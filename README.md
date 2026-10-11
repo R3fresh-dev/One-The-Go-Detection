@@ -20,8 +20,8 @@ Supporting documents: [reading order](specs/README.md), [hardware starter guide]
 ## Research reports
 
 - [THC chemistry and sensing review](specs/research/THC_CHEMISTRY_REVIEW.md): 46-source review of metabolites in blood, urine, and saliva; breath collection; sensing methods; and implications for the pocket device. [PDF edition](specs/research/THC_Chemistry_and_Pocket_Device_Research.pdf).
-- [FDA regulatory and compliance assessment](specs/research/FDA_REGULATORY_ASSESSMENT.md): current US classification, study, quality, software, cybersecurity, and postmarket requirements mapped to the repository's evidence gates.
-- [Faster market-entry strategy](specs/research/FAST_MARKET_STRATEGY.md): proposed staged launch using existing products and a limited app, followed by an OEM all-in-one exposure device; includes a 30-day readiness sprint and illustrative $20/month economics. These research recommendations do not change the current product requirements or close release gates.
+- [FDA regulatory and compliance assessment](specs/research/FDA_REGULATORY_ASSESSMENT.md): current US classification, study, quality, software, cybersecurity, and postmarket requirements mapped to the repository's evidence gates. [PDF edition](specs/research/FDA_Regulatory_Assessment.pdf).
+- [Faster market-entry strategy](specs/research/FAST_MARKET_STRATEGY.md): proposed staged launch using existing products and a limited app, followed by an OEM all-in-one exposure device; includes a 30-day readiness sprint and illustrative $20/month economics. These research recommendations do not change the current product requirements or close release gates. [PDF edition](specs/research/Fast_Market_Strategy.pdf).
 
 ## What is implemented
 
