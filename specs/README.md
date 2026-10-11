@@ -24,6 +24,8 @@ For an immediate hardware start, read the hardware guide and roadmap first, then
 ## Background research
 
 - [THC chemistry and sensing review](research/THC_CHEMISTRY_REVIEW.md) and [PDF edition](research/THC_Chemistry_and_Pocket_Device_Research.pdf): metabolite chemistry, matrix-specific evidence, breath research, and sensing limitations. Research recommendations inform future decisions; they do not supersede the current requirement register or release gates.
+- [FDA regulatory and compliance assessment](research/FDA_REGULATORY_ASSESSMENT.md): US regulatory sources, a repository gap register, and evidence needed for studies and a possible commercial device.
+- [Faster market-entry strategy](research/FAST_MARKET_STRATEGY.md): proposed initial distribution/service scope, a simpler OEM all-in-one product, supplier diligence, and subscription economics. The existing impairment research program and normative phase gates remain the baseline.
 
 ## Contracts and starter material
 
