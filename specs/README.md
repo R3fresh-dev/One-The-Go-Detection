@@ -21,6 +21,10 @@ The product vision is a pocket cannabis-and-alcohol device with a mobile app. Th
 
 For an immediate hardware start, read the hardware guide and roadmap first, then use the other documents as implementation references.
 
+## Background research
+
+- [THC chemistry and sensing review](research/THC_CHEMISTRY_REVIEW.md) and [PDF edition](research/THC_Chemistry_and_Pocket_Device_Research.pdf): metabolite chemistry, matrix-specific evidence, breath research, and sensing limitations. Research recommendations inform future decisions; they do not supersede the current requirement register or release gates.
+
 ## Contracts and starter material
 
 - [Machine-readable contracts](../contracts/): JSON Schemas and the proposed OpenAPI interface. Structural validity does not establish measurement or model validity.

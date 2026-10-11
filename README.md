@@ -17,6 +17,10 @@ The initial hardware recommendation is an **Arduino Nano ESP32**. Start with the
 
 Supporting documents: [reading order](specs/README.md), [hardware starter guide](specs/HARDWARE_STARTER_GUIDE.md), [validation plan](specs/VALIDATION_PLAN.md), [roadmap](specs/ROADMAP.md), [decision log](specs/DECISIONS.md), [sources](specs/SOURCES.md), and [verification report](specs/VERIFICATION_REPORT.md).
 
+## Research reports
+
+- [THC chemistry and sensing review](specs/research/THC_CHEMISTRY_REVIEW.md): 46-source review of metabolites in blood, urine, and saliva; breath collection; sensing methods; and implications for the pocket device. [PDF edition](specs/research/THC_Chemistry_and_Pocket_Device_Research.pdf).
+
 ## What is implemented
 
 - Five JSON Schemas for measurements, sessions, model manifests, results, and synthetic telemetry.
