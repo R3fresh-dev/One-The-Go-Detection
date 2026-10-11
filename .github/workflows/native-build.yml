@@ -101,9 +101,21 @@ jobs:
           "$otgd_sdkmanager" --sdk_root="$otgd_android_sdk" 'platforms;android-36' 'build-tools;36.0.0'
           test -f "$otgd_android_sdk/platforms/android-36/android.jar"
           test -x "$otgd_android_sdk/build-tools/36.0.0/aapt2"
-      - name: Compile native modules, run Kotlin golden suites, build debug APK
-        run: ./gradlew --no-daemon --max-workers=2 -PreactNativeDevServerPort=8082 -PreactNativeArchitectures=arm64-v8a,x86_64 :otgd-reaction-task:testDebugUnitTest :app:assembleDebug
+      # Release is an embedding/build mode here, never production signing. The
+      # init script refuses nonlocal IDs, a Metro-dependent Release variant or
+      # any signer other than Expo's generated public Android development key.
+      - name: Compile native modules, run Kotlin golden suites, build both local APKs
+        run: ./gradlew --no-daemon --max-workers=2 --init-script ../modules/scripts/local-preview.init.gradle -PreactNativeDevServerPort=8082 -PreactNativeArchitectures=arm64-v8a,x86_64 :otgd-reaction-task:testDebugUnitTest :app:assembleDebug :app:assembleRelease
         working-directory: apps/mobile/android
+      - name: Inspect standalone local APK bundle, application ID and development signer
+        run: python3 modules/scripts/verify_android_preview.py
+        working-directory: apps/mobile
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: android-local-preview-apk
+          path: apps/mobile/native-build/otgd-local-preview.apk
+          if-no-files-found: error
+          retention-days: 14
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: android-debug-apk
@@ -118,7 +130,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
       - name: Evidence boundary
-        run: echo 'Android native code and Kotlin fixture tests compiled and the debug APK was built. The development APK uses Metro; no store signing, physical latency calibration, Bluetooth bench run or human sensing is claimed.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Android native code and Kotlin fixture tests compiled. The standalone local preview APK embeds JavaScript and uses the generated development signing key; the separate debug APK uses Metro. No Play signing, device execution, physical latency calibration, Bluetooth bench run or human sensing is claimed.' >> "$GITHUB_STEP_SUMMARY"
 
   ios:
     runs-on: macos-26

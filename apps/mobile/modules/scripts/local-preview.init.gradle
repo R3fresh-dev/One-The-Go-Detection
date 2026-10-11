@@ -1,0 +1,24 @@
+// Local preview artifact contract: Expo's generated Release variant embeds JS,
+// but is signed ONLY with the generated public Android development key. This is
+// not a production signing configuration or an APK for Play distribution.
+gradle.projectsEvaluated {
+  def app = gradle.rootProject.findProject(':app')
+  if (app == null || System.getenv('APP_ENV') != 'local') {
+    throw new GradleException('Local preview builds require APP_ENV=local and the generated app project.')
+  }
+  def android = app.extensions.getByName('android')
+  def release = android.buildTypes.getByName('release')
+  def developmentSigning = android.signingConfigs.getByName('debug')
+  if (android.defaultConfig.applicationId != 'dev.r3fresh.otgd.local') {
+    throw new GradleException('Local preview refuses a nonlocal application identifier.')
+  }
+  if (release.signingConfig != developmentSigning ||
+      developmentSigning.storeFile?.canonicalFile != app.file('debug.keystore').canonicalFile ||
+      developmentSigning.keyAlias != 'androiddebugkey') {
+    throw new GradleException('Local preview requires the generated Android development signing configuration.')
+  }
+  def react = app.extensions.getByName('react')
+  if (release.debuggable || react.debuggableVariants.get().contains('release')) {
+    throw new GradleException('The local preview Release variant must embed its bundle and must not depend on Metro.')
+  }
+}

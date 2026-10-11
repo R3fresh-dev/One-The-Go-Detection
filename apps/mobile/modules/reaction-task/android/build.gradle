@@ -6,7 +6,11 @@ version = '1.0.0'
 
 android {
   namespace 'expo.modules.otgdreaction'
-  defaultConfig { minSdkVersion 24 }
+  defaultConfig {
+    minSdkVersion 24
+    versionCode 1
+    versionName '1.0.0'
+  }
   testOptions { unitTests.returnDefaultValues = true }
   sourceSets { test.resources.srcDirs += ['../fixtures'] }
 }
