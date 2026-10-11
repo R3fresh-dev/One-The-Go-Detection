@@ -1,0 +1,126 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "result_kind": {
+      "const": "administrative_report_result",
+      "title": "Result Kind",
+      "type": "string"
+    },
+    "result_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Result Id",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "revision_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Revision Id",
+      "type": "string"
+    },
+    "revision_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Revision Sha256",
+      "type": "string"
+    },
+    "base_snapshot_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Base Snapshot Sha256",
+      "type": "string"
+    },
+    "target_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Target At",
+      "type": "string"
+    },
+    "evaluated_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "measurement_only",
+        "invalid",
+        "inconclusive"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "reason_codes": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Reason Codes",
+      "type": "array"
+    },
+    "provenance_summary": {
+      "items": {
+        "enum": [
+          "simulated",
+          "prototype_sensor",
+          "reference_lab",
+          "validated_sensor"
+        ],
+        "type": "string"
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "title": "Provenance Summary",
+      "type": "array"
+    },
+    "replaces_result_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Replaces Result Id",
+      "type": "string"
+    },
+    "inference_available": {
+      "const": false,
+      "title": "Inference Available",
+      "type": "boolean"
+    },
+    "probability": {
+      "title": "Probability",
+      "type": "null"
+    },
+    "classification": {
+      "title": "Classification",
+      "type": "null"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "null"
+    }
+  },
+  "required": [
+    "schema_version",
+    "result_kind",
+    "result_id",
+    "session_id",
+    "revision_id",
+    "revision_sha256",
+    "base_snapshot_sha256",
+    "target_at",
+    "evaluated_at",
+    "state",
+    "reason_codes",
+    "provenance_summary",
+    "replaces_result_id",
+    "inference_available",
+    "probability",
+    "classification",
+    "model_id"
+  ],
+  "title": "ReportRevisionResult",
+  "type": "object"
+}

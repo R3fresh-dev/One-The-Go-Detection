@@ -8,6 +8,7 @@ from sqlalchemy import (
     CheckConstraint,
     Float,
     ForeignKey,
+    Index,
     Integer,
     String,
     create_engine,
@@ -80,6 +81,12 @@ class Check(Base):
     evidence_sha256: Mapped[str | None] = mapped_column(String(64))
     result: Mapped[dict | None] = mapped_column(JSON)
     created: Mapped[float] = mapped_column(Float, default=now, index=True)
+    __table_args__ = (
+        Index(
+            "ix_checks_owner_replacement_page",
+            "account_id", "generation", "supersedes_id", "created", "id",
+        ),
+    )
 
 
 class Dedup(Base):

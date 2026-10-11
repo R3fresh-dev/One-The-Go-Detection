@@ -940,6 +940,104 @@
         ]
       }
     },
+    "/v1/sessions/{session_id}/replacement-links": {
+      "get": {
+        "summary": "Session Replacement Links",
+        "operationId": "session_replacement_links_v1_sessions__session_id__replacement_links_get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementLinks"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
     "/v1/sessions/{session_id}/context": {
       "put": {
         "summary": "Context Put",
@@ -3442,6 +3540,508 @@
           }
         ]
       }
+    },
+    "/v1/research/sessions/{session_id}/report-artifact-uploads": {
+      "post": {
+        "tags": [
+          "administrative-report-revisions"
+        ],
+        "summary": "Report Artifact Upload",
+        "operationId": "report_artifact_upload_v1_research_sessions__session_id__report_artifact_uploads_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtifactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/research/sessions/{session_id}/report-artifact-uploads/{artifact_id}/complete": {
+      "post": {
+        "tags": [
+          "administrative-report-revisions"
+        ],
+        "summary": "Report Artifact Complete",
+        "operationId": "report_artifact_complete_v1_research_sessions__session_id__report_artifact_uploads__artifact_id__complete_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteArtifact"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/research/sessions/{session_id}/report-revisions": {
+      "post": {
+        "tags": [
+          "administrative-report-revisions"
+        ],
+        "summary": "Report Revision Create",
+        "operationId": "report_revision_create_v1_research_sessions__session_id__report_revisions_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRevisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportRevisionCompanion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/report-revisions": {
+      "get": {
+        "tags": [
+          "administrative-report-revisions"
+        ],
+        "summary": "Report Revision List",
+        "operationId": "report_revision_list_v1_sessions__session_id__report_revisions_get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportRevisionList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/report-revisions/{revision_id}": {
+      "get": {
+        "tags": [
+          "administrative-report-revisions"
+        ],
+        "summary": "Report Revision Detail",
+        "operationId": "report_revision_detail_v1_sessions__session_id__report_revisions__revision_id__get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportRevisionDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -4824,6 +5424,39 @@
         ],
         "title": "LabImport"
       },
+      "MethodApproval": {
+        "properties": {
+          "calibration_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 32,
+            "minItems": 1,
+            "title": "Calibration Ids"
+          },
+          "instrument_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 32,
+            "minItems": 1,
+            "title": "Instrument Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "calibration_ids",
+          "instrument_ids"
+        ],
+        "title": "MethodApproval"
+      },
       "Profile": {
         "properties": {
           "age_years": {
@@ -4926,6 +5559,868 @@
           "history"
         ],
         "title": "ProfileWrite"
+      },
+      "ReplacementLink": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "created_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Created At"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "processing",
+              "completed",
+              "invalid"
+            ],
+            "title": "State"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "session_id",
+          "created_at",
+          "state"
+        ],
+        "title": "ReplacementLink"
+      },
+      "ReplacementLinks": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version",
+            "default": "1.0.0"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "data_generation": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Data Generation"
+          },
+          "base_snapshot_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Snapshot Sha256"
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReplacementLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReplacementLink"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1024,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "session_id",
+          "data_generation",
+          "base_snapshot_sha256",
+          "previous",
+          "items",
+          "next_cursor"
+        ],
+        "title": "ReplacementLinks"
+      },
+      "ReportAuthorization": {
+        "properties": {
+          "operator_account_ref": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Operator Account Ref"
+          },
+          "study_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Study Id"
+          },
+          "protocol_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Protocol Id"
+          },
+          "configuration_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Configuration Id"
+          },
+          "configuration_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Sha256"
+          },
+          "consent_record_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Consent Record Id"
+          },
+          "retention_policy_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Retention Policy Id"
+          },
+          "approved_lab_methods": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MethodApproval"
+            },
+            "propertyNames": {
+              "maxLength": 256,
+              "minLength": 1
+            },
+            "type": "object",
+            "maxProperties": 3,
+            "title": "Approved Lab Methods"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "operator_account_ref",
+          "study_id",
+          "protocol_id",
+          "configuration_id",
+          "configuration_sha256",
+          "consent_record_id",
+          "retention_policy_id",
+          "approved_lab_methods"
+        ],
+        "title": "ReportAuthorization"
+      },
+      "ReportContent": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "correction",
+              "reanalysis"
+            ],
+            "title": "Kind"
+          },
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "CORRECTED_LABORATORY_REPORT",
+              "SPECIMEN_REANALYSIS"
+            ],
+            "title": "Reason Code"
+          },
+          "reported_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Reported At"
+          },
+          "replacement_measurements": {
+            "items": {
+              "$ref": "#/components/schemas/ScientificMeasurement"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Replacement Measurements"
+          },
+          "source_report": {
+            "$ref": "#/components/schemas/VerifiedReport"
+          },
+          "authorization": {
+            "$ref": "#/components/schemas/ReportAuthorization"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "reason_code",
+          "reported_at",
+          "replacement_measurements",
+          "source_report",
+          "authorization"
+        ],
+        "title": "ReportContent"
+      },
+      "ReportDescriptor": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "revision_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Revision Id"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "data_generation": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Data Generation"
+          },
+          "base_snapshot_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Snapshot Sha256"
+          },
+          "base_evidence_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Evidence Sha256"
+          },
+          "previous_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Revision Id"
+          },
+          "previous_revision_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Revision Sha256"
+          },
+          "original_target_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Original Target At"
+          },
+          "original_collected_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Original Collected At"
+          },
+          "original_capture_completed_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Original Capture Completed At"
+          },
+          "report": {
+            "$ref": "#/components/schemas/ReportContent"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "revision_id",
+          "session_id",
+          "data_generation",
+          "base_snapshot_sha256",
+          "base_evidence_sha256",
+          "previous_revision_id",
+          "previous_revision_sha256",
+          "original_target_at",
+          "original_collected_at",
+          "original_capture_completed_at",
+          "report"
+        ],
+        "title": "ReportDescriptor"
+      },
+      "ReportRevisionCompanion": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "record_type": {
+            "type": "string",
+            "const": "administrative_report_revision",
+            "title": "Record Type"
+          },
+          "revision_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Revision Id"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "data_generation": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Data Generation"
+          },
+          "sequence": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Sequence"
+          },
+          "accepted_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Accepted At"
+          },
+          "descriptor": {
+            "$ref": "#/components/schemas/ReportDescriptor"
+          },
+          "revision_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Revision Sha256"
+          },
+          "effective_measurements": {
+            "items": {
+              "$ref": "#/components/schemas/ScientificMeasurement"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Effective Measurements"
+          },
+          "result": {
+            "$ref": "#/components/schemas/ReportRevisionResult"
+          },
+          "result_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Result Sha256"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "record_type",
+          "revision_id",
+          "session_id",
+          "data_generation",
+          "sequence",
+          "accepted_at",
+          "descriptor",
+          "revision_sha256",
+          "effective_measurements",
+          "result",
+          "result_sha256"
+        ],
+        "title": "ReportRevisionCompanion"
+      },
+      "ReportRevisionDetail": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "data_generation": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Data Generation"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/ReportRevisionCompanion"
+          },
+          "previous_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Revision Id"
+          },
+          "next_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Revision Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "session_id",
+          "data_generation",
+          "revision",
+          "previous_revision_id",
+          "next_revision_id"
+        ],
+        "title": "ReportRevisionDetail"
+      },
+      "ReportRevisionList": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "data_generation": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Data Generation"
+          },
+          "base_snapshot_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Snapshot Sha256"
+          },
+          "base_result_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Base Result Id"
+          },
+          "original_target_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Original Target At"
+          },
+          "original_collected_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Collected At"
+          },
+          "original_capture_completed_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Original Capture Completed At"
+          },
+          "latest_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Revision Id"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReportRevisionSummary"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "session_id",
+          "data_generation",
+          "base_snapshot_sha256",
+          "base_result_id",
+          "original_target_at",
+          "original_collected_at",
+          "original_capture_completed_at",
+          "latest_revision_id",
+          "items"
+        ],
+        "title": "ReportRevisionList"
+      },
+      "ReportRevisionRequest": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "revision_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Revision Id"
+          },
+          "study_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Study Id"
+          },
+          "sample_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Sample Id"
+          },
+          "base_snapshot_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Snapshot Sha256"
+          },
+          "expected_previous_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Previous Revision Id"
+          },
+          "expected_previous_revision_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Previous Revision Sha256"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "correction",
+              "reanalysis"
+            ],
+            "title": "Kind"
+          },
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "CORRECTED_LABORATORY_REPORT",
+              "SPECIMEN_REANALYSIS"
+            ],
+            "title": "Reason Code"
+          },
+          "reported_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Reported At"
+          },
+          "source_report_artifact_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Source Report Artifact Id"
+          },
+          "replacement_measurements": {
+            "items": {
+              "$ref": "#/components/schemas/ScientificMeasurement"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Replacement Measurements"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "revision_id",
+          "study_id",
+          "sample_id",
+          "base_snapshot_sha256",
+          "expected_previous_revision_id",
+          "expected_previous_revision_sha256",
+          "kind",
+          "reason_code",
+          "reported_at",
+          "source_report_artifact_id",
+          "replacement_measurements"
+        ],
+        "title": "ReportRevisionRequest"
+      },
+      "ReportRevisionResult": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "result_kind": {
+            "type": "string",
+            "const": "administrative_report_result",
+            "title": "Result Kind"
+          },
+          "result_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Result Id"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "revision_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Revision Id"
+          },
+          "revision_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Revision Sha256"
+          },
+          "base_snapshot_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Base Snapshot Sha256"
+          },
+          "target_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Target At"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Evaluated At"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "measurement_only",
+              "invalid",
+              "inconclusive"
+            ],
+            "title": "State"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Reason Codes"
+          },
+          "provenance_summary": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "simulated",
+                "prototype_sensor",
+                "reference_lab",
+                "validated_sensor"
+              ]
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Provenance Summary"
+          },
+          "replaces_result_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Replaces Result Id"
+          },
+          "inference_available": {
+            "type": "boolean",
+            "const": false,
+            "title": "Inference Available"
+          },
+          "probability": {
+            "type": "null",
+            "title": "Probability"
+          },
+          "classification": {
+            "type": "null",
+            "title": "Classification"
+          },
+          "model_id": {
+            "type": "null",
+            "title": "Model Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "result_kind",
+          "result_id",
+          "session_id",
+          "revision_id",
+          "revision_sha256",
+          "base_snapshot_sha256",
+          "target_at",
+          "evaluated_at",
+          "state",
+          "reason_codes",
+          "provenance_summary",
+          "replaces_result_id",
+          "inference_available",
+          "probability",
+          "classification",
+          "model_id"
+        ],
+        "title": "ReportRevisionResult"
+      },
+      "ReportRevisionSummary": {
+        "properties": {
+          "revision_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Revision Id"
+          },
+          "revision_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Revision Sha256"
+          },
+          "sequence": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Sequence"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "correction",
+              "reanalysis"
+            ],
+            "title": "Kind"
+          },
+          "reported_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Reported At"
+          },
+          "accepted_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Accepted At"
+          },
+          "previous_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Revision Id"
+          },
+          "next_revision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Revision Id"
+          },
+          "result_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Result Id"
+          },
+          "result_state": {
+            "type": "string",
+            "enum": [
+              "measurement_only",
+              "invalid",
+              "inconclusive"
+            ],
+            "title": "Result State"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision_id",
+          "revision_sha256",
+          "sequence",
+          "kind",
+          "reported_at",
+          "accepted_at",
+          "previous_revision_id",
+          "next_revision_id",
+          "result_id",
+          "result_state"
+        ],
+        "title": "ReportRevisionSummary"
       },
       "Selection": {
         "properties": {
@@ -5101,6 +6596,47 @@
         ],
         "title": "ValidationError"
       },
+      "VerifiedReport": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Artifact Id"
+          },
+          "version_id": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Version Id"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "media_type": {
+            "type": "string",
+            "const": "application/pdf",
+            "title": "Media Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "maximum": 8388608.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "version_id",
+          "sha256",
+          "media_type",
+          "size_bytes"
+        ],
+        "title": "VerifiedReport"
+      },
       "Withdrawal": {
         "properties": {
           "confirmation": {
@@ -5115,6 +6651,414 @@
           "confirmation"
         ],
         "title": "Withdrawal"
+      },
+      "ScientificMeasurement": {
+        "title": "Measurement",
+        "description": "Proposed v0.1 saliva envelope. Limits are assay-specific; qualifiers are not impairment thresholds. See LLD for cross-field semantics.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "0.1.0"
+          },
+          "measurement_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sample_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "analyte": {
+            "enum": [
+              "THC",
+              "THC_COOH",
+              "OH11_THC"
+            ]
+          },
+          "qualifier": {
+            "enum": [
+              "quantified",
+              "below_loq",
+              "above_range",
+              "not_detected",
+              "not_measured",
+              "invalid"
+            ]
+          },
+          "value_ng_ml": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "unit": {
+            "const": "ng/mL"
+          },
+          "assay_basis": {
+            "enum": [
+              "free",
+              "total_after_hydrolysis",
+              "unspecified"
+            ]
+          },
+          "limits": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "lod_ng_ml": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "loq_ng_ml": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "upper_ng_ml": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              }
+            },
+            "required": [
+              "lod_ng_ml",
+              "loq_ng_ml",
+              "upper_ng_ml"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "reference_lab",
+              "prototype_sensor",
+              "validated_sensor"
+            ]
+          },
+          "method_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "calibration_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "cartridge_lot": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "instrument_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "operator_ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "collected_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+          },
+          "measured_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+          },
+          "quality_flags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "minItems": 0
+          },
+          "original_report": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "unit": {
+                "enum": [
+                  "ng/mL",
+                  "pg/mL"
+                ]
+              },
+              "qualifier": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              }
+            },
+            "required": [
+              "value",
+              "unit",
+              "qualifier"
+            ]
+          },
+          "uncertainty_ng_ml": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "concentration_basis": {
+            "enum": [
+              "neat_oral_fluid",
+              "collected_mixture",
+              "unspecified"
+            ],
+            "description": "Basis of both original and unit-normalized concentration and analytical limits. No local dilution correction is performed."
+          },
+          "correction_status": {
+            "enum": [
+              "not_corrected",
+              "laboratory_corrected",
+              "unspecified"
+            ],
+            "description": "Whether the reporting laboratory applied dilution correction; preserve its report, do not infer or repeat a correction."
+          }
+        },
+        "required": [
+          "schema_version",
+          "measurement_id",
+          "sample_id",
+          "analyte",
+          "qualifier",
+          "value_ng_ml",
+          "unit",
+          "assay_basis",
+          "limits",
+          "source",
+          "method_id",
+          "calibration_id",
+          "cartridge_lot",
+          "instrument_id",
+          "operator_ref",
+          "collected_at",
+          "measured_at",
+          "quality_flags",
+          "original_report",
+          "uncertainty_ng_ml",
+          "concentration_basis",
+          "correction_status"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "qualifier": {
+                  "const": "quantified"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "value_ng_ml": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "limits": {
+                  "properties": {
+                    "loq_ng_ml": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "upper_ng_ml": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "value_ng_ml": {
+                  "type": "null"
+                },
+                "original_report": {
+                  "properties": {
+                    "value": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "qualifier": {
+                  "const": "below_loq"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "loq_ng_ml": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "qualifier": {
+                  "const": "above_range"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "upper_ng_ml": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "qualifier": {
+                  "const": "not_detected"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "lod_ng_ml": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "qualifier": {
+                  "const": "invalid"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "quality_flags": {
+                  "minItems": 1
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "qualifier": {
+                  "const": "not_measured"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "measured_at": {
+                  "type": "null"
+                },
+                "method_id": {
+                  "type": "null"
+                },
+                "instrument_id": {
+                  "type": "null"
+                },
+                "calibration_id": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "qualifier": {
+                  "enum": [
+                    "quantified",
+                    "below_loq",
+                    "above_range",
+                    "not_detected"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "method_id": {
+                  "type": "string"
+                },
+                "instrument_id": {
+                  "type": "string"
+                },
+                "measured_at": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
       },
       "SyntheticAnalyte": {
         "additionalProperties": false,

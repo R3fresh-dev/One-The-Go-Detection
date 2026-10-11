@@ -20,9 +20,15 @@ uv run --project services/api python tools/generate_application_contracts.py
 | `CaptureAuthorization.schema.json`, `StartAuthorization.schema.json` | Fresh single-use qualified-start request/consumption. |
 | `Attestation.schema.json` | Domain-separated signature envelope and exact normalized payload. |
 | `SyntheticDeviceCapture.schema.json` | Bounded fictional transport, association, clock exchanges, fixed values and transcript. |
+| `ReplacementLinks.schema.json` | Owner/generation-scoped navigation between immutable physical checks, with bounded keyset pagination. |
+| `ReportRevisionRequest.schema.json`, `ReportDescriptor.schema.json` | Authorized same-specimen correction/reanalysis and its immutable original-evidence links. |
+| `ReportRevisionResult.schema.json`, `ReportRevisionCompanion.schema.json` | Separate measurement-only report result, effective analyte projection and complete hashed companion. |
+| `ReportRevisionList.schema.json`, `ReportRevisionDetail.schema.json`, `ReportRevisionIndex.schema.json` | Typed historical navigation and exact separately bounded export-file references. |
 | `canonical-golden.json` | RFC 8785 Unicode/numeric fixtures and rejected JSON inputs. |
 
 A JSON Schema pass is one layer. Server semantic checks additionally enforce exact nested metadata keys, limits, source/time/identity consistency, native schedule and score recomputation, simulator transcript and clock arithmetic, full manifest lineage, current authority and immutable state. The original snapshot carries a selected projection; the complete native evidence is retained and hashed in its companion attempt. Unknown fields cannot be used to smuggle raw health media into unrestricted metadata.
+
+Report contracts embed `ScientificMeasurement`, derived without modification from the original `measurement.schema.json`. This prevents generated clients from interpreting the report DTO's delegated measurement validation as permission to submit arbitrary dictionaries. Semantic unit, specimen, chronology, method-authority and chain checks remain required. Administrative report revisions never rewrite the original capture or supply an intoxication estimate; see the [reviewed revision contract](../../openspec/changes/production-mobile-platform/report-revision-contract.md).
 
 ## Fixture provenance
 

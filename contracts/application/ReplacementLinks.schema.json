@@ -1,0 +1,101 @@
+{
+  "$defs": {
+    "ReplacementLink": {
+      "additionalProperties": false,
+      "properties": {
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "created_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Created At",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "processing",
+            "completed",
+            "invalid"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "created_at",
+        "state"
+      ],
+      "title": "ReplacementLink",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "data_generation": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Data Generation",
+      "type": "integer"
+    },
+    "base_snapshot_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Base Snapshot Sha256",
+      "type": "string"
+    },
+    "previous": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReplacementLink"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/ReplacementLink"
+      },
+      "maxItems": 100,
+      "title": "Items",
+      "type": "array"
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Cursor"
+    }
+  },
+  "required": [
+    "session_id",
+    "data_generation",
+    "base_snapshot_sha256",
+    "previous",
+    "items",
+    "next_cursor"
+  ],
+  "title": "ReplacementLinks",
+  "type": "object"
+}

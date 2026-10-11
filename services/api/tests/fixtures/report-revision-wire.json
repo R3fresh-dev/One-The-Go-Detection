@@ -1,0 +1,2556 @@
+{
+  "fixture_notice": "Entirely fictional software fixture; no actual laboratory, approval, participant sample, or clinical validation.",
+  "schema_version": "1.0.0",
+  "account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+  "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+  "data_generation": 1,
+  "base": {
+    "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+    "state": "completed",
+    "revision": 7,
+    "mode": "analytical",
+    "created_at": "2026-10-10T18:00:00Z",
+    "snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+    "evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+    "result": {
+      "schema_version": "0.1.0",
+      "result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "state": "measurement_only",
+      "target_at": "2026-10-10T18:00:00Z",
+      "evaluated_at": "2026-10-11T04:32:41.334Z",
+      "model_id": null,
+      "model_lifecycle": null,
+      "endpoint_id": null,
+      "probability": null,
+      "classification": null,
+      "operating_threshold": null,
+      "uncertainty_policy_id": null,
+      "reason_codes": [
+        "MODEL_UNAVAILABLE",
+        "MODEL_UNVALIDATED"
+      ],
+      "input_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+      "provenance_summary": [
+        "prototype_sensor",
+        "reference_lab"
+      ],
+      "replaces_result_id": null
+    },
+    "snapshot": {
+      "schema_version": "0.1.0",
+      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "supersedes_session_id": null,
+      "mode": "analytical",
+      "subject_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+      "study_id": "FICTIONAL-REVISION-STUDY",
+      "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+      "created_at": "2026-10-10T18:00:00Z",
+      "target_at": "2026-10-10T18:00:00Z",
+      "clock_uncertainty_ms": 20.0,
+      "acquisition_span_ms": 160000.0,
+      "device": {
+        "device_id": "synthetic-reader",
+        "boot_id": "synthetic-boot-001",
+        "hardware_revision": "simulated-hw",
+        "firmware_version": "synthetic-0.1.0"
+      },
+      "profile": {
+        "age_years": 35,
+        "height_cm": 175.0,
+        "weight_kg": 80.0,
+        "bmi": 26.122,
+        "recorded_at": "2026-10-10T17:59:00Z",
+        "source": "study_measurement"
+      },
+      "history": {
+        "use_frequency": "unknown",
+        "route": "unknown",
+        "time_since_use_min": null,
+        "recent_exercise": null,
+        "sleep_hours": null,
+        "alcohol_co_use": "unknown"
+      },
+      "baseline_ref": null,
+      "sample": {
+        "sample_id": "22222222-2222-4222-8222-222222222222",
+        "collection_method_id": "synthetic-collection",
+        "collected_at": "2026-10-10T18:00:10Z",
+        "volume_ml": 1.0,
+        "dilution_factor": 1.0,
+        "status": "valid",
+        "quality_flags": []
+      },
+      "saliva": [
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000001",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC",
+          "qualifier": "quantified",
+          "value_ng_ml": 12.0,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.3,
+            "loq_ng_ml": 1.0,
+            "upper_ng_ml": 200.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-LAB-METHOD",
+          "calibration_id": "FICTIONAL-CALIBRATION",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": "2026-10-10T18:00:20Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": 12.0,
+            "unit": "ng/mL",
+            "qualifier": "quantified"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        },
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000002",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC_COOH",
+          "qualifier": "below_loq",
+          "value_ng_ml": null,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.03,
+            "loq_ng_ml": 0.1,
+            "upper_ng_ml": 2.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-LAB-METHOD",
+          "calibration_id": "FICTIONAL-CALIBRATION",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": "2026-10-10T18:00:20Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": null,
+            "unit": "ng/mL",
+            "qualifier": "BLQ"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        },
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000003",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "OH11_THC",
+          "qualifier": "not_measured",
+          "value_ng_ml": null,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": null,
+            "loq_ng_ml": null,
+            "upper_ng_ml": null
+          },
+          "source": "reference_lab",
+          "method_id": null,
+          "calibration_id": null,
+          "cartridge_lot": null,
+          "instrument_id": null,
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": null,
+          "quality_flags": [],
+          "original_report": {
+            "value": null,
+            "unit": "ng/mL",
+            "qualifier": "not_measured"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        }
+      ],
+      "eyes": {
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-10T18:00:30Z",
+        "ended_at": "2026-10-10T18:00:40Z",
+        "quality_flags": [],
+        "capture_config_id": "synthetic-eyes",
+        "camera_id": "synthetic-camera",
+        "frame_rate_hz": 30,
+        "scale_basis": "normalized",
+        "baseline_diameter_mm": null,
+        "relative_constriction": 0.2,
+        "latency_ms": 250,
+        "raw_artifact_id": null
+      },
+      "cardiac": {
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-10T18:00:10Z",
+        "ended_at": "2026-10-10T18:00:40Z",
+        "quality_flags": [],
+        "acquisition_config_id": "FICTIONAL_ACCEPTED_PPG",
+        "modality": "ppg",
+        "heart_rate_bpm": 72.0,
+        "ecg_status": "not_collected",
+        "ecg_rmssd_ms": null,
+        "sample_rate_hz": 100.0,
+        "raw_artifact_id": null
+      },
+      "task": {
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-10T18:00:50Z",
+        "ended_at": "2026-10-10T18:02:50Z",
+        "quality_flags": [],
+        "task_id": "44444444-4444-4444-8444-444444444444",
+        "task_version": "choice_inhibit_v0",
+        "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "practice_trials": 6,
+        "scored_trials": 60,
+        "go_trials": 48,
+        "no_go_trials": 12,
+        "valid_correct_go_trials": 45,
+        "features": {
+          "median_rt_ms": 340.0,
+          "iqr_rt_ms": 80.0,
+          "p90_rt_ms": 470.0,
+          "omission_rate": 0.041666666666666664,
+          "wrong_go_rate": 0.020833333333333332,
+          "no_go_error_rate": 0.08333333333333333
+        },
+        "events_artifact_id": null
+      },
+      "capture_completed_at": "2026-10-10T18:03:00Z"
+    },
+    "context": {
+      "schema_version": "1.0.0",
+      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "context_confirmed_at": "2026-10-10T18:00:00Z",
+      "profile_version_id": null,
+      "profile_snapshot_sha256": "4d39f5fc853f967791aa2f138220307b3ef56c897c3a47ac82c906bb56eb5ed8",
+      "history_snapshot_sha256": "d88c0743ced64f55fb9073dbbee04b75f2f397311fe596c6a53a7bbbc76ea10f",
+      "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+      "configuration_refs": [],
+      "baseline_refs": [],
+      "device_associations": [],
+      "self_report_context": null
+    },
+    "manifest": {
+      "schema_version": "1.0.0",
+      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "context_sha256": "7258c43a0dec25861ac2978ac5962f3cc0a4eed9fd091bf9aeae705f9f201ee2",
+      "attempts": [
+        {
+          "attempt_id": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
+          "sha256": "a7d4f4ac154dcfce58f72ec6379ce5271441db6e87f6970f856ad02b930dcb86"
+        },
+        {
+          "attempt_id": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
+          "sha256": "8db1bd0b15ee5a5a2546e5d745387ba77e58d05c3450fcf85534a59829fd1a5d"
+        },
+        {
+          "attempt_id": "f6983c95-9346-4445-9cba-4254987a588f",
+          "sha256": "4161908ffd8c905313e5015192a3a232445a7465590aab719865f3d8031935ac"
+        },
+        {
+          "attempt_id": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
+          "sha256": "8e06c9633714ede639c096e5112f6127e819f1e976c6bf2bef0abf8650b99820"
+        }
+      ],
+      "selected": {
+        "saliva": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
+        "eyes": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
+        "cardiac": "f6983c95-9346-4445-9cba-4254987a588f",
+        "task": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
+        "alcohol": null
+      }
+    },
+    "attempts": [
+      {
+        "schema_version": "1.0.0",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "attempt_id": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
+        "component": "saliva",
+        "record_id": "22222222-2222-4222-8222-222222222222",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-10T18:00:10Z",
+        "ended_at": "2026-10-10T18:00:10Z",
+        "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
+        "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "quality_flags": [],
+        "component_metadata": {
+          "projection": {
+            "sample": {
+              "sample_id": "22222222-2222-4222-8222-222222222222",
+              "collection_method_id": "synthetic-collection",
+              "collected_at": "2026-10-10T18:00:10Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 1.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": [
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "33333333-3333-4333-8333-000000000001",
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "analyte": "THC",
+                "qualifier": "quantified",
+                "value_ng_ml": 12.0,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": 0.3,
+                  "loq_ng_ml": 1.0,
+                  "upper_ng_ml": 200.0
+                },
+                "source": "reference_lab",
+                "method_id": "FICTIONAL-LAB-METHOD",
+                "calibration_id": "FICTIONAL-CALIBRATION",
+                "cartridge_lot": null,
+                "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+                "operator_ref": null,
+                "collected_at": "2026-10-10T18:00:10Z",
+                "measured_at": "2026-10-10T18:00:20Z",
+                "quality_flags": [],
+                "original_report": {
+                  "value": 12.0,
+                  "unit": "ng/mL",
+                  "qualifier": "quantified"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected"
+              },
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "33333333-3333-4333-8333-000000000002",
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "analyte": "THC_COOH",
+                "qualifier": "below_loq",
+                "value_ng_ml": null,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": 0.03,
+                  "loq_ng_ml": 0.1,
+                  "upper_ng_ml": 2.0
+                },
+                "source": "reference_lab",
+                "method_id": "FICTIONAL-LAB-METHOD",
+                "calibration_id": "FICTIONAL-CALIBRATION",
+                "cartridge_lot": null,
+                "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+                "operator_ref": null,
+                "collected_at": "2026-10-10T18:00:10Z",
+                "measured_at": "2026-10-10T18:00:20Z",
+                "quality_flags": [],
+                "original_report": {
+                  "value": null,
+                  "unit": "ng/mL",
+                  "qualifier": "BLQ"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected"
+              },
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "33333333-3333-4333-8333-000000000003",
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "analyte": "OH11_THC",
+                "qualifier": "not_measured",
+                "value_ng_ml": null,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": null,
+                  "loq_ng_ml": null,
+                  "upper_ng_ml": null
+                },
+                "source": "reference_lab",
+                "method_id": null,
+                "calibration_id": null,
+                "cartridge_lot": null,
+                "instrument_id": null,
+                "operator_ref": null,
+                "collected_at": "2026-10-10T18:00:10Z",
+                "measured_at": null,
+                "quality_flags": [],
+                "original_report": {
+                  "value": null,
+                  "unit": "ng/mL",
+                  "qualifier": "not_measured"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected"
+              }
+            ]
+          }
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      {
+        "schema_version": "1.0.0",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "attempt_id": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
+        "component": "eyes",
+        "record_id": "07cdca68-8bc9-4864-a265-9e8ef6c48b2e",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-10T18:00:30Z",
+        "ended_at": "2026-10-10T18:00:40Z",
+        "configuration_id": "FICTIONAL_ACCEPTED_eyes",
+        "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "quality_flags": [],
+        "component_metadata": {
+          "projection": {
+            "status": "valid",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:30Z",
+            "ended_at": "2026-10-10T18:00:40Z",
+            "quality_flags": [],
+            "capture_config_id": "synthetic-eyes",
+            "camera_id": "synthetic-camera",
+            "frame_rate_hz": 30,
+            "scale_basis": "normalized",
+            "baseline_diameter_mm": null,
+            "relative_constriction": 0.2,
+            "latency_ms": 250,
+            "raw_artifact_id": null
+          }
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      {
+        "schema_version": "1.0.0",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "attempt_id": "f6983c95-9346-4445-9cba-4254987a588f",
+        "component": "cardiac",
+        "record_id": "9ae51a8a-e285-4049-a78a-e9a23d90660c",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-10T18:00:10Z",
+        "ended_at": "2026-10-10T18:00:40Z",
+        "configuration_id": "FICTIONAL_ACCEPTED_cardiac",
+        "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "quality_flags": [],
+        "component_metadata": {
+          "projection": {
+            "status": "valid",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:10Z",
+            "ended_at": "2026-10-10T18:00:40Z",
+            "quality_flags": [],
+            "acquisition_config_id": "FICTIONAL_ACCEPTED_PPG",
+            "modality": "ppg",
+            "heart_rate_bpm": 72.0,
+            "ecg_status": "not_collected",
+            "ecg_rmssd_ms": null,
+            "sample_rate_hz": 100.0,
+            "raw_artifact_id": null
+          },
+          "modality": "ppg"
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      {
+        "schema_version": "1.0.0",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "attempt_id": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
+        "component": "task",
+        "record_id": "44444444-4444-4444-8444-444444444444",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-10T18:00:50Z",
+        "ended_at": "2026-10-10T18:02:50Z",
+        "configuration_id": "FICTIONAL_ACCEPTED_task",
+        "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "quality_flags": [],
+        "component_metadata": {
+          "projection": {
+            "status": "valid",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:50Z",
+            "ended_at": "2026-10-10T18:02:50Z",
+            "quality_flags": [],
+            "task_id": "44444444-4444-4444-8444-444444444444",
+            "task_version": "choice_inhibit_v0",
+            "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "practice_trials": 6,
+            "scored_trials": 60,
+            "go_trials": 48,
+            "no_go_trials": 12,
+            "valid_correct_go_trials": 45,
+            "features": {
+              "median_rt_ms": 340.0,
+              "iqr_rt_ms": 80.0,
+              "p90_rt_ms": 470.0,
+              "omission_rate": 0.041666666666666664,
+              "wrong_go_rate": 0.020833333333333332,
+              "no_go_error_rate": 0.08333333333333333
+            },
+            "events_artifact_id": null
+          }
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      }
+    ],
+    "alcohol": null,
+    "raw_artifacts_omitted_reason": "NO_RAW_EXPORT_SCOPE"
+  },
+  "requests": [
+    {
+      "schema_version": "1.0.0",
+      "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+      "study_id": "FICTIONAL-REVISION-STUDY",
+      "sample_id": "22222222-2222-4222-8222-222222222222",
+      "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+      "expected_previous_revision_id": null,
+      "expected_previous_revision_sha256": null,
+      "kind": "correction",
+      "reason_code": "CORRECTED_LABORATORY_REPORT",
+      "reported_at": "2026-10-11T04:32:31.346Z",
+      "source_report_artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+      "replacement_measurements": [
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC",
+          "qualifier": "quantified",
+          "value_ng_ml": 6.0,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.3,
+            "loq_ng_ml": 1.0,
+            "upper_ng_ml": 200.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-LAB-METHOD",
+          "calibration_id": "FICTIONAL-CALIBRATION",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": "2026-10-11T04:32:11.346Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": 6000.0,
+            "unit": "pg/mL",
+            "qualifier": "quantified"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0.0",
+      "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+      "study_id": "FICTIONAL-REVISION-STUDY",
+      "sample_id": "22222222-2222-4222-8222-222222222222",
+      "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+      "expected_previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+      "expected_previous_revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+      "kind": "reanalysis",
+      "reason_code": "SPECIMEN_REANALYSIS",
+      "reported_at": "2026-10-11T04:32:31.412Z",
+      "source_report_artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+      "replacement_measurements": [
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC",
+          "qualifier": "quantified",
+          "value_ng_ml": 6.0,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.3,
+            "loq_ng_ml": 1.0,
+            "upper_ng_ml": 200.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-LAB-METHOD",
+          "calibration_id": "FICTIONAL-CALIBRATION",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": "2026-10-11T04:32:11.412Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": 6000.0,
+            "unit": "pg/mL",
+            "qualifier": "quantified"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        }
+      ]
+    }
+  ],
+  "companions": [
+    {
+      "schema_version": "1.0.0",
+      "record_type": "administrative_report_revision",
+      "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "data_generation": 1,
+      "sequence": 1,
+      "accepted_at": "2026-10-11T04:32:41.409Z",
+      "descriptor": {
+        "schema_version": "1.0.0",
+        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "data_generation": 1,
+        "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+        "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+        "previous_revision_id": null,
+        "previous_revision_sha256": null,
+        "original_target_at": "2026-10-10T18:00:00Z",
+        "original_collected_at": "2026-10-10T18:00:10Z",
+        "original_capture_completed_at": "2026-10-10T18:03:00Z",
+        "report": {
+          "kind": "correction",
+          "reason_code": "CORRECTED_LABORATORY_REPORT",
+          "reported_at": "2026-10-11T04:32:31.346Z",
+          "replacement_measurements": [
+            {
+              "schema_version": "0.1.0",
+              "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+              "sample_id": "22222222-2222-4222-8222-222222222222",
+              "analyte": "THC",
+              "qualifier": "quantified",
+              "value_ng_ml": 6.0,
+              "unit": "ng/mL",
+              "assay_basis": "free",
+              "limits": {
+                "lod_ng_ml": 0.3,
+                "loq_ng_ml": 1.0,
+                "upper_ng_ml": 200.0
+              },
+              "source": "reference_lab",
+              "method_id": "FICTIONAL-LAB-METHOD",
+              "calibration_id": "FICTIONAL-CALIBRATION",
+              "cartridge_lot": null,
+              "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+              "operator_ref": null,
+              "collected_at": "2026-10-10T18:00:10Z",
+              "measured_at": "2026-10-11T04:32:11.346Z",
+              "quality_flags": [],
+              "original_report": {
+                "value": 6000.0,
+                "unit": "pg/mL",
+                "qualifier": "quantified"
+              },
+              "uncertainty_ng_ml": null,
+              "concentration_basis": "neat_oral_fluid",
+              "correction_status": "not_corrected"
+            }
+          ],
+          "source_report": {
+            "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+            "version_id": "1",
+            "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
+            "media_type": "application/pdf",
+            "size_bytes": 47
+          },
+          "authorization": {
+            "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+            "study_id": "FICTIONAL-REVISION-STUDY",
+            "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+            "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
+            "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+            "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+            "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
+            "approved_lab_methods": {
+              "FICTIONAL-LAB-METHOD": {
+                "calibration_ids": [
+                  "FICTIONAL-CALIBRATION"
+                ],
+                "instrument_ids": [
+                  "FICTIONAL-LAB-INSTRUMENT"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+      "effective_measurements": [
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000003",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "OH11_THC",
+          "qualifier": "not_measured",
+          "value_ng_ml": null,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": null,
+            "loq_ng_ml": null,
+            "upper_ng_ml": null
+          },
+          "source": "reference_lab",
+          "method_id": null,
+          "calibration_id": null,
+          "cartridge_lot": null,
+          "instrument_id": null,
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": null,
+          "quality_flags": [],
+          "original_report": {
+            "value": null,
+            "unit": "ng/mL",
+            "qualifier": "not_measured"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        },
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC",
+          "qualifier": "quantified",
+          "value_ng_ml": 6.0,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.3,
+            "loq_ng_ml": 1.0,
+            "upper_ng_ml": 200.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-LAB-METHOD",
+          "calibration_id": "FICTIONAL-CALIBRATION",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": "2026-10-11T04:32:11.346Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": 6000.0,
+            "unit": "pg/mL",
+            "qualifier": "quantified"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        },
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000002",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC_COOH",
+          "qualifier": "below_loq",
+          "value_ng_ml": null,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.03,
+            "loq_ng_ml": 0.1,
+            "upper_ng_ml": 2.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-LAB-METHOD",
+          "calibration_id": "FICTIONAL-CALIBRATION",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": "2026-10-10T18:00:20Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": null,
+            "unit": "ng/mL",
+            "qualifier": "BLQ"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        }
+      ],
+      "result": {
+        "schema_version": "1.0.0",
+        "result_kind": "administrative_report_result",
+        "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+        "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+        "target_at": "2026-10-10T18:00:00Z",
+        "evaluated_at": "2026-10-11T04:32:41.409Z",
+        "state": "measurement_only",
+        "reason_codes": [
+          "CORRECTED_LABORATORY_REPORT",
+          "MODEL_UNAVAILABLE",
+          "MODEL_UNVALIDATED"
+        ],
+        "provenance_summary": [
+          "prototype_sensor",
+          "reference_lab"
+        ],
+        "replaces_result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+        "inference_available": false,
+        "probability": null,
+        "classification": null,
+        "model_id": null
+      },
+      "result_sha256": "4815268f9ed056e60cbe4b069c887616975e1dc776aa00de2d967c1594b3f1a6"
+    },
+    {
+      "schema_version": "1.0.0",
+      "record_type": "administrative_report_revision",
+      "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "data_generation": 1,
+      "sequence": 2,
+      "accepted_at": "2026-10-11T04:32:41.480Z",
+      "descriptor": {
+        "schema_version": "1.0.0",
+        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "data_generation": 1,
+        "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+        "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+        "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+        "previous_revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "original_target_at": "2026-10-10T18:00:00Z",
+        "original_collected_at": "2026-10-10T18:00:10Z",
+        "original_capture_completed_at": "2026-10-10T18:03:00Z",
+        "report": {
+          "kind": "reanalysis",
+          "reason_code": "SPECIMEN_REANALYSIS",
+          "reported_at": "2026-10-11T04:32:31.412Z",
+          "replacement_measurements": [
+            {
+              "schema_version": "0.1.0",
+              "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+              "sample_id": "22222222-2222-4222-8222-222222222222",
+              "analyte": "THC",
+              "qualifier": "quantified",
+              "value_ng_ml": 6.0,
+              "unit": "ng/mL",
+              "assay_basis": "free",
+              "limits": {
+                "lod_ng_ml": 0.3,
+                "loq_ng_ml": 1.0,
+                "upper_ng_ml": 200.0
+              },
+              "source": "reference_lab",
+              "method_id": "FICTIONAL-LAB-METHOD",
+              "calibration_id": "FICTIONAL-CALIBRATION",
+              "cartridge_lot": null,
+              "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+              "operator_ref": null,
+              "collected_at": "2026-10-10T18:00:10Z",
+              "measured_at": "2026-10-11T04:32:11.412Z",
+              "quality_flags": [],
+              "original_report": {
+                "value": 6000.0,
+                "unit": "pg/mL",
+                "qualifier": "quantified"
+              },
+              "uncertainty_ng_ml": null,
+              "concentration_basis": "neat_oral_fluid",
+              "correction_status": "not_corrected"
+            }
+          ],
+          "source_report": {
+            "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+            "version_id": "1",
+            "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
+            "media_type": "application/pdf",
+            "size_bytes": 47
+          },
+          "authorization": {
+            "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+            "study_id": "FICTIONAL-REVISION-STUDY",
+            "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+            "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
+            "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+            "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+            "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
+            "approved_lab_methods": {
+              "FICTIONAL-LAB-METHOD": {
+                "calibration_ids": [
+                  "FICTIONAL-CALIBRATION"
+                ],
+                "instrument_ids": [
+                  "FICTIONAL-LAB-INSTRUMENT"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+      "effective_measurements": [
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000003",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "OH11_THC",
+          "qualifier": "not_measured",
+          "value_ng_ml": null,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": null,
+            "loq_ng_ml": null,
+            "upper_ng_ml": null
+          },
+          "source": "reference_lab",
+          "method_id": null,
+          "calibration_id": null,
+          "cartridge_lot": null,
+          "instrument_id": null,
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": null,
+          "quality_flags": [],
+          "original_report": {
+            "value": null,
+            "unit": "ng/mL",
+            "qualifier": "not_measured"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        },
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC",
+          "qualifier": "quantified",
+          "value_ng_ml": 6.0,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.3,
+            "loq_ng_ml": 1.0,
+            "upper_ng_ml": 200.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-LAB-METHOD",
+          "calibration_id": "FICTIONAL-CALIBRATION",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": "2026-10-11T04:32:11.412Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": 6000.0,
+            "unit": "pg/mL",
+            "qualifier": "quantified"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        },
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000002",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC_COOH",
+          "qualifier": "below_loq",
+          "value_ng_ml": null,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.03,
+            "loq_ng_ml": 0.1,
+            "upper_ng_ml": 2.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-LAB-METHOD",
+          "calibration_id": "FICTIONAL-CALIBRATION",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+          "operator_ref": null,
+          "collected_at": "2026-10-10T18:00:10Z",
+          "measured_at": "2026-10-10T18:00:20Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": null,
+            "unit": "ng/mL",
+            "qualifier": "BLQ"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        }
+      ],
+      "result": {
+        "schema_version": "1.0.0",
+        "result_kind": "administrative_report_result",
+        "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+        "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+        "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+        "target_at": "2026-10-10T18:00:00Z",
+        "evaluated_at": "2026-10-11T04:32:41.480Z",
+        "state": "measurement_only",
+        "reason_codes": [
+          "MODEL_UNAVAILABLE",
+          "MODEL_UNVALIDATED",
+          "SPECIMEN_REANALYSIS"
+        ],
+        "provenance_summary": [
+          "prototype_sensor",
+          "reference_lab"
+        ],
+        "replaces_result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+        "inference_available": false,
+        "probability": null,
+        "classification": null,
+        "model_id": null
+      },
+      "result_sha256": "3ad3c8d9b06e1af3e3d0ea03713bb75e409d6dc4983ddf96910a7cf61d2e90df"
+    }
+  ],
+  "list": {
+    "schema_version": "1.0.0",
+    "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+    "data_generation": 1,
+    "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+    "base_result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+    "original_target_at": "2026-10-10T18:00:00Z",
+    "original_collected_at": "2026-10-10T18:00:10Z",
+    "original_capture_completed_at": "2026-10-10T18:03:00Z",
+    "latest_revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+    "items": [
+      {
+        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+        "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "sequence": 1,
+        "kind": "correction",
+        "reported_at": "2026-10-11T04:32:31.346Z",
+        "accepted_at": "2026-10-11T04:32:41.409Z",
+        "previous_revision_id": null,
+        "next_revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+        "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+        "result_state": "measurement_only"
+      },
+      {
+        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+        "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+        "sequence": 2,
+        "kind": "reanalysis",
+        "reported_at": "2026-10-11T04:32:31.412Z",
+        "accepted_at": "2026-10-11T04:32:41.480Z",
+        "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+        "next_revision_id": null,
+        "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
+        "result_state": "measurement_only"
+      }
+    ]
+  },
+  "details": [
+    {
+      "schema_version": "1.0.0",
+      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "data_generation": 1,
+      "revision": {
+        "schema_version": "1.0.0",
+        "record_type": "administrative_report_revision",
+        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "data_generation": 1,
+        "sequence": 1,
+        "accepted_at": "2026-10-11T04:32:41.409Z",
+        "descriptor": {
+          "schema_version": "1.0.0",
+          "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "data_generation": 1,
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+          "previous_revision_id": null,
+          "previous_revision_sha256": null,
+          "original_target_at": "2026-10-10T18:00:00Z",
+          "original_collected_at": "2026-10-10T18:00:10Z",
+          "original_capture_completed_at": "2026-10-10T18:03:00Z",
+          "report": {
+            "kind": "correction",
+            "reason_code": "CORRECTED_LABORATORY_REPORT",
+            "reported_at": "2026-10-11T04:32:31.346Z",
+            "replacement_measurements": [
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "analyte": "THC",
+                "qualifier": "quantified",
+                "value_ng_ml": 6.0,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": 0.3,
+                  "loq_ng_ml": 1.0,
+                  "upper_ng_ml": 200.0
+                },
+                "source": "reference_lab",
+                "method_id": "FICTIONAL-LAB-METHOD",
+                "calibration_id": "FICTIONAL-CALIBRATION",
+                "cartridge_lot": null,
+                "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+                "operator_ref": null,
+                "collected_at": "2026-10-10T18:00:10Z",
+                "measured_at": "2026-10-11T04:32:11.346Z",
+                "quality_flags": [],
+                "original_report": {
+                  "value": 6000.0,
+                  "unit": "pg/mL",
+                  "qualifier": "quantified"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected"
+              }
+            ],
+            "source_report": {
+              "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+              "version_id": "1",
+              "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
+              "media_type": "application/pdf",
+              "size_bytes": 47
+            },
+            "authorization": {
+              "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+              "study_id": "FICTIONAL-REVISION-STUDY",
+              "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+              "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
+              "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+              "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+              "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
+              "approved_lab_methods": {
+                "FICTIONAL-LAB-METHOD": {
+                  "calibration_ids": [
+                    "FICTIONAL-CALIBRATION"
+                  ],
+                  "instrument_ids": [
+                    "FICTIONAL-LAB-INSTRUMENT"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "effective_measurements": [
+          {
+            "schema_version": "0.1.0",
+            "measurement_id": "33333333-3333-4333-8333-000000000003",
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "analyte": "OH11_THC",
+            "qualifier": "not_measured",
+            "value_ng_ml": null,
+            "unit": "ng/mL",
+            "assay_basis": "free",
+            "limits": {
+              "lod_ng_ml": null,
+              "loq_ng_ml": null,
+              "upper_ng_ml": null
+            },
+            "source": "reference_lab",
+            "method_id": null,
+            "calibration_id": null,
+            "cartridge_lot": null,
+            "instrument_id": null,
+            "operator_ref": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "measured_at": null,
+            "quality_flags": [],
+            "original_report": {
+              "value": null,
+              "unit": "ng/mL",
+              "qualifier": "not_measured"
+            },
+            "uncertainty_ng_ml": null,
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected"
+          },
+          {
+            "schema_version": "0.1.0",
+            "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "analyte": "THC",
+            "qualifier": "quantified",
+            "value_ng_ml": 6.0,
+            "unit": "ng/mL",
+            "assay_basis": "free",
+            "limits": {
+              "lod_ng_ml": 0.3,
+              "loq_ng_ml": 1.0,
+              "upper_ng_ml": 200.0
+            },
+            "source": "reference_lab",
+            "method_id": "FICTIONAL-LAB-METHOD",
+            "calibration_id": "FICTIONAL-CALIBRATION",
+            "cartridge_lot": null,
+            "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+            "operator_ref": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "measured_at": "2026-10-11T04:32:11.346Z",
+            "quality_flags": [],
+            "original_report": {
+              "value": 6000.0,
+              "unit": "pg/mL",
+              "qualifier": "quantified"
+            },
+            "uncertainty_ng_ml": null,
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected"
+          },
+          {
+            "schema_version": "0.1.0",
+            "measurement_id": "33333333-3333-4333-8333-000000000002",
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "analyte": "THC_COOH",
+            "qualifier": "below_loq",
+            "value_ng_ml": null,
+            "unit": "ng/mL",
+            "assay_basis": "free",
+            "limits": {
+              "lod_ng_ml": 0.03,
+              "loq_ng_ml": 0.1,
+              "upper_ng_ml": 2.0
+            },
+            "source": "reference_lab",
+            "method_id": "FICTIONAL-LAB-METHOD",
+            "calibration_id": "FICTIONAL-CALIBRATION",
+            "cartridge_lot": null,
+            "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+            "operator_ref": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "measured_at": "2026-10-10T18:00:20Z",
+            "quality_flags": [],
+            "original_report": {
+              "value": null,
+              "unit": "ng/mL",
+              "qualifier": "BLQ"
+            },
+            "uncertainty_ng_ml": null,
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected"
+          }
+        ],
+        "result": {
+          "schema_version": "1.0.0",
+          "result_kind": "administrative_report_result",
+          "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+          "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "target_at": "2026-10-10T18:00:00Z",
+          "evaluated_at": "2026-10-11T04:32:41.409Z",
+          "state": "measurement_only",
+          "reason_codes": [
+            "CORRECTED_LABORATORY_REPORT",
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED"
+          ],
+          "provenance_summary": [
+            "prototype_sensor",
+            "reference_lab"
+          ],
+          "replaces_result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+          "inference_available": false,
+          "probability": null,
+          "classification": null,
+          "model_id": null
+        },
+        "result_sha256": "4815268f9ed056e60cbe4b069c887616975e1dc776aa00de2d967c1594b3f1a6"
+      },
+      "previous_revision_id": null,
+      "next_revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c"
+    },
+    {
+      "schema_version": "1.0.0",
+      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "data_generation": 1,
+      "revision": {
+        "schema_version": "1.0.0",
+        "record_type": "administrative_report_revision",
+        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "data_generation": 1,
+        "sequence": 2,
+        "accepted_at": "2026-10-11T04:32:41.480Z",
+        "descriptor": {
+          "schema_version": "1.0.0",
+          "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "data_generation": 1,
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+          "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+          "previous_revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+          "original_target_at": "2026-10-10T18:00:00Z",
+          "original_collected_at": "2026-10-10T18:00:10Z",
+          "original_capture_completed_at": "2026-10-10T18:03:00Z",
+          "report": {
+            "kind": "reanalysis",
+            "reason_code": "SPECIMEN_REANALYSIS",
+            "reported_at": "2026-10-11T04:32:31.412Z",
+            "replacement_measurements": [
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "analyte": "THC",
+                "qualifier": "quantified",
+                "value_ng_ml": 6.0,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": 0.3,
+                  "loq_ng_ml": 1.0,
+                  "upper_ng_ml": 200.0
+                },
+                "source": "reference_lab",
+                "method_id": "FICTIONAL-LAB-METHOD",
+                "calibration_id": "FICTIONAL-CALIBRATION",
+                "cartridge_lot": null,
+                "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+                "operator_ref": null,
+                "collected_at": "2026-10-10T18:00:10Z",
+                "measured_at": "2026-10-11T04:32:11.412Z",
+                "quality_flags": [],
+                "original_report": {
+                  "value": 6000.0,
+                  "unit": "pg/mL",
+                  "qualifier": "quantified"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected"
+              }
+            ],
+            "source_report": {
+              "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+              "version_id": "1",
+              "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
+              "media_type": "application/pdf",
+              "size_bytes": 47
+            },
+            "authorization": {
+              "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+              "study_id": "FICTIONAL-REVISION-STUDY",
+              "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+              "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
+              "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+              "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+              "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
+              "approved_lab_methods": {
+                "FICTIONAL-LAB-METHOD": {
+                  "calibration_ids": [
+                    "FICTIONAL-CALIBRATION"
+                  ],
+                  "instrument_ids": [
+                    "FICTIONAL-LAB-INSTRUMENT"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+        "effective_measurements": [
+          {
+            "schema_version": "0.1.0",
+            "measurement_id": "33333333-3333-4333-8333-000000000003",
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "analyte": "OH11_THC",
+            "qualifier": "not_measured",
+            "value_ng_ml": null,
+            "unit": "ng/mL",
+            "assay_basis": "free",
+            "limits": {
+              "lod_ng_ml": null,
+              "loq_ng_ml": null,
+              "upper_ng_ml": null
+            },
+            "source": "reference_lab",
+            "method_id": null,
+            "calibration_id": null,
+            "cartridge_lot": null,
+            "instrument_id": null,
+            "operator_ref": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "measured_at": null,
+            "quality_flags": [],
+            "original_report": {
+              "value": null,
+              "unit": "ng/mL",
+              "qualifier": "not_measured"
+            },
+            "uncertainty_ng_ml": null,
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected"
+          },
+          {
+            "schema_version": "0.1.0",
+            "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "analyte": "THC",
+            "qualifier": "quantified",
+            "value_ng_ml": 6.0,
+            "unit": "ng/mL",
+            "assay_basis": "free",
+            "limits": {
+              "lod_ng_ml": 0.3,
+              "loq_ng_ml": 1.0,
+              "upper_ng_ml": 200.0
+            },
+            "source": "reference_lab",
+            "method_id": "FICTIONAL-LAB-METHOD",
+            "calibration_id": "FICTIONAL-CALIBRATION",
+            "cartridge_lot": null,
+            "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+            "operator_ref": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "measured_at": "2026-10-11T04:32:11.412Z",
+            "quality_flags": [],
+            "original_report": {
+              "value": 6000.0,
+              "unit": "pg/mL",
+              "qualifier": "quantified"
+            },
+            "uncertainty_ng_ml": null,
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected"
+          },
+          {
+            "schema_version": "0.1.0",
+            "measurement_id": "33333333-3333-4333-8333-000000000002",
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "analyte": "THC_COOH",
+            "qualifier": "below_loq",
+            "value_ng_ml": null,
+            "unit": "ng/mL",
+            "assay_basis": "free",
+            "limits": {
+              "lod_ng_ml": 0.03,
+              "loq_ng_ml": 0.1,
+              "upper_ng_ml": 2.0
+            },
+            "source": "reference_lab",
+            "method_id": "FICTIONAL-LAB-METHOD",
+            "calibration_id": "FICTIONAL-CALIBRATION",
+            "cartridge_lot": null,
+            "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+            "operator_ref": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "measured_at": "2026-10-10T18:00:20Z",
+            "quality_flags": [],
+            "original_report": {
+              "value": null,
+              "unit": "ng/mL",
+              "qualifier": "BLQ"
+            },
+            "uncertainty_ng_ml": null,
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected"
+          }
+        ],
+        "result": {
+          "schema_version": "1.0.0",
+          "result_kind": "administrative_report_result",
+          "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+          "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "target_at": "2026-10-10T18:00:00Z",
+          "evaluated_at": "2026-10-11T04:32:41.480Z",
+          "state": "measurement_only",
+          "reason_codes": [
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED",
+            "SPECIMEN_REANALYSIS"
+          ],
+          "provenance_summary": [
+            "prototype_sensor",
+            "reference_lab"
+          ],
+          "replaces_result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+          "inference_available": false,
+          "probability": null,
+          "classification": null,
+          "model_id": null
+        },
+        "result_sha256": "3ad3c8d9b06e1af3e3d0ea03713bb75e409d6dc4983ddf96910a7cf61d2e90df"
+      },
+      "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+      "next_revision_id": null
+    }
+  ],
+  "export": {
+    "selection": {
+      "kind": "single",
+      "session_ids": [
+        "87db9824-768f-4d7c-810c-ef51e4315e4d"
+      ]
+    },
+    "manifest_sha256": "394834b90c1d5f6a7a0614288cae0f850df7c091fdd203cb8663b188de4e5cc3",
+    "files": {
+      "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/716518fb-74f7-440d-a740-c8dd774f6cf4.json": {
+        "accepted_at": "2026-10-11T04:32:41.409Z",
+        "data_generation": 1,
+        "descriptor": {
+          "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "data_generation": 1,
+          "original_capture_completed_at": "2026-10-10T18:03:00Z",
+          "original_collected_at": "2026-10-10T18:00:10Z",
+          "original_target_at": "2026-10-10T18:00:00Z",
+          "previous_revision_id": null,
+          "previous_revision_sha256": null,
+          "report": {
+            "authorization": {
+              "approved_lab_methods": {
+                "FICTIONAL-LAB-METHOD": {
+                  "calibration_ids": [
+                    "FICTIONAL-CALIBRATION"
+                  ],
+                  "instrument_ids": [
+                    "FICTIONAL-LAB-INSTRUMENT"
+                  ]
+                }
+              },
+              "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
+              "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+              "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+              "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+              "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+              "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
+              "study_id": "FICTIONAL-REVISION-STUDY"
+            },
+            "kind": "correction",
+            "reason_code": "CORRECTED_LABORATORY_REPORT",
+            "replacement_measurements": [
+              {
+                "analyte": "THC",
+                "assay_basis": "free",
+                "calibration_id": "FICTIONAL-CALIBRATION",
+                "cartridge_lot": null,
+                "collected_at": "2026-10-10T18:00:10Z",
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected",
+                "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+                "limits": {
+                  "lod_ng_ml": 0.3,
+                  "loq_ng_ml": 1,
+                  "upper_ng_ml": 200
+                },
+                "measured_at": "2026-10-11T04:32:11.346Z",
+                "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+                "method_id": "FICTIONAL-LAB-METHOD",
+                "operator_ref": null,
+                "original_report": {
+                  "qualifier": "quantified",
+                  "unit": "pg/mL",
+                  "value": 6000
+                },
+                "qualifier": "quantified",
+                "quality_flags": [],
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "schema_version": "0.1.0",
+                "source": "reference_lab",
+                "uncertainty_ng_ml": null,
+                "unit": "ng/mL",
+                "value_ng_ml": 6
+              }
+            ],
+            "reported_at": "2026-10-11T04:32:31.346Z",
+            "source_report": {
+              "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+              "media_type": "application/pdf",
+              "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
+              "size_bytes": 47,
+              "version_id": "1"
+            }
+          },
+          "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+          "schema_version": "1.0.0",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        },
+        "effective_measurements": [
+          {
+            "analyte": "OH11_THC",
+            "assay_basis": "free",
+            "calibration_id": null,
+            "cartridge_lot": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected",
+            "instrument_id": null,
+            "limits": {
+              "lod_ng_ml": null,
+              "loq_ng_ml": null,
+              "upper_ng_ml": null
+            },
+            "measured_at": null,
+            "measurement_id": "33333333-3333-4333-8333-000000000003",
+            "method_id": null,
+            "operator_ref": null,
+            "original_report": {
+              "qualifier": "not_measured",
+              "unit": "ng/mL",
+              "value": null
+            },
+            "qualifier": "not_measured",
+            "quality_flags": [],
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "schema_version": "0.1.0",
+            "source": "reference_lab",
+            "uncertainty_ng_ml": null,
+            "unit": "ng/mL",
+            "value_ng_ml": null
+          },
+          {
+            "analyte": "THC",
+            "assay_basis": "free",
+            "calibration_id": "FICTIONAL-CALIBRATION",
+            "cartridge_lot": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected",
+            "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+            "limits": {
+              "lod_ng_ml": 0.3,
+              "loq_ng_ml": 1,
+              "upper_ng_ml": 200
+            },
+            "measured_at": "2026-10-11T04:32:11.346Z",
+            "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+            "method_id": "FICTIONAL-LAB-METHOD",
+            "operator_ref": null,
+            "original_report": {
+              "qualifier": "quantified",
+              "unit": "pg/mL",
+              "value": 6000
+            },
+            "qualifier": "quantified",
+            "quality_flags": [],
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "schema_version": "0.1.0",
+            "source": "reference_lab",
+            "uncertainty_ng_ml": null,
+            "unit": "ng/mL",
+            "value_ng_ml": 6
+          },
+          {
+            "analyte": "THC_COOH",
+            "assay_basis": "free",
+            "calibration_id": "FICTIONAL-CALIBRATION",
+            "cartridge_lot": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected",
+            "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+            "limits": {
+              "lod_ng_ml": 0.03,
+              "loq_ng_ml": 0.1,
+              "upper_ng_ml": 2
+            },
+            "measured_at": "2026-10-10T18:00:20Z",
+            "measurement_id": "33333333-3333-4333-8333-000000000002",
+            "method_id": "FICTIONAL-LAB-METHOD",
+            "operator_ref": null,
+            "original_report": {
+              "qualifier": "BLQ",
+              "unit": "ng/mL",
+              "value": null
+            },
+            "qualifier": "below_loq",
+            "quality_flags": [],
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "schema_version": "0.1.0",
+            "source": "reference_lab",
+            "uncertainty_ng_ml": null,
+            "unit": "ng/mL",
+            "value_ng_ml": null
+          }
+        ],
+        "record_type": "administrative_report_revision",
+        "result": {
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "classification": null,
+          "evaluated_at": "2026-10-11T04:32:41.409Z",
+          "inference_available": false,
+          "model_id": null,
+          "probability": null,
+          "provenance_summary": [
+            "prototype_sensor",
+            "reference_lab"
+          ],
+          "reason_codes": [
+            "CORRECTED_LABORATORY_REPORT",
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED"
+          ],
+          "replaces_result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+          "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+          "result_kind": "administrative_report_result",
+          "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+          "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+          "schema_version": "1.0.0",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "state": "measurement_only",
+          "target_at": "2026-10-10T18:00:00Z"
+        },
+        "result_sha256": "4815268f9ed056e60cbe4b069c887616975e1dc776aa00de2d967c1594b3f1a6",
+        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+        "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "schema_version": "1.0.0",
+        "sequence": 1,
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+      },
+      "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/5b9c74dd-e66b-466d-b398-4227f4cc286c.json": {
+        "accepted_at": "2026-10-11T04:32:41.480Z",
+        "data_generation": 1,
+        "descriptor": {
+          "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "data_generation": 1,
+          "original_capture_completed_at": "2026-10-10T18:03:00Z",
+          "original_collected_at": "2026-10-10T18:00:10Z",
+          "original_target_at": "2026-10-10T18:00:00Z",
+          "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+          "previous_revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+          "report": {
+            "authorization": {
+              "approved_lab_methods": {
+                "FICTIONAL-LAB-METHOD": {
+                  "calibration_ids": [
+                    "FICTIONAL-CALIBRATION"
+                  ],
+                  "instrument_ids": [
+                    "FICTIONAL-LAB-INSTRUMENT"
+                  ]
+                }
+              },
+              "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
+              "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+              "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+              "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+              "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+              "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
+              "study_id": "FICTIONAL-REVISION-STUDY"
+            },
+            "kind": "reanalysis",
+            "reason_code": "SPECIMEN_REANALYSIS",
+            "replacement_measurements": [
+              {
+                "analyte": "THC",
+                "assay_basis": "free",
+                "calibration_id": "FICTIONAL-CALIBRATION",
+                "cartridge_lot": null,
+                "collected_at": "2026-10-10T18:00:10Z",
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected",
+                "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+                "limits": {
+                  "lod_ng_ml": 0.3,
+                  "loq_ng_ml": 1,
+                  "upper_ng_ml": 200
+                },
+                "measured_at": "2026-10-11T04:32:11.412Z",
+                "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+                "method_id": "FICTIONAL-LAB-METHOD",
+                "operator_ref": null,
+                "original_report": {
+                  "qualifier": "quantified",
+                  "unit": "pg/mL",
+                  "value": 6000
+                },
+                "qualifier": "quantified",
+                "quality_flags": [],
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "schema_version": "0.1.0",
+                "source": "reference_lab",
+                "uncertainty_ng_ml": null,
+                "unit": "ng/mL",
+                "value_ng_ml": 6
+              }
+            ],
+            "reported_at": "2026-10-11T04:32:31.412Z",
+            "source_report": {
+              "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+              "media_type": "application/pdf",
+              "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
+              "size_bytes": 47,
+              "version_id": "1"
+            }
+          },
+          "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+          "schema_version": "1.0.0",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        },
+        "effective_measurements": [
+          {
+            "analyte": "OH11_THC",
+            "assay_basis": "free",
+            "calibration_id": null,
+            "cartridge_lot": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected",
+            "instrument_id": null,
+            "limits": {
+              "lod_ng_ml": null,
+              "loq_ng_ml": null,
+              "upper_ng_ml": null
+            },
+            "measured_at": null,
+            "measurement_id": "33333333-3333-4333-8333-000000000003",
+            "method_id": null,
+            "operator_ref": null,
+            "original_report": {
+              "qualifier": "not_measured",
+              "unit": "ng/mL",
+              "value": null
+            },
+            "qualifier": "not_measured",
+            "quality_flags": [],
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "schema_version": "0.1.0",
+            "source": "reference_lab",
+            "uncertainty_ng_ml": null,
+            "unit": "ng/mL",
+            "value_ng_ml": null
+          },
+          {
+            "analyte": "THC",
+            "assay_basis": "free",
+            "calibration_id": "FICTIONAL-CALIBRATION",
+            "cartridge_lot": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected",
+            "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+            "limits": {
+              "lod_ng_ml": 0.3,
+              "loq_ng_ml": 1,
+              "upper_ng_ml": 200
+            },
+            "measured_at": "2026-10-11T04:32:11.412Z",
+            "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+            "method_id": "FICTIONAL-LAB-METHOD",
+            "operator_ref": null,
+            "original_report": {
+              "qualifier": "quantified",
+              "unit": "pg/mL",
+              "value": 6000
+            },
+            "qualifier": "quantified",
+            "quality_flags": [],
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "schema_version": "0.1.0",
+            "source": "reference_lab",
+            "uncertainty_ng_ml": null,
+            "unit": "ng/mL",
+            "value_ng_ml": 6
+          },
+          {
+            "analyte": "THC_COOH",
+            "assay_basis": "free",
+            "calibration_id": "FICTIONAL-CALIBRATION",
+            "cartridge_lot": null,
+            "collected_at": "2026-10-10T18:00:10Z",
+            "concentration_basis": "neat_oral_fluid",
+            "correction_status": "not_corrected",
+            "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+            "limits": {
+              "lod_ng_ml": 0.03,
+              "loq_ng_ml": 0.1,
+              "upper_ng_ml": 2
+            },
+            "measured_at": "2026-10-10T18:00:20Z",
+            "measurement_id": "33333333-3333-4333-8333-000000000002",
+            "method_id": "FICTIONAL-LAB-METHOD",
+            "operator_ref": null,
+            "original_report": {
+              "qualifier": "BLQ",
+              "unit": "ng/mL",
+              "value": null
+            },
+            "qualifier": "below_loq",
+            "quality_flags": [],
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "schema_version": "0.1.0",
+            "source": "reference_lab",
+            "uncertainty_ng_ml": null,
+            "unit": "ng/mL",
+            "value_ng_ml": null
+          }
+        ],
+        "record_type": "administrative_report_revision",
+        "result": {
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "classification": null,
+          "evaluated_at": "2026-10-11T04:32:41.480Z",
+          "inference_available": false,
+          "model_id": null,
+          "probability": null,
+          "provenance_summary": [
+            "prototype_sensor",
+            "reference_lab"
+          ],
+          "reason_codes": [
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED",
+            "SPECIMEN_REANALYSIS"
+          ],
+          "replaces_result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+          "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
+          "result_kind": "administrative_report_result",
+          "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+          "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+          "schema_version": "1.0.0",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "state": "measurement_only",
+          "target_at": "2026-10-10T18:00:00Z"
+        },
+        "result_sha256": "3ad3c8d9b06e1af3e3d0ea03713bb75e409d6dc4983ddf96910a7cf61d2e90df",
+        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+        "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+        "schema_version": "1.0.0",
+        "sequence": 2,
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+      },
+      "checks/87db9824-768f-4d7c-810c-ef51e4315e4d.json": {
+        "alcohol": null,
+        "attempts": [
+          {
+            "artifact_refs": [],
+            "attempt_id": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
+            "attestation_refs": [],
+            "component": "saliva",
+            "component_metadata": {
+              "projection": {
+                "saliva": [
+                  {
+                    "analyte": "THC",
+                    "assay_basis": "free",
+                    "calibration_id": "FICTIONAL-CALIBRATION",
+                    "cartridge_lot": null,
+                    "collected_at": "2026-10-10T18:00:10Z",
+                    "concentration_basis": "neat_oral_fluid",
+                    "correction_status": "not_corrected",
+                    "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+                    "limits": {
+                      "lod_ng_ml": 0.3,
+                      "loq_ng_ml": 1,
+                      "upper_ng_ml": 200
+                    },
+                    "measured_at": "2026-10-10T18:00:20Z",
+                    "measurement_id": "33333333-3333-4333-8333-000000000001",
+                    "method_id": "FICTIONAL-LAB-METHOD",
+                    "operator_ref": null,
+                    "original_report": {
+                      "qualifier": "quantified",
+                      "unit": "ng/mL",
+                      "value": 12
+                    },
+                    "qualifier": "quantified",
+                    "quality_flags": [],
+                    "sample_id": "22222222-2222-4222-8222-222222222222",
+                    "schema_version": "0.1.0",
+                    "source": "reference_lab",
+                    "uncertainty_ng_ml": null,
+                    "unit": "ng/mL",
+                    "value_ng_ml": 12
+                  },
+                  {
+                    "analyte": "THC_COOH",
+                    "assay_basis": "free",
+                    "calibration_id": "FICTIONAL-CALIBRATION",
+                    "cartridge_lot": null,
+                    "collected_at": "2026-10-10T18:00:10Z",
+                    "concentration_basis": "neat_oral_fluid",
+                    "correction_status": "not_corrected",
+                    "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+                    "limits": {
+                      "lod_ng_ml": 0.03,
+                      "loq_ng_ml": 0.1,
+                      "upper_ng_ml": 2
+                    },
+                    "measured_at": "2026-10-10T18:00:20Z",
+                    "measurement_id": "33333333-3333-4333-8333-000000000002",
+                    "method_id": "FICTIONAL-LAB-METHOD",
+                    "operator_ref": null,
+                    "original_report": {
+                      "qualifier": "BLQ",
+                      "unit": "ng/mL",
+                      "value": null
+                    },
+                    "qualifier": "below_loq",
+                    "quality_flags": [],
+                    "sample_id": "22222222-2222-4222-8222-222222222222",
+                    "schema_version": "0.1.0",
+                    "source": "reference_lab",
+                    "uncertainty_ng_ml": null,
+                    "unit": "ng/mL",
+                    "value_ng_ml": null
+                  },
+                  {
+                    "analyte": "OH11_THC",
+                    "assay_basis": "free",
+                    "calibration_id": null,
+                    "cartridge_lot": null,
+                    "collected_at": "2026-10-10T18:00:10Z",
+                    "concentration_basis": "neat_oral_fluid",
+                    "correction_status": "not_corrected",
+                    "instrument_id": null,
+                    "limits": {
+                      "lod_ng_ml": null,
+                      "loq_ng_ml": null,
+                      "upper_ng_ml": null
+                    },
+                    "measured_at": null,
+                    "measurement_id": "33333333-3333-4333-8333-000000000003",
+                    "method_id": null,
+                    "operator_ref": null,
+                    "original_report": {
+                      "qualifier": "not_measured",
+                      "unit": "ng/mL",
+                      "value": null
+                    },
+                    "qualifier": "not_measured",
+                    "quality_flags": [],
+                    "sample_id": "22222222-2222-4222-8222-222222222222",
+                    "schema_version": "0.1.0",
+                    "source": "reference_lab",
+                    "uncertainty_ng_ml": null,
+                    "unit": "ng/mL",
+                    "value_ng_ml": null
+                  }
+                ],
+                "sample": {
+                  "collected_at": "2026-10-10T18:00:10Z",
+                  "collection_method_id": "synthetic-collection",
+                  "dilution_factor": 1,
+                  "quality_flags": [],
+                  "sample_id": "22222222-2222-4222-8222-222222222222",
+                  "status": "valid",
+                  "volume_ml": 1
+                }
+              }
+            },
+            "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
+            "ended_at": "2026-10-10T18:00:10Z",
+            "quality_flags": [],
+            "record_id": "22222222-2222-4222-8222-222222222222",
+            "schema_version": "1.0.0",
+            "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+            "source": "reference_lab",
+            "started_at": "2026-10-10T18:00:10Z",
+            "status": "valid",
+            "supersedes_attempt_id": null
+          },
+          {
+            "artifact_refs": [],
+            "attempt_id": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
+            "attestation_refs": [],
+            "component": "eyes",
+            "component_metadata": {
+              "projection": {
+                "baseline_diameter_mm": null,
+                "camera_id": "synthetic-camera",
+                "capture_config_id": "synthetic-eyes",
+                "ended_at": "2026-10-10T18:00:40Z",
+                "frame_rate_hz": 30,
+                "latency_ms": 250,
+                "quality_flags": [],
+                "raw_artifact_id": null,
+                "relative_constriction": 0.2,
+                "scale_basis": "normalized",
+                "source": "prototype_sensor",
+                "started_at": "2026-10-10T18:00:30Z",
+                "status": "valid"
+              }
+            },
+            "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "configuration_id": "FICTIONAL_ACCEPTED_eyes",
+            "ended_at": "2026-10-10T18:00:40Z",
+            "quality_flags": [],
+            "record_id": "07cdca68-8bc9-4864-a265-9e8ef6c48b2e",
+            "schema_version": "1.0.0",
+            "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:30Z",
+            "status": "valid",
+            "supersedes_attempt_id": null
+          },
+          {
+            "artifact_refs": [],
+            "attempt_id": "f6983c95-9346-4445-9cba-4254987a588f",
+            "attestation_refs": [],
+            "component": "cardiac",
+            "component_metadata": {
+              "modality": "ppg",
+              "projection": {
+                "acquisition_config_id": "FICTIONAL_ACCEPTED_PPG",
+                "ecg_rmssd_ms": null,
+                "ecg_status": "not_collected",
+                "ended_at": "2026-10-10T18:00:40Z",
+                "heart_rate_bpm": 72,
+                "modality": "ppg",
+                "quality_flags": [],
+                "raw_artifact_id": null,
+                "sample_rate_hz": 100,
+                "source": "prototype_sensor",
+                "started_at": "2026-10-10T18:00:10Z",
+                "status": "valid"
+              }
+            },
+            "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "configuration_id": "FICTIONAL_ACCEPTED_cardiac",
+            "ended_at": "2026-10-10T18:00:40Z",
+            "quality_flags": [],
+            "record_id": "9ae51a8a-e285-4049-a78a-e9a23d90660c",
+            "schema_version": "1.0.0",
+            "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:10Z",
+            "status": "valid",
+            "supersedes_attempt_id": null
+          },
+          {
+            "artifact_refs": [],
+            "attempt_id": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
+            "attestation_refs": [],
+            "component": "task",
+            "component_metadata": {
+              "projection": {
+                "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                "ended_at": "2026-10-10T18:02:50Z",
+                "events_artifact_id": null,
+                "features": {
+                  "iqr_rt_ms": 80,
+                  "median_rt_ms": 340,
+                  "no_go_error_rate": 0.08333333333333333,
+                  "omission_rate": 0.041666666666666664,
+                  "p90_rt_ms": 470,
+                  "wrong_go_rate": 0.020833333333333332
+                },
+                "go_trials": 48,
+                "no_go_trials": 12,
+                "practice_trials": 6,
+                "quality_flags": [],
+                "scored_trials": 60,
+                "source": "prototype_sensor",
+                "started_at": "2026-10-10T18:00:50Z",
+                "status": "valid",
+                "task_id": "44444444-4444-4444-8444-444444444444",
+                "task_version": "choice_inhibit_v0",
+                "valid_correct_go_trials": 45
+              }
+            },
+            "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "configuration_id": "FICTIONAL_ACCEPTED_task",
+            "ended_at": "2026-10-10T18:02:50Z",
+            "quality_flags": [],
+            "record_id": "44444444-4444-4444-8444-444444444444",
+            "schema_version": "1.0.0",
+            "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:50Z",
+            "status": "valid",
+            "supersedes_attempt_id": null
+          }
+        ],
+        "context": {
+          "baseline_refs": [],
+          "configuration_refs": [],
+          "context_confirmed_at": "2026-10-10T18:00:00Z",
+          "device_associations": [],
+          "history_snapshot_sha256": "d88c0743ced64f55fb9073dbbee04b75f2f397311fe596c6a53a7bbbc76ea10f",
+          "profile_snapshot_sha256": "4d39f5fc853f967791aa2f138220307b3ef56c897c3a47ac82c906bb56eb5ed8",
+          "profile_version_id": null,
+          "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+          "schema_version": "1.0.0",
+          "self_report_context": null,
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        },
+        "created_at": "2026-10-10T18:00:00Z",
+        "evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+        "manifest": {
+          "attempts": [
+            {
+              "attempt_id": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
+              "sha256": "a7d4f4ac154dcfce58f72ec6379ce5271441db6e87f6970f856ad02b930dcb86"
+            },
+            {
+              "attempt_id": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
+              "sha256": "8db1bd0b15ee5a5a2546e5d745387ba77e58d05c3450fcf85534a59829fd1a5d"
+            },
+            {
+              "attempt_id": "f6983c95-9346-4445-9cba-4254987a588f",
+              "sha256": "4161908ffd8c905313e5015192a3a232445a7465590aab719865f3d8031935ac"
+            },
+            {
+              "attempt_id": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
+              "sha256": "8e06c9633714ede639c096e5112f6127e819f1e976c6bf2bef0abf8650b99820"
+            }
+          ],
+          "context_sha256": "7258c43a0dec25861ac2978ac5962f3cc0a4eed9fd091bf9aeae705f9f201ee2",
+          "schema_version": "1.0.0",
+          "selected": {
+            "alcohol": null,
+            "cardiac": "f6983c95-9346-4445-9cba-4254987a588f",
+            "eyes": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
+            "saliva": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
+            "task": "ef4d6e29-6d95-4d37-8686-b32e4961ba05"
+          },
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        },
+        "mode": "analytical",
+        "raw_artifacts_omitted_reason": "NO_RAW_EXPORT_SCOPE",
+        "report_revision_index": {
+          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "data_generation": 1,
+          "items": [
+            {
+              "path": "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/716518fb-74f7-440d-a740-c8dd774f6cf4.json",
+              "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+              "result_sha256": "4815268f9ed056e60cbe4b069c887616975e1dc776aa00de2d967c1594b3f1a6",
+              "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+              "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+              "sequence": 1,
+              "sha256": "60ce7a4fafc07fbd988cc19539e46eb7b7620a4142f6c35decf2b158c04d93cc",
+              "size_bytes": 5621
+            },
+            {
+              "path": "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/5b9c74dd-e66b-466d-b398-4227f4cc286c.json",
+              "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
+              "result_sha256": "3ad3c8d9b06e1af3e3d0ea03713bb75e409d6dc4983ddf96910a7cf61d2e90df",
+              "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+              "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+              "sequence": 2,
+              "sha256": "90036c2bb1f9f6708ac8ce7452156cedf36795bb709b8d53000ad57d3dcefd07",
+              "size_bytes": 5701
+            }
+          ],
+          "schema_version": "1.0.0",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        },
+        "result": {
+          "classification": null,
+          "endpoint_id": null,
+          "evaluated_at": "2026-10-11T04:32:41.334Z",
+          "input_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "model_id": null,
+          "model_lifecycle": null,
+          "operating_threshold": null,
+          "probability": null,
+          "provenance_summary": [
+            "prototype_sensor",
+            "reference_lab"
+          ],
+          "reason_codes": [
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED"
+          ],
+          "replaces_result_id": null,
+          "result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+          "schema_version": "0.1.0",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "state": "measurement_only",
+          "target_at": "2026-10-10T18:00:00Z",
+          "uncertainty_policy_id": null
+        },
+        "revision": 7,
+        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "snapshot": {
+          "acquisition_span_ms": 160000,
+          "baseline_ref": null,
+          "capture_completed_at": "2026-10-10T18:03:00Z",
+          "cardiac": {
+            "acquisition_config_id": "FICTIONAL_ACCEPTED_PPG",
+            "ecg_rmssd_ms": null,
+            "ecg_status": "not_collected",
+            "ended_at": "2026-10-10T18:00:40Z",
+            "heart_rate_bpm": 72,
+            "modality": "ppg",
+            "quality_flags": [],
+            "raw_artifact_id": null,
+            "sample_rate_hz": 100,
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:10Z",
+            "status": "valid"
+          },
+          "clock_uncertainty_ms": 20,
+          "created_at": "2026-10-10T18:00:00Z",
+          "device": {
+            "boot_id": "synthetic-boot-001",
+            "device_id": "synthetic-reader",
+            "firmware_version": "synthetic-0.1.0",
+            "hardware_revision": "simulated-hw"
+          },
+          "eyes": {
+            "baseline_diameter_mm": null,
+            "camera_id": "synthetic-camera",
+            "capture_config_id": "synthetic-eyes",
+            "ended_at": "2026-10-10T18:00:40Z",
+            "frame_rate_hz": 30,
+            "latency_ms": 250,
+            "quality_flags": [],
+            "raw_artifact_id": null,
+            "relative_constriction": 0.2,
+            "scale_basis": "normalized",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:30Z",
+            "status": "valid"
+          },
+          "history": {
+            "alcohol_co_use": "unknown",
+            "recent_exercise": null,
+            "route": "unknown",
+            "sleep_hours": null,
+            "time_since_use_min": null,
+            "use_frequency": "unknown"
+          },
+          "mode": "analytical",
+          "profile": {
+            "age_years": 35,
+            "bmi": 26.122,
+            "height_cm": 175,
+            "recorded_at": "2026-10-10T17:59:00Z",
+            "source": "study_measurement",
+            "weight_kg": 80
+          },
+          "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
+          "saliva": [
+            {
+              "analyte": "THC",
+              "assay_basis": "free",
+              "calibration_id": "FICTIONAL-CALIBRATION",
+              "cartridge_lot": null,
+              "collected_at": "2026-10-10T18:00:10Z",
+              "concentration_basis": "neat_oral_fluid",
+              "correction_status": "not_corrected",
+              "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+              "limits": {
+                "lod_ng_ml": 0.3,
+                "loq_ng_ml": 1,
+                "upper_ng_ml": 200
+              },
+              "measured_at": "2026-10-10T18:00:20Z",
+              "measurement_id": "33333333-3333-4333-8333-000000000001",
+              "method_id": "FICTIONAL-LAB-METHOD",
+              "operator_ref": null,
+              "original_report": {
+                "qualifier": "quantified",
+                "unit": "ng/mL",
+                "value": 12
+              },
+              "qualifier": "quantified",
+              "quality_flags": [],
+              "sample_id": "22222222-2222-4222-8222-222222222222",
+              "schema_version": "0.1.0",
+              "source": "reference_lab",
+              "uncertainty_ng_ml": null,
+              "unit": "ng/mL",
+              "value_ng_ml": 12
+            },
+            {
+              "analyte": "THC_COOH",
+              "assay_basis": "free",
+              "calibration_id": "FICTIONAL-CALIBRATION",
+              "cartridge_lot": null,
+              "collected_at": "2026-10-10T18:00:10Z",
+              "concentration_basis": "neat_oral_fluid",
+              "correction_status": "not_corrected",
+              "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
+              "limits": {
+                "lod_ng_ml": 0.03,
+                "loq_ng_ml": 0.1,
+                "upper_ng_ml": 2
+              },
+              "measured_at": "2026-10-10T18:00:20Z",
+              "measurement_id": "33333333-3333-4333-8333-000000000002",
+              "method_id": "FICTIONAL-LAB-METHOD",
+              "operator_ref": null,
+              "original_report": {
+                "qualifier": "BLQ",
+                "unit": "ng/mL",
+                "value": null
+              },
+              "qualifier": "below_loq",
+              "quality_flags": [],
+              "sample_id": "22222222-2222-4222-8222-222222222222",
+              "schema_version": "0.1.0",
+              "source": "reference_lab",
+              "uncertainty_ng_ml": null,
+              "unit": "ng/mL",
+              "value_ng_ml": null
+            },
+            {
+              "analyte": "OH11_THC",
+              "assay_basis": "free",
+              "calibration_id": null,
+              "cartridge_lot": null,
+              "collected_at": "2026-10-10T18:00:10Z",
+              "concentration_basis": "neat_oral_fluid",
+              "correction_status": "not_corrected",
+              "instrument_id": null,
+              "limits": {
+                "lod_ng_ml": null,
+                "loq_ng_ml": null,
+                "upper_ng_ml": null
+              },
+              "measured_at": null,
+              "measurement_id": "33333333-3333-4333-8333-000000000003",
+              "method_id": null,
+              "operator_ref": null,
+              "original_report": {
+                "qualifier": "not_measured",
+                "unit": "ng/mL",
+                "value": null
+              },
+              "qualifier": "not_measured",
+              "quality_flags": [],
+              "sample_id": "22222222-2222-4222-8222-222222222222",
+              "schema_version": "0.1.0",
+              "source": "reference_lab",
+              "uncertainty_ng_ml": null,
+              "unit": "ng/mL",
+              "value_ng_ml": null
+            }
+          ],
+          "sample": {
+            "collected_at": "2026-10-10T18:00:10Z",
+            "collection_method_id": "synthetic-collection",
+            "dilution_factor": 1,
+            "quality_flags": [],
+            "sample_id": "22222222-2222-4222-8222-222222222222",
+            "status": "valid",
+            "volume_ml": 1
+          },
+          "schema_version": "0.1.0",
+          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "study_id": "FICTIONAL-REVISION-STUDY",
+          "subject_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+          "supersedes_session_id": null,
+          "target_at": "2026-10-10T18:00:00Z",
+          "task": {
+            "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "ended_at": "2026-10-10T18:02:50Z",
+            "events_artifact_id": null,
+            "features": {
+              "iqr_rt_ms": 80,
+              "median_rt_ms": 340,
+              "no_go_error_rate": 0.08333333333333333,
+              "omission_rate": 0.041666666666666664,
+              "p90_rt_ms": 470,
+              "wrong_go_rate": 0.020833333333333332
+            },
+            "go_trials": 48,
+            "no_go_trials": 12,
+            "practice_trials": 6,
+            "quality_flags": [],
+            "scored_trials": 60,
+            "source": "prototype_sensor",
+            "started_at": "2026-10-10T18:00:50Z",
+            "status": "valid",
+            "task_id": "44444444-4444-4444-8444-444444444444",
+            "task_version": "choice_inhibit_v0",
+            "valid_correct_go_trials": 45
+          }
+        },
+        "snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+        "state": "completed"
+      },
+      "profile.json": {
+        "current": null,
+        "schema_version": "1.0.0",
+        "selection_kind": "single",
+        "versions": []
+      },
+      "manifest.json": {
+        "canonicalization": "RFC8785",
+        "created_at": "2026-10-11T04:32:41.750Z",
+        "expires_at": "2026-10-12T04:32:41.688Z",
+        "files": [
+          {
+            "path": "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/716518fb-74f7-440d-a740-c8dd774f6cf4.json",
+            "sha256": "60ce7a4fafc07fbd988cc19539e46eb7b7620a4142f6c35decf2b158c04d93cc",
+            "size_bytes": 5621
+          },
+          {
+            "path": "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/5b9c74dd-e66b-466d-b398-4227f4cc286c.json",
+            "sha256": "90036c2bb1f9f6708ac8ce7452156cedf36795bb709b8d53000ad57d3dcefd07",
+            "size_bytes": 5701
+          },
+          {
+            "path": "checks/87db9824-768f-4d7c-810c-ef51e4315e4d.json",
+            "sha256": "a27b22c65fd15277acb2531d19e68d8e817ab18bbfc8814c86f8c89a6ddb7612",
+            "size_bytes": 14173
+          },
+          {
+            "path": "profile.json",
+            "sha256": "36e0890a89ed3f2c6fd4c336ab72f96efe87da5892dfbc4c542ec41c29b28636",
+            "size_bytes": 81
+          }
+        ],
+        "job_id": "69911a5e-f1f8-4621-9ed4-d80b7fa57db8",
+        "omitted_categories": [
+          "raw_artifacts"
+        ],
+        "schema_version": "1.0.0",
+        "selection": {
+          "kind": "single",
+          "session_ids": [
+            "87db9824-768f-4d7c-810c-ef51e4315e4d"
+          ]
+        },
+        "session_ids": [
+          "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        ]
+      }
+    }
+  }
+}

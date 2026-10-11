@@ -154,8 +154,17 @@ def heartbeat(claim, receipt, done, lost):
             return
 
 
+def export_manifest_bytes(files, manifest):
+    """Final allocation budget includes the manifest, which can exceed one record."""
+    data = canonical(manifest)
+    if len(files) + 1 > 65_000 or sum(len(value) for value in files.values()) + len(data) > 50 * 1024 * 1024:
+        raise Problem(413, "EXPORT_TOO_LARGE")
+    return data
+
+
 def make_export(claim):
     from .main import detail, evidence
+    from .report_revisions import export_records
 
     files = {}
     total = 0
@@ -170,9 +179,18 @@ def make_export(claim):
                 raise Problem(410, "DATA_GENERATION_RETIRED")
             safe_result(row.result)
             bundle = {**detail(row), **evidence(db, a, row)}
+            heads = claim.body.get("report_revision_heads", {})
+            head = heads.get(sid, {"revision_id": None, "revision_sha256": None})
+            revision_index, revision_files = export_records(db, a, row, head)
+            bundle["report_revision_index"] = revision_index
+            for path, data in revision_files.items():
+                total += len(data)
+                if total > 50 * 1024 * 1024 or path in files:
+                    raise Problem(413, "EXPORT_TOO_LARGE")
+                files[path] = data
             raw = canonical(bundle)
             total += len(raw)
-            if total > 50 * 1024 * 1024:
+            if len(raw) > 512 * 1024 or total > 50 * 1024 * 1024:
                 raise Problem(413, "EXPORT_TOO_LARGE")
             files[f"checks/{sid}.json"] = raw
         profiles = []
@@ -199,7 +217,11 @@ def make_export(claim):
             }
         )
         total += len(files["profile.json"])
-        if total > 50 * 1024 * 1024:
+        if (
+            len(files["profile.json"]) > 512 * 1024
+            or total > 50 * 1024 * 1024
+            or len(files) + 1 > 65_000
+        ):
             raise Problem(413, "EXPORT_TOO_LARGE")
         manifest = {
             "schema_version": "1.0.0",
@@ -220,7 +242,9 @@ def make_export(claim):
             ],
         }
         db.commit()
-    files["manifest.json"] = canonical(manifest)
+    # Archive metadata can span many small records; its bytes still consume the
+    # same total limit. Each actual structured evidence/profile file is bounded above.
+    files["manifest.json"] = export_manifest_bytes(files, manifest)
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for path, data in files.items():

@@ -28,7 +28,7 @@ The default unit fixture uses SQLite only under `OTGD_ENVIRONMENT=test`. Its exp
 
 ## HTTP contract
 
-The [generated OpenAPI](../../contracts/application/openapi.json) describes 37 paths. [Companion JSON Schemas](../../contracts/application/README.md) define profile, context, attempt, evidence manifest, alcohol, export, authorization and synthetic transport DTOs. Original scientific v0.1 schemas remain strict and are not widened to accept raw/native metadata; companion records carry that information.
+The [generated OpenAPI](../../contracts/application/openapi.json) describes the implemented routes and typed request/response models. [Companion JSON Schemas](../../contracts/application/README.md) define profile, context, attempt, evidence manifest, alcohol, export, authorization, replacement navigation, report revisions and synthetic transport DTOs. Original scientific v0.1 schemas remain strict and are not widened to accept raw/native metadata; companion records carry that information.
 
 | Area | Principal routes | Behavior |
 |---|---|---|
@@ -36,14 +36,16 @@ The [generated OpenAPI](../../contracts/application/openapi.json) describes 37 p
 | Identity | `/v1/me/capabilities`, `/v1/auth/logout` | Pinned RS256 issuer/client access tokens, live family revocation, ownership and generation checks. |
 | Profile | `/v1/me/profile`, `/v1/me/acknowledgments` | Versioned explicit saves, canonical units/BMI, current notice acknowledgment. |
 | Check | `/v1/sessions`, `/v1/sessions/{id}` | Owner-scoped registration/history/detail, stable cursors, immutable finalized records and linked replacement checks. |
+| Replacement navigation | `/v1/sessions/{id}/replacement-links` | Bounded, owner/generation-scoped predecessor and direct replacement pages; accepted frozen snapshots only, with independent link/hash checks. |
 | Evidence | `.../snapshot`, `.../context`, `.../attempts/{id}`, `.../evidence-manifest`, `.../evidence` | Independent revisions and canonical digests; exact source, session, attempt, projection and context linkage. |
 | Result | `.../finalize`, `.../result` | Transactional outbox plus SQS processing; measurement-only or invalid output. |
 | Devices | `/v1/devices/...`, `.../capture-authorizations`, `.../attestations` | Domain-separated P-256 proof, operator trust anchors, single-use online start authorization and immutable signed payload mapping. |
 | Studies | `/v1/me/studies`, `/v1/studies/{id}/consents`, `.../withdrawals` | Exact document hash, explicit consent and effective withdrawal, independently qualified channel/configuration checks. No real study is seeded. |
 | Raw artifacts | `/v1/artifact-uploads`, `.../{id}`, `.../{id}/complete` | Approved scope only; bounded conditional PUT; checksum/media/size verification pinned to a non-null S3 version. |
 | Reference laboratory | `/v1/research/lab-imports` | Current study and independently provisioned laboratory role; verified source report and strict normalized analyte records. |
+| Report revisions | `/v1/research/sessions/{id}/report-artifact-uploads`, `.../report-revisions`; owner reads under `/v1/sessions/{id}/report-revisions` | Separate purpose-specific report completion, current administrative authority before replay, immutable same-specimen report/result chain, and preserved original capture/target times. |
 | Alcohol | `/v1/sessions/{id}/alcohol` | Separate immutable v1 companion in mg/L; never inserted into the THC snapshot or converted to BAC. |
-| Privacy | `/v1/privacy/export-requests`, `/v1/privacy/deletion-requests`, `/v1/privacy/jobs/{id}` | Stable explicit operations with visible pending/completed/failed/expired dispositions. |
+| Privacy | `/v1/privacy/exports`, `/v1/privacy/deletion-requests`, `/v1/privacy/jobs/{id}` | Stable explicit operations with visible pending/completed/failed/expired dispositions. |
 | Download | `/v1/privacy/jobs/{id}/download` | Authenticated current-policy gateway, exact stored object version, no presigned bearer GET. |
 
 Authenticated writes require `Authorization: Bearer ...`, `X-Data-Generation` and a stable `Idempotency-Key`. Revisioned writes also require a quoted integer `If-Match`. Use `"0"` for a new context, attempt or evidence manifest. A new session begins at revision 1; accepting its snapshot advances that session revision. Read the returned ETag instead of assuming later revisions.
@@ -76,5 +78,7 @@ Cleanup claims an artifact disposition before external deletion. Artifact comple
 Restoring PostgreSQL does not restore the journal or its independent key. [Recovery tooling](../../scripts/restore-journal.py) requires consistent journal inventories and provenance, applies generation barriers before readiness, and suspends recovered study/device scopes. A missing provider subject for an incomplete account deletion requires independently verified identity reconciliation; its HMAC is not treated as reversible.
 
 ## Deployment authority
+
+The numbered additive migration `002_replacement_navigation` creates and verifies the index for bounded direct replacement queries and records its immutable migration identity. It is replay-safe and does not rewrite scientific evidence or change the v1 serialization. Baseline and index migrations run with migration authority before the application starts; host tests and actual PostgreSQL CI evidence are recorded separately.
 
 The migration role performs DDL. Runtime identities have bounded PostgreSQL pools, verified TLS in QA/prod, no authority to modify qualification/trust/recovery records, and append-only audit writes. Secrets are injected by the environment; the repository contains only an official public RDS CA bundle. Real operator qualification, study documents, device trust anchors, clinical models, domain/certificate inputs and AWS credentials are not fabricated or supplied by this service.

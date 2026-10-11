@@ -1,9 +1,10 @@
 """Versioned one-off migration. Runtime application identity cannot run DDL."""
 
-from sqlalchemy import text
+from sqlalchemy import select, text
 
 from .config import settings
-from .db import Base, engine
+from .db import Base, SystemState, engine
+from .schema_migrations import migration_002_replacement_navigation
 
 
 def migrate():
@@ -40,9 +41,9 @@ def migrate():
                         f"CREATE INDEX IF NOT EXISTS ix_{table}_cleanup_next_at ON {table}(cleanup_next_at)"
                     )
                 )
-        existing = connection.execute(
-            text("SELECT body FROM system_state WHERE key='schema_version'")
-        ).scalar()
+        existing = connection.scalar(
+            select(SystemState.body).where(SystemState.key == "schema_version")
+        )
         if existing and existing.get("version") != 1:
             raise RuntimeError("Unsupported database version; do not downgrade")
         import json
@@ -52,6 +53,7 @@ def migrate():
                 text("INSERT INTO system_state (key,body) VALUES (:key,:body)"),
                 {"key": "schema_version", "body": json.dumps({"version": 1})},
             )
+        migration_002_replacement_navigation(connection)
         if postgres and s.app_database_password:
             from psycopg import sql
 

@@ -5,6 +5,7 @@ Run with: uv run --project services/api python tools/generate_application_contra
 The test environment here is for schema loading only; no database or cloud call occurs.
 """
 
+from copy import deepcopy
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,7 @@ os.environ.setdefault("OTGD_DATABASE_URL", "sqlite://")
 sys.path.insert(0, str(ROOT / "services/api"))
 from otgd.main import app
 from otgd import dto
+from otgd import report_revisions
 from otgd.synthetic_evidence import SyntheticDeviceCapture
 
 OUTPUT = ROOT / "contracts/application"
@@ -29,7 +31,46 @@ MODELS = [
     "Attestation",
     "CaptureAuthorization",
     "StartAuthorization",
+    "ReplacementLinks",
 ]
+REPORT_MODELS = [
+    "ReportRevisionRequest",
+    "ReportDescriptor",
+    "ReportRevisionResult",
+    "ReportRevisionCompanion",
+    "ReportRevisionList",
+    "ReportRevisionDetail",
+    "ReportRevisionIndex",
+]
+
+
+def annotate_measurements(schema, reference):
+    """Expose the unchanged scientific envelope used by runtime validation.
+
+    The report DTOs deliberately delegate their measurement semantics to the
+    canonical validator. Their generated API must still describe those exact
+    objects instead of implying that arbitrary dictionaries are accepted.
+    """
+    found = False
+    if isinstance(schema, dict):
+        properties = schema.get("properties", {})
+        for name in ("replacement_measurements", "effective_measurements"):
+            if name in properties:
+                properties[name]["items"] = {"$ref": reference}
+                found = True
+        for value in schema.values():
+            found = annotate_measurements(value, reference) or found
+    elif isinstance(schema, list):
+        for value in schema:
+            found = annotate_measurements(value, reference) or found
+    return found
+
+
+def measurement_definition():
+    scientific = json.loads((ROOT / "contracts/measurement.schema.json").read_text())
+    # Embedded definitions resolve references in their enclosing contract. The
+    # scientific schema itself remains byte-for-byte unchanged in its own file.
+    return {key: value for key, value in scientific.items() if key not in ("$id", "$schema")}
 
 
 def main():
@@ -39,6 +80,9 @@ def main():
         "Versioned measurement-only application API. Clinical inference is compiled unavailable. See shared-contracts.md for state, idempotency, owner/generation and native evidence invariants. Unknown nested component metadata is rejected at runtime; CaptureAttempt carries a strict v0.1 projection plus the named typed companion evidence."
     )
     synthetic = SyntheticDeviceCapture.model_json_schema()
+    scientific = measurement_definition()
+    if annotate_measurements(api, "#/components/schemas/ScientificMeasurement"):
+        api["components"]["schemas"]["ScientificMeasurement"] = deepcopy(scientific)
 
     def refs(value):
         if isinstance(value, dict):
@@ -136,6 +180,13 @@ def main():
             )
             + "\n"
         )
+    for name in REPORT_MODELS:
+        schema = getattr(report_revisions, name).model_json_schema()
+        if annotate_measurements(schema, "#/$defs/ScientificMeasurement"):
+            schema.setdefault("$defs", {})["ScientificMeasurement"] = deepcopy(scientific)
+        (OUTPUT / f"{name}.schema.json").write_text(
+            json.dumps(schema, indent=2, ensure_ascii=False) + "\n"
+        )
     (OUTPUT / "SyntheticDeviceCapture.schema.json").write_text(
         json.dumps(
             SyntheticDeviceCapture.model_json_schema(), indent=2, ensure_ascii=False
@@ -143,7 +194,7 @@ def main():
         + "\n"
     )
     print(
-        f"Generated OpenAPI with {len(api['paths'])} paths and {len(MODELS) + 1} companion schemas."
+        f"Generated OpenAPI with {len(api['paths'])} paths and {len(MODELS) + len(REPORT_MODELS) + 1} companion schemas."
     )
 
 

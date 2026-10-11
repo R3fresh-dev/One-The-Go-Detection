@@ -1,0 +1,516 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "revision_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Revision Id",
+      "type": "string"
+    },
+    "study_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Study Id",
+      "type": "string"
+    },
+    "sample_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Sample Id",
+      "type": "string"
+    },
+    "base_snapshot_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Base Snapshot Sha256",
+      "type": "string"
+    },
+    "expected_previous_revision_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expected Previous Revision Id"
+    },
+    "expected_previous_revision_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expected Previous Revision Sha256"
+    },
+    "kind": {
+      "enum": [
+        "correction",
+        "reanalysis"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "reason_code": {
+      "enum": [
+        "CORRECTED_LABORATORY_REPORT",
+        "SPECIMEN_REANALYSIS"
+      ],
+      "title": "Reason Code",
+      "type": "string"
+    },
+    "reported_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Reported At",
+      "type": "string"
+    },
+    "source_report_artifact_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Source Report Artifact Id",
+      "type": "string"
+    },
+    "replacement_measurements": {
+      "items": {
+        "$ref": "#/$defs/ScientificMeasurement"
+      },
+      "maxItems": 3,
+      "minItems": 1,
+      "title": "Replacement Measurements",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "revision_id",
+    "study_id",
+    "sample_id",
+    "base_snapshot_sha256",
+    "expected_previous_revision_id",
+    "expected_previous_revision_sha256",
+    "kind",
+    "reason_code",
+    "reported_at",
+    "source_report_artifact_id",
+    "replacement_measurements"
+  ],
+  "title": "ReportRevisionRequest",
+  "type": "object",
+  "$defs": {
+    "ScientificMeasurement": {
+      "title": "Measurement",
+      "description": "Proposed v0.1 saliva envelope. Limits are assay-specific; qualifiers are not impairment thresholds. See LLD for cross-field semantics.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "measurement_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sample_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "analyte": {
+          "enum": [
+            "THC",
+            "THC_COOH",
+            "OH11_THC"
+          ]
+        },
+        "qualifier": {
+          "enum": [
+            "quantified",
+            "below_loq",
+            "above_range",
+            "not_detected",
+            "not_measured",
+            "invalid"
+          ]
+        },
+        "value_ng_ml": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unit": {
+          "const": "ng/mL"
+        },
+        "assay_basis": {
+          "enum": [
+            "free",
+            "total_after_hydrolysis",
+            "unspecified"
+          ]
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "lod_ng_ml": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "loq_ng_ml": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "upper_ng_ml": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          },
+          "required": [
+            "lod_ng_ml",
+            "loq_ng_ml",
+            "upper_ng_ml"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "simulated",
+            "reference_lab",
+            "prototype_sensor",
+            "validated_sensor"
+          ]
+        },
+        "method_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "calibration_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "cartridge_lot": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "instrument_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "operator_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "collected_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "measured_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "quality_flags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0
+        },
+        "original_report": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "unit": {
+              "enum": [
+                "ng/mL",
+                "pg/mL"
+              ]
+            },
+            "qualifier": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "value",
+            "unit",
+            "qualifier"
+          ]
+        },
+        "uncertainty_ng_ml": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "concentration_basis": {
+          "enum": [
+            "neat_oral_fluid",
+            "collected_mixture",
+            "unspecified"
+          ],
+          "description": "Basis of both original and unit-normalized concentration and analytical limits. No local dilution correction is performed."
+        },
+        "correction_status": {
+          "enum": [
+            "not_corrected",
+            "laboratory_corrected",
+            "unspecified"
+          ],
+          "description": "Whether the reporting laboratory applied dilution correction; preserve its report, do not infer or repeat a correction."
+        }
+      },
+      "required": [
+        "schema_version",
+        "measurement_id",
+        "sample_id",
+        "analyte",
+        "qualifier",
+        "value_ng_ml",
+        "unit",
+        "assay_basis",
+        "limits",
+        "source",
+        "method_id",
+        "calibration_id",
+        "cartridge_lot",
+        "instrument_id",
+        "operator_ref",
+        "collected_at",
+        "measured_at",
+        "quality_flags",
+        "original_report",
+        "uncertainty_ng_ml",
+        "concentration_basis",
+        "correction_status"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "quantified"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value_ng_ml": {
+                "type": "number",
+                "minimum": 0
+              },
+              "limits": {
+                "properties": {
+                  "loq_ng_ml": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "upper_ng_ml": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value_ng_ml": {
+                "type": "null"
+              },
+              "original_report": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "below_loq"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "limits": {
+                "properties": {
+                  "loq_ng_ml": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "above_range"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "limits": {
+                "properties": {
+                  "upper_ng_ml": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "not_detected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "limits": {
+                "properties": {
+                  "lod_ng_ml": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "invalid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "quality_flags": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "not_measured"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "measured_at": {
+                "type": "null"
+              },
+              "method_id": {
+                "type": "null"
+              },
+              "instrument_id": {
+                "type": "null"
+              },
+              "calibration_id": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "enum": [
+                  "quantified",
+                  "below_loq",
+                  "above_range",
+                  "not_detected"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "method_id": {
+                "type": "string"
+              },
+              "instrument_id": {
+                "type": "string"
+              },
+              "measured_at": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

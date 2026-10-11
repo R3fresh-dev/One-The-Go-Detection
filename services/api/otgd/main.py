@@ -84,10 +84,12 @@ from .dto import (
     LabImport,
     Name,
     ProfileWrite,
+    ReplacementLinks,
     StartAuthorization,
     Withdrawal,
 )
 from .errors import response_problem
+from .replacement_links import replacement_links_view
 
 app = FastAPI(
     title="One-The-Go Detection",
@@ -721,6 +723,15 @@ def snapshot_put(request: Request, session_id: UUID, body: dict):
     return mutate(request, action)
 
 
+@app.get("/v1/sessions/{session_id}/replacement-links", response_model=ReplacementLinks)
+def session_replacement_links(
+    request: Request, session_id: UUID, cursor: str | None = None, limit: int = 20
+):
+    with access(request) as (db, a, c, r):
+        base = owned_check(db, a, session_id)
+        return replacement_links_view(db, a, base, cursor, limit)
+
+
 def evidence_write(request, session_id, kind, key, data):
     def action(db, a, c):
         check = owned_check(db, a, session_id)
@@ -1253,6 +1264,8 @@ def attest(request: Request, session_id: UUID, body: Attestation):
 @app.post("/v1/artifact-uploads")
 def artifact_upload(request: Request, body: ArtifactRequest):
     def action(db, a, c):
+        from .report_revisions import ensure_artifact_capacity
+
         check = owned_check(db, a, body.session_id)
         require_draft(check)
         if check.study_id != body.study_id:
@@ -1284,16 +1297,7 @@ def artifact_upload(request: Request, body: ArtifactRequest):
         }[body.artifact_kind]
         if body.size_bytes > limit or body.media_type != media:
             raise Problem(413, "LIMIT_EXCEEDED")
-        artifacts = list(
-            db.scalars(select(Artifact).where(Artifact.account_id == a.id))
-        )
-        pending = [x for x in artifacts if x.state in ("quarantine", "cleanup_pending")]
-        if (
-            len(pending) >= 3
-            or sum(x.size for x in pending) + body.size_bytes > 128 * 1024 * 1024
-            or sum(x.size for x in artifacts) + body.size_bytes > 1024**3
-        ):
-            raise Problem(429, "LIMIT_EXCEEDED", headers={"Retry-After": "60"})
+        ensure_artifact_capacity(db, a.id, body.size_bytes)
         id = uid()
         row = Artifact(
             id=id,
@@ -1343,6 +1347,8 @@ def artifact_complete(request: Request, artifact_id: UUID, body: CompleteArtifac
         )
         if not row or row.account_id != a.id or row.generation != a.generation:
             raise Problem(404, "NOT_FOUND")
+        if row.scope.get("purpose") == "administrative_report_revision":
+            raise Problem(403, "ARTIFACT_PURPOSE_MISMATCH")
         if (body.sha256, body.size_bytes, body.media_type) != (
             row.sha256,
             row.size,
@@ -1367,6 +1373,8 @@ def artifact_complete(request: Request, artifact_id: UUID, body: CompleteArtifac
         )
         if not row or row.account_id != a.id or row.generation != a.generation:
             raise Problem(404, "NOT_FOUND")
+        if row.scope.get("purpose") == "administrative_report_revision":
+            raise Problem(403, "ARTIFACT_PURPOSE_MISMATCH")
         if row.state not in ("quarantine", "verified"):
             raise Problem(410, "ARTIFACT_RETIRED")
         if (body.sha256, body.size_bytes, body.media_type) != (
@@ -1494,6 +1502,8 @@ def model_get(request: Request, model_id: Name):
 @app.post("/v1/privacy/exports", status_code=202)
 def export_post(request: Request, body: ExportRequest):
     def action(db, a, c):
+        from .report_revisions import freeze_head
+
         recent(c)
         existing = list(
             db.scalars(
@@ -1522,11 +1532,13 @@ def export_post(request: Request, body: ExportRequest):
                 raise Problem(413, "LIMIT_EXCEEDED")
         else:
             ids = body.selection.session_ids
+        report_heads = {}
         for id in ids:
             check = owned_check(db, a, id)
             if check.state not in ("completed", "invalid"):
                 raise Problem(409, "FINALIZED_CHECK_REQUIRED")
             safe_result(check.result)
+            report_heads[id] = freeze_head(db, a, check)
         version_ids = set()
         current_version = None
         if body.selection.kind == "all":
@@ -1552,6 +1564,7 @@ def export_post(request: Request, body: ExportRequest):
             "session_ids": ids,
             "profile_version_ids": sorted(version_ids),
             "current_profile_version_id": current_version,
+            "report_revision_heads": report_heads,
         }
         if len(canonical(job_body)) > 512 * 1024:
             raise Problem(413, "LIMIT_EXCEEDED")
@@ -1717,3 +1730,9 @@ app.add_middleware(
     ],
     max_age=300,
 )
+
+
+# Report revisions have their own finalized-check authorization and immutable DTOs.
+from .report_revisions import router as report_revision_router
+
+app.include_router(report_revision_router)

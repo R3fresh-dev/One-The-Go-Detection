@@ -9,6 +9,7 @@ on:
       - 'services/api/**'
       - 'contracts/**'
       - 'tools/**'
+      - 'openspec/**'
       - '.github/workflows/platform.yml'
   push:
     branches: [main]
@@ -19,6 +20,7 @@ on:
       - 'services/api/**'
       - 'contracts/**'
       - 'tools/**'
+      - 'openspec/**'
       - '.github/workflows/platform.yml'
   workflow_dispatch:
     inputs:
@@ -55,6 +57,28 @@ jobs:
       - run: npm run verify
         working-directory: infra
       - run: uv sync --project services/api --locked
+      - name: Scientific contracts and feature inventory
+        run: |
+          uv run --project services/api python tools/verify_specs.py
+          uv run --project services/api python tools/verify_openspec.py
+      - name: Strict OpenSpec validation
+        run: npx --yes @fission-ai/openspec@1.14.1 validate production-mobile-platform --strict
+        env:
+          OPENSPEC_TELEMETRY: '0'
+      - name: Generated API schema validation and drift
+        run: |
+          uv run --project services/api python tools/generate_application_contracts.py
+          uv run --project services/api python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          from openapi_spec_validator import validate
+          root = Path('contracts/application')
+          validate(json.loads((root / 'openapi.json').read_text()))
+          for path in root.glob('*.schema.json'):
+              Draft202012Validator.check_schema(json.loads(path.read_text()))
+          PY
+          git diff --exit-code -- contracts/application
       - run: uv run --project services/api python -m unittest discover -s infra/test -p 'test_*.py' -v
       - run: uv run --project services/api python -m compileall -q scripts deploy infra/local
       - name: Integration status

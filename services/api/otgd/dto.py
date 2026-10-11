@@ -34,6 +34,22 @@ class DTO(BaseModel):
         return self.model_dump(mode="json")
 
 
+class ReplacementLink(DTO):
+    session_id: UUID
+    created_at: UTC
+    state: Literal["processing", "completed", "invalid"]
+
+
+class ReplacementLinks(DTO):
+    schema_version: Literal["1.0.0"] = "1.0.0"
+    session_id: UUID
+    data_generation: Annotated[int, Field(ge=1, le=9007199254740991)]
+    base_snapshot_sha256: SHA
+    previous: ReplacementLink | None
+    items: Annotated[list[ReplacementLink], Field(max_length=100)]
+    next_cursor: Annotated[str, Field(min_length=1, max_length=1024)] | None
+
+
 class Profile(DTO):
     age_years: Annotated[int, Field(ge=18, le=125)] | None = None
     height_cm: Annotated[float, Field(gt=0, le=300)] | None = None
