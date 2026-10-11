@@ -41,6 +41,10 @@ internal object ReactionViewRegistry {
 
 class OTGDReactionTaskView(context: Context, appContext: AppContext) : ExpoView(context, appContext), Choreographer.FrameCallback {
   val onProgress by EventDispatcher()
+  // The generic Expo 57 overload accepts nullable map values. ViewEvent uses
+  // JSTypeConverterProvider's map conversion, whose putGeneric(null) calls
+  // WritableMap.putNull; nested maps/lists take the same conversion path.
+  // Keep absent features/timestamps explicit rather than filtering or casting.
   val onComplete by EventDispatcher<Map<String, Any?>>()
   var requestedRunId = ""
   var requestedSeed = 0.0

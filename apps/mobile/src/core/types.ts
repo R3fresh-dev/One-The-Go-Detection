@@ -1,3 +1,5 @@
+import type { ReplacementLinksCache } from "./replacements";
+import type { ReportCache } from "./reportRevisions";
 export type Environment = "local" | "qa" | "prod" | "test";
 export type Json =
   null | boolean | number | string | Json[] | { [key: string]: Json };
@@ -187,6 +189,8 @@ export interface CheckRecord {
   kind: "guest_demo" | "engineering_fixture" | "measurement";
   stage: Stage;
   frozen: boolean;
+  replacement_links?: ReplacementLinksCache;
+  report_revision_cache?: ReportCache;
   snapshot: Snapshot;
   context: CaptureContext;
   attempts: CaptureAttempt[];
@@ -236,7 +240,12 @@ export interface AppConfig {
   maintenance: boolean;
   minimum_app_version: string;
   supported_app_versions: string[];
-  contract_versions: { application: string[]; scientific: string[]; capture_evidence: string[]; native_task: string[] };
+  contract_versions: {
+    application: string[];
+    scientific: string[];
+    capture_evidence: string[];
+    native_task: string[];
+  };
   limits: JsonObject;
 }
 export interface Capabilities {

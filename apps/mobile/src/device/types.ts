@@ -1,4 +1,5 @@
 import type { ClockEvidence, DeviceChannel, DeviceEnvelope, SyntheticCapabilities } from './protocol';
+import type { SyntheticSignalFrame, SyntheticSignalOptions, SyntheticSignalPreview, SyntheticSignalScenario } from './signal';
 export type DeviceState = 'unavailable' | 'idle' | 'scanning' | 'connecting' | 'connected_simulator' | 'error';
 export interface DiscoveredDevice { peripheralId: string; alias: string; rssi: number }
 export interface DeviceAssociation {
@@ -15,10 +16,12 @@ export interface DeviceAssociation {
 }
 export interface DeviceSnapshot {
   state: DeviceState;
+  observedAt: string;
   devices: DiscoveredDevice[];
   association: DeviceAssociation | null;
   reason: string | null;
   captureInProgress: boolean;
+  signalPreview: SyntheticSignalPreview | null;
   humanCaptureAvailable: false;
 }
 export interface CaptureContext { sessionId: string; attemptId: string; captureId: string; workspaceEpoch: string }
@@ -58,7 +61,7 @@ export interface DeviceController {
   disconnect(): Promise<void>;
   forget(): Promise<void>;
   useLocalSimulator(): Promise<void>;
-  captureSynthetic(channel: DeviceChannel, context: CaptureContext): Promise<SyntheticDeviceCapture>;
+  captureSynthetic(channel: DeviceChannel, context: CaptureContext, options?: SyntheticSignalOptions): Promise<SyntheticDeviceCapture>;
   cancelCapture(reason?: string): Promise<void>;
   dispose(): Promise<void>;
 }
@@ -72,6 +75,7 @@ export type TransportEvent =
   | { kind: 'discovered'; peripheralId: string; alias: string; rssi: number }
   | { kind: 'state'; state: string }
   | { kind: 'packet'; peripheralId: string; base64: string; receivedAtMonotonicMs: number }
+  | { kind: 'synthetic_signal'; peripheralId: string; frame: SyntheticSignalFrame; receivedAtMonotonicMs: number }
   | { kind: 'disconnected'; peripheralId: string; reason: string };
 export interface DeviceTransport {
   kind: 'ble_unprovisioned' | 'local_simulator';
@@ -82,5 +86,6 @@ export interface DeviceTransport {
   stopScan(): Promise<void>;
   connect(peripheralId: string): Promise<{ peripheralId: string; mtu: number; capabilities: string }>;
   write(base64: string): Promise<void>;
+  prepareSyntheticSignal?(scenario: SyntheticSignalScenario): void;
   disconnect(): Promise<void>;
 }

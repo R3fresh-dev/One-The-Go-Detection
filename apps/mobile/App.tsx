@@ -44,7 +44,7 @@ import { ThemeProvider, useTheme } from "./src/ui/theme";
 
 const primary: { route: Route; label: string; glyph: string }[] = [
   { route: "home", label: "Home", glyph: "⌂" },
-  { route: "check", label: "Check", glyph: "＋" },
+  { route: "check", label: "Check", glyph: "+" },
   { route: "history", label: "History", glyph: "≡" },
   { route: "settings", label: "Settings", glyph: "⚙" },
 ];
@@ -186,11 +186,16 @@ function Shell({
     screens: Record<Route, React.ReactNode> = {
       welcome: <WelcomeScreen {...props} />,
       notice: <NoticeScreen {...props} key={model.state?.notice?.sha256} />,
-      home: model.state ? <HomeScreen {...props} /> : null,
+      home: model.state ? (
+        <HomeScreen
+          {...props}
+          key={`${controller.epoch}:${model.state.generation}`}
+        />
+      ) : null,
       profile: model.state ? (
         <ProfileScreen
           {...props}
-          key={`${model.state.workspace}:${model.profileConflict ? "conflict" : "normal"}`}
+          key={`${controller.epoch}:${model.state.generation}:${model.profileConflict ? "conflict" : "normal"}`}
         />
       ) : null,
       device: <DeviceScreen {...props} />,
@@ -384,39 +389,54 @@ function Shell({
               </View>
             </View>
           )}
-          {!model.activeTask && Platform.OS === "web" && (
-            <View style={{ paddingHorizontal: 24, paddingTop: 12 }}>
-              <Notice>
-                Browser preview uses memory only. Reloading clears this browser
-                workspace. Encrypted persistence and the native reaction task
-                require an installed Android or iOS build.
-              </Notice>
-            </View>
+          {!model.activeTask && (
+            <ContextStrip
+              key={`${controller.epoch}:${model.state?.generation}`}
+              browser={Platform.OS === "web"}
+              guest={
+                !!model.state?.acknowledgedNotice &&
+                !model.identity &&
+                model.route !== "welcome"
+              }
+            />
           )}
-          {!model.activeTask &&
-            !!model.state &&
-            !model.identity &&
-            model.state.acknowledgedNotice &&
-            model.route !== "welcome" && (
-              <View style={{ paddingHorizontal: 24, paddingTop: 12 }}>
-                <Notice tone="warning">
-                  Guest demo · sample and sensor values are synthetic. Native
-                  taps, when available, are uncalibrated practice. Guest data
-                  never uploads.
-                </Notice>
-              </View>
-            )}
           {!model.activeTask && (model.error || model.message) && (
-            <View style={{ paddingHorizontal: 24, paddingTop: 12, gap: 8 }}>
-              <Notice tone={model.error ? "danger" : "neutral"}>
+            <View
+              style={{
+                paddingHorizontal: 24,
+                paddingVertical: 8,
+                gap: 8,
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: model.error
+                  ? colors.dangerSoft
+                  : colors.accentSoft,
+              }}
+            >
+              <Text
+                accessibilityLiveRegion="polite"
+                style={{
+                  flex: 1,
+                  color: model.error ? colors.danger : colors.ink,
+                  fontSize: 13,
+                  lineHeight: 19,
+                }}
+              >
                 {model.error ?? model.message}
-              </Notice>
-              <Button
-                compact
-                secondary
-                title="Dismiss message"
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Dismiss message"
                 onPress={() => controller.dismissError()}
-              />
+                style={{
+                  minWidth: 48,
+                  minHeight: 48,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: colors.secondary, fontSize: 22 }}>×</Text>
+              </Pressable>
             </View>
           )}
           <View style={{ flex: 1, minHeight: 0 }}>
@@ -472,5 +492,80 @@ function Shell({
         </View>
       )}
     </SafeAreaView>
+  );
+}
+function ContextStrip({
+  browser,
+  guest,
+}: {
+  browser: boolean;
+  guest: boolean;
+}) {
+  const colors = useTheme(),
+    [expanded, setExpanded] = useState(false);
+  if (!browser && !guest) return null;
+  return (
+    <View
+      style={{
+        paddingHorizontal: 24,
+        backgroundColor: colors.warningSoft,
+        borderBottomWidth: 1,
+        borderColor: colors.line,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <View style={{ flex: 1, gap: 3, paddingVertical: 8 }}>
+          {browser && (
+            <Text style={{ color: colors.ink, fontSize: 12, lineHeight: 17 }}>
+              Browser preview · memory only
+            </Text>
+          )}
+          {guest && (
+            <Text style={{ color: colors.ink, fontSize: 12, lineHeight: 17 }}>
+              Guest demo · synthetic values · no uploads
+            </Text>
+          )}
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            expanded
+              ? "Hide preview and demo details"
+              : "Preview and demo details"
+          }
+          accessibilityState={{ expanded }}
+          onPress={() => setExpanded((value) => !value)}
+          style={{
+            minHeight: 48,
+            minWidth: 52,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text
+            style={{ color: colors.accent, fontSize: 13, fontWeight: "600" }}
+          >
+            {expanded ? "Hide" : "Details"}
+          </Text>
+        </Pressable>
+      </View>
+      {expanded && (
+        <View style={{ paddingBottom: 12, gap: 8 }}>
+          {browser && (
+            <Text style={{ color: colors.ink, fontSize: 13, lineHeight: 20 }}>
+              Reloading clears this browser workspace. Encrypted persistence and
+              the native reaction task require an installed Android or iOS
+              build.
+            </Text>
+          )}
+          {guest && (
+            <Text style={{ color: colors.ink, fontSize: 13, lineHeight: 20 }}>
+              Sample and sensor values are synthetic. Native taps, when
+              available, are uncalibrated practice. Guest data never uploads.
+            </Text>
+          )}
+        </View>
+      )}
+    </View>
   );
 }

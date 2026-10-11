@@ -25,10 +25,12 @@ test("guest completes a measurement-only check, exact export and privacy/setting
   await expect(
     page.getByRole("heading", { name: "A check with context" }),
   ).toBeVisible();
+  await expect(page.getByTestId("review-context")).toBeInViewport();
   await page.screenshot({
     path: `artifacts/${info.project.name}-home.png`,
     fullPage: true,
   });
+  await page.getByTestId("review-context").click();
   await page
     .getByRole("switch", { name: "I have reviewed this check’s context." })
     .check();
@@ -51,7 +53,7 @@ test("guest completes a measurement-only check, exact export and privacy/setting
   await page.getByRole("button", { name: "8 Review", exact: true }).click();
   await page.getByTestId("save-check").click();
   await expect(
-    page.getByRole("heading", { name: "Intoxication cannot be determined" }),
+    page.getByRole("heading", { name: "Measurements saved" }),
   ).toBeVisible();
   await expect(page.getByTestId("upload-check")).toHaveCount(0);
   await expect(
@@ -105,6 +107,91 @@ test("guest completes a measurement-only check, exact export and privacy/setting
   expect(runtimeErrors).toEqual([]);
 });
 
+test("live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit", async ({
+  page,
+}) => {
+  const runtimeErrors: string[] = [];
+  page.on("pageerror", (error) => runtimeErrors.push(error.message));
+  await page.route("http://{localhost,127.0.0.1}:8000/**", (route) =>
+    route.abort("internetdisconnected"),
+  );
+  await page.goto("/");
+  await page.getByTestId("explore-demo").click();
+  await page.getByRole("button", { name: "Start demo", exact: true }).click();
+  await page
+    .getByRole("switch", { name: "I have read how this app handles data." })
+    .check();
+  await page.getByTestId("acknowledge-notice").click();
+  await expect(page.getByTestId("review-context")).toBeInViewport();
+  await page.getByTestId("home-device-connection").click();
+  await page
+    .getByRole("button", { name: "Use local synthetic simulator", exact: true })
+    .click();
+  await expect(
+    page.getByText("Synthetic simulator connected", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("tab", { name: "Home", exact: true }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Synthetic reader connected",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByTestId("review-context").click();
+  await page
+    .getByRole("switch", { name: "I have reviewed this check’s context." })
+    .check();
+  await page.getByTestId("start-check").click();
+  await page.getByRole("button", { name: "6 ECG", exact: true }).click();
+  await page.getByRole("radio", { name: "Contact lost", exact: true }).click();
+  await page
+    .getByRole("button", {
+      name: "Start ECG software demonstration",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByText("Fictional contact lost", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Synthetic signal quality failed.", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "8 Review", exact: true }).click();
+  await page.getByTestId("save-check").click();
+  await expect(
+    page.getByRole("heading", { name: "Measurements saved" }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Start a replacement check", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Review current context on Home",
+      exact: true,
+    })
+    .click();
+  await page.getByTestId("review-context").click();
+  await page
+    .getByRole("switch", { name: "I have reviewed this check’s context." })
+    .check();
+  await page.getByTestId("start-check").click();
+  await page.getByRole("button", { name: "8 Review", exact: true }).click();
+  await page.getByTestId("save-check").click();
+  await page.getByTestId("view-original-check").click();
+  await expect(
+    page.getByText("This record does not replace an earlier acquisition.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: /^View replacement check / }).click();
+  await expect(
+    page.getByText("This check replaces an earlier acquisition", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("profile errors remain actionable and browser reload never pretends encrypted persistence", async ({
   page,
 }) => {
@@ -118,6 +205,7 @@ test("profile errors remain actionable and browser reload never pretends encrypt
     .getByRole("switch", { name: "I have read how this app handles data." })
     .check();
   await page.getByTestId("acknowledge-notice").click();
+  await page.getByTestId("review-context").click();
   await page
     .getByRole("button", { name: "Edit profile and context", exact: true })
     .click();
@@ -151,6 +239,6 @@ test("profile errors remain actionable and browser reload never pretends encrypt
     page.getByRole("heading", { name: "Your measurements, in one place" }),
   ).toBeVisible();
   await expect(
-    page.getByText("Browser preview uses memory only.", { exact: false }),
+    page.getByText("Browser preview · memory only", { exact: true }),
   ).toBeVisible();
 });

@@ -5,6 +5,7 @@ not participant acquisition, active registry provisioning, or assay evidence.
 """
 
 from copy import deepcopy
+from datetime import datetime
 from types import SimpleNamespace
 from uuid import uuid4
 import io
@@ -27,7 +28,14 @@ from otgd.db import (
     iso,
     now,
 )
-from otgd.domain import measurement_result, rec_id, save_record, validate_session
+from otgd.domain import (
+    measurement_result,
+    rec_id,
+    save_record,
+    validate_component,
+    validate_session,
+)
+from otgd.dto import CaptureAttempt
 from otgd.report_revisions import (
     PURPOSE,
     load_chain,
@@ -70,6 +78,33 @@ def laboratory(client, account, store):
         sample_rate_hz=100.0,
         acquisition_config_id="FICTIONAL_ACCEPTED_PPG",
     )
+    # This fixture exercises laboratory report administration, not a native
+    # reaction task. Preserve absence instead of inventing native timing proof.
+    snapshot["task"].update(
+        status="not_collected",
+        source="prototype_sensor",
+        started_at=None,
+        ended_at=None,
+        practice_trials=0,
+        scored_trials=0,
+        go_trials=0,
+        no_go_trials=0,
+        valid_correct_go_trials=0,
+        features={key: None for key in snapshot["task"]["features"]},
+        events_artifact_id=None,
+    )
+    starts = [snapshot["sample"]["collected_at"]] + [
+        snapshot[key]["started_at"] for key in ("eyes", "cardiac")
+    ]
+    ends = [snapshot["sample"]["collected_at"]] + [
+        snapshot[key]["ended_at"] for key in ("eyes", "cardiac")
+    ]
+    def instant(value):
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+    snapshot["acquisition_span_ms"] = (
+        max(map(instant, ends)) - min(map(instant, starts))
+    ).total_seconds() * 1000
     for reading in snapshot["saliva"]:
         reading["source"] = "reference_lab"
         if reading["qualifier"] != "not_measured":
@@ -122,10 +157,10 @@ def laboratory(client, account, store):
                 if component == "task"
                 else str(uuid4()),
                 "supersedes_attempt_id": None,
-                "status": "valid",
+                "status": "valid" if component == "saliva" else projection["status"],
                 "source": "reference_lab"
                 if component == "saliva"
-                else "prototype_sensor",
+                else projection["source"],
                 "started_at": snapshot["sample"]["collected_at"]
                 if component == "saliva"
                 else projection["started_at"],
@@ -134,8 +169,14 @@ def laboratory(client, account, store):
                 else projection["ended_at"],
                 "configuration_id": CONFIGURATION
                 if component == "saliva"
+                else projection["acquisition_config_id"]
+                if component == "cardiac"
+                else None
+                if component == "task"
                 else "FICTIONAL_ACCEPTED_" + component,
-                "configuration_hash": "2" * 64,
+                "configuration_hash": None
+                if component == "task"
+                else "2" * 64,
                 "quality_flags": [],
                 "component_metadata": {
                     "projection": projection,
@@ -145,6 +186,11 @@ def laboratory(client, account, store):
                 "attestation_refs": [],
             }
         )
+    # Already-accepted fictional evidence still has to be internally coherent;
+    # seeding is not a reason to bypass component or strict DTO validation.
+    for attempt in attempts:
+        CaptureAttempt.model_validate(attempt)
+        validate_component(attempt)
     manifest = {
         "schema_version": "1.0.0",
         "session_id": session_id,
@@ -766,7 +812,7 @@ def test_large_structured_revision_is_rejected_before_persisting_result(
         )
 
 
-def test_task_only_finalized_check_lists_no_revisions_and_preserves_null_collection(
+def test_saliva_free_finalized_check_lists_no_revisions_and_preserves_null_collection(
     client, laboratory
 ):
     with factory().begin() as db:

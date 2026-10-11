@@ -1,0 +1,905 @@
+{
+  "$defs": {
+    "MethodApproval": {
+      "additionalProperties": false,
+      "properties": {
+        "calibration_ids": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Calibration Ids",
+          "type": "array"
+        },
+        "instrument_ids": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Instrument Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "calibration_ids",
+        "instrument_ids"
+      ],
+      "title": "MethodApproval",
+      "type": "object"
+    },
+    "ReportAuthorization": {
+      "additionalProperties": false,
+      "properties": {
+        "operator_account_ref": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Operator Account Ref",
+          "type": "string"
+        },
+        "study_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Study Id",
+          "type": "string"
+        },
+        "protocol_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Protocol Id",
+          "type": "string"
+        },
+        "configuration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Configuration Id",
+          "type": "string"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        },
+        "consent_record_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Consent Record Id",
+          "type": "string"
+        },
+        "retention_policy_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Retention Policy Id",
+          "type": "string"
+        },
+        "approved_lab_methods": {
+          "additionalProperties": {
+            "$ref": "#/$defs/MethodApproval"
+          },
+          "maxProperties": 3,
+          "propertyNames": {
+            "maxLength": 256,
+            "minLength": 1
+          },
+          "title": "Approved Lab Methods",
+          "type": "object"
+        }
+      },
+      "required": [
+        "operator_account_ref",
+        "study_id",
+        "protocol_id",
+        "configuration_id",
+        "configuration_sha256",
+        "consent_record_id",
+        "retention_policy_id",
+        "approved_lab_methods"
+      ],
+      "title": "ReportAuthorization",
+      "type": "object"
+    },
+    "ReportContent": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "correction",
+            "reanalysis"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "reason_code": {
+          "enum": [
+            "CORRECTED_LABORATORY_REPORT",
+            "SPECIMEN_REANALYSIS"
+          ],
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "reported_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Reported At",
+          "type": "string"
+        },
+        "replacement_measurements": {
+          "items": {
+            "$ref": "#/$defs/ScientificMeasurement"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Replacement Measurements",
+          "type": "array"
+        },
+        "source_report": {
+          "$ref": "#/$defs/VerifiedReport"
+        },
+        "authorization": {
+          "$ref": "#/$defs/ReportAuthorization"
+        }
+      },
+      "required": [
+        "kind",
+        "reason_code",
+        "reported_at",
+        "replacement_measurements",
+        "source_report",
+        "authorization"
+      ],
+      "title": "ReportContent",
+      "type": "object"
+    },
+    "ReportDescriptor": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "revision_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Revision Id",
+          "type": "string"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "data_generation": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "title": "Data Generation",
+          "type": "integer"
+        },
+        "base_snapshot_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Base Snapshot Sha256",
+          "type": "string"
+        },
+        "base_evidence_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Base Evidence Sha256",
+          "type": "string"
+        },
+        "previous_revision_id": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Previous Revision Id"
+        },
+        "previous_revision_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Previous Revision Sha256"
+        },
+        "original_target_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Original Target At",
+          "type": "string"
+        },
+        "original_collected_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Original Collected At",
+          "type": "string"
+        },
+        "original_capture_completed_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Original Capture Completed At",
+          "type": "string"
+        },
+        "report": {
+          "$ref": "#/$defs/ReportContent"
+        }
+      },
+      "required": [
+        "schema_version",
+        "revision_id",
+        "session_id",
+        "data_generation",
+        "base_snapshot_sha256",
+        "base_evidence_sha256",
+        "previous_revision_id",
+        "previous_revision_sha256",
+        "original_target_at",
+        "original_collected_at",
+        "original_capture_completed_at",
+        "report"
+      ],
+      "title": "ReportDescriptor",
+      "type": "object"
+    },
+    "ReportRevisionResult": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "result_kind": {
+          "const": "administrative_report_result",
+          "title": "Result Kind",
+          "type": "string"
+        },
+        "result_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Result Id",
+          "type": "string"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "revision_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Revision Id",
+          "type": "string"
+        },
+        "revision_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Revision Sha256",
+          "type": "string"
+        },
+        "base_snapshot_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Base Snapshot Sha256",
+          "type": "string"
+        },
+        "target_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Target At",
+          "type": "string"
+        },
+        "evaluated_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Evaluated At",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "measurement_only",
+            "invalid",
+            "inconclusive"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "reason_codes": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Reason Codes",
+          "type": "array"
+        },
+        "provenance_summary": {
+          "items": {
+            "enum": [
+              "simulated",
+              "prototype_sensor",
+              "reference_lab",
+              "validated_sensor"
+            ],
+            "type": "string"
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "title": "Provenance Summary",
+          "type": "array"
+        },
+        "replaces_result_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Replaces Result Id",
+          "type": "string"
+        },
+        "inference_available": {
+          "const": false,
+          "title": "Inference Available",
+          "type": "boolean"
+        },
+        "probability": {
+          "title": "Probability",
+          "type": "null"
+        },
+        "classification": {
+          "title": "Classification",
+          "type": "null"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "null"
+        }
+      },
+      "required": [
+        "schema_version",
+        "result_kind",
+        "result_id",
+        "session_id",
+        "revision_id",
+        "revision_sha256",
+        "base_snapshot_sha256",
+        "target_at",
+        "evaluated_at",
+        "state",
+        "reason_codes",
+        "provenance_summary",
+        "replaces_result_id",
+        "inference_available",
+        "probability",
+        "classification",
+        "model_id"
+      ],
+      "title": "ReportRevisionResult",
+      "type": "object"
+    },
+    "VerifiedReport": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "version_id": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Version Id",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "media_type": {
+          "const": "application/pdf",
+          "title": "Media Type",
+          "type": "string"
+        },
+        "size_bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 8388608,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "version_id",
+        "sha256",
+        "media_type",
+        "size_bytes"
+      ],
+      "title": "VerifiedReport",
+      "type": "object"
+    },
+    "ScientificMeasurement": {
+      "title": "Measurement",
+      "description": "Proposed v0.1 saliva envelope. Limits are assay-specific; qualifiers are not impairment thresholds. See LLD for cross-field semantics.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "measurement_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sample_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "analyte": {
+          "enum": [
+            "THC",
+            "THC_COOH",
+            "OH11_THC"
+          ]
+        },
+        "qualifier": {
+          "enum": [
+            "quantified",
+            "below_loq",
+            "above_range",
+            "not_detected",
+            "not_measured",
+            "invalid"
+          ]
+        },
+        "value_ng_ml": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unit": {
+          "const": "ng/mL"
+        },
+        "assay_basis": {
+          "enum": [
+            "free",
+            "total_after_hydrolysis",
+            "unspecified"
+          ]
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "lod_ng_ml": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "loq_ng_ml": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "upper_ng_ml": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          },
+          "required": [
+            "lod_ng_ml",
+            "loq_ng_ml",
+            "upper_ng_ml"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "simulated",
+            "reference_lab",
+            "prototype_sensor",
+            "validated_sensor"
+          ]
+        },
+        "method_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "calibration_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "cartridge_lot": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "instrument_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "operator_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "collected_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "measured_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "quality_flags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0
+        },
+        "original_report": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "unit": {
+              "enum": [
+                "ng/mL",
+                "pg/mL"
+              ]
+            },
+            "qualifier": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "value",
+            "unit",
+            "qualifier"
+          ]
+        },
+        "uncertainty_ng_ml": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "concentration_basis": {
+          "enum": [
+            "neat_oral_fluid",
+            "collected_mixture",
+            "unspecified"
+          ],
+          "description": "Basis of both original and unit-normalized concentration and analytical limits. No local dilution correction is performed."
+        },
+        "correction_status": {
+          "enum": [
+            "not_corrected",
+            "laboratory_corrected",
+            "unspecified"
+          ],
+          "description": "Whether the reporting laboratory applied dilution correction; preserve its report, do not infer or repeat a correction."
+        }
+      },
+      "required": [
+        "schema_version",
+        "measurement_id",
+        "sample_id",
+        "analyte",
+        "qualifier",
+        "value_ng_ml",
+        "unit",
+        "assay_basis",
+        "limits",
+        "source",
+        "method_id",
+        "calibration_id",
+        "cartridge_lot",
+        "instrument_id",
+        "operator_ref",
+        "collected_at",
+        "measured_at",
+        "quality_flags",
+        "original_report",
+        "uncertainty_ng_ml",
+        "concentration_basis",
+        "correction_status"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "quantified"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value_ng_ml": {
+                "type": "number",
+                "minimum": 0
+              },
+              "limits": {
+                "properties": {
+                  "loq_ng_ml": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "upper_ng_ml": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value_ng_ml": {
+                "type": "null"
+              },
+              "original_report": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "below_loq"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "limits": {
+                "properties": {
+                  "loq_ng_ml": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "above_range"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "limits": {
+                "properties": {
+                  "upper_ng_ml": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "not_detected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "limits": {
+                "properties": {
+                  "lod_ng_ml": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "invalid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "quality_flags": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "const": "not_measured"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "measured_at": {
+                "type": "null"
+              },
+              "method_id": {
+                "type": "null"
+              },
+              "instrument_id": {
+                "type": "null"
+              },
+              "calibration_id": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "qualifier": {
+                "enum": [
+                  "quantified",
+                  "below_loq",
+                  "above_range",
+                  "not_detected"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "method_id": {
+                "type": "string"
+              },
+              "instrument_id": {
+                "type": "string"
+              },
+              "measured_at": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "administrative_report_revision",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "revision_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Revision Id",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "data_generation": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "title": "Data Generation",
+      "type": "integer"
+    },
+    "sequence": {
+      "maximum": 20,
+      "minimum": 1,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "accepted_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Accepted At",
+      "type": "string"
+    },
+    "descriptor": {
+      "$ref": "#/$defs/ReportDescriptor"
+    },
+    "revision_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Revision Sha256",
+      "type": "string"
+    },
+    "effective_measurements": {
+      "items": {
+        "$ref": "#/$defs/ScientificMeasurement"
+      },
+      "maxItems": 3,
+      "title": "Effective Measurements",
+      "type": "array"
+    },
+    "result": {
+      "$ref": "#/$defs/ReportRevisionResult"
+    },
+    "result_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Result Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_type",
+    "revision_id",
+    "session_id",
+    "data_generation",
+    "sequence",
+    "accepted_at",
+    "descriptor",
+    "revision_sha256",
+    "effective_measurements",
+    "result",
+    "result_sha256"
+  ],
+  "title": "ReportRevisionCompanion",
+  "type": "object"
+}

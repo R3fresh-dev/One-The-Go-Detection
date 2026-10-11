@@ -350,7 +350,15 @@ def validate_native(v, projection):
         "presentedNoGo": sum(
             t["presented"] and t["stimulus"] == "no_go" for t in scored
         ),
-        "completedScored": sum(t["outcome"] != "unresolved" for t in scored),
+        # A tap can resolve an outcome before the response window finishes.
+        # Native Kotlin/Swift count completed windows, including at equality,
+        # so cancellation after a tap must retain the distinct terminal counts.
+        "completedScored": sum(
+            t["presented"]
+            and t["onsetMs"] is not None
+            and v["durationMs"] >= t["onsetMs"] + 1000
+            for t in scored
+        ),
         "correctGo": sum(t["outcome"] == "correct" for t in scored),
         "omissions": sum(t["outcome"] == "omission" for t in scored),
         "wrongGo": sum(t["outcome"] == "wrong_choice" for t in scored),

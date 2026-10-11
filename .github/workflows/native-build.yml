@@ -2,10 +2,10 @@ name: Android iOS and simulator firmware
 
 on:
   pull_request:
-    paths: ['apps/mobile/**', 'firmware/**', 'openspec/changes/production-mobile-platform/fixtures/**', '.github/workflows/native-build.yml']
+    paths: ['apps/mobile/**', '!apps/mobile/**/*.md', 'firmware/**', 'openspec/changes/production-mobile-platform/fixtures/**', '.github/workflows/native-build.yml']
   push:
     branches: [main]
-    paths: ['apps/mobile/**', 'firmware/**', 'openspec/changes/production-mobile-platform/fixtures/**', '.github/workflows/native-build.yml']
+    paths: ['apps/mobile/**', '!apps/mobile/**/*.md', 'firmware/**', 'openspec/changes/production-mobile-platform/fixtures/**', '.github/workflows/native-build.yml']
   workflow_dispatch:
 
 permissions:

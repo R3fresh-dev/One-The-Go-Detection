@@ -2,6 +2,8 @@ import { canonicalJson, clone, digest, knownKeys, requiredString } from '../core
 import { ACK_TIMEOUT_MS, capabilities, clockExchange, DeviceError, fragmentMessage, fromBase64, MAX_RETRIES, MessageJournal, Reassembler, selectClock, toBase64, uuid } from './protocol';
 import type { ClockEvidence, DeviceChannel, DeviceEnvelope } from './protocol';
 import { LocalSimulatorTransport, syntheticValues } from './simulator';
+import { assertSignalScenario, SyntheticSignalError, SyntheticSignalReducer } from './signal';
+import type { SyntheticSignalOptions } from './signal';
 import type { CaptureContext, DeviceAssociation, DeviceController, DeviceControllerOptions, DeviceSnapshot, DeviceTransport, SyntheticDeviceCapture, TransportEvent } from './types';
 
 interface Pending {
@@ -36,14 +38,20 @@ export class DeviceControllerImpl implements DeviceController {
   private outgoing: Promise<void> = Promise.resolve();
   private scanTimer: ReturnType<typeof setTimeout> | null = null;
   private assemblyTimer: ReturnType<typeof setInterval> | null = null;
+  private signal: SyntheticSignalReducer | null = null;
+  private signalTimer: ReturnType<typeof setInterval> | null = null;
   private active: { context: CaptureContext; channel: DeviceChannel; clock: ClockEvidence | null; startedAt: string; messages: DeviceEnvelope[]; resolve: (value: SyntheticDeviceCapture) => void; reject: (error: Error) => void; timer: ReturnType<typeof setTimeout> } | null = null;
   constructor(private readonly options: DeviceControllerOptions, private readonly nativeFactory: () => DeviceTransport) {
     this.transport = nativeFactory(); this.unsubscribe = this.transport.subscribe(event => this.receive(event));
-    this.state = { state: this.transport.available ? 'idle' : 'unavailable', devices: [], association: null, reason: this.transport.available ? null : 'NATIVE_BLUETOOTH_UNAVAILABLE', captureInProgress: false, humanCaptureAvailable: false };
+    this.state = { state: this.transport.available ? 'idle' : 'unavailable', observedAt: new Date().toISOString(), devices: [], association: null, reason: this.transport.available ? null : 'NATIVE_BLUETOOTH_UNAVAILABLE', captureInProgress: false, signalPreview: null, humanCaptureAvailable: false };
   }
   snapshot(): DeviceSnapshot { return clone(this.state); }
   subscribe(listener: (snapshot: DeviceSnapshot) => void): () => void { this.listeners.add(listener); listener(this.snapshot()); return () => this.listeners.delete(listener); }
-  private update(patch: Partial<DeviceSnapshot>): void { this.state = { ...this.state, ...patch, humanCaptureAvailable: false }; this.listeners.forEach(listener => listener(this.snapshot())); }
+  private update(patch: Partial<DeviceSnapshot>): void {
+    const observed = ['state', 'association', 'reason', 'captureInProgress'].some(key => Object.prototype.hasOwnProperty.call(patch, key));
+    this.state = { ...this.state, ...patch, ...(observed ? { observedAt: new Date().toISOString() } : {}), humanCaptureAvailable: false };
+    this.listeners.forEach(listener => listener(this.snapshot()));
+  }
   private checkLive(): void { if (this.disposed) throw new DeviceError('CONTROLLER_DISPOSED'); }
   private association(): DeviceAssociation { if (!this.state.association) throw new DeviceError('NOT_CONNECTED'); return this.state.association; }
   async scan(): Promise<void> {
@@ -154,6 +162,17 @@ export class DeviceControllerImpl implements DeviceController {
       return;
     }
     if (event.kind === 'disconnected') { if (this.state.association || this.active || this.state.state === 'connecting') this.fail(event.reason); return; }
+    if (event.kind === 'synthetic_signal') {
+      if (!this.active || !this.signal) return;
+      try {
+        if (this.transport.kind !== 'local_simulator' || event.peripheralId !== this.state.association?.peripheralId) throw new DeviceError('SYNTHETIC_PREVIEW_UNAVAILABLE');
+        this.update({ signalPreview: this.signal.accept(event.frame, event.receivedAtMonotonicMs) });
+      } catch (error) {
+        if (error instanceof SyntheticSignalError) { this.update({ signalPreview: this.signal.snapshot() }); this.fail(error.code, error); }
+        else this.fail(code(error));
+      }
+      return;
+    }
     if (!this.state.association || !this.sessionId || event.peripheralId !== this.state.association.peripheralId) return;
     try {
       const message = this.receiver.push(fromBase64(event.base64, this.attBytes), event.receivedAtMonotonicMs); if (!message) return;
@@ -177,13 +196,24 @@ export class DeviceControllerImpl implements DeviceController {
         throw new DeviceError(['REPLAY_JOURNAL_FULL', 'DEVICE_BUSY', 'SEQUENCE_REPLAY', 'COMMAND_DEADLINE', 'CAPTURE_REFUSED'].includes(reason) ? reason : 'PERIPHERAL_REJECTED_COMMAND');
       }
       else throw new DeviceError('UNEXPECTED_DEVICE_MESSAGE');
-    } catch (error) { this.fail(code(error)); }
+    } catch (error) { this.fail(code(error), error instanceof SyntheticSignalError ? error : undefined); }
   }
-  async captureSynthetic(channel: DeviceChannel, context: CaptureContext): Promise<SyntheticDeviceCapture> {
+  async captureSynthetic(channel: DeviceChannel, context: CaptureContext, options?: SyntheticSignalOptions): Promise<SyntheticDeviceCapture> {
     this.checkLive();
     if (this.state.state !== 'connected_simulator' || this.active) throw new DeviceError('DEVICE_NOT_READY');
     uuid(context.sessionId); uuid(context.attemptId); uuid(context.captureId); requiredString(context.workspaceEpoch, 128);
     if (!this.association().capabilities.channels.includes(channel)) throw new DeviceError('CHANNEL_UNAVAILABLE');
+    if (options) knownKeys(options as Record<string, unknown>, ['signalScenario']);
+    if (channel === 'saliva' && options?.signalScenario !== undefined) throw new DeviceError('SYNTHETIC_SCENARIO_UNAVAILABLE');
+    const scenario = options?.signalScenario ?? 'clean';
+    if (channel !== 'saliva') {
+      assertSignalScenario(channel, scenario);
+      if (this.transport.kind !== 'local_simulator' && scenario !== 'clean') throw new DeviceError('SYNTHETIC_SCENARIO_REQUIRES_LOCAL_SIMULATOR');
+      if (this.transport.kind === 'local_simulator') {
+        if (!this.transport.prepareSyntheticSignal) throw new DeviceError('SYNTHETIC_PREVIEW_UNAVAILABLE');
+        this.transport.prepareSyntheticSignal(scenario);
+      }
+    }
     const generation = this.generation;
     this.sessionId = context.sessionId;
     const result = new Promise<SyntheticDeviceCapture>((resolve, reject) => {
@@ -192,15 +222,25 @@ export class DeviceControllerImpl implements DeviceController {
     });
     // Install a rejection consumer immediately; callers still receive the original rejected promise.
     void result.catch(() => {});
-    this.update({ captureInProgress: true, reason: null });
+    this.update({ captureInProgress: true, reason: null, signalPreview: null });
     try {
       await this.hello(); const clock = await this.synchronize();
       const active = this.active as NonNullable<DeviceControllerImpl['active']> | null;
       if (!active || generation !== this.generation) throw new DeviceError('CAPTURE_CANCELED');
       active.clock = clock;
+      if (this.transport.kind === 'local_simulator' && channel !== 'saliva') {
+        const association = this.association();
+        this.signal = new SyntheticSignalReducer({ deviceId: association.deviceId, bootId: association.bootId, context, channel, scenario }, this.transport.now());
+        this.update({ signalPreview: this.signal.snapshot() });
+        this.signalTimer = setInterval(() => {
+          const signal = this.signal; if (!signal || !this.active) return;
+          try { signal.tick(this.transport.now()); }
+          catch (error) { this.update({ signalPreview: signal.snapshot() }); this.fail(code(error), error instanceof SyntheticSignalError ? error : undefined); }
+        }, 100);
+      }
       await this.command('start_capture', { deadline_after_ms: 120_000, deadline_device_ms: this.transport.now() + clock.offset_ms + 15_000,
         attempt_id: context.attemptId, capture_id: context.captureId, workspace_epoch: context.workspaceEpoch, channel, source: 'simulated' }, null);
-    } catch (error) { if (this.active && generation === this.generation) this.fail(code(error)); }
+    } catch (error) { if (this.active && generation === this.generation) this.fail(code(error), error instanceof SyntheticSignalError ? error : undefined); }
     return result;
   }
   private complete(message: DeviceEnvelope): void {
@@ -215,28 +255,38 @@ export class DeviceControllerImpl implements DeviceController {
     if (typeof start !== 'number' || typeof end !== 'number' || !Number.isFinite(start + end) || start < 0 || end < start || end - start > 30_000) throw new DeviceError('CAPTURE_CLOCK_INVALID');
     const expected = syntheticValues(a.channel);
     if (canonicalJson(p.values) !== canonicalJson(expected)) throw new DeviceError('SYNTHETIC_FIXTURE_MISMATCH');
+    if (this.association().transport === 'local_simulator' && a.channel !== 'saliva') {
+      if (!this.signal) throw new DeviceError('SYNTHETIC_PREVIEW_UNAVAILABLE');
+      try { this.update({ signalPreview: this.signal.complete(start, end, this.transport.now()) }); }
+      catch (error) { this.update({ signalPreview: this.signal.snapshot() }); throw error; }
+    }
     const association = clone(this.association());
     const payload = { source: 'simulated' as const, channel: a.channel, context: a.context, association, clockEvidence: a.clock,
       startedAt: a.startedAt, endedAt: new Date().toISOString(), deviceStartedMonotonicMs: start, deviceEndedMonotonicMs: end,
       values: expected, fixtureId: 'synthetic_bench_v1' as const, messages: a.messages, qualityFlags: ['SIMULATED', 'UNVERIFIED_DEVICE'] as ['SIMULATED', 'UNVERIFIED_DEVICE'], modelEligible: false as const };
-    clearTimeout(a.timer); this.active = null; this.update({ captureInProgress: false });
+    clearTimeout(a.timer); this.clearSignalTimer(); this.signal = null; this.active = null; this.update({ captureInProgress: false });
     a.resolve({ ...payload, evidenceSha256: digest(payload) });
   }
-  private invalidate(reason: string): void {
+  private clearSignalTimer(): void { if (this.signalTimer) clearInterval(this.signalTimer); this.signalTimer = null; }
+  private invalidate(reason: string, signalError?: SyntheticSignalError): void {
     this.generation++;
     for (const pending of this.pending.values()) { if (pending.timer) clearTimeout(pending.timer); pending.reject(new DeviceError(reason)); } this.pending.clear();
     if (this.assemblyTimer) clearInterval(this.assemblyTimer); this.assemblyTimer = null;
+    this.clearSignalTimer(); this.signal = null;
     this.receiver.reset(); this.sessionId = null;
     const active = this.active; this.active = null;
-    if (active) { clearTimeout(active.timer); active.reject(new DeviceError(reason)); this.options.onInvalidated?.(reason, clone(active.context)); }
-    this.update({ association: null, captureInProgress: false });
+    if (active) { clearTimeout(active.timer); active.reject(signalError ?? new DeviceError(reason)); this.options.onInvalidated?.(reason, clone(active.context)); }
+    this.update({ association: null, captureInProgress: false, ...(signalError ? {} : { signalPreview: null }) });
   }
-  private fail(reason: string): void {
-    this.invalidate(reason); this.update({ state: 'error', reason });
+  private fail(reason: string, signalError?: SyntheticSignalError): void {
+    this.invalidate(reason, signalError); this.update({ state: 'error', reason });
     // Disconnect also stops the simulator/peripheral acquisition. Local invalidation has already happened.
     void this.transport.disconnect().catch(() => {});
   }
-  async cancelCapture(reason = 'USER_CANCELED'): Promise<void> { if (!this.active) return; await this.disconnectWithReason(reason); }
+  async cancelCapture(reason = 'USER_CANCELED'): Promise<void> {
+    if (!this.active) { if (this.state.signalPreview) this.update({ signalPreview: null }); return; }
+    await this.disconnectWithReason(reason);
+  }
   private async disconnectWithReason(reason: string): Promise<void> {
     this.invalidate(reason); if (this.scanTimer) clearTimeout(this.scanTimer); this.scanTimer = null;
     this.update({ state: this.transport.available ? 'idle' : 'unavailable', reason: null });
@@ -246,7 +296,7 @@ export class DeviceControllerImpl implements DeviceController {
   async forget(): Promise<void> { await this.disconnectWithReason('FORGOTTEN'); this.update({ devices: [] }); }
   private async changeTransport(transport: DeviceTransport): Promise<void> {
     this.unsubscribe(); await this.transport.disconnect(); this.transport = transport; this.unsubscribe = transport.subscribe(event => this.receive(event));
-    this.update({ state: transport.available ? 'idle' : 'unavailable', devices: [], association: null, reason: null });
+    this.update({ state: transport.available ? 'idle' : 'unavailable', devices: [], association: null, reason: null, signalPreview: null });
   }
   async useLocalSimulator(): Promise<void> {
     this.checkLive(); await this.disconnect(); await this.changeTransport(new LocalSimulatorTransport(this.options.idFactory));

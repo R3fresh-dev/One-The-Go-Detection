@@ -83,7 +83,7 @@ export function normalizeConcentration(value: number | null, unit: 'pg/mL' | 'ng
 const baseComponent = (source: Source = 'prototype_sensor'): Component => ({ status: 'not_collected', source, started_at: null, ended_at: null, quality_flags: ['NOT_COLLECTED'] });
 export function createCheck(state: WorkspaceState, opts: { now: string; id: IdFactory; kind: CheckRecord['kind']; accountRef?: string; contextConfirmed: boolean; supersedes?: string }): CheckRecord {
   if (!opts.contextConfirmed) throw new IntegrityError('CONTEXT_CONFIRMATION', 'Review and confirm this check’s context before starting.');
-  if (state.checks.some(c => !c.frozen)) throw new IntegrityError('ACTIVE_DRAFT', 'Resume or discard your current draft before starting another.');
+  if (state.checks.some(c => !c.frozen && c.workspace === state.workspace && c.generation === state.generation && c.delivery !== 'quarantined')) throw new IntegrityError('ACTIVE_DRAFT', 'Resume or discard your current draft before starting another.');
   const { now, id } = opts, profile = opts.kind === 'engineering_fixture' ? emptyProfile(now) : normalizeProfile(state.profile, now), sessionId = id();
   if (opts.kind === 'engineering_fixture') profile.profile.source = 'synthetic'; else profile.profile.recorded_at = state.profile.profile.recorded_at;
   const history = clone(profile.history), source: Source = opts.kind === 'measurement' ? 'prototype_sensor' : 'simulated';

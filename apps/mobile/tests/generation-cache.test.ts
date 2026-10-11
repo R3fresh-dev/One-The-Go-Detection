@@ -131,6 +131,45 @@ test("unknown current generation invalidates every cached export but preserves d
   );
 });
 
+test("a retained retired draft does not block a new current-generation draft, while a reachable active draft does", () => {
+  const state = emptyWorkspace("account:fixture", at, 1);
+  const options = {
+    now: at,
+    id: randomUUID,
+    kind: "measurement" as const,
+    accountRef: "00000000-0000-4000-8000-000000000001",
+    contextConfirmed: true,
+  };
+  const retiredDraft = createCheck(state, options);
+  state.checks = [retiredDraft];
+  const current = quarantineGeneration(state, 2);
+  current.generation = 2;
+  const original = clone(current);
+  const newDraft = createCheck(current, options);
+  assert.equal(newDraft.generation, 2);
+  assert.equal(newDraft.workspace, current.workspace);
+  assert.notEqual(newDraft.id, retiredDraft.id);
+  assert.deepEqual(
+    current,
+    original,
+    "creating a draft does not rewrite retained evidence",
+  );
+  assert.equal(current.checks[0]!.delivery, "quarantined");
+  current.checks.push(newDraft);
+  assert.throws(() => createCheck(current, options), /Resume or discard/);
+  current.checks[1]!.delivery = "quarantined";
+  assert.doesNotThrow(
+    () => createCheck(current, options),
+    "even a same-generation tombstoned draft is inaccessible, not an active draft",
+  );
+  current.checks[1]!.delivery = "local_draft";
+  current.checks[1]!.workspace = "account:foreign";
+  assert.doesNotThrow(
+    () => createCheck(current, options),
+    "another workspace cannot impose a draft on this workspace",
+  );
+});
+
 function frozen(generation: number) {
   const state = emptyWorkspace("account:fixture", at, generation);
   return freezeCheck(

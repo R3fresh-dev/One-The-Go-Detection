@@ -46,6 +46,16 @@ Every feature is read by independent reviewers through product/domain, security/
 
 Review reports live in `reviews/`. The resolution ledger identifies the exact correction and re-review disposition. Spec validation checks syntax and structure; it does not establish correctness, clinical validity, native compilation, LocalStack integration, or AWS deployment.
 
+## Reviewed implementation amendments
+
+Three concrete contracts were frozen before their respective follow-up implementations:
+
+- [Administrative laboratory report revisions](report-revision-contract.md), with the [six-finding adversarial review ledger](reviews/report-revision-review.md), preserve the original sample, target and evidence while adding separately hashed report/result versions.
+- [Physical replacement navigation](replacement-links-contract.md) defines bounded, owner/generation-scoped original/replacement links. Its review correction excludes mutable uploaded drafts.
+- [Synthetic live signal preview](synthetic-signal-contract.md) defines exact fictional PPG/ECG display bounds, fault states and deadlines. It cannot authorize a valid capture without the unchanged complete transport evidence.
+
+The [implementation map](verification/implementation-map.md), [machine-readable requirement map](verification/requirements-implementation.json), and [CI evidence](verification/ci-evidence.md) distinguish supplied source, executed checks and remaining external gates.
+
 ## Repository synchronization
 
 The source analysis uses the unchanged normative PRD/HLD/LLD. Before this checkpoint, upstream research and commercial-strategy documentation through `e2226e28a80e73729b9763bd6c65bab533b52403` was preserved by fast-forward. Those documents identify proposed alternative commercial scope and explicitly do not amend the normative PRD. This change therefore retains the requested multimodal research application and its unavailable clinical-inference gate.

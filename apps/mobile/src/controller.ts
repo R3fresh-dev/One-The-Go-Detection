@@ -4,7 +4,21 @@ import {
   captureWorkspaceScope,
   retiredWithoutReplacement,
 } from "./core/workspaceScope";
-import { createDeviceController } from "./device";
+import {
+  mergeReplacementPage,
+  parseReplacementLinks,
+  verifyReplacementTarget,
+} from "./core/replacements";
+import {
+  beginReportRefresh,
+  parseReportDetail,
+  parseReportList,
+} from "./core/reportRevisions";
+import {
+  createDeviceController,
+  getSyntheticSignalFailure,
+  type SyntheticSignalScenario,
+} from "./device";
 import {
   projectSyntheticDevice,
   syntheticConfigurationDigest,
@@ -146,6 +160,8 @@ export class AppController {
   private transitions: Promise<void> = Promise.resolve();
   private authFlow = 0;
   private scopeFence = 0;
+  private replacementRequest = 0;
+  private reportRequest = 0;
   private nativeMountedRun: string | null = null;
   private nativeReference: ReactionTaskViewRef | null = null;
   private acquiring = false;
@@ -960,10 +976,21 @@ export class AppController {
     });
   }
   async prepareReplacement(id: string): Promise<void> {
-    await this.stopActive("ROUTE_HIDDEN");
+    const scope = this.scope(),
+      check = this.check;
+    if (!check || check.id !== id || !check.frozen)
+      throw new IntegrityError(
+        "CHECK_UNAVAILABLE",
+        "Open the original saved check before starting its replacement.",
+      );
+    await scope.wait(this.stopActive("ROUTE_HIDDEN"));
     this.patch({ pendingReplacement: id, route: "home" });
   }
-  async selectCheck(id: string, route: Route = "result"): Promise<void> {
+  async selectCheck(
+    id: string,
+    route: Route = "result",
+    validate?: (check: CheckRecord) => void,
+  ): Promise<void> {
     const scope = this.scope();
     await scope.wait(this.stopActive("ROUTE_HIDDEN"));
     if (
@@ -986,6 +1013,7 @@ export class AppController {
         this.api.request<unknown>(`/v1/sessions/${id}`),
       );
       check = parseRemoteCheck(response.value, this.model.state!);
+      validate?.(check);
       scope.assertCurrent();
       await scope.wait(this.commit((state) => replaceCheck(state, check!)));
     }
@@ -994,9 +1022,154 @@ export class AppController {
         "CHECK_UNAVAILABLE",
         "This check is not available in the active workspace.",
       );
+    validate?.(check);
     if (check.frozen) verifyCheck(check);
     scope.assertCurrent();
     this.patch({ selectedCheck: id, route: check.frozen ? route : "check" });
+  }
+  async openLinkedCheck(
+    baseId: string,
+    targetId: string,
+    direction: "previous" | "replacement",
+  ): Promise<void> {
+    const base = this.check;
+    if (!base || base.id !== baseId)
+      throw new IntegrityError(
+        "WORKSPACE_CHANGED",
+        "The originating check is no longer open.",
+      );
+    await this.selectCheck(targetId, "result", (target) =>
+      verifyReplacementTarget(base, target, direction),
+    );
+  }
+  async refreshReplacementLinks(more = false): Promise<void> {
+    const check = this.check,
+      scope = this.scope(),
+      requestId = ++this.replacementRequest;
+    if (!check?.frozen || !check.remote_revision || !this.model.identity)
+      throw new IntegrityError(
+        "LOCAL_LINKS_ONLY",
+        "This check has local replacement links only. Eligible account checks need a completed upload before loading service links.",
+      );
+    const cursor = more ? check.replacement_links?.next_cursor : null;
+    if (more && !cursor) return;
+    await scope.wait(this.stopActive("ROUTE_HIDDEN"));
+    const response = await scope.wait(
+      this.api.request<unknown>(
+        `/v1/sessions/${check.id}/replacement-links?limit=20${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+      ),
+    );
+    const page = parseReplacementLinks(response.value, check);
+    if (requestId !== this.replacementRequest || this.check?.id !== check.id)
+      return;
+    await scope.wait(
+      this.commit((state) => {
+        const current = state.checks.find((item) => item.id === check.id);
+        if (
+          !current ||
+          current.snapshot_sha256 !== check.snapshot_sha256 ||
+          requestId !== this.replacementRequest
+        )
+          throw new IntegrityError(
+            "WORKSPACE_CHANGED",
+            "The originating check changed before its links were saved.",
+          );
+        if (more && current.replacement_links?.next_cursor !== cursor)
+          throw new IntegrityError(
+            "REPLACEMENT_PAGE_CHANGED",
+            "The replacement page changed. Refresh the first page before continuing.",
+          );
+        return replaceCheck(state, {
+          ...current,
+          replacement_links: mergeReplacementPage(
+            current.replacement_links,
+            page,
+            more,
+            now(),
+          ),
+        });
+      }),
+    );
+  }
+  async refreshReportRevisions(): Promise<void> {
+    const check = this.check,
+      scope = this.scope(),
+      requestId = ++this.reportRequest;
+    if (
+      !check?.frozen ||
+      !check.remote_revision ||
+      !this.model.identity ||
+      !check.result
+    )
+      throw new IntegrityError(
+        "REPORT_ORIGINAL_REQUIRED",
+        "Laboratory report history requires the uploaded original check and its completed original result. Local original evidence remains available.",
+      );
+    const current = () =>
+      scope.current() &&
+      this.check?.id === check.id &&
+      requestId === this.reportRequest;
+    await scope.wait(this.stopActive("ROUTE_HIDDEN"));
+    if (!current()) return;
+    const response = await scope.wait(
+      this.api.request<unknown>(`/v1/sessions/${check.id}/report-revisions`),
+    );
+    if (!current()) return;
+    const list = parseReportList(response.value, check);
+    let cache = beginReportRefresh(list, check, now());
+    const save = () =>
+      this.commit((state) => {
+        if (!current())
+          throw new IntegrityError(
+            "WORKSPACE_CHANGED",
+            "The original check is no longer open.",
+          );
+        const saved = state.checks.find((item) => item.id === check.id);
+        if (
+          !saved ||
+          !sameFrozenEvidence(saved, check) ||
+          saved.result?.result_id !== check.result?.result_id
+        )
+          throw new IntegrityError(
+            "REPORT_ORIGINAL_CHANGED",
+            "The original result changed while report history was loading. Refresh the original record before continuing.",
+          );
+        return replaceCheck(state, {
+          ...saved,
+          report_revision_cache: clone(cache),
+        });
+      });
+    // Persist the complete known index first. A missing later detail must block
+    // local export instead of silently omitting a report discovered here.
+    await scope.wait(save());
+    for (let i = cache.companions.length; i < list.items.length; i++) {
+      if (!current()) return;
+      const detail = await scope.wait(
+        this.api.request<unknown>(
+          `/v1/sessions/${check.id}/report-revisions/${list.items[i]!.revision_id}`,
+        ),
+      );
+      if (!current()) return;
+      const companion = parseReportDetail(
+        detail.value,
+        check,
+        list,
+        cache.companions,
+      );
+      cache = {
+        ...cache,
+        companions: [...cache.companions, companion],
+        observed_at: now(),
+      };
+      await scope.wait(save());
+    }
+    if (current())
+      this.patch({
+        message: list.items.length
+          ? "Laboratory report history verified and saved separately from the original captured record."
+          : "No laboratory report revisions were available when checked.",
+        offline: false,
+      });
   }
   async navigate(route: Route): Promise<void> {
     await this.stopActive("ROUTE_HIDDEN");
@@ -1072,7 +1245,10 @@ export class AppController {
         : state;
     });
   }
-  async simulateDevice(channel: "saliva" | "ppg" | "ecg"): Promise<void> {
+  async simulateDevice(
+    channel: "saliva" | "ppg" | "ecg",
+    signalScenario: SyntheticSignalScenario = "clean",
+  ): Promise<void> {
     const check = this.check;
     if (!check || check.frozen || check.kind === "measurement")
       throw new IntegrityError(
@@ -1109,12 +1285,16 @@ export class AppController {
           await this.abandonArmedCapture(check.id, started.attempt.attempt_id);
           return;
         }
-        const result = await this.device.captureSynthetic(channel, {
-          sessionId: check.id,
-          attemptId: started.attempt.attempt_id,
-          captureId: started.attempt.record_id,
-          workspaceEpoch: epoch,
-        });
+        const result = await this.device.captureSynthetic(
+          channel,
+          {
+            sessionId: check.id,
+            attemptId: started.attempt.attempt_id,
+            captureId: started.attempt.record_id,
+            workspaceEpoch: epoch,
+          },
+          channel === "saliva" ? undefined : { signalScenario },
+        );
         if (!current() || result.context.workspaceEpoch !== epoch) {
           await this.abandonArmedCapture(check.id, started.attempt.attempt_id);
           return;
@@ -1148,6 +1328,40 @@ export class AppController {
               "Bounded synthetic transport capture saved. The complete packet and clock evidence is retained; human measurement remains unavailable.",
           });
       } catch (error) {
+        const endedAt = now(),
+          signalFailure = current()
+            ? getSyntheticSignalFailure(error, started.attempt, endedAt)
+            : null;
+        if (signalFailure) {
+          await this.commit((state) => {
+            const currentCheck = state.checks.find(
+              (item) => item.id === check.id,
+            );
+            if (!current() || !currentCheck)
+              throw new IntegrityError(
+                "WORKSPACE_CHANGED",
+                "The synthetic capture belongs to a prior check or workspace.",
+              );
+            return replaceCheck(
+              state,
+              settleAttempt(
+                currentCheck,
+                started.attempt.attempt_id,
+                signalFailure.projection,
+                "invalid",
+                endedAt,
+                signalFailure.qualityFlags,
+                signalFailure.metadata,
+              ),
+            );
+          });
+          if (current())
+            this.patch({
+              message:
+                "Synthetic signal quality failed. The invalid attempt and its reason were saved with null physiological features. Reconnect and start a new attempt.",
+            });
+          return;
+        }
         if (epoch === this.workspaceEpoch)
           await this.abandonArmedCapture(check.id, started.attempt.attempt_id);
         if (current()) throw error;
@@ -1534,7 +1748,22 @@ export class AppController {
         "REMOTE_RECORD_CONFLICT",
         "The remote snapshot/evidence differs. The local record was retained.",
       );
-    await scope.wait(this.commit((state) => replaceCheck(state, remote)));
+    await scope.wait(
+      this.commit((state) => {
+        const current = state.checks.find((item) => item.id === check.id);
+        if (!current || remote.remote_revision < current.remote_revision)
+          return state;
+        return replaceCheck(state, {
+          ...remote,
+          ...(current.replacement_links
+            ? { replacement_links: current.replacement_links }
+            : {}),
+          ...(current.report_revision_cache
+            ? { report_revision_cache: current.report_revision_cache }
+            : {}),
+        });
+      }),
+    );
   }
   async changePreferences(
     values: Partial<WorkspaceState["preferences"]>,
@@ -1668,6 +1897,8 @@ export class AppController {
     inspectExportArchive(bytes, {
       selection: typeof job.scope === "object" ? job.scope : undefined,
       manifestSha256: job.manifest_sha256,
+      accountRef: this.model.identity!.accountRef,
+      generation: this.model.state!.generation,
     });
     scope.assertCurrent();
     await shareArchive(bytes, id, scope.assertCurrent);

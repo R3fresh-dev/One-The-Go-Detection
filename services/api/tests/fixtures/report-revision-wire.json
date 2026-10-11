@@ -1,24 +1,24 @@
 {
   "fixture_notice": "Entirely fictional software fixture; no actual laboratory, approval, participant sample, or clinical validation.",
   "schema_version": "1.0.0",
-  "account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
-  "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+  "account_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
+  "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
   "data_generation": 1,
   "base": {
-    "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+    "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
     "state": "completed",
     "revision": 7,
     "mode": "analytical",
     "created_at": "2026-10-10T18:00:00Z",
-    "snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
-    "evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+    "snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
+    "evidence_sha256": "6dc451c5eec6e22d2146e5e16646d0b60d75c349d0e20553ece4b671258e005e",
     "result": {
       "schema_version": "0.1.0",
-      "result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
-      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "result_id": "61f56879-3f03-42da-a29b-2ccf1ef8172d",
+      "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
       "state": "measurement_only",
       "target_at": "2026-10-10T18:00:00Z",
-      "evaluated_at": "2026-10-11T04:32:41.334Z",
+      "evaluated_at": "2026-10-11T04:51:53.780Z",
       "model_id": null,
       "model_lifecycle": null,
       "endpoint_id": null,
@@ -30,7 +30,7 @@
         "MODEL_UNAVAILABLE",
         "MODEL_UNVALIDATED"
       ],
-      "input_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+      "input_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
       "provenance_summary": [
         "prototype_sensor",
         "reference_lab"
@@ -39,16 +39,16 @@
     },
     "snapshot": {
       "schema_version": "0.1.0",
-      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
       "supersedes_session_id": null,
       "mode": "analytical",
-      "subject_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+      "subject_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
       "study_id": "FICTIONAL-REVISION-STUDY",
       "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
       "created_at": "2026-10-10T18:00:00Z",
       "target_at": "2026-10-10T18:00:00Z",
       "clock_uncertainty_ms": 20.0,
-      "acquisition_span_ms": 160000.0,
+      "acquisition_span_ms": 30000.0,
       "device": {
         "device_id": "synthetic-reader",
         "boot_id": "synthetic-boot-001",
@@ -209,26 +209,26 @@
         "raw_artifact_id": null
       },
       "task": {
-        "status": "valid",
+        "status": "not_collected",
         "source": "prototype_sensor",
-        "started_at": "2026-10-10T18:00:50Z",
-        "ended_at": "2026-10-10T18:02:50Z",
+        "started_at": null,
+        "ended_at": null,
         "quality_flags": [],
         "task_id": "44444444-4444-4444-8444-444444444444",
         "task_version": "choice_inhibit_v0",
         "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-        "practice_trials": 6,
-        "scored_trials": 60,
-        "go_trials": 48,
-        "no_go_trials": 12,
-        "valid_correct_go_trials": 45,
+        "practice_trials": 0,
+        "scored_trials": 0,
+        "go_trials": 0,
+        "no_go_trials": 0,
+        "valid_correct_go_trials": 0,
         "features": {
-          "median_rt_ms": 340.0,
-          "iqr_rt_ms": 80.0,
-          "p90_rt_ms": 470.0,
-          "omission_rate": 0.041666666666666664,
-          "wrong_go_rate": 0.020833333333333332,
-          "no_go_error_rate": 0.08333333333333333
+          "median_rt_ms": null,
+          "iqr_rt_ms": null,
+          "p90_rt_ms": null,
+          "omission_rate": null,
+          "wrong_go_rate": null,
+          "no_go_error_rate": null
         },
         "events_artifact_id": null
       },
@@ -236,7 +236,7 @@
     },
     "context": {
       "schema_version": "1.0.0",
-      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
       "context_confirmed_at": "2026-10-10T18:00:00Z",
       "profile_version_id": null,
       "profile_snapshot_sha256": "4d39f5fc853f967791aa2f138220307b3ef56c897c3a47ac82c906bb56eb5ed8",
@@ -249,39 +249,39 @@
     },
     "manifest": {
       "schema_version": "1.0.0",
-      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-      "context_sha256": "7258c43a0dec25861ac2978ac5962f3cc0a4eed9fd091bf9aeae705f9f201ee2",
+      "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+      "context_sha256": "12469a644d467cc6761000d50cc03da3ab2bc38ddb202d31c0b747dd6b022c45",
       "attempts": [
         {
-          "attempt_id": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
-          "sha256": "a7d4f4ac154dcfce58f72ec6379ce5271441db6e87f6970f856ad02b930dcb86"
+          "attempt_id": "5dbb8f73-8072-4b10-b112-cb6a1520636a",
+          "sha256": "d1946cd3e11bcf7109733b78e6e9cc2ad563cb9633b84bc77ffd52f535023817"
         },
         {
-          "attempt_id": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
-          "sha256": "8db1bd0b15ee5a5a2546e5d745387ba77e58d05c3450fcf85534a59829fd1a5d"
+          "attempt_id": "ae7a1d5d-13cc-448f-8738-40cb52921bba",
+          "sha256": "52c439462ac31eef261f8cadef5406661e18480af55f2f827a7a56a9945888e1"
         },
         {
-          "attempt_id": "f6983c95-9346-4445-9cba-4254987a588f",
-          "sha256": "4161908ffd8c905313e5015192a3a232445a7465590aab719865f3d8031935ac"
+          "attempt_id": "1bafd2d6-d2ff-41f6-8594-4be50f083b65",
+          "sha256": "c7794328c7435b247d72342af0b8ed9f1c4930395bd877df9304276342847e08"
         },
         {
-          "attempt_id": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
-          "sha256": "8e06c9633714ede639c096e5112f6127e819f1e976c6bf2bef0abf8650b99820"
+          "attempt_id": "ca99503f-520b-4a70-84f7-66e02629f888",
+          "sha256": "5d714bb62b922dd49be6b3152fdcc584a41ea741d8df1db3cee4d88e09a3f569"
         }
       ],
       "selected": {
-        "saliva": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
-        "eyes": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
-        "cardiac": "f6983c95-9346-4445-9cba-4254987a588f",
-        "task": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
+        "saliva": "5dbb8f73-8072-4b10-b112-cb6a1520636a",
+        "eyes": "ae7a1d5d-13cc-448f-8738-40cb52921bba",
+        "cardiac": "1bafd2d6-d2ff-41f6-8594-4be50f083b65",
+        "task": "ca99503f-520b-4a70-84f7-66e02629f888",
         "alcohol": null
       }
     },
     "attempts": [
       {
         "schema_version": "1.0.0",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-        "attempt_id": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+        "attempt_id": "5dbb8f73-8072-4b10-b112-cb6a1520636a",
         "component": "saliva",
         "record_id": "22222222-2222-4222-8222-222222222222",
         "supersedes_attempt_id": null,
@@ -408,10 +408,10 @@
       },
       {
         "schema_version": "1.0.0",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-        "attempt_id": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+        "attempt_id": "ae7a1d5d-13cc-448f-8738-40cb52921bba",
         "component": "eyes",
-        "record_id": "07cdca68-8bc9-4864-a265-9e8ef6c48b2e",
+        "record_id": "59a60872-0806-40cb-a1bc-4ca3456cac61",
         "supersedes_attempt_id": null,
         "status": "valid",
         "source": "prototype_sensor",
@@ -442,16 +442,16 @@
       },
       {
         "schema_version": "1.0.0",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-        "attempt_id": "f6983c95-9346-4445-9cba-4254987a588f",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+        "attempt_id": "1bafd2d6-d2ff-41f6-8594-4be50f083b65",
         "component": "cardiac",
-        "record_id": "9ae51a8a-e285-4049-a78a-e9a23d90660c",
+        "record_id": "659e7e11-812c-430d-8ce7-222b153184f3",
         "supersedes_attempt_id": null,
         "status": "valid",
         "source": "prototype_sensor",
         "started_at": "2026-10-10T18:00:10Z",
         "ended_at": "2026-10-10T18:00:40Z",
-        "configuration_id": "FICTIONAL_ACCEPTED_cardiac",
+        "configuration_id": "FICTIONAL_ACCEPTED_PPG",
         "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
         "quality_flags": [],
         "component_metadata": {
@@ -476,40 +476,40 @@
       },
       {
         "schema_version": "1.0.0",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-        "attempt_id": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+        "attempt_id": "ca99503f-520b-4a70-84f7-66e02629f888",
         "component": "task",
         "record_id": "44444444-4444-4444-8444-444444444444",
         "supersedes_attempt_id": null,
-        "status": "valid",
+        "status": "not_collected",
         "source": "prototype_sensor",
-        "started_at": "2026-10-10T18:00:50Z",
-        "ended_at": "2026-10-10T18:02:50Z",
-        "configuration_id": "FICTIONAL_ACCEPTED_task",
-        "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "started_at": null,
+        "ended_at": null,
+        "configuration_id": null,
+        "configuration_hash": null,
         "quality_flags": [],
         "component_metadata": {
           "projection": {
-            "status": "valid",
+            "status": "not_collected",
             "source": "prototype_sensor",
-            "started_at": "2026-10-10T18:00:50Z",
-            "ended_at": "2026-10-10T18:02:50Z",
+            "started_at": null,
+            "ended_at": null,
             "quality_flags": [],
             "task_id": "44444444-4444-4444-8444-444444444444",
             "task_version": "choice_inhibit_v0",
             "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-            "practice_trials": 6,
-            "scored_trials": 60,
-            "go_trials": 48,
-            "no_go_trials": 12,
-            "valid_correct_go_trials": 45,
+            "practice_trials": 0,
+            "scored_trials": 0,
+            "go_trials": 0,
+            "no_go_trials": 0,
+            "valid_correct_go_trials": 0,
             "features": {
-              "median_rt_ms": 340.0,
-              "iqr_rt_ms": 80.0,
-              "p90_rt_ms": 470.0,
-              "omission_rate": 0.041666666666666664,
-              "wrong_go_rate": 0.020833333333333332,
-              "no_go_error_rate": 0.08333333333333333
+              "median_rt_ms": null,
+              "iqr_rt_ms": null,
+              "p90_rt_ms": null,
+              "omission_rate": null,
+              "wrong_go_rate": null,
+              "no_go_error_rate": null
             },
             "events_artifact_id": null
           }
@@ -524,20 +524,20 @@
   "requests": [
     {
       "schema_version": "1.0.0",
-      "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+      "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
       "study_id": "FICTIONAL-REVISION-STUDY",
       "sample_id": "22222222-2222-4222-8222-222222222222",
-      "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+      "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
       "expected_previous_revision_id": null,
       "expected_previous_revision_sha256": null,
       "kind": "correction",
       "reason_code": "CORRECTED_LABORATORY_REPORT",
-      "reported_at": "2026-10-11T04:32:31.346Z",
-      "source_report_artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+      "reported_at": "2026-10-11T04:51:43.793Z",
+      "source_report_artifact_id": "ee880cd6-76ea-447c-9e27-6dce73577d17",
       "replacement_measurements": [
         {
           "schema_version": "0.1.0",
-          "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+          "measurement_id": "1b3a103d-95c6-4839-9e22-9559c7f22f6a",
           "sample_id": "22222222-2222-4222-8222-222222222222",
           "analyte": "THC",
           "qualifier": "quantified",
@@ -556,7 +556,7 @@
           "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
           "operator_ref": null,
           "collected_at": "2026-10-10T18:00:10Z",
-          "measured_at": "2026-10-11T04:32:11.346Z",
+          "measured_at": "2026-10-11T04:51:23.792Z",
           "quality_flags": [],
           "original_report": {
             "value": 6000.0,
@@ -571,20 +571,20 @@
     },
     {
       "schema_version": "1.0.0",
-      "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+      "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
       "study_id": "FICTIONAL-REVISION-STUDY",
       "sample_id": "22222222-2222-4222-8222-222222222222",
-      "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
-      "expected_previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-      "expected_previous_revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+      "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
+      "expected_previous_revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+      "expected_previous_revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
       "kind": "reanalysis",
       "reason_code": "SPECIMEN_REANALYSIS",
-      "reported_at": "2026-10-11T04:32:31.412Z",
-      "source_report_artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+      "reported_at": "2026-10-11T04:51:44.042Z",
+      "source_report_artifact_id": "ee880cd6-76ea-447c-9e27-6dce73577d17",
       "replacement_measurements": [
         {
           "schema_version": "0.1.0",
-          "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+          "measurement_id": "eeb2adaa-3867-4b36-a518-324f4c15d167",
           "sample_id": "22222222-2222-4222-8222-222222222222",
           "analyte": "THC",
           "qualifier": "quantified",
@@ -603,7 +603,7 @@
           "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
           "operator_ref": null,
           "collected_at": "2026-10-10T18:00:10Z",
-          "measured_at": "2026-10-11T04:32:11.412Z",
+          "measured_at": "2026-10-11T04:51:24.041Z",
           "quality_flags": [],
           "original_report": {
             "value": 6000.0,
@@ -621,18 +621,18 @@
     {
       "schema_version": "1.0.0",
       "record_type": "administrative_report_revision",
-      "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+      "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
       "data_generation": 1,
       "sequence": 1,
-      "accepted_at": "2026-10-11T04:32:41.409Z",
+      "accepted_at": "2026-10-11T04:51:54.038Z",
       "descriptor": {
         "schema_version": "1.0.0",
-        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
         "data_generation": 1,
-        "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
-        "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+        "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
+        "base_evidence_sha256": "6dc451c5eec6e22d2146e5e16646d0b60d75c349d0e20553ece4b671258e005e",
         "previous_revision_id": null,
         "previous_revision_sha256": null,
         "original_target_at": "2026-10-10T18:00:00Z",
@@ -641,11 +641,11 @@
         "report": {
           "kind": "correction",
           "reason_code": "CORRECTED_LABORATORY_REPORT",
-          "reported_at": "2026-10-11T04:32:31.346Z",
+          "reported_at": "2026-10-11T04:51:43.793Z",
           "replacement_measurements": [
             {
               "schema_version": "0.1.0",
-              "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+              "measurement_id": "1b3a103d-95c6-4839-9e22-9559c7f22f6a",
               "sample_id": "22222222-2222-4222-8222-222222222222",
               "analyte": "THC",
               "qualifier": "quantified",
@@ -664,7 +664,7 @@
               "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
               "operator_ref": null,
               "collected_at": "2026-10-10T18:00:10Z",
-              "measured_at": "2026-10-11T04:32:11.346Z",
+              "measured_at": "2026-10-11T04:51:23.792Z",
               "quality_flags": [],
               "original_report": {
                 "value": 6000.0,
@@ -677,19 +677,19 @@
             }
           ],
           "source_report": {
-            "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+            "artifact_id": "ee880cd6-76ea-447c-9e27-6dce73577d17",
             "version_id": "1",
             "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
             "media_type": "application/pdf",
             "size_bytes": 47
           },
           "authorization": {
-            "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+            "operator_account_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
             "study_id": "FICTIONAL-REVISION-STUDY",
             "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
             "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
             "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
-            "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+            "consent_record_id": "58d6f721-e6cc-4c33-a7f9-025b792d922c",
             "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
             "approved_lab_methods": {
               "FICTIONAL-LAB-METHOD": {
@@ -704,7 +704,7 @@
           }
         }
       },
-      "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+      "revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
       "effective_measurements": [
         {
           "schema_version": "0.1.0",
@@ -740,7 +740,7 @@
         },
         {
           "schema_version": "0.1.0",
-          "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+          "measurement_id": "1b3a103d-95c6-4839-9e22-9559c7f22f6a",
           "sample_id": "22222222-2222-4222-8222-222222222222",
           "analyte": "THC",
           "qualifier": "quantified",
@@ -759,7 +759,7 @@
           "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
           "operator_ref": null,
           "collected_at": "2026-10-10T18:00:10Z",
-          "measured_at": "2026-10-11T04:32:11.346Z",
+          "measured_at": "2026-10-11T04:51:23.792Z",
           "quality_flags": [],
           "original_report": {
             "value": 6000.0,
@@ -806,13 +806,13 @@
       "result": {
         "schema_version": "1.0.0",
         "result_kind": "administrative_report_result",
-        "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-        "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
-        "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+        "result_id": "0e1b6148-ad86-437e-8c2e-4bf4c23fd228",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+        "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+        "revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
+        "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
         "target_at": "2026-10-10T18:00:00Z",
-        "evaluated_at": "2026-10-11T04:32:41.409Z",
+        "evaluated_at": "2026-10-11T04:51:54.038Z",
         "state": "measurement_only",
         "reason_codes": [
           "CORRECTED_LABORATORY_REPORT",
@@ -823,42 +823,42 @@
           "prototype_sensor",
           "reference_lab"
         ],
-        "replaces_result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+        "replaces_result_id": "61f56879-3f03-42da-a29b-2ccf1ef8172d",
         "inference_available": false,
         "probability": null,
         "classification": null,
         "model_id": null
       },
-      "result_sha256": "4815268f9ed056e60cbe4b069c887616975e1dc776aa00de2d967c1594b3f1a6"
+      "result_sha256": "a08af5d7e333e161c1db7df3bd9294138efe1894682237814a5fb266de45069d"
     },
     {
       "schema_version": "1.0.0",
       "record_type": "administrative_report_revision",
-      "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+      "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
       "data_generation": 1,
       "sequence": 2,
-      "accepted_at": "2026-10-11T04:32:41.480Z",
+      "accepted_at": "2026-10-11T04:51:54.282Z",
       "descriptor": {
         "schema_version": "1.0.0",
-        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
         "data_generation": 1,
-        "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
-        "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
-        "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-        "previous_revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
+        "base_evidence_sha256": "6dc451c5eec6e22d2146e5e16646d0b60d75c349d0e20553ece4b671258e005e",
+        "previous_revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+        "previous_revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
         "original_target_at": "2026-10-10T18:00:00Z",
         "original_collected_at": "2026-10-10T18:00:10Z",
         "original_capture_completed_at": "2026-10-10T18:03:00Z",
         "report": {
           "kind": "reanalysis",
           "reason_code": "SPECIMEN_REANALYSIS",
-          "reported_at": "2026-10-11T04:32:31.412Z",
+          "reported_at": "2026-10-11T04:51:44.042Z",
           "replacement_measurements": [
             {
               "schema_version": "0.1.0",
-              "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+              "measurement_id": "eeb2adaa-3867-4b36-a518-324f4c15d167",
               "sample_id": "22222222-2222-4222-8222-222222222222",
               "analyte": "THC",
               "qualifier": "quantified",
@@ -877,7 +877,7 @@
               "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
               "operator_ref": null,
               "collected_at": "2026-10-10T18:00:10Z",
-              "measured_at": "2026-10-11T04:32:11.412Z",
+              "measured_at": "2026-10-11T04:51:24.041Z",
               "quality_flags": [],
               "original_report": {
                 "value": 6000.0,
@@ -890,19 +890,19 @@
             }
           ],
           "source_report": {
-            "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+            "artifact_id": "ee880cd6-76ea-447c-9e27-6dce73577d17",
             "version_id": "1",
             "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
             "media_type": "application/pdf",
             "size_bytes": 47
           },
           "authorization": {
-            "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+            "operator_account_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
             "study_id": "FICTIONAL-REVISION-STUDY",
             "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
             "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
             "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
-            "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+            "consent_record_id": "58d6f721-e6cc-4c33-a7f9-025b792d922c",
             "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
             "approved_lab_methods": {
               "FICTIONAL-LAB-METHOD": {
@@ -917,7 +917,7 @@
           }
         }
       },
-      "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+      "revision_sha256": "9b0ea4bda6ab4e00081e467d19b8055d1a5dd257eb784dea94573a1241c97892",
       "effective_measurements": [
         {
           "schema_version": "0.1.0",
@@ -953,7 +953,7 @@
         },
         {
           "schema_version": "0.1.0",
-          "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+          "measurement_id": "eeb2adaa-3867-4b36-a518-324f4c15d167",
           "sample_id": "22222222-2222-4222-8222-222222222222",
           "analyte": "THC",
           "qualifier": "quantified",
@@ -972,7 +972,7 @@
           "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
           "operator_ref": null,
           "collected_at": "2026-10-10T18:00:10Z",
-          "measured_at": "2026-10-11T04:32:11.412Z",
+          "measured_at": "2026-10-11T04:51:24.041Z",
           "quality_flags": [],
           "original_report": {
             "value": 6000.0,
@@ -1019,13 +1019,13 @@
       "result": {
         "schema_version": "1.0.0",
         "result_kind": "administrative_report_result",
-        "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-        "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
-        "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+        "result_id": "b62ad8bf-4bfe-4eda-993e-9069939760f0",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+        "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+        "revision_sha256": "9b0ea4bda6ab4e00081e467d19b8055d1a5dd257eb784dea94573a1241c97892",
+        "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
         "target_at": "2026-10-10T18:00:00Z",
-        "evaluated_at": "2026-10-11T04:32:41.480Z",
+        "evaluated_at": "2026-10-11T04:51:54.282Z",
         "state": "measurement_only",
         "reason_codes": [
           "MODEL_UNAVAILABLE",
@@ -1036,48 +1036,48 @@
           "prototype_sensor",
           "reference_lab"
         ],
-        "replaces_result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+        "replaces_result_id": "0e1b6148-ad86-437e-8c2e-4bf4c23fd228",
         "inference_available": false,
         "probability": null,
         "classification": null,
         "model_id": null
       },
-      "result_sha256": "3ad3c8d9b06e1af3e3d0ea03713bb75e409d6dc4983ddf96910a7cf61d2e90df"
+      "result_sha256": "61f9d7d4254cf31922cd3fe20327ee249d53505e07ddbd5658480a3701266be3"
     }
   ],
   "list": {
     "schema_version": "1.0.0",
-    "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+    "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
     "data_generation": 1,
-    "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
-    "base_result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+    "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
+    "base_result_id": "61f56879-3f03-42da-a29b-2ccf1ef8172d",
     "original_target_at": "2026-10-10T18:00:00Z",
     "original_collected_at": "2026-10-10T18:00:10Z",
     "original_capture_completed_at": "2026-10-10T18:03:00Z",
-    "latest_revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+    "latest_revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
     "items": [
       {
-        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-        "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+        "revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
         "sequence": 1,
         "kind": "correction",
-        "reported_at": "2026-10-11T04:32:31.346Z",
-        "accepted_at": "2026-10-11T04:32:41.409Z",
+        "reported_at": "2026-10-11T04:51:43.793Z",
+        "accepted_at": "2026-10-11T04:51:54.038Z",
         "previous_revision_id": null,
-        "next_revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-        "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+        "next_revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+        "result_id": "0e1b6148-ad86-437e-8c2e-4bf4c23fd228",
         "result_state": "measurement_only"
       },
       {
-        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-        "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+        "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+        "revision_sha256": "9b0ea4bda6ab4e00081e467d19b8055d1a5dd257eb784dea94573a1241c97892",
         "sequence": 2,
         "kind": "reanalysis",
-        "reported_at": "2026-10-11T04:32:31.412Z",
-        "accepted_at": "2026-10-11T04:32:41.480Z",
-        "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+        "reported_at": "2026-10-11T04:51:44.042Z",
+        "accepted_at": "2026-10-11T04:51:54.282Z",
+        "previous_revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
         "next_revision_id": null,
-        "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
+        "result_id": "b62ad8bf-4bfe-4eda-993e-9069939760f0",
         "result_state": "measurement_only"
       }
     ]
@@ -1085,23 +1085,23 @@
   "details": [
     {
       "schema_version": "1.0.0",
-      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
       "data_generation": 1,
       "revision": {
         "schema_version": "1.0.0",
         "record_type": "administrative_report_revision",
-        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
         "data_generation": 1,
         "sequence": 1,
-        "accepted_at": "2026-10-11T04:32:41.409Z",
+        "accepted_at": "2026-10-11T04:51:54.038Z",
         "descriptor": {
           "schema_version": "1.0.0",
-          "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
           "data_generation": 1,
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
-          "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
+          "base_evidence_sha256": "6dc451c5eec6e22d2146e5e16646d0b60d75c349d0e20553ece4b671258e005e",
           "previous_revision_id": null,
           "previous_revision_sha256": null,
           "original_target_at": "2026-10-10T18:00:00Z",
@@ -1110,11 +1110,11 @@
           "report": {
             "kind": "correction",
             "reason_code": "CORRECTED_LABORATORY_REPORT",
-            "reported_at": "2026-10-11T04:32:31.346Z",
+            "reported_at": "2026-10-11T04:51:43.793Z",
             "replacement_measurements": [
               {
                 "schema_version": "0.1.0",
-                "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+                "measurement_id": "1b3a103d-95c6-4839-9e22-9559c7f22f6a",
                 "sample_id": "22222222-2222-4222-8222-222222222222",
                 "analyte": "THC",
                 "qualifier": "quantified",
@@ -1133,7 +1133,7 @@
                 "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
                 "operator_ref": null,
                 "collected_at": "2026-10-10T18:00:10Z",
-                "measured_at": "2026-10-11T04:32:11.346Z",
+                "measured_at": "2026-10-11T04:51:23.792Z",
                 "quality_flags": [],
                 "original_report": {
                   "value": 6000.0,
@@ -1146,19 +1146,19 @@
               }
             ],
             "source_report": {
-              "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+              "artifact_id": "ee880cd6-76ea-447c-9e27-6dce73577d17",
               "version_id": "1",
               "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
               "media_type": "application/pdf",
               "size_bytes": 47
             },
             "authorization": {
-              "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+              "operator_account_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
               "study_id": "FICTIONAL-REVISION-STUDY",
               "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
               "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
               "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
-              "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+              "consent_record_id": "58d6f721-e6cc-4c33-a7f9-025b792d922c",
               "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
               "approved_lab_methods": {
                 "FICTIONAL-LAB-METHOD": {
@@ -1173,7 +1173,7 @@
             }
           }
         },
-        "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
         "effective_measurements": [
           {
             "schema_version": "0.1.0",
@@ -1209,7 +1209,7 @@
           },
           {
             "schema_version": "0.1.0",
-            "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+            "measurement_id": "1b3a103d-95c6-4839-9e22-9559c7f22f6a",
             "sample_id": "22222222-2222-4222-8222-222222222222",
             "analyte": "THC",
             "qualifier": "quantified",
@@ -1228,7 +1228,7 @@
             "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
             "operator_ref": null,
             "collected_at": "2026-10-10T18:00:10Z",
-            "measured_at": "2026-10-11T04:32:11.346Z",
+            "measured_at": "2026-10-11T04:51:23.792Z",
             "quality_flags": [],
             "original_report": {
               "value": 6000.0,
@@ -1275,13 +1275,13 @@
         "result": {
           "schema_version": "1.0.0",
           "result_kind": "administrative_report_result",
-          "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-          "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-          "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "result_id": "0e1b6148-ad86-437e-8c2e-4bf4c23fd228",
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+          "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+          "revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
           "target_at": "2026-10-10T18:00:00Z",
-          "evaluated_at": "2026-10-11T04:32:41.409Z",
+          "evaluated_at": "2026-10-11T04:51:54.038Z",
           "state": "measurement_only",
           "reason_codes": [
             "CORRECTED_LABORATORY_REPORT",
@@ -1292,49 +1292,49 @@
             "prototype_sensor",
             "reference_lab"
           ],
-          "replaces_result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+          "replaces_result_id": "61f56879-3f03-42da-a29b-2ccf1ef8172d",
           "inference_available": false,
           "probability": null,
           "classification": null,
           "model_id": null
         },
-        "result_sha256": "4815268f9ed056e60cbe4b069c887616975e1dc776aa00de2d967c1594b3f1a6"
+        "result_sha256": "a08af5d7e333e161c1db7df3bd9294138efe1894682237814a5fb266de45069d"
       },
       "previous_revision_id": null,
-      "next_revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c"
+      "next_revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b"
     },
     {
       "schema_version": "1.0.0",
-      "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+      "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
       "data_generation": 1,
       "revision": {
         "schema_version": "1.0.0",
         "record_type": "administrative_report_revision",
-        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
         "data_generation": 1,
         "sequence": 2,
-        "accepted_at": "2026-10-11T04:32:41.480Z",
+        "accepted_at": "2026-10-11T04:51:54.282Z",
         "descriptor": {
           "schema_version": "1.0.0",
-          "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
           "data_generation": 1,
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
-          "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
-          "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-          "previous_revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
+          "base_evidence_sha256": "6dc451c5eec6e22d2146e5e16646d0b60d75c349d0e20553ece4b671258e005e",
+          "previous_revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+          "previous_revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
           "original_target_at": "2026-10-10T18:00:00Z",
           "original_collected_at": "2026-10-10T18:00:10Z",
           "original_capture_completed_at": "2026-10-10T18:03:00Z",
           "report": {
             "kind": "reanalysis",
             "reason_code": "SPECIMEN_REANALYSIS",
-            "reported_at": "2026-10-11T04:32:31.412Z",
+            "reported_at": "2026-10-11T04:51:44.042Z",
             "replacement_measurements": [
               {
                 "schema_version": "0.1.0",
-                "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+                "measurement_id": "eeb2adaa-3867-4b36-a518-324f4c15d167",
                 "sample_id": "22222222-2222-4222-8222-222222222222",
                 "analyte": "THC",
                 "qualifier": "quantified",
@@ -1353,7 +1353,7 @@
                 "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
                 "operator_ref": null,
                 "collected_at": "2026-10-10T18:00:10Z",
-                "measured_at": "2026-10-11T04:32:11.412Z",
+                "measured_at": "2026-10-11T04:51:24.041Z",
                 "quality_flags": [],
                 "original_report": {
                   "value": 6000.0,
@@ -1366,19 +1366,19 @@
               }
             ],
             "source_report": {
-              "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+              "artifact_id": "ee880cd6-76ea-447c-9e27-6dce73577d17",
               "version_id": "1",
               "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
               "media_type": "application/pdf",
               "size_bytes": 47
             },
             "authorization": {
-              "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+              "operator_account_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
               "study_id": "FICTIONAL-REVISION-STUDY",
               "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
               "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
               "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
-              "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
+              "consent_record_id": "58d6f721-e6cc-4c33-a7f9-025b792d922c",
               "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
               "approved_lab_methods": {
                 "FICTIONAL-LAB-METHOD": {
@@ -1393,7 +1393,7 @@
             }
           }
         },
-        "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+        "revision_sha256": "9b0ea4bda6ab4e00081e467d19b8055d1a5dd257eb784dea94573a1241c97892",
         "effective_measurements": [
           {
             "schema_version": "0.1.0",
@@ -1429,7 +1429,7 @@
           },
           {
             "schema_version": "0.1.0",
-            "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+            "measurement_id": "eeb2adaa-3867-4b36-a518-324f4c15d167",
             "sample_id": "22222222-2222-4222-8222-222222222222",
             "analyte": "THC",
             "qualifier": "quantified",
@@ -1448,7 +1448,7 @@
             "instrument_id": "FICTIONAL-LAB-INSTRUMENT",
             "operator_ref": null,
             "collected_at": "2026-10-10T18:00:10Z",
-            "measured_at": "2026-10-11T04:32:11.412Z",
+            "measured_at": "2026-10-11T04:51:24.041Z",
             "quality_flags": [],
             "original_report": {
               "value": 6000.0,
@@ -1495,13 +1495,13 @@
         "result": {
           "schema_version": "1.0.0",
           "result_kind": "administrative_report_result",
-          "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
-          "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-          "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "result_id": "b62ad8bf-4bfe-4eda-993e-9069939760f0",
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
+          "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+          "revision_sha256": "9b0ea4bda6ab4e00081e467d19b8055d1a5dd257eb784dea94573a1241c97892",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
           "target_at": "2026-10-10T18:00:00Z",
-          "evaluated_at": "2026-10-11T04:32:41.480Z",
+          "evaluated_at": "2026-10-11T04:51:54.282Z",
           "state": "measurement_only",
           "reason_codes": [
             "MODEL_UNAVAILABLE",
@@ -1512,15 +1512,15 @@
             "prototype_sensor",
             "reference_lab"
           ],
-          "replaces_result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+          "replaces_result_id": "0e1b6148-ad86-437e-8c2e-4bf4c23fd228",
           "inference_available": false,
           "probability": null,
           "classification": null,
           "model_id": null
         },
-        "result_sha256": "3ad3c8d9b06e1af3e3d0ea03713bb75e409d6dc4983ddf96910a7cf61d2e90df"
+        "result_sha256": "61f9d7d4254cf31922cd3fe20327ee249d53505e07ddbd5658480a3701266be3"
       },
-      "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+      "previous_revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
       "next_revision_id": null
     }
   ],
@@ -1528,17 +1528,17 @@
     "selection": {
       "kind": "single",
       "session_ids": [
-        "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        "e60c588d-dafe-4696-a139-5990c98d98b7"
       ]
     },
-    "manifest_sha256": "394834b90c1d5f6a7a0614288cae0f850df7c091fdd203cb8663b188de4e5cc3",
+    "manifest_sha256": "df335cf237f8ce739c4cf4d521f0a46fb963c8d6bd59356ae202376beae709fd",
     "files": {
-      "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/716518fb-74f7-440d-a740-c8dd774f6cf4.json": {
-        "accepted_at": "2026-10-11T04:32:41.409Z",
+      "report-revisions/e60c588d-dafe-4696-a139-5990c98d98b7/ea79e252-f58e-4aaf-94bc-c8b27fa1c17b.json": {
+        "accepted_at": "2026-10-11T04:51:54.038Z",
         "data_generation": 1,
         "descriptor": {
-          "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "base_evidence_sha256": "6dc451c5eec6e22d2146e5e16646d0b60d75c349d0e20553ece4b671258e005e",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
           "data_generation": 1,
           "original_capture_completed_at": "2026-10-10T18:03:00Z",
           "original_collected_at": "2026-10-10T18:00:10Z",
@@ -1559,8 +1559,8 @@
               },
               "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
               "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
-              "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
-              "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+              "consent_record_id": "58d6f721-e6cc-4c33-a7f9-025b792d922c",
+              "operator_account_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
               "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
               "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
               "study_id": "FICTIONAL-REVISION-STUDY"
@@ -1582,8 +1582,8 @@
                   "loq_ng_ml": 1,
                   "upper_ng_ml": 200
                 },
-                "measured_at": "2026-10-11T04:32:11.346Z",
-                "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+                "measured_at": "2026-10-11T04:51:23.792Z",
+                "measurement_id": "1b3a103d-95c6-4839-9e22-9559c7f22f6a",
                 "method_id": "FICTIONAL-LAB-METHOD",
                 "operator_ref": null,
                 "original_report": {
@@ -1601,18 +1601,18 @@
                 "value_ng_ml": 6
               }
             ],
-            "reported_at": "2026-10-11T04:32:31.346Z",
+            "reported_at": "2026-10-11T04:51:43.793Z",
             "source_report": {
-              "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+              "artifact_id": "ee880cd6-76ea-447c-9e27-6dce73577d17",
               "media_type": "application/pdf",
               "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
               "size_bytes": 47,
               "version_id": "1"
             }
           },
-          "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
+          "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
           "schema_version": "1.0.0",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7"
         },
         "effective_measurements": [
           {
@@ -1661,8 +1661,8 @@
               "loq_ng_ml": 1,
               "upper_ng_ml": 200
             },
-            "measured_at": "2026-10-11T04:32:11.346Z",
-            "measurement_id": "ea1ac64f-5ba1-4c04-adb4-938eb6150407",
+            "measured_at": "2026-10-11T04:51:23.792Z",
+            "measurement_id": "1b3a103d-95c6-4839-9e22-9559c7f22f6a",
             "method_id": "FICTIONAL-LAB-METHOD",
             "operator_ref": null,
             "original_report": {
@@ -1714,9 +1714,9 @@
         ],
         "record_type": "administrative_report_revision",
         "result": {
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
           "classification": null,
-          "evaluated_at": "2026-10-11T04:32:41.409Z",
+          "evaluated_at": "2026-10-11T04:51:54.038Z",
           "inference_available": false,
           "model_id": null,
           "probability": null,
@@ -1729,35 +1729,35 @@
             "MODEL_UNAVAILABLE",
             "MODEL_UNVALIDATED"
           ],
-          "replaces_result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
-          "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
+          "replaces_result_id": "61f56879-3f03-42da-a29b-2ccf1ef8172d",
+          "result_id": "0e1b6148-ad86-437e-8c2e-4bf4c23fd228",
           "result_kind": "administrative_report_result",
-          "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-          "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+          "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+          "revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
           "schema_version": "1.0.0",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
           "state": "measurement_only",
           "target_at": "2026-10-10T18:00:00Z"
         },
-        "result_sha256": "4815268f9ed056e60cbe4b069c887616975e1dc776aa00de2d967c1594b3f1a6",
-        "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-        "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+        "result_sha256": "a08af5d7e333e161c1db7df3bd9294138efe1894682237814a5fb266de45069d",
+        "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+        "revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
         "schema_version": "1.0.0",
         "sequence": 1,
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7"
       },
-      "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/5b9c74dd-e66b-466d-b398-4227f4cc286c.json": {
-        "accepted_at": "2026-10-11T04:32:41.480Z",
+      "report-revisions/e60c588d-dafe-4696-a139-5990c98d98b7/55a8e714-774a-4ec8-96e9-08388ec2a69b.json": {
+        "accepted_at": "2026-10-11T04:51:54.282Z",
         "data_generation": 1,
         "descriptor": {
-          "base_evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "base_evidence_sha256": "6dc451c5eec6e22d2146e5e16646d0b60d75c349d0e20553ece4b671258e005e",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
           "data_generation": 1,
           "original_capture_completed_at": "2026-10-10T18:03:00Z",
           "original_collected_at": "2026-10-10T18:00:10Z",
           "original_target_at": "2026-10-10T18:00:00Z",
-          "previous_revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-          "previous_revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+          "previous_revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+          "previous_revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
           "report": {
             "authorization": {
               "approved_lab_methods": {
@@ -1772,8 +1772,8 @@
               },
               "configuration_id": "FICTIONAL-APPROVED-CONFIGURATION",
               "configuration_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
-              "consent_record_id": "b5d317b8-c99e-4ec5-a582-74ee6d4c33ab",
-              "operator_account_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+              "consent_record_id": "58d6f721-e6cc-4c33-a7f9-025b792d922c",
+              "operator_account_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
               "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
               "retention_policy_id": "FICTIONAL-REPORT-RETENTION",
               "study_id": "FICTIONAL-REVISION-STUDY"
@@ -1795,8 +1795,8 @@
                   "loq_ng_ml": 1,
                   "upper_ng_ml": 200
                 },
-                "measured_at": "2026-10-11T04:32:11.412Z",
-                "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+                "measured_at": "2026-10-11T04:51:24.041Z",
+                "measurement_id": "eeb2adaa-3867-4b36-a518-324f4c15d167",
                 "method_id": "FICTIONAL-LAB-METHOD",
                 "operator_ref": null,
                 "original_report": {
@@ -1814,18 +1814,18 @@
                 "value_ng_ml": 6
               }
             ],
-            "reported_at": "2026-10-11T04:32:31.412Z",
+            "reported_at": "2026-10-11T04:51:44.042Z",
             "source_report": {
-              "artifact_id": "f218cef2-42b7-4ea4-8a8a-68fab2e694e6",
+              "artifact_id": "ee880cd6-76ea-447c-9e27-6dce73577d17",
               "media_type": "application/pdf",
               "sha256": "84ff7a0429387953c2a9aa43354fe66fa49bf42dbd3e8f91f313ce4f1a8310b5",
               "size_bytes": 47,
               "version_id": "1"
             }
           },
-          "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
+          "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
           "schema_version": "1.0.0",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7"
         },
         "effective_measurements": [
           {
@@ -1874,8 +1874,8 @@
               "loq_ng_ml": 1,
               "upper_ng_ml": 200
             },
-            "measured_at": "2026-10-11T04:32:11.412Z",
-            "measurement_id": "4ee92e7d-c513-4948-a1f4-145171a38271",
+            "measured_at": "2026-10-11T04:51:24.041Z",
+            "measurement_id": "eeb2adaa-3867-4b36-a518-324f4c15d167",
             "method_id": "FICTIONAL-LAB-METHOD",
             "operator_ref": null,
             "original_report": {
@@ -1927,9 +1927,9 @@
         ],
         "record_type": "administrative_report_revision",
         "result": {
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
           "classification": null,
-          "evaluated_at": "2026-10-11T04:32:41.480Z",
+          "evaluated_at": "2026-10-11T04:51:54.282Z",
           "inference_available": false,
           "model_id": null,
           "probability": null,
@@ -1942,29 +1942,29 @@
             "MODEL_UNVALIDATED",
             "SPECIMEN_REANALYSIS"
           ],
-          "replaces_result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
-          "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
+          "replaces_result_id": "0e1b6148-ad86-437e-8c2e-4bf4c23fd228",
+          "result_id": "b62ad8bf-4bfe-4eda-993e-9069939760f0",
           "result_kind": "administrative_report_result",
-          "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-          "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+          "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+          "revision_sha256": "9b0ea4bda6ab4e00081e467d19b8055d1a5dd257eb784dea94573a1241c97892",
           "schema_version": "1.0.0",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
           "state": "measurement_only",
           "target_at": "2026-10-10T18:00:00Z"
         },
-        "result_sha256": "3ad3c8d9b06e1af3e3d0ea03713bb75e409d6dc4983ddf96910a7cf61d2e90df",
-        "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-        "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+        "result_sha256": "61f9d7d4254cf31922cd3fe20327ee249d53505e07ddbd5658480a3701266be3",
+        "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+        "revision_sha256": "9b0ea4bda6ab4e00081e467d19b8055d1a5dd257eb784dea94573a1241c97892",
         "schema_version": "1.0.0",
         "sequence": 2,
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7"
       },
-      "checks/87db9824-768f-4d7c-810c-ef51e4315e4d.json": {
+      "checks/e60c588d-dafe-4696-a139-5990c98d98b7.json": {
         "alcohol": null,
         "attempts": [
           {
             "artifact_refs": [],
-            "attempt_id": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
+            "attempt_id": "5dbb8f73-8072-4b10-b112-cb6a1520636a",
             "attestation_refs": [],
             "component": "saliva",
             "component_metadata": {
@@ -2084,7 +2084,7 @@
             "quality_flags": [],
             "record_id": "22222222-2222-4222-8222-222222222222",
             "schema_version": "1.0.0",
-            "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+            "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
             "source": "reference_lab",
             "started_at": "2026-10-10T18:00:10Z",
             "status": "valid",
@@ -2092,7 +2092,7 @@
           },
           {
             "artifact_refs": [],
-            "attempt_id": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
+            "attempt_id": "ae7a1d5d-13cc-448f-8738-40cb52921bba",
             "attestation_refs": [],
             "component": "eyes",
             "component_metadata": {
@@ -2116,9 +2116,9 @@
             "configuration_id": "FICTIONAL_ACCEPTED_eyes",
             "ended_at": "2026-10-10T18:00:40Z",
             "quality_flags": [],
-            "record_id": "07cdca68-8bc9-4864-a265-9e8ef6c48b2e",
+            "record_id": "59a60872-0806-40cb-a1bc-4ca3456cac61",
             "schema_version": "1.0.0",
-            "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+            "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
             "source": "prototype_sensor",
             "started_at": "2026-10-10T18:00:30Z",
             "status": "valid",
@@ -2126,7 +2126,7 @@
           },
           {
             "artifact_refs": [],
-            "attempt_id": "f6983c95-9346-4445-9cba-4254987a588f",
+            "attempt_id": "1bafd2d6-d2ff-41f6-8594-4be50f083b65",
             "attestation_refs": [],
             "component": "cardiac",
             "component_metadata": {
@@ -2147,12 +2147,12 @@
               }
             },
             "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
-            "configuration_id": "FICTIONAL_ACCEPTED_cardiac",
+            "configuration_id": "FICTIONAL_ACCEPTED_PPG",
             "ended_at": "2026-10-10T18:00:40Z",
             "quality_flags": [],
-            "record_id": "9ae51a8a-e285-4049-a78a-e9a23d90660c",
+            "record_id": "659e7e11-812c-430d-8ce7-222b153184f3",
             "schema_version": "1.0.0",
-            "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+            "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
             "source": "prototype_sensor",
             "started_at": "2026-10-10T18:00:10Z",
             "status": "valid",
@@ -2160,45 +2160,45 @@
           },
           {
             "artifact_refs": [],
-            "attempt_id": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
+            "attempt_id": "ca99503f-520b-4a70-84f7-66e02629f888",
             "attestation_refs": [],
             "component": "task",
             "component_metadata": {
               "projection": {
                 "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-                "ended_at": "2026-10-10T18:02:50Z",
+                "ended_at": null,
                 "events_artifact_id": null,
                 "features": {
-                  "iqr_rt_ms": 80,
-                  "median_rt_ms": 340,
-                  "no_go_error_rate": 0.08333333333333333,
-                  "omission_rate": 0.041666666666666664,
-                  "p90_rt_ms": 470,
-                  "wrong_go_rate": 0.020833333333333332
+                  "iqr_rt_ms": null,
+                  "median_rt_ms": null,
+                  "no_go_error_rate": null,
+                  "omission_rate": null,
+                  "p90_rt_ms": null,
+                  "wrong_go_rate": null
                 },
-                "go_trials": 48,
-                "no_go_trials": 12,
-                "practice_trials": 6,
+                "go_trials": 0,
+                "no_go_trials": 0,
+                "practice_trials": 0,
                 "quality_flags": [],
-                "scored_trials": 60,
+                "scored_trials": 0,
                 "source": "prototype_sensor",
-                "started_at": "2026-10-10T18:00:50Z",
-                "status": "valid",
+                "started_at": null,
+                "status": "not_collected",
                 "task_id": "44444444-4444-4444-8444-444444444444",
                 "task_version": "choice_inhibit_v0",
-                "valid_correct_go_trials": 45
+                "valid_correct_go_trials": 0
               }
             },
-            "configuration_hash": "2222222222222222222222222222222222222222222222222222222222222222",
-            "configuration_id": "FICTIONAL_ACCEPTED_task",
-            "ended_at": "2026-10-10T18:02:50Z",
+            "configuration_hash": null,
+            "configuration_id": null,
+            "ended_at": null,
             "quality_flags": [],
             "record_id": "44444444-4444-4444-8444-444444444444",
             "schema_version": "1.0.0",
-            "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+            "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
             "source": "prototype_sensor",
-            "started_at": "2026-10-10T18:00:50Z",
-            "status": "valid",
+            "started_at": null,
+            "status": "not_collected",
             "supersedes_attempt_id": null
           }
         ],
@@ -2213,75 +2213,75 @@
           "protocol_id": "FICTIONAL-REVISION-PROTOCOL",
           "schema_version": "1.0.0",
           "self_report_context": null,
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7"
         },
         "created_at": "2026-10-10T18:00:00Z",
-        "evidence_sha256": "b0f50e30f8e7561564eafac31a55da2f7f2d2b89332f00f7d31d0d35ecbb18ea",
+        "evidence_sha256": "6dc451c5eec6e22d2146e5e16646d0b60d75c349d0e20553ece4b671258e005e",
         "manifest": {
           "attempts": [
             {
-              "attempt_id": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
-              "sha256": "a7d4f4ac154dcfce58f72ec6379ce5271441db6e87f6970f856ad02b930dcb86"
+              "attempt_id": "5dbb8f73-8072-4b10-b112-cb6a1520636a",
+              "sha256": "d1946cd3e11bcf7109733b78e6e9cc2ad563cb9633b84bc77ffd52f535023817"
             },
             {
-              "attempt_id": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
-              "sha256": "8db1bd0b15ee5a5a2546e5d745387ba77e58d05c3450fcf85534a59829fd1a5d"
+              "attempt_id": "ae7a1d5d-13cc-448f-8738-40cb52921bba",
+              "sha256": "52c439462ac31eef261f8cadef5406661e18480af55f2f827a7a56a9945888e1"
             },
             {
-              "attempt_id": "f6983c95-9346-4445-9cba-4254987a588f",
-              "sha256": "4161908ffd8c905313e5015192a3a232445a7465590aab719865f3d8031935ac"
+              "attempt_id": "1bafd2d6-d2ff-41f6-8594-4be50f083b65",
+              "sha256": "c7794328c7435b247d72342af0b8ed9f1c4930395bd877df9304276342847e08"
             },
             {
-              "attempt_id": "ef4d6e29-6d95-4d37-8686-b32e4961ba05",
-              "sha256": "8e06c9633714ede639c096e5112f6127e819f1e976c6bf2bef0abf8650b99820"
+              "attempt_id": "ca99503f-520b-4a70-84f7-66e02629f888",
+              "sha256": "5d714bb62b922dd49be6b3152fdcc584a41ea741d8df1db3cee4d88e09a3f569"
             }
           ],
-          "context_sha256": "7258c43a0dec25861ac2978ac5962f3cc0a4eed9fd091bf9aeae705f9f201ee2",
+          "context_sha256": "12469a644d467cc6761000d50cc03da3ab2bc38ddb202d31c0b747dd6b022c45",
           "schema_version": "1.0.0",
           "selected": {
             "alcohol": null,
-            "cardiac": "f6983c95-9346-4445-9cba-4254987a588f",
-            "eyes": "d8cfddc9-7566-4591-a7e9-0c7f3f50fdd8",
-            "saliva": "74b6b40c-0741-4f2f-9af5-2408b1d7f1c6",
-            "task": "ef4d6e29-6d95-4d37-8686-b32e4961ba05"
+            "cardiac": "1bafd2d6-d2ff-41f6-8594-4be50f083b65",
+            "eyes": "ae7a1d5d-13cc-448f-8738-40cb52921bba",
+            "saliva": "5dbb8f73-8072-4b10-b112-cb6a1520636a",
+            "task": "ca99503f-520b-4a70-84f7-66e02629f888"
           },
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7"
         },
         "mode": "analytical",
         "raw_artifacts_omitted_reason": "NO_RAW_EXPORT_SCOPE",
         "report_revision_index": {
-          "base_snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "base_snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
           "data_generation": 1,
           "items": [
             {
-              "path": "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/716518fb-74f7-440d-a740-c8dd774f6cf4.json",
-              "result_id": "954455b6-dfa1-42c9-a0fa-518fa5636030",
-              "result_sha256": "4815268f9ed056e60cbe4b069c887616975e1dc776aa00de2d967c1594b3f1a6",
-              "revision_id": "716518fb-74f7-440d-a740-c8dd774f6cf4",
-              "revision_sha256": "9e32e861f0ceeb6e6986df12085062200f6fa02ffe76ee97ea9b8bcd559c2b5b",
+              "path": "report-revisions/e60c588d-dafe-4696-a139-5990c98d98b7/ea79e252-f58e-4aaf-94bc-c8b27fa1c17b.json",
+              "result_id": "0e1b6148-ad86-437e-8c2e-4bf4c23fd228",
+              "result_sha256": "a08af5d7e333e161c1db7df3bd9294138efe1894682237814a5fb266de45069d",
+              "revision_id": "ea79e252-f58e-4aaf-94bc-c8b27fa1c17b",
+              "revision_sha256": "8f56144b69fe7418dcb45ce01c023888e032be94be19c99e6fbc6cf6d7a7ccf8",
               "sequence": 1,
-              "sha256": "60ce7a4fafc07fbd988cc19539e46eb7b7620a4142f6c35decf2b158c04d93cc",
+              "sha256": "cab410a2ec8befb916297d99e60a37c2b73d5e8da1164b547d9914e387ffe4c3",
               "size_bytes": 5621
             },
             {
-              "path": "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/5b9c74dd-e66b-466d-b398-4227f4cc286c.json",
-              "result_id": "f813bc5f-f447-4b3f-9452-a327a98dda3a",
-              "result_sha256": "3ad3c8d9b06e1af3e3d0ea03713bb75e409d6dc4983ddf96910a7cf61d2e90df",
-              "revision_id": "5b9c74dd-e66b-466d-b398-4227f4cc286c",
-              "revision_sha256": "23b7dfbafb70fa26ebe8115a0d4a564b16fd91ff5608e97a56d41d669d140af5",
+              "path": "report-revisions/e60c588d-dafe-4696-a139-5990c98d98b7/55a8e714-774a-4ec8-96e9-08388ec2a69b.json",
+              "result_id": "b62ad8bf-4bfe-4eda-993e-9069939760f0",
+              "result_sha256": "61f9d7d4254cf31922cd3fe20327ee249d53505e07ddbd5658480a3701266be3",
+              "revision_id": "55a8e714-774a-4ec8-96e9-08388ec2a69b",
+              "revision_sha256": "9b0ea4bda6ab4e00081e467d19b8055d1a5dd257eb784dea94573a1241c97892",
               "sequence": 2,
-              "sha256": "90036c2bb1f9f6708ac8ce7452156cedf36795bb709b8d53000ad57d3dcefd07",
+              "sha256": "6683fee9fe375271596802a9c9122b19ba9be25072ba4a49d6470c3bdd5ce7c4",
               "size_bytes": 5701
             }
           ],
           "schema_version": "1.0.0",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d"
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7"
         },
         "result": {
           "classification": null,
           "endpoint_id": null,
-          "evaluated_at": "2026-10-11T04:32:41.334Z",
-          "input_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+          "evaluated_at": "2026-10-11T04:51:53.780Z",
+          "input_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
           "model_id": null,
           "model_lifecycle": null,
           "operating_threshold": null,
@@ -2295,17 +2295,17 @@
             "MODEL_UNVALIDATED"
           ],
           "replaces_result_id": null,
-          "result_id": "d68cd5da-2ede-4a13-b450-8874ee533a62",
+          "result_id": "61f56879-3f03-42da-a29b-2ccf1ef8172d",
           "schema_version": "0.1.0",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
           "state": "measurement_only",
           "target_at": "2026-10-10T18:00:00Z",
           "uncertainty_policy_id": null
         },
         "revision": 7,
-        "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+        "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
         "snapshot": {
-          "acquisition_span_ms": 160000,
+          "acquisition_span_ms": 30000,
           "baseline_ref": null,
           "capture_completed_at": "2026-10-10T18:03:00Z",
           "cardiac": {
@@ -2471,37 +2471,37 @@
             "volume_ml": 1
           },
           "schema_version": "0.1.0",
-          "session_id": "87db9824-768f-4d7c-810c-ef51e4315e4d",
+          "session_id": "e60c588d-dafe-4696-a139-5990c98d98b7",
           "study_id": "FICTIONAL-REVISION-STUDY",
-          "subject_ref": "a541b29f-5bf6-40b2-8200-6abac0de9e89",
+          "subject_ref": "9ec59436-9135-4156-b17c-34ce2191e76a",
           "supersedes_session_id": null,
           "target_at": "2026-10-10T18:00:00Z",
           "task": {
             "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-            "ended_at": "2026-10-10T18:02:50Z",
+            "ended_at": null,
             "events_artifact_id": null,
             "features": {
-              "iqr_rt_ms": 80,
-              "median_rt_ms": 340,
-              "no_go_error_rate": 0.08333333333333333,
-              "omission_rate": 0.041666666666666664,
-              "p90_rt_ms": 470,
-              "wrong_go_rate": 0.020833333333333332
+              "iqr_rt_ms": null,
+              "median_rt_ms": null,
+              "no_go_error_rate": null,
+              "omission_rate": null,
+              "p90_rt_ms": null,
+              "wrong_go_rate": null
             },
-            "go_trials": 48,
-            "no_go_trials": 12,
-            "practice_trials": 6,
+            "go_trials": 0,
+            "no_go_trials": 0,
+            "practice_trials": 0,
             "quality_flags": [],
-            "scored_trials": 60,
+            "scored_trials": 0,
             "source": "prototype_sensor",
-            "started_at": "2026-10-10T18:00:50Z",
-            "status": "valid",
+            "started_at": null,
+            "status": "not_collected",
             "task_id": "44444444-4444-4444-8444-444444444444",
             "task_version": "choice_inhibit_v0",
-            "valid_correct_go_trials": 45
+            "valid_correct_go_trials": 0
           }
         },
-        "snapshot_sha256": "cece99eb7bd596e2e7d703fc0148192cab3f4f2dc40c6163717c057d0496a616",
+        "snapshot_sha256": "1ea8418551ccf6e58f98696892ac25d05ce2a8fccc9b591b96d2c913835378cd",
         "state": "completed"
       },
       "profile.json": {
@@ -2512,23 +2512,23 @@
       },
       "manifest.json": {
         "canonicalization": "RFC8785",
-        "created_at": "2026-10-11T04:32:41.750Z",
-        "expires_at": "2026-10-12T04:32:41.688Z",
+        "created_at": "2026-10-11T04:51:55.090Z",
+        "expires_at": "2026-10-12T04:51:54.850Z",
         "files": [
           {
-            "path": "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/716518fb-74f7-440d-a740-c8dd774f6cf4.json",
-            "sha256": "60ce7a4fafc07fbd988cc19539e46eb7b7620a4142f6c35decf2b158c04d93cc",
+            "path": "report-revisions/e60c588d-dafe-4696-a139-5990c98d98b7/ea79e252-f58e-4aaf-94bc-c8b27fa1c17b.json",
+            "sha256": "cab410a2ec8befb916297d99e60a37c2b73d5e8da1164b547d9914e387ffe4c3",
             "size_bytes": 5621
           },
           {
-            "path": "report-revisions/87db9824-768f-4d7c-810c-ef51e4315e4d/5b9c74dd-e66b-466d-b398-4227f4cc286c.json",
-            "sha256": "90036c2bb1f9f6708ac8ce7452156cedf36795bb709b8d53000ad57d3dcefd07",
+            "path": "report-revisions/e60c588d-dafe-4696-a139-5990c98d98b7/55a8e714-774a-4ec8-96e9-08388ec2a69b.json",
+            "sha256": "6683fee9fe375271596802a9c9122b19ba9be25072ba4a49d6470c3bdd5ce7c4",
             "size_bytes": 5701
           },
           {
-            "path": "checks/87db9824-768f-4d7c-810c-ef51e4315e4d.json",
-            "sha256": "a27b22c65fd15277acb2531d19e68d8e817ab18bbfc8814c86f8c89a6ddb7612",
-            "size_bytes": 14173
+            "path": "checks/e60c588d-dafe-4696-a139-5990c98d98b7.json",
+            "sha256": "b046eb833b788efbf04f910ea5303c8d5ce45047270eb2beea90ab4a6d78cbbe",
+            "size_bytes": 13907
           },
           {
             "path": "profile.json",
@@ -2536,7 +2536,7 @@
             "size_bytes": 81
           }
         ],
-        "job_id": "69911a5e-f1f8-4621-9ed4-d80b7fa57db8",
+        "job_id": "3d2711e8-d281-4e92-bb4d-f3ff0deb736c",
         "omitted_categories": [
           "raw_artifacts"
         ],
@@ -2544,11 +2544,11 @@
         "selection": {
           "kind": "single",
           "session_ids": [
-            "87db9824-768f-4d7c-810c-ef51e4315e4d"
+            "e60c588d-dafe-4696-a139-5990c98d98b7"
           ]
         },
         "session_ids": [
-          "87db9824-768f-4d7c-810c-ef51e4315e4d"
+          "e60c588d-dafe-4696-a139-5990c98d98b7"
         ]
       }
     }

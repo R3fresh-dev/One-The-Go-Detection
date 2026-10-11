@@ -93,6 +93,10 @@ test("all retained measurement and application DTO schema copies match source co
     "EvidenceManifest",
     "Alcohol",
     "ProfileWrite",
+    "ReportRevisionCompanion",
+    "ReportRevisionList",
+    "ReportRevisionDetail",
+    "ReportRevisionIndex",
   ])
     assert.equal(
       readFileSync(`src/contracts/${name}.schema.json`, "utf8"),

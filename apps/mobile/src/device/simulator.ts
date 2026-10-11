@@ -1,18 +1,11 @@
 import { canonicalJson, knownKeys, requiredString, safeInteger } from '../core/integrity';
 import { capabilities, DeviceError, fragmentMessage, fromBase64, MessageJournal, Reassembler, toBase64, uuid } from './protocol';
 import type { DeviceChannel, DeviceEnvelope, SyntheticCapabilities } from './protocol';
-import type { DeviceTransport, SyntheticEcgValues, SyntheticPpgValues, SyntheticSalivaValues, TransportEvent } from './types';
-
-export function syntheticValues(channel: DeviceChannel): SyntheticPpgValues | SyntheticEcgValues | SyntheticSalivaValues {
-  if (channel === 'ppg') return { heart_rate_bpm: 72, duration_seconds: 3, method: 'ppg' };
-  if (channel === 'ecg') return { heart_rate_bpm: 72, duration_seconds: 4, method: 'ecg', sample_rate_hz: 50, lead_count: 1, units: 'arbitrary_counts',
-    samples: Array.from({ length: 200 }, (_, i) => { const p = i % 42; return p === 10 ? 800 : p === 11 ? -250 : p >= 20 && p <= 25 ? (p <= 22 ? p - 19 : 26 - p) * 25 : p >= 4 && p <= 6 ? 30 : 0; }) };
-  return { specimen: 'oral_fluid', assay_id: 'synthetic_assay_v1', analytes: [
-    { analyte: 'delta9_thc', qualifier: 'quantified', value: 12, unit: 'ng/mL', lod: 1, loq: 2, uloq: 100 },
-    { analyte: '11_hydroxy_thc', qualifier: 'not_detected', value: null, unit: 'ng/mL', lod: 1, loq: 2, uloq: 100 },
-    { analyte: 'thc_cooh', qualifier: 'not_detected', value: null, unit: 'ng/mL', lod: 1, loq: 2, uloq: 100 },
-  ] };
-}
+import type { DeviceTransport, TransportEvent } from './types';
+import { assertSignalScenario, syntheticSignalFrame } from './signal';
+import type { SyntheticSignalIdentity, SyntheticSignalScenario } from './signal';
+import { syntheticValues } from './synthetic-values';
+export { syntheticValues } from './synthetic-values';
 
 /** Software-only peripheral. It deliberately passes through the same framing and validation path. */
 export class LocalSimulatorTransport implements DeviceTransport {
@@ -26,6 +19,8 @@ export class LocalSimulatorTransport implements DeviceTransport {
   private sequence = 0;
   private transfer = 0;
   private captureTimer: ReturnType<typeof setTimeout> | null = null;
+  private signalTimer: ReturnType<typeof setTimeout> | null = null;
+  private signalScenario: SyntheticSignalScenario = 'clean';
   private active: { session: string; attempt: string; capture: string; epoch: string } | null = null;
   private capabilitiesRecord: SyntheticCapabilities;
   constructor(private readonly idFactory: () => string) {
@@ -43,7 +38,35 @@ export class LocalSimulatorTransport implements DeviceTransport {
     this.sequence = 0; this.transfer = 0; this.capabilitiesRecord.boot_id = uuid(this.idFactory());
     return { peripheralId, mtu: 23, capabilities: canonicalJson(this.capabilitiesRecord) };
   }
-  async disconnect(): Promise<void> { this.connected = false; if (this.captureTimer) clearTimeout(this.captureTimer); this.captureTimer = null; this.active = null; this.receiver.reset(); this.emit({ kind: 'disconnected', peripheralId: 'local-simulator', reason: 'DISCONNECTED' }); }
+  private clearCaptureTimers(): void {
+    if (this.captureTimer) clearTimeout(this.captureTimer);
+    if (this.signalTimer) clearTimeout(this.signalTimer);
+    this.captureTimer = null; this.signalTimer = null;
+  }
+  prepareSyntheticSignal(scenario: SyntheticSignalScenario): void {
+    if (this.active) throw new DeviceError('DEVICE_BUSY');
+    assertSignalScenario('ecg', scenario); this.signalScenario = scenario;
+  }
+  async disconnect(): Promise<void> { this.connected = false; this.clearCaptureTimers(); this.active = null; this.signalScenario = 'clean'; this.receiver.reset(); this.emit({ kind: 'disconnected', peripheralId: 'local-simulator', reason: 'DISCONNECTED' }); }
+  private streamSignal(identity: SyntheticSignalIdentity, start: number, complete: () => void): void {
+    const last = identity.channel === 'ecg' ? 40 : 30;
+    const deliver = (sequence: number): void => {
+      this.signalTimer = null;
+      if (!this.connected || this.active?.capture !== identity.context.captureId) return;
+      const untilDue = start + sequence * 100 - this.now();
+      if (untilDue > 0) { this.signalTimer = setTimeout(() => deliver(sequence), Math.ceil(untilDue)); return; }
+      const frame = syntheticSignalFrame(identity, sequence, start);
+      // The stale fixture becomes silent. The controller's independent watchdog must end it.
+      if (!frame) return;
+      this.emit({ kind: 'synthetic_signal', peripheralId: 'local-simulator', frame, receivedAtMonotonicMs: this.now() });
+      if (!this.connected || this.active?.capture !== identity.context.captureId) return;
+      if (sequence === last) { complete(); return; }
+      const next = sequence + 1;
+      // A single pending timer is bounded; a delayed UI cannot enqueue a backlog of callbacks.
+      this.signalTimer = setTimeout(() => deliver(next), Math.max(0, Math.ceil(start + next * 100 - this.now())));
+    };
+    deliver(0);
+  }
   private send(type: DeviceEnvelope['type'], session: string, payload: Record<string, unknown>): DeviceEnvelope {
     const message: DeviceEnvelope = { protocol_version: 1, message_id: uuid(this.idFactory()), device_id: this.capabilitiesRecord.device_id, boot_id: this.capabilitiesRecord.boot_id, session_id: session, sequence: this.sequence++, monotonic_ms: this.now(), type, payload };
     this.retransmit(message); return message;
@@ -75,17 +98,23 @@ export class LocalSimulatorTransport implements DeviceTransport {
       if (!['ppg', 'ecg', 'saliva'].includes(String(p.channel)) || p.source !== 'simulated' || this.active || typeof p.deadline_device_ms !== 'number' || p.deadline_device_ms < this.now() || p.deadline_device_ms > this.now() + 120_000) throw new DeviceError('CAPTURE_REFUSED');
       const channel = p.channel as DeviceChannel, start = this.now(); this.active = { session: message.session_id, attempt, capture, epoch }; ack();
       const duration = channel === 'ppg' ? 3000 : channel === 'ecg' ? 4000 : 2000;
-      this.captureTimer = setTimeout(() => {
+      const complete = () => {
         this.captureTimer = null;
         if (!this.connected || this.active?.capture !== capture) return;
         this.active = null;
         responses.push(this.send('capture_complete', message.session_id, { source: 'simulated', channel, attempt_id: attempt, capture_id: capture, workspace_epoch: epoch,
           started_monotonic_ms: start, ended_monotonic_ms: this.now(), fixture_id: 'synthetic_bench_v1', values: syntheticValues(channel) }));
-      }, duration);
+      };
+      if (channel === 'saliva') this.captureTimer = setTimeout(complete, duration);
+      else {
+        assertSignalScenario(channel, this.signalScenario);
+        const identity: SyntheticSignalIdentity = { deviceId: this.capabilitiesRecord.device_id, bootId: this.capabilitiesRecord.boot_id, context: { sessionId: message.session_id, attemptId: attempt, captureId: capture, workspaceEpoch: epoch }, channel, scenario: this.signalScenario };
+        this.streamSignal(identity, start, complete);
+      }
     } else if (message.type === 'cancel_capture') {
       knownKeys(p, ['deadline_after_ms', 'attempt_id', 'capture_id', 'workspace_epoch']);
       if (this.active && (this.active.attempt !== p.attempt_id || this.active.capture !== p.capture_id || this.active.epoch !== p.workspace_epoch || this.active.session !== message.session_id)) throw new DeviceError('CANCEL_IDENTITY');
-      if (this.captureTimer) clearTimeout(this.captureTimer); this.captureTimer = null; this.active = null; ack();
+      this.clearCaptureTimers(); this.active = null; ack();
     } else throw new DeviceError('UNSUPPORTED_COMMAND');
     this.priorResponses.set(message.message_id, responses);
   }

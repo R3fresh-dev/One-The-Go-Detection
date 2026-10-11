@@ -44,6 +44,7 @@ import {
   layout,
 } from "./components";
 import { useTheme } from "./theme";
+import { HomeDeviceSummary } from "./device-summary";
 
 export interface ScreenProps {
   controller: AppController;
@@ -358,6 +359,7 @@ export function HomeScreen({ controller, model }: ScreenProps) {
         x.delivery !== "quarantined",
     ),
     [confirm, setConfirm] = useState(false),
+    [reviewing, setReviewing] = useState(false),
     [mode, setMode] = useState<"measurement" | "engineering_fixture">(
       "measurement",
     );
@@ -376,32 +378,6 @@ export function HomeScreen({ controller, model }: ScreenProps) {
       }
       subtitle="A clear record of what was measured, when, and how."
     >
-      <View
-        style={{
-          backgroundColor: c.navy,
-          borderRadius: 24,
-          padding: 25,
-          gap: 20,
-        }}
-      >
-        <Text style={{ color: "#D2E7E9", fontSize: 13, letterSpacing: 1.5 }}>
-          MEASUREMENT ONLY
-        </Text>
-        <Text
-          style={{
-            color: "#FFFFFF",
-            fontSize: 25,
-            fontWeight: "600",
-            lineHeight: 33,
-          }}
-        >
-          Understand the evidence. Keep its limitations visible.
-        </Text>
-        <Text style={{ color: "#BBD2D7", fontSize: 15, lineHeight: 23 }}>
-          There is no intoxication score in this release. Valid measurements and
-          uncalibrated practice remain distinct.
-        </Text>
-      </View>
       {model.pendingReplacement && (
         <Notice>
           Replacement for {shortId(model.pendingReplacement)}. Review the
@@ -440,63 +416,87 @@ export function HomeScreen({ controller, model }: ScreenProps) {
             <Title small>Start a check</Title>
             <Badge>{model.identity ? "Private account" : "Guest demo"}</Badge>
           </Row>
-          {fixtureAllowed && (
-            <Choice
-              label="Check type"
-              value={mode}
-              options={[
-                { value: "measurement", label: "Measurements / practice" },
-                {
-                  value: "engineering_fixture",
-                  label: "Fictional engineering fixture",
-                },
-              ]}
-              onChange={setMode}
-            />
-          )}
-          {model.identity && mode === "engineering_fixture" ? (
-            <Notice>
-              Fictional fixtures use a separate synthetic profile with all
-              demographics and context unknown. Your saved personal profile is
-              not included.
-            </Notice>
-          ) : (
-            <ContextFacts profile={state.profile} />
-          )}
           <Paragraph muted>
-            These optional self-reported values freeze when you start. They
-            cannot predict metabolism or impairment. Original last-use time is
-            retained; elapsed time is recalculated at this check’s start.
+            Measurements and uncalibrated practice. No intoxication score.
           </Paragraph>
-          <Button
-            secondary
-            title="Edit profile and context"
-            onPress={action(controller, () => controller.navigate("profile"))}
-          />
-          <SwitchRow
-            title="I have reviewed this check’s context."
-            detail="Blank or unknown values are allowed. Updates after starting apply to a new check."
-            value={confirm}
-            onChange={setConfirm}
-          />
-          <Button
-            title={
-              model.identity && mode === "engineering_fixture"
-                ? "Start fictional fixture"
-                : model.identity
-                  ? "Start check"
-                  : "Start demo check"
-            }
-            disabled={!confirm || accountPaused}
-            busy={model.busy}
-            onPress={action(controller, () =>
-              controller.beginCheck(
-                model.identity ? mode : "guest_demo",
-                confirm,
-              ),
-            )}
-            testID="start-check"
-          />
+          {!reviewing ? (
+            <Button
+              title="Review context and start"
+              testID="review-context"
+              disabled={accountPaused}
+              onPress={() => setReviewing(true)}
+            />
+          ) : (
+            <>
+              {fixtureAllowed && (
+                <Choice
+                  label="Check type"
+                  value={mode}
+                  options={[
+                    { value: "measurement", label: "Measurements / practice" },
+                    {
+                      value: "engineering_fixture",
+                      label: "Fictional engineering fixture",
+                    },
+                  ]}
+                  onChange={setMode}
+                />
+              )}
+              {model.identity && mode === "engineering_fixture" ? (
+                <Notice>
+                  Fictional fixtures use a separate synthetic profile with all
+                  demographics and context unknown. Your saved personal profile
+                  is not included.
+                </Notice>
+              ) : (
+                <ContextFacts profile={state.profile} />
+              )}
+              <Paragraph muted>
+                These optional self-reported values freeze when you start. They
+                cannot predict metabolism or impairment. Original last-use time
+                is retained; elapsed time is recalculated at this check’s start.
+              </Paragraph>
+              <Button
+                secondary
+                title="Edit profile and context"
+                onPress={action(controller, () =>
+                  controller.navigate("profile"),
+                )}
+              />
+              <SwitchRow
+                title="I have reviewed this check’s context."
+                detail="Blank or unknown values are allowed. Updates after starting apply to a new check."
+                value={confirm}
+                onChange={setConfirm}
+              />
+              <Button
+                title={
+                  model.identity && mode === "engineering_fixture"
+                    ? "Start fictional fixture"
+                    : model.identity
+                      ? "Start check"
+                      : "Start demo check"
+                }
+                disabled={!confirm || accountPaused}
+                busy={model.busy}
+                onPress={action(controller, () =>
+                  controller.beginCheck(
+                    model.identity ? mode : "guest_demo",
+                    confirm,
+                  ),
+                )}
+                testID="start-check"
+              />
+              <Button
+                title="Cancel context review"
+                secondary
+                onPress={() => {
+                  setReviewing(false);
+                  setConfirm(false);
+                }}
+              />
+            </>
+          )}
         </Card>
       )}
       <View style={layout.grid}>
@@ -525,19 +525,7 @@ export function HomeScreen({ controller, model }: ScreenProps) {
             onPress={action(controller, () => controller.navigate("history"))}
           />
         </Card>
-        <Card style={layout.column}>
-          <Label>Connected hardware</Label>
-          <Paragraph>
-            Qualified saliva, eye, ECG and alcohol instruments are unavailable
-            in this release. Device discovery and fictional protocol transport
-            are available for engineering.
-          </Paragraph>
-          <Button
-            title="Devices and connection"
-            secondary
-            onPress={action(controller, () => controller.navigate("device"))}
-          />
-        </Card>
+        <HomeDeviceSummary controller={controller} />
       </View>
       <Card>
         <ActionRow

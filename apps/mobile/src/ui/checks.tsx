@@ -20,8 +20,10 @@ import {
 import type { CaptureAttempt, CheckRecord, JsonObject, Stage } from "../core/types";
 import { cardiacAttemptModality } from "../core/domain";
 import { formatSalivaMeasurement } from "./measurement-format";
+import { SignalPanel } from "../device/SignalPanel";
 import { canonicalJson } from "../core/integrity";
 import { BUILD } from "../platform/config";
+import { ReplacementLinksCard, ReportRevisionsCard } from "./revisions";
 import {
   action,
   ContextFacts,
@@ -311,6 +313,8 @@ export function CheckScreen({ controller, model }: ScreenProps) {
   const cardiacChoicePending = validCardiac.length > 1 && !check.selected_cardiac_attempt_id;
   const requestedCardiacModality = stage === "ecg" ? "ecg" : "ppg";
   const cardiacAlreadyCaptured = validCardiac.some(a => cardiacAttemptModality(a) === requestedCardiacModality);
+  const renderedEpoch = controller.epoch;
+  const signalScopeCurrent = () => controller.epoch === renderedEpoch && controller.check?.id === check.id && controller.check.stage === stage;
   const skip = () =>
     controller.ask({
       title: "Continue without this measurement?",
@@ -560,17 +564,17 @@ export function CheckScreen({ controller, model }: ScreenProps) {
             )}
           </Card>
           {synthetic && (
-            <Button
-              secondary
-              title={
-                stage === "ecg"
-                  ? "Capture ECG from connected simulator"
-                  : "Capture PPG from connected simulator"
-              }
+            <SignalPanel
+              key={`${check.id}:${stage}:${controller.epoch}`}
+              device={controller.device}
+              sessionId={check.id}
+              workspaceEpoch={controller.epoch}
+              channel={stage === "ecg" ? "ecg" : "ppg"}
               disabled={cardiacAlreadyCaptured}
-              onPress={action(controller, () =>
-                controller.simulateDevice(stage === "ecg" ? "ecg" : "ppg"),
-              )}
+              onStart={async scenario => { if (signalScopeCurrent()) await controller.simulateDevice(requestedCardiacModality, scenario); }}
+              onStop={async () => { if (signalScopeCurrent()) await controller.stopActive("USER_CANCELED"); }}
+              onDevices={async () => { if (signalScopeCurrent()) await controller.setStage("device"); }}
+              onError={error => { if (signalScopeCurrent()) controller.report(error); }}
             />
           )}
           <CurrentMeasurement
@@ -582,7 +586,7 @@ export function CheckScreen({ controller, model }: ScreenProps) {
             <Card>
               <Row>
                 <Metric
-                  label="Heart rate"
+                  label="Saved heart rate"
                   value={numberText(check.snapshot.cardiac.heart_rate_bpm)}
                   unit="bpm"
                 />
@@ -939,30 +943,46 @@ export function ResultScreen({ controller, model }: ScreenProps) {
     );
   return (
     <Page
-      title="Measurements, with context"
+      title="Your measurements"
       eyebrow={check.frozen ? "Saved check" : "Draft check"}
       onBack={action(controller, () => controller.navigate("history"))}
       subtitle={`Started ${dateLabel(check.snapshot.created_at)}`}
     >
       <Card>
         <Row>
-          <Badge tone="accent">
+          <Badge tone={check.result?.state === "invalid" ? "danger" : "accent"}>
             {check.result?.state === "measurement_only"
-              ? "Measurements only"
-              : friendly(check.result?.state)}
+              ? "Measurement record"
+              : friendly(check.result?.state ?? "unavailable")}
           </Badge>
+          {check.kind !== "measurement" && <Badge tone="warning">Demo</Badge>}
           <Badge>{friendly(check.delivery)}</Badge>
         </Row>
-        <Title small>Intoxication cannot be determined</Title>
+        <Title small>
+          {check.result?.state === "measurement_only"
+            ? "Measurements saved"
+            : check.result?.state === "invalid"
+              ? "Check needs attention"
+              : "Result unavailable"}
+        </Title>
         <Paragraph>
-          This release has no validated impairment model. A concentration, pulse
-          measurement or reaction time does not supply a verdict about
-          intoxication or driving safety.
+          No validated impairment model is available for this check.
+          Intoxication cannot be determined.
         </Paragraph>
-        <Fact label="Check time" value={dateLabel(check.snapshot.target_at)} />
-        <Fact label="Saved snapshot" value={shortId(check.snapshot_sha256)} />
+        {check.result?.state === "invalid" && (
+          <Paragraph muted>
+            Review the invalid acquisitions below. A replacement check uses new
+            measurements and preserves this record.
+          </Paragraph>
+        )}
+        {check.result?.state === "inconclusive" && (
+          <Paragraph muted>
+            The available evidence could not produce a complete result. The
+            recorded measurements and missing values remain visible below.
+          </Paragraph>
+        )}
+        <Fact label="Recorded at" value={dateLabel(check.snapshot.target_at)} />
       </Card>
-      <Provenance check={check} />
       {check.error && <Notice tone="danger">{check.error}</Notice>}
       <SalivaCard check={check} />
       <View style={layout.grid}>
@@ -1037,10 +1057,13 @@ export function ResultScreen({ controller, model }: ScreenProps) {
           </Paragraph>
         </Card>
       )}
+      <ReportRevisionsCard key={`${controller.epoch}:${check.id}:${check.generation}`} controller={controller} model={model} />
+      <ReplacementLinksCard controller={controller} model={model} />
+      <Provenance check={check} />
       <Card>
         <ActionRow
-          title="View evidence and frozen context"
-          detail={`${check.attempts.length} retained attempts · SHA-256 linked`}
+          title="About this result"
+          detail="Sources, recorded and evaluated times, frozen context and evidence hashes"
           onPress={action(controller, () => controller.navigate("evidence"))}
         />
         <ActionRow
@@ -1127,6 +1150,10 @@ export function EvidenceScreen({ controller, model }: ScreenProps) {
         <Title small>Frozen context</Title>
         <Fact label="Check ID" value={check.id} />
         <Fact label="Created / target time" value={check.snapshot.target_at} />
+        <Fact label="Capture completed" value={check.snapshot.capture_completed_at ?? "Not completed"} />
+        <Fact label="Original result evaluated" value={check.result?.evaluated_at ?? "Not evaluated"} />
+        <Fact label="Original result state" value={friendly(check.result?.state ?? "unavailable")} />
+        {check.result && <Fact label="Original result reasons" value={check.result.reason_codes.map(friendly).join(", ") || "None recorded"} />}
         <Fact
           label="Profile revision"
           value={check.context.profile_version_id ?? "None"}
@@ -1142,8 +1169,8 @@ export function EvidenceScreen({ controller, model }: ScreenProps) {
         <Fact
           label="Original last use"
           value={
-            check.context.self_report_context.last_use_at ??
-            friendly(check.context.self_report_context.last_use_status)
+            check.context.self_report_context?.last_use_at ??
+            friendly(check.context.self_report_context?.last_use_status ?? "not_recorded")
           }
         />
         <Fact

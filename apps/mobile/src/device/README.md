@@ -24,6 +24,8 @@ The app already supplies its Expo UUID implementation; the example's factory is 
 
 `DevicePanel` provides scan, connect, explicit local simulator selection, disconnect/forget and permission recovery. State is one of `unavailable`, `idle`, `scanning`, `connecting`, `connected_simulator` or `error`. `humanCaptureAvailable` is always false in this adapter. Platform aliases are display labels, not evidence of identity.
 
+`DeviceSnapshot.observedAt` is the UTC time of an actual connection/handshake/capture-state observation. Live sample updates do not advance it. `signalPreview` is either null or a context-bound, explicitly fictional local software display; it is not device identity, battery status or clinical evidence.
+
 The native transport lives in `modules/device-transport`. It uses Android `BluetoothGatt` and iOS `CoreBluetooth`, without a third-party BLE dependency. Availability failure is explicit; it does not silently substitute software simulation. Android requests runtime scan/connect permissions on Android 12+ and the legacy discovery location permission only when needed. iOS initializes its central manager after discovery is requested. App configuration supplies the Bluetooth usage explanation. There is no background acquisition mode.
 
 ## Capture DTO
@@ -49,6 +51,27 @@ Every captured value must equal the named fixture, including field names, units 
 | Saliva | Oral-fluid synthetic assay; delta-9-THC 12 ng/mL; 11-hydroxy-THC and THC-COOH not detected with null values; fixed fictional LOD 1, LOQ 2 and ULOQ 100 ng/mL |
 
 These concentrations and analytical limits are software test values. No physical assay is implemented or qualified. ECG arbitrary counts are not millivolts, and the generated waveform is not a person's cardiac signal. Current snapshot version 0.1 uses PPG or ECG as its single cardiovascular channel, not both in one capture.
+
+## Live fictional quality and waveform
+
+The reviewed [synthetic signal contract](../../../../openspec/changes/production-mobile-platform/synthetic-signal-contract.md) was committed before this follow-up implementation. `SignalPanel.tsx` implements the cardiac UI and `signal.ts` validates its bounded local-only events. No dependency or BLE protocol extension is needed.
+
+```ts
+import { getSyntheticSignalFailure, type SyntheticSignalScenario } from './src/device';
+
+const scenario: SyntheticSignalScenario = 'lead_off'; // ECG-only fictional fault.
+const capture = await device.captureSynthetic('ecg', context, {
+  signalScenario: scenario,
+});
+```
+
+Scenarios are `clean`, `poor_contact`, `motion_artifact`, `transport_gap`, `stale_signal` and `insufficient_samples`, plus ECG-only `lead_off` and `saturated`. Select the scenario before starting. Nonclean options require the explicit local software simulator; saliva accepts no signal option. The current BLE firmware displays **Live preview unavailable — waiting for verified synthetic completion** and preserves the unchanged ten-message bench protocol.
+
+Local preview delivery is 10 Hz. ECG data are the same fixed 200 samples at 50 Hz, with a 100-sample/two-second visible ring and at most 99 drawn contiguous segments. Values stay in arbitrary counts. PPG carries no ECG array; the ECG fixture is independent of the fictional 72 bpm. A monotonic 500 ms silence or dispatch delay is invalid at equality. These are development UI checks, not physiological quality thresholds or native timing calibration.
+
+The reducer binds each frame to device/boot/session/attempt/capture/epoch and checks its exact sequence, scheduled elapsed time, sample offset and values. It rejects malformed or missing data, never fills gaps, and clears the current BPM immediately at a terminal fault. A stopped waveform is labeled not current. Complete preview alone cannot save a valid attempt: the controller still requires the full verified transport completion and all clean preview batches. The original full capture evidence and hash remain unchanged.
+
+`getSyntheticSignalFailure(error, startedAttempt, endedAt)` returns an exact invalid cardiac projection, quality flags and existing scalar metadata only for the matching typed simulated failure. The app's existing workspace/generation/intent fence still governs the durable write. Other errors use its ordinary interruption path. Invalid values remain null; no incomplete waveform is represented as a completed transport attestation. Reconnect and create a new attempt to retry. Background/workspace cancellation clears even a previously completed display; immutable accepted evidence is retained in its original check.
 
 ## BLE framing
 
@@ -94,7 +117,7 @@ From `apps/mobile` run:
 node --import tsx --test src/device/tests/*.test.ts
 ```
 
-Tests cover byte framing, CRC, strict parsing, replay, timeout, clock intervals and a complete timed software capture/cancellation. See [../../modules/VERIFICATION.md](../../modules/VERIFICATION.md) for the executed evidence and device test gaps. The [Nano ESP32 firmware](../../../../firmware/README.md) exercises the same synthetic BLE protocol. Android/iOS radio, permissions and lifecycle behavior require a real device bench run; the host simulator does not prove them.
+Tests cover byte framing, CRC, strict parsing, replay, timeout, clock intervals, timed software capture/cancellation, all fictional quality failures, the 499/500 ms boundary, identity/sample tampering, bounded scrolling and unchanged complete-wire evidence. See [../../modules/VERIFICATION.md](../../modules/VERIFICATION.md) for the executed evidence and device test gaps. The [Nano ESP32 firmware](../../../../firmware/README.md) exercises the same synthetic BLE protocol. Android/iOS radio, permissions and lifecycle behavior require a real device bench run; the host simulator does not prove them.
 
 Future human measurements need an approved device implementation, electrical/optical/assay qualification as applicable, server-registry device public-key trust, authenticated per-device binding, approved capture configuration and fresh one-time online capture authorization. The app cannot register an arbitrary public key or promote a radio alias, CRC, software hash or simulator message into that trust chain. See the reviewed [shared contracts](../../../../openspec/changes/production-mobile-platform/shared-contracts.md).
 

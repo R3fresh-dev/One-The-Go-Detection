@@ -6,6 +6,10 @@ export * from './types';
 export { DeviceError, DEVICE_SERVICE_UUID, CLOCK_POLICY_ID } from './protocol';
 export { DevicePanel } from './DevicePanel';
 export type { DevicePanelProps } from './DevicePanel';
+export { getSyntheticSignalFailure } from './signalFailure';
+export type { SyntheticSignalFailure } from './signalFailure';
+export { signalScenarios, SYNTHETIC_SIGNAL_CONFIGURATION } from './signal';
+export type { SyntheticSignalScenario, SyntheticSignalOptions, SyntheticSignalPreview } from './signal';
 
 export function createDeviceController(options: DeviceControllerOptions): DeviceController {
   const controller = new DeviceControllerImpl(options, createNativeDeviceTransport);

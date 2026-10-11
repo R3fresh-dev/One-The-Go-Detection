@@ -1,6 +1,7 @@
 """These fixtures are fictional host/JS records, not physiological acquisitions."""
 
 from copy import deepcopy
+from datetime import datetime, timedelta
 from uuid import uuid4
 
 import pytest
@@ -141,6 +142,82 @@ def native_fixture():
 def test_host_generated_native_contract_fixture_against_independent_server_scoring():
     raw, p = native_fixture()
     validate_native(raw, p)
+
+
+def test_configured_task_attempt_cannot_diverge_from_its_stimulus_hash():
+    from otgd.domain import validate_component
+
+    bundle = strict_loads(
+        (ROOT / "apps/mobile/testfixtures/native-check-contract.json").read_text()
+    )
+    attempt = next(item for item in bundle["attempts"] if item["component"] == "task")
+    validate_component(attempt)
+    attempt["configuration_hash"] = "f" * 64
+    with pytest.raises(Problem):
+        validate_component(attempt)
+
+
+@pytest.mark.parametrize("elapsed_in_window", [999, 1000])
+def test_canceled_native_response_preserves_completed_window_count(elapsed_in_window):
+    """Fictional terminal fixture follows the unchanged Kotlin/Swift count rule."""
+    raw, projection = native_fixture()
+    selected = next(
+        trial for trial in raw["trialEvents"]
+        if trial["phase"] == "scored" and trial["stimulus"] != "no_go"
+    )
+    duration = selected["onsetMs"] + elapsed_in_window
+    raw["status"] = projection["status"] = "invalid"
+    raw["features"] = None
+    projection["features"] = {key: None for key in projection["features"]}
+    raw["qualityFlags"].append("USER_CANCELED")
+    raw["durationMs"] = duration
+    raw["nativeEndMs"] = raw["nativeStartMs"] + duration
+    ended = datetime.fromisoformat(raw["startedAt"]) + timedelta(milliseconds=duration)
+    raw["endedAt"] = projection["ended_at"] = ended.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    raw["timing"]["observedEndedAt"] = raw["endedAt"]
+    raw["timing"]["terminalCutoffMs"] = duration
+    raw["inputEvents"] = [
+        event for event in raw["inputEvents"]
+        if event["nativeTimestampMs"] <= duration
+    ]
+    for trial in raw["trialEvents"]:
+        if trial["index"] <= selected["index"]:
+            continue
+        trial["presented"] = False
+        trial["outcome"] = "unresolved"
+        for key in (
+            "frameTimestampMs", "callbackTimestampMs", "onsetMs", "onsetLatenessMs",
+            "selectedInputSequence", "responseTimeMs", "correctGoRtMs",
+        ):
+            trial[key] = None
+    scored = [
+        trial for trial in raw["trialEvents"]
+        if trial["phase"] == "scored" and trial["presented"]
+    ]
+    completed = len(scored) - (1 if elapsed_in_window < 1000 else 0)
+    raw["counts"] = {
+        "presentedPractice": 6,
+        "presentedScored": len(scored),
+        "presentedGo": sum(trial["stimulus"] != "no_go" for trial in scored),
+        "presentedNoGo": sum(trial["stimulus"] == "no_go" for trial in scored),
+        "completedScored": completed,
+        "correctGo": sum(trial["outcome"] == "correct" for trial in scored),
+        "omissions": 0,
+        "wrongGo": 0,
+        "noGoErrors": 0,
+        "correctWithholds": sum(trial["outcome"] == "correct_withhold" for trial in scored),
+    }
+    for name, field in (
+        ("practice_trials", "presentedPractice"), ("scored_trials", "presentedScored"),
+        ("go_trials", "presentedGo"), ("no_go_trials", "presentedNoGo"),
+        ("valid_correct_go_trials", "correctGo"),
+    ):
+        projection[name] = raw["counts"][field]
+    assert selected["outcome"] == "correct"
+    validate_native(raw, projection)
+    raw["counts"]["completedScored"] += 1
+    with pytest.raises(Problem):
+        validate_native(raw, projection)
 
 
 @pytest.mark.parametrize(

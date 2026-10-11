@@ -308,6 +308,12 @@ def validate_component(attempt):
         if component == "task" and p["task_id"] != attempt["record_id"]:
             raise Problem(422, "PROJECTION_MISMATCH")
         if (
+            component == "task"
+            and attempt["configuration_hash"] is not None
+            and p["config_sha256"] != attempt["configuration_hash"]
+        ):
+            raise Problem(422, "TASK_CONFIGURATION_MISMATCH")
+        if (
             component == "cardiac"
             and "modality" in metadata
             and metadata["modality"] != p["modality"]
