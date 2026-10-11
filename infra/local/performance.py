@@ -75,6 +75,7 @@ def run(count=40,concurrency=20):
                 deadline=time.monotonic()+15;delay=.1
                 while time.monotonic()<deadline:
                     response=http.get(f'http://api:8000/v1/sessions/{sid}/result',headers=headers)
+                    if time.monotonic()>deadline:raise AssertionError('Actual SQS result exceeded fifteen seconds')
                     if response.status_code==200:
                         result=response.json()
                         if result['state']!='measurement_only' or result['probability']is not None:raise AssertionError('Invalid measurement-only result')

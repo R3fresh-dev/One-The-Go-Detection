@@ -3436,7 +3436,7 @@
   "followup_review": {
     "recorded_at": "2026-10-11T09:36:01.512985+00:00",
     "scope": "Independent working-source review and focused execution, preserving original historical requirements and later frozen-source digests. Final committed-revision aggregate/live/native gates and genuine release qualification remain separate.",
-    "findings": "ALIGN-01 through ALIGN-45 in docs/REQUIREMENTS_ALIGNMENT_AUDIT.md; source fixes, focused execution, concurrent participant/HR/evaluation positive-flow work, final gates and external qualification remain separate.",
+    "findings": "ALIGN-01 through ALIGN-49 in docs/REQUIREMENTS_ALIGNMENT_AUDIT.md; source fixes, focused execution, participant/HR/evaluation positive-flow work and actual CI harness/artifact-parser follow-up remain separate from final gates and external qualification.",
     "capability_delta_inventory": [
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-dashboard/spec.md",
@@ -4666,7 +4666,7 @@
     "source_snapshots": [
       {
         "file": ".github/workflows/hosted-native-preview.yml",
-        "sha256": "d1679be3e0b33d087c324a79c62d793c0efeec13f2ab55bb4a72cf6674bbadcc",
+        "sha256": "1fe53997450a25c04ee6ee40042ba3982630aa0853091d23e0f539c720016106",
         "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
@@ -4726,7 +4726,7 @@
       },
       {
         "file": "apps/mobile/modules/scripts/hosted_preview.py",
-        "sha256": "48829795736de41f6ac6ed44671a6b2536d14c8e8a333d27d3b74ac1a7577c85",
+        "sha256": "087cf72ce7b1904a257fef720060b5054fe312f94077a768b4bce2c65093f629",
         "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
@@ -4896,7 +4896,7 @@
       },
       {
         "file": "docs/MODEL_TRAINING_AND_EVALUATION.md",
-        "sha256": "fe9bafa2d30091aed6c62be712f0541625babc947c5c4d80ccb273998527912f",
+        "sha256": "699894d4c957782c6dcbff5d9e4e3e6b75c5e323dc7a5f794f964ad0ec35b8ee",
         "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
@@ -4981,7 +4981,7 @@
       },
       {
         "file": "infra/local/participant_probe.py",
-        "sha256": "9a7a33dde21defe732984e6a5f95a4e916390892d875c30e27ed9d077f3c8c9a",
+        "sha256": "ddba6d97d6c979bdea69138152e43f310f4be51c4620e86ea0f1f13a3251b112",
         "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
@@ -5121,7 +5121,7 @@
       },
       {
         "file": "services/api/tests/test_participant_acquisition.py",
-        "sha256": "50084560684b9e2fbf005e48565f133d92f03a65e4c3e1c51dd0545214cc79f6",
+        "sha256": "a9113ffb30c7907e12aad494ddfdf7d83afc96ef5f3d8c0668768158c2948b57",
         "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
@@ -5297,6 +5297,102 @@
       "source_snapshot_count": 95,
       "final_aggregate_claim": false,
       "hosted_test_isolation_review": "Test-only OTGD_UNIT_PREVIEW selects fictional binary mode in runtime/constants mocks; absent from production config/runtime. Compiled guest guard and actual browser/native preview checks remain mandatory separately."
+    },
+    "post_ci_followup": {
+      "failed_revision": "89fdfbf",
+      "scope": "Actual CI exposed participant live-probe, consent concurrency, hosted Android typed-Boolean parsing and hosted iOS generated-output cleanliness failures; narrow harness/artifact-parser fixes independently reviewed without application runtime grant changes or relaxed thresholds",
+      "findings": [
+        {
+          "id": "ALIGN-46",
+          "finding": "Live participant probe polled nonexistent /v1/jobs, although result processing had been queued",
+          "source_fix": "Existing owned /sessions/{sid}/result exact202 processing or200 plus SELECT exactowned completed Job account/generation/kind/session/output; original60sec deadline now rejects late response and bounds poll timeout/delay; performance15sec poll likewise rejects post-HTTP late success",
+          "real_final_application_probe_pass_claim": false
+        },
+        {
+          "id": "ALIGN-47",
+          "finding": "Consent concurrency test used direct registry UPDATE outside actual exclusive authority transition after readonly runtime adoption",
+          "source_fix": "Actual typed three-principal released study plus production transition and matched advisoryShareLock/blockedExclusiveLock, unchanged1sec observation, immutable body/SHA/history, consentcommit then fresh403",
+          "runtime_grant_widened": false,
+          "actual_postgresql_report_pending_inspection": false
+        },
+        {
+          "id": "ALIGN-48",
+          "finding": "Actual SDK36 aapt2 TYPE_INT_BOOLEAN true is 0xffffffff; earlier handwritten parser fixture used1 and real hosted Android admission failed",
+          "source_fix": "Only canonical typed0/0xffffffff decode tofalse/true; conflicting text and integer substitutes refuse; hosted marker mustbe actualTrue and debuggable actualFalse/default",
+          "actual_aapt2_fixture_bytes": 1284,
+          "actual_aapt2_fixture_sha256": "1902cf5fbd4e9969e6c6069b7adb62a0f1dc075d03d1347b44cc845fdba42dff",
+          "actual_rebuilt_apk_admission_or_launch_claim": false
+        },
+        {
+          "id": "ALIGN-49",
+          "finding": "Successful hosted iOS compilation was followed by clean-source refusal because Swift tests created unignored module.build output",
+          "source_fix": "Two exact conventional generated module.build paths ignored; each workflow Swift package uses distinct RUNNER_TEMP scratch path outsidecheckout; real temporaryGit source_inventory rejects trackedSwift edits and untrackedSwift inputs while ignoredoutput leaves inventoryunchanged",
+          "clean_source_check_weakened": false,
+          "actual_rebuilt_ios_admission_or_launch_claim": false
+        }
+      ],
+      "additional_changed_harness_snapshots": [
+        {
+          "file": "infra/local/performance.py",
+          "sha256": "1a44d7d691d7528c7c87c36362d9ddd3bd1d817df349b7c5293981b11100e176"
+        },
+        {
+          "file": "services/api/tests/test_consent_versions.py",
+          "sha256": "7b0e9f9ba33b3faf8089b58debeeaac133c43bcb885af45ca1ef2c2b5e68c819"
+        },
+        {
+          "file": ".gitignore",
+          "sha256": "d4eafd1fcf2d288692c46475c6f1d2504f3b47bb7a480892cb93664689e6063a"
+        },
+        {
+          "file": "infra/test/test_hosted_preview.py",
+          "sha256": "7d44b7bd8f5482bf65109d9002908eefa2ee480b8eba524ab4fe3a24b240d8ce"
+        }
+      ],
+      "application_runtime_source_changed": false,
+      "thresholds_relaxed": false,
+      "whole_gate_pass_claim": false,
+      "completion_claim": false,
+      "merge_approval": false,
+      "focused_reports": [
+        {
+          "report": "/tmp/otgd-consent-advisory-pg.xml",
+          "sha256": "5663f1fccc66cc7f963528f9c2aca03e796c0b4716342d91767421159fdcfd2e",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "observer": "Reviewer inspected owner actual PostgreSQL: matched advisory locks and runtime SELECT-only registry/UPDATE42501"
+        },
+        {
+          "report": "/tmp/otgd-consent-runtime-regression-pg.xml",
+          "sha256": "7e6a88de6a25caf9432b49dd066f0e46ae2d8153e0067afd63ed6551521d8339",
+          "tests": 15,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "observer": "Reviewer inspected owner actual PostgreSQL consent/participant regression suite"
+        },
+        {
+          "report": "/tmp/otgd-independent-post-ci-participant.xml",
+          "sha256": "730b66a2fe75e19567ecaa259e5c2a1be282cdc6bcf66cacb5b8afce05dfc85e",
+          "tests": 47,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "observer": "Reviewer independently executed SQLite participant HTTP suite with explicit storage doubles"
+        }
+      ],
+      "independent_hosted_helper_execution": {
+        "command": "python3 -m unittest infra.test.test_hosted_preview -v",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "includes_actual_aapt2_xml_and_real_temporary_git": true,
+        "native_build_or_hosted_launch_claim": false
+      },
+      "preview_artifact_parser_changed": true
     }
   }
 }

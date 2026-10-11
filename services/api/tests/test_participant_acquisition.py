@@ -12,26 +12,38 @@ from uuid import uuid4
 import pytest
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
-from pydantic import ValidationError
-from sqlalchemy import select
-
 from otgd.canonical import canonical, digest
 from otgd.capture_signing import DOMAIN
 from otgd.db import Account, Artifact, Check, Dedup, Record, factory, iso, now
 from otgd.domain import NOTICE_SHA, record
 from otgd.errors import Problem
 from otgd.operator_governance import (
-    active_body, software_supported, submit, transition,
+    active_body,
+    software_supported,
+    submit,
+    transition,
 )
 from otgd.participant_acquisition import (
-    CardiacProtocol, CollectionRequest, InstructionAcknowledgment,
-    LaboratoryProtocol, instruction_receipt, require_completed_collections,
+    CardiacProtocol,
+    LaboratoryProtocol,
+    require_completed_collections,
 )
+from pydantic import ValidationError
+from sqlalchemy import select
 
 from .conftest import headers
 from .governance_fixture import (
-    CALIBRATION, POLICY, PROOF, PROTOCOL, STUDY, approve, calibration,
-    common, configuration, device, proof, retention, study,
+    CALIBRATION,
+    PROTOCOL,
+    STUDY,
+    approve,
+    calibration,
+    common,
+    configuration,
+    device,
+    proof,
+    retention,
+    study,
 )
 from .helpers import session_fixture
 
@@ -580,6 +592,7 @@ def test_pending_sample_blocks_finalization_until_explicit_cancellation_without_
 def test_actual_http_collection_staff_report_import_refresh_and_finalize(collection_scope, client, monkeypatch):
     """Full HTTP custody and finalization; the PDF object store is a named double."""
     import io
+
     from otgd import storage
     from otgd.worker import run_job
 
@@ -671,6 +684,9 @@ def test_actual_http_collection_staff_report_import_refresh_and_finalize(collect
     final = client.post(f"/v1/sessions/{run['session_id']}/finalize", headers=headers(revision=2), json={
         "snapshot_sha256": digest(snapshot), "evidence_sha256": digest(manifest)})
     assert final.status_code == 202, final.text
+    pending_result = client.get(f"/v1/sessions/{run['session_id']}/result", headers=headers())
+    assert pending_result.status_code == 202
+    assert pending_result.json() == {"session_id": run["session_id"], "state": "processing"}
     write_review_fixture("import_flow", {"configuration": run["config"], "context": run["context"],
         "capabilities": client.get("/v1/me/capabilities", headers=headers()).json(),
         "ack_request": run["ack"], "instruction_receipt": run["receipt"], "authorization": run["grant"],

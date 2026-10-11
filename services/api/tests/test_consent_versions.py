@@ -6,7 +6,7 @@ from threading import Event
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import select, text, update
+from sqlalchemy import select, text
 
 from otgd import main
 from otgd.canonical import digest
@@ -122,16 +122,21 @@ def test_queued_confirmation_keeps_actual_past_time_if_approved_document_remains
 
 @pytest.mark.postgres
 def test_actual_postgresql_consent_commit_serializes_operator_retirement(client, account, monkeypatch):
-    if engine().dialect.name != "postgresql":
-        pytest.skip("Actual PostgreSQL required for registry row-lock evidence")
-    value = document(account)
-    approve(value)
+    from otgd.operator_governance import history, transition
+    from .governance_fixture import approve as approve_registry, common
+
+    assert engine().dialect.name == "postgresql", "Mandatory live gate requires real PostgreSQL"
+    value = common(STUDY, **document(account), protocol_id="fictional-consent-protocol", channels={})
+    with factory().begin() as db:
+        released = approve_registry(db, "study", value)
     acquired, release, retiring = Event(), Event(), Event()
+    consent_pid = []
     retirement_pid = []
     original = main.save_record
 
     def pause_after_registry_lock(db, owner, kind, key, data, **options):
         if kind == "consent":
+            consent_pid.append(db.scalar(text("SELECT pg_backend_pid()")))
             acquired.set()
             assert release.wait(3), "Test request never released"
         return original(db, owner, kind, key, data, **options)
@@ -140,7 +145,8 @@ def test_actual_postgresql_consent_commit_serializes_operator_retirement(client,
         with factory().begin() as db:
             retirement_pid.append(db.scalar(text("SELECT pg_backend_pid()")))
             retiring.set()
-            db.execute(update(Registry).where(Registry.id == "study:"+STUDY).values(active=False))
+            return transition(db, "study", STUDY, value["version"], "retire",
+                "local:fixture-releaser", "Fictional study retirement", released["revision"])
 
     monkeypatch.setattr(main, "save_record", pause_after_registry_lock)
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -153,7 +159,18 @@ def test_actual_postgresql_consent_commit_serializes_operator_retirement(client,
             observed_wait = False
             while time.monotonic() < deadline:
                 with factory()() as db:
-                    observed_wait = db.scalar(text("SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE pid=:pid AND wait_event_type='Lock')"), {"pid": retirement_pid[0]})
+                    observed_wait = db.scalar(text("""
+                        SELECT EXISTS (
+                            SELECT 1 FROM pg_locks AS waiting
+                            JOIN pg_locks AS held ON held.locktype = waiting.locktype
+                                AND held.database = waiting.database
+                                AND held.classid = waiting.classid AND held.objid = waiting.objid
+                                AND held.objsubid = waiting.objsubid
+                            WHERE waiting.pid = :retirement_pid AND waiting.locktype = 'advisory'
+                                AND waiting.mode = 'ExclusiveLock' AND NOT waiting.granted
+                                AND held.pid = :consent_pid AND held.mode = 'ShareLock' AND held.granted
+                        )
+                    """), {"retirement_pid": retirement_pid[0], "consent_pid": consent_pid[0]})
                 if observed_wait:
                     break
                 time.sleep(.01)
@@ -161,5 +178,14 @@ def test_actual_postgresql_consent_commit_serializes_operator_retirement(client,
         finally:
             release.set()
         assert request.result(timeout=5).status_code == 201
-        retirement.result(timeout=5)
+        retired = retirement.result(timeout=5)
+        assert retired["state"] == "retired" and retired["revision"] == 4
+        assert retired["submitted_body"] == released["submitted_body"]
+        assert retired["submitted_sha256"] == released["submitted_sha256"]
+    with factory()() as db:
+        assert db.get(Registry, "study:" + STUDY).active is False
+        decisions = history(db, "study", STUDY)["items"][0]["decisions"]
+        assert [entry["state"] for entry in decisions] == ["submitted", "approved", "active", "retired"]
+        assert decisions[-1]["submitted_sha256"] == released["submitted_sha256"]
+        assert record(db, db.get(Account, account), "consent", STUDY).body["state"] == "active"
     assert submit(client, acceptance(value)).status_code == 403

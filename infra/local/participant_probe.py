@@ -24,7 +24,7 @@ from sqlalchemy import select, text as sql_text
 from app_flow import signin
 from otgd.canonical import digest, strict_loads
 from otgd.config import ROOT, settings
-from otgd.db import Artifact, Registry, factory, iso, now
+from otgd.db import Artifact, Job, Registry, factory, iso, now
 from otgd.lab_handoff import PURPOSE
 from otgd.local_oauth_state import lock_account
 from otgd.operator_cli import require_maintenance_db
@@ -176,12 +176,13 @@ class Actor:
         if caps["account_state"] != "active":
             raise RuntimeError("Dedicated fictional identity is not active; existing data was preserved")
 
-    def request(self, method, path, body=None, revision=None, status=(200, 201, 202), key=None):
+    def request(self, method, path, body=None, revision=None, status=(200, 201, 202), key=None, with_status=False, timeout=None):
         headers = {"Authorization": "Bearer " + self.token, "X-Data-Generation": str(self.generation),
             "Idempotency-Key": key or str(uuid4())}
         if revision is not None:
             headers["If-Match"] = '"' + str(revision) + '"'
-        response = self.http.request(method, API + path, headers=headers, json=body)
+        request_options = {} if timeout is None else {"timeout": timeout}
+        response = self.http.request(method, API + path, headers=headers, json=body, **request_options)
         if response.status_code not in status:
             # Tokens, bearer URLs, PDF bodies and health payloads never enter logs.
             try:
@@ -189,7 +190,8 @@ class Actor:
             except ValueError:
                 code = "UNEXPECTED_HTTP_STATUS"
             raise AssertionError(f"Participant probe {method} {path}: HTTP {response.status_code} {code}")
-        return response.json()
+        value = response.json()
+        return (response.status_code, value) if with_status else value
 
 
 def put_signed_pdf(http, cfg, ticket, pdf, expected):
@@ -341,19 +343,29 @@ def probe():
         subject.request("PUT", base + "/evidence-manifest", manifest, revision=0)
         queued = subject.request("POST", base + "/finalize", {"snapshot_sha256": digest(snapshot),
             "evidence_sha256": digest(manifest)}, revision=2)
+        if queued["session_id"] != sid or queued["state"] != "processing":
+            raise AssertionError("Finalization changed the owned session or processing receipt")
         deadline = time.monotonic() + 60
-        while time.monotonic() < deadline:
-            job = subject.request("GET", "/v1/jobs/" + queued["job_id"])
-            if job["state"] == "completed":
+        while (remaining := deadline - time.monotonic()) > 0:
+            status, result = subject.request("GET", base + "/result", status=(200, 202), with_status=True,
+                timeout=min(15, remaining))
+            if time.monotonic() > deadline:
+                raise AssertionError("Actual SQS participant result worker exceeded 60 seconds")
+            if status == 200:
                 break
-            if job["state"] == "failed":
-                raise AssertionError("Actual queued participant result worker failed")
-            time.sleep(0.25)
+            if result != {"session_id": sid, "state": "processing"}:
+                raise AssertionError("Pending result changed the owned session or processing state")
+            time.sleep(min(0.25, max(0, deadline - time.monotonic())))
         else:
             raise AssertionError("Actual SQS participant result worker exceeded 60 seconds")
-        result = subject.request("GET", base + "/result")
         if result["probability"] is not None or result["state"] != "inconclusive" or result["reason_codes"] != ["STUDY_UNAUTHORIZED"]:
             raise AssertionError("Fictional unmodeled study produced a numerical research estimate")
+        with factory().begin() as db:
+            job = db.get(Job, queued["job_id"])
+            if (job is None or job.account_id != subject.account or job.generation != subject.generation
+                or job.kind != "result" or job.body != {"session_id": sid} or job.state != "completed"
+                or job.completed is None or job.output != result):
+                raise AssertionError("Actual queued result did not retain its owned completed job")
     return {"status": "passed", "fixture_scope": SCOPE, **role_maintenance, "actual_oauth_pkce": True,
         "actual_postgresql_registry_three_principals": True, "reference_lab_without_ble": True,
         "immutable_instruction_collection_analysis": True, "pending_blocks_finalization": True,

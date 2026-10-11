@@ -171,7 +171,13 @@ def binary_xml(data):
                 _, key, raw, typed_size, _, value_type, value = struct.unpack_from('<IIIHBBI', chunk, at)
                 if key >= len(strings) or typed_size != 8 or strings[key] in attributes:
                     raise ValueError('Ambiguous manifest attribute')
-                if raw != 0xffffffff or value_type == 3:
+                if value_type == 0x12:  # Res_value::TYPE_INT_BOOLEAN (aapt2)
+                    if value not in (0, 0xffffffff):
+                        raise ValueError('Noncanonical manifest boolean')
+                    value = value == 0xffffffff
+                    if raw != 0xffffffff and (raw >= len(strings) or strings[raw] != ('true' if value else 'false')):
+                        raise ValueError('Conflicting manifest boolean text')
+                elif raw != 0xffffffff or value_type == 3:
                     index = raw if raw != 0xffffffff else value
                     if index >= len(strings):
                         raise ValueError('Invalid manifest value')
@@ -211,11 +217,11 @@ def inspect_artifact(path, platform, data=None):
         applications = [attributes for name, attributes in elements if name == 'application']
         sdk_versions = [attributes for name, attributes in elements if name == 'uses-sdk']
         hosted_markers = [attributes for name, attributes in elements if name == 'meta-data' and attributes.get('name') == 'dev.r3fresh.otgd.HOSTED_PREVIEW']
-        if len(manifests) != 1 or manifests[0].get('package') != BUNDLE or len(applications) != 1 or applications[0].get('debuggable', 0) not in (0, 'false'):
+        if len(manifests) != 1 or manifests[0].get('package') != BUNDLE or len(applications) != 1 or applications[0].get('debuggable', False) is not False:
             raise ValueError('Expected the nondebuggable canonical local Android app')
         if len(sdk_versions) != 1 or str(sdk_versions[0].get('minSdkVersion')) != '24' or str(sdk_versions[0].get('targetSdkVersion')) != '36':
             raise ValueError('APK differs from the reviewed Android minimum/target SDK')
-        if len(hosted_markers) != 1 or hosted_markers[0].get('value') not in (1, 'true'):
+        if len(hosted_markers) != 1 or hosted_markers[0].get('value') is not True:
             raise ValueError('APK does not contain the hosted guest build marker')
         if archive.getinfo('assets/index.android.bundle').file_size < 1024:
             raise ValueError('Missing standalone Android JavaScript bundle')

@@ -104,11 +104,11 @@ jobs:
           set -euo pipefail
           mkdir -p reports
           rm -f reports/ios-hosted-native.xml reports/ios-hosted-native.log
-          swift test --package-path apps/mobile/modules/reaction-task --parallel --num-workers 1 --verbose --disable-swift-testing --xunit-output "$PWD/reports/ios-hosted-native.xml" 2>&1 | tee reports/ios-hosted-native.log
+          swift test --package-path apps/mobile/modules/reaction-task --scratch-path "$RUNNER_TEMP/otgd-hosted-reaction-swift" --parallel --num-workers 1 --verbose --disable-swift-testing --xunit-output "$PWD/reports/ios-hosted-native.xml" 2>&1 | tee reports/ios-hosted-native.log
           python3 scripts/verify-swift-xctest.py reports/ios-hosted-native.xml reports/ios-hosted-native.log
           python3 scripts/ci_gate.py verify-junit reports/ios-hosted-native.xml
           rm -f reports/ios-hosted-optical.xml reports/ios-hosted-optical.log
-          swift test --package-path apps/mobile/modules/eye-capture --parallel --num-workers 1 --verbose --disable-swift-testing --xunit-output "$PWD/reports/ios-hosted-optical.xml" 2>&1 | tee reports/ios-hosted-optical.log
+          swift test --package-path apps/mobile/modules/eye-capture --scratch-path "$RUNNER_TEMP/otgd-hosted-optical-swift" --parallel --num-workers 1 --verbose --disable-swift-testing --xunit-output "$PWD/reports/ios-hosted-optical.xml" 2>&1 | tee reports/ios-hosted-optical.log
           python3 scripts/verify-swift-xctest.py reports/ios-hosted-optical.xml reports/ios-hosted-optical.log
           python3 scripts/ci_gate.py verify-junit reports/ios-hosted-optical.xml
       - name: Generate canonical iOS project and install pods

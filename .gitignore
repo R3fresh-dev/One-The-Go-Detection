@@ -30,6 +30,8 @@ coverage/
 *.sqlite*
 apps/mobile/android/
 apps/mobile/ios/
+apps/mobile/modules/reaction-task/.build/
+apps/mobile/modules/eye-capture/.build/
 apps/mobile/native-build/
 apps/mobile/dist/
 apps/mobile/native-build/
