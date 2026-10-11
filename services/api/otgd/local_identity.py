@@ -25,6 +25,7 @@ if s.environment != "local":
     )
 
 app = FastAPI(title="OTGD fictional local identity", docs_url=None, redoc_url=None)
+FICTIONAL_ACCOUNTS = ("fixture_a", "fixture_b", *(f"perf_{i:02d}" for i in range(1,21)))
 
 
 def key():
@@ -155,7 +156,7 @@ def authorize(
 
 @app.post("/oauth2/authorize")
 def choose(authorization_id: str = Form(...), account: str = Form(...)):
-    if account not in ("fixture_a", "fixture_b"):
+    if account not in FICTIONAL_ACCOUNTS:
         return err("invalid_request")
     with factory().begin() as db:
         row = db.scalar(

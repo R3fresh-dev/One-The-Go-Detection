@@ -80,8 +80,8 @@ def check_document_links():
     for path in ROOT.rglob("*.md"):
         if any(part.startswith(".") or part in {"node_modules", "cdk.out", "dist", "build", "coverage"} for part in path.relative_to(ROOT).parts):
             continue
-        for match in re.finditer(r"\[[^\]]*\]\(([^\s)]+)(?:\s+[^)]*)?\)", path.read_text()):
-            target = match.group(1)
+        for match in re.finditer(r"\[[^\]]*\]\((?:<([^>\n]+)>|([^\s)]+))(?:\s+[^)]*)?\)", path.read_text()):
+            target = match.group(1) or match.group(2)
             if target.startswith(("http:", "https:", "mailto:", "#")):
                 continue
             resolved = (path.parent / target.split("#", 1)[0]).resolve()

@@ -1,33 +1,8 @@
 name: Platform validation
 
 on:
-  pull_request:
-    paths:
-      - 'infra/**'
-      - 'deploy/**'
-      - 'scripts/**'
-      - 'services/api/**'
-      - 'contracts/**'
-      - 'tools/**'
-      - 'openspec/**'
-      - '.github/workflows/platform.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'infra/**'
-      - 'deploy/**'
-      - 'scripts/**'
-      - 'services/api/**'
-      - 'contracts/**'
-      - 'tools/**'
-      - 'openspec/**'
-      - '.github/workflows/platform.yml'
+  workflow_call:
   workflow_dispatch:
-    inputs:
-      run_localstack:
-        description: 'Run actual LocalStack integration; requires LOCALSTACK_AUTH_TOKEN CI secret'
-        type: boolean
-        default: true
 
 permissions:
   contents: read
@@ -54,9 +29,14 @@ jobs:
           enable-cache: true
       - run: npm ci --ignore-scripts
         working-directory: infra
-      - run: npm run verify
+      - run: |
+          npm run build
+          mkdir -p ../reports
+          node --import tsx --test --test-reporter=junit test/*.test.ts > ../reports/infra-node.xml
         working-directory: infra
       - run: uv sync --project services/api --locked
+      - name: Require infrastructure assertions to execute
+        run: python scripts/ci_gate.py verify-junit reports/infra-node.xml
       - name: Scientific contracts and feature inventory
         run: |
           uv run --project services/api python tools/verify_specs.py
@@ -79,10 +59,13 @@ jobs:
               Draft202012Validator.check_schema(json.loads(path.read_text()))
           PY
           git diff --exit-code -- contracts/application
-      - run: uv run --project services/api python -m unittest discover -s infra/test -p 'test_*.py' -v
+      - run: uv run --project services/api python scripts/ci_gate.py infra-unit
+        env:
+          OTGD_ENVIRONMENT: test
+          OTGD_DATABASE_URL: 'sqlite://'
       - run: uv run --project services/api python -m compileall -q scripts deploy infra/local
       - name: Integration status
-        run: echo 'Source and synthesis checks do not establish Docker, LocalStack, AWS, Android or iOS execution. The LocalStack workflow_dispatch job is a separate required release gate.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'This job validates contracts and infrastructure synthesis. The mandatory sibling jobs execute PostgreSQL, LocalStack and native builds before merge-gate can pass.' >> "$GITHUB_STEP_SUMMARY"
 
   postgres-integration:
     runs-on: ubuntu-24.04
@@ -106,6 +89,7 @@ jobs:
       OTGD_DISPOSABLE_DATABASE: 'true'
       OTGD_APP_DATABASE_USER: otgd_app_ci
       OTGD_APP_DATABASE_PASSWORD: disposable_runtime_fixture_only
+      OTGD_TOMBSTONE_KEY: '3535353535353535353535353535353535353535353535353535353535353535'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
@@ -115,31 +99,19 @@ jobs:
           enable-cache: true
       - run: uv sync --project services/api --locked
       - name: API semantics against actual PostgreSQL
-        run: uv run --project services/api pytest services/api/tests -v --junitxml=postgres-results.xml
-      - name: Migration replay and separate runtime authority
-        run: uv run --project services/api python infra/test/postgres_roles.py
+        run: python scripts/ci_gate.py live-dependencies
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: postgres-test-results
-          path: postgres-results.xml
+          path: reports/postgres.xml
           retention-days: 7
 
   localstack-integration:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_localstack
     runs-on: ubuntu-24.04
     timeout-minutes: 25
-    env:
-      LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - name: Require actual CI token
-        shell: bash
-        run: |
-          if [ -z "$LOCALSTACK_AUTH_TOKEN" ]; then
-            echo 'UNEXECUTED: configure the LocalStack CI auth token; this integration gate has not passed.' >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
         with:
           version: '0.13.0'
@@ -151,12 +123,23 @@ jobs:
         run: python scripts/local-platform.py up
       - name: Repeat bootstrap without data reset
         run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps resource-init
+      - name: Every long-running container healthy; initializers successful
+        run: python scripts/ci_gate.py docker-health
       - name: Actual versioned conditional S3 and SQS probe
         run: python scripts/local-platform.py check
       - name: Fictional OAuth, HTTP, worker, export and deletion flow
         run: python scripts/local-platform.py check-app --confirm-fictional-workspace
+      - name: Actual signed concurrent API and SQS performance
+        run: python scripts/ci_gate.py performance
       - name: Record limits of this evidence
         run: echo 'Actual local S3/SQS/PostgreSQL transport checks completed. AWS IAM/KMS/private-network behavior, queue kill matrix, native-device evidence, and clinical validity require their own release evidence.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: localstack-performance-evidence
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Stop disposable CI project
         if: always()
         run: python scripts/local-platform.py down

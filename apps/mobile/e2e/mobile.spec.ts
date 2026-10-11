@@ -1,4 +1,7 @@
 import { test, expect } from "@playwright/test";
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { unzipSync } from "fflate";
 
 test("guest completes a measurement-only check, exact export and privacy/settings journey", async ({
   page,
@@ -81,7 +84,36 @@ test("guest completes a measurement-only check, exact export and privacy/setting
   await page
     .getByRole("button", { name: "Create export and share", exact: true })
     .click();
-  expect((await download).suggestedFilename()).toMatch(/\.zip$/);
+  const archive = await download;
+  expect(archive.suggestedFilename()).toMatch(/\.zip$/);
+  const archivePath = info.outputPath("selected-check.zip");
+  await archive.saveAs(archivePath);
+  const files = unzipSync(await readFile(archivePath));
+  const manifest = JSON.parse(Buffer.from(files["manifest.json"]!).toString());
+  expect(manifest.selection.kind).toBe("single");
+  expect(manifest.session_ids).toHaveLength(1);
+  expect(manifest.selection.session_ids).toEqual(manifest.session_ids);
+  expect(manifest.raw_artifacts_included).toBe(false);
+  expect(manifest.canonicalization).toBe("RFC8785");
+  for (const entry of manifest.files) {
+    const content = files[entry.path];
+    expect(content, `Missing exported file ${entry.path}`).toBeDefined();
+    expect(content!.length).toBe(entry.bytes);
+    expect(createHash("sha256").update(content!).digest("hex")).toBe(
+      entry.sha256,
+    );
+  }
+  expect(
+    Object.keys(files).filter((name) => name.startsWith("checks/")),
+  ).toEqual([`checks/${manifest.session_ids[0]}.json`]);
+  const saved = JSON.parse(
+    Buffer.from(files[`checks/${manifest.session_ids[0]}.json`]!).toString(),
+  );
+  expect(saved.source).toBe("guest_demo");
+  expect(saved.result.state).toBe("measurement_only");
+  expect(saved.result.probability).toBeNull();
+  expect(files[`contexts/${manifest.session_ids[0]}.json`]).toBeDefined();
+  expect(files[`manifests/${manifest.session_ids[0]}.json`]).toBeDefined();
   await page.getByRole("tab", { name: "Settings", exact: true }).click();
   await page.getByRole("radio", { name: "Dark", exact: true }).click();
   await page

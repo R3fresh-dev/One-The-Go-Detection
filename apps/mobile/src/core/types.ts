@@ -322,6 +322,7 @@ export interface QueueOperation {
     | "withdrawal"
     | "deletion"
     | "export"
+    | "consent"
     | "acknowledgment";
   generation: number;
   check_id: string | null;

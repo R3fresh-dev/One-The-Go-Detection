@@ -39,6 +39,8 @@ Some of these branches need additional software as well as real hardware/protoco
 
 ## Executed checks in this workspace
 
+The entries below are historical checkpoints. The current merge-gate fixes are under verification: combined API/shared-scientific unit coverage exceeds 82%, mobile business-module unit coverage exceeds 87%, Android module tests have executed seven cases, and all five Docker services plus both initialization jobs passed their state checks. Full combined integration/performance, exact-revision GitHub execution and branch-protection read-back remain pending. Follow [CI_GATES.md](docs/CI_GATES.md); do not treat earlier passing checks as final-revision evidence.
+
 | Check | Observed evidence |
 |---|---|
 | Specification review | Three independent review perspectives; 38 original findings corrected and re-reviewed before implementation; strict OpenSpec validation and structural verification passed at the specification checkpoint. |
@@ -57,7 +59,7 @@ Some of these branches need additional software as well as real hardware/protoco
 
 | Gate | What is needed |
 |---|---|
-| Actual LocalStack | Docker/Compose runtime and a valid LocalStack auth token. Neither a mock nor a SQLite suite satisfies this gate. Use the supplied `check` and disposable `check-app` probes. |
+| Actual LocalStack | The pinned Apache-2.0 community default needs Docker/Compose and no subscription. The optional licensed preset requires an authorized token. Current full combined transport/application/performance evidence is still pending. Neither a mock nor SQLite satisfies it. |
 | Final native CI | Earlier actual iOS and PostgreSQL jobs passed. Android configuration failures were diagnosed and corrected in separate commits; the next native run must produce verified APKs. Final mobile changes also need a fresh iOS simulator build. Read commit-bound job conclusions and artifacts in the CI ledger. |
 | Physical phones | Android/iPhone permission denial/return, secure storage/restart, Bluetooth loss/background, orientation, accessible text and TalkBack/VoiceOver. Physical task timing remains uncalibrated. |
 | QA | Actual AWS account/region, DNS and ACM certificate, Cognito callback identity, secrets, image digest and permissions; run deployment, recovery, queue-kill, isolation and load evidence. |

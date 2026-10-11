@@ -34,6 +34,25 @@ for (const env of ['qa','prod'] as const) {
       assert.equal(service.Properties.NetworkConfiguration.AwsvpcConfiguration.AssignPublicIp,'DISABLED');
       assert.equal(service.Properties.DeploymentConfiguration.MaximumPercent,200);
     }
+    // Inspect the real worker definition and its service, rather than accepting
+    // a health command on an unrelated task or the metrics sidecar.
+    const tasks=t.findResources('AWS::ECS::TaskDefinition') as Record<string,any>;
+    const workerTasks=Object.entries(tasks).filter(([,task])=>task.Properties.ContainerDefinitions.some((container:any)=>container.Name==='worker'));
+    assert.equal(workerTasks.length,1);
+    const [workerTaskId,workerTask]=workerTasks[0];
+    const worker=workerTask.Properties.ContainerDefinitions.find((container:any)=>container.Name==='worker');
+    assert.deepEqual(worker.HealthCheck,{
+      Command:['CMD','uv','run','--no-sync','python','-m','otgd.worker_health'],
+      Interval:10,Timeout:5,Retries:3,StartPeriod:35,
+    });
+    assert.equal(worker.User,'10001');
+    assert.equal(worker.Essential,true);
+    assert.equal(worker.ReadonlyRootFilesystem,true);
+    assert.ok(worker.MountPoints.some((mount:any)=>mount.ContainerPath==='/tmp' && mount.SourceVolume==='scratch' && mount.ReadOnly===false));
+    assert.ok(workerTask.Properties.Volumes.some((volume:any)=>volume.Name==='scratch'));
+    const workerServices=Object.values(t.findResources('AWS::ECS::Service')).filter((service:any)=>service.Properties.TaskDefinition.Ref===workerTaskId) as any[];
+    assert.equal(workerServices.length,1);
+    assert.deepEqual(workerServices[0].Properties.DeploymentConfiguration.DeploymentCircuitBreaker,{Enable:true,Rollback:true});
     const body=JSON.stringify(t.toJSON());
     assert.ok(body.includes('s3:if-none-match'));
     assert.ok(body.includes('s3:DeleteObjectVersion'));

@@ -3,7 +3,7 @@
 from sqlalchemy import select, text
 
 from .config import settings
-from .db import Base, SystemState, engine
+from .db import Base, SystemState, Account,engine
 from .schema_migrations import migration_002_replacement_navigation
 
 
@@ -21,6 +21,15 @@ def migrate():
                 raise RuntimeError("Another migration owns the advisory lock")
         # Additive baseline v1. Subsequent versions must use separate numbered migrations.
         Base.metadata.create_all(connection)
+        from .identity_keys import KEY_STATE,key_descriptor
+        key_identity=key_descriptor(s)
+        prior_key=connection.scalar(select(SystemState.body).where(SystemState.key==KEY_STATE))
+        if prior_key is None:
+            if connection.scalar(select(Account.id).limit(1)):
+                raise RuntimeError('Existing account identity requires independently verified key provenance before migration')
+            connection.execute(SystemState.__table__.insert().values(key=KEY_STATE,body=key_identity))
+        elif prior_key!=key_identity:
+            raise RuntimeError('Identity tombstone key replacement is not supported; retained key provenance must be reconciled')
         if postgres:
             connection.execute(
                 text("ALTER TABLE system_state ALTER COLUMN key TYPE varchar(128)")

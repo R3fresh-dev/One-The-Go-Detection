@@ -309,6 +309,7 @@ class Consent(DTO):
     document_version: Name
     document_sha256: SHA
     accepted: Literal[True]
+    acknowledged_at: UTC
 
 
 class Withdrawal(DTO):

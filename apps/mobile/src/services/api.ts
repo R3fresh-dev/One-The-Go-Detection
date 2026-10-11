@@ -40,6 +40,41 @@ export interface ApiResponse<T> {
   status: number;
   evidenceSha256: string | null;
 }
+// A deadline must settle the caller even if token recovery or a platform fetch
+// implementation does not honor AbortSignal. Late work never commits a reply.
+export function withAbort<T>(
+  signal: AbortSignal,
+  operation: () => Promise<T>,
+): Promise<T> {
+  const reason = () =>
+    signal.reason instanceof Error
+      ? signal.reason
+      : new ApiError(0, "REQUEST_CANCELED", "The request was canceled.", true);
+  if (signal.aborted) return Promise.reject(reason());
+  return new Promise<T>((resolve, reject) => {
+    const abort = () => {
+      signal.removeEventListener("abort", abort);
+      reject(reason());
+    };
+    signal.addEventListener("abort", abort, { once: true });
+    Promise.resolve()
+      .then(() => {
+        if (signal.aborted) throw reason();
+        return operation();
+      })
+      .then(
+        (value) => {
+          signal.removeEventListener("abort", abort);
+          if (signal.aborted) reject(reason());
+          else resolve(value);
+        },
+        (error) => {
+          signal.removeEventListener("abort", abort);
+          reject(error);
+        },
+      );
+  });
+}
 export class ApiClient {
   private pending = new Set<AbortController>();
   constructor(
@@ -53,7 +88,10 @@ export class ApiClient {
     }),
   ) {}
   cancelAll(): void {
-    for (const controller of this.pending) controller.abort();
+    for (const controller of this.pending)
+      controller.abort(
+        new ApiError(0, "REQUEST_CANCELED", "The request was canceled.", true),
+      );
     this.pending.clear();
   }
   async request<T>(
@@ -82,36 +120,54 @@ export class ApiClient {
           readiness.code === "maintenance",
         );
     }
+    const controller = new AbortController();
+    this.pending.add(controller);
+    const timeout = setTimeout(
+      () =>
+        controller.abort(
+          new ApiError(
+            0,
+            "REQUEST_TIMEOUT",
+            "The service did not respond within 15 seconds. Your local records remain on this device.",
+            true,
+          ),
+        ),
+      15_000,
+    );
+    const abort = () =>
+      controller.abort(
+        new ApiError(0, "REQUEST_CANCELED", "The request was canceled.", true),
+      );
+    options.signal?.addEventListener("abort", abort, { once: true });
+    if (options.signal?.aborted) abort();
     const run = async (refresh: boolean): Promise<ApiResponse<T>> => {
-      const controller = new AbortController();
-      this.pending.add(controller);
-      const timeout = setTimeout(() => controller.abort(), 15_000);
-      const abort = () => controller.abort();
-      options.signal?.addEventListener("abort", abort, { once: true });
-      try {
-        const headers: Record<string, string> = {
-          Accept: "application/json",
-          "X-App-Version": this.appVersion,
-        };
-        if (!options.public) {
-          const access =
-            options.token ?? (await this.tokenProvider.accessToken(refresh));
-          if (!access)
-            throw new ApiError(401, "AUTH_REQUIRED", "Sign in to continue.");
-          headers.Authorization = `Bearer ${access}`;
-        }
-        if (method !== "GET") {
-          if (!options.key || !options.generation)
-            throw new IntegrityError(
-              "MUTATION_IDENTITY",
-              "The request is missing its stable operation identity.",
-            );
-          headers["Idempotency-Key"] = options.key;
-          headers["X-Data-Generation"] = String(options.generation);
-          headers["Content-Type"] = "application/json";
-        }
-        if (options.etag) headers["If-Match"] = options.etag;
-        const response = await fetch(`${this.origin}${path}`, {
+      const headers: Record<string, string> = {
+        Accept: "application/json",
+        "X-App-Version": this.appVersion,
+      };
+      if (!options.public) {
+        const access =
+          options.token ??
+          (await withAbort(controller.signal, () =>
+            this.tokenProvider.accessToken(refresh),
+          ));
+        if (!access)
+          throw new ApiError(401, "AUTH_REQUIRED", "Sign in to continue.");
+        headers.Authorization = `Bearer ${access}`;
+      }
+      if (method !== "GET") {
+        if (!options.key || !options.generation)
+          throw new IntegrityError(
+            "MUTATION_IDENTITY",
+            "The request is missing its stable operation identity.",
+          );
+        headers["Idempotency-Key"] = options.key;
+        headers["X-Data-Generation"] = String(options.generation);
+        headers["Content-Type"] = "application/json";
+      }
+      if (options.etag) headers["If-Match"] = options.etag;
+      const response = await withAbort(controller.signal, () =>
+        fetch(`${this.origin}${path}`, {
           method,
           headers,
           body:
@@ -120,70 +176,72 @@ export class ApiClient {
               : JSON.stringify(options.body),
           signal: controller.signal,
           redirect: "error",
-        });
-        const raw = await response.text();
-        const value = raw
-          ? parseBoundedJson(
-              raw,
-              method === "GET" && /^\/v1\/sessions\/[0-9a-f-]+$/i.test(path)
-                ? 67_108_864
-                : 1_048_576,
-            )
-          : null;
-        if (
-          response.status === 401 &&
-          !refresh &&
-          !options.public &&
-          !options.token
-        )
-          return run(true);
-        if (!response.ok) {
-          const error =
-            value && typeof value === "object"
-              ? (value as Record<string, unknown>)
-              : {};
-          const retryHeader = response.headers.get("Retry-After"),
-            retry = retryHeader === null ? NaN : Number(retryHeader);
-          const fields =
-            error.field_errors &&
-            typeof error.field_errors === "object" &&
-            !Array.isArray(error.field_errors)
-              ? (error.field_errors as Record<string, string>)
-              : {};
-          throw new ApiError(
-            response.status,
-            typeof error.code === "string" ? error.code : "SERVICE_ERROR",
-            typeof error.message === "string"
-              ? error.message
-              : "The service could not complete this request.",
-            Boolean(error.retryable),
-            typeof error.request_id === "string" ? error.request_id : null,
-            Number.isFinite(retry) && retry >= 0 ? retry : null,
-            fields,
-          );
-        }
-        return {
-          value: value as T,
-          status: response.status,
-          etag: response.headers.get("ETag"),
-          evidenceSha256: response.headers.get("X-Evidence-Sha256"),
-        };
-      } catch (error) {
-        if (error instanceof ApiError || error instanceof IntegrityError)
-          throw error;
+        }),
+      );
+      const raw = await withAbort(controller.signal, () => response.text());
+      const value = raw
+        ? parseBoundedJson(
+            raw,
+            method === "GET" && /^\/v1\/sessions\/[0-9a-f-]+$/i.test(path)
+              ? 67_108_864
+              : 1_048_576,
+          )
+        : null;
+      if (
+        response.status === 401 &&
+        !refresh &&
+        !options.public &&
+        !options.token
+      )
+        return run(true);
+      if (!response.ok) {
+        const error =
+          value && typeof value === "object"
+            ? (value as Record<string, unknown>)
+            : {};
+        const retryHeader = response.headers.get("Retry-After"),
+          retry = retryHeader === null ? NaN : Number(retryHeader);
+        const fields =
+          error.field_errors &&
+          typeof error.field_errors === "object" &&
+          !Array.isArray(error.field_errors)
+            ? (error.field_errors as Record<string, string>)
+            : {};
         throw new ApiError(
-          0,
-          "NETWORK_UNAVAILABLE",
-          "The service could not be reached. Your local records remain on this device.",
-          true,
+          response.status,
+          typeof error.code === "string" ? error.code : "SERVICE_ERROR",
+          typeof error.message === "string"
+            ? error.message
+            : "The service could not complete this request.",
+          Boolean(error.retryable),
+          typeof error.request_id === "string" ? error.request_id : null,
+          Number.isFinite(retry) && retry >= 0 ? retry : null,
+          fields,
         );
-      } finally {
-        clearTimeout(timeout);
-        options.signal?.removeEventListener("abort", abort);
-        this.pending.delete(controller);
       }
+      return {
+        value: value as T,
+        status: response.status,
+        etag: response.headers.get("ETag"),
+        evidenceSha256: response.headers.get("X-Evidence-Sha256"),
+      };
     };
-    return run(false);
+    try {
+      return await run(false);
+    } catch (error) {
+      if (error instanceof ApiError || error instanceof IntegrityError)
+        throw error;
+      throw new ApiError(
+        0,
+        "NETWORK_UNAVAILABLE",
+        "The service could not be reached. Your local records remain on this device.",
+        true,
+      );
+    } finally {
+      clearTimeout(timeout);
+      options.signal?.removeEventListener("abort", abort);
+      this.pending.delete(controller);
+    }
   }
   async download(
     path: string,
@@ -195,22 +253,37 @@ export class ApiClient {
         "DOWNLOAD_ORIGIN",
         "The export download route is invalid.",
       );
-    const token = await this.tokenProvider.accessToken();
-    if (!token)
-      throw new ApiError(401, "AUTH_REQUIRED", "Sign in to download.");
     const controller = new AbortController();
     this.pending.add(controller);
-    const timeout = setTimeout(() => controller.abort(), 60_000);
+    const timeout = setTimeout(
+      () =>
+        controller.abort(
+          new ApiError(
+            0,
+            "REQUEST_TIMEOUT",
+            "The export download did not complete within 60 seconds. Try again when connected.",
+            true,
+          ),
+        ),
+      60_000,
+    );
     try {
-      const response = await fetch(`${this.origin}${path}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-Data-Generation": String(generation),
-          "X-App-Version": this.appVersion,
-        },
-        signal: controller.signal,
-        redirect: "error",
-      });
+      const token = await withAbort(controller.signal, () =>
+        this.tokenProvider.accessToken(),
+      );
+      if (!token)
+        throw new ApiError(401, "AUTH_REQUIRED", "Sign in to download.");
+      const response = await withAbort(controller.signal, () =>
+        fetch(`${this.origin}${path}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "X-Data-Generation": String(generation),
+            "X-App-Version": this.appVersion,
+          },
+          signal: controller.signal,
+          redirect: "error",
+        }),
+      );
       if (!response.ok)
         throw new ApiError(
           response.status,
@@ -228,13 +301,24 @@ export class ApiClient {
           "DOWNLOAD_SIZE",
           "The export length is missing or outside the permitted bound.",
         );
-      const buffer = new Uint8Array(await response.arrayBuffer());
+      const buffer = new Uint8Array(
+        await withAbort(controller.signal, () => response.arrayBuffer()),
+      );
       if (buffer.byteLength !== length)
         throw new IntegrityError(
           "DOWNLOAD_INCOMPLETE",
           "The export download is incomplete.",
         );
       return buffer;
+    } catch (error) {
+      if (error instanceof ApiError || error instanceof IntegrityError)
+        throw error;
+      throw new ApiError(
+        0,
+        "NETWORK_UNAVAILABLE",
+        "The export could not be downloaded. Try again when connected.",
+        true,
+      );
     } finally {
       clearTimeout(timeout);
       this.pending.delete(controller);

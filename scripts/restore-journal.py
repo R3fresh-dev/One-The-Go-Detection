@@ -23,6 +23,7 @@ from otgd.canonical import canonical, digest, strict_loads
 from otgd.config import settings
 from otgd.db import Account, Artifact, Check, Dedup, Job, Outbox, Record, Registry, SystemState, factory, iso, now
 from otgd.storage import client, put_versioned, versioned_read
+from otgd.identity_keys import key_descriptor
 
 EVENT_LIMIT = 8192
 INVENTORY_LIMIT = 100000
@@ -261,11 +262,11 @@ def recover(backup_created_at, confirm_quiesced):
     if control.get('schema_version')!='1.0.0' or control.get('environment')!=cfg.environment or control.get('minimum_retention_days',0)<90 or control.get('maximum_recovery_age_days')!=35 or timestamp(control.get('established_at'))>backup:
         raise RecoveryBlocked('Journal does not prove the required post-backup interval/90-day retention policy')
     first=inventory(s3,bucket,'events/')
-    rows=read_inventory(bucket,first,{cfg.tombstone_key_id},time_now)
+    rows=read_inventory(bucket,first,{key_descriptor(cfg)['key_id']},time_now)
     second=inventory(s3,bucket,'events/')
     if first!=second: raise RecoveryBlocked('Journal changed during recovery; writers must remain paused')
     # Reading pinned versions again verifies content, not merely matching list results.
-    again=read_inventory(bucket,second,{cfg.tombstone_key_id},time_now)
+    again=read_inventory(bucket,second,{key_descriptor(cfg)['key_id']},time_now)
     if rows!=again: raise RecoveryBlocked('Repeated versioned inventory differs')
     plan=build_plan(rows)
     prior_cutoff=0

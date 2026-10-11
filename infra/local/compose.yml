@@ -42,6 +42,10 @@ x-environment: &environment
   AWS_SECRET_ACCESS_KEY: test
   AWS_DEFAULT_REGION: us-east-2
   AWS_EC2_METADATA_DISABLED: "true"
+  # Service-to-service traffic stays on the Compose network even when the
+  # developer's Docker client injects an outbound HTTPS proxy.
+  NO_PROXY: localhost,127.0.0.1,::1,postgres,localstack,identity,api,worker
+  no_proxy: localhost,127.0.0.1,::1,postgres,localstack,identity,api,worker
 
 services:
   postgres:
@@ -58,9 +62,9 @@ services:
       retries: 20
     restart: unless-stopped
   localstack:
-    image: localstack/localstack:2026.09.1@sha256:0c644ede65c2d0c95737e09a39007828bd381bdb07ca8200c6bf17d66a4ed191
+    # Apache-2.0 community release; the licensed current preset is explicit.
+    image: localstack/localstack:4.14.0@sha256:3ebc37595918b8accb852f8048fef2aff047d465167edd655528065b07bc364a
     environment:
-      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:?Supply your LocalStack developer or CI token}
       SERVICES: s3,sqs
       LOCALSTACK_HOST: localstack:4566
       SQS_ENDPOINT_STRATEGY: path
@@ -133,6 +137,12 @@ services:
       <<: *environment
       OTGD_DATABASE_POOL_SIZE: "3"
     command: [uv, run, --no-sync, python, -m, otgd.worker]
+    healthcheck:
+      test: [CMD, uv, run, --no-sync, python, -m, otgd.worker_health]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 35s
     depends_on:
       api: {condition: service_healthy}
     restart: unless-stopped

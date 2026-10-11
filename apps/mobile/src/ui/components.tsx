@@ -361,6 +361,7 @@ export function Choice<T extends string>({
             accessibilityRole="radio"
             accessibilityLabel={option.label}
             accessibilityState={{ checked: value === option.value }}
+            aria-checked={value === option.value}
             style={{
               minHeight: 48,
               justifyContent: "center",
@@ -625,6 +626,9 @@ export function Confirmation({
         }}
       >
         <View
+          role="dialog"
+          aria-modal
+          accessibilityLabel={sheet?.title}
           accessibilityViewIsModal
           style={{
             maxWidth: 500,

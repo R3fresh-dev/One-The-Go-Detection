@@ -232,6 +232,8 @@ def laboratory(client, account, store):
             {
                 "state": "active",
                 "document_sha256": "1" * 64,
+                "document_version": "fictional-approved-v1",
+                "invitation_id": "fictional-invitation-v1",
                 "consent_record_id": consent_id,
             },
         )
@@ -240,6 +242,8 @@ def laboratory(client, account, store):
                 "account_refs": [account],
                 "channels": {"saliva": CONFIGURATION},
                 "document_sha256": "1" * 64,
+                "document_version": "fictional-approved-v1",
+                "invitation_id": "fictional-invitation-v1",
             },
             ("configuration", CONFIGURATION): {
                 "configuration_id": CONFIGURATION,
@@ -1285,6 +1289,7 @@ def test_deletion_retires_revisions_and_scrubs_both_record_kinds(client, laborat
         )
 
 
+@pytest.mark.postgres
 def test_actual_postgresql_concurrent_revisions_cannot_branch(client, laboratory):
     from otgd.db import engine
 

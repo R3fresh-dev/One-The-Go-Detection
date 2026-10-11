@@ -5,13 +5,16 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import threading
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[1]
+_compilation_lock = threading.RLock()
 
 
 def read_json(path: Path):
@@ -38,17 +41,31 @@ def timestamp(value: str) -> datetime:
     return datetime.fromisoformat(value[:-1] + "+00:00")
 
 
-def validate_schema(value, filename: str):
-    documents = [read_json(p) for p in (ROOT / "contracts").glob("*.schema.json")]
-    registry = Registry().with_resources(
+@lru_cache(maxsize=1)
+def schema_registry(contract_root: Path):
+    """Source schemas are immutable for a process/release; authority is never cached."""
+    documents = [read_json(p) for p in contract_root.glob("*.schema.json")]
+    return Registry().with_resources(
         (doc["$id"], Resource.from_contents(doc)) for doc in documents
     )
-    document = read_json(ROOT / "contracts" / filename)
+
+
+@lru_cache(maxsize=64)
+def compiled_validator(contract_root: Path, filename: str):
+    document = read_json(contract_root / filename)
     Draft202012Validator.check_schema(document)
+    return Draft202012Validator(
+        document, registry=schema_registry(contract_root), format_checker=FormatChecker()
+    )
+
+
+def validate_schema(value, filename: str):
     finite_numbers(value)
-    Draft202012Validator(
-        document, registry=registry, format_checker=FormatChecker()
-    ).validate(value)
+    # functools caches are thread-safe but duplicate simultaneous cache misses.
+    # Serialize compilation only; payload validation remains outside the lock.
+    with _compilation_lock:
+        validator = compiled_validator((ROOT / "contracts").resolve(), filename)
+    validator.validate(value)
 
 
 def validate_measurement(value):

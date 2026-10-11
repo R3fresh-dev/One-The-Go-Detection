@@ -8,6 +8,7 @@ import re
 import secrets
 import threading
 from contextlib import contextmanager
+from datetime import datetime
 from uuid import UUID as PyUUID
 
 from botocore.exceptions import BotoCoreError, ClientError
@@ -90,6 +91,7 @@ from .dto import (
 )
 from .errors import response_problem
 from .replacement_links import replacement_links_view
+from .report_revisions import router as report_revision_router
 
 app = FastAPI(
     title="One-The-Go Detection",
@@ -265,9 +267,9 @@ def operation(
         return existing, True
     if revoked:
         raise Problem(401, "AUTH_REQUIRED")
-    if gen != account.generation:
+    if gen != account.generation and route != "/v1/auth/logout":
         raise Problem(410, "DATA_GENERATION_RETIRED")
-    if account.state != "active" and not (
+    if account.state != "active" and route != "/v1/auth/logout" and not (
         allow_generation_ack and account.state == "awaiting_generation_ack"
     ):
         raise Problem(403, "ACCOUNT_NOT_WRITABLE")
@@ -407,7 +409,14 @@ def job_view(job):
         "completed_at": iso(job.completed) if job.completed else None,
         "expires_at": iso(job.expires) if job.expires else None,
         "failure_code": job.failure,
-        "retained_categories": [],
+        "retained_categories": [
+            "identity_and_generation_barriers",
+            "audit_and_security_metadata",
+            "minimal_operation_receipts",
+            "operator_membership_references",
+            "private_cleanup_references",
+            "deletion_journal",
+        ] if job.kind == "deletion" else [],
         "policy_version": "privacy-v1",
         "attempt_count": job.attempts,
         "allowed_actions": ["refresh"] if state in ("pending", "running") else [],
@@ -431,6 +440,8 @@ def live():
 @app.get("/health/ready")
 def ready():
     with factory()() as db:
+        from .identity_keys import require_key
+        require_key(db)
         version = db.get(SystemState, "schema_version")
         recovery = db.get(SystemState, "recovery")
         if not version or version.body.get("version") != 1:
@@ -582,6 +593,8 @@ def logout(request: Request):
         entry, replay = operation(request, db, a, c, r, True)
         if replay:
             return answer(entry)
+        if request.state.json_value != {}:
+            raise Problem(422, "INVALID_LOGOUT_REQUEST")
         db.add(Revocation(id=family_hash(a.id, c["origin_jti"]), account_id=a.id))
         return answer(
             entry,
@@ -944,6 +957,9 @@ def consent(request: Request, study_id: Name, body: Consent):
     def action(db, a, c):
         recent(c)
         study = registry(db, "study", study_id)
+        acknowledgment = datetime.fromisoformat(body.acknowledged_at.replace("Z", "+00:00")).timestamp()
+        if acknowledgment < 0 or acknowledgment > now() + 5:
+            raise Problem(422, "CONSENT_ACKNOWLEDGMENT_TIME_INVALID")
         if a.id not in study.get("account_refs", []) or any(
             getattr(body, k) != study.get(k)
             for k in ("invitation_id", "document_version", "document_sha256")
@@ -956,8 +972,11 @@ def consent(request: Request, study_id: Name, body: Consent):
         ):
             raise Problem(403, "CONSENT_DOCUMENT_INVALID")
         existing = record(db, a, "consent", study_id)
-        if existing:
+        identity_fields = ("invitation_id", "document_version", "document_sha256")
+        if existing and all(existing.body.get(k) == getattr(body, k) for k in identity_fields):
             raise Problem(409, "CONSENT_ALREADY_RECORDED")
+        if existing and existing.body.get("state") == "withdrawn" and existing.body.get("invitation_id") == body.invitation_id:
+            raise Problem(403, "STUDY_REINVITATION_REQUIRED")
         data = {
             **body.data(),
             "study_id": study_id,
@@ -965,7 +984,16 @@ def consent(request: Request, study_id: Name, body: Consent):
             "state": "active",
             "accepted_at": iso(),
         }
-        save_record(db, a, "consent", study_id, data)
+        if existing:
+            previous_id = existing.body["consent_record_id"]
+            if not record(db, a, "consent_receipt", previous_id):
+                save_record(db, a, "consent_receipt", previous_id, existing.body)
+            existing.body = data
+            existing.sha256 = digest(data)
+            existing.revision += 1
+        else:
+            save_record(db, a, "consent", study_id, data)
+        save_record(db, a, "consent_receipt", data["consent_record_id"], data)
         return data, 201, {}, None
 
     return mutate(request, action)
@@ -1638,10 +1666,12 @@ def deletion_post(request: Request, body: DeleteRequest):
 
 @app.get("/v1/privacy/jobs/{job_id}")
 def privacy_status(request: Request, job_id: UUID):
-    with access(request, allow_inactive=True) as (db, a, c, r):
+    with access(request, receipt=True,allow_inactive=True) as (db, a, c, r):
         job = db.get(Job, job_id)
         if not job or job.account_id != a.id or job.kind not in ("export", "deletion"):
             raise Problem(404, "NOT_FOUND")
+        if job.kind=='export' and (r or a.state!='active'):
+            raise Problem(403,'CAPABILITY_DENIED')
         if job.kind == "export" and job.generation != a.generation:
             raise Problem(410, "DATA_GENERATION_RETIRED")
         return job_view(job)
@@ -1733,6 +1763,4 @@ app.add_middleware(
 
 
 # Report revisions have their own finalized-check authorization and immutable DTOs.
-from .report_revisions import router as report_revision_router
-
 app.include_router(report_revision_router)

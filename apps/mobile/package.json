@@ -18,7 +18,8 @@
     "fixtures:generate": "node --import tsx scripts/generate-contract-fixtures.ts",
     "test:e2e": "playwright test",
     "serve:web": "node scripts/serve-web.mjs",
-    "format:check": "prettier --check App.tsx app.config.ts src/controller.ts src/core/profileForm.ts src/core/operationGuards.ts src/core/serializedVault.ts src/services tests e2e scripts"
+    "format:check": "prettier --check App.tsx app.config.ts src/controller.ts src/core/profileForm.ts src/core/operationGuards.ts src/core/serializedVault.ts src/services tests e2e scripts",
+    "test:coverage": "node scripts/test-coverage.mjs"
   },
   "dependencies": {
     "@noble/hashes": "2.4.0",

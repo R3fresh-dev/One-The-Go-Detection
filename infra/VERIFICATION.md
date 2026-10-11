@@ -2,6 +2,8 @@
 
 Checked **2026-10-11** in the repository workspace. No AWS stack, external account, notification subscription, purchase or native application binary was created by this infrastructure work.
 
+This is the original infrastructure checkpoint. Docker is now available, canonical containers have started and passed health/initialization checks, and actual PostgreSQL suites have executed. Final combined-source integration/performance and exact-revision GitHub evidence remain under verification. Use [the current merge criteria](../docs/CI_GATES.md) and [local setup](README.md); historical unavailable-runtime and mandatory-token statements below are superseded by the explicit community LocalStack default and mandatory aggregate workflow.
+
 ## Executed here
 
 | Check | Evidence |

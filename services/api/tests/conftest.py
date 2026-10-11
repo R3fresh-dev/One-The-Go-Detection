@@ -21,6 +21,8 @@ def client():
     Base.metadata.create_all(eng)
     with factory().begin() as db:
         db.add(SystemState(key="schema_version", body={"version": 1}))
+        from otgd.identity_keys import KEY_STATE,key_descriptor
+        db.add(SystemState(key=KEY_STATE,body=key_descriptor()))
     verifier.keys = {"test": KEY.public_key()}
     verifier.expires = time.monotonic() + 3600
     with TestClient(app) as client:
