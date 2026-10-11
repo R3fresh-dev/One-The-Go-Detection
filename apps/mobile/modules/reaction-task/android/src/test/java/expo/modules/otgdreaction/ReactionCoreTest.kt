@@ -47,12 +47,12 @@ class ReactionCoreTest {
         if (expected.isNull("selected_input_sequence")) assertNull(t.selectedInputSequence) else assertEquals(expected.getInt("selected_input_sequence"), t.selectedInputSequence)
         number(expected,"response_time_ms",t.responseTimeMs); number(expected,"correct_go_rt_ms",t.correctGoRtMs)
         if (expected.has("input_dispositions")) {
-          val dispositions = expected.getJSONArray("input_dispositions")
-          assertEquals(List(dispositions.length()) { dispositions.getString(it) },result.inputs.map { it.disposition })
+          val expectedValues = expected.getJSONArray("input_dispositions")
+          assertEquals((0 until expectedValues.length()).map { expectedValues.getString(it) },result.inputs.map { it.disposition })
         }
         if (expected.has("sorted_native_sequences")) {
-          val sequences = expected.getJSONArray("sorted_native_sequences")
-          assertEquals(List(sequences.length()) { sequences.getInt(it) },result.inputs.map { it.nativeSequence })
+          val expectedValues = expected.getJSONArray("sorted_native_sequences")
+          assertEquals((0 until expectedValues.length()).map { expectedValues.getInt(it) },result.inputs.map { it.nativeSequence })
         }
         if (expected.has("ignored_after_terminal_count")) assertEquals(expected.getInt("ignored_after_terminal_count"),ignored)
       }
