@@ -138,6 +138,10 @@ export class PlatformStack extends Stack {
         secrets:dbMigration?{...runtimeSecrets,OTGD_DATABASE_PASSWORD:ecs.Secret.fromSecretsManager(database.secret!,'password'),OTGD_APP_DATABASE_PASSWORD:ecs.Secret.fromSecretsManager(appSecret,'password')}:runtimeSecrets,
         logging:ecs.LogDrivers.awsLogs({logGroup,streamPrefix:name}),stopTimeout:Duration.seconds(120),
         linuxParameters:new ecs.LinuxParameters(this,`${name}Linux`,{initProcessEnabled:true}),
+        ...(name==='worker'?{healthCheck:{
+          command:['CMD','uv','run','--no-sync','python','-m','otgd.worker_health'],
+          interval:Duration.seconds(10),timeout:Duration.seconds(5),retries:3,startPeriod:Duration.seconds(35),
+        }}:{}),
       });
       // Private writable scratch for bounded exports; never a shared/public volume.
       task.addVolume({name:'scratch'});

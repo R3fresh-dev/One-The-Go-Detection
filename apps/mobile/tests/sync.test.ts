@@ -12,8 +12,133 @@ import { clone, digest } from "../src/core/integrity";
 import { ApiClient, ApiError, type ApiResponse } from "../src/services/api";
 import { queueCheck, queueMutation, SyncEngine } from "../src/services/sync";
 import type { JsonObject, WorkspaceState } from "../src/core/types";
+import { deferred } from "./support/customer";
 
 const at = "2026-10-11T15:00:00.000Z";
+
+test("a queued receipt commit cannot revive consent when withdrawal publishes before its serialized callback", async () => {
+  const payload = {
+    invitation_id: randomUUID(),
+    document_version: "v1",
+    document_sha256: "a".repeat(64),
+    accepted: true,
+    acknowledged_at: at,
+  };
+  let state = queueMutation(
+    emptyWorkspace("local:account", at),
+    "consent",
+    { study_id: "unit-study", payload },
+    randomUUID,
+    at,
+  );
+  const queued = deferred<void>(),
+    publishWithdrawal = deferred<void>();
+  let calls = 0;
+  const api = {
+    request: async () => {
+      calls++;
+      return {
+        value: {
+          ...payload,
+          study_id: "unit-study",
+          consent_record_id: randomUUID(),
+          state: "active",
+          accepted_at: at,
+        },
+        status: 201,
+        etag: null,
+        evidenceSha256: null,
+      };
+    },
+  } as unknown as ApiClient;
+  const engine = new SyncEngine(
+    api,
+    () => state,
+    async (change) => {
+      queued.resolve();
+      await publishWithdrawal.promise;
+      state = change(state);
+    },
+    () => "same-workspace",
+    () => true,
+  );
+  const pending = engine.run(state.queue[0]!.id, true);
+  await queued.promise;
+  state = clone(state);
+  state.queue[0]!.state = "blocked";
+  state.queue[0]!.error = "WITHDRAWAL_PENDING";
+  publishWithdrawal.resolve();
+  await pending;
+  assert.equal(state.queue[0]!.state, "blocked");
+  assert.equal(state.queue[0]!.error, "WITHDRAWAL_PENDING");
+  assert.equal(calls, 1);
+});
+
+test("withdrawal fences an in-flight consent against both a late receipt and a late retryable failure", async () => {
+  for (const failure of [false, true]) {
+    const payload = {
+      invitation_id: randomUUID(),
+      document_version: "v1",
+      document_sha256: "a".repeat(64),
+      accepted: true,
+      acknowledged_at: at,
+    };
+    let state = queueMutation(
+      emptyWorkspace("local:account", at),
+      "consent",
+      { study_id: "unit-study", payload },
+      randomUUID,
+      at,
+    );
+    const id = state.queue[0]!.id,
+      entered = deferred<void>(),
+      reply = deferred<ApiResponse<unknown>>();
+    let calls = 0;
+    const api = {
+      request: async () => {
+        calls++;
+        entered.resolve();
+        return reply.promise;
+      },
+    } as unknown as ApiClient;
+    const engine = new SyncEngine(
+      api,
+      () => state,
+      async (change) => {
+        state = change(state);
+      },
+      () => "same-workspace",
+      () => true,
+    );
+    const pending = engine.run(id, true);
+    await entered.promise;
+    state = clone(state);
+    state.queue[0]!.state = "blocked";
+    state.queue[0]!.error = "WITHDRAWAL_PENDING";
+    if (failure)
+      reply.reject(
+        new ApiError(0, "REQUEST_CANCELED", "Canceled for withdrawal", true),
+      );
+    else
+      reply.resolve({
+        value: {
+          ...payload,
+          study_id: "unit-study",
+          consent_record_id: randomUUID(),
+          state: "active",
+          accepted_at: at,
+        },
+        status: 201,
+        etag: null,
+        evidenceSha256: null,
+      });
+    await pending;
+    await engine.retryDue(true);
+    assert.equal(state.queue[0]!.state, "blocked");
+    assert.equal(state.queue[0]!.error, "WITHDRAWAL_PENDING");
+    assert.equal(calls, 1);
+  }
+});
 function seeded() {
   let state = emptyWorkspace("local:account", at);
   let check = createCheck(state, {

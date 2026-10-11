@@ -18,7 +18,7 @@ Run these commands from the repository root. Docker Compose and an appropriate L
 For source verification without Docker:
 
 ```bash
-uv run --project services/api pytest -q services/api/tests
+uv run --project services/api pytest -q services/api/tests -m 'not postgres'
 uv run --project services/api ruff check services/api/otgd --select E4,E7,E9,F
 uv run --project services/api python tools/generate_application_contracts.py
 uv run --project services/api python tools/verify_specs.py
@@ -76,6 +76,10 @@ Deletion first advances the account generation and records a durable local barri
 Cleanup claims an artifact disposition before external deletion. Artifact completion rejects a cleanup claim and rechecks immutable metadata under the row lock, preventing resurrection of a version already selected for removal. Cleanup pages use per-row due times, independent failure handling and repeated generation-prefix sweeps. Already admitted download bytes and copies the user has exported cannot be recalled.
 
 Restoring PostgreSQL does not restore the journal or its independent key. [Recovery tooling](../../scripts/restore-journal.py) requires consistent journal inventories and provenance, applies generation barriers before readiness, and suspends recovered study/device scopes. A missing provider subject for an incomplete account deletion requires independently verified identity reconciliation; its HMAC is not treated as reversible.
+
+The identity tombstone key has immutable migration-owned provenance: its configured label and SHA-256 fingerprint of the secret bytes. Admission and readiness check that provenance before looking up or creating an account. Replacing either the secret or its label fails closed, and the restore inventory must name the same effective key ID. Key rotation is unsupported until a retained-keyring migration is implemented. An existing database without recorded key provenance requires independent reconciliation; migration does not guess which key originally derived its accounts.
+
+Research consent preserves each accepted receipt separately from the current consent pointer. The receipt includes the exact approved invitation, document version/hash, actual client acknowledgment time and server acceptance time. A changed approved version or invitation requires explicit new consent even when its text hash is unchanged. Lost-response retries keep their original acknowledgment and return the original immutable receipt. Withdrawal changes the current pointer without rewriting the historical acceptance. Deletion receipts declare retained identity barriers, audit/security metadata, minimal receipts, membership references, cleanup references and journal evidence; they do not claim those categories were erased.
 
 ## Deployment authority
 

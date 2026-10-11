@@ -30,6 +30,7 @@ from .db import (
 )
 from .domain import measurement_result, safe_result, verify_evidence
 from .errors import Problem
+from .worker_health import WorkerHealth
 
 stop = threading.Event()
 
@@ -137,7 +138,7 @@ def current(db, claim):
     return account, job
 
 
-def heartbeat(claim, receipt, done, lost):
+def heartbeat(claim, receipt, done, lost, health=None, channel=None):
     while not done.wait(30):
         try:
             with factory().begin() as db:
@@ -149,7 +150,11 @@ def heartbeat(claim, receipt, done, lost):
                     ReceiptHandle=receipt,
                     VisibilityTimeout=120,
                 )
+            if health is not None:
+                health.success(channel)
         except Exception:
+            if health is not None:
+                health.failure(channel)
             lost.set()
             return
 
@@ -437,7 +442,7 @@ def fail_claim(claim, error):
             outbox.lease_until = None
 
 
-def run_job(job_id, receipt=None):
+def run_job(job_id, receipt=None, health=None, channel=None):
     claim = claim_job(job_id)
     if not claim:
         with factory()() as db:
@@ -450,7 +455,7 @@ def run_job(job_id, receipt=None):
     done = threading.Event()
     lost = threading.Event()
     thread = threading.Thread(
-        target=heartbeat, args=(claim, receipt, done, lost), daemon=True
+        target=heartbeat, args=(claim, receipt, done, lost, health, channel), daemon=True
     )
     thread.start()
     try:
@@ -678,7 +683,7 @@ def cleanup_once():
     }
 
 
-def consume():
+def consume(health=None, channel=None):
     while not stop.is_set():
         try:
             messages = (
@@ -691,6 +696,8 @@ def consume():
                 )
                 .get("Messages", [])
             )
+            if health is not None:
+                health.success(channel)
             for msg in messages:
                 try:
                     body = strict_loads(msg["Body"])
@@ -699,7 +706,7 @@ def consume():
                         or body["schema_version"] != "1.0.0"
                     ):
                         raise ValueError()
-                    result = run_job(body["job_id"], msg["ReceiptHandle"])
+                    result = run_job(body["job_id"], msg["ReceiptHandle"], health, channel)
                     if result in ("completed", "terminal", "deferred"):
                         storage.client("sqs").delete_message(
                             QueueUrl=settings().queue_url,
@@ -710,6 +717,8 @@ def consume():
                         "invalid_queue_delivery"
                     )  # No message bodies.
         except Exception:
+            if health is not None:
+                health.failure(channel)
             logging.getLogger("otgd.worker").warning("queue_dependency_failed")
             stop.wait(2)
 
@@ -723,15 +732,22 @@ def main():
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: stop.set())
     next_cleanup = 0
+    health = WorkerHealth()
     with ThreadPoolExecutor(max_workers=2) as executor:
-        futures = [executor.submit(consume) for _ in range(2)]
+        futures = [executor.submit(consume, health, f'consumer-{index}') for index in range(2)]
         while not stop.is_set():
             try:
                 dispatch_once()
+                health.success('dispatcher')
                 if now() >= next_cleanup:
-                    cleanup_once()
+                    outcome = cleanup_once()
+                    if outcome['failed']:
+                        health.failure('cleanup')
+                    else:
+                        health.success('cleanup')
                     next_cleanup = now() + 15
             except Exception:
+                health.failure('dispatcher')
                 logging.getLogger("otgd.worker").warning("dispatcher_dependency_failed")
             stop.wait(1)
         for f in futures:

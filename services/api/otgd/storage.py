@@ -155,6 +155,7 @@ def delete_versions(bucket, prefix):
 
 
 def journal_accept(job, account, claims_subject=None):
+    from .identity_keys import key_descriptor
     body = {
         "schema_version": "1.0.0",
         "event_type": "deletion_accepted",
@@ -167,7 +168,7 @@ def journal_accept(job, account, claims_subject=None):
         "policy_version": "privacy-v1",
         "accepted_at": job.body["accepted_at"],
         "subject_ref_hmac": account.subject_hash,
-        "hmac_key_id": settings().tombstone_key_id,
+        "hmac_key_id": key_descriptor()['key_id'],
     }
     raw = canonical(body)
     version = put_versioned(

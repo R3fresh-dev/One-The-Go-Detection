@@ -21,6 +21,7 @@ import { DevicePanel } from "../device";
 import { digestText, utf8 } from "../core/integrity";
 import type { CheckRecord, JsonObject, PrivacyJob } from "../core/types";
 import { BUILD } from "../platform/config";
+import { assessStudyConsent } from "./study-consent";
 import {
   action,
   CheckRow,
@@ -1190,18 +1191,24 @@ function StudyCard({
     [accepted, setAccepted] = useState(false),
     text = String(study.document_text ?? ""),
     hash = String(study.document_sha256 ?? ""),
-    verified =
-      utf8(text).length <= 65_536 && !!text && digestText(text) === hash,
-    consent = study.consent as JsonObject | null;
+    assessment = assessStudyConsent(study),
+    verified = assessment.documentValid,
+    consent = assessment.receipt;
   return (
     <Card>
       <Title small>{String(study.name ?? study.study_id)}</Title>
       <Badge>
         {study.local_withdrawal_pending
           ? "Withdrawal pending"
-          : consent
-            ? friendly(consent.state)
-            : "Invitation available"}
+          : assessment.current
+            ? "Current consent recorded"
+            : assessment.needsFreshInvitation
+              ? "New invitation required"
+              : consent?.state === "active"
+                ? "Updated information requires consent"
+                : consent
+                  ? friendly(consent.state)
+                  : "Invitation available"}
       </Badge>
       <Fact label="Study" value={String(study.study_id)} />
       <Fact
@@ -1235,7 +1242,14 @@ function StudyCard({
             check. Consent is unavailable.
           </Notice>
         ))}
-      {!consent && !study.local_withdrawal_pending && (
+      {assessment.needsFreshInvitation && (
+        <Notice>
+          You withdrew from this invitation. A new server-issued invitation is
+          required before you can consent again; refreshing this document does
+          not reverse withdrawal.
+        </Notice>
+      )}
+      {assessment.mayAccept && (
         <>
           <SwitchRow
             title="I consent to this exact study document."
@@ -1324,7 +1338,12 @@ export function StudiesScreen({ controller, model }: ScreenProps) {
       )}
       {model.state?.studies.map((study) => (
         <StudyCard
-          key={String(study.study_id)}
+          key={JSON.stringify([
+            study.study_id,
+            study.invitation_id,
+            study.document_version,
+            study.document_sha256,
+          ])}
           study={study}
           controller={controller}
         />

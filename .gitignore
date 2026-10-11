@@ -1,4 +1,4 @@
-.venv/
+.venv
 venv/
 __pycache__/
 *.py[cod]
@@ -32,9 +32,15 @@ apps/mobile/android/
 apps/mobile/ios/
 apps/mobile/native-build/
 apps/mobile/dist/
+apps/mobile/native-build/
 infra/dist/
 services/api/htmlcov/
 .local/
 
 # Official public RDS trust anchors, verified by manifest (not private keys)
 !infra/certs/global-bundle.pem
+.coverage
+coverage.xml
+reports/
+node_modules
+.local-identity/

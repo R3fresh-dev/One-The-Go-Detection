@@ -2061,27 +2061,72 @@ export class AppController {
   }
   async consent(study: JsonObject): Promise<void> {
     this.requireWritable();
-    if (!(await this.signIn(true))) return;
-    const scope = this.scope();
+    // This is the explicit confirmation time, before the browser reauthentication.
+    // A lost receipt reuses the original durable intent instead of confirming again.
+    const acknowledgedAt = now();
     const text = String(study.document_text ?? ""),
       hash = String(study.document_sha256 ?? "");
-    if (!text || digestText(text) !== hash)
+    if (
+      !text ||
+      digestText(text) !== hash ||
+      typeof study.study_id !== "string" ||
+      typeof study.invitation_id !== "string" ||
+      typeof study.document_version !== "string"
+    )
       throw new IntegrityError(
         "STUDY_DOCUMENT_INVALID",
         "Approved study information is missing or could not be verified.",
       );
-    await this.api.request(`/v1/studies/${study.study_id}/consents`, {
-      method: "POST",
-      body: {
-        invitation_id: study.invitation_id,
-        document_version: study.document_version,
-        document_sha256: hash,
-        accepted: true,
-      },
-      generation: this.model.state!.generation,
-      key: newId(),
-    });
+    const studyId = study.study_id,
+      invitationId = study.invitation_id,
+      documentVersion = study.document_version;
+    if (!(await this.signIn(true))) return;
+    this.requireWritable();
+    const scope = this.scope(),
+      state = this.model.state!;
+    const matches = (q: WorkspaceState["queue"][number]) =>
+      q.kind === "consent" &&
+      q.generation === state.generation &&
+      q.body.study_id === studyId &&
+      (q.body.payload as JsonObject)?.invitation_id === invitationId &&
+      (q.body.payload as JsonObject)?.document_version === documentVersion &&
+      (q.body.payload as JsonObject)?.document_sha256 === hash;
+    let intent = state.queue.find(matches);
+    if (!intent) {
+      await scope.wait(
+        this.commit((current) =>
+          queueMutation(
+            current,
+            "consent",
+            {
+              study_id: studyId,
+              payload: {
+                invitation_id: invitationId,
+                document_version: documentVersion,
+                document_sha256: hash,
+                accepted: true,
+                acknowledged_at: acknowledgedAt,
+              },
+            },
+            newId,
+            acknowledgedAt,
+          ),
+        ),
+      );
+      intent = this.model.state!.queue.find(matches)!;
+    }
+    await scope.wait(this.sync.run(intent.id, true));
     scope.assertCurrent();
+    if (
+      this.model.state!.queue.find((q) => q.id === intent!.id)?.state !==
+      "synced"
+    ) {
+      this.patch({
+        message:
+          "Your exact study consent confirmation is saved as a pending request. Its original timestamp and request identity will be retained when reconciling the receipt. Research access is not confirmed yet.",
+      });
+      return;
+    }
     await scope.wait(this.refreshStudies());
     await this.refreshCapabilities();
     if (!scope.current()) return;
@@ -2108,9 +2153,12 @@ export class AppController {
           : x,
       );
       next.queue = next.queue.map((q) =>
-        q.kind === "check" &&
+        (q.kind === "check" || q.kind === "consent") &&
         q.state !== "synced" &&
-        s.checks.find((c) => c.id === q.check_id)?.snapshot.study_id === studyId
+        (q.kind === "consent"
+          ? q.body.study_id === studyId
+          : s.checks.find((c) => c.id === q.check_id)?.snapshot.study_id ===
+            studyId)
           ? { ...q, state: "blocked", error: "WITHDRAWAL_PENDING" }
           : q,
       );
@@ -2145,9 +2193,12 @@ export class AppController {
     await credentialRemoval;
     if (flow !== this.authFlow) return;
     if (removeLocal && this.store) await this.store.clear();
+    if (flow !== this.authFlow) return;
     this.workspaceEpoch = newId();
     await this.writes.catch(() => {});
+    if (flow !== this.authFlow) return;
     if (this.store) await this.store.close();
+    if (flow !== this.authFlow) return;
     this.store = null;
     this.patch({
       state: null,
@@ -2161,6 +2212,7 @@ export class AppController {
       historyCursor: null,
     });
     await this.openGuest();
+    if (flow !== this.authFlow) return;
     this.patch({
       route: "welcome",
       message:
@@ -2175,13 +2227,16 @@ export class AppController {
           generation,
           key: newId(),
         });
+        if (flow !== this.authFlow) return;
         await providerRevoke;
+        if (flow !== this.authFlow) return;
         if (providerLogout) await this.auth.openProviderLogout(providerLogout);
       } catch {
-        this.patch({
-          message:
-            "Signed out on this device. Remote token or provider-session revocation was not confirmed.",
-        });
+        if (flow === this.authFlow)
+          this.patch({
+            message:
+              "Signed out on this device. Remote token or provider-session revocation was not confirmed.",
+          });
       }
     } else
       this.patch({

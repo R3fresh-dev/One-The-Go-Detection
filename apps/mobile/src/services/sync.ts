@@ -177,7 +177,7 @@ export class SyncEngine {
       queue.kind === "withdrawal" || queue.kind === "deletion";
     const ready = () =>
       this.ordinaryWritesAllowed() ||
-      !["check", "profile"].includes(queue.kind) ||
+      !["check", "profile", "consent"].includes(queue.kind) ||
       queue.state === "awaiting_result";
     if (!ready()) return;
     if (
@@ -192,9 +192,14 @@ export class SyncEngine {
       workspace = state.workspace;
     this.active = true;
     const guard = () => {
+      const current = this.read()?.queue.find((item) => item.id === queueId);
       if (
         this.epoch() !== epoch ||
         this.read()?.workspace !== workspace ||
+        !current ||
+        ["synced", "blocked", "conflict", "quarantined"].includes(
+          current.state,
+        ) ||
         !this.available() ||
         !ready()
       )
@@ -208,12 +213,18 @@ export class SyncEngine {
     ) => {
       guard();
       await this.commit((current) => {
+        guard();
         const next = clone(current);
         const q = next.queue.find((x) => x.id === queueId);
         if (!q)
           throw new IntegrityError(
             "QUEUE_REMOVED",
             "This queued operation was canceled.",
+          );
+        if (["synced", "blocked", "conflict", "quarantined"].includes(q.state))
+          throw new IntegrityError(
+            "QUEUE_FENCED",
+            "This operation was fenced while its receipt was being saved.",
           );
         change(next, q);
         return next;
@@ -382,9 +393,22 @@ export class SyncEngine {
       ) {
         const disposition = errorDisposition(error);
         await this.commit((current) => {
+          if (
+            this.epoch() !== epoch ||
+            current.workspace !== workspace ||
+            !this.available() ||
+            !ready()
+          )
+            return current;
           let next = clone(current);
           const q = next.queue.find((q) => q.id === queueId);
-          if (!q) return next;
+          // Withdrawal/deletion may fence an operation while its HTTP reply is
+          // in flight. Neither a success nor an error may revive that intent.
+          if (
+            !q ||
+            ["synced", "blocked", "conflict", "quarantined"].includes(q.state)
+          )
+            return next;
           q.state = disposition.state;
           q.error = disposition.message;
           q.attempts++;
@@ -457,11 +481,13 @@ export class SyncEngine {
     const path =
       queue.kind === "withdrawal"
         ? `/v1/studies/${queue.body.study_id}/withdrawals`
-        : queue.kind === "deletion"
-          ? "/v1/privacy/deletion-requests"
-          : queue.kind === "export"
-            ? "/v1/privacy/exports"
-            : "/v1/me/acknowledgments";
+        : queue.kind === "consent"
+          ? `/v1/studies/${queue.body.study_id}/consents`
+          : queue.kind === "deletion"
+            ? "/v1/privacy/deletion-requests"
+            : queue.kind === "export"
+              ? "/v1/privacy/exports"
+              : "/v1/me/acknowledgments";
     const response = await this.api.request<unknown>(path, {
       ...common,
       body: queue.body.payload ?? queue.body,
@@ -477,8 +503,41 @@ export class SyncEngine {
           "The notice receipt does not match the exact acknowledged version.",
         );
     }
+    if (queue.kind === "consent") {
+      const receipt = requireObject(response.value);
+      const payload = requireObject(queue.body.payload);
+      if (
+        receipt.study_id !== queue.body.study_id ||
+        receipt.state !== "active" ||
+        receipt.accepted !== true ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          String(receipt.consent_record_id),
+        ) ||
+        typeof receipt.accepted_at !== "string" ||
+        !receipt.accepted_at.endsWith("Z") ||
+        !Number.isFinite(Date.parse(receipt.accepted_at)) ||
+        [
+          "invitation_id",
+          "document_version",
+          "document_sha256",
+          "acknowledged_at",
+        ].some((key) => receipt[key] !== payload[key])
+      )
+        throw new IntegrityError(
+          "CONSENT_RECEIPT_MISMATCH",
+          "The consent receipt does not match the exact confirmed study document and acknowledgment.",
+        );
+    }
     await save((s, q) => {
       q.state = "synced";
+      q.error = null;
+      q.next_attempt_at = null;
+      if (queue.kind === "consent")
+        s.studies = s.studies.map((study) =>
+          study.study_id === queue.body.study_id
+            ? { ...study, consent: response.value as JsonObject }
+            : study,
+        );
       if (
         queue.kind === "acknowledgment" &&
         s.notice?.sha256 === queue.body.sha256

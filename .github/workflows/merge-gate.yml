@@ -1,0 +1,95 @@
+name: Required application gates
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  merge_group:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  application:
+    name: ${{ matrix.gate }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [unit-coverage, atdd, components]
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+      OTGD_ENVIRONMENT: test
+      OTGD_DATABASE_URL: 'sqlite://'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --project services/api --locked
+      - run: npm ci
+        working-directory: apps/mobile
+      - run: npm run typecheck
+        working-directory: apps/mobile
+      - name: Build actual shared browser application
+        if: matrix.gate != 'unit-coverage'
+        run: npm run export:web
+        working-directory: apps/mobile
+      - name: Install actual Chromium
+        if: matrix.gate != 'unit-coverage'
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/mobile
+      - run: python scripts/ci_gate.py '${{ matrix.gate }}'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: evidence-${{ matrix.gate }}
+          path: |
+            reports/
+            apps/mobile/reports/
+            apps/mobile/playwright-report/
+            apps/mobile/test-results/
+          if-no-files-found: error
+          retention-days: 14
+  platform:
+    uses: ./.github/workflows/platform.yml
+  native:
+    uses: ./.github/workflows/native-build.yml
+  merge-gate:
+    name: merge-gate
+    if: always()
+    needs: [application, platform, native]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Reject every failed, skipped or cancelled mandatory gate
+        env:
+          APPLICATION: ${{ needs.application.result }}
+          PLATFORM: ${{ needs.platform.result }}
+          NATIVE: ${{ needs.native.result }}
+        run: test "$APPLICATION" = success && test "$PLATFORM" = success && test "$NATIVE" = success
+      - name: Preserve exact revision evidence
+        env:
+          REVISION: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          mkdir -p reports
+          python3 - <<'PYCODE'
+          import json,os
+          json.dump({'revision':os.environ['REVISION'],'run_url':os.environ['RUN_URL'],'passed':['unit-coverage','atdd','components','performance','live-dependencies','docker-health','localstack-api','specifications','native-android','native-ios','firmware']},open('reports/gates.json','w'),indent=2)
+          PYCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: exact-revision-merge-evidence
+          path: reports/gates.json
+          if-no-files-found: error

@@ -12,8 +12,8 @@ from otgd.storage import client, versioned_read
 def main():
     s=settings()
     if s.environment!='local' or not s.aws_endpoint_url: raise RuntimeError('This probe requires the local Compose services')
-    httpx.get('http://api:8000/health/ready',timeout=10).raise_for_status()
-    jwks=httpx.get('http://identity:8081/.well-known/jwks.json',timeout=10);jwks.raise_for_status()
+    httpx.get('http://api:8000/health/ready',timeout=10,trust_env=False).raise_for_status()
+    jwks=httpx.get('http://identity:8081/.well-known/jwks.json',timeout=10,trust_env=False);jwks.raise_for_status()
     if not jwks.json().get('keys'): raise RuntimeError('The real local issuer has no signing key')
     s3=client('s3');sqs=client('sqs');ident=str(uuid4())
     key='verification/'+ident+'.json';payload=b'{"synthetic":true}'

@@ -39,6 +39,8 @@ Some of these branches need additional software as well as real hardware/protoco
 
 ## Executed checks in this workspace
 
+The entries below are historical checkpoints. The current merge-gate fixes are under verification: combined API/shared-scientific unit coverage exceeds 82%, mobile business-module unit coverage exceeds 87%, Android module tests have executed seven cases, and all five Docker services plus both initialization jobs passed their state checks. Full combined integration/performance, exact-revision GitHub execution and branch-protection read-back remain pending. Follow [CI_GATES.md](docs/CI_GATES.md); do not treat earlier passing checks as final-revision evidence.
+
 | Check | Observed evidence |
 |---|---|
 | Specification review | Three independent review perspectives; 38 original findings corrected and re-reviewed before implementation; strict OpenSpec validation and structural verification passed at the specification checkpoint. |

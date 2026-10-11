@@ -37,7 +37,7 @@ def prepare(host='localhost',lan=False):
         with os.fdopen(os.open(env,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'w') as f:
             # Compose single quotes preserve literal dollar signs in tokens.
             f.write('\n'.join(k+"='"+v.replace("'","\\'")+"'" for k,v in rows.items())+'\n')
-        print('Created protected local settings. Add a valid LocalStack token if one was not supplied in the environment.')
+        print('Created protected local settings. Default Apache-2.0 LocalStack 4.14 needs no token; the explicit licensed preset requires an authorized token.')
     key=LOCAL/'secrets/identity-key.pem'
     key.parent.mkdir(mode=0o700,exist_ok=True)
     if not key.exists():
@@ -53,11 +53,13 @@ def main():
     p.add_argument('--host',default='localhost');p.add_argument('--lan',action='store_true')
     p.add_argument('--confirm-local-data-loss',action='store_true')
     p.add_argument('--confirm-fictional-workspace',action='store_true')
+    p.add_argument('--licensed-localstack',action='store_true',help='Select the pinned current licensed image; requires authorized LOCALSTACK_AUTH_TOKEN')
     a=p.parse_args()
     if a.command=='prepare': prepare(a.host,a.lan);return
     if not shutil.which('docker'): raise RuntimeError('Docker is unavailable; local integration is UNEXECUTED')
     if not (LOCAL/'.env').exists(): raise RuntimeError('Run prepare first')
     cmd=['docker','compose','--project-name','otgd-local','--env-file',str(LOCAL/'.env'),'-f',str(LOCAL/'compose.yml')]
+    if a.licensed_localstack:cmd+=['-f',str(LOCAL/'compose.localstack-licensed.yml')]
     operations={
         'up':['up','--build','--detach','--wait','--wait-timeout','180'],
         'down':['down'], 'status':['ps'], 'logs':['logs','--tail','100'],

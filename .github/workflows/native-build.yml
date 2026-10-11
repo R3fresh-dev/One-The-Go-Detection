@@ -1,11 +1,7 @@
 name: Android iOS and simulator firmware
 
 on:
-  pull_request:
-    paths: ['apps/mobile/**', '!apps/mobile/**/*.md', 'firmware/**', 'openspec/changes/production-mobile-platform/fixtures/**', '.github/workflows/native-build.yml']
-  push:
-    branches: [main]
-    paths: ['apps/mobile/**', '!apps/mobile/**/*.md', 'firmware/**', 'openspec/changes/production-mobile-platform/fixtures/**', '.github/workflows/native-build.yml']
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -35,7 +31,7 @@ jobs:
         working-directory: apps/mobile
       - run: npm run typecheck
         working-directory: apps/mobile
-      - run: node --import tsx --test tests/*.test.ts src/device/tests/*.test.ts
+      - run: npm run test:coverage
         working-directory: apps/mobile
       - run: node modules/scripts/verify-native-assets.mjs
         working-directory: apps/mobile
@@ -107,6 +103,8 @@ jobs:
       - name: Compile native modules, run Kotlin golden suites, build both local APKs
         run: ./gradlew --no-daemon --max-workers=2 --init-script ../modules/scripts/local-preview.init.gradle -PreactNativeDevServerPort=8082 -PreactNativeArchitectures=arm64-v8a,x86_64 :otgd-reaction-task:testDebugUnitTest :app:assembleDebug :app:assembleRelease
         working-directory: apps/mobile/android
+      - name: Require every native fixture test to execute
+        run: python3 scripts/ci_gate.py verify-junit apps/mobile/modules/reaction-task/android/build/test-results/testDebugUnitTest/*.xml
       - name: Inspect standalone local APK bundle, application ID and development signer
         run: python3 modules/scripts/verify_android_preview.py
         working-directory: apps/mobile
@@ -154,7 +152,10 @@ jobs:
       - run: node modules/scripts/verify-native-assets.mjs
         working-directory: apps/mobile
       - name: Run actual Swift core golden suites on macOS
-        run: swift test --package-path apps/mobile/modules/reaction-task
+        run: |
+          mkdir -p reports
+          swift test --package-path apps/mobile/modules/reaction-task --xunit-output "$PWD/reports/ios-native.xml"
+          python3 scripts/ci_gate.py verify-junit reports/ios-native.xml
       - name: Generate and install iOS native project dependencies
         run: |
           node node_modules/expo/bin/cli prebuild --platform ios --no-install
@@ -167,6 +168,13 @@ jobs:
         with:
           name: ios-simulator-app
           path: apps/mobile/native-build/otgd-ios-simulator.app.zip
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ios-native-test-results
+          path: reports/ios-native.xml
           if-no-files-found: error
           retention-days: 14
       - name: Evidence boundary

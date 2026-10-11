@@ -9,7 +9,7 @@ import {
   parseBoundedJson,
   requireObject,
 } from "../core/integrity";
-import { ApiError, type TokenProvider } from "./api";
+import { ApiError, withAbort, type TokenProvider } from "./api";
 import { SerializedVault, refreshTokenForGrant } from "../core/serializedVault";
 import { AuthorizationAttemptGuard } from "../core/operationGuards";
 
@@ -29,6 +29,7 @@ export class AuthManager implements TokenProvider {
   private tokens: OAuthTokens | null = null;
   private stored: StoredSession | null = null;
   private refreshing: Promise<string | null> | null = null;
+  private refreshingEpoch = -1;
   private epoch = 0;
   private readonly persistence = new SerializedVault(vault);
   private readonly key = `otgd.auth.${BUILD.environment}`;
@@ -134,20 +135,36 @@ export class AuthManager implements TokenProvider {
         "The authentication service changed.",
       );
     const controller = new AbortController(),
-      timeout = setTimeout(() => controller.abort(), 15_000);
+      timeout = setTimeout(
+        () =>
+          controller.abort(
+            new ApiError(
+              0,
+              "AUTH_NETWORK_UNAVAILABLE",
+              "Sign-in service did not respond within 15 seconds. Try again when connected.",
+              true,
+            ),
+          ),
+        15_000,
+      );
     try {
-      const response = await fetch(auth.token_endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/json",
-        },
-        body: new URLSearchParams(fields).toString(),
-        signal: controller.signal,
-        redirect: "error",
-      });
+      const response = await withAbort(controller.signal, () =>
+        fetch(auth.token_endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Accept: "application/json",
+          },
+          body: new URLSearchParams(fields).toString(),
+          signal: controller.signal,
+          redirect: "error",
+        }),
+      );
       const body = requireObject(
-        parseBoundedJson(await response.text(), 32_768),
+        parseBoundedJson(
+          await withAbort(controller.signal, () => response.text()),
+          32_768,
+        ),
       );
       if (
         !response.ok ||
@@ -224,9 +241,10 @@ export class AuthManager implements TokenProvider {
   async accessToken(force = false): Promise<string | null> {
     if (!force && this.tokens && this.tokens.expiresAt > Date.now() + 30_000)
       return this.tokens.accessToken;
-    if (this.refreshing) return this.refreshing;
+    if (this.refreshing && this.refreshingEpoch === this.epoch)
+      return this.refreshing;
     if (!this.stored?.refreshToken) return null;
-    this.refreshing = (async () => {
+    const pending = (async () => {
       const stored = this.stored!,
         epoch = this.epoch;
       let tokens: OAuthTokens;
@@ -267,10 +285,15 @@ export class AuthManager implements TokenProvider {
       await this.commit(tokens, this.stored.identity, epoch);
       return tokens.accessToken;
     })();
+    this.refreshing = pending;
+    this.refreshingEpoch = this.epoch;
     try {
-      return await this.refreshing;
+      return await pending;
     } finally {
-      this.refreshing = null;
+      if (this.refreshing === pending) {
+        this.refreshing = null;
+        this.refreshingEpoch = -1;
+      }
     }
   }
   async clear(): Promise<void> {
@@ -320,20 +343,23 @@ export class AuthManager implements TokenProvider {
   async revokeProvider(): Promise<void> {
     const saved = this.stored;
     if (!saved?.refreshToken || !saved.auth.revocation_endpoint) return;
+    const refreshToken = saved.refreshToken;
     const controller = new AbortController(),
       timeout = setTimeout(() => controller.abort(), 10_000);
     try {
-      await fetch(saved.auth.revocation_endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          token: saved.refreshToken,
-          token_type_hint: "refresh_token",
-          client_id: BUILD.clientId,
-        }).toString(),
-        signal: controller.signal,
-        redirect: "error",
-      });
+      await withAbort(controller.signal, () =>
+        fetch(saved.auth.revocation_endpoint!, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            token: refreshToken,
+            token_type_hint: "refresh_token",
+            client_id: BUILD.clientId,
+          }).toString(),
+          signal: controller.signal,
+          redirect: "error",
+        }),
+      );
     } finally {
       clearTimeout(timeout);
     }

@@ -42,12 +42,20 @@ The registry keeps tags immutable and images retained so rollback targets are no
 
 Use a release-signing key controlled by the responsible operator. The CLI expects Ed25519 PEM, readable only by its owner. Keep the private key outside the repository/image; distribute the public key through a separate trusted operator/CI channel. Do not trust a public key supplied inside an untrusted release record.
 
-The `build` command requires a clean, committed checkout and `releaseId` equal to its full Git commit. Docker Buildx builds the locked Linux/amd64 service image, pushes a commit tag, obtains its ECR digest and signs a canonical release record. Authentication is sent to Docker through stdin; it is not placed in arguments or logs. Configure Docker's credential helper for the operator account.
+The `build` command requires a clean, committed checkout and `releaseId` equal to its full Git commit. Download `gates.json` from that revision's **Required application gates** run and supply `--gate-evidence` for release operations. The CLI verifies the actual GitHub API run and every job in its latest attempt; the file's claims alone cannot authorize a release. Configure authorized Actions read access through `GH_TOKEN` or `GITHUB_TOKEN` when the repository requires it. Tokens stay in request headers and must never be committed or placed in command arguments.
+
+Eligible runs belong to `R3fresh-dev/One-The-Go-Detection`, use the active `.github/workflows/merge-gate.yml`, and test the exact release commit through `push` on `main` or the actual `merge_group` commit targeting `main`. PR-only, manual, fork, older direct platform/native workflows, skipped jobs and an earlier successful attempt do not qualify. Required job names are `unit-coverage`, `atdd`, `components`, `merge-gate`, `platform / contracts-and-synthesis`, `platform / postgres-integration`, `platform / localstack-integration`, `native / shared-and-firmware`, `native / android`, and `native / ios`. The new aggregate workflow must actually execute before it can produce qualifying evidence; expected nested names must be confirmed against that run. The verifier fails closed if they differ.
+
+Docker Buildx builds the locked Linux/amd64 service image from `git archive` of the exact commit, pushes a commit tag, obtains its ECR digest and signs a canonical release record. Ignored/untracked files and concurrent checkout edits cannot enter that immutable build context. The CLI applies `org.opencontainers.image.revision`, pulls the actual pinned image, checks its revision label and configuration digest, and rechecks the clean source before signing. The release binds that image configuration digest; deployment and activation retrieve the immutable ECR manifest and verify its digest/configuration against the signed record. Promotion preserves the same digest/configuration and source label. Multi-platform indexes or unverifiable manifest representations fail closed in this Linux/amd64 release path.
+
+Authentication is sent to Docker through stdin; it is not placed in arguments or logs. Configure Docker's credential helper for the operator account. The signing key must match the independently trusted public key. The signed record includes the GitHub run ID, attempt, workflow, exact SHA and required job IDs, plus their canonical SHA-256. A rerun invalidates an older signed receipt until a fresh record binds the new successful attempt; changing a local `passed` array cannot repair it. The CLI checks for changed run evidence again after long build/promotion work and immediately before activation. Older signed records without these source/gate bindings cannot activate through this CLI; obtain a newly reviewed record rather than weakening verification.
 
 ```bash
 uv run --project services/api python deploy/platform.py build \
   --config infra/config/qa.local.json \
   --signing-key /secure/otgd-release-private.pem \
+  --trusted-public-key /secure/otgd-release-public.pem \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
   --output deploy/releases/qa-REVIEWED_COMMIT.json
 ```
 
@@ -61,6 +69,7 @@ Keep `activateServices=false`. Use the signed release and independently trusted 
 uv run --project services/api python deploy/platform.py deploy-stopped \
   --config infra/config/qa.local.json \
   --release deploy/releases/qa-REVIEWED_COMMIT.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
   --trusted-public-key /secure/otgd-release-public.pem
 ```
 
@@ -72,6 +81,7 @@ For the first **empty** deployment only, establish the independent journal's con
 uv run --project services/api python deploy/platform.py bootstrap \
   --config infra/config/qa.local.json \
   --release deploy/releases/qa-REVIEWED_COMMIT.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
   --trusted-public-key /secure/otgd-release-public.pem \
   --establish-new --output deploy/receipts/qa-bootstrap.json
 ```
@@ -84,6 +94,7 @@ Run migration before traffic:
 uv run --project services/api python deploy/platform.py migrate \
   --config infra/config/qa.local.json \
   --release deploy/releases/qa-REVIEWED_COMMIT.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
   --trusted-public-key /secure/otgd-release-public.pem \
   --output deploy/receipts/qa-migration.json
 ```
@@ -98,13 +109,29 @@ Set `activateServices=true` in the reviewed QA config and activate:
 uv run --project services/api python deploy/platform.py activate \
   --config infra/config/qa.local.json \
   --release deploy/releases/qa-REVIEWED_COMMIT.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
   --trusted-public-key /secure/otgd-release-public.pem \
   --output deploy/receipts/qa-migration.json
 ```
 
-Activation re-verifies the signed release and checks the actual stopped maintenance task's command, image and successful exit. A local JSON file alone is insufficient evidence. ECS retains stopped-task metadata for a limited period; if it is no longer verifiable, rerun the bounded migration with services stopped and save a fresh receipt. ECS readiness/rollback then protects rollout. Successful service stabilization still requires the acceptance probes below.
+Activation re-verifies the signed release and checks the exact deployed maintenance task-definition ARN, cluster, start marker, single migration container, immutable image and successful exit. Receipts bind account, region and release revision. The complete migration or restore command must match, including the recovery timestamp and quiescence flag; an unused module/script argument does not qualify. Unexpected environment, role and resource overrides are rejected. Snapshot recovery timestamps must match the actual selected recovery point. A local JSON file alone is insufficient evidence. ECS retains stopped-task metadata for a limited period; if it is no longer verifiable, rerun the bounded migration with services stopped and save a fresh receipt. ECS readiness/rollback then protects rollout. Successful service stabilization still requires the acceptance probes below.
 
-Record an actual QA evidence file with `environment: "qa"`, the exact `image_digest`, `status: "passed"`, execution date/run reference, and `passed_gates` containing `private_network`, `conditional_upload`, `worker_kill_matrix`, `deletion_restore`, `authenticated_export`, and `alarm_delivery`. The operator signs the production release only after examining those underlying results. Do not fabricate a passed file for an unexecuted check.
+Record actual QA evidence only after reviewing the underlying results. Its payload has `schema_version: "1.0.0"`, `purpose: "qa-release-approval"`, `environment: "qa"`, the source QA `account`, `region`, `release_id`, exact `image_digest`, `qa_release_sha256` (SHA-256 of the signed QA release file), and that release's `gate_provenance_sha256`. It also needs `status: "passed"`, UTC `executed_at`, `approved_at` and `expires_at`, an accountable `operator_ref`, and `passed_gates` containing `private_network`, `conditional_upload`, `worker_kill_matrix`, `deletion_restore`, `authenticated_export`, and `alarm_delivery`. `evidence_refs` maps every required probe name to its actual protected result reference. Times must satisfy execution ≤ approval ≤ now < expiry, with expiry no more than seven days after probe execution. Missing probes, expired approval or a different image/commit/environment/source envelope block promotion.
+
+Sign that reviewed payload with the existing trusted release authority:
+
+```bash
+uv run --project services/api python deploy/platform.py approve-qa \
+  --config infra/config/qa.local.json \
+  --release deploy/releases/qa-REVIEWED_COMMIT.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
+  --trusted-public-key /secure/otgd-release-public.pem \
+  --signing-key /secure/otgd-release-private.pem \
+  --qa-evidence deploy/receipts/qa-reviewed-probe-payload.json \
+  --output deploy/receipts/qa-validation-signed.json
+```
+
+This operation signs an operator approval; it reports `checks_executed=false` and does not run or invent QA probes. Promotion verifies its Ed25519 signature under the independently trusted key. Production deployment, maintenance and activation require the same signed `--qa-evidence`, recheck its expiry and binding, and verify its exact envelope hash against the production release. A plain JSON `passed` file is insufficient. Keep the underlying private-network, IAM/KMS, worker interruption, restore and alarm evidence available for review.
 
 ## 6. Promote the exact QA image to production
 
@@ -117,11 +144,12 @@ uv run --project services/api python deploy/platform.py promote \
   --source-release deploy/releases/qa-REVIEWED_COMMIT.json \
   --trusted-public-key /secure/otgd-release-public.pem \
   --signing-key /secure/otgd-release-private.pem \
-  --qa-evidence deploy/receipts/qa-validation.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
+  --qa-evidence deploy/receipts/qa-validation-signed.json \
   --output deploy/releases/prod-REVIEWED_COMMIT.json
 ```
 
-Then use the same stopped deployment → bootstrap verification → migration → activation sequence for production. Bootstrap creation is permitted only for its first empty journal. Production has no fictional issuer and rejects synthetic-cloud capture. Mobile signed builds must carry the actual production origin/issuer/client identity; they do not discover a local override at runtime.
+Then use the same stopped deployment → bootstrap verification → migration → activation sequence for production, supplying the production signed release, `--gate-evidence` and `--qa-evidence` on each operation. Bootstrap creation is permitted only for its first empty journal. Production has no fictional issuer and rejects synthetic-cloud capture. Mobile signed builds must carry the actual production origin/issuer/client identity; they do not discover a local override at runtime.
 
 ## Rollback and disaster recovery
 

@@ -20,6 +20,10 @@ class ReleaseTest(unittest.TestCase):
             private.write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()));private.chmod(0o600)
             public.write_bytes(key.public_key().public_bytes(serialization.Encoding.PEM,serialization.PublicFormat.SubjectPublicKeyInfo))
             body={'environment':'qa','account':'123456789012','region':'us-east-2','image_digest':'sha256:'+'b'*64,'release_id':'c'*40,'database_schema':1,'inference_available':False}
+            from deploy.provenance import REPOSITORY, WORKFLOW_PATH, REQUIRED_JOBS, sha256
+            proof={'provider':'github_actions','repository':REPOSITORY,'workflow_path':WORKFLOW_PATH,'workflow_id':1,'run_id':2,'run_attempt':1,'head_sha':body['release_id'],'run_url':f'https://github.com/{REPOSITORY}/actions/runs/2','event':'push','head_branch':'main','jobs':{name:i for i,name in enumerate(sorted(REQUIRED_JOBS),1)}}
+            body.update(gate_provenance=proof,gate_provenance_sha256=sha256(proof))
+            body.update(oci_revision=body['release_id'],image_config_digest='sha256:'+'f'*64)
             cfg={'environment':'qa','account':'123456789012','region':'us-east-2','imageDigest':body['image_digest'],'releaseId':body['release_id']}
             d.sign_release(body,release,private)
             self.assertEqual(d.verify_release(release,public,cfg),body)

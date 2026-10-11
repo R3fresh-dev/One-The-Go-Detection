@@ -6,6 +6,8 @@ A mobile and device development platform for one saliva sample, physiological me
 
 Read the [implementation and verification status](IMPLEMENTATION_STATUS.md) for the exact distinction between supplied source, passing checks, native builds and external release prerequisites. No AWS deployment or clinical qualification is implied by source or infrastructure synthesis.
 
+The [required merge checks](docs/CI_GATES.md) describe the strict coverage, browser, performance, real-dependency, Docker, LocalStack and native gates. Workflow configuration and verified GitHub branch protection are separate requirements.
+
 ## Start here
 
 | What you want | Start here |

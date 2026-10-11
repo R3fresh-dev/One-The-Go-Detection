@@ -84,7 +84,10 @@ def require_draft(check):
 
 
 def registry(db, kind, id):
-    value = db.get(Registry, kind + ":" + id)
+    value = db.scalar(
+        select(Registry).where(Registry.id == kind + ":" + id)
+        .with_for_update(read=True).execution_options(populate_existing=True)
+    )
     if not value or not value.active or value.kind != kind:
         raise Problem(403, "CAPABILITY_DENIED")
     return value.body
@@ -106,7 +109,10 @@ def qualification(
         or account.id not in study.get("account_refs", [])
     ):
         raise Problem(403, "CAPABILITY_DENIED")
-    if consent.body.get("document_sha256") != study.get("document_sha256"):
+    if any(not isinstance(study.get(field), str) or not study[field]
+        or consent.body.get(field) != study[field] for field in (
+        "document_sha256", "document_version", "invitation_id"
+    )):
         raise Problem(403, "CURRENT_CONSENT_REQUIRED")
     if configuration_id is None:
         configuration_id = study.get("channels", {}).get(channel)

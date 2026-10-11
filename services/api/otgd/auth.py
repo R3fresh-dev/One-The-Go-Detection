@@ -82,7 +82,9 @@ class Verifier:
                 ):
                     raise ValueError()
             if (
-                not isinstance(claims["auth_time"], int)
+                any(type(claims[field]) is not int for field in ('iat','exp','auth_time'))
+                or claims['auth_time']<0 or claims['auth_time']>claims['iat']
+                or claims['exp']<=claims['iat']
                 or claims["auth_time"] > now() + 5
             ):
                 raise ValueError()
@@ -96,7 +98,9 @@ verifier = Verifier()
 
 def subject_hash(claims):
     s = settings()
-    key = bytes.fromhex(s.tombstone_key or "00" * 32)
+    from .identity_keys import key_descriptor
+    key_descriptor(s)
+    key = bytes.fromhex(s.tombstone_key)
     return hmac.new(
         key, canonical([s.issuer, claims["sub"]]), hashlib.sha256
     ).hexdigest()
@@ -110,6 +114,8 @@ def authenticate(db, authorization, receipt=False):
     if not authorization or not authorization.startswith("Bearer "):
         raise Problem(401, "AUTH_REQUIRED")
     claims = verifier.verify(authorization[7:])
+    from .identity_keys import require_key
+    require_key(db)
     subject = subject_hash(claims)
     recovery = db.get(SystemState, "recovery")
     if settings().recovery_required and (
@@ -157,5 +163,5 @@ def authenticate(db, authorization, receipt=False):
 
 
 def recent(claims):
-    if now() - claims["auth_time"] > 300:
+    if not 0<=now() - claims["auth_time"]<=300:
         raise Problem(401, "REAUTHENTICATION_REQUIRED")

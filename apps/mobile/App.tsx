@@ -234,6 +234,7 @@ function Shell({
             accessibilityRole="tab"
             accessibilityLabel={item.label}
             accessibilityState={{ selected }}
+            aria-selected={selected}
             onPress={action(controller, () => controller.navigate(item.route))}
             style={({ pressed }) => ({
               flex: vertical ? undefined : 1,
@@ -275,6 +276,11 @@ function Shell({
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar style={colors.background === "#0D2027" ? "light" : "dark"} />
       <View
+        aria-hidden={!!model.sheet || privateCover}
+        accessibilityElementsHidden={!!model.sheet || privateCover}
+        importantForAccessibility={
+          model.sheet || privateCover ? "no-hide-descendants" : "auto"
+        }
         style={{
           flex: 1,
           flexDirection: wide ? "row" : "column",

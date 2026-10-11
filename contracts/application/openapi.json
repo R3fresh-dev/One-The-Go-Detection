@@ -5018,6 +5018,11 @@
             "type": "boolean",
             "const": true,
             "title": "Accepted"
+          },
+          "acknowledged_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Acknowledged At"
           }
         },
         "additionalProperties": false,
@@ -5026,7 +5031,8 @@
           "invitation_id",
           "document_version",
           "document_sha256",
-          "accepted"
+          "accepted",
+          "acknowledged_at"
         ],
         "title": "Consent"
       },
