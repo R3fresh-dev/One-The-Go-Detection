@@ -76,3 +76,5 @@ The actual board-target compile also passed locally on 2026-10-11 with the pins 
 For the current executed/pending checks, read [native verification](../apps/mobile/modules/VERIFICATION.md). No firmware build, software simulator, or app bundle constitutes an assay qualification, electrical safety assessment or validated intoxication model.
 
 Primary references: [Arduino Nano ESP32](https://docs.arduino.cc/hardware/nano-esp32/), [Espressif's built-in BLE API](https://docs.espressif.com/projects/arduino-esp32/en/latest/api/ble.html), [Arduino package index](https://downloads.arduino.cc/packages/package_index.json), [ArduinoJson 7 releases](https://arduinojson.org/v7/revisions/), [Arduino CLI 1.5.1 release](https://github.com/arduino/arduino-cli/releases/tag/v1.5.1).
+
+The separate [signed physical reader](nano_esp32_signed_reader/README.md) implements protected device/server signatures and an opt-in real ADC PPG/ECG driver. Its [custom security-enabled ESP-IDF build](secure_reader/README.md) is separate from this fictional simulator. Actual sensing/electrical/calibration/provisioning qualification remains external.

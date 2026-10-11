@@ -53,7 +53,7 @@ def signin(http,cfg,account):
     start=http.get('http://identity:8081/oauth2/authorize',params={'client_id':cfg.client_id,'redirect_uri':'otgd-local://oauth/callback','response_type':'code','state':state,'code_challenge':challenge,'code_challenge_method':'S256'})
     start.raise_for_status();match=re.search(r'name="authorization_id" value="([^"]+)"',start.text)
     if not match:raise AssertionError('Fictional issuer did not provide authorization form')
-    choice=http.post('http://identity:8081/oauth2/authorize',data={'authorization_id':html.unescape(match[1]),'account':account})
+    choice=http.post('http://identity:8081/oauth2/authorize',headers={'Origin':cfg.identity_origin.rstrip('/')},data={'authorization_id':html.unescape(match[1]),'account':account})
     if choice.status_code!=303:raise AssertionError('Fictional authorization failed')
     redirect=parse_qs(urlparse(choice.headers['location']).query)
     if redirect['state']!=[state]:raise AssertionError('OAuth state differs')

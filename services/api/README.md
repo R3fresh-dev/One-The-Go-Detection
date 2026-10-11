@@ -15,6 +15,8 @@ python scripts/local-platform.py check
 
 Run these commands from the repository root. Docker Compose and an appropriate LocalStack token are required. Full instructions, phone routing, isolated QA/prod configuration, and immutable promotion are in [infra](../../infra/README.md) and [deploy](../../deploy/README.md). The local issuer is never deployed to QA or production.
 
+The [fictional local issuer contract](LOCAL_IDENTITY.md) documents browser session/Origin binding, fixed refresh deadlines, replay revocation, private signing-key custody, account deletion and disposable PostgreSQL verification.
+
 For source verification without Docker:
 
 ```bash

@@ -25,6 +25,7 @@ import {
   verifyReportArchiveIndex,
 } from "../core/reportRevisions";
 import { verifyExportEvidence } from "../core/exportEvidence";
+import { parseRawExportManifest } from "../core/rawExport";
 import type {
   CaptureAttempt,
   CaptureContext,
@@ -48,7 +49,7 @@ const LOCAL_EXCLUSIONS = [
 const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const uuid = new RegExp(`^${UUID}$`, "i"),
   pathPattern = new RegExp(
-    `^(manifest\\.json|profile\\.json|(?:checks|contexts|manifests|attempts|alcohol)/${UUID}\\.json|report-revisions/${UUID}/${UUID}\\.json)$`,
+    `^(manifest\\.json|profile\\.json|(?:checks|contexts|manifests|attempts|alcohol)/${UUID}\\.json|report-revisions/${UUID}/${UUID}\\.json|raw/(?:eye_video|ecg_waveform)/${UUID}\\.bin)$`,
     "i",
   );
 const fail = (code: string, message: string): never => {
@@ -151,6 +152,7 @@ export function inspectExportArchive(
     manifestSha256?: string;
     accountRef?: string;
     generation?: number;
+    rawExport?: JsonObject;
   } = {},
 ): { fileCount: number; uncompressedBytes: number } {
   if (bytes.byteLength > ARCHIVE_LIMIT)
@@ -164,7 +166,9 @@ export function inspectExportArchive(
         names.has(file.name) ||
         !pathPattern.test(file.name) ||
         file.originalSize >
-          (file.name === "manifest.json" ? TOTAL_LIMIT : RECORD_LIMIT) ||
+          (file.name === "manifest.json" || file.name.startsWith("raw/")
+            ? TOTAL_LIMIT
+            : RECORD_LIMIT) ||
         total + file.originalSize > TOTAL_LIMIT ||
         ++count > 65_000
       )
@@ -184,7 +188,10 @@ export function inspectExportArchive(
   let actualTotal = 0;
   for (const [path, value] of Object.entries(files)) {
     if (
-      value.byteLength > (path === "manifest.json" ? TOTAL_LIMIT : RECORD_LIMIT)
+      value.byteLength >
+      (path === "manifest.json" || path.startsWith("raw/")
+        ? TOTAL_LIMIT
+        : RECORD_LIMIT)
     )
       fail(
         "EXPORT_RECORD_LIMIT",
@@ -192,6 +199,7 @@ export function inspectExportArchive(
       );
     actualTotal += value.byteLength;
     sizes[path] = value.byteLength;
+    if (path.startsWith("raw/")) continue;
     parsed[path] = parseBoundedJson(
       decodeUtf8(value),
       path === "manifest.json" ? TOTAL_LIMIT : RECORD_LIMIT,
@@ -217,7 +225,12 @@ export function inspectExportArchive(
     "created_at",
     "files",
     ...(layout === "cloud"
-      ? ["job_id", "expires_at", "omitted_categories"]
+      ? [
+          "job_id",
+          "expires_at",
+          "omitted_categories",
+          ...(Object.hasOwn(manifest, "raw_export") ? ["raw_export"] : []),
+        ]
       : [
           "manifest_sha256",
           "raw_artifacts_included",
@@ -247,8 +260,12 @@ export function inspectExportArchive(
       !uuid.test(manifest.job_id) ||
       manifestInstant(manifest.expires_at) <= createdAt ||
       !Array.isArray(manifest.omitted_categories) ||
-      manifest.omitted_categories.length !== 1 ||
-      manifest.omitted_categories[0] !== "raw_artifacts"
+      digest(manifest.omitted_categories) !==
+        digest(
+          manifest.raw_export === undefined
+            ? ["raw_artifacts"]
+            : ["unselected_raw_artifacts", "source_lab_reports"],
+        )
     )
       fail(
         "EXPORT_MANIFEST_INVALID",
@@ -268,6 +285,22 @@ export function inspectExportArchive(
       "The local manifest differs from the fixed release limitations and exclusions.",
     );
   const selectionObject = requireObject(manifest.selection);
+  const rawExport =
+    manifest.raw_export === undefined
+      ? null
+      : parseRawExportManifest(manifest.raw_export);
+  if (
+    (rawExport &&
+      (layout !== "cloud" ||
+        !expected.rawExport ||
+        digest(rawExport) !== digest(expected.rawExport))) ||
+    (!rawExport && expected.rawExport) ||
+    (!rawExport && Object.keys(files).some((path) => path.startsWith("raw/")))
+  )
+    fail(
+      "RAW_EXPORT_SCOPE_MISMATCH",
+      "Raw files require the exact separately authorized scope from this authenticated job receipt.",
+    );
   knownKeys(selectionObject, ["kind", "session_ids"]);
   const selection = selectionObject as unknown as ExportSelection;
   validateSelection(selection);
@@ -300,7 +333,10 @@ export function inspectExportArchive(
       typeof path !== "string" ||
       !Number.isSafeInteger(size) ||
       Number(size) < 1 ||
-      Number(size) > RECORD_LIMIT ||
+      Number(size) >
+        (typeof path === "string" && path.startsWith("raw/")
+          ? TOTAL_LIMIT
+          : RECORD_LIMIT) ||
       typeof entry.sha256 !== "string" ||
       !/^[a-f0-9]{64}$/.test(entry.sha256) ||
       listed.has(path) ||
@@ -371,6 +407,14 @@ export function inspectExportArchive(
       );
     let check: CheckRecord;
     if (cloud) {
+      if (
+        wrapper.raw_artifacts_omitted_reason !==
+        (rawExport ? "UNSELECTED_RAW_ARTIFACTS_OMITTED" : "NO_RAW_EXPORT_SCOPE")
+      )
+        fail(
+          "RAW_EXPORT_SCOPE_MISMATCH",
+          "The selected check raw omission label differs from this exact archive scope.",
+        );
       const { report_revision_index: ignored, ...original } = wrapper;
       const state = emptyWorkspace(
         "export-verification",
@@ -452,6 +496,33 @@ export function inspectExportArchive(
     const revisionPaths = verifyReportArchiveIndex(index, check, parsed, sizes);
     for (const path of revisionPaths) take(path);
     checks.push(check);
+  }
+  if (rawExport) {
+    for (const value of rawExport.sources as JsonObject[]) {
+      const source = requireObject(value),
+        path = String(source.path),
+        file = files[path],
+        check = checks.find((check) => check.id === source.session_id);
+      if (
+        !file ||
+        !check ||
+        check.snapshot.study_id !== rawExport.study_id ||
+        file.byteLength !== source.size_bytes ||
+        digestBytes(file) !== source.sha256 ||
+        Number(source.retained_until) * 1000 <=
+          Date.parse(String(manifest.created_at)) ||
+        !check.attempts.some(
+          (attempt) =>
+            attempt.component ===
+            (source.kind === "eye_video" ? "eyes" : "cardiac"),
+        )
+      )
+        fail(
+          "RAW_EXPORT_SOURCE_MISMATCH",
+          "A raw member differs from its verified source bytes, retained lifetime or exact selected study check.",
+        );
+      consumed.add(path);
+    }
   }
   for (const path of Object.keys(files))
     if (!consumed.has(path))

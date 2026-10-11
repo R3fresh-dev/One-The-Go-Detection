@@ -1,0 +1,900 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/research/ResearchResult.schema.json",
+  "title": "Authorized research result",
+  "description": "Server-admitted research result and immutable execution evidence. No consumer or driving-clearance claim. Legacy result contract remains unchanged.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "result_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "session_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "enum": [
+        "research_estimate",
+        "inconclusive"
+      ]
+    },
+    "target_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "model_lifecycle": {
+      "const": "active_research"
+    },
+    "endpoint_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "probability": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "classification": {
+      "enum": [
+        "above_threshold",
+        "below_threshold",
+        null
+      ]
+    },
+    "operating_threshold": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1
+    },
+    "uncertainty_policy_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "SIMULATED_INPUT",
+          "MODEL_UNVALIDATED",
+          "MODEL_UNAVAILABLE",
+          "MODEL_RETIRED",
+          "STUDY_UNAUTHORIZED",
+          "INVALID_ACQUISITION",
+          "MISSING_REQUIRED_CHANNEL",
+          "INCOMPATIBLE_METHOD",
+          "UNKNOWN_ASSAY_BASIS",
+          "INCOMPATIBLE_TASK",
+          "OUTSIDE_SCOPE",
+          "TIMING_UNCERTAIN",
+          "STALE_COMPONENT",
+          "UNCERTAINTY_ABSTENTION",
+          "ANALYTICAL_ONLY",
+          "PENDING_VALIDATION",
+          "DEMO_ONLY"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "input_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "provenance_summary": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "simulated",
+          "reference_lab",
+          "prototype_sensor",
+          "validated_sensor"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "replaces_result_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "model_execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "registry_version": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+        },
+        "registry_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "feature_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "calibration_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "endpoint_definition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "population_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "model_artifact_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evaluation_report_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "feature_values_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "calibration_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capture_context_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evidence_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "authority_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "baseline_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authority_manifest": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0"
+            },
+            "model_registry_version": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+            },
+            "model_manifest": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "title": "Model Manifest",
+              "description": "Proposed research registry contract. Actual approvals and eligibility must be checked by the server; strings and a schema-valid document are not authorization.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "schema_version": {
+                  "const": "0.1.0"
+                },
+                "model_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "lifecycle": {
+                  "enum": [
+                    "unvalidated",
+                    "active_research",
+                    "retired"
+                  ]
+                },
+                "artifact_sha256": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "endpoint_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "endpoint_definition": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "input_contract_version": {
+                  "const": "0.1.0"
+                },
+                "required_channels": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "saliva_thc",
+                      "saliva_thc_cooh",
+                      "saliva_oh11_thc",
+                      "pupil",
+                      "cardiac_hr",
+                      "ecg",
+                      "task"
+                    ]
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                },
+                "allowed_protocol_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_collection_method_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_assay_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_assay_bases": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "free",
+                      "total_after_hydrolysis"
+                    ]
+                  },
+                  "minItems": 0
+                },
+                "allowed_hardware_revisions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_task_versions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_provenance": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "reference_lab",
+                      "prototype_sensor",
+                      "validated_sensor"
+                    ]
+                  },
+                  "uniqueItems": true
+                },
+                "feature_version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "baseline_mode": {
+                  "enum": [
+                    "population",
+                    "personalized"
+                  ]
+                },
+                "operating_threshold": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "exclusiveMinimum": 0,
+                  "exclusiveMaximum": 1
+                },
+                "calibration_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "quality_policy_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "co_use_policy_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "population": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "min_age_years": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 18
+                    },
+                    "max_age_years": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 18
+                    }
+                  },
+                  "required": [
+                    "description",
+                    "min_age_years",
+                    "max_age_years"
+                  ]
+                },
+                "max_clock_uncertainty_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "max_acquisition_span_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "max_delivery_delay_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "uncertainty_policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "policy_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "method": {
+                      "enum": [
+                        "unresolved",
+                        "none",
+                        "probability_band"
+                      ]
+                    },
+                    "lower": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "upper": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "rationale": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 256
+                    }
+                  },
+                  "required": [
+                    "policy_id",
+                    "method",
+                    "lower",
+                    "upper",
+                    "rationale"
+                  ]
+                },
+                "validation_report_uri": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "approval_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "compatibility_policy_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Resolved policy must enforce exact per-analyte method, biochemical basis, concentration basis and correction-status combinations; independent allow lists are only prefilters."
+                }
+              },
+              "required": [
+                "schema_version",
+                "model_id",
+                "lifecycle",
+                "artifact_sha256",
+                "endpoint_id",
+                "endpoint_definition",
+                "input_contract_version",
+                "required_channels",
+                "allowed_protocol_ids",
+                "allowed_collection_method_ids",
+                "allowed_assay_ids",
+                "allowed_assay_bases",
+                "allowed_hardware_revisions",
+                "allowed_task_versions",
+                "allowed_provenance",
+                "feature_version",
+                "baseline_mode",
+                "operating_threshold",
+                "calibration_id",
+                "quality_policy_id",
+                "co_use_policy_id",
+                "population",
+                "max_clock_uncertainty_ms",
+                "max_acquisition_span_ms",
+                "max_delivery_delay_ms",
+                "uncertainty_policy",
+                "validation_report_uri",
+                "approval_refs",
+                "compatibility_policy_id"
+              ],
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "lifecycle": {
+                        "const": "active_research"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "artifact_sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "endpoint_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "endpoint_definition": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "calibration_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "quality_policy_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "co_use_policy_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "operating_threshold": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "exclusiveMaximum": 1
+                      },
+                      "population": {
+                        "properties": {
+                          "description": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          },
+                          "min_age_years": {
+                            "type": "integer",
+                            "minimum": 18
+                          },
+                          "max_age_years": {
+                            "type": "integer",
+                            "minimum": 18
+                          }
+                        }
+                      },
+                      "uncertainty_policy": {
+                        "properties": {
+                          "policy_id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          },
+                          "method": {
+                            "enum": [
+                              "none",
+                              "probability_band"
+                            ]
+                          },
+                          "rationale": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          }
+                        }
+                      },
+                      "validation_report_uri": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "approval_refs": {
+                        "minItems": 2
+                      },
+                      "allowed_protocol_ids": {
+                        "minItems": 1
+                      },
+                      "allowed_collection_method_ids": {
+                        "minItems": 1
+                      },
+                      "allowed_assay_ids": {
+                        "minItems": 1
+                      },
+                      "allowed_assay_bases": {
+                        "minItems": 1
+                      },
+                      "allowed_hardware_revisions": {
+                        "minItems": 1
+                      },
+                      "allowed_task_versions": {
+                        "minItems": 1
+                      },
+                      "allowed_provenance": {
+                        "minItems": 1
+                      },
+                      "max_clock_uncertainty_ms": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "max_acquisition_span_ms": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "max_delivery_delay_ms": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "compatibility_policy_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "uncertainty_policy": {
+                        "properties": {
+                          "method": {
+                            "const": "probability_band"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "uncertainty_policy": {
+                        "properties": {
+                          "lower": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "upper": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "model_registry_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "model_artifact_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "evaluation_report_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "calibration_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "quality_policy_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "co_use_policy_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "compatibility_policy_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "study_approval_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "consent_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "registry_events_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "native_timing_calibration_sha256": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "schema_version",
+            "model_registry_version",
+            "model_manifest",
+            "model_registry_sha256",
+            "model_artifact_sha256",
+            "evaluation_report_sha256",
+            "calibration_sha256",
+            "quality_policy_sha256",
+            "co_use_policy_sha256",
+            "compatibility_policy_sha256",
+            "study_approval_sha256",
+            "consent_sha256",
+            "registry_events_sha256",
+            "native_timing_calibration_sha256"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "registry_version",
+        "registry_id",
+        "feature_version",
+        "calibration_id",
+        "endpoint_definition",
+        "population_description",
+        "manifest_sha256",
+        "model_artifact_sha256",
+        "evaluation_report_sha256",
+        "feature_values_sha256",
+        "calibration_sha256",
+        "capture_context_sha256",
+        "evidence_manifest_sha256",
+        "authority_sha256",
+        "baseline_sha256",
+        "authority_manifest"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "result_id",
+    "session_id",
+    "state",
+    "target_at",
+    "evaluated_at",
+    "model_id",
+    "model_lifecycle",
+    "endpoint_id",
+    "probability",
+    "classification",
+    "operating_threshold",
+    "uncertainty_policy_id",
+    "reason_codes",
+    "input_sha256",
+    "provenance_summary",
+    "replaces_result_id",
+    "model_execution"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "research_estimate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "model_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "model_lifecycle": {
+            "const": "active_research"
+          },
+          "endpoint_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "probability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "classification": {
+            "enum": [
+              "above_threshold",
+              "below_threshold"
+            ]
+          },
+          "operating_threshold": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "uncertainty_policy_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "provenance_summary": {
+            "not": {
+              "contains": {
+                "const": "simulated"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "probability": {
+            "type": "null"
+          },
+          "classification": {
+            "type": "null"
+          },
+          "operating_threshold": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

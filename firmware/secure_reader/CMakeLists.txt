@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+if(NOT OTGD_ARDUINO_COMPONENT OR NOT OTGD_ARDUINO_JSON)
+  message(FATAL_ERROR "Use firmware/tools/secure_reader_build.py with verified immutable sources")
+endif()
+set(EXTRA_COMPONENT_DIRS "${OTGD_ARDUINO_COMPONENT}")
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(otgd_secure_reader)

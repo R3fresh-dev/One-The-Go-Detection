@@ -1,0 +1,120 @@
+{
+  "fixture_scope": "FICTIONAL-SERVER-AND-READER-KEYS-FOR-PROTOCOL-TESTS-NOT-PHYSICAL-QUALIFICATION",
+  "authorization": {
+    "attempt_id": "54447203-5ad5-4407-bcc3-62be73d6d11c",
+    "channel": "cardiac",
+    "binding_id": "0c439eb6-936f-434a-9a81-40433cc914a6",
+    "device_id": "fictional-device",
+    "configuration_id": "fictional-cardiac-configuration",
+    "configuration_hash": "a5273e16f0d84ba55788da11f03e35f23ae11a4d8fd75426c6a952a58ead62f3",
+    "raw_recording_kind": null,
+    "authorization_id": "843ba77c-1409-4f04-9fdf-771a46f22b35",
+    "session_id": "c52ff89a-83fd-41a1-8de4-bb31bf1c8e1a",
+    "state": "issued",
+    "expires_at": "2026-10-11T07:17:46.894Z",
+    "expires_epoch": 1791703066.894865,
+    "configuration_max_duration_ms": 15000,
+    "supported_phone_models": [],
+    "supported_os_versions": [],
+    "supported_native_builds": [],
+    "software_adapter_id": "otgd_signed_reader_v1",
+    "configuration_submitted_sha256": "4309742a80acdf2fb746ab5d03bf434ac62291220fd509f3fe72c75370c06371",
+    "configuration_version": "v1",
+    "capture_context_sha256": "5338a7bc40c140ea440a6eb05dbc80c38ddf45507b8bf0b6502917cea6524b84",
+    "configuration_material": {
+      "schema_version": "1.0.0",
+      "channel": "cardiac",
+      "modality": "ppg",
+      "adapter_id": "otgd_esp32_adc_v1",
+      "protocol_version": 1,
+      "duration_ms": 15000,
+      "end_guard_ms": 50,
+      "sample_rate_hz": 100,
+      "raw_unit": "counts",
+      "raw_sample_limit": 0,
+      "raw_encoding": null,
+      "extractor_version": "adc_peak_intervals_v1",
+      "input_gpio": 1,
+      "contact_gpio": 4,
+      "contact_active_high": true,
+      "adc_resolution_bits": 12,
+      "attenuation_db": 11,
+      "reference_mv": 3300.0,
+      "gain": 1.0,
+      "offset_mv": 0.0,
+      "threshold_adc": 2048,
+      "minimum_peak_interval_ms": 250,
+      "maximum_peak_interval_ms": 2000,
+      "minimum_amplitude_adc": 100
+    },
+    "raw_recording_permission": null
+  },
+  "start": {
+    "authorization_id": "843ba77c-1409-4f04-9fdf-771a46f22b35",
+    "attempt_id": "54447203-5ad5-4407-bcc3-62be73d6d11c",
+    "device_boot_id": "77777777-7777-4777-8777-777777777777",
+    "state": "started",
+    "server_started_at": "2026-10-11T07:16:46.958Z",
+    "raw_recording_permission": null,
+    "server_start": {
+      "grant": {
+        "schema_version": "1.0.0",
+        "environment": "test",
+        "owner_ref": "470aa756-ce4f-4a1b-984b-25b59d2a3e05",
+        "data_generation": 1,
+        "session_id": "c52ff89a-83fd-41a1-8de4-bb31bf1c8e1a",
+        "attempt_id": "54447203-5ad5-4407-bcc3-62be73d6d11c",
+        "authorization_id": "843ba77c-1409-4f04-9fdf-771a46f22b35",
+        "binding_id": "0c439eb6-936f-434a-9a81-40433cc914a6",
+        "device_id": "fictional-device",
+        "device_key_id": "fixture-key",
+        "boot_id": "77777777-7777-4777-8777-777777777777",
+        "channel": "cardiac",
+        "configuration_max_duration_ms": 15000,
+        "configuration_id": "fictional-cardiac-configuration",
+        "configuration_hash": "a5273e16f0d84ba55788da11f03e35f23ae11a4d8fd75426c6a952a58ead62f3",
+        "configuration_submitted_sha256": "4309742a80acdf2fb746ab5d03bf434ac62291220fd509f3fe72c75370c06371",
+        "configuration_version": "v1",
+        "capture_context_sha256": "5338a7bc40c140ea440a6eb05dbc80c38ddf45507b8bf0b6502917cea6524b84",
+        "issued_at": "2026-10-11T07:16:46.958Z",
+        "expires_at": "2026-10-11T07:17:46.958Z",
+        "device_nonce": "QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI",
+        "nonce": "ebc66b29-0d82-4ddc-aab6-f8f8d82c84dd",
+        "raw_recording_permission": null
+      },
+      "signature": "MEYCIQDOtErHyyXMcAGfWFwPh9VM1/TGEffjj5Wu7qv++vw6AAIhAL9U+Yih6cB/jV4VjP3sm3ZQef6x2i2tPyoK/Su+qMCH",
+      "key_id": "local-capture-v1:fb502459d5a8923e8f1f03cae9cb1903d6306bbdc8e9d080db1aa4fe68a467b7",
+      "domain": "OTGD capture grant v1\u0000"
+    }
+  },
+  "context": {
+    "schema_version": "1.0.0",
+    "session_id": "c52ff89a-83fd-41a1-8de4-bb31bf1c8e1a",
+    "context_confirmed_at": "2026-10-11T07:16:46.858Z",
+    "profile_version_id": null,
+    "profile_snapshot_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "history_snapshot_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "protocol_id": "fictional-governance-protocol",
+    "configuration_refs": [
+      {
+        "id": "fictional-cardiac-configuration",
+        "version": "v1",
+        "sha256": "a5273e16f0d84ba55788da11f03e35f23ae11a4d8fd75426c6a952a58ead62f3",
+        "scope": "measurement_collection"
+      }
+    ],
+    "baseline_refs": [],
+    "self_report_context": null,
+    "device_associations": [
+      {
+        "binding_id": "0c439eb6-936f-434a-9a81-40433cc914a6",
+        "device_id": "fictional-device",
+        "hardware_revision": "fixture-hw",
+        "firmware_version": "1.0.0",
+        "boot_id": "77777777-7777-4777-8777-777777777777",
+        "clock_evidence_ref": null
+      }
+    ]
+  },
+  "server_public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEiHzY6NeczvBJl6vz4I+X/I7AOJvDxt8SQKufCqu4X2ZffQ47YLXVeplkjpJxFiI+t0cRzlwAy1ORfK4TclbJkQ=="
+}

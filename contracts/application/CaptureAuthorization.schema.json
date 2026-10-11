@@ -53,6 +53,22 @@
       "pattern": "^[a-f0-9]{64}$",
       "title": "Configuration Hash",
       "type": "string"
+    },
+    "raw_recording_kind": {
+      "anyOf": [
+        {
+          "enum": [
+            "eye_video",
+            "ecg_waveform"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Raw Recording Kind"
     }
   },
   "required": [

@@ -247,7 +247,7 @@ def test_native_contract_tampering_rejected(tamper):
 @pytest.mark.parametrize(
     "filename", ["fictional-check-contract.json", "native-check-contract.json"]
 )
-def test_mobile_generated_bundle_upload_finalize_and_read(client, account, filename):
+def test_mobile_generated_bundle_upload_finalize_and_read(client, account, filename, monkeypatch):
     from otgd.worker import run_job
     from .conftest import headers
 
@@ -255,12 +255,38 @@ def test_mobile_generated_bundle_upload_finalize_and_read(client, account, filen
     source = next((p for p in paths if p.name == filename), None)
     assert source is not None, [p.name for p in paths]
     bundle = strict_loads(source.read_text())
-    # Only the test owner reference is remapped; all companion digests stay as the app emitted them.
+    # Verify the app-emitted ledger first. Authorized upload adds an explicitly
+    # fictional approved study/configuration envelope; raw native evidence stays unchanged.
     assert digest(bundle["snapshot"]) == bundle["snapshot_sha256"]
     assert digest(bundle["manifest"]) == bundle["evidence_sha256"]
     snapshot = deepcopy(bundle["snapshot"])
     snapshot["subject_ref"] = account
+    if filename == "native-check-contract.json":
+        from otgd.db import factory, iso
+        from .governance_fixture import approve, configuration, proof, retention, study, STUDY, PROTOCOL
+        config = configuration(supported_phone_models=[bundle["attempts"][0]["component_metadata"]["native_result"]["timing"]["deviceModel"]])
+        with factory().begin() as db:
+            for kind, value in (("study", study(account)), ("retention", retention()),
+                ("qualification", proof(config_body=config)), ("configuration", config)):
+                approve(db, kind, value)
+        doc = study(account)
+        accepted = client.post(f"/v1/studies/{STUDY}/consents", headers=headers(), json={
+            **{k: doc[k] for k in ("invitation_id", "document_version", "document_sha256")},
+            "accepted": True, "acknowledged_at": iso()})
+        assert accepted.status_code == 201, accepted.text
+        snapshot.update(study_id=STUDY, protocol_id=PROTOCOL)
+        bundle["context"]["protocol_id"] = PROTOCOL
+        bundle["context"]["configuration_refs"][0].update(id=config["configuration_id"], version=config["version"])
+        bundle["attempts"][0]["configuration_id"] = config["configuration_id"]
+        bundle["manifest"]["context_sha256"] = digest(bundle["context"])
+        bundle["manifest"]["attempts"][0]["sha256"] = digest(bundle["attempts"][0])
+        bundle["evidence_sha256"] = digest(bundle["manifest"])
     sid = snapshot["session_id"]
+    if filename == "native-check-contract.json":
+        # The immutable host fixture contains fictional October 11 anchors.
+        # Execute online grants at that explicit test clock; do not weaken runtime freshness.
+        clock = datetime.fromisoformat(bundle["attempts"][0]["started_at"].replace("Z", "+00:00")).timestamp()
+        monkeypatch.setattr("otgd.main.now", lambda: clock)
 
     def send(method, path, body, revision=None):
         response = client.request(
@@ -294,7 +320,21 @@ def test_mobile_generated_bundle_upload_finalize_and_read(client, account, filen
             for ref in bundle["manifest"]["attempts"]
             if ref["attempt_id"] == attempt["attempt_id"]
         )
-        send("PUT", f"/v1/sessions/{sid}/attempts/{attempt['attempt_id']}", attempt, 0)
+        revision = 0
+        if filename == "native-check-contract.json" and attempt["component"] == "task" and attempt["status"] == "valid":
+            armed = {**attempt, "status": "started", "ended_at": None,
+                "quality_flags": [], "component_metadata": {}}
+            send("PUT", f"/v1/sessions/{sid}/attempts/{attempt['attempt_id']}", armed, 0)
+            grant = send("POST", f"/v1/sessions/{sid}/capture-authorizations", {
+                "attempt_id": attempt["attempt_id"], "channel": "task", "binding_id": None,
+                "device_id": None, "configuration_id": attempt["configuration_id"],
+                "configuration_hash": attempt["configuration_hash"],
+            }).json()
+            send("POST", f"/v1/sessions/{sid}/capture-authorizations/{grant['authorization_id']}/start", {
+                "attempt_id": attempt["attempt_id"], "device_boot_id": "fictional-host-contract-fixture",
+            })
+            revision = 1
+        send("PUT", f"/v1/sessions/{sid}/attempts/{attempt['attempt_id']}", attempt, revision)
     if bundle["alcohol"] is not None:
         send("POST", f"/v1/sessions/{sid}/alcohol", bundle["alcohol"])
     send("PUT", f"/v1/sessions/{sid}/snapshot", snapshot, 1)

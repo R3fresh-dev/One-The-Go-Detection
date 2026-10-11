@@ -21,6 +21,7 @@ def client(service, public=False):
         endpoint_url=endpoint,
         config=Config(
             signature_version="s3v4" if service == "s3" else "v4",
+            ignore_configured_endpoint_urls=True,
             connect_timeout=5,
             read_timeout=30,
             retries={"max_attempts": 3, "mode": "standard"},

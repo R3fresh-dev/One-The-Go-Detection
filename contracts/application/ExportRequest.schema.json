@@ -28,6 +28,71 @@
       ],
       "title": "ExportSelection",
       "type": "object"
+    },
+    "RawExportScope": {
+      "additionalProperties": false,
+      "properties": {
+        "authorization_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Authorization Id",
+          "type": "string"
+        },
+        "authorization_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Authorization Version",
+          "type": "string"
+        },
+        "authorization_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Authorization Sha256",
+          "type": "string"
+        },
+        "export_notice_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Export Notice Version",
+          "type": "string"
+        },
+        "export_notice_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Export Notice Sha256",
+          "type": "string"
+        },
+        "acknowledged_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Acknowledged At",
+          "type": "string"
+        },
+        "confirmed": {
+          "const": true,
+          "title": "Confirmed",
+          "type": "boolean"
+        },
+        "artifact_ids": {
+          "items": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "authorization_id",
+        "authorization_version",
+        "authorization_sha256",
+        "export_notice_version",
+        "export_notice_sha256",
+        "acknowledged_at",
+        "confirmed",
+        "artifact_ids"
+      ],
+      "title": "RawExportScope",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -41,9 +106,19 @@
       "type": "string"
     },
     "include_raw": {
-      "const": false,
       "title": "Include Raw",
       "type": "boolean"
+    },
+    "raw_scope": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RawExportScope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

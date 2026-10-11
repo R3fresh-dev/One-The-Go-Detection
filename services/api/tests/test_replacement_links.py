@@ -172,7 +172,9 @@ def test_removed_predecessor_is_unavailable_without_rewriting_child(client, acco
     assert response.json()["base_snapshot_sha256"] == digest(child)
 
 
-def test_numbered_replacement_index_migration_replays_without_evidence_changes(client, account):
+def test_numbered_replacement_index_migration_replays_without_evidence_changes(client, account, monkeypatch):
+    from .journal_fixture import inject_marker
+    inject_marker(monkeypatch)
     original = seed(account)
     migrate()
     migrate()

@@ -19,6 +19,7 @@ import {
   verifyCheck,
 } from "./domain";
 import { verifyAttemptProjection } from "./exportProjection";
+import { verifyRetainedNativeEye } from "./eyeProjection";
 import {
   assertBytes,
   assertPlainJson,
@@ -123,6 +124,8 @@ export function verifyExportEvidence(check: CheckRecord): void {
     "selected_cardiac_attempt_id",
     "replacement_links",
     "report_revision_cache",
+    "acquisition",
+    "attestations",
   ];
   demand(
     required.every((key) => Object.hasOwn(raw, key)) &&
@@ -130,7 +133,13 @@ export function verifyExportEvidence(check: CheckRecord): void {
   );
   const original = Object.fromEntries(
     Object.entries(raw).filter(
-      ([key]) => !["replacement_links", "report_revision_cache"].includes(key),
+      ([key]) =>
+        ![
+          "replacement_links",
+          "report_revision_cache",
+          "acquisition",
+          "attestations",
+        ].includes(key),
     ),
   );
   assertPlainJson(original);
@@ -262,7 +271,16 @@ export function verifyExportEvidence(check: CheckRecord): void {
       demand(!validComponents.has(key));
       validComponents.add(key);
     }
-    if (attempt.component_metadata.native_result != null)
+    if (
+      attempt.component_metadata.native_result != null &&
+      attempt.component === "eyes"
+    )
+      verifyRetainedNativeEye(
+        attempt.component_metadata.native_result,
+        projection,
+        attempt,
+      );
+    else if (attempt.component_metadata.native_result != null)
       verifyNative(
         attempt.component_metadata.native_result,
         projection,

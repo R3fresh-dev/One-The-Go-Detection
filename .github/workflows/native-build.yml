@@ -1,4 +1,4 @@
-name: Android iOS and simulator firmware
+name: Android iOS and research reader firmware
 
 on:
   workflow_call:
@@ -39,6 +39,10 @@ jobs:
         run: |
           g++ -std=c++17 -Wall -Wextra -Werror firmware/tests/protocol_core_test.cpp -o "$RUNNER_TEMP/otgd-protocol-test"
           "$RUNNER_TEMP/otgd-protocol-test"
+          g++ -std=c++17 -Wall -Wextra -Werror -pthread \
+            firmware/tests/signed_reader_acquisition_test.cpp \
+            -o "$RUNNER_TEMP/otgd-reader-acquisition-test"
+          "$RUNNER_TEMP/otgd-reader-acquisition-test"
       - name: Install pinned Arduino CLI with release checksum
         run: |
           mkdir -p "$RUNNER_TEMP/otgd-arduino"
@@ -54,15 +58,79 @@ jobs:
           arduino-cli core update-index
           arduino-cli core install arduino:esp32@2.0.18-arduino.5
           arduino-cli lib install ArduinoJson@7.4.2
+          g++ -std=c++17 -Wall -Wextra -Werror \
+            -I"$HOME/Arduino/libraries/ArduinoJson/src" \
+            firmware/tests/signed_reader_core_test.cpp \
+            firmware/nano_esp32_signed_reader/RyuDouble.cpp \
+            -o "$RUNNER_TEMP/otgd-signed-reader-test"
+          "$RUNNER_TEMP/otgd-signed-reader-test"
+          g++ -std=c++17 -Wall -Wextra -Werror \
+            -I"$HOME/Arduino/libraries/ArduinoJson/src" \
+            firmware/tests/signed_reader_grant_test.cpp \
+            firmware/nano_esp32_signed_reader/RyuDouble.cpp \
+            -lcrypto -o "$RUNNER_TEMP/otgd-reader-grant-test"
+          "$RUNNER_TEMP/otgd-reader-grant-test"
           arduino-cli compile --fqbn arduino:esp32:nano_nora --warnings all --output-dir firmware/build/nano_esp32 firmware/nano_esp32_ble_simulator
+          arduino-cli compile --fqbn arduino:esp32:nano_nora --warnings all --output-dir firmware/build/signed_reader firmware/nano_esp32_signed_reader
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: nano-esp32-synthetic-firmware
           path: firmware/build/nano_esp32/
           if-no-files-found: error
           retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nano-esp32-signed-reader-firmware
+          path: firmware/build/signed_reader/
+          if-no-files-found: error
+          retention-days: 14
       - name: Evidence boundary
         run: echo 'Firmware compiled for the actual board package. This job does not flash a board, test radio behavior, qualify sensing hardware or establish impairment prediction.' >> "$GITHUB_STEP_SUMMARY"
+
+  protected-reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+      - name: Prepare and verify immutable protected SDK sources
+        run: python firmware/tools/secure_reader_build.py prepare --cache "$RUNNER_TEMP/otgd-secure-sdk"
+      - name: Install hash-locked build dependencies and official checked toolchain
+        run: |
+          set -euo pipefail
+          otgd_sdk="$RUNNER_TEMP/otgd-secure-sdk"
+          uv venv --python 3.12 --seed "$otgd_sdk/python"
+          "$otgd_sdk/python/bin/pip" install --require-hashes -r firmware/secure_reader/requirements.lock
+          export IDF_PATH="$otgd_sdk/esp-idf"
+          export IDF_TOOLS_PATH="$otgd_sdk/tools"
+          "$otgd_sdk/python/bin/python" "$IDF_PATH/tools/idf_tools.py" install xtensa-esp32s3-elf cmake ninja
+      - name: Compile actual encrypted NVS, secure boot and authenticated BLE branch
+        run: |
+          set -euo pipefail
+          otgd_sdk="$RUNNER_TEMP/otgd-secure-sdk"
+          export IDF_PATH="$otgd_sdk/esp-idf"
+          export IDF_TOOLS_PATH="$otgd_sdk/tools"
+          export PATH="$otgd_sdk/python/bin:$IDF_TOOLS_PATH/tools/xtensa-esp32s3-elf/esp-2021r2-patch5-8.4.0/xtensa-esp32s3-elf/bin:$IDF_TOOLS_PATH/tools/cmake/3.23.1/bin:$IDF_TOOLS_PATH/tools/ninja/1.10.2:$PATH"
+          otgd_ci_key="$RUNNER_TEMP/otgd-fictional-secure-boot.pem"
+          trap 'rm -f "$otgd_ci_key"' EXIT
+          umask 077
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out "$otgd_ci_key" 2>/dev/null
+          "$otgd_sdk/python/bin/python" firmware/tools/secure_reader_build.py build --cache "$otgd_sdk" --output "$RUNNER_TEMP/otgd-secure-reader-build" --boot-signing-key "$otgd_ci_key"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: protected-reader-build
+          path: |
+            ${{ runner.temp }}/otgd-secure-reader-build/otgd_secure_reader.bin
+            ${{ runner.temp }}/otgd-secure-reader-build/bootloader/bootloader.bin
+            ${{ runner.temp }}/otgd-secure-reader-build/partition_table/partition-table.bin
+            ${{ runner.temp }}/otgd-secure-reader-build/build-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record unprovisioned build boundary
+        run: echo 'The actual security-enabled SDK branch compiled with an ephemeral fictional boot-signing key. No device provisioning, flash operation, eFuse change, physical pairing or sensing qualification occurred.' >> "$GITHUB_STEP_SUMMARY"
 
   android:
     runs-on: ubuntu-24.04
@@ -101,10 +169,12 @@ jobs:
       # init script refuses nonlocal IDs, a Metro-dependent Release variant or
       # any signer other than Expo's generated public Android development key.
       - name: Compile native modules, run Kotlin golden suites, build both local APKs
-        run: ./gradlew --no-daemon --max-workers=2 --init-script ../modules/scripts/local-preview.init.gradle -PreactNativeDevServerPort=8082 -PreactNativeArchitectures=arm64-v8a,x86_64 :otgd-reaction-task:testDebugUnitTest :app:assembleDebug :app:assembleRelease
+        run: ./gradlew --no-daemon --max-workers=2 --init-script ../modules/scripts/local-preview.init.gradle -PreactNativeDevServerPort=8082 -PreactNativeArchitectures=arm64-v8a,x86_64 :otgd-reaction-task:testDebugUnitTest :otgd-eye-capture:testDebugUnitTest :app:assembleDebug :app:assembleRelease
         working-directory: apps/mobile/android
       - name: Require every native fixture test to execute
-        run: python3 scripts/ci_gate.py verify-junit apps/mobile/modules/reaction-task/android/build/test-results/testDebugUnitTest/*.xml
+        run: |
+          python3 scripts/ci_gate.py verify-junit apps/mobile/modules/reaction-task/android/build/test-results/testDebugUnitTest/*.xml
+          python3 scripts/ci_gate.py verify-junit apps/mobile/modules/eye-capture/android/build/test-results/testDebugUnitTest/*.xml
       - name: Inspect standalone local APK bundle, application ID and development signer
         run: python3 modules/scripts/verify_android_preview.py
         working-directory: apps/mobile
@@ -124,7 +194,9 @@ jobs:
         if: always()
         with:
           name: android-native-test-reports
-          path: apps/mobile/modules/reaction-task/android/build/reports/tests/
+          path: |
+            apps/mobile/modules/reaction-task/android/build/reports/tests/
+            apps/mobile/modules/eye-capture/android/build/reports/tests/
           if-no-files-found: warn
           retention-days: 14
       - name: Evidence boundary
@@ -162,6 +234,12 @@ jobs:
             2>&1 | tee reports/ios-native.log
           python3 scripts/verify-swift-xctest.py reports/ios-native.xml reports/ios-native.log
           python3 scripts/ci_gate.py verify-junit reports/ios-native.xml
+          swift test --package-path apps/mobile/modules/eye-capture \
+            --parallel --num-workers 1 --verbose --disable-swift-testing \
+            --xunit-output "$PWD/reports/ios-optical.xml" \
+            2>&1 | tee reports/ios-optical.log
+          python3 scripts/verify-swift-xctest.py reports/ios-optical.xml reports/ios-optical.log
+          python3 scripts/ci_gate.py verify-junit reports/ios-optical.xml
       - name: Generate and install iOS native project dependencies
         run: |
           node node_modules/expo/bin/cli prebuild --platform ios --no-install
@@ -183,6 +261,8 @@ jobs:
           path: |
             reports/ios-native.xml
             reports/ios-native.log
+            reports/ios-optical.xml
+            reports/ios-optical.log
           if-no-files-found: error
           retention-days: 14
       - name: Evidence boundary

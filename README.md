@@ -17,6 +17,7 @@ The [required merge checks](docs/CI_GATES.md) describe the strict coverage, brow
 | Implement/review one app feature | [20-feature OpenSpec index](openspec/changes/production-mobile-platform/README.md), [shared contracts](openspec/changes/production-mobile-platform/shared-contracts.md), [tasks](openspec/changes/production-mobile-platform/tasks.md). |
 | See the adversarial review | [Findings and re-review ledger](openspec/changes/production-mobile-platform/reviews/RESOLUTION_LEDGER.md). |
 | Run Android/iOS | [Mobile application](apps/mobile/README.md), native modules under `apps/mobile/modules`. |
+| Try the UIs in a browser | [Codespaces web preview, Appetize native preview and service costs](docs/BROWSER_ACCESS_AND_SERVICES.md). |
 | Run actual local service dependencies | [LocalStack and PostgreSQL quick start](infra/README.md), [routing/environment settings](infra/ENVIRONMENT.md). |
 | Deploy an approved release to AWS | [Deployment tooling](deploy/README.md), [operator runbooks](infra/runbooks/OPERATIONS.md), [dated cost estimate](infra/costs/README.md). |
 | Work on the backend/API | [Service engineering guide](services/api/README.md), [generated application contract](contracts/application/README.md). |
@@ -52,7 +53,7 @@ For Android, install the documented SDK/JDK and run `npm run android` from `apps
 
 ## Run LocalStack and the service
 
-Install Docker with Compose v2, Python 3.12 and `uv` 0.13.0. Supply an appropriate LocalStack authentication token in your environment, then run:
+Install Docker with Compose v2, Python 3.12 and `uv` 0.13.0. The pinned community LocalStack preset needs no subscription or authentication token. For a new disposable fictional workspace, run:
 
 ```bash
 uv sync --project services/api --locked
@@ -62,6 +63,8 @@ python scripts/local-platform.py check
 ```
 
 Choose the correct host **before preparing the environment and building the app**: `localhost` for the iOS simulator, `10.0.2.2` for the Android emulator, or your computer's LAN IP with `--lan` for a physical phone. Configure API and OAuth origins consistently; identity issuer URLs must match exactly. See the [routing table](infra/ENVIRONMENT.md#local-phone-routing).
+
+For an existing workspace, preserve its secrets, database and independently versioned journal. Follow the [retained-runtime upgrade checklist](docs/JOURNAL_CONTINUITY.md#upgrade-a-retained-local-runtime) before recreating services. Community LocalStack storage persistence is unqualified; a restart can lose journal objects even while PostgreSQL survives. The optional licensed preset needs its own entitlement and restart/recovery qualification; see [infra/README.md](infra/README.md).
 
 For a disposable fictional local workspace, `python scripts/local-platform.py check-app --confirm-fictional-workspace` exercises actual PKCE → HTTP API → SQS worker → export → all-data deletion. This command deletes Fictional Account A's local data. The script requires real local services and never calls an in-process replacement worker.
 
@@ -76,7 +79,7 @@ npm run verify --prefix infra
 OPENSPEC_TELEMETRY=0 npx --yes @fission-ai/openspec@1.14.1 validate production-mobile-platform --strict
 ```
 
-Read the verification report for actual counts and externally unexecuted gates. CI separates ordinary source checks, a real PostgreSQL service, native builds, firmware compilation and an explicitly requested LocalStack integration run. A green source job does not satisfy the AWS or device release gates.
+Read the verification report for actual counts and externally unexecuted gates. The [required aggregate workflow](.github/workflows/merge-gate.yml) requires unit coverage strictly above 80%, ATDD, components, performance, real dependencies, every Docker health outcome, LocalStack API/application flows, PostgreSQL, firmware and Android/iOS checks on the exact revision. No skipped required job qualifies. Verify GitHub branch protection separately; a green source job does not satisfy AWS or physical-device release acceptance.
 
 ## Hardware sequence
 

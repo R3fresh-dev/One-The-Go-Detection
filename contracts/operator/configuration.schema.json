@@ -1,0 +1,1514 @@
+{
+  "$defs": {
+    "LabMethod": {
+      "additionalProperties": false,
+      "properties": {
+        "calibration_ids": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Calibration Ids",
+          "type": "array"
+        },
+        "instrument_ids": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Instrument Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "calibration_ids",
+        "instrument_ids"
+      ],
+      "title": "LabMethod",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "configuration_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Configuration Id",
+      "type": "string"
+    },
+    "study_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Study Id",
+      "type": "string"
+    },
+    "protocol_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Protocol Id",
+      "type": "string"
+    },
+    "channel": {
+      "enum": [
+        "saliva",
+        "eyes",
+        "cardiac",
+        "ecg",
+        "task",
+        "alcohol"
+      ],
+      "title": "Channel",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "material": {
+      "additionalProperties": true,
+      "oneOf": [
+        {
+          "const": {
+            "configuration_id": "choice_inhibit_v0_native_dev_1",
+            "events": {
+              "input_kinds": [
+                "direct_touch"
+              ],
+              "late_after_terminal": "ignore_without_mutating_terminal_evidence",
+              "max_touch_down_events": 1024,
+              "overflow": "invalidate_and_stop",
+              "sort_keys": [
+                "native_timestamp_ms",
+                "target_rank",
+                "pointer_id",
+                "native_sequence"
+              ],
+              "target_order": [
+                "left",
+                "right",
+                "outside"
+              ]
+            },
+            "extractor_version": "choice_inhibit_features_1",
+            "implementation_version": "1.0.0",
+            "presentation": {
+              "between_trials": "neutral_fixation",
+              "end_task_rect": [
+                750,
+                20,
+                230,
+                120
+              ],
+              "layout_change": "invalidate",
+              "left_target_rect": [
+                20,
+                650,
+                460,
+                250
+              ],
+              "minimum_control_hit_target_points": {
+                "android": 48,
+                "ios": 44
+              },
+              "minimum_view_height_points": 400,
+              "minimum_view_width_points": 240,
+              "orientation": "portrait",
+              "rect_unit": "per_mille_of_view",
+              "right_target_rect": [
+                520,
+                650,
+                460,
+                250
+              ],
+              "screen_reader_mode": "uncalibrated_adapted_practice",
+              "stimulus_labels": {
+                "left": "LEFT_ARROW",
+                "no_go": "WAIT",
+                "right": "RIGHT_ARROW"
+              },
+              "stimulus_rect": [
+                200,
+                150,
+                600,
+                400
+              ],
+              "style": {
+                "alpha": 255,
+                "arrow_fit": "uniform_largest_centered_square_inside_stimulus_rect",
+                "arrow_stroke": "none",
+                "background_hex": "#101820",
+                "between_trial_fixation": "filled_centered_dot",
+                "border_hex": "#71899E",
+                "border_width_points": 2,
+                "color_space": "sRGB",
+                "corner_radius_points": 12,
+                "end_fill_hex": "#334155",
+                "end_font_size_points": 16,
+                "end_text_hex": "#FFFFFF",
+                "fixation_dot_diameter_points": 8,
+                "fixation_hex": "#B8C4CE",
+                "font_family": {
+                  "android": "sans-serif",
+                  "ios": "system_sans_serif"
+                },
+                "font_weight": "regular",
+                "left_arrow_transform": "mirror_right_x_about_500",
+                "os_brightness_changes": "do_not_request_or_override",
+                "physical_luminance": "unmeasured",
+                "response_font_size_points": 20,
+                "right_arrow_polygon_per_mille": [
+                  [
+                    150,
+                    400
+                  ],
+                  [
+                    550,
+                    400
+                  ],
+                  [
+                    550,
+                    200
+                  ],
+                  [
+                    850,
+                    500
+                  ],
+                  [
+                    550,
+                    800
+                  ],
+                  [
+                    550,
+                    600
+                  ],
+                  [
+                    150,
+                    600
+                  ]
+                ],
+                "scored_text_scale": "fixed_1_0",
+                "stimulus_hex": "#FFFFFF",
+                "target_fill_hex": "#213547",
+                "target_text_hex": "#FFFFFF",
+                "text_alignment": "center",
+                "text_overflow": "reject_layout_before_start",
+                "theme_invariant": true,
+                "wait_font_size_points": 32
+              },
+              "target_labels": {
+                "left": "Left",
+                "right": "Right"
+              }
+            },
+            "provenance": {
+              "android_onset_method": "choreographer_frame_time_nanos",
+              "bridge_source": "native_task",
+              "calibration_status": "uncalibrated",
+              "domain_source": "prototype_sensor",
+              "ios_onset_method": "cadisplaylink_target_timestamp",
+              "model_eligible": false,
+              "physical_onset_verified": false
+            },
+            "rng": {
+              "algorithm": "lcg32",
+              "increment": 1013904223,
+              "modulus": 4294967296,
+              "multiplier": 1664525
+            },
+            "schedule": {
+              "first_onset_ms": 2000,
+              "initial_group_order": [
+                "left",
+                "right",
+                "no_go"
+              ],
+              "interval_draws": 66,
+              "interval_min_ms": 1500,
+              "interval_modulus": 401,
+              "interval_semantics": "trial_i_to_trial_i_plus_one_final_draw_retained_unused",
+              "practice_counts": {
+                "left": 2,
+                "no_go": 2,
+                "right": 2
+              },
+              "scored_counts": {
+                "left": 24,
+                "no_go": 12,
+                "right": 24
+              },
+              "shuffle": "fisher_yates_descending",
+              "shuffle_order": [
+                "practice",
+                "scored"
+              ]
+            },
+            "schema_version": "1.0.0",
+            "scoring": {
+              "anticipatory_classification": "before_first_onset_or_between_trials",
+              "correct_go_quantiles_percent": [
+                25,
+                50,
+                75,
+                90
+              ],
+              "display_ms_rounding": "nearest_integer_half_away_from_zero",
+              "eligible_trial_policy": "every_presented_trial_if_run_intact",
+              "empty_quantiles": null,
+              "first_qualifying_response_only": true,
+              "full_precision_storage": true,
+              "invalid_features": null,
+              "late_classification": "at_or_after_preceding_deadline_before_next_onset",
+              "numeric_fixture_absolute_tolerance_ms": "0.000001",
+              "practice_excluded": true,
+              "quantile_method": "linear_index_n_minus_one_p",
+              "response_fault_excludes_entire_run": true
+            },
+            "seed": {
+              "max": 4294967295,
+              "min": 0,
+              "type": "uint32"
+            },
+            "task_version": "choice_inhibit_v0",
+            "timing": {
+              "clock_regression_is_fault": true,
+              "fault_comparison": "greater_than",
+              "final_event_drain_ms": 100,
+              "max_frame_callback_dispatch_delay_ms": 100,
+              "max_frame_gap_ms": 100,
+              "max_input_dispatch_delay_ms": 100,
+              "max_scheduled_onset_lateness_ms": 100,
+              "negative_native_dispatch_is_fault": true,
+              "response_end_inclusive": false,
+              "response_start_inclusive": true,
+              "response_window_ms": 1000,
+              "same_turn_cancel_precedes_terminal": true,
+              "terminal_cutoff": "last_actual_onset_plus_response_window_plus_drain"
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0",
+              "title": "Schema Version",
+              "type": "string"
+            },
+            "channel": {
+              "enum": [
+                "cardiac",
+                "ecg",
+                "alcohol"
+              ],
+              "title": "Channel",
+              "type": "string"
+            },
+            "modality": {
+              "enum": [
+                "ppg",
+                "ecg",
+                "breath_alcohol"
+              ],
+              "title": "Modality",
+              "type": "string"
+            },
+            "protocol_version": {
+              "const": 1,
+              "title": "Protocol Version",
+              "type": "integer"
+            },
+            "duration_ms": {
+              "maximum": 3600000,
+              "minimum": 100,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "sample_rate_hz": {
+              "exclusiveMinimum": 0,
+              "maximum": 10000,
+              "title": "Sample Rate Hz",
+              "type": "number"
+            },
+            "raw_unit": {
+              "enum": [
+                "counts",
+                "mV",
+                "mg/L"
+              ],
+              "title": "Raw Unit",
+              "type": "string"
+            },
+            "extractor_version": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Extractor Version",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema_version",
+            "channel",
+            "modality",
+            "protocol_version",
+            "duration_ms",
+            "sample_rate_hz",
+            "raw_unit",
+            "extractor_version"
+          ],
+          "title": "SensorMaterial",
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0",
+              "title": "Schema Version",
+              "type": "string"
+            },
+            "channel": {
+              "enum": [
+                "cardiac",
+                "ecg"
+              ],
+              "title": "Channel",
+              "type": "string"
+            },
+            "modality": {
+              "enum": [
+                "ppg",
+                "ecg"
+              ],
+              "title": "Modality",
+              "type": "string"
+            },
+            "protocol_version": {
+              "const": 1,
+              "title": "Protocol Version",
+              "type": "integer"
+            },
+            "duration_ms": {
+              "maximum": 120000,
+              "minimum": 1000,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "sample_rate_hz": {
+              "maximum": 1000,
+              "minimum": 20,
+              "title": "Sample Rate Hz",
+              "type": "integer"
+            },
+            "raw_unit": {
+              "enum": [
+                "counts",
+                "mV"
+              ],
+              "title": "Raw Unit",
+              "type": "string"
+            },
+            "extractor_version": {
+              "const": "adc_peak_intervals_v1",
+              "title": "Extractor Version",
+              "type": "string"
+            },
+            "adapter_id": {
+              "const": "otgd_esp32_adc_v1",
+              "title": "Adapter Id",
+              "type": "string"
+            },
+            "end_guard_ms": {
+              "maximum": 100,
+              "minimum": 10,
+              "title": "End Guard Ms",
+              "type": "integer"
+            },
+            "raw_sample_limit": {
+              "maximum": 1024,
+              "minimum": 0,
+              "title": "Raw Sample Limit",
+              "type": "integer"
+            },
+            "raw_encoding": {
+              "anyOf": [
+                {
+                  "const": "otgd_ecg_samples_v1",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Raw Encoding"
+            },
+            "input_gpio": {
+              "maximum": 10,
+              "minimum": 1,
+              "title": "Input Gpio",
+              "type": "integer"
+            },
+            "contact_gpio": {
+              "maximum": 48,
+              "minimum": 1,
+              "title": "Contact Gpio",
+              "type": "integer"
+            },
+            "contact_active_high": {
+              "title": "Contact Active High",
+              "type": "boolean"
+            },
+            "adc_resolution_bits": {
+              "const": 12,
+              "title": "Adc Resolution Bits",
+              "type": "integer"
+            },
+            "attenuation_db": {
+              "const": 11,
+              "title": "Attenuation Db",
+              "type": "integer"
+            },
+            "reference_mv": {
+              "maximum": 5000,
+              "minimum": 500,
+              "title": "Reference Mv",
+              "type": "number"
+            },
+            "gain": {
+              "exclusiveMinimum": 0,
+              "maximum": 100000,
+              "title": "Gain",
+              "type": "number"
+            },
+            "offset_mv": {
+              "maximum": 5000,
+              "minimum": -5000,
+              "title": "Offset Mv",
+              "type": "number"
+            },
+            "threshold_adc": {
+              "maximum": 4094,
+              "minimum": 1,
+              "title": "Threshold Adc",
+              "type": "integer"
+            },
+            "minimum_peak_interval_ms": {
+              "maximum": 2000,
+              "minimum": 250,
+              "title": "Minimum Peak Interval Ms",
+              "type": "integer"
+            },
+            "maximum_peak_interval_ms": {
+              "maximum": 2000,
+              "minimum": 250,
+              "title": "Maximum Peak Interval Ms",
+              "type": "integer"
+            },
+            "minimum_amplitude_adc": {
+              "maximum": 4095,
+              "minimum": 1,
+              "title": "Minimum Amplitude Adc",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "schema_version",
+            "channel",
+            "modality",
+            "protocol_version",
+            "duration_ms",
+            "sample_rate_hz",
+            "raw_unit",
+            "extractor_version",
+            "adapter_id",
+            "end_guard_ms",
+            "raw_sample_limit",
+            "raw_encoding",
+            "input_gpio",
+            "contact_gpio",
+            "contact_active_high",
+            "adc_resolution_bits",
+            "attenuation_db",
+            "reference_mv",
+            "gain",
+            "offset_mv",
+            "threshold_adc",
+            "minimum_peak_interval_ms",
+            "maximum_peak_interval_ms",
+            "minimum_amplitude_adc"
+          ],
+          "title": "ADCMaterial",
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0",
+              "title": "Schema Version",
+              "type": "string"
+            },
+            "channel": {
+              "const": "eyes",
+              "title": "Channel",
+              "type": "string"
+            },
+            "duration_ms": {
+              "maximum": 300000,
+              "minimum": 100,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "camera_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Camera Id",
+              "type": "string"
+            },
+            "stimulus_policy_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Stimulus Policy Id",
+              "type": "string"
+            },
+            "illumination_policy_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Illumination Policy Id",
+              "type": "string"
+            },
+            "geometry_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Geometry Id",
+              "type": "string"
+            },
+            "frame_rate_hz": {
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Frame Rate Hz",
+              "type": "number"
+            },
+            "extractor_version": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Extractor Version",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema_version",
+            "channel",
+            "duration_ms",
+            "camera_id",
+            "stimulus_policy_id",
+            "illumination_policy_id",
+            "geometry_id",
+            "frame_rate_hz",
+            "extractor_version"
+          ],
+          "title": "OpticalMaterial",
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0",
+              "title": "Schema Version",
+              "type": "string"
+            },
+            "channel": {
+              "const": "eyes",
+              "title": "Channel",
+              "type": "string"
+            },
+            "duration_ms": {
+              "maximum": 10000,
+              "minimum": 100,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "camera_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Camera Id",
+              "type": "string"
+            },
+            "stimulus_policy_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Stimulus Policy Id",
+              "type": "string"
+            },
+            "illumination_policy_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Illumination Policy Id",
+              "type": "string"
+            },
+            "geometry_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Geometry Id",
+              "type": "string"
+            },
+            "frame_rate_hz": {
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Frame Rate Hz",
+              "type": "number"
+            },
+            "extractor_version": {
+              "const": "otgd-dark-component-v1",
+              "title": "Extractor Version",
+              "type": "string"
+            },
+            "lens_facing": {
+              "enum": [
+                "front",
+                "back"
+              ],
+              "title": "Lens Facing",
+              "type": "string"
+            },
+            "capture_width": {
+              "maximum": 1920,
+              "minimum": 64,
+              "title": "Capture Width",
+              "type": "integer"
+            },
+            "capture_height": {
+              "maximum": 1920,
+              "minimum": 64,
+              "title": "Capture Height",
+              "type": "integer"
+            },
+            "maximum_frame_gap_ms": {
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Maximum Frame Gap Ms",
+              "type": "integer"
+            },
+            "max_frames": {
+              "maximum": 300,
+              "minimum": 2,
+              "title": "Max Frames",
+              "type": "integer"
+            },
+            "roi": {
+              "additionalProperties": false,
+              "properties": {
+                "x0": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "title": "X0",
+                  "type": "number"
+                },
+                "y0": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "title": "Y0",
+                  "type": "number"
+                },
+                "x1": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "title": "X1",
+                  "type": "number"
+                },
+                "y1": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "title": "Y1",
+                  "type": "number"
+                }
+              },
+              "required": [
+                "x0",
+                "y0",
+                "x1",
+                "y1"
+              ],
+              "title": "OpticalROI",
+              "type": "object"
+            },
+            "roi_sample_width": {
+              "maximum": 128,
+              "minimum": 8,
+              "title": "Roi Sample Width",
+              "type": "integer"
+            },
+            "roi_sample_height": {
+              "maximum": 128,
+              "minimum": 8,
+              "title": "Roi Sample Height",
+              "type": "integer"
+            },
+            "dark_threshold": {
+              "maximum": 254,
+              "minimum": 0,
+              "title": "Dark Threshold",
+              "type": "integer"
+            },
+            "min_area_fraction": {
+              "exclusiveMaximum": 1,
+              "exclusiveMinimum": 0,
+              "title": "Min Area Fraction",
+              "type": "number"
+            },
+            "max_area_fraction": {
+              "exclusiveMaximum": 1,
+              "exclusiveMinimum": 0,
+              "title": "Max Area Fraction",
+              "type": "number"
+            },
+            "min_roundness": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Min Roundness",
+              "type": "number"
+            },
+            "min_contrast_delta": {
+              "maximum": 255,
+              "minimum": 1,
+              "title": "Min Contrast Delta",
+              "type": "integer"
+            },
+            "edge_margin_pixels": {
+              "maximum": 16,
+              "minimum": 1,
+              "title": "Edge Margin Pixels",
+              "type": "integer"
+            },
+            "minimum_valid_frames": {
+              "maximum": 300,
+              "minimum": 2,
+              "title": "Minimum Valid Frames",
+              "type": "integer"
+            },
+            "minimum_valid_frame_fraction": {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "title": "Minimum Valid Frame Fraction",
+              "type": "number"
+            },
+            "exposure_mode": {
+              "const": "automatic",
+              "title": "Exposure Mode",
+              "type": "string"
+            },
+            "focus_mode": {
+              "const": "continuous_auto",
+              "title": "Focus Mode",
+              "type": "string"
+            },
+            "stimulus_mode": {
+              "enum": [
+                "passive_ambient_no_modulation",
+                "reviewed_display_step"
+              ],
+              "title": "Stimulus Mode",
+              "type": "string"
+            },
+            "scale_basis": {
+              "enum": [
+                "normalized",
+                "millimeters"
+              ],
+              "title": "Scale Basis",
+              "type": "string"
+            },
+            "geometry_scale": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "calibration_id": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "title": "Calibration Id",
+                      "type": "string"
+                    },
+                    "calibration_sha256": {
+                      "pattern": "^[a-f0-9]{64}$",
+                      "title": "Calibration Sha256",
+                      "type": "string"
+                    },
+                    "pixels_to_mm": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 100,
+                      "title": "Pixels To Mm",
+                      "type": "number"
+                    },
+                    "min_diameter_pixels": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 1920,
+                      "title": "Min Diameter Pixels",
+                      "type": "number"
+                    },
+                    "max_diameter_pixels": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 1920,
+                      "title": "Max Diameter Pixels",
+                      "type": "number"
+                    },
+                    "max_uncertainty_mm": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 100,
+                      "title": "Max Uncertainty Mm",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "calibration_id",
+                    "calibration_sha256",
+                    "pixels_to_mm",
+                    "min_diameter_pixels",
+                    "max_diameter_pixels",
+                    "max_uncertainty_mm"
+                  ],
+                  "title": "GeometryScale",
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "display_stimulus": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "baseline_gray_level": {
+                      "maximum": 255,
+                      "minimum": 0,
+                      "title": "Baseline Gray Level",
+                      "type": "integer"
+                    },
+                    "step_gray_level": {
+                      "maximum": 255,
+                      "minimum": 0,
+                      "title": "Step Gray Level",
+                      "type": "integer"
+                    },
+                    "onset_ms": {
+                      "maximum": 10000,
+                      "minimum": 100,
+                      "title": "Onset Ms",
+                      "type": "integer"
+                    },
+                    "step_duration_ms": {
+                      "maximum": 10000,
+                      "minimum": 100,
+                      "title": "Step Duration Ms",
+                      "type": "integer"
+                    },
+                    "display_brightness_fraction": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 1,
+                      "title": "Display Brightness Fraction",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "baseline_gray_level",
+                    "step_gray_level",
+                    "onset_ms",
+                    "step_duration_ms",
+                    "display_brightness_fraction"
+                  ],
+                  "title": "DisplayStimulus",
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "response": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "baseline_window_ms": {
+                      "maximum": 10000,
+                      "minimum": 100,
+                      "title": "Baseline Window Ms",
+                      "type": "integer"
+                    },
+                    "minimum_baseline_frames": {
+                      "maximum": 300,
+                      "minimum": 2,
+                      "title": "Minimum Baseline Frames",
+                      "type": "integer"
+                    },
+                    "minimum_post_frames": {
+                      "maximum": 300,
+                      "minimum": 2,
+                      "title": "Minimum Post Frames",
+                      "type": "integer"
+                    },
+                    "latency_fraction_threshold": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 1,
+                      "title": "Latency Fraction Threshold",
+                      "type": "number"
+                    },
+                    "maximum_latency_ms": {
+                      "maximum": 10000,
+                      "minimum": 1,
+                      "title": "Maximum Latency Ms",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "baseline_window_ms",
+                    "minimum_baseline_frames",
+                    "minimum_post_frames",
+                    "latency_fraction_threshold",
+                    "maximum_latency_ms"
+                  ],
+                  "title": "OpticalResponse",
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "raw_encoding": {
+              "const": "otgd_eye_roi_v1",
+              "title": "Raw Encoding",
+              "type": "string"
+            },
+            "expected_output_rotation_degrees": {
+              "enum": [
+                0,
+                90,
+                180,
+                270
+              ],
+              "title": "Expected Output Rotation Degrees",
+              "type": "integer"
+            },
+            "expected_sensor_orientation_degrees": {
+              "anyOf": [
+                {
+                  "enum": [
+                    0,
+                    90,
+                    180,
+                    270
+                  ],
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Expected Sensor Orientation Degrees"
+            }
+          },
+          "required": [
+            "schema_version",
+            "channel",
+            "duration_ms",
+            "camera_id",
+            "stimulus_policy_id",
+            "illumination_policy_id",
+            "geometry_id",
+            "frame_rate_hz",
+            "extractor_version",
+            "lens_facing",
+            "capture_width",
+            "capture_height",
+            "maximum_frame_gap_ms",
+            "max_frames",
+            "roi",
+            "roi_sample_width",
+            "roi_sample_height",
+            "dark_threshold",
+            "min_area_fraction",
+            "max_area_fraction",
+            "min_roundness",
+            "min_contrast_delta",
+            "edge_margin_pixels",
+            "minimum_valid_frames",
+            "minimum_valid_frame_fraction",
+            "exposure_mode",
+            "focus_mode",
+            "stimulus_mode",
+            "scale_basis",
+            "raw_encoding",
+            "expected_output_rotation_degrees"
+          ],
+          "title": "ExecutableOpticalMaterial",
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0",
+              "title": "Schema Version",
+              "type": "string"
+            },
+            "channel": {
+              "const": "saliva",
+              "title": "Channel",
+              "type": "string"
+            },
+            "source": {
+              "const": "reference_lab",
+              "title": "Source",
+              "type": "string"
+            },
+            "collection_method_ids": {
+              "items": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 64,
+              "minItems": 1,
+              "title": "Collection Method Ids",
+              "type": "array"
+            },
+            "assay_bases": {
+              "items": {
+                "enum": [
+                  "free",
+                  "total_after_hydrolysis"
+                ],
+                "type": "string"
+              },
+              "maxItems": 2,
+              "minItems": 1,
+              "title": "Assay Bases",
+              "type": "array"
+            },
+            "concentration_bases": {
+              "items": {
+                "enum": [
+                  "neat_oral_fluid",
+                  "collected_mixture"
+                ],
+                "type": "string"
+              },
+              "maxItems": 2,
+              "minItems": 1,
+              "title": "Concentration Bases",
+              "type": "array"
+            },
+            "correction_statuses": {
+              "items": {
+                "enum": [
+                  "not_corrected",
+                  "laboratory_corrected"
+                ],
+                "type": "string"
+              },
+              "maxItems": 2,
+              "minItems": 1,
+              "title": "Correction Statuses",
+              "type": "array"
+            }
+          },
+          "required": [
+            "schema_version",
+            "channel",
+            "source",
+            "collection_method_ids",
+            "assay_bases",
+            "concentration_bases",
+            "correction_statuses"
+          ],
+          "title": "LaboratoryMaterial",
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0",
+              "title": "Schema Version",
+              "type": "string"
+            },
+            "channel": {
+              "const": "saliva",
+              "title": "Channel",
+              "type": "string"
+            },
+            "source": {
+              "const": "prototype_sensor",
+              "title": "Source",
+              "type": "string"
+            },
+            "collection_method_ids": {
+              "items": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 64,
+              "minItems": 1,
+              "title": "Collection Method Ids",
+              "type": "array"
+            },
+            "assay_bases": {
+              "items": {
+                "enum": [
+                  "free",
+                  "total_after_hydrolysis"
+                ],
+                "type": "string"
+              },
+              "maxItems": 2,
+              "minItems": 1,
+              "title": "Assay Bases",
+              "type": "array"
+            },
+            "concentration_bases": {
+              "items": {
+                "enum": [
+                  "neat_oral_fluid",
+                  "collected_mixture"
+                ],
+                "type": "string"
+              },
+              "maxItems": 2,
+              "minItems": 1,
+              "title": "Concentration Bases",
+              "type": "array"
+            },
+            "correction_statuses": {
+              "items": {
+                "enum": [
+                  "not_corrected",
+                  "laboratory_corrected"
+                ],
+                "type": "string"
+              },
+              "maxItems": 2,
+              "minItems": 1,
+              "title": "Correction Statuses",
+              "type": "array"
+            },
+            "modality": {
+              "const": "saliva_reader",
+              "title": "Modality",
+              "type": "string"
+            },
+            "protocol_version": {
+              "const": 1,
+              "title": "Protocol Version",
+              "type": "integer"
+            },
+            "duration_ms": {
+              "maximum": 120000,
+              "minimum": 100,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "raw_unit": {
+              "const": "ng/mL",
+              "title": "Raw Unit",
+              "type": "string"
+            },
+            "extractor_version": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Extractor Version",
+              "type": "string"
+            },
+            "method_ids": {
+              "items": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 16,
+              "minItems": 1,
+              "title": "Method Ids",
+              "type": "array"
+            },
+            "analyte_limits": {
+              "additionalProperties": {
+                "additionalProperties": false,
+                "properties": {
+                  "lod_ng_ml": {
+                    "minimum": 0,
+                    "title": "Lod Ng Ml",
+                    "type": "number"
+                  },
+                  "loq_ng_ml": {
+                    "minimum": 0,
+                    "title": "Loq Ng Ml",
+                    "type": "number"
+                  },
+                  "upper_ng_ml": {
+                    "exclusiveMinimum": 0,
+                    "title": "Upper Ng Ml",
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "lod_ng_ml",
+                  "loq_ng_ml",
+                  "upper_ng_ml"
+                ],
+                "title": "AnalyteLimits",
+                "type": "object"
+              },
+              "maxProperties": 3,
+              "minProperties": 1,
+              "propertyNames": {
+                "enum": [
+                  "THC",
+                  "OH11_THC",
+                  "THC_COOH"
+                ]
+              },
+              "title": "Analyte Limits",
+              "type": "object"
+            }
+          },
+          "required": [
+            "schema_version",
+            "channel",
+            "source",
+            "collection_method_ids",
+            "assay_bases",
+            "concentration_bases",
+            "correction_statuses",
+            "modality",
+            "protocol_version",
+            "duration_ms",
+            "raw_unit",
+            "extractor_version",
+            "method_ids",
+            "analyte_limits"
+          ],
+          "title": "SalivaReaderMaterial",
+          "type": "object"
+        }
+      ],
+      "title": "Material",
+      "type": "object"
+    },
+    "qualification_evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Qualification Evidence Ref",
+      "type": "string"
+    },
+    "retention_policy_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Retention Policy Id",
+      "type": "string"
+    },
+    "max_duration_ms": {
+      "maximum": 3600000,
+      "minimum": 100,
+      "title": "Max Duration Ms",
+      "type": "integer"
+    },
+    "software_adapter_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Software Adapter Id",
+      "type": "string"
+    },
+    "raw_retention_approved": {
+      "default": false,
+      "title": "Raw Retention Approved",
+      "type": "boolean"
+    },
+    "device_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Device Id"
+    },
+    "key_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Key Id"
+    },
+    "calibration_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Calibration Id"
+    },
+    "approved_hardware": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Approved Hardware",
+      "type": "array"
+    },
+    "approved_firmware": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Approved Firmware",
+      "type": "array"
+    },
+    "supported_phone_models": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Supported Phone Models",
+      "type": "array"
+    },
+    "supported_os_versions": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Supported Os Versions",
+      "type": "array"
+    },
+    "supported_native_builds": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Supported Native Builds",
+      "type": "array"
+    },
+    "optical_safety_ref": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Optical Safety Ref"
+    },
+    "lab_methods": {
+      "additionalProperties": {
+        "$ref": "#/$defs/LabMethod"
+      },
+      "maxProperties": 16,
+      "propertyNames": {
+        "maxLength": 256,
+        "minLength": 1
+      },
+      "title": "Lab Methods",
+      "type": "object"
+    }
+  },
+  "required": [
+    "registry_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "configuration_id",
+    "study_id",
+    "protocol_id",
+    "channel",
+    "sha256",
+    "material",
+    "qualification_evidence_ref",
+    "retention_policy_id",
+    "max_duration_ms",
+    "software_adapter_id"
+  ],
+  "title": "Configuration",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/configuration.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

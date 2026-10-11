@@ -23,7 +23,7 @@ WORKFLOW_PATH = ".github/workflows/merge-gate.yml"
 REQUIRED_JOBS = frozenset({
     "unit-coverage", "atdd", "components", "merge-gate",
     "platform / contracts-and-synthesis", "platform / postgres-integration",
-    "platform / localstack-integration", "native / shared-and-firmware",
+    "platform / localstack-integration", "native / shared-and-firmware", "native / protected-reader",
     "native / android", "native / ios",
 })
 REQUIRED_GATE_LABELS = frozenset({

@@ -4,7 +4,21 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const environment = process.env.APP_ENV ?? "local";
   if (!["local", "qa", "prod", "test"].includes(environment))
     throw new Error("Unsupported APP_ENV");
+  if (
+    process.env.EXPO_PUBLIC_APP_ENV &&
+    process.env.EXPO_PUBLIC_APP_ENV !== environment
+  )
+    throw new Error("EXPO_PUBLIC_APP_ENV must match APP_ENV");
+  process.env.EXPO_PUBLIC_APP_ENV = environment;
   const local = environment === "local" || environment === "test";
+  const previewValue = process.env.EXPO_PUBLIC_HOSTED_PREVIEW ?? "false";
+  if (!["true", "false"].includes(previewValue))
+    throw new Error("EXPO_PUBLIC_HOSTED_PREVIEW must be true or false");
+  const hostedPreview = previewValue === "true";
+  if (hostedPreview && environment !== "local")
+    throw new Error(
+      "The fictional hosted preview is permitted only in APP_ENV=local",
+    );
   const buildNumber = Number(process.env.APP_BUILD_NUMBER ?? "1");
   if (
     !Number.isSafeInteger(buildNumber) ||
@@ -50,6 +64,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       supportsTablet: true,
       buildNumber: String(buildNumber),
       infoPlist: {
+        ...(hostedPreview ? { OTGDHostedPreview: true } : {}),
         NSCameraUsageDescription:
           "Show an optional eye-positioning preview. Preview does not record images or measure pupils.",
         NSFaceIDUsageDescription:
@@ -131,6 +146,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ],
     extra: {
       environment,
+      hostedPreview,
       buildNumber: String(buildNumber),
       apiUrl,
       issuer,

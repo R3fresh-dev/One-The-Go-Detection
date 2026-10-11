@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { DeviceController } from './types';
 
-export interface DevicePanelProps { controller: DeviceController }
+export interface DevicePanelProps { controller: DeviceController; allowBluetooth?: boolean; onBind?:()=>Promise<void>; onRemoteForget?:(bindingId:string)=>Promise<void> }
 const explanations: Record<string, string> = {
   NATIVE_BLUETOOTH_UNAVAILABLE: 'Bluetooth is unavailable in this build. Use the local synthetic simulator or install a native development build.',
   BLUETOOTH_PERMISSION_DENIED: 'Bluetooth access was declined. Select Find simulator to try again.',
@@ -16,7 +16,7 @@ const explanations: Record<string, string> = {
   REPLAY_JOURNAL_FULL: 'This simulator reached its bounded message limit. Restart the physical board and reconnect, or select the local simulator again.',
   BACKGROUND: 'Capture stopped when the app left the foreground. Start a new attempt after reconnecting.',
 };
-export function DevicePanel({ controller }: DevicePanelProps): React.ReactElement {
+export function DevicePanel({ controller, allowBluetooth = true, onBind, onRemoteForget }: DevicePanelProps): React.ReactElement {
   const [snapshot, setSnapshot] = useState(controller.snapshot());
   const [busy, setBusy] = useState(false);
   const [operationError, setOperationError] = useState<string | null>(null);
@@ -25,22 +25,27 @@ export function DevicePanel({ controller }: DevicePanelProps): React.ReactElemen
   const button = (label: string, action: () => Promise<void>, disabled = false) => <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled: busy || disabled }} disabled={busy || disabled} style={[styles.button, (busy || disabled) && styles.disabled]} onPress={() => run(action)}><Text style={styles.buttonText}>{label}</Text></Pressable>;
   const reason = snapshot.reason ?? operationError;
   return <View style={styles.panel}>
-    <Text style={styles.heading} accessibilityRole="header">Device simulator</Text>
-    <Text style={styles.body}>Synthetic bench data only. A Bluetooth connection does not establish a trusted human measurement. No intoxication prediction is available.</Text>
-    <Text style={styles.status} accessibilityLiveRegion="polite">{snapshot.state === 'connected_simulator' ? 'Synthetic simulator connected' : snapshot.state === 'scanning' ? 'Looking for project simulators…' : snapshot.state === 'connecting' ? 'Checking capabilities and clock exchange…' : 'No simulator connected'}</Text>
+    <Text style={styles.heading} accessibilityRole="header">Reader and simulator</Text>
+    <Text style={styles.body}>Connect only a project simulator or a reader implementing otgd_signed_reader_v1. A Bluetooth connection and advertised identity do not establish trust. Device-owned proof, current calibration and a fresh server-approved capture are separate. Unknown vendor protocols remain unsupported.</Text>
+    <Text style={styles.status} accessibilityLiveRegion="polite">{snapshot.state === 'connected_reader' ? (snapshot.association?.verifiedBindingId ? 'Reader binding verified by service' : 'Signed-protocol reader connected · identity unverified') : snapshot.state === 'connected_simulator' ? 'Synthetic simulator connected' : snapshot.state === 'scanning' ? 'Looking for project simulators…' : snapshot.state === 'connecting' ? 'Checking capabilities and clock exchange…' : 'No simulator connected'}</Text>
     {busy && <ActivityIndicator accessibilityLabel="Device operation in progress" />}
     {reason && <Text style={styles.error} accessibilityLiveRegion="assertive">{explanations[reason] ?? `Device operation stopped: ${reason}. Reconnect or use the local simulator.`}</Text>}
     {snapshot.association && <View style={styles.details}>
       <Text style={styles.body}>Device: {snapshot.association.deviceId}</Text>
       <Text style={styles.body}>Firmware: {snapshot.association.firmwareVersion}</Text>
-      <Text style={styles.body}>Connection: {snapshot.association.transport === 'local_simulator' ? 'Local software simulator' : 'Unprovisioned Bluetooth simulator'}</Text>
-      <Text style={styles.body}>Human capture: unavailable</Text>
-      {button('Disconnect simulator', () => controller.disconnect())}
-      {button('Forget simulator', () => controller.forget())}
+      <Text style={styles.body}>Connection: {snapshot.association.source === 'prototype_sensor' ? 'Bluetooth signed-protocol reader' : snapshot.association.transport === 'local_simulator' ? 'Local software simulator' : 'Unprovisioned Bluetooth simulator'}</Text>
+      <Text style={styles.body}>Measurement approval: requires the current study configuration and fresh online authorization</Text>
+      {snapshot.association.source === 'prototype_sensor' && <>
+        <Text style={styles.body}>Binding: {snapshot.association.verifiedBindingId ?? 'Not verified'}</Text>
+        {!snapshot.association.verifiedBindingId && onBind && button('Verify and bind this reader', onBind)}
+        {snapshot.association.verifiedBindingId && onRemoteForget && button('Disconnect and revoke account binding',()=>onRemoteForget(snapshot.association!.verifiedBindingId!))}
+      </>}
+      {button(snapshot.association.source === 'prototype_sensor' ? 'Disconnect reader' : 'Disconnect simulator', () => controller.disconnect())}
+      {button(snapshot.association.source === 'prototype_sensor' ? 'Forget local reader connection' : 'Forget simulator', () => controller.forget())}
     </View>}
     {!snapshot.association && <>
-      {snapshot.state === 'scanning' ? button('Stop discovery', () => controller.stopScan()) : button('Find Bluetooth simulator', () => controller.scan())}
-      {snapshot.devices.map(device => <View key={device.peripheralId} style={styles.device}>
+      {allowBluetooth ? (snapshot.state === 'scanning' ? button('Stop discovery', () => controller.stopScan()) : button('Find Bluetooth simulator', () => controller.scan())) : <Text style={styles.body}>Bluetooth discovery is disabled in the fictional preview. The local software simulator needs no hardware or permissions.</Text>}
+      {allowBluetooth && snapshot.devices.map(device => <View key={device.peripheralId} style={styles.device}>
         <Text style={styles.body}>{device.alias}</Text><Text style={styles.caption}>Signal {device.rssi} dBm · identity unverified</Text>
         {button(`Connect ${device.alias}`, () => controller.connect(device.peripheralId))}
       </View>)}

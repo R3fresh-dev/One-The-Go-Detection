@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     storage_kms_key_id: str | None = None
     journal_kms_key_id: str | None = None
     recovery_required: bool = False
+    independent_recovery_admission: bool = False
+    deployment_account: str | None = None
+    source_revision: str | None = None
+    capture_signing_key_id: str | None = None
+    capture_signing_private_key_file: str = '.local/capture-signing-key.pem'
     maintenance: bool = False
     minimum_app_version: str = "0.2.0"
     supported_app_versions: list[str] = ["0.2.0"]
@@ -71,6 +76,8 @@ class Settings(BaseSettings):
         if not 1 <= self.database_pool_size <= 5:
             raise ValueError("Database pool outside reviewed capacity")
         if self.environment in ("qa", "prod"):
+            if not re.fullmatch(r"[0-9]{12}", self.deployment_account or "") or not re.fullmatch(r"[0-9a-f]{40}", self.source_revision or ""):
+                raise ValueError("Cloud admission requires its actual AWS account and immutable source revision")
             if self.database_sslmode != "verify-full" or not self.database_sslrootcert:
                 raise ValueError(
                     "Cloud PostgreSQL requires verified TLS and an RDS CA path"

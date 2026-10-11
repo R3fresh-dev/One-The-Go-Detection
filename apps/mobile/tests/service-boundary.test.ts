@@ -67,6 +67,25 @@ test("unsupported app version, minimum version or contract pauses synchronizatio
   );
 });
 
+test("research result format advertisement supports only the versioned reader and grants no inference authority", () => {
+  const original = clone(actualConfig) as any;
+  delete original.contract_versions.research_result;
+  assert.equal(parseAppConfig(original, expected).inference_available, false);
+  original.contract_versions.research_result = ["1.1.0"];
+  const parsed = parseAppConfig(original, expected);
+  assert.deepEqual(parsed.contract_versions.research_result, ["1.1.0"]);
+  assert.deepEqual(parsed.contract_versions.scientific, ["0.1.0"]);
+  assert.equal(parsed.inference_available, false);
+  for (const invalid of [[], ["1.2.0"], ["1.1.0", "0.1.0"], "1.1.0", null]) {
+    const changed = clone(original);
+    changed.contract_versions.research_result = invalid;
+    assert.throws(
+      () => parseAppConfig(changed, expected),
+      /format is unsupported/,
+    );
+  }
+});
+
 test("maintenance blocks an ordinary HTTP write before fetch and preserves exact privacy escape routes", async () => {
   const oldFetch = globalThis.fetch,
     calls: { url: string; init: RequestInit }[] = [];

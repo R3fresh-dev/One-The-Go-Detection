@@ -44,11 +44,18 @@ from otgd.report_revisions import (
     ensure_artifact_capacity,
 )
 from otgd.errors import Problem
+from otgd.raw_retention import administrative_authority, attach_retention
 from otgd.worker import run_job, export_manifest_bytes
 
 from .conftest import headers
 from .helpers import session_fixture
 from .test_api import store as versioned_store_fixture
+from .governance_fixture import (
+    approve,
+    common,
+    device as fixture_device,
+    calibration as fixture_calibration,
+)
 
 STUDY = "FICTIONAL-REVISION-STUDY"
 PROTOCOL = "FICTIONAL-REVISION-PROTOCOL"
@@ -68,6 +75,10 @@ def store(monkeypatch):
 
 @pytest.fixture
 def laboratory(client, account, store):
+    document_text = (
+        "FICTIONAL consent software fixture. This is not human-study approval."
+    )
+    document_sha256 = __import__("hashlib").sha256(document_text.encode()).hexdigest()
     snapshot = session_fixture(account)
     snapshot.update(mode="analytical", study_id=STUDY, protocol_id=PROTOCOL)
     snapshot["profile"]["source"] = "study_measurement"
@@ -99,6 +110,7 @@ def laboratory(client, account, store):
     ends = [snapshot["sample"]["collected_at"]] + [
         snapshot[key]["ended_at"] for key in ("eyes", "cardiac")
     ]
+
     def instant(value):
         return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
@@ -174,9 +186,7 @@ def laboratory(client, account, store):
                 else None
                 if component == "task"
                 else "FICTIONAL_ACCEPTED_" + component,
-                "configuration_hash": None
-                if component == "task"
-                else "2" * 64,
+                "configuration_hash": None if component == "task" else "2" * 64,
                 "quality_flags": [],
                 "component_metadata": {
                     "projection": projection,
@@ -231,7 +241,7 @@ def laboratory(client, account, store):
             STUDY,
             {
                 "state": "active",
-                "document_sha256": "1" * 64,
+                "document_sha256": document_sha256,
                 "document_version": "fictional-approved-v1",
                 "invitation_id": "fictional-invitation-v1",
                 "consent_record_id": consent_id,
@@ -241,9 +251,10 @@ def laboratory(client, account, store):
             ("study", STUDY): {
                 "account_refs": [account],
                 "channels": {"saliva": CONFIGURATION},
-                "document_sha256": "1" * 64,
+                "document_sha256": document_sha256,
                 "document_version": "fictional-approved-v1",
                 "invitation_id": "fictional-invitation-v1",
+                "expires_at": now() + 86400,
             },
             ("configuration", CONFIGURATION): {
                 "configuration_id": CONFIGURATION,
@@ -275,27 +286,116 @@ def laboratory(client, account, store):
                 "study_ids": [STUDY],
                 "expires_at": now() + 86400,
             },
+            ("retention", RETENTION): {
+                "schema_version": "1.0.0",
+                "registry_id": RETENTION,
+                "policy_id": RETENTION,
+                "version": "fictional-v1",
+                "study_id": STUDY,
+                "expires_at": now() + 86400,
+                "evidence_ref": "FICTIONAL-RAW-REVIEW",
+                "evidence_sha256": "5" * 64,
+                "purpose_id": PURPOSE,
+                "purpose_text": "Fictional administrative report corrections only",
+                "raw_kinds": ["source_lab_report"],
+                "max_retention_days": 2,
+                "access_roles": ["lab_report_revision"],
+                "withdrawal_behavior": "delete_live_data",
+                "exceptions": [],
+                "raw_notice_version": "fictional-v1",
+                "raw_notice_text": "FICTIONAL administrative laboratory report retention.",
+                "raw_notice_sha256": __import__("hashlib")
+                .sha256(b"FICTIONAL administrative laboratory report retention.")
+                .hexdigest(),
+            },
         }
-        for (kind, ident), body in records.items():
-            db.add(Registry(id=kind + ":" + ident, kind=kind, body=body, active=True))
-        db.add(
-            Artifact(
-                id=artifact_id,
-                account_id=account,
-                generation=1,
-                session_id=session_id,
-                bucket=settings().artifact_bucket,
-                key=key,
-                version_id=version,
-                sha256=__import__("hashlib").sha256(pdf).hexdigest(),
-                size=len(pdf),
-                media_type="application/pdf",
-                kind="source_lab_report",
-                state="verified",
-                expires=now() - 400,
-                scope=scope,
-            )
+        # New raw authority executes the typed, three-principal maintenance
+        # lifecycle. Historical v1 scientific evidence above remains unchanged.
+        study = common(STUDY, **records[("study", STUDY)])
+        study.update(
+            study_id=STUDY,
+            protocol_id=PROTOCOL,
+            name="Fictional laboratory fixture",
+            document_text=document_text,
+            retention_summary="Fictional administrative PDF retention",
         )
+        approve(db, "study", study)
+        dev = fixture_device(account)
+        dev["approved_protocol_ids"] = [PROTOCOL]
+        approve(db, "device", dev)
+        cal = fixture_calibration()
+        cal.update(registry_id=CALIBRATION, calibration_id=CALIBRATION)
+        approve(db, "calibration", cal)
+        material = {
+            "schema_version": "1.0.0",
+            "channel": "saliva",
+            "source": "reference_lab",
+            "collection_method_ids": [snapshot["sample"]["collection_method_id"]],
+            "assay_bases": ["free", "total_after_hydrolysis"],
+            "concentration_bases": ["neat_oral_fluid", "collected_mixture"],
+            "correction_statuses": ["not_corrected", "laboratory_corrected"],
+        }
+        method = common(
+            METHOD,
+            method_id=METHOD,
+            assay_bases=material["assay_bases"],
+            collection_method_ids=material["collection_method_ids"],
+            instrument_ids=[INSTRUMENT],
+            laboratory_ids=["FICTIONAL-LABORATORY"],
+        )
+        approve(db, "method", method)
+        approve(db, "retention", records[("retention", RETENTION)])
+        config = common(CONFIGURATION, **records[("configuration", CONFIGURATION)])
+        config.update(
+            material=material,
+            sha256=digest(material),
+            max_duration_ms=150000,
+            software_adapter_id="unimplemented-laboratory",
+        )
+        from otgd.operator_governance import Configuration
+
+        config = Configuration.model_validate(config).data()
+        evidence = common(PROOF, **records[("qualification", PROOF)])
+        evidence.update(
+            configuration_sha256=config["sha256"],
+            purpose="measurement_collection",
+            configuration_registry_id=CONFIGURATION,
+            configuration_version=config["version"],
+            configuration_submitted_sha256=digest(config),
+        )
+        approve(db, "qualification", evidence)
+        approve(db, "configuration", config)
+        role = common(account, **records[("role", account)])
+        role["account_ref"] = account
+        approve(db, "role", role)
+        source_artifact = Artifact(
+            id=artifact_id,
+            account_id=account,
+            generation=1,
+            session_id=session_id,
+            bucket=settings().artifact_bucket,
+            key=key,
+            version_id=version,
+            sha256=__import__("hashlib").sha256(pdf).hexdigest(),
+            size=len(pdf),
+            media_type="application/pdf",
+            kind="source_lab_report",
+            state="verified",
+            expires=now() - 400,
+            scope=scope,
+        )
+        db.add(source_artifact)
+        db.flush()
+        frozen = administrative_authority(
+            db,
+            a,
+            check,
+            RETENTION,
+            PURPOSE,
+            iso(check.created),
+            operator_role="lab_report_revision",
+        )
+        attach_retention(db, source_artifact, frozen)
     return SimpleNamespace(
         account=account,
         session_id=session_id,
@@ -592,7 +692,7 @@ def test_missing_or_malformed_method_mapping_is_not_invented(
     response = post(client, laboratory)
     assert (
         response.status_code == 403
-        and response.json()["code"] == "REPORT_METHOD_UNAVAILABLE"
+        and response.json()["code"] == "REGISTRY_INTEGRITY_FAILURE"
     )
 
 

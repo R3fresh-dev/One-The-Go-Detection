@@ -25,7 +25,9 @@ def test_missing_provenance_cannot_be_guessed_for_existing_accounts(client,accou
     assert client.get('/v1/me/capabilities',headers=headers()).status_code==503
     with pytest.raises(RuntimeError,match='provenance'):migrate()
 
-def test_empty_initial_migration_records_key_once_and_replays(client):
+def test_empty_initial_migration_records_key_once_and_replays(client, monkeypatch):
+    from .journal_fixture import inject_marker
+    inject_marker(monkeypatch)
     with factory().begin() as db:db.delete(db.get(SystemState,KEY_STATE))
     migrate();migrate()
     with factory()() as db:assert db.get(SystemState,KEY_STATE).body==key_descriptor()

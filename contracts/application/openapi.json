@@ -3,7 +3,7 @@
   "info": {
     "title": "One-The-Go Detection",
     "version": "1.0.0",
-    "description": "Versioned measurement-only application API. Clinical inference is compiled unavailable. See shared-contracts.md for state, idempotency, owner/generation and native evidence invariants. Unknown nested component metadata is rejected at runtime; CaptureAttempt carries a strict v0.1 projection plus the named typed companion evidence."
+    "description": "Versioned application API. Measurement mode is the default. ResearchResult 1.1 requires current independent study, consent, hardware, calibration and model approval; legacy 0.1 results never carry research estimates. See shared-contracts.md and the authorized-model-execution amendment for state, idempotency, owner/generation and native evidence invariants. Unknown nested component metadata is rejected at runtime; CaptureAttempt carries a strict v0.1 measurement projection plus the named typed companion evidence."
   },
   "paths": {
     "/health/live": {
@@ -2065,6 +2065,310 @@
         ]
       }
     },
+    "/v1/studies/{study_id}/raw-recordings": {
+      "get": {
+        "summary": "Raw Recordings",
+        "operationId": "raw_recordings_v1_studies__study_id__raw_recordings_get",
+        "parameters": [
+          {
+            "name": "study_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "title": "Study Id"
+            }
+          },
+          {
+            "name": "artifact_cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Artifact Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/studies/{study_id}/raw-recording-preferences": {
+      "post": {
+        "summary": "Raw Preferences",
+        "operationId": "raw_preferences_v1_studies__study_id__raw_recording_preferences_post",
+        "parameters": [
+          {
+            "name": "study_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "title": "Study Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RawPreferences"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/studies/{study_id}/raw-recording-revocations": {
+      "post": {
+        "summary": "Raw Revocations",
+        "operationId": "raw_revocations_v1_studies__study_id__raw_recording_revocations_post",
+        "parameters": [
+          {
+            "name": "study_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "title": "Study Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RawRevocation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
     "/v1/device-bindings/challenges": {
       "post": {
         "summary": "Bind Challenge",
@@ -2687,6 +2991,115 @@
         ]
       }
     },
+    "/v1/artifact-uploads/{artifact_id}/ticket": {
+      "post": {
+        "summary": "Artifact Ticket Renew",
+        "operationId": "artifact_ticket_renew_v1_artifact_uploads__artifact_id__ticket_post",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
     "/v1/artifact-uploads/{artifact_id}": {
       "get": {
         "summary": "Artifact Status",
@@ -3300,6 +3713,136 @@
               "type": "string"
             },
             "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/privacy/raw-export-scopes": {
+      "get": {
+        "summary": "Raw Export Scope Get",
+        "operationId": "raw_export_scope_get_v1_privacy_raw_export_scopes_get",
+        "parameters": [
+          {
+            "name": "study_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Study Id"
+            }
+          },
+          {
+            "name": "authorization_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization Id"
+            }
+          },
+          {
+            "name": "artifact_cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Artifact Cursor"
+            }
+          },
+          {
+            "name": "authorization_cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
           }
         ]
       }
@@ -4354,6 +4897,42 @@
               "application/pdf"
             ],
             "title": "Media Type"
+          },
+          "raw_consent_record_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Consent Record Id"
+          },
+          "attempt_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt Id"
+          },
+          "capture_started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capture Started At"
           }
         },
         "additionalProperties": false,
@@ -4793,6 +5372,21 @@
             "type": "string",
             "pattern": "^[a-f0-9]{64}$",
             "title": "Configuration Hash"
+          },
+          "raw_recording_kind": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "eye_video",
+                  "ecg_waveform"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Recording Kind"
           }
         },
         "additionalProperties": false,
@@ -5237,8 +5831,17 @@
           },
           "include_raw": {
             "type": "boolean",
-            "const": false,
             "title": "Include Raw"
+          },
+          "raw_scope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RawExportScope"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -5565,6 +6168,194 @@
           "history"
         ],
         "title": "ProfileWrite"
+      },
+      "RawChoice": {
+        "properties": {
+          "record": {
+            "type": "boolean",
+            "title": "Record"
+          },
+          "upload": {
+            "type": "boolean",
+            "title": "Upload"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "record",
+          "upload"
+        ],
+        "title": "RawChoice"
+      },
+      "RawChoices": {
+        "properties": {
+          "eye_video": {
+            "$ref": "#/components/schemas/RawChoice"
+          },
+          "ecg_waveform": {
+            "$ref": "#/components/schemas/RawChoice"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "eye_video",
+          "ecg_waveform"
+        ],
+        "title": "RawChoices"
+      },
+      "RawExportScope": {
+        "properties": {
+          "authorization_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Authorization Id"
+          },
+          "authorization_version": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Authorization Version"
+          },
+          "authorization_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Authorization Sha256"
+          },
+          "export_notice_version": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Export Notice Version"
+          },
+          "export_notice_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Export Notice Sha256"
+          },
+          "acknowledged_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Acknowledged At"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirmed"
+          },
+          "artifact_ids": {
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+            },
+            "type": "array",
+            "maxItems": 128,
+            "minItems": 1,
+            "title": "Artifact Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "authorization_id",
+          "authorization_version",
+          "authorization_sha256",
+          "export_notice_version",
+          "export_notice_sha256",
+          "acknowledged_at",
+          "confirmed",
+          "artifact_ids"
+        ],
+        "title": "RawExportScope"
+      },
+      "RawPreferences": {
+        "properties": {
+          "consent_record_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Consent Record Id"
+          },
+          "policy_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Policy Id"
+          },
+          "policy_version": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Policy Version"
+          },
+          "policy_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Policy Sha256"
+          },
+          "raw_notice_version": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Raw Notice Version"
+          },
+          "raw_notice_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Raw Notice Sha256"
+          },
+          "acknowledged_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Acknowledged At"
+          },
+          "choices": {
+            "$ref": "#/components/schemas/RawChoices"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "consent_record_id",
+          "policy_id",
+          "policy_version",
+          "policy_sha256",
+          "raw_notice_version",
+          "raw_notice_sha256",
+          "acknowledged_at",
+          "choices"
+        ],
+        "title": "RawPreferences"
+      },
+      "RawRevocation": {
+        "properties": {
+          "confirmation": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirmation"
+          },
+          "artifact_kinds": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "eye_video",
+                "ecg_waveform"
+              ]
+            },
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Artifact Kinds"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "confirmation",
+          "artifact_kinds"
+        ],
+        "title": "RawRevocation"
       },
       "ReplacementLink": {
         "properties": {
@@ -6548,10 +7339,30 @@
             "title": "Attempt Id"
           },
           "device_boot_id": {
-            "type": "string",
-            "maxLength": 256,
-            "minLength": 1,
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Device Boot Id"
+          },
+          "device_nonce": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Nonce"
           }
         },
         "additionalProperties": false,

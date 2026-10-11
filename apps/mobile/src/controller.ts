@@ -1,5 +1,43 @@
+import {
+  getEyeCaptureAvailability,
+  type EyeOptions,
+  type EyeCaptureComplete,
+  type EyeCaptureViewRef,
+} from "../modules/eye-capture";
+import { projectNativeEye } from "./core/eyeProjection";
+import type { RawPermission } from "./core/rawArtifacts";
+import { decodeRawRecording, verifyRawPermission } from "./core/rawArtifacts";
+import {
+  configurationFor,
+  configurationsFor,
+  verifyCaptureGrant,
+  verifyCaptureStart,
+  type AcquisitionChannel,
+  type ApprovedConfiguration,
+} from "./core/acquisition";
+import {
+  bindingTranscript,
+  readerBinding,
+  type PhysicalCapabilities,
+  type PhysicalChannel,
+  type ReaderBinding,
+  type SignedStartToken,
+} from "./device/physicalProtocol";
+import { assessStudyConsent } from "./ui/study-consent";
+import {
+  assertRawChoicesAllowed,
+  parseRawRecordingStatus,
+  RAW_KINDS,
+  type RawChoices,
+  type RawKind,
+} from "./core/rawRecordings";
 import { Platform } from "react-native";
 import { RunStopGate, TerminalEvidenceGate } from "./core/operationGuards";
+import {
+  parseRawExportPage,
+  confirmRawExport,
+  type RawExportScope,
+} from "./core/rawExport";
 import {
   captureWorkspaceScope,
   retiredWithoutReplacement,
@@ -48,6 +86,7 @@ import {
 } from "./core/domain";
 import {
   assertBytes,
+  canonicalJson,
   clone,
   digest,
   digestBytes,
@@ -107,19 +146,32 @@ export interface ActiveTask {
   seed: number;
   epoch: string;
 }
+export interface ActiveEye {
+  runId: string;
+  attemptId: string;
+  checkId: string;
+  epoch: string;
+  configurationId: string;
+  options: EyeOptions;
+  stopping?: boolean;
+}
 export interface AppModel {
   state: WorkspaceState | null;
   config: AppConfig | null;
   identity: Identity | null;
   route: Route;
   selectedCheck: string | null;
+  rawStudyId: string | null;
   locked: boolean;
   loading: boolean;
   busy: boolean;
+  privacyBusy: boolean;
   error: string | null;
   message: string | null;
   offline: boolean;
   activeTask: ActiveTask | null;
+  activeEye: ActiveEye | null;
+  eyeProgress: string | null;
   taskProgress: string | null;
   sheet: SheetSpec | null;
   historyRows: JsonObject[];
@@ -136,13 +188,17 @@ export class AppController {
     identity: null,
     route: "welcome",
     selectedCheck: null,
+    rawStudyId: null,
     locked: false,
     loading: true,
     busy: false,
+    privacyBusy: false,
     error: null,
     message: null,
     offline: false,
     activeTask: null,
+    activeEye: null,
+    eyeProgress: null,
     taskProgress: null,
     sheet: null,
     historyRows: [],
@@ -165,6 +221,8 @@ export class AppController {
   private nativeMountedRun: string | null = null;
   private nativeReference: ReactionTaskViewRef | null = null;
   private acquiring = false;
+  eyeView: EyeCaptureViewRef | null = null;
+  private readonly eyeRuns = new Map<string, ActiveEye>();
   private captureIntent = 0;
   private pendingCapture: Promise<void> | null = null;
   private foreground = true;
@@ -182,9 +240,16 @@ export class AppController {
   readonly auth = new AuthManager(() => {
     void this.authenticationRequired().catch((error) => this.report(error));
   });
-  readonly device = createDeviceController({ idFactory: newId });
-  readonly api = new ApiClient(BUILD.apiUrl, this.auth, BUILD.version, () =>
-    syncReadiness(this.model.config, BUILD.version),
+  readonly device = createDeviceController(
+    { idFactory: newId },
+    !BUILD.hostedPreview,
+  );
+  readonly api = new ApiClient(
+    BUILD.apiUrl,
+    this.auth,
+    BUILD.version,
+    () => syncReadiness(this.model.config, BUILD.version),
+    () => !BUILD.hostedPreview,
   );
   readonly sync = new SyncEngine(
     this.api,
@@ -197,6 +262,7 @@ export class AppController {
       !this.model.locked &&
       !!this.model.identity,
     () => syncReadiness(this.model.config, BUILD.version).allowed,
+    () => this.store,
   );
   getSnapshot = (): AppModel => this.model;
   subscribe = (listener: () => void): (() => void) => {
@@ -236,6 +302,21 @@ export class AppController {
       this.patch({ busy: false });
     }
   }
+  async runPrivacy(action: () => Promise<void>): Promise<void> {
+    if (this.model.privacyBusy) return;
+    this.patch({ privacyBusy: true });
+    try {
+      await action();
+    } catch (error) {
+      if (
+        !(error instanceof IntegrityError || error instanceof ApiError) ||
+        !["WORKSPACE_CHANGED", "AUTH_CHANGED"].includes(error.code)
+      )
+        this.report(error);
+    } finally {
+      this.patch({ privacyBusy: false });
+    }
+  }
   report(error: unknown): void {
     this.patch({
       diagnosticError:
@@ -258,17 +339,18 @@ export class AppController {
     try {
       validateBuild();
       await cleanupExports();
-      const identity = await this.auth.restore();
+      const identity = BUILD.hostedPreview ? null : await this.auth.restore();
       if (identity)
         this.patch({ identity, locked: true, loading: false, route: "home" });
       else {
         await this.openGuest();
         this.patch({ loading: false });
       }
-      void this.refreshConfig().catch((e) => {
-        this.patch({ offline: true });
-        if (this.model.identity) this.report(e);
-      });
+      if (!BUILD.hostedPreview)
+        void this.refreshConfig().catch((e) => {
+          this.patch({ offline: true });
+          if (this.model.identity) this.report(e);
+        });
     } catch (error) {
       this.patch({ loading: false });
       this.report(error);
@@ -319,11 +401,15 @@ export class AppController {
             emptyWorkspace(workspace, now(), generation);
           current();
           state = clone(state);
+          state.rawRecordingStatuses ??= {};
+          state.rawRecordingFences ??= {};
           state.historyIndex ??= [];
           state.historyCursor ??= null;
           state.checks = state.checks.map((c) =>
             c.frozen ? c : interruptStartedAttempts(c, now()),
           );
+          if (opened.reconcileRaw)
+            state = await opened.reconcileRaw(state, now());
           await opened.save(state);
           current();
           this.store = opened;
@@ -331,6 +417,7 @@ export class AppController {
             state,
             locked: false,
             selectedCheck: null,
+            rawStudyId: null,
             historyRows: state.historyIndex,
             historyCursor: state.historyCursor,
             pendingReplacement: null,
@@ -346,11 +433,7 @@ export class AppController {
   }
   private async openGuest(): Promise<void> {
     const flow = this.authFlow;
-    await this.activate(
-      `guest:${BUILD.environment}`,
-      1,
-      () => flow === this.authFlow,
-    );
+    await this.activate(this.guestWorkspace(), 1, () => flow === this.authFlow);
     if (flow !== this.authFlow) return;
     this.patch({
       identity: null,
@@ -418,6 +501,9 @@ export class AppController {
   private accountWorkspace(identity: Identity): string {
     return `${BUILD.environment}:${digestText(`${identity.issuer}:${identity.accountRef}`)}`;
   }
+  private guestWorkspace(): string {
+    return `guest:${BUILD.environment}${BUILD.hostedPreview ? ":fictional-preview" : ""}`;
+  }
   async resetStore(): Promise<void> {
     ++this.authFlow;
     this.authenticating = false;
@@ -426,7 +512,7 @@ export class AppController {
     this.api.cancelAll();
     const name = this.model.identity
       ? this.accountWorkspace(this.model.identity)
-      : `guest:${BUILD.environment}`;
+      : this.guestWorkspace();
     await this.writes.catch(() => {});
     if (this.store) {
       await this.store.close();
@@ -442,6 +528,8 @@ export class AppController {
   }
   async commit(
     change: (state: WorkspaceState) => WorkspaceState,
+    raw?: { id: string; bytes: Uint8Array; current: () => boolean },
+    maintainRaw = false,
   ): Promise<void> {
     const epoch = this.workspaceEpoch,
       scope = this.scope(false);
@@ -460,9 +548,27 @@ export class AppController {
           );
         scope.assertCurrent();
         const previous = this.model.state;
-        const next = change(this.model.state);
+        let next = change(this.model.state);
         const unknownRetirement = retiredWithoutReplacement(previous, next);
-        await this.store.save(next);
+        if (raw) {
+          if (!this.store.saveWithRaw)
+            throw new IntegrityError(
+              "ENCRYPTED_RAW_STORAGE_REQUIRED",
+              "This native store cannot atomically protect recording bytes and their index.",
+            );
+          await this.store.saveWithRaw(
+            next,
+            raw.id,
+            raw.bytes,
+            () =>
+              epoch === this.workspaceEpoch && scope.current() && raw.current(),
+          );
+        } else if (
+          (maintainRaw || unknownRetirement) &&
+          this.store.reconcileRaw
+        )
+          next = await this.store.reconcileRaw(next, now());
+        else await this.store.save(next);
         if (epoch !== this.workspaceEpoch || !scope.current()) return;
         if (unknownRetirement) {
           ++this.scopeFence;
@@ -475,6 +581,7 @@ export class AppController {
           ...(unknownRetirement
             ? {
                 selectedCheck: null,
+                rawStudyId: null,
                 pendingReplacement: null,
                 profileConflict: null,
                 sheet: null,
@@ -598,6 +705,11 @@ export class AppController {
     });
   }
   async signIn(reauthenticate = false): Promise<boolean> {
+    if (BUILD.hostedPreview)
+      throw new IntegrityError(
+        "HOSTED_PREVIEW_LOCAL_ONLY",
+        "Sign-in is unavailable in the fictional preview. Guest examples never connect to an account.",
+      );
     const flow = ++this.authFlow;
     this.authenticating = true;
     const liveFlow = () => flow === this.authFlow && !this.disposed;
@@ -773,14 +885,18 @@ export class AppController {
     }
     const epoch = this.workspaceEpoch,
       flow = this.authFlow;
-    await this.commit((state) => {
-      const next = changed
-        ? quarantineGeneration(state, cap.data_generation, now())
-        : clone(state);
-      next.generation = cap.data_generation;
-      next.capabilities = cap;
-      return next;
-    });
+    await this.commit(
+      (state) => {
+        const next = changed
+          ? quarantineGeneration(state, cap.data_generation, now())
+          : clone(state);
+        next.generation = cap.data_generation;
+        next.capabilities = cap;
+        return next;
+      },
+      undefined,
+      changed,
+    );
     if (
       epoch !== this.workspaceEpoch ||
       flow !== this.authFlow ||
@@ -798,6 +914,7 @@ export class AppController {
       ...(changed
         ? {
             selectedCheck: null,
+            rawStudyId: null,
             pendingReplacement: null,
             profileConflict: null,
             sheet: null,
@@ -924,6 +1041,11 @@ export class AppController {
     contextConfirmed: boolean,
     supersedes?: string,
   ): Promise<void> {
+    if (BUILD.hostedPreview && kind !== "guest_demo")
+      throw new IntegrityError(
+        "HOSTED_PREVIEW_FICTIONAL_ONLY",
+        "This preview creates isolated fictional guest checks only.",
+      );
     this.requireWritable(false);
     if (
       kind === "engineering_fixture" &&
@@ -973,6 +1095,851 @@ export class AppController {
       route: "check",
       selectedCheck: check.id,
       pendingReplacement: null,
+    });
+  }
+  async beginStudyCheck(
+    studyId: string,
+    protocolId: string,
+    contextConfirmed: boolean,
+  ): Promise<void> {
+    this.requireWritable();
+    if (!this.model.identity || BUILD.hostedPreview)
+      throw new IntegrityError(
+        "SIGN_IN_REQUIRED",
+        "Research capture requires an owned account and fresh online study authorization.",
+      );
+    const scope = this.scope();
+    await scope.wait(this.refreshCapabilities());
+    await scope.wait(this.refreshStudies());
+    const study = this.model.state!.studies.find(
+      (study) => study.study_id === studyId,
+    );
+    if (
+      !study ||
+      !assessStudyConsent(study).current ||
+      study.local_withdrawal_pending
+    )
+      throw new IntegrityError(
+        "CURRENT_STUDY_CONSENT_REQUIRED",
+        "Confirm the current approved study document before starting research capture.",
+      );
+    const configurations = configurationsFor(
+      this.model.state!.capabilities,
+      studyId,
+      protocolId,
+    );
+    if (!configurations.length || configurations.length > 16)
+      throw new IntegrityError(
+        "CAPTURE_UNAVAILABLE",
+        "No current approved protocol with an installed capture adapter is available.",
+      );
+    const check = createCheck(this.model.state!, {
+      now: now(),
+      id: newId,
+      kind: "measurement",
+      accountRef: this.model.identity.accountRef,
+      contextConfirmed,
+    });
+    check.snapshot.mode = "controlled_research";
+    check.snapshot.study_id = studyId;
+    check.snapshot.protocol_id = protocolId;
+    check.context.protocol_id = protocolId;
+    check.context.configuration_refs = [
+      ...new Map(
+        configurations.map((config) => [
+          config.configuration_id,
+          {
+            id: config.configuration_id,
+            version: config.configuration_version,
+            sha256: config.configuration_hash,
+            scope: "measurement_collection",
+          },
+        ]),
+      ).values(),
+    ];
+    if (this.model.state!.profile.sync !== "synced")
+      check.context.profile_version_id = null;
+    const association = this.device.snapshot().association;
+    if (
+      association?.source === "prototype_sensor" &&
+      association.verifiedBindingId
+    ) {
+      check.snapshot.device = {
+        device_id: association.deviceId,
+        boot_id: association.bootId,
+        hardware_revision: association.hardwareRevision,
+        firmware_version: association.firmwareVersion,
+      };
+      check.context.device_associations = [
+        {
+          ...check.snapshot.device,
+          binding_id: association.verifiedBindingId,
+          clock_evidence_ref: null,
+        },
+      ];
+    }
+    check.acquisition = {
+      register_key: newId(),
+      context_key: newId(),
+      registered: false,
+      context_registered: false,
+      attempts: {},
+    };
+    await scope.wait(this.commit((state) => replaceCheck(state, check)));
+    this.patch({
+      route: "check",
+      selectedCheck: check.id,
+      pendingReplacement: null,
+      message:
+        "Research context saved on this device. Each acquisition requires a fresh online grant; no measurement or raw upload is queued.",
+    });
+  }
+  async refreshDeviceBindings(): Promise<void> {
+    if (!this.model.identity || BUILD.hostedPreview) return;
+    const scope = this.scope(),
+      response = await scope.wait(
+        this.api.request<JsonObject>("/v1/device-bindings"),
+      );
+    if (
+      !Array.isArray(response.value.items) ||
+      response.value.items.length > 500
+    )
+      throw new IntegrityError(
+        "DEVICE_BINDINGS_UNSUPPORTED",
+        "The owned device binding list is unsupported.",
+      );
+    const items = response.value.items.map((value) => {
+      const item = requireObject(value);
+      if (
+        typeof item.binding_id !== "string" ||
+        !["active", "revoked"].includes(String(item.state)) ||
+        typeof item.device_id !== "string" ||
+        typeof item.key_id !== "string" ||
+        typeof item.key_active !== "boolean"
+      )
+        throw new IntegrityError(
+          "DEVICE_BINDINGS_UNSUPPORTED",
+          "A device binding receipt is incomplete.",
+        );
+      return clone(item) as JsonObject;
+    });
+    await scope.wait(
+      this.commit((state) => ({ ...state, deviceBindings: items })),
+    );
+  }
+  async bindConnectedReader(
+    recovery = 0,
+    selected?: {
+      deviceId: string;
+      keyId: string;
+      hardwareRevision: string;
+      firmwareVersion: string;
+    },
+  ): Promise<void> {
+    this.requireWritable();
+    if (!this.model.identity || BUILD.hostedPreview)
+      throw new IntegrityError(
+        "SIGN_IN_REQUIRED",
+        "A signed reader must be bound to an authenticated owner.",
+      );
+    const scope = this.scope(),
+      association = this.device.snapshot().association;
+    if (
+      !association ||
+      association.source !== "prototype_sensor" ||
+      this.device.snapshot().state !== "connected_reader"
+    )
+      throw new IntegrityError(
+        "SIGNED_READER_REQUIRED",
+        "Connect a reader advertising the documented signed protocol first.",
+      );
+    const cap = association.capabilities as PhysicalCapabilities;
+    const generation = this.model.state!.generation;
+    const readerTarget = selected ?? {
+      deviceId: association.deviceId,
+      keyId: cap.key_id,
+      hardwareRevision: association.hardwareRevision,
+      firmwareVersion: association.firmwareVersion,
+    };
+    const assertReader = () => {
+      scope.assertCurrent();
+      const current = this.device.snapshot(),
+        reader = current.association;
+      if (
+        current.state !== "connected_reader" ||
+        !reader ||
+        reader.source !== "prototype_sensor" ||
+        reader.deviceId !== readerTarget.deviceId ||
+        (reader.capabilities as PhysicalCapabilities).key_id !==
+          readerTarget.keyId ||
+        reader.hardwareRevision !== readerTarget.hardwareRevision ||
+        reader.firmwareVersion !== readerTarget.firmwareVersion
+      )
+        throw new IntegrityError(
+          "BINDING_TARGET_CHANGED",
+          "The selected reader changed. Select and confirm the connected reader again.",
+        );
+    };
+    assertReader();
+    let intent = this.model.state!.deviceBindingIntent;
+    if (
+      !intent ||
+      intent.device_id !== association.deviceId ||
+      intent.key_id !== cap.key_id
+    ) {
+      const observedKey = intent?.completion_key;
+      intent = {
+        device_id: association.deviceId,
+        key_id: cap.key_id,
+        challenge_key: newId(),
+        completion_key: newId(),
+        challenge: null,
+        signature: null,
+      };
+      await scope.wait(
+        this.commit((state) => {
+          assertReader();
+          if (state.deviceBindingIntent?.completion_key !== observedKey)
+            throw new IntegrityError(
+              "BINDING_TARGET_CHANGED",
+              "A newer binding request was retained. Confirm that request before retrying.",
+            );
+          return { ...state, deviceBindingIntent: intent };
+        }),
+      );
+    }
+    const target = {
+      completionKey: intent.completion_key,
+    };
+    const assertTarget = () => {
+      assertReader();
+      if (
+        this.model.state!.deviceBindingIntent?.completion_key !==
+        target.completionKey
+      )
+        throw new IntegrityError(
+          "BINDING_TARGET_CHANGED",
+          "The selected reader or binding request changed. Select and confirm the connected reader again.",
+        );
+    };
+    const challenge = intent.challenge
+      ? { value: intent.challenge }
+      : await scope.wait(
+          this.api.request<JsonObject>("/v1/device-bindings/challenges", {
+            method: "POST",
+            body: { device_id: association.deviceId, key_id: cap.key_id },
+            generation,
+            key: intent.challenge_key,
+          }),
+        );
+    assertTarget();
+    if (!intent.challenge) {
+      await scope.wait(
+        this.commit((state) => {
+          assertTarget();
+          return {
+            ...state,
+            deviceBindingIntent: {
+              ...intent!,
+              challenge: clone(challenge.value),
+            },
+          };
+        }),
+      );
+      intent = this.model.state!.deviceBindingIntent!;
+    }
+    if (
+      challenge.value.domain !== "OTGD-BIND-v1\n" ||
+      challenge.value.signature_format !== "ECDSA_P256_SHA256_DER_BASE64"
+    )
+      throw new IntegrityError(
+        "BINDING_DOMAIN_UNSUPPORTED",
+        "The device proof transcript is unsupported.",
+      );
+    const storedTranscript = requireObject(challenge.value.transcript);
+    if (
+      storedTranscript.environment !== BUILD.environment ||
+      storedTranscript.owner_ref !== this.model.identity.accountRef ||
+      storedTranscript.data_generation !== generation ||
+      storedTranscript.device_id !== association.deviceId ||
+      storedTranscript.key_id !== cap.key_id ||
+      storedTranscript.hardware_revision !== cap.hardware_revision ||
+      storedTranscript.firmware_version !== cap.firmware_version ||
+      storedTranscript.challenge_id !== challenge.value.challenge_id
+    )
+      throw new IntegrityError(
+        "BINDING_OWNER_MISMATCH",
+        "The retained challenge belongs to another owner, generation or reader.",
+      );
+    const restart = async () => {
+      assertTarget();
+      if (recovery >= 1)
+        throw new IntegrityError(
+          "BINDING_RECOVERY_REQUIRED",
+          "The reader proof could not be recovered. Reconnect the provisioned reader and retry.",
+        );
+      await scope.wait(
+        this.commit((state) => {
+          assertTarget();
+          const next = clone(state);
+          delete next.deviceBindingIntent;
+          return next;
+        }),
+      );
+      assertReader();
+      await scope.wait(this.bindConnectedReader(recovery + 1, readerTarget));
+    };
+    const complete = async (value: unknown) => {
+      assertTarget();
+      const receipt = readerBinding(value, cap);
+      this.device.installBinding(receipt, {
+        environment: BUILD.environment,
+        owner_ref: this.model.identity!.accountRef,
+        data_generation: generation,
+      });
+      await scope.wait(this.refreshDeviceBindings());
+      await scope.wait(
+        this.commit((state) => {
+          assertTarget();
+          const next = clone(state);
+          delete next.deviceBindingIntent;
+          return next;
+        }),
+      );
+      this.patch({
+        message:
+          "The service verified the reader's device-owned signature and recorded this binding. Each measurement still requires current device calibration and a fresh approved configuration.",
+      });
+    };
+    if (intent.signature) {
+      // Reconcile the immutable accepted receipt before freshness checks. The
+      // server's same-key replay independently verifies current owner authority.
+      try {
+        const response = await scope.wait(
+          this.api.request<unknown>("/v1/device-bindings", {
+            method: "POST",
+            body: {
+              challenge_id: String(storedTranscript.challenge_id),
+              signature: intent.signature,
+            },
+            generation,
+            key: intent.completion_key,
+          }),
+        );
+        await complete(response.value);
+        return;
+      } catch (error) {
+        const code =
+          error && typeof error === "object" && "code" in error
+            ? String(error.code)
+            : "";
+        if (
+          code === "CHALLENGE_EXPIRED_OR_USED" ||
+          code === "PHYSICAL_CAPTURE_SCOPE"
+        ) {
+          await restart();
+          return;
+        }
+        throw error;
+      }
+    }
+    if (
+      typeof storedTranscript.expires_at === "string" &&
+      Date.parse(storedTranscript.expires_at) <= Date.now()
+    ) {
+      await restart();
+      return;
+    }
+    const transcript = bindingTranscript(challenge.value.transcript, cap);
+    if (
+      transcript.challenge_id !== challenge.value.challenge_id ||
+      transcript.environment !== BUILD.environment ||
+      transcript.owner_ref !== this.model.identity.accountRef ||
+      transcript.data_generation !== generation
+    )
+      throw new IntegrityError(
+        "BINDING_OWNER_MISMATCH",
+        "The challenge belongs to another owner, environment or data generation.",
+      );
+    const proof = intent.signature
+      ? { signature: intent.signature }
+      : await scope.wait(this.device.requestBindingProof(transcript));
+    assertTarget();
+    if (!intent.signature) {
+      await scope.wait(
+        this.commit((state) => {
+          assertTarget();
+          return {
+            ...state,
+            deviceBindingIntent: { ...intent!, signature: proof.signature },
+          };
+        }),
+      );
+      intent = this.model.state!.deviceBindingIntent!;
+    }
+    const response = await scope.wait(
+      this.api.request<unknown>("/v1/device-bindings", {
+        method: "POST",
+        body: {
+          challenge_id: transcript.challenge_id,
+          signature: proof.signature,
+        },
+        generation,
+        key: intent.completion_key,
+      }),
+    );
+    await complete(response.value);
+  }
+  async forgetReaderBinding(bindingId: string): Promise<void> {
+    if (!this.model.identity)
+      throw new IntegrityError(
+        "SIGN_IN_REQUIRED",
+        "An owned device binding is required.",
+      );
+    const scope = this.scope(),
+      stop = this.stopActive("USER_CANCELED");
+    this.api.cancelAll();
+    await scope.wait(this.device.forget());
+    await scope.wait(stop);
+    await scope.wait(
+      this.commit((state) =>
+        queueMutation(
+          state,
+          "device_unbind",
+          { binding_id: bindingId },
+          newId,
+          now(),
+        ),
+      ),
+    );
+    const intent = this.model.state!.queue.find(
+      (q) =>
+        q.kind === "device_unbind" &&
+        q.body.binding_id === bindingId &&
+        q.state !== "synced",
+    );
+    if (intent) await scope.wait(this.sync.run(intent.id, true));
+    await scope.wait(this.refreshDeviceBindings());
+    this.patch({
+      message:
+        intent &&
+        this.model.state!.queue.find((q) => q.id === intent.id)?.state !==
+          "synced"
+          ? "Local reader disconnected. Remote forget remains pending; retry the exact request from privacy controls."
+          : "Local reader disconnected and the service binding was revoked.",
+    });
+  }
+  private async armApprovedCapture(
+    check: CheckRecord,
+    channel: AcquisitionChannel,
+    current: () => boolean,
+    rawKind?: RawKind,
+  ): Promise<{
+    attemptId: string;
+    config: ApprovedConfiguration;
+    grant: JsonObject;
+  }> {
+    const scope = this.scope();
+    this.api.cancelAll();
+    await scope.wait(this.sync.whenIdle());
+    await scope.wait(this.auth.whenRefreshSettled());
+    await scope.wait(this.writes.catch(() => {}));
+    if (!current())
+      throw new IntegrityError(
+        "CAPTURE_STOPPED",
+        "Capture was stopped before authorization.",
+      );
+    await scope.wait(this.refreshCapabilities());
+    await scope.wait(this.refreshStudies());
+    const study = this.model.state!.studies.find(
+      (study) => study.study_id === check.snapshot.study_id,
+    );
+    if (
+      !study ||
+      !assessStudyConsent(study).current ||
+      study.local_withdrawal_pending
+    )
+      throw new IntegrityError(
+        "CURRENT_STUDY_CONSENT_REQUIRED",
+        "The current study consent no longer authorizes acquisition.",
+      );
+    const config = configurationFor(
+      check,
+      this.model.state!.capabilities,
+      channel,
+    );
+    let rawAuthority;
+    if (rawKind) {
+      const previous =
+        this.model.state!.rawRecordingStatuses[check.snapshot.study_id!];
+      if (!previous?.receipt_id || !previous.choices[rawKind].record)
+        throw new IntegrityError(
+          "OPTIONAL_RAW_CONSENT_REQUIRED",
+          "Review and confirm separate recording choices before this acquisition.",
+        );
+      await scope.wait(this.refreshRawRecordings(check.snapshot.study_id!));
+      const status =
+        this.model.state!.rawRecordingStatuses[check.snapshot.study_id!];
+      if (
+        !status ||
+        status.receipt_id !== previous.receipt_id ||
+        status.policy?.sha256 !== previous.policy?.sha256 ||
+        status.policy?.raw_notice.sha256 !== previous.policy?.raw_notice.sha256
+      )
+        throw new IntegrityError(
+          "RAW_POLICY_CHANGED",
+          "Optional recording permission changed. Review the exact current policy and consent before starting.",
+        );
+      rawAuthority = {
+        kind: rawKind,
+        status,
+        fences:
+          this.model.state!.rawRecordingFences[check.snapshot.study_id!] ?? [],
+      };
+    }
+    const association = this.device.snapshot().association;
+    const usesReader = !["task", "eyes"].includes(channel);
+    if (
+      usesReader &&
+      (!association ||
+        association.source !== "prototype_sensor" ||
+        !association.verifiedBindingId ||
+        !check.context.device_associations.some(
+          (ref) =>
+            ref.binding_id === association.verifiedBindingId &&
+            ref.device_id === association.deviceId &&
+            ref.boot_id === association.bootId,
+        ))
+    )
+      throw new IntegrityError(
+        "FROZEN_DEVICE_BINDING_REQUIRED",
+        "Bind the approved reader before Start check. A different reader or reboot requires a new check.",
+      );
+    const armed = startAttempt(
+      this.check!,
+      channel === "ecg" ? "cardiac" : channel,
+      now(),
+      newId,
+      "prototype_sensor",
+      config.configuration_id,
+      config.configuration_hash,
+      channel === "cardiac" ? "ppg" : channel === "ecg" ? "ecg" : undefined,
+    );
+    armed.check.acquisition ??= {
+      register_key: newId(),
+      context_key: newId(),
+      registered: false,
+      context_registered: false,
+      attempts: {},
+    };
+    armed.check.acquisition.attempts[armed.attempt.attempt_id] = {
+      start_key: newId(),
+      grant_key: newId(),
+      invoke_key: newId(),
+      terminal_key: newId(),
+      attestation_key: newId(),
+      started_body: clone(armed.attempt) as unknown as JsonObject,
+      remote_revision: 0,
+      authorization: null,
+    };
+    await scope.wait(this.commit((state) => replaceCheck(state, armed.check)));
+    const path = `/v1/sessions/${check.id}`,
+      ledger = armed.check.acquisition;
+    const save = async (change: (check: CheckRecord) => void) =>
+      scope.wait(
+        this.commit((state) => {
+          if (!current())
+            throw new IntegrityError(
+              "CAPTURE_STOPPED",
+              "Capture stopped before committing authorization.",
+            );
+          const next = clone(state),
+            record = next.checks.find((c) => c.id === check.id)!;
+          change(record);
+          return next;
+        }),
+      );
+    try {
+      if (!ledger.registered) {
+        const response = await scope.wait(
+          this.api.request<JsonObject>("/v1/sessions", {
+            method: "POST",
+            body: {
+              session_id: check.id,
+              mode: check.snapshot.mode,
+              protocol_id: check.snapshot.protocol_id,
+              study_id: check.snapshot.study_id,
+              supersedes_session_id: check.snapshot.supersedes_session_id,
+            },
+            generation: check.generation,
+            key: ledger.register_key,
+          }),
+        );
+        await save((record) => {
+          record.acquisition!.registered = true;
+          record.remote_revision = Number(response.value.revision);
+          record.remote_etag = response.etag ?? `"${response.value.revision}"`;
+        });
+      }
+      if (!ledger.context_registered) {
+        const response = await scope.wait(
+          this.api.request<JsonObject>(`${path}/context`, {
+            method: "PUT",
+            body: check.context,
+            generation: check.generation,
+            key: ledger.context_key,
+            etag: '"0"',
+          }),
+        );
+        if (response.value.sha256 !== digest(check.context))
+          throw new IntegrityError(
+            "CONTEXT_ACK_MISMATCH",
+            "The service did not acknowledge this frozen context.",
+          );
+        await save((record) => {
+          record.acquisition!.context_registered = true;
+        });
+      }
+      const attemptLedger = ledger.attempts[armed.attempt.attempt_id]!;
+      const persisted = await scope.wait(
+        this.api.request<JsonObject>(
+          `${path}/attempts/${armed.attempt.attempt_id}`,
+          {
+            method: "PUT",
+            body: attemptLedger.started_body,
+            generation: check.generation,
+            key: attemptLedger.start_key,
+            etag: '"0"',
+          },
+        ),
+      );
+      if (persisted.value.sha256 !== digest(attemptLedger.started_body))
+        throw new IntegrityError(
+          "ATTEMPT_ACK_MISMATCH",
+          "The service acknowledged different capture metadata.",
+        );
+      await save((record) => {
+        record.acquisition!.attempts[
+          armed.attempt.attempt_id
+        ]!.remote_revision = Number(persisted.value.revision);
+      });
+      const bindingId = usesReader ? association!.verifiedBindingId : null,
+        deviceId = usesReader ? association!.deviceId : null;
+      const response = await scope.wait(
+        this.api.request<unknown>(`${path}/capture-authorizations`, {
+          method: "POST",
+          body: {
+            attempt_id: armed.attempt.attempt_id,
+            channel,
+            binding_id: bindingId,
+            device_id: deviceId,
+            configuration_id: config.configuration_id,
+            configuration_hash: config.configuration_hash,
+            raw_recording_kind: rawKind ?? null,
+          },
+          generation: check.generation,
+          key: attemptLedger.grant_key,
+        }),
+      );
+      const grant = verifyCaptureGrant(
+        response.value,
+        armed.check,
+        armed.attempt.attempt_id,
+        channel,
+        config,
+        bindingId,
+        deviceId,
+        rawAuthority,
+      );
+      await save((record) => {
+        record.acquisition!.attempts[armed.attempt.attempt_id]!.authorization =
+          grant;
+      });
+      const prepared = usesReader
+        ? await scope.wait(
+            this.device.prepareAuthorizedCapture({
+              sessionId: check.id,
+              attemptId: armed.attempt.attempt_id,
+              captureId: armed.attempt.record_id,
+              workspaceEpoch: this.workspaceEpoch,
+            }),
+          )
+        : null;
+      const bootId = prepared?.device_boot_id ?? null;
+      if (usesReader && bootId !== association!.bootId)
+        throw new IntegrityError(
+          "DEVICE_REBOOTED",
+          "The reader rebooted after the frozen check began. Start a new check.",
+        );
+      const invoked = await scope.wait(
+        this.api.request<unknown>(
+          `${path}/capture-authorizations/${grant.authorization_id}/start`,
+          {
+            method: "POST",
+            body: {
+              attempt_id: armed.attempt.attempt_id,
+              device_boot_id: bootId,
+              device_nonce: prepared?.device_nonce ?? null,
+            },
+            generation: check.generation,
+            key: attemptLedger.invoke_key,
+          },
+        ),
+      );
+      verifyCaptureStart(
+        invoked.value,
+        grant,
+        armed.attempt.attempt_id,
+        bootId,
+      );
+      if (usesReader) {
+        const reply = requireObject(invoked.value);
+        grant.server_start = reply.server_start as JsonObject;
+        await save((record) => {
+          record.acquisition!.attempts[
+            armed.attempt.attempt_id
+          ]!.authorization = clone(grant);
+        });
+      }
+      if (!current())
+        throw new IntegrityError(
+          "CAPTURE_STOPPED",
+          "Capture was stopped before hardware invocation.",
+        );
+      return { attemptId: armed.attempt.attempt_id, config, grant };
+    } catch (error) {
+      await this.abandonArmedCapture(check.id, armed.attempt.attempt_id);
+      throw error;
+    }
+  }
+  async captureReader(
+    channel: PhysicalChannel,
+    recordRaw = false,
+  ): Promise<void> {
+    if (recordRaw && channel !== "ecg")
+      throw new IntegrityError(
+        "RAW_CHANNEL_UNAVAILABLE",
+        "This optional recording adapter is available only for the approved ECG channel.",
+      );
+    if (recordRaw && (!this.store?.saveWithRaw || !this.store.deleteRaw))
+      throw new IntegrityError(
+        "ENCRYPTED_RAW_STORAGE_REQUIRED",
+        "Optional ECG recording requires unlocked encrypted native storage before acquisition.",
+      );
+    this.requireWritable();
+    const check = this.check;
+    if (!check || check.frozen)
+      throw new IntegrityError(
+        "CHECK_REQUIRED",
+        "Start an authorized draft check first.",
+      );
+    await this.withCaptureIntent(check, async (current) => {
+      const authorization = await this.armApprovedCapture(
+        check,
+        channel === "ppg" ? "cardiac" : channel,
+        current,
+        recordRaw ? "ecg_waveform" : undefined,
+      );
+      const association = this.device.snapshot().association!,
+        cap = association.capabilities as PhysicalCapabilities;
+      const attempt = this.check!.attempts.find(
+        (a) => a.attempt_id === authorization.attemptId,
+      )!;
+      try {
+        const captured = await this.device.captureAuthorized(
+          channel,
+          {
+            sessionId: check.id,
+            attemptId: attempt.attempt_id,
+            captureId: attempt.record_id,
+            workspaceEpoch: this.workspaceEpoch,
+          },
+          {
+            environment: BUILD.environment,
+            owner_ref: this.model.identity!.accountRef,
+            data_generation: check.generation,
+            authorization_id: String(authorization.grant.authorization_id),
+            binding_id: association.verifiedBindingId!,
+            device_id: association.deviceId,
+            key_id: cap.key_id,
+            configuration_id: authorization.config.configuration_id,
+            configuration_hash: authorization.config.configuration_hash,
+            max_duration_ms: Number(
+              authorization.grant.configuration_max_duration_ms,
+            ),
+            server_start: authorization.grant
+              .server_start as unknown as SignedStartToken,
+            capture_context_sha256: digest(check.context),
+          },
+        );
+        if (!current()) {
+          await this.abandonArmedCapture(check.id, attempt.attempt_id);
+          return;
+        }
+        const projection = captured.normalized_payload;
+        const component =
+          channel === "saliva" ? requireObject(projection.sample) : projection;
+        const valid =
+          channel === "alcohol"
+            ? [
+                "quantified",
+                "not_detected",
+                "below_loq",
+                "above_range",
+              ].includes(String(component.qualifier))
+            : component.status === "valid";
+        await this.commit((state) => {
+          if (!current())
+            throw new IntegrityError(
+              "CAPTURE_STOPPED",
+              "A late reader reply cannot settle a stopped capture.",
+            );
+          const record = state.checks.find((c) => c.id === check.id)!;
+          const next = settleAttempt(
+            record,
+            attempt.attempt_id,
+            projection,
+            valid ? "valid" : "invalid",
+            captured.endedAt,
+            Array.isArray(component.quality_flags)
+              ? (component.quality_flags as string[])
+              : [],
+            {},
+          );
+          next.attempts.find(
+            (a) => a.attempt_id === attempt.attempt_id,
+          )!.attestation_refs = [captured.attestation_id];
+          next.attestations ??= {};
+          next.attestations[attempt.attempt_id] = {
+            attestation_id: captured.attestation_id,
+            envelope: captured.envelope as unknown as JsonObject,
+            signature: captured.signature,
+            normalized_payload: captured.normalized_payload,
+          };
+          return replaceCheck(state, next);
+        });
+        if (captured.rawRecording) {
+          if (!recordRaw)
+            throw new IntegrityError(
+              "UNREQUESTED_RAW_RECORDING",
+              "Feature-only acquisition cannot retain raw recording.",
+            );
+          await this.retainRawRecording(
+            check.id,
+            attempt.attempt_id,
+            "ecg_waveform",
+            captured.rawRecording,
+            authorization.grant.raw_recording_permission,
+          );
+        }
+        this.patch({
+          message:
+            "Device-signed measurement saved locally. Its signature will be independently verified by the service only when you explicitly upload the saved check. No raw upload was queued.",
+        });
+      } catch (error) {
+        await this.abandonArmedCapture(check.id, attempt.attempt_id);
+        if (current()) throw error;
+      }
     });
   }
   async prepareReplacement(id: string): Promise<void> {
@@ -1228,21 +2195,60 @@ export class AppController {
       await pending;
     } finally {
       if (this.pendingCapture === pending) this.pendingCapture = null;
-      if (!this.model.activeTask) this.acquiring = false;
+      if (!this.model.activeTask && !this.model.activeEye)
+        this.acquiring = false;
     }
   }
   private async abandonArmedCapture(
     checkId: string,
     attemptId: string,
+    noFrameReason?: string,
   ): Promise<void> {
     if (!this.model.state || this.model.locked) return;
     await this.commit((state) => {
       const check = state.checks.find((c) => c.id === checkId);
-      return check?.attempts.some(
+      const original = check?.attempts.find(
         (a) => a.attempt_id === attemptId && a.status === "started",
-      )
-        ? replaceCheck(state, interruptStartedAttempts(check, now()))
-        : state;
+      );
+      if (!check || !original) return state;
+      const next = interruptStartedAttempts(check, now());
+      if (noFrameReason && original.component === "eyes") {
+        const attempt = next.attempts.find((a) => a.attempt_id === attemptId)!,
+          projection = requireObject(
+            attempt.component_metadata.projection,
+          ) as JsonObject;
+        projection.started_at = null;
+        projection.ended_at = null;
+        projection.quality_flags = [noFrameReason];
+        projection.capture_config_id = original.configuration_id;
+        const material = requireObject(
+          check.acquisition?.attempts[attemptId]?.authorization
+            ?.configuration_material ?? {},
+        );
+        projection.camera_id =
+          typeof material.camera_id === "string"
+            ? material.camera_id
+            : "unavailable";
+        projection.frame_rate_hz = null;
+        projection.scale_basis =
+          material.scale_basis === "millimeters"
+            ? "calibrated_mm"
+            : "normalized";
+        projection.baseline_diameter_mm = null;
+        projection.relative_constriction = null;
+        projection.latency_ms = null;
+        projection.raw_artifact_id = null;
+        attempt.started_at = null;
+        attempt.ended_at = null;
+        attempt.quality_flags = [noFrameReason];
+        attempt.component_metadata = {
+          armed_at: original.started_at,
+          native_result: null,
+          projection,
+        };
+        next.snapshot.eyes = clone(projection) as typeof next.snapshot.eyes;
+      }
+      return replaceCheck(state, next);
     });
   }
   async simulateDevice(
@@ -1399,7 +2405,226 @@ export class AppController {
     }));
     this.patch({ selectedCheck: null, route: "home" });
   }
+  async startEyeCapture(recordRaw = false): Promise<void> {
+    this.requireWritable();
+    if (recordRaw && (!this.store?.saveWithRaw || !this.store.deleteRaw))
+      throw new IntegrityError(
+        "ENCRYPTED_RAW_STORAGE_REQUIRED",
+        "Optional ROI recording requires unlocked encrypted native storage before acquisition.",
+      );
+    if (BUILD.hostedPreview || !getEyeCaptureAvailability().available)
+      throw new IntegrityError(
+        "NATIVE_CAMERA_MODULE_UNAVAILABLE",
+        "Install an approved native build with the optical acquisition adapter. Browser previews do not acquire eye measurements.",
+      );
+    const check = this.check;
+    if (!check || check.frozen)
+      throw new IntegrityError(
+        "CHECK_REQUIRED",
+        "Start an approved research check first.",
+      );
+    await this.withCaptureIntent(check, async (current) => {
+      const approved = await this.armApprovedCapture(
+        check,
+        "eyes",
+        current,
+        recordRaw ? "eye_video" : undefined,
+      );
+      if (
+        approved.config.software_adapter_id !== "optical_roi_v1" ||
+        !approved.config.supported_os_versions?.length ||
+        !approved.config.supported_native_builds?.length
+      ) {
+        await this.abandonArmedCapture(check.id, approved.attemptId);
+        throw new IntegrityError(
+          "OPTICAL_CONFIGURATION_UNAVAILABLE",
+          "The approved optical adapter requires exact reviewed phone, OS and native build inventories.",
+        );
+      }
+      if (!current()) {
+        await this.abandonArmedCapture(check.id, approved.attemptId);
+        return;
+      }
+      const attempt = this.check!.attempts.find(
+        (a) => a.attempt_id === approved.attemptId,
+      )!;
+      const active: ActiveEye = {
+        runId: attempt.record_id,
+        attemptId: attempt.attempt_id,
+        checkId: check.id,
+        epoch: this.workspaceEpoch,
+        configurationId: approved.config.configuration_id,
+        options: {
+          run_id: attempt.record_id,
+          workspace_epoch: this.workspaceEpoch,
+          authorization_id: String(approved.grant.authorization_id),
+          configuration_sha256: approved.config.configuration_hash,
+          material_json: canonicalJson(approved.grant.configuration_material),
+          supported_phone_models: approved.config.supported_phone_models,
+          supported_os_versions: approved.config.supported_os_versions!,
+          supported_native_builds: approved.config.supported_native_builds!,
+          raw_recording_permission: recordRaw
+            ? (approved.grant
+                .raw_recording_permission as unknown as RawPermission)
+            : null,
+        },
+      };
+      this.eyeRuns.set(active.runId, active);
+      this.patch({
+        activeEye: active,
+        eyeProgress: "Preparing approved camera",
+      });
+    });
+  }
+  async completeEyeCapture(
+    result: EyeCaptureComplete,
+    origin?: ActiveEye,
+  ): Promise<void> {
+    const active = origin ?? this.eyeRuns.get(result.run_id);
+    if (
+      !active ||
+      active.epoch !== this.workspaceEpoch ||
+      result.workspace_epoch !== active.epoch ||
+      result.run_id !== active.runId
+    )
+      return;
+    const view = this.eyeView;
+    try {
+      return await this.terminalEvidence.persist(
+        active.runId,
+        digest({
+          native_result: result.native_result,
+          status: result.status,
+          reason: result.reason ?? null,
+        }),
+        async () => {
+          if (
+            result.authorization_id !== undefined &&
+            result.authorization_id !== active.options.authorization_id
+          )
+            throw new IntegrityError(
+              "OPTICAL_AUTHORIZATION_MISMATCH",
+              "The native camera completion belongs to another authorization.",
+            );
+          if (!result.native_result) {
+            if (result.status !== "invalid" || result.raw_recording !== null)
+              throw new IntegrityError(
+                "OPTICAL_TERMINAL_INVALID",
+                "An optical completion without acquired native evidence must be invalid and contain no recording.",
+              );
+            await this.abandonArmedCapture(
+              active.checkId,
+              active.attemptId,
+              (result.reason ?? "CAMERA_NOT_STARTED").slice(0, 64),
+            );
+          } else {
+            const native = requireObject(result.native_result),
+              material = requireObject(
+                JSON.parse(active.options.material_json),
+              );
+            if (native.status !== result.status)
+              throw new IntegrityError(
+                "OPTICAL_STATUS_MISMATCH",
+                "The native terminal status contradicts its immutable frame evidence.",
+              );
+            const projection = projectNativeEye(native, {
+              runId: active.runId,
+              epoch: active.epoch,
+              authorizationId: active.options.authorization_id,
+              configurationId: active.configurationId,
+              configurationHash: active.options.configuration_sha256,
+              material: material as JsonObject,
+            });
+            await this.commit((state) => {
+              if (active.epoch !== this.workspaceEpoch)
+                throw new IntegrityError(
+                  "WORKSPACE_CHANGED",
+                  "Optical evidence belongs to a retired workspace.",
+                );
+              const check = state.checks.find((c) => c.id === active.checkId);
+              if (!check)
+                throw new IntegrityError(
+                  "CHECK_REQUIRED",
+                  "The original optical check is unavailable.",
+                );
+              return replaceCheck(
+                state,
+                settleAttempt(
+                  check,
+                  active.attemptId,
+                  projection,
+                  result.status,
+                  String(projection.ended_at),
+                  projection.quality_flags,
+                  { native_result: native as JsonObject },
+                ),
+              );
+            });
+            if (result.raw_recording) {
+              if (
+                !active.options.raw_recording_permission ||
+                !active.options.raw_recording_permission.record
+              )
+                throw new IntegrityError(
+                  "UNREQUESTED_RAW_RECORDING",
+                  "The native camera returned a recording without an explicit fresh recording grant.",
+                );
+              const studyId = this.model.state!.checks.find(
+                (check) => check.id === active.checkId,
+              )?.snapshot.study_id;
+              if (
+                studyId &&
+                !this.model.state!.rawRecordingFences[studyId]?.includes(
+                  "eye_video",
+                )
+              )
+                await this.retainRawRecording(
+                  active.checkId,
+                  active.attemptId,
+                  "eye_video",
+                  result.raw_recording,
+                  active.options.raw_recording_permission,
+                );
+            }
+          }
+          this.eyeRuns.delete(active.runId);
+          this.acquiring = false;
+          if (this.model.activeEye?.runId === active.runId)
+            this.patch({ activeEye: null, eyeProgress: null });
+          this.patch({
+            message:
+              result.status === "valid"
+                ? "Optical ROI evidence saved locally. Physical illumination timing remains unmeasured; no impairment or driving-safety claim is available."
+                : "Eye acquisition ended invalid. Its evidence is retained; retry creates a new attempt.",
+          });
+        },
+      );
+    } finally {
+      if (result.raw_recording && view)
+        await view
+          .releaseRaw(active.runId, result.raw_recording.sha256)
+          .catch(() => {});
+    }
+  }
+  updateEyeProgress(
+    runId: string,
+    epoch: string,
+    frames: number,
+    maximum: number,
+  ): void {
+    if (
+      this.model.activeEye?.runId === runId &&
+      epoch === this.workspaceEpoch &&
+      !this.model.activeEye.stopping
+    )
+      this.patch({ eyeProgress: `${frames} / ${maximum} bounded ROI frames` });
+  }
   async startNativeTask(): Promise<void> {
+    if (BUILD.hostedPreview)
+      throw new IntegrityError(
+        "HOSTED_PREVIEW_FICTIONAL_ONLY",
+        "Real reaction taps are unavailable in this fictional preview.",
+      );
     const check = this.check;
     if (!check || check.frozen)
       throw new IntegrityError(
@@ -1424,16 +2649,33 @@ export class AppController {
       if (!current()) return;
       await this.writes.catch(() => {});
       if (!current()) return;
-      const { check: next, attempt } = startAttempt(
-        this.check!,
-        "task",
-        now(),
-        newId,
-        "prototype_sensor",
-        TASK_CONFIGURATION_ID,
-        TASK_CONFIGURATION_SHA256,
-      );
-      await this.commit((state) => replaceCheck(state, next));
+      let attempt;
+      if (check.snapshot.mode === "controlled_research") {
+        const approved = await this.armApprovedCapture(check, "task", current);
+        if (
+          approved.config.configuration_hash !== TASK_CONFIGURATION_SHA256 ||
+          approved.config.software_adapter_id !== "task_native_v1"
+        )
+          throw new IntegrityError(
+            "TASK_CONFIGURATION_UNSUPPORTED",
+            "The approved task configuration differs from this native implementation.",
+          );
+        attempt = this.check!.attempts.find(
+          (a) => a.attempt_id === approved.attemptId,
+        )!;
+      } else {
+        const armed = startAttempt(
+          this.check!,
+          "task",
+          now(),
+          newId,
+          "prototype_sensor",
+          TASK_CONFIGURATION_ID,
+          TASK_CONFIGURATION_SHA256,
+        );
+        await this.commit((state) => replaceCheck(state, armed.check));
+        attempt = armed.attempt;
+      }
       if (!current()) {
         await this.abandonArmedCapture(check.id, attempt.attempt_id);
         return;
@@ -1538,19 +2780,45 @@ export class AppController {
     const pendingStart = this.pendingCapture;
     const active = this.model.activeTask,
       view = this.nativeView;
+    const eye = this.model.activeEye,
+      eyeView = this.eyeView;
     return this.stopRequests.run(
-      active?.runId ?? `device:${this.workspaceEpoch}`,
+      active?.runId ?? eye?.runId ?? `device:${this.workspaceEpoch}`,
       async () => {
         // This call is deliberately first; a radio timeout cannot delay native UI-thread cancellation.
         const nativeStop =
           active && view
             ? view.cancel(active.runId, reason)
             : Promise.resolve(null);
+        const eyeStop =
+          eye && eyeView
+            ? eyeView.cancel(eye.runId, reason)
+            : Promise.resolve(null);
+        if (eye)
+          this.patch({
+            eyeProgress: "Stopping camera immediately",
+            activeEye: { ...eye, stopping: true },
+          });
         const deviceStops = Promise.allSettled([
           this.device.cancelCapture(reason),
           this.device.stopScan(),
         ]);
         try {
+          const eyeReceipt = await eyeStop;
+          if (eye) {
+            if (eyeReceipt) await this.completeEyeCapture(eyeReceipt, eye);
+            else if (!eyeView) {
+              await this.abandonArmedCapture(eye.checkId, eye.attemptId);
+              this.eyeRuns.delete(eye.runId);
+              this.acquiring = false;
+              this.patch({ activeEye: null, eyeProgress: null });
+            }
+            if (this.model.activeEye?.runId === eye.runId)
+              throw new IntegrityError(
+                "NATIVE_TERMINAL_PENDING",
+                "The camera is stopped, but its terminal evidence has not been preserved. Retry End eye capture to save that same ended run.",
+              );
+          }
           const receipt = await nativeStop;
           if (active) {
             if (receipt?.result) await this.completeNativeTask(receipt.result);
@@ -1638,7 +2906,11 @@ export class AppController {
     this.patch({ sheet: guarded });
   }
   closeSheet(): void {
-    if (!this.model.busy) this.patch({ sheet: null });
+    if (
+      (!this.model.busy || this.model.sheet?.interrupting) &&
+      !this.model.privacyBusy
+    )
+      this.patch({ sheet: null });
   }
   async confirmSheet(secondary = false): Promise<void> {
     const sheet = this.model.sheet;
@@ -1646,7 +2918,7 @@ export class AppController {
     this.patch({ sheet: null });
     await (secondary ? sheet.secondary?.action() : sheet.action());
   }
-  async uploadCheck(): Promise<void> {
+  async uploadCheck(rawLocalIds: string[] = []): Promise<void> {
     this.requireWritable();
     const check = this.check;
     if (!check || !this.model.identity)
@@ -1654,7 +2926,9 @@ export class AppController {
         "SIGN_IN_REQUIRED",
         "Account uploads require a signed-in owner. Guest records never migrate.",
       );
-    await this.commit((s) => queueCheck(s, check.id, newId, now()));
+    await this.commit((s) =>
+      queueCheck(s, check.id, newId, now(), rawLocalIds),
+    );
     const queue = this.model.state!.queue.find(
       (q) => q.check_id === check.id && q.state !== "synced",
     );
@@ -1662,7 +2936,12 @@ export class AppController {
   }
   async reconcilePrivacy(queueId: string): Promise<void> {
     const original = this.model.state?.queue.find((q) => q.id === queueId);
-    if (!original || !["deletion", "withdrawal"].includes(original.kind))
+    if (
+      !original ||
+      !["deletion", "withdrawal", "raw_revocation", "device_unbind"].includes(
+        original.kind,
+      )
+    )
       return;
     if (!(await this.signIn(true))) return;
     await this.commit((s) => ({
@@ -1786,7 +3065,73 @@ export class AppController {
       exportEntry: { ...s.exportEntry!, source },
     }));
   }
-  async createExport(): Promise<void> {
+  async refreshRawExportScopes(
+    authorizationId?: string,
+    artifactCursor?: string,
+    authorizationCursor?: string,
+  ): Promise<void> {
+    if (!this.model.identity || BUILD.hostedPreview)
+      throw new IntegrityError(
+        "SIGN_IN_REQUIRED",
+        "Separate raw export permissions require an owned account.",
+      );
+    if (authorizationCursor && (authorizationId || artifactCursor))
+      throw new IntegrityError(
+        "RAW_EXPORT_PAGE_INVALID",
+        "Choose an authorization page or an exact source page.",
+      );
+    const scope = this.scope(),
+      query = new URLSearchParams();
+    if (authorizationId) query.set("authorization_id", authorizationId);
+    if (artifactCursor) query.set("artifact_cursor", artifactCursor);
+    if (authorizationCursor)
+      query.set("authorization_cursor", authorizationCursor);
+    const response = await scope.wait(
+      this.api.request<unknown>(
+        `/v1/privacy/raw-export-scopes${query.size ? "?" + query.toString() : ""}`,
+      ),
+    );
+    const page = parseRawExportPage(response.value);
+    await this.commit((state) => {
+      const replacedIds = new Set(page.scopes.map((a) => a.authorization_id));
+      if (authorizationId) replacedIds.add(authorizationId);
+      const previous =
+        authorizationCursor || authorizationId
+          ? (state.rawExportAuthorities ?? []).filter(
+              (a) => !replacedIds.has(a.authorization_id),
+            )
+          : [];
+      if (previous.length + page.scopes.length > 100)
+        throw new IntegrityError(
+          "RAW_EXPORT_PAGE_LIMIT",
+          "The bounded authorization inventory is full. Reload the first page.",
+        );
+      return {
+        ...state,
+        rawExportAuthorities: [...previous, ...page.scopes],
+        rawExportArtifactCursors: {
+          ...(authorizationCursor || authorizationId
+            ? state.rawExportArtifactCursors
+            : {}),
+          ...Object.fromEntries(
+            page.scopes.map((a) => [
+              a.authorization_id,
+              artifactCursor ?? null,
+            ]),
+          ),
+        },
+        rawExportNextCursor: authorizationId
+          ? state.rawExportNextCursor
+          : page.next_cursor,
+      };
+    });
+  }
+  async createExport(rawChoice?: {
+    authorization_id: string;
+    authority_sha256: string;
+    notice_sha256: string;
+    artifact_ids: string[];
+  }): Promise<void> {
     const scope = this.scope(),
       state = this.model.state!,
       entry = state.exportEntry;
@@ -1797,6 +3142,11 @@ export class AppController {
         "Choose an export scope first.",
       );
     if (entry.source === "device") {
+      if (rawChoice)
+        throw new IntegrityError(
+          "RAW_EXPORT_CLOUD_ONLY",
+          "Authorized raw exports are prepared by the service; device exports retain their metadata-only scope.",
+        );
       const bytes = createLocalExport(state, entry.selection, now());
       scope.assertCurrent();
       await shareArchive(bytes, newId(), scope.assertCurrent);
@@ -1814,11 +3164,60 @@ export class AppController {
         "SIGN_IN_REQUIRED",
         "Synced records require an account. Guest checks remain local.",
       );
-    const body = {
+    let rawScope: RawExportScope | null = null;
+    if (rawChoice) {
+      const cursor =
+        state.rawExportArtifactCursors?.[rawChoice.authorization_id];
+      await scope.wait(
+        this.refreshRawExportScopes(
+          rawChoice.authorization_id,
+          cursor ?? undefined,
+        ),
+      );
+      const authority = this.model.state!.rawExportAuthorities?.find(
+        (a) => a.authorization_id === rawChoice.authorization_id,
+      );
+      if (
+        !authority ||
+        authority.authorization_sha256 !== rawChoice.authority_sha256 ||
+        authority.export_notice.sha256 !== rawChoice.notice_sha256
+      )
+        throw new IntegrityError(
+          "RAW_EXPORT_AUTHORITY_CHANGED",
+          "Raw export authority or its exact notice changed. Review the new terms and selection.",
+        );
+      rawScope = confirmRawExport(
+        authority,
+        rawChoice.artifact_ids,
+        entry.selection,
+        now(),
+      );
+    }
+    let body = {
       selection: entry.selection,
       format: "json_zip",
-      include_raw: false,
+      include_raw: rawScope !== null,
+      ...(rawScope ? { raw_scope: rawScope } : {}),
     } as unknown as JsonObject;
+    const semantic = (value: JsonObject) =>
+      digest({
+        ...value,
+        ...(value.raw_scope
+          ? {
+              raw_scope: {
+                ...requireObject(value.raw_scope),
+                acknowledged_at: null,
+              },
+            }
+          : {}),
+      });
+    const unresolved = this.model.state!.queue.find(
+      (q) =>
+        q.kind === "export" &&
+        ["queued", "retry_wait", "auth_required"].includes(q.state) &&
+        semantic(q.body) === semantic(body),
+    );
+    if (unresolved) body = clone(unresolved.body);
     await scope.wait(
       this.commit((current) =>
         queueMutation(current, "export", body, newId, now()),
@@ -1899,6 +3298,7 @@ export class AppController {
       manifestSha256: job.manifest_sha256,
       accountRef: this.model.identity!.accountRef,
       generation: this.model.state!.generation,
+      rawExport: job.raw_export,
     });
     scope.assertCurrent();
     await shareArchive(bytes, id, scope.assertCurrent);
@@ -1946,17 +3346,32 @@ export class AppController {
         "The account or data generation changed. Review and reauthenticate before requesting deletion.",
       );
     const scopeGuard = this.scope();
-    await scopeGuard.wait(this.stopActive("WITHDRAWAL"));
+    const stopped = this.stopActive("WITHDRAWAL");
     this.api.cancelAll();
-    await this.commit((state) =>
-      queueMutation(
+    await this.commit((state) => {
+      const next = queueMutation(
         state,
         "deletion",
         { scope, confirmation: true },
         newId,
         now(),
-      ),
-    );
+      );
+      for (const study of next.studies)
+        next.rawRecordingFences[String(study.study_id)] = [...RAW_KINDS];
+      for (const raw of next.rawArtifacts ?? [])
+        if (raw.state !== "deleted") {
+          raw.state = "quarantined";
+          raw.error = "DELETION_REQUESTED";
+        }
+      for (const q of next.queue)
+        if (q.kind !== "deletion" && q.state !== "synced") {
+          q.state = "blocked";
+          q.error = "DELETION_REQUESTED";
+        }
+      return next;
+    });
+    await scopeGuard.wait(stopped);
+    await scopeGuard.wait(this.purgeLocalRaw());
     const item = this.model.state!.queue.find(
       (q) =>
         q.kind === "deletion" && q.state !== "synced" && q.body.scope === scope,
@@ -2015,6 +3430,7 @@ export class AppController {
     this.api.cancelAll();
     await this.writes.catch(() => {});
     const scope = this.scope();
+    await scope.wait(this.purgeLocalRaw());
     await scope.wait(
       this.commit((state) => ({
         ...emptyWorkspace(state.workspace, now(), state.generation),
@@ -2023,14 +3439,21 @@ export class AppController {
         acknowledgedNotice: state.acknowledgedNotice,
         capabilities: state.capabilities,
         jobs: state.jobs.filter((job) => job.kind === "deletion"),
+        rawRecordingFences: state.rawRecordingFences,
         queue: state.queue.filter((q) =>
-          ["deletion", "withdrawal"].includes(q.kind),
+          [
+            "deletion",
+            "withdrawal",
+            "raw_revocation",
+            "device_unbind",
+          ].includes(q.kind),
         ),
       })),
     );
     scope.assertCurrent();
     this.patch({
       selectedCheck: null,
+      rawStudyId: null,
       historyRows: [],
       historyCursor: null,
       pendingReplacement: null,
@@ -2135,9 +3558,513 @@ export class AppController {
         "Consent recorded for that exact study version. Measurement qualification remains separate.",
     });
   }
+  async openRawRecordings(studyId: string): Promise<void> {
+    if (!this.model.identity || BUILD.hostedPreview)
+      throw new IntegrityError(
+        "SIGN_IN_REQUIRED",
+        "Raw recording choices require an owned account study. Guest previews never record or upload.",
+      );
+    const scope = this.scope();
+    await scope.wait(this.stopActive("ROUTE_HIDDEN"));
+    this.patch({ rawStudyId: studyId, route: "raw-recordings" });
+    await scope.wait(this.refreshRawRecordings(studyId));
+  }
+  async refreshRawRecordings(
+    studyId = this.model.rawStudyId,
+    artifactCursor?: string,
+  ): Promise<void> {
+    if (!studyId || !this.model.identity) return;
+    const scope = this.scope();
+    const response = await scope.wait(
+      this.api.request<unknown>(
+        `/v1/studies/${encodeURIComponent(studyId)}/raw-recordings${artifactCursor ? `?artifact_cursor=${encodeURIComponent(artifactCursor)}` : ""}`,
+      ),
+    );
+    const status = parseRawRecordingStatus(response.value, studyId);
+    await scope.wait(
+      this.commit((current) => {
+        const next = clone(current);
+        next.rawRecordingStatuses[studyId] = status;
+        // Completed receipts can remove a stop fence. Pending/lost revocation cannot.
+        const pending = next.queue.some(
+          (q) =>
+            q.kind === "raw_revocation" &&
+            q.body.study_id === studyId &&
+            q.state !== "synced",
+        );
+        if (!pending)
+          next.rawRecordingFences[studyId] = (
+            next.rawRecordingFences[studyId] ?? []
+          ).filter(
+            (kind) =>
+              status.revocations.some(
+                (receipt) =>
+                  receipt.state === "cleanup_pending" &&
+                  receipt.artifact_kinds.includes(kind),
+              ) ||
+              !status.revocations.some(
+                (receipt) =>
+                  receipt.state === "completed" &&
+                  receipt.artifact_kinds.includes(kind),
+              ),
+          );
+        return next;
+      }),
+    );
+  }
+  async saveRawRecordingChoices(
+    studyId: string,
+    choices: RawChoices,
+  ): Promise<void> {
+    this.requireWritable();
+    if (!this.model.identity)
+      throw new IntegrityError(
+        "SIGN_IN_REQUIRED",
+        "Recording choices require a signed-in study owner.",
+      );
+    const partition = {
+      epoch: this.workspaceEpoch,
+      workspace: this.model.state!.workspace,
+      generation: this.model.state!.generation,
+      accountRef: this.model.identity.accountRef,
+    };
+    const status = this.model.state!.rawRecordingStatuses[studyId];
+    if (!status)
+      throw new IntegrityError(
+        "RAW_POLICY_UNAVAILABLE",
+        "Load the approved policy before changing recording choices.",
+      );
+    assertRawChoicesAllowed(
+      status,
+      choices,
+      this.model.state!.rawRecordingFences[studyId],
+    );
+    if (
+      this.model.state!.studies.some(
+        (study) => study.study_id === studyId && study.local_withdrawal_pending,
+      )
+    )
+      throw new IntegrityError(
+        "WITHDRAWAL_PENDING",
+        "Recording cannot restart while study withdrawal is pending.",
+      );
+    const acknowledgedAt = now();
+    const payload = {
+      consent_record_id: status.consent_record_id,
+      policy_id: status.policy!.policy_id,
+      policy_version: status.policy!.version,
+      policy_sha256: status.policy!.sha256,
+      raw_notice_version: status.policy!.raw_notice.version,
+      raw_notice_sha256: status.policy!.raw_notice.sha256,
+      acknowledged_at: acknowledgedAt,
+      choices: clone(choices),
+    } as unknown as JsonObject;
+    if (!(await this.signIn(true))) return;
+    if (
+      partition.epoch !== this.workspaceEpoch ||
+      partition.workspace !== this.model.state?.workspace ||
+      partition.generation !== this.model.state?.generation ||
+      partition.accountRef !== this.model.identity?.accountRef
+    )
+      throw new IntegrityError(
+        "WORKSPACE_CHANGED",
+        "The recording confirmation was discarded because its owner workspace changed.",
+      );
+    const origin = this.scope();
+    this.requireWritable();
+    assertRawChoicesAllowed(
+      status,
+      choices,
+      this.model.state!.rawRecordingFences[studyId],
+    );
+    const matches = (q: WorkspaceState["queue"][number]) =>
+      q.kind === "raw_preference" &&
+      q.generation === this.model.state!.generation &&
+      q.body.study_id === studyId &&
+      digest({ ...requireObject(q.body.payload), acknowledged_at: null }) ===
+        digest({ ...payload, acknowledged_at: null });
+    let intent = this.model.state!.queue.find(matches);
+    if (!intent) {
+      await origin.wait(
+        this.commit((current) =>
+          queueMutation(
+            current,
+            "raw_preference",
+            { study_id: studyId, payload },
+            newId,
+            acknowledgedAt,
+          ),
+        ),
+      );
+      intent = this.model.state!.queue.find(matches)!;
+    }
+    await origin.wait(this.sync.run(intent.id, true));
+    const accepted =
+      this.model.state!.queue.find((q) => q.id === intent!.id)?.state ===
+      "synced";
+    this.patch({
+      message: accepted
+        ? "Your separate recording and upload choices were confirmed by the service. Each capture still requires current authorization."
+        : "Your exact choices are saved as a pending request. Recording permission is not confirmed until its receipt is verified.",
+    });
+  }
+  async retainRawRecording(
+    checkId: string,
+    attemptId: string,
+    kind: RawKind,
+    value: unknown,
+    permissionValue: unknown,
+  ): Promise<void> {
+    const scope = this.scope(),
+      check = this.model.state?.checks.find((check) => check.id === checkId),
+      store = this.store;
+    if (
+      !this.model.identity ||
+      BUILD.hostedPreview ||
+      !check ||
+      check.snapshot.mode !== "controlled_research" ||
+      !check.snapshot.study_id ||
+      !store?.saveWithRaw ||
+      !store.deleteRaw
+    )
+      throw new IntegrityError(
+        "ENCRYPTED_RAW_STORAGE_REQUIRED",
+        "Participant recordings require an owned approved check and unlocked encrypted native storage.",
+      );
+    const attempt = check.attempts.find(
+        (attempt) => attempt.attempt_id === attemptId,
+      ),
+      status = this.model.state!.rawRecordingStatuses[check.snapshot.study_id];
+    if (
+      !attempt ||
+      !attempt.started_at ||
+      attempt.status === "started" ||
+      attempt.component !== (kind === "eye_video" ? "eyes" : "cardiac") ||
+      !status
+    )
+      throw new IntegrityError(
+        "RAW_ATTEMPT_REQUIRED",
+        "The raw recording requires its actual completed acquisition attempt and exact consent receipt.",
+      );
+    const permission = verifyRawPermission(
+      permissionValue,
+      status,
+      kind,
+      this.model.state!.rawRecordingFences[check.snapshot.study_id] ?? [],
+    );
+    const raw = decodeRawRecording(value, kind),
+      localId = newId();
+    const current = () =>
+      scope.current() &&
+      !this.model.state!.rawRecordingFences[check.snapshot.study_id!]?.includes(
+        kind,
+      ) &&
+      !this.model.state!.studies.some(
+        (study) =>
+          study.study_id === check.snapshot.study_id &&
+          study.local_withdrawal_pending,
+      );
+    try {
+      if (kind === "eye_video") {
+        const native = requireObject(attempt.component_metadata.native_result),
+          frames = native.frame_events;
+        const material = requireObject(
+            check.acquisition?.attempts[attemptId]?.authorization
+              ?.configuration_material,
+          ),
+          view = new DataView(raw.bytes.buffer);
+        if (
+          !Array.isArray(frames) ||
+          view.getUint16(16, true) !== material.roi_sample_width ||
+          view.getUint16(18, true) !== material.roi_sample_height ||
+          view.getUint32(20, true) !== frames.length
+        )
+          throw new IntegrityError(
+            "RAW_FRAME_LINKAGE",
+            "The retained ROI geometry or count differs from its actual native acquisition ledger.",
+          );
+        const stride = 12 + view.getUint16(16, true) * view.getUint16(18, true);
+        for (let index = 0; index < frames.length; index++) {
+          const frame = requireObject(frames[index]),
+            at = 24 + index * stride;
+          if (
+            Math.abs(
+              view.getFloat64(at, true) - Number(frame.native_timestamp_ms),
+            ) > 1e-6 ||
+            digestBytes(raw.bytes.subarray(at + 12, at + stride)) !==
+              frame.roi_luma_sha256
+          )
+            throw new IntegrityError(
+              "RAW_FRAME_LINKAGE",
+              "Raw frame timestamps or luminance digests differ from their immutable native evidence.",
+            );
+        }
+      } else {
+        const body = raw.evidence!,
+          attestation = check.attestations?.[attemptId],
+          material = requireObject(
+            check.acquisition?.attempts[attemptId]?.authorization
+              ?.configuration_material,
+          );
+        if (
+          !attestation ||
+          [
+            "attestation_id",
+            "envelope",
+            "signature",
+            "normalized_payload",
+          ].some((key) => digest(body[key]) !== digest(attestation[key])) ||
+          material.raw_encoding !== "otgd_ecg_samples_v1" ||
+          !Number.isSafeInteger(material.raw_sample_limit) ||
+          Number(material.raw_sample_limit) < 1 ||
+          Number(material.raw_sample_limit) > 1024
+        )
+          throw new IntegrityError(
+            "RAW_SAMPLE_LINKAGE",
+            "The retained ECG bytes do not match their actual signed acquisition and approved raw codec.",
+          );
+        let total = 0;
+        for (const value of body.sample_chunks as JsonObject[]) {
+          const n = requireObject(requireObject(value).normalized_payload);
+          total += (n.samples as unknown[]).length;
+          if (
+            n.sample_rate_hz !== material.sample_rate_hz ||
+            Number(n.first_sample_index) + (n.samples as unknown[]).length >
+              Number(material.raw_sample_limit)
+          )
+            throw new IntegrityError(
+              "RAW_SAMPLE_LINKAGE",
+              "The retained ECG sample rate or range exceeds its approved material.",
+            );
+        }
+        if (total > Number(material.raw_sample_limit))
+          throw new IntegrityError(
+            "RAW_SAMPLE_LINKAGE",
+            "The retained ECG sample count exceeds its approved recording limit.",
+          );
+      }
+      await this.commit(
+        (state) => {
+          if (!current())
+            throw new IntegrityError(
+              "RAW_RECORDING_STOPPED",
+              "A stopped recording cannot return to local storage.",
+            );
+          const next = clone(state);
+          next.rawArtifacts ??= [];
+          next.rawArtifacts.push({
+            local_id: localId,
+            study_id: check.snapshot.study_id!,
+            session_id: check.id,
+            attempt_id: attemptId,
+            artifact_kind: kind,
+            format: raw.format,
+            media_type: raw.media_type,
+            sha256: raw.sha256,
+            size_bytes: raw.size_bytes,
+            capture_started_at: attempt.started_at!,
+            consent_record_id: status.consent_record_id!,
+            permission,
+            state: "local",
+            server_artifact_id: null,
+            created_at: now(),
+            retention_due_at: new Date(
+              Date.parse(attempt.started_at!) +
+                status.policy!.max_retention_days * 86_400_000,
+            ).toISOString(),
+            error: null,
+          });
+          return next;
+        },
+        { id: localId, bytes: raw.bytes, current },
+      );
+    } catch (error) {
+      await store.deleteRaw(localId).catch(() => {});
+      throw error;
+    } finally {
+      raw.bytes.fill(0);
+    }
+  }
+  private async purgeLocalRaw(
+    studyId?: string,
+    kinds: RawKind[] = [...RAW_KINDS],
+  ): Promise<void> {
+    const scope = this.scope(),
+      store = this.store;
+    const files = (this.model.state?.rawArtifacts ?? []).filter(
+      (raw) =>
+        (!studyId || raw.study_id === studyId) &&
+        kinds.includes(raw.artifact_kind) &&
+        raw.state !== "deleted",
+    );
+    for (const file of files) {
+      if (!store?.deleteRaw)
+        throw new IntegrityError(
+          "ENCRYPTED_RAW_STORAGE_REQUIRED",
+          "The encrypted recording store is unavailable for local cleanup.",
+        );
+      await scope.wait(store.deleteRaw(file.local_id));
+      await scope.wait(
+        this.commit((state) => {
+          const next = clone(state),
+            raw = next.rawArtifacts?.find(
+              (raw) => raw.local_id === file.local_id,
+            );
+          if (raw) {
+            raw.state = "deleted";
+            raw.error = null;
+          }
+          return next;
+        }),
+      );
+    }
+  }
+  private async maintainLocalRaw(): Promise<void> {
+    if (!this.model.state || this.model.locked || !this.store?.reconcileRaw)
+      return;
+    if (
+      !(this.model.state.rawArtifacts ?? []).some(
+        (raw) =>
+          raw.state !== "deleted" &&
+          (raw.state === "quarantined" ||
+            !Number.isFinite(Date.parse(raw.retention_due_at)) ||
+            Date.parse(raw.retention_due_at) <= Date.now()),
+      )
+    )
+      return;
+    await this.commit((state) => state, undefined, true);
+  }
+  async removeLocalRawFile(localId: string): Promise<void> {
+    const scope = this.scope(),
+      file = this.model.state?.rawArtifacts?.find(
+        (file) => file.local_id === localId,
+      );
+    if (!file || file.state === "deleted") return;
+    const stop = this.stopActive("USER_CANCELED");
+    this.api.cancelAll();
+    await this.commit((state) => {
+      const next = clone(state),
+        raw = next.rawArtifacts!.find((raw) => raw.local_id === localId)!;
+      raw.state = "quarantined";
+      raw.error = "LOCAL_COPY_REMOVAL_REQUESTED";
+      for (const q of next.queue)
+        if (
+          q.kind === "check" &&
+          q.state !== "synced" &&
+          ((q.body.raw_local_ids ?? []) as string[]).includes(localId)
+        ) {
+          q.state = "blocked";
+          q.error = "LOCAL_COPY_REMOVAL_REQUESTED";
+        }
+      return next;
+    });
+    await scope.wait(stop);
+    if (!this.store?.deleteRaw)
+      throw new IntegrityError(
+        "ENCRYPTED_RAW_STORAGE_REQUIRED",
+        "Local cleanup is pending until encrypted native storage is unlocked.",
+      );
+    await scope.wait(this.store.deleteRaw(localId));
+    await this.commit((state) => {
+      const next = clone(state),
+        raw = next.rawArtifacts!.find((raw) => raw.local_id === localId)!;
+      raw.state = "deleted";
+      raw.error = null;
+      return next;
+    });
+    this.patch({
+      message:
+        "This encrypted device copy was removed. Already uploaded files remain governed by their server cleanup receipts.",
+    });
+  }
+  async revokeRawRecordings(studyId: string, kinds: RawKind[]): Promise<void> {
+    if (
+      !this.model.identity ||
+      !this.model.state ||
+      !kinds.length ||
+      new Set(kinds).size !== kinds.length ||
+      kinds.some((kind) => !RAW_KINDS.includes(kind))
+    )
+      throw new IntegrityError(
+        "RAW_REVOCATION_INVALID",
+        "Choose owned recording kinds to stop.",
+      );
+    const scope = this.scope();
+    // Stop acquisition before any durable write or server request can wait.
+    const stopped = this.stopActive("WITHDRAWAL");
+    this.api.cancelAll();
+    await scope.wait(
+      this.commit((current) => {
+        const next = queueMutation(
+          current,
+          "raw_revocation",
+          {
+            study_id: studyId,
+            payload: { confirmation: true, artifact_kinds: [...kinds] },
+          },
+          newId,
+          now(),
+        );
+        next.rawRecordingFences[studyId] = [
+          ...new Set([...(next.rawRecordingFences[studyId] ?? []), ...kinds]),
+        ];
+        for (const raw of next.rawArtifacts ?? [])
+          if (
+            raw.study_id === studyId &&
+            kinds.includes(raw.artifact_kind) &&
+            raw.state !== "deleted"
+          )
+            raw.state = "quarantined";
+        for (const q of next.queue)
+          if (
+            q.kind === "check" &&
+            q.state !== "synced" &&
+            ((q.body.raw_local_ids ?? []) as string[]).some((id) =>
+              next.rawArtifacts?.some(
+                (raw) =>
+                  raw.local_id === id &&
+                  raw.study_id === studyId &&
+                  kinds.includes(raw.artifact_kind),
+              ),
+            )
+          ) {
+            q.state = "blocked";
+            q.error = "RAW_REVOCATION_PENDING";
+            const check = next.checks.find((check) => check.id === q.check_id);
+            if (check) {
+              check.delivery = "blocked";
+              check.error = "RAW_REVOCATION_PENDING";
+            }
+          }
+        for (const q of next.queue)
+          if (
+            q.kind === "raw_preference" &&
+            q.body.study_id === studyId &&
+            q.state !== "synced"
+          ) {
+            q.state = "blocked";
+            q.error = "RAW_REVOCATION_PENDING";
+          }
+        return next;
+      }),
+    );
+    await scope.wait(stopped);
+    await scope.wait(this.purgeLocalRaw(studyId, kinds));
+    const intent = this.model.state!.queue.find(
+      (q) =>
+        q.kind === "raw_revocation" &&
+        q.body.study_id === studyId &&
+        q.state !== "synced",
+    );
+    if (intent) await scope.wait(this.sync.run(intent.id, true));
+    this.patch({
+      message:
+        "Local recording is stopped. Pending requests and server cleanup receipts are shown separately; cleanup is complete only when the service confirms it.",
+    });
+  }
   async withdraw(studyId: string): Promise<void> {
     const scope = this.scope();
-    await scope.wait(this.stopActive("WITHDRAWAL"));
+    const stopped = this.stopActive("WITHDRAWAL");
     this.api.cancelAll();
     await this.commit((s) => {
       const next = queueMutation(
@@ -2147,15 +4074,21 @@ export class AppController {
         newId,
         now(),
       );
+      next.rawRecordingFences[studyId] = [...RAW_KINDS];
+      for (const raw of next.rawArtifacts ?? [])
+        if (raw.study_id === studyId && raw.state !== "deleted")
+          raw.state = "quarantined";
       next.studies = next.studies.map((x) =>
         String(x.study_id) === studyId
           ? { ...x, local_withdrawal_pending: true }
           : x,
       );
       next.queue = next.queue.map((q) =>
-        (q.kind === "check" || q.kind === "consent") &&
+        (q.kind === "check" ||
+          q.kind === "consent" ||
+          q.kind === "raw_preference") &&
         q.state !== "synced" &&
-        (q.kind === "consent"
+        (["consent", "raw_preference"].includes(q.kind)
           ? q.body.study_id === studyId
           : s.checks.find((c) => c.id === q.check_id)?.snapshot.study_id ===
             studyId)
@@ -2164,6 +4097,8 @@ export class AppController {
       );
       return next;
     });
+    await scope.wait(stopped);
+    await scope.wait(this.purgeLocalRaw(studyId));
     const queued = this.model.state!.queue.find(
       (q) =>
         q.kind === "withdrawal" &&
@@ -2208,6 +4143,7 @@ export class AppController {
       diagnosticError: null,
       route: "welcome",
       selectedCheck: null,
+      rawStudyId: null,
       historyRows: [],
       historyCursor: null,
     });
@@ -2261,6 +4197,7 @@ export class AppController {
     this.foreground = true;
     if (!this.authenticating && !this.model.locked && !this.acquiring) {
       try {
+        await this.maintainLocalRaw();
         await this.refreshConfig();
         if (this.model.identity) {
           await this.refreshCapabilities();
@@ -2280,6 +4217,7 @@ export class AppController {
       !this.model.locked &&
       this.model.identity
     ) {
+      await this.maintainLocalRaw();
       await this.sync.retryDue();
       for (const q of this.model.state?.queue ?? [])
         if (

@@ -38,6 +38,7 @@ x-environment: &environment
   OTGD_TOMBSTONE_KEY: ${OTGD_TOMBSTONE_KEY:?Run scripts/local-platform.py prepare}
   OTGD_TOMBSTONE_KEY_ID: v1
   OTGD_LOCAL_SIGNING_KEY_PATH: /run/otgd/identity-key.pem
+  OTGD_CAPTURE_SIGNING_PRIVATE_KEY_FILE: /run/otgd/capture-signing-key.pem
   AWS_ACCESS_KEY_ID: test
   AWS_SECRET_ACCESS_KEY: test
   AWS_DEFAULT_REGION: us-east-2
@@ -81,12 +82,22 @@ services:
     restart: unless-stopped
   resource-init:
     <<: *runtime
-    environment: *environment
+    environment:
+      <<: *environment
+      OTGD_DATABASE_USER: otgd_migrator
+      OTGD_DATABASE_PASSWORD: ${OTGD_LOCAL_MIGRATION_PASSWORD}
+      OTGD_DATABASE_POOL_SIZE: "1"
+      OTGD_JOURNAL_ESTABLISHMENT_VERSION_ID: ${OTGD_JOURNAL_ESTABLISHMENT_VERSION_ID:-}
+      OTGD_JOURNAL_ESTABLISHMENT_SHA256: ${OTGD_JOURNAL_ESTABLISHMENT_SHA256:-}
     command: [uv, run, --no-sync, python, /app/infra/local/bootstrap_resources.py]
     depends_on:
+      postgres: {condition: service_healthy}
       localstack: {condition: service_healthy}
   migrate:
     <<: *runtime
+    user: "${OTGD_LOCAL_UID:-1000}:${OTGD_LOCAL_GID:-1000}"
+    volumes:
+      - ./secrets/capture-signing-key.pem:/run/otgd/capture-signing-key.pem:ro
     environment:
       <<: *environment
       OTGD_DATABASE_USER: otgd_migrator
@@ -94,6 +105,8 @@ services:
       OTGD_DATABASE_POOL_SIZE: "1"
       OTGD_APP_DATABASE_USER: otgd_app
       OTGD_APP_DATABASE_PASSWORD: ${OTGD_LOCAL_APP_PASSWORD}
+      OTGD_JOURNAL_ESTABLISHMENT_VERSION_ID: ${OTGD_JOURNAL_ESTABLISHMENT_VERSION_ID:-}
+      OTGD_JOURNAL_ESTABLISHMENT_SHA256: ${OTGD_JOURNAL_ESTABLISHMENT_SHA256:-}
     command: [uv, run, --no-sync, python, -m, otgd.migrate]
     depends_on:
       postgres: {condition: service_healthy}
@@ -118,6 +131,9 @@ services:
     restart: unless-stopped
   api:
     <<: *runtime
+    user: "${OTGD_LOCAL_UID:-1000}:${OTGD_LOCAL_GID:-1000}"
+    volumes:
+      - ./secrets/capture-signing-key.pem:/run/otgd/capture-signing-key.pem:ro
     environment:
       <<: *environment
       OTGD_DATABASE_POOL_SIZE: "5"

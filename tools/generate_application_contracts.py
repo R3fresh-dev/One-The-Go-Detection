@@ -77,7 +77,7 @@ def main():
     OUTPUT.mkdir(exist_ok=True)
     api = app.openapi()
     api["info"]["description"] = (
-        "Versioned measurement-only application API. Clinical inference is compiled unavailable. See shared-contracts.md for state, idempotency, owner/generation and native evidence invariants. Unknown nested component metadata is rejected at runtime; CaptureAttempt carries a strict v0.1 projection plus the named typed companion evidence."
+        "Versioned application API. Measurement mode is the default. ResearchResult 1.1 requires current independent study, consent, hardware, calibration and model approval; legacy 0.1 results never carry research estimates. See shared-contracts.md and the authorized-model-execution amendment for state, idempotency, owner/generation and native evidence invariants. Unknown nested component metadata is rejected at runtime; CaptureAttempt carries a strict v0.1 measurement projection plus the named typed companion evidence."
     )
     synthetic = SyntheticDeviceCapture.model_json_schema()
     scientific = measurement_definition()

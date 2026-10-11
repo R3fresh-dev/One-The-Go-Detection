@@ -1,4 +1,4 @@
-"""Owner-scoped versioned API. No endpoint executes an intoxication model."""
+"""Owner-scoped versioned API with independently governed research execution."""
 
 from __future__ import annotations
 
@@ -24,6 +24,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from . import storage
 from .auth import authenticate, family_hash, recent
 from .canonical import canonical, digest, strict_loads
+from .capture_signing import require_signing_key, sign_start
 from .config import settings, web_origins
 from .db import (
     Artifact,
@@ -52,7 +53,6 @@ from .domain import (
     if_match,
     notice,
     owned_check,
-    qualification,
     record,
     registry,
     require_draft,
@@ -84,6 +84,7 @@ from .dto import (
     Finalize,
     LabImport,
     Name,
+    SHA,
     ProfileWrite,
     ReplacementLinks,
     StartAuthorization,
@@ -91,7 +92,22 @@ from .dto import (
 )
 from .errors import response_problem
 from .replacement_links import replacement_links_view
+from .raw_capture import codec_limit, read_raw_version, validate_raw_artifact, verification_receipt
 from .report_revisions import router as report_revision_router
+from .operator_governance import (
+    acquisition_context, active_body, capture_binding_context, capture_configuration as qualification, channel_capabilities,
+    qualified_binding, raw_recording_supported, released_version, started_capture, validate_reader_projection, validate_optical_attempt, validate_reader_start_identity,
+)
+from .raw_retention import (
+    RawPreferences, RawRevocation, admit_artifact, assert_artifact_admitted,
+    attach_retention, raw_start_permission, raw_status, renew_ticket_authority, revoke_raw, set_preferences,
+)
+from .raw_export import (
+    archive_bytes as export_archive_bytes, available_scopes as raw_export_scopes,
+    freeze_export as freeze_raw_export, validate_job as validate_raw_export_job,
+    validate_output as validate_raw_export_output,
+    public_job_scope as raw_export_public_job_scope,
+)
 
 app = FastAPI(
     title="One-The-Go Detection",
@@ -190,6 +206,7 @@ def enforce_rate(db, account, request):
         "/privacy/" in request.url.path
         or request.url.path.endswith("/withdrawals")
         or request.url.path.endswith("/logout")
+        or request.url.path.endswith("/raw-recording-revocations")
     )
     kind = "privacy" if privacy else ("read" if request.method == "GET" else "write")
     rate, burst = (30, 10) if privacy else ((120, 40) if kind == "read" else (60, 20))
@@ -341,6 +358,7 @@ def mutate(request, handler, escape=False, ack=False):
             if entry.operation_id:
                 job = db.get(Job, entry.operation_id)
                 if job and job.kind == "export":
+                    validate_raw_export_job(db, a, job)
                     return JSONResponse(job_view(job), status_code=entry.status)
             return answer(entry)
         body, status, headers, opid = handler(db, a, c)
@@ -429,6 +447,9 @@ def job_view(job):
             size_bytes=job.output["size_bytes"],
             manifest_sha256=digest(job.output["manifest"]),
         )
+    raw_scope = raw_export_public_job_scope(job) if job.kind == "export" else None
+    if raw_scope is not None:
+        result["raw_export"] = raw_scope
     return result
 
 
@@ -442,6 +463,9 @@ def ready():
     with factory()() as db:
         from .identity_keys import require_key
         require_key(db)
+        require_signing_key(db)
+        from .recovery_authority import require_authority
+        require_authority(db)
         version = db.get(SystemState, "schema_version")
         recovery = db.get(SystemState, "recovery")
         if not version or version.body.get("version") != 1:
@@ -467,6 +491,7 @@ def app_config():
         "contract_versions": {
             "application": ["1.0.0"],
             "scientific": ["0.1.0"],
+            "research_result": ["1.1.0"],
             "capture_evidence": ["1.0.0"],
             "native_task": ["1.0.0"],
         },
@@ -506,17 +531,18 @@ def get_notice(version: str):
 @app.get("/v1/me/capabilities")
 def capabilities(request: Request):
     with access(request, allow_inactive=True) as (db, a, c, r):
+        from .model_engine import model_capabilities
+        model_status = model_capabilities(db, a)
         return {
             "account_ref": a.id,
             "data_generation": a.generation,
             "account_state": a.state,
             "server_time": iso(),
             "notice": {**notice(), "acknowledged": a.notice == NOTICE_SHA},
-            "inference_available": False,
-            "channels": {
-                k: {"available": False, "reason_codes": ["NO_QUALIFIED_CONFIGURATION"]}
-                for k in ["saliva", "eyes", "cardiac", "ecg", "alcohol"]
-            },
+            "inference_available": model_status["inference_available"],
+            "model_execution_supported": model_status["model_execution_supported"],
+            "model_reason_codes": model_status["reason_codes"],
+            "channels": channel_capabilities(db, a),
             "studies": [
                 x.body
                 for x in db.scalars(
@@ -630,11 +656,18 @@ def session_create(request: Request, body: CreateCheck):
             raise Problem(409, "SESSION_ID_CONFLICT")
         if body.mode == "synthetic" and settings().environment == "prod":
             raise Problem(403, "SYNTHETIC_CLOUD_UNAVAILABLE")
-        if body.mode == "controlled_research":
-            registry(db, "study", body.study_id or "")
+        if body.mode != "synthetic":
+            study = active_body(db, "study", body.study_id or "")
+            recovery = db.get(SystemState, "recovery")
+            if recovery:
+                from .recovery_scopes import require_study_scope
+                require_study_scope(db,body.study_id,a)
             consent = record(db, a, "consent", body.study_id or "")
-            if not consent or consent.body.get("state") != "active":
+            if (not consent or consent.body.get("state") != "active"
+                or a.id not in study["account_refs"] or body.protocol_id != study["protocol_id"]):
                 raise Problem(403, "CAPABILITY_DENIED")
+            if any(consent.body.get(k) != study[k] for k in ("document_version", "document_sha256", "invitation_id")):
+                raise Problem(403, "CURRENT_CONSENT_REQUIRED")
         if body.supersedes_session_id:
             owned_check(db, a, body.supersedes_session_id)
         row = Check(
@@ -759,6 +792,15 @@ def evidence_write(request, session_id, kind, key, data):
             if data["attempt_id"] != key:
                 raise Problem(422, "ATTEMPT_MISMATCH")
             validate_component(data)
+            if check.mode != "synthetic" and data["source"] != "simulated" and data["status"] == "valid":
+                channel = "ecg" if data["component"] == "cardiac" and data["component_metadata"].get("projection", {}).get("modality") == "ecg" else data["component"]
+                config = qualification(db, a, check, channel, data["configuration_id"], data["configuration_hash"])
+                if config["software_adapter_id"] == "otgd_signed_reader_v1":
+                    validate_reader_projection(db, config, data["component_metadata"]["projection"])
+                if data["source"] != "reference_lab":
+                    authorization = started_capture(db, a, check, data, config)
+                    if data["component"] == "eyes":
+                        validate_optical_attempt(db, a, check, data, config, authorization)
             if old:
                 if old.body["status"] != "started" or data["status"] == "started":
                     raise Problem(409, "IMMUTABLE_ATTEMPT")
@@ -768,13 +810,17 @@ def evidence_write(request, session_id, kind, key, data):
                     "component",
                     "record_id",
                     "source",
-                    "started_at",
                     "configuration_id",
                     "configuration_hash",
                     "supersedes_attempt_id",
                 ):
                     if old.body[field] != data[field]:
                         raise Problem(409, "ATTEMPT_IDENTITY_CONFLICT")
+                if old.body["started_at"] != data["started_at"] and (
+                    data["source"] == "simulated"
+                    or data["component_metadata"].get("armed_at") != old.body["started_at"]
+                ):
+                    raise Problem(409, "ATTEMPT_IDENTITY_CONFLICT")
                 if data["component"] == "cardiac" and old.body[
                     "component_metadata"
                 ].get("modality") != data["component_metadata"].get("modality"):
@@ -1045,10 +1091,31 @@ def bindings_get(request: Request):
         return {"items": items}
 
 
+@app.get("/v1/studies/{study_id}/raw-recordings")
+def raw_recordings(request: Request, study_id: Name, artifact_cursor: UUID | None = None):
+    with access(request, allow_inactive=True) as (db, a, c, r):
+        return raw_status(db, a, study_id, artifact_cursor)
+
+
+@app.post("/v1/studies/{study_id}/raw-recording-preferences")
+def raw_preferences(request: Request, study_id: Name, body: RawPreferences):
+    def action(db, a, c):
+        recent(c)
+        return set_preferences(db, a, study_id, body), 201, {}, None
+    return mutate(request, action)
+
+
+@app.post("/v1/studies/{study_id}/raw-recording-revocations")
+def raw_revocations(request: Request, study_id: Name, body: RawRevocation):
+    def action(db, a, c):
+        return revoke_raw(db, a, study_id, body), 200, {}, None
+    return mutate(request, action, escape=True)
+
+
 @app.post("/v1/device-bindings/challenges")
 def bind_challenge(request: Request, body: BindChallenge):
     def action(db, a, c):
-        key = registry(db, "device", body.device_id + ":" + body.key_id)
+        key = active_body(db, "device", body.device_id + ":" + body.key_id)
         if a.id not in key.get("account_refs", []):
             raise Problem(403, "CAPABILITY_DENIED")
         id = uid()
@@ -1094,7 +1161,7 @@ def bind(request: Request, body: Binding):
         if not ch or ch.body["consumed"] or ch.body["expires"] <= now():
             raise Problem(409, "CHALLENGE_EXPIRED_OR_USED")
         t = ch.body["transcript"]
-        key = registry(db, "device", t["device_id"] + ":" + t["key_id"])
+        key = active_body(db, "device", t["device_id"] + ":" + t["key_id"])
         if a.id not in key.get("account_refs", []):
             raise Problem(403, "CAPABILITY_DENIED")
         verify_signature(key["public_key_spki"], body.signature, "OTGD-BIND-v1\n", t)
@@ -1139,8 +1206,20 @@ def authorize_capture(request: Request, session_id: UUID, body: CaptureAuthoriza
             not attempt
             or attempt.parent_id != session_id
             or attempt.body["status"] != "started"
+            or attempt.body["configuration_id"] != body.configuration_id
+            or attempt.body["configuration_hash"] != body.configuration_hash
+            or attempt.body["component"] != ("cardiac" if body.channel == "ecg" else body.channel)
         ):
             raise Problem(409, "STARTED_ATTEMPT_REQUIRED")
+        context = acquisition_context(db, a, check, config)
+        raw_permission = None
+        if body.raw_recording_kind:
+            if not raw_recording_supported(config, body.raw_recording_kind):
+                raise Problem(403, "RAW_CODEC_UNIMPLEMENTED")
+            raw_permission = raw_start_permission(db, a, check, config, body.raw_recording_kind)
+            raw_receipt = record(db, a, "raw_consent_receipt", raw_permission["receipt_id"])
+            if raw_receipt.created > attempt.created:
+                raise Problem(403, "RAW_CONSENT_BEFORE_CAPTURE_REQUIRED")
         if body.binding_id:
             binding = record(db, a, "binding", body.binding_id)
             if (
@@ -1152,6 +1231,8 @@ def authorize_capture(request: Request, session_id: UUID, body: CaptureAuthoriza
             registry(
                 db, "device", binding.body["device_id"] + ":" + binding.body["key_id"]
             )
+            qualified_binding(db, a, config, binding)
+            capture_binding_context(context, binding)
         elif body.channel not in ("task", "eyes"):
             raise Problem(403, "DEVICE_BINDING_REQUIRED")
         data = {
@@ -1162,6 +1243,15 @@ def authorize_capture(request: Request, session_id: UUID, body: CaptureAuthoriza
             "expires_at": iso(now() + 60),
             "expires_epoch": now() + 60,
             "configuration_max_duration_ms": config["max_duration_ms"],
+            "supported_phone_models": config["supported_phone_models"],
+            "supported_os_versions": config["supported_os_versions"],
+            "supported_native_builds": config["supported_native_builds"],
+            "software_adapter_id": config["software_adapter_id"],
+            "configuration_submitted_sha256": digest(config),
+            "configuration_version": config["version"],
+            "capture_context_sha256": context.sha256,
+            "configuration_material": config["material"],
+            "raw_recording_permission": raw_permission,
         }
         save_record(db, a, "authorization", data["authorization_id"], data, session_id)
         return data, 201, {}, None
@@ -1180,22 +1270,59 @@ def start_capture(
         if not row or row.parent_id != session_id:
             raise Problem(404, "NOT_FOUND")
         v = row.body
-        qualification(
+        config = qualification(
             db, a, check, v["channel"], v["configuration_id"], v["configuration_hash"]
         )
+        if v.get("configuration_submitted_sha256") != digest(config) or v.get("configuration_version") != config["version"]:
+            raise Problem(403, "CONFIGURATION_APPROVAL_CHANGED")
+        if v.get("capture_context_sha256") != acquisition_context(db, a, check, config).sha256:
+            raise Problem(403, "CAPTURE_CONTEXT_CHANGED")
+        if v.get("raw_recording_kind") and raw_start_permission(db, a, check, config, v["raw_recording_kind"]) != v.get("raw_recording_permission"):
+            raise Problem(403, "RAW_RECORDING_APPROVAL_CHANGED")
         if (
             v["state"] != "issued"
             or v["expires_epoch"] <= now()
             or v["attempt_id"] != body.attempt_id
         ):
             raise Problem(409, "AUTHORIZATION_EXPIRED_OR_USED")
+        device_key_id = None
+        if v["binding_id"]:
+            binding = record(db, a, "binding", v["binding_id"])
+            if not binding or not body.device_nonce or not body.device_boot_id:
+                raise Problem(403, "DEVICE_NONCE_AND_BINDING_REQUIRED")
+            validate_reader_start_identity(body.device_boot_id, body.device_nonce)
+            qualified_binding(db, a, config, binding)
+            capture_binding_context(acquisition_context(db, a, check, config), binding, body.device_boot_id)
+            if binding.body["device_id"] != v["device_id"]:
+                raise Problem(403, "CAPTURE_SCOPE_MISMATCH")
+            device_key_id = binding.body["key_id"]
+        started_epoch = now()
+        started_at = iso(started_epoch)
+        signed = sign_start(db, {
+            "schema_version": "1.0.0", "environment": settings().environment,
+            "owner_ref": a.id, "data_generation": a.generation,
+            "session_id": session_id, "attempt_id": v["attempt_id"],
+            "authorization_id": authorization_id, "binding_id": v["binding_id"],
+            "device_id": v["device_id"], "device_key_id": device_key_id,
+            "boot_id": body.device_boot_id, "configuration_id": v["configuration_id"],
+            "channel": v["channel"], "configuration_max_duration_ms": v["configuration_max_duration_ms"],
+            "configuration_hash": v["configuration_hash"],
+            "configuration_submitted_sha256": v["configuration_submitted_sha256"],
+            "configuration_version": v["configuration_version"],
+            "capture_context_sha256": v["capture_context_sha256"],
+            "issued_at": started_at, "expires_at": iso(started_epoch + 60),
+            "device_nonce": body.device_nonce, "nonce": uid(),
+            "raw_recording_permission": v.get("raw_recording_permission"),
+        })
         row.body = {
             **v,
             "state": "started",
             "device_boot_id": body.device_boot_id,
-            "server_started_at": iso(),
-            "server_started_epoch": now(),
+            "server_started_at": started_at,
+            "server_started_epoch": started_epoch,
+            "server_start": signed,
         }
+        row.sha256 = digest(row.body)
         return (
             {
                 "authorization_id": authorization_id,
@@ -1203,6 +1330,8 @@ def start_capture(
                 "device_boot_id": body.device_boot_id,
                 "state": "started",
                 "server_started_at": row.body["server_started_at"],
+                "raw_recording_permission": row.body.get("raw_recording_permission"),
+                "server_start": signed,
             },
             200,
             {},
@@ -1247,9 +1376,12 @@ def attest(request: Request, session_id: UUID, body: Attestation):
             or binding.body["key_id"] != e["key_id"]
         ):
             raise Problem(403, "CAPTURE_SCOPE_MISMATCH")
-        qualification(
+        config = qualification(
             db, a, check, v["channel"], v["configuration_id"], e["configuration_hash"]
         )
+        if v.get("configuration_submitted_sha256") != digest(config) or v.get("configuration_version") != config["version"]:
+            raise Problem(403, "CONFIGURATION_APPROVAL_CHANGED")
+        qualified_binding(db, a, config, binding)
         if (
             e["configuration_hash"] != v["configuration_hash"]
             or attempt.body["configuration_hash"] != e["configuration_hash"]
@@ -1304,6 +1436,9 @@ def artifact_upload(request: Request, body: ArtifactRequest):
             "source_lab_report": "saliva",
         }[body.artifact_kind]
         config = qualification(db, a, check, channel)
+        if body.artifact_kind in ("eye_video", "ecg_waveform") and not raw_recording_supported(config, body.artifact_kind):
+            raise Problem(403, "RAW_CODEC_UNIMPLEMENTED")
+        raw_authority = admit_artifact(db, a, check, body, config)
         consent = record(db, a, "consent", body.study_id)
         if (
             body.retention_policy_id != config["retention_policy_id"]
@@ -1311,15 +1446,9 @@ def artifact_upload(request: Request, body: ArtifactRequest):
             or not config.get("raw_retention_approved")
         ):
             raise Problem(403, "RAW_RETENTION_UNAVAILABLE")
-        limit = (
-            {"eye_video": 64, "ecg_waveform": 16, "source_lab_report": 8}[
-                body.artifact_kind
-            ]
-            * 1024
-            * 1024
-        )
+        limit = codec_limit(body.artifact_kind)
         media = {
-            "eye_video": "video/mp4",
+            "eye_video": "application/octet-stream" if config["material"].get("raw_encoding") == "otgd_eye_roi_v1" else "video/mp4",
             "ecg_waveform": "application/octet-stream",
             "source_lab_report": "application/pdf",
         }[body.artifact_kind]
@@ -1342,10 +1471,34 @@ def artifact_upload(request: Request, body: ArtifactRequest):
             scope=body.data(),
         )
         db.add(row)
+        attach_retention(db, row, raw_authority)
         ticket = storage.upload_ticket(row)
         ticket["expires_at"] = iso(row.expires)
         return ticket, 201, {}, None
 
+    return mutate(request, action)
+
+
+@app.post("/v1/artifact-uploads/{artifact_id}/ticket")
+def artifact_ticket_renew(request: Request, artifact_id: UUID, body: dict):
+    if body:
+        raise Problem(422, "INVALID_REQUEST")
+    def action(db, a, c):
+        row = db.scalar(select(Artifact).where(Artifact.id == artifact_id)
+            .with_for_update().execution_options(populate_existing=True))
+        if not row or row.account_id != a.id or row.generation != a.generation:
+            raise Problem(404, "NOT_FOUND")
+        if row.scope.get("purpose") == "administrative_report_revision":
+            raise Problem(403, "ARTIFACT_PURPOSE_MISMATCH")
+        if row.state == "verified":
+            assert_artifact_admitted(db, a, row)
+            return {"artifact_id": row.id, "state": "verified", "version_id": row.version_id}, 200, {}, None
+        check = owned_check(db, a, row.session_id)
+        require_draft(check)
+        renew_ticket_authority(db, a, row)
+        ticket = storage.upload_ticket(row)
+        ticket["expires_at"] = iso(row.expires)
+        return ticket, 201, {}, None
     return mutate(request, action)
 
 
@@ -1385,12 +1538,16 @@ def artifact_complete(request: Request, artifact_id: UUID, body: CompleteArtifac
             raise Problem(422, "ARTIFACT_MISMATCH")
         if row.state not in ("quarantine", "verified"):
             raise Problem(410, "ARTIFACT_RETIRED")
+        assert_artifact_admitted(db, a, row)
+        if row.size > codec_limit(row.kind):
+            raise Problem(413, "RAW_CODEC_LIMIT_EXCEEDED")
         detached = row
     version = (
         detached.version_id
         if detached.state == "verified"
         else storage.verify_artifact(detached)
     )
+    raw = read_raw_version(detached, version)
 
     def action(db, a, c):
         row = db.scalar(
@@ -1405,6 +1562,7 @@ def artifact_complete(request: Request, artifact_id: UUID, body: CompleteArtifac
             raise Problem(403, "ARTIFACT_PURPOSE_MISMATCH")
         if row.state not in ("quarantine", "verified"):
             raise Problem(410, "ARTIFACT_RETIRED")
+        assert_artifact_admitted(db, a, row)
         if (body.sha256, body.size_bytes, body.media_type) != (
             row.sha256,
             row.size,
@@ -1413,7 +1571,7 @@ def artifact_complete(request: Request, artifact_id: UUID, body: CompleteArtifac
             raise Problem(422, "ARTIFACT_MISMATCH")
         check = owned_check(db, a, row.session_id)
         require_draft(check)
-        qualification(
+        config = qualification(
             db,
             a,
             check,
@@ -1421,6 +1579,20 @@ def artifact_complete(request: Request, artifact_id: UUID, body: CompleteArtifac
                 row.kind
             ],
         )
+        evidence = validate_raw_artifact(db, a, row, config, raw)
+        receipt = verification_receipt(row, config, version, evidence)
+        prior = record(db, a, "raw_verification", row.id)
+        if prior and {k: v for k, v in prior.body.items() if k != "verified_at"} != {k: v for k, v in receipt.items() if k != "verified_at"}:
+            raise Problem(409, "IMMUTABLE_RAW_VERIFICATION")
+        for chunk in evidence["sequences"]:
+            sequence = record(db, a, "sequence", chunk["sequence_id"])
+            value = {"raw_artifact_id": row.id, "payload_sha256": chunk["payload_sha256"]}
+            if sequence and sequence.body != value:
+                raise Problem(409, "DEVICE_SEQUENCE_REPLAY")
+            if not sequence:
+                save_record(db, a, "sequence", chunk["sequence_id"], value, row.session_id)
+        if not prior:
+            save_record(db, a, "raw_verification", row.id, receipt, row.session_id)
         if row.state == "verified" and row.version_id != version:
             raise Problem(409, "IMMUTABLE_ARTIFACT")
         row.version_id = version
@@ -1516,15 +1688,22 @@ def alcohol_get(request: Request, session_id: UUID):
 @app.get("/v1/model-manifests/{model_id}")
 def model_get(request: Request, model_id: Name):
     with access(request) as (db, a, c, r):
-        if model_id != "no-clinical-model-v1":
-            raise Problem(404, "NOT_FOUND")
-        from .canonical import strict_loads
-
-        data = strict_loads(
-            (ROOT / "examples/unvalidated_model_manifest.json").read_text()
-        )
-        data["model_id"] = model_id
-        return data
+        if model_id == "no-clinical-model-v1":
+            data = strict_loads((ROOT / "examples/unvalidated_model_manifest.json").read_text())
+            data["model_id"] = model_id
+            return data
+        try:
+            model = released_version(db, "model", model_id)
+            for study_id in model.body["study_ids"]:
+                study = active_body(db, "study", study_id)
+                consent = record(db, a, "consent", study_id)
+                if (a.id in study["account_refs"] and consent and consent.body.get("state") == "active"
+                    and all(consent.body.get(k) == study[k] for k in ("document_version", "document_sha256", "invitation_id"))):
+                    return JSONResponse(model.body["manifest"], headers={"ETag": '"' + digest(model.body["manifest"]) + '"',
+                        "X-Registry-Submitted-Sha256": model.sha256, "Cache-Control": "no-store"})
+        except Problem:
+            pass
+        raise Problem(404, "NOT_FOUND")
 
 
 @app.post("/v1/privacy/exports", status_code=202)
@@ -1594,6 +1773,11 @@ def export_post(request: Request, body: ExportRequest):
             "current_profile_version_id": current_version,
             "report_revision_heads": report_heads,
         }
+        expires_at = now() + 86400
+        if body.include_raw:
+            raw = freeze_raw_export(db, a, body.raw_scope, ids)
+            job_body["raw_export"] = raw["raw_export"]
+            expires_at = min(expires_at, raw["expires_at"])
         if len(canonical(job_body)) > 512 * 1024:
             raise Problem(413, "LIMIT_EXCEEDED")
         id = uid()
@@ -1604,7 +1788,7 @@ def export_post(request: Request, body: ExportRequest):
             kind="export",
             body=job_body,
             accepted=now(),
-            expires=now() + 86400,
+            expires=expires_at,
             state="pending",
             attempts=0,
         )
@@ -1614,6 +1798,14 @@ def export_post(request: Request, body: ExportRequest):
         return job_view(job), 202, {}, id
 
     return mutate(request, action, escape=True)
+
+
+@app.get("/v1/privacy/raw-export-scopes")
+def raw_export_scope_get(request: Request, study_id: Name | None = None,
+    authorization_id: Name | None = None, artifact_cursor: UUID | None = None,
+    authorization_cursor: SHA | None = None):
+    with access(request) as (db, a, c, r):
+        return raw_export_scopes(db, a, study_id, authorization_id, artifact_cursor, authorization_cursor)
 
 
 @app.post("/v1/privacy/deletion-requests", status_code=202)
@@ -1674,14 +1866,19 @@ def privacy_status(request: Request, job_id: UUID):
             raise Problem(403,'CAPABILITY_DENIED')
         if job.kind == "export" and job.generation != a.generation:
             raise Problem(410, "DATA_GENERATION_RETIRED")
+        if job.kind == "export" and job.state not in ("failed", "revoked", "expired") and (not job.expires or job.expires > now()):
+            validate_raw_export_job(db, a, job)
         return job_view(job)
 
 
 @app.get("/v1/privacy/jobs/{job_id}/download")
 def privacy_download(request: Request, job_id: UUID):
     from fastapi.responses import StreamingResponse
+    from .raw_export import DOWNLOAD_SLOTS
 
-    with access(request) as (db, a, c, r):
+    def admitted(db, a):
+        if a.state != "active":
+            raise Problem(403, "ACCOUNT_NOT_WRITABLE")
         job = db.get(Job, job_id)
         if not job or job.account_id != a.id or job.kind != "export":
             raise Problem(404, "NOT_FOUND")
@@ -1691,6 +1888,8 @@ def privacy_download(request: Request, job_id: UUID):
             raise Problem(410, "EXPORT_EXPIRED")
         if job.state != "completed" or not job.output:
             raise Problem(409, "EXPORT_NOT_READY")
+        validate_raw_export_job(db, a, job)
+        validate_raw_export_output(db, a, job, job.output)
         for sid in job.body["session_ids"]:
             check = owned_check(db, a, sid)
             if check.study_id:
@@ -1698,44 +1897,75 @@ def privacy_download(request: Request, job_id: UUID):
                 if not consent or consent.body["state"] != "active":
                     raise Problem(403, "CAPABILITY_DENIED")
             safe_result(check.result)
-        if (
-            request.headers.get("range")
-            or request.headers.get("if-none-match")
-            or request.headers.get("if-modified-since")
-        ):
-            raise Problem(416, "RESUME_UNSUPPORTED")
-        output = job.output
-        if not output.get("version_id") or output["size_bytes"] > 64 * 1024 * 1024:
+        value = job.output
+        if (not value.get("version_id") or value["version_id"] == "null"
+            or not isinstance(value.get("size_bytes"), int)
+            or not 0 < value["size_bytes"] <= export_archive_bytes(job)
+            or not re.fullmatch(r"[a-f0-9]{64}", value.get("sha256", ""))):
             raise Problem(503, "EXPORT_MANIFEST_INVALID")
-    obj = storage.client("s3").get_object(
-        Bucket=settings().export_bucket,
-        Key=output["key"],
-        VersionId=output["version_id"],
-    )
-    if obj["ContentLength"] != output["size_bytes"]:
-        obj["Body"].close()
-        raise Problem(503, "EXPORT_MANIFEST_INVALID")
+        return value
+
+    with access(request) as (db, a, c, r):
+        output = admitted(db, a)
+    if any(request.headers.get(header) for header in ("range", "if-none-match", "if-modified-since")):
+        raise Problem(416, "RESUME_UNSUPPORTED")
+
+    def readmit():
+        # Reauthenticate current account/family and recheck all current authority
+        # without charging a new API request for each internal delivery chunk.
+        # Close the transaction before any network I/O or yielded response bytes.
+        with factory()() as db:
+            a, _, _ = authenticate(db, request.headers.get("authorization"))
+            current = admitted(db, a)
+            if current != output:
+                raise Problem(403, "EXPORT_OUTPUT_CHANGED")
+            db.commit()
+
+    if not DOWNLOAD_SLOTS.acquire(blocking=False):
+        raise Problem(429, "EXPORT_DOWNLOAD_BUSY", headers={"Retry-After": "1"})
+    try:
+        obj = storage.client("s3").get_object(Bucket=settings().export_bucket,
+            Key=output["key"], VersionId=output["version_id"])
+        body = obj["Body"]
+        try:
+            if (obj.get("VersionId") != output["version_id"]
+                or obj.get("ContentLength") != output["size_bytes"]):
+                raise Problem(503, "EXPORT_MANIFEST_INVALID")
+            data = body.read(output["size_bytes"] + 1)
+            if (len(data) != output["size_bytes"]
+                or hashlib.sha256(data).hexdigest() != output["sha256"]):
+                raise Problem(503, "EXPORT_MANIFEST_INVALID")
+        finally:
+            body.close()
+        readmit()  # Delayed S3 reads cannot disclose a now-revoked archive.
+    except BaseException:
+        DOWNLOAD_SLOTS.release()
+        raise
 
     def stream():
-        total = 0
-        try:
-            while chunk := obj["Body"].read(64 * 1024):
-                total += len(chunk)
-                if total > output["size_bytes"]:
-                    raise RuntimeError("Bounded export stream exceeded")
-                yield chunk
-        finally:
-            obj["Body"].close()
+        for offset in range(0, len(data), 64 * 1024):
+            # A newly denied stream terminates. Already sent/in-flight bytes
+            # cannot be recalled; the maximum admitted chunk is 64 KiB.
+            readmit()
+            yield data[offset:offset + 64 * 1024]
 
-    return StreamingResponse(
-        stream(),
-        media_type="application/zip",
-        headers={
+    class VerifiedDownloadResponse(StreamingResponse):
+        async def __call__(self, scope, receive, send):
+            try:
+                await super().__call__(scope, receive, send)
+            finally:
+                # Includes cancellation before the generator's first iteration.
+                DOWNLOAD_SLOTS.release()
+
+    try:
+        return VerifiedDownloadResponse(stream(), media_type="application/zip", headers={
             "Content-Length": str(output["size_bytes"]),
             "Content-Disposition": f'attachment; filename="otgd-{job_id}.zip"',
             "Cache-Control": "private, no-store",
-        },
-    )
+        })
+    except BaseException:
+        DOWNLOAD_SLOTS.release()
+        raise
 
 
 app.add_middleware(

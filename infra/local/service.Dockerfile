@@ -19,7 +19,10 @@ COPY infra/certs/ /app/infra/certs/
 COPY scripts/ /app/scripts/
 RUN --mount=type=secret,id=proxy_ca \
     if [ -f /run/secrets/proxy_ca ]; then export SSL_CERT_FILE=/run/secrets/proxy_ca; fi; \
-    uv sync --locked --no-dev && chown -R 10001:10001 /app /opt/venv && chmod -R a+rX /app /opt/venv
+    uv sync --locked --no-dev && chown -R 10001:10001 /app /opt/venv && chmod -R a+rX /app /opt/venv && install -d -m 1777 -o 10001 -g 10001 /tmp
+# ECS copies a matching Dockerfile VOLUME directory's initialized ownership and
+# permissions to the Fargate bind volume. Compose's explicit tmpfs still wins.
+VOLUME ["/tmp"]
 USER 10001
 EXPOSE 8000
 CMD ["uv","run","--no-sync","uvicorn","otgd.main:app","--host","0.0.0.0","--port","8000","--no-access-log","--limit-concurrency","100","--timeout-graceful-shutdown","100"]

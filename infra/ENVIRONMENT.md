@@ -11,6 +11,7 @@ Copy [qa.example.json](config/qa.example.json) or [prod.example.json](config/pro
 | `account`, `region` | Actual AWS account and region; default region is `us-east-2`. STS must agree. |
 | `domain`, `certificateArn` | Public API domain and an issued ACM certificate in that account/region. |
 | `hostedZoneId`, `hostedZoneName` | Optional pair for an existing public Route 53 zone. If omitted, the operator creates DNS to the output ALB. |
+| `webDomain`, `webCertificateArn` | Optional pair for a custom UI hostname and issued same-account ACM certificate in **us-east-1** for CloudFront. With managed Route 53 it must be a subdomain of the supplied public zone. Omit both to use the output CloudFront HTTPS domain. |
 | `cognitoDomainPrefix` | Unique hosted sign-in prefix; CDK creates the pool and public client. |
 | `oauthRedirectUris`, `oauthLogoutUris` | Exact native callbacks; register their scheme in the matching mobile environment. No wildcard or local cloud callback. |
 | `imageDigest`, `releaseId` | Immutable ECR SHA-256 digest and reviewed Git commit, bound by a signed release record. |
@@ -26,6 +27,7 @@ Copy [qa.example.json](config/qa.example.json) or [prod.example.json](config/pro
 | Setting | Source / rule |
 |---|---|
 | `OTGD_ENVIRONMENT` | Fixed `local`, `qa` or `prod`; `test` is used only by disposable tests. |
+| `OTGD_DEPLOYMENT_ACCOUNT`, `OTGD_SOURCE_REVISION` | Cloud account and reviewed Git revision injected by CDK for independent activation authority. |
 | `OTGD_DATABASE_HOST`, `PORT`, `NAME`, `USER` | RDS outputs or internal Compose database; production database is private. |
 | `OTGD_DATABASE_PASSWORD` | Application secret at runtime; separate RDS migration credential in the maintenance task. |
 | `OTGD_DATABASE_SSLMODE`, `OTGD_DATABASE_SSLROOTCERT` | Cloud uses `verify-full` and the packaged public AWS RDS CA bundle. Local PostgreSQL uses its private Compose network. |
@@ -39,11 +41,18 @@ Copy [qa.example.json](config/qa.example.json) or [prod.example.json](config/pro
 | `OTGD_S3_PUBLIC_ENDPOINT_URL` | Local-only phone-visible endpoint for signing. Changing it invalidates old tickets; never rewrite their host. |
 | `OTGD_ARTIFACT_BUCKET`, `EXPORT_BUCKET`, `JOURNAL_BUCKET` | Separate versioned private buckets. |
 | `OTGD_STORAGE_KMS_KEY_ID`, `JOURNAL_KMS_KEY_ID` | Separate data and deletion-journal keys; cloud rejects missing/equal keys. |
+| `OTGD_CAPTURE_SIGNING_KEY_ID` | Retained environment ECC_NIST_P256 KMS SIGN_VERIFY key ARN. API has Sign/GetPublicKey; migration has GetPublicKey only to bind its public descriptor. Workers cannot sign capture grants. |
 | `OTGD_QUEUE_URL`, `DLQ_URL` | Actual provisioned URLs. No automatic in-process cloud-outage fallback. |
 | `OTGD_TOMBSTONE_KEY`, `TOMBSTONE_KEY_ID` | Independent 256-bit hex secret and version identifier; preserve for the lifetime of its restore evidence. |
 | `OTGD_USER_POOL_ID` | Cloud only; limits identity-removal permissions to the environment pool. |
 | `OTGD_LOCAL_SIGNING_KEY_PATH` | Local-only protected RSA key mount. Never packaged into an image. |
 | `OTGD_RECOVERY_REQUIRED` | Cloud recovery readiness gate. |
+
+The private static web origin has its own versioned retained bucket, CloudFront SigV4 origin access control and immutable `releases/<commit>` prefix. Outputs `WebOrigin`, `WebCallbackUri`, `WebBucket`, `WebDistributionId`, `WebDistributionDomain` and `WebReleasePrefix` identify the actual target. Cognito/backend browser callbacks include exactly `WebOrigin + '/'`; native callbacks remain separately registered. The one-command scripts and publication/DNS details are in [deploy/README.md](../deploy/README.md). Regional workload estimates must include static storage, requests, CloudFront egress/function usage and optional DNS before cost approval.
+
+`RegistrySubmitter`, `RegistryReviewer`, `RegistryReleaser` outputs identify distinct same-account MFA operator roles with no default human assumer assignments or participant/runtime trust. Their supported workflow uses the operator's verified role on a private administrative host, exact role-ID lookup and scoped administrative secret access; a generic migration task identity is not a reviewer. Assigning three independent humans and validating their effective role/network access is actual account setup, not completed by template synthesis.
+
+`CaptureSigningKeyArn` identifies the retained signing key with alias `alias/otgd-<environment>-capture-grant`; its private material never leaves KMS and is not an encryption key. Migration anchors its actual public descriptor; replacement/rotation requires separately reviewed authority migration rather than an automatic bypass. RegistryReleaser can read the retained independent journal and write only `scope-resumptions/*`, with encrypt/decrypt/data-key permissions only for that journal key. API/worker/migration are explicitly denied writes to this resumption-authority prefix even though they can write ordinary journal events. Real KMS signing, protected firmware trust, ObjectLock and role/network acceptance remain AWS/device evidence to obtain.
 
 ## Connection capacity
 

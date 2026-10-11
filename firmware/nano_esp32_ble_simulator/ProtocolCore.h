@@ -42,6 +42,7 @@ inline bool validUtf8(const std::string& s) {
 /** Lexical validation before ArduinoJson can discard duplicate keys. No unbounded recursion or key tables. */
 class StrictJson {
   const std::string& text_; size_t pos_=0;
+  bool allowNulValues_=false;
   void ws() { while (pos_<text_.size() && (text_[pos_]==' ' || text_[pos_]=='\t' || text_[pos_]=='\r' || text_[pos_]=='\n')) pos_++; }
   bool consume(char c) { ws(); if (pos_>=text_.size() || text_[pos_]!=c) return false; pos_++; return true; }
   bool hex4(uint32_t& out) {
@@ -55,11 +56,11 @@ class StrictJson {
     else if(cp<65536) { out.push_back(char(0xe0|(cp>>12))); out.push_back(char(0x80|((cp>>6)&63))); out.push_back(char(0x80|(cp&63))); }
     else { out.push_back(char(0xf0|(cp>>18))); out.push_back(char(0x80|((cp>>12)&63))); out.push_back(char(0x80|((cp>>6)&63))); out.push_back(char(0x80|(cp&63))); }
   }
-  bool string(std::string& decoded) {
+  bool string(std::string& decoded,bool allowNul=false) {
     if (!consume('"')) return false;
     while (pos_<text_.size()) {
       const uint8_t c=uint8_t(text_[pos_++]);
-      if(c=='"') return validUtf8(decoded) && decoded.find('\0')==std::string::npos;
+      if(c=='"') return validUtf8(decoded) && (allowNul || decoded.find('\0')==std::string::npos);
       if(c<32) return false;
       if(c!='\\') { decoded.push_back(char(c)); continue; }
       if(pos_==text_.size()) return false;
@@ -90,7 +91,7 @@ class StrictJson {
     if(depth>16) return false;
     ws(); if(pos_>=text_.size()) return false;
     const char c=text_[pos_];
-    if(c=='"') { std::string decoded; return string(decoded); }
+    if(c=='"') { std::string decoded; return string(decoded,allowNulValues_); }
     if(c=='{') {
       pos_++; ws(); if(pos_<text_.size() && text_[pos_]=='}') { pos_++; return true; }
       std::vector<std::string> keys;
@@ -106,7 +107,7 @@ class StrictJson {
     return number();
   }
 public:
-  explicit StrictJson(const std::string& text):text_(text) {}
+  explicit StrictJson(const std::string& text,bool allowNulValues=false):text_(text),allowNulValues_(allowNulValues) {}
   bool valid() { if(text_.size()>kLogicalLimit-4 || !validUtf8(text_)) return false; if(!value(0)) return false; ws(); return pos_==text_.size(); }
 };
 

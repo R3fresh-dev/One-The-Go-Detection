@@ -15,6 +15,12 @@ def initialize(cloud=False,establish_new=False):
     s=settings(); s3=client('s3'); sqs=client('sqs')
     if cloud != (s.environment in ('qa','prod')):
         raise RuntimeError('Explicit cloud verification must match the fixed environment')
+    # This must precede even bucket creation: a retained SQL database cannot
+    # adopt a fresh emulator journal after its independent evidence is lost.
+    from otgd.db import engine
+    from otgd.journal_continuity import preflight_bootstrap
+    with engine().connect() as connection:
+        retained = preflight_bootstrap(connection, s, s3)
     for name in [s.artifact_bucket,s.export_bucket,s.journal_bucket]:
         try: s3.head_bucket(Bucket=name)
         except ClientError as e:
@@ -41,7 +47,7 @@ def initialize(cloud=False,establish_new=False):
         if established.get('environment')!=s.environment or established.get('minimum_retention_days')!=90: raise RuntimeError('Journal continuity configuration mismatch')
     except ClientError as e:
         if e.response['ResponseMetadata']['HTTPStatusCode']!=404: raise
-        if cloud and not establish_new: raise RuntimeError('Missing journal continuity evidence; only a confirmed empty first deployment may establish a new journal')
+        if retained or (cloud and not establish_new): raise RuntimeError('Missing journal continuity evidence; only a confirmed empty first deployment may establish a new journal')
         established={'schema_version':'1.0.0','environment':s.environment,'established_at':datetime.now(timezone.utc).isoformat(),'minimum_retention_days':90,'maximum_recovery_age_days':35}
         raw=canonical(established); version=put_versioned(s.journal_bucket,key,raw,conditional=True)
         if versioned_read(s.journal_bucket,key,version,8192)!=raw: raise RuntimeError('Journal establishment verification failed')

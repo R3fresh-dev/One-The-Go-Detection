@@ -9,10 +9,11 @@ from sqlalchemy import select
 
 from .canonical import canonical, digest
 from .config import ROOT, settings
-from .db import Check, Record, Registry, SystemState, iso, now, uid
+from .db import Check, Record, Registry, RegistryVersion, SystemState, iso, now, uid
 from .errors import Problem
 
 sys.path.insert(0, str(ROOT / "tools"))
+from spec_validation import validate_manifest as validate_manifest
 from spec_validation import validate_measurement, validate_schema, validate_session
 
 NOTICE = "This application records measurements and research practice. Cannabinoid detection, pulse, pupil appearance, and reaction performance do not establish current intoxication. Clinical inference is unavailable. Do not use these results to decide whether to drive. Guest demonstration records remain on this device. Account uploads require your explicit action. Exported copies already shared cannot be recalled. You can review, export, and request deletion of your account data."
@@ -84,11 +85,18 @@ def require_draft(check):
 
 
 def registry(db, kind, id):
+    from .operator_governance import authority_lock, released_version
+
+    authority_lock(db)
     value = db.scalar(
         select(Registry).where(Registry.id == kind + ":" + id)
         .with_for_update(read=True).execution_options(populate_existing=True)
     )
     if not value or not value.active or value.kind != kind:
+        raise Problem(403, "CAPABILITY_DENIED")
+    if db.scalar(select(RegistryVersion.id).where(RegistryVersion.registry_key == value.id).limit(1)):
+        released_version(db, kind, id)
+    elif value.body.get("expires_at") is not None and value.body["expires_at"] <= now():
         raise Problem(403, "CAPABILITY_DENIED")
     return value.body
 
@@ -97,11 +105,14 @@ def qualification(
     db, account, check, channel, configuration_id=None, configuration_hash=None
 ):
     recovery = db.get(SystemState, "recovery")
-    if recovery and recovery.body.get("scopes_suspended", True):
-        raise Problem(403, "RECOVERED_SCOPE_SUSPENDED")
+    if recovery:
+        from .recovery_scopes import require_study_scope
+        require_study_scope(db,check.study_id,account)
     if not check.study_id:
         raise Problem(403, "QUALIFIED_CHANNEL_UNAVAILABLE")
     study = registry(db, "study", check.study_id)
+    if study.get("protocol_id") is not None and check.protocol_id != study["protocol_id"]:
+        raise Problem(403, "CONFIGURATION_MISMATCH")
     consent = record(db, account, "consent", check.study_id)
     if (
         not consent
@@ -139,6 +150,9 @@ def qualification(
         raise Problem(403, "QUALIFICATION_EVIDENCE_UNAVAILABLE")
     if configuration_hash is not None and config.get("sha256") != configuration_hash:
         raise Problem(403, "CONFIGURATION_MISMATCH")
+    if config.get("schema_version") == "1.0.0":
+        from .operator_governance import validate_dependencies
+        validate_dependencies(db, "configuration", config)
     return config
 
 
@@ -204,6 +218,7 @@ def validate_component(attempt):
             "storage_handling_events",
         },
         "eyes": {
+            "native_result",
             "camera_id",
             "geometry_id",
             "illumination_id",
@@ -311,6 +326,10 @@ def validate_component(attempt):
             or p["ended_at"] != attempt["ended_at"]
         ):
             raise Problem(422, "PROJECTION_MISMATCH")
+        if (component == "eyes" and attempt["status"] in ("invalid", "canceled")
+            and metadata.get("native_result") is None
+            and any(p[key] is not None for key in ("baseline_diameter_mm", "relative_constriction", "latency_ms"))):
+            raise Problem(422, "INVALID_OPTICAL_FEATURES")
         if component == "task" and p["task_id"] != attempt["record_id"]:
             raise Problem(422, "PROJECTION_MISMATCH")
         if (
@@ -510,6 +529,23 @@ def verify_evidence(db, account, check):
             raise Problem(422, "PROJECTION_MISMATCH")
         body = item.body
         if body["status"] == "valid" and body["source"] != "simulated":
+            native_optical = False
+            if check.mode != "synthetic":
+                from .operator_governance import capture_configuration, started_capture, validate_optical_attempt, validate_reader_projection
+                approved = capture_configuration(db, account, check,
+                    "ecg" if component == "cardiac" and expected.get("modality") == "ecg" else component,
+                    body["configuration_id"], body["configuration_hash"])
+                if body["source"] != "reference_lab":
+                    authorization = started_capture(db, account, check, body, approved)
+                    if component == "eyes":
+                        validate_optical_attempt(db, account, check, body, approved, authorization)
+                        native_optical = (body["source"] == "prototype_sensor"
+                            and approved["software_adapter_id"] == "optical_roi_v1"
+                            and approved.get("device_id") is None)
+                    if approved["software_adapter_id"] == "otgd_signed_reader_v1":
+                        validate_reader_projection(db, approved, body["component_metadata"]["projection"])
+                if component == "task" and body["component_metadata"].get("native_result", {}).get("timing", {}).get("deviceModel") not in approved["supported_phone_models"]:
+                    raise Problem(403, "PHONE_CONFIGURATION_UNAVAILABLE")
             if (
                 component == "task"
                 and body["source"] == "prototype_sensor"
@@ -517,6 +553,11 @@ def verify_evidence(db, account, check):
             ):
                 if not body["component_metadata"].get("native_result"):
                     raise Problem(422, "NATIVE_EVIDENCE_REQUIRED")
+            elif native_optical:
+                # The phone camera has no peripheral-reader key. Its complete
+                # ledger and current owned online start were checked above;
+                # physical/clinical qualification remains a separate model gate.
+                pass
             else:
                 qualification(
                     db,
@@ -606,6 +647,10 @@ def measurement_result(check):
 def safe_result(value):
     if value is None:
         return None
+    if value.get("schema_version") == "1.1.0":
+        from .model_engine import validate_result
+
+        return validate_result(value)
     if value.get("state") == "research_estimate":
         raise Problem(422, "UNSUPPORTED_RESEARCH_RESULT")
     validate_schema(value, "result.schema.json")

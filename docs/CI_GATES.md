@@ -6,14 +6,14 @@ The workflow calls [platform.yml](../.github/workflows/platform.yml) and [native
 
 | Requirement | Executed check |
 |---|---|
-| Unit coverage strictly above 80% | Every `otgd` Python module and the shared scientific `spec_validation` module, plus every executable mobile `src/**/*.ts` business module, including unloaded native adapters. The Python and mobile inventories must independently exceed 80%; rounded percentages cannot satisfy the boundary. Infrastructure operational unit tests also run. |
-| ATDD | Playwright journeys against a fresh production export of `apps/mobile`, at phone and desktop sizes. |
-| Components | Actual browser DOM interactions, accessibility and confirmation/privacy behavior, separately selected from the ATDD file. |
+| Unit coverage strictly above 80% | Every `otgd` Python module, the shared scientific `spec_validation` module and executable `tools/model_evaluation.py` training/evaluation source, plus every executable mobile `src/**/*.ts` business module, including unloaded native adapters. The Python and mobile inventories must independently exceed 80%; rounded percentages cannot satisfy the boundary. Infrastructure operational unit tests also run. |
+| ATDD | Playwright journeys against a fresh production export of `apps/mobile`, at phone and desktop sizes, plus a separately built hosted-preview export proving its guest-only boundary and reload behavior. |
+| Components | Actual browser DOM interactions, accessibility, confirmation/privacy behavior and optional raw-recording screens, separately selected from the ATDD files. |
 | Performance | Forty signed workflows across twenty fictional identities against the running API, PostgreSQL, S3/SQS and worker. All 400 measured writes must succeed; p95 must be below 1,000 ms and p99 below 2,000 ms; each queued result has a fifteen-second deadline. |
 | Live dependencies | The complete API suite against disposable PostgreSQL 16, including concurrency cases, followed by repeat migrations and runtime-role privilege denial checks. |
 | Docker health | All five long-running services healthy; resource initialization and migration exited zero. Worker health requires recent progress on every operational channel. |
-| LocalStack APIs | Actual versioned/conditional S3 and SQS probes, repeat bootstrap, PKCE sign-in, immutable evidence/finalize replay, queued result, authenticated export and deletion/ownership denial requests. |
-| Additional required checks | Contracts/OpenSpec/schema drift, CDK assertions, Android module tests and both APK builds, Swift golden tests and complete iOS simulator build, actual Nano ESP32 firmware compile. |
+| LocalStack APIs | Actual versioned/conditional S3 and SQS probes, repeat bootstrap, PKCE sign-in, immutable evidence/finalize replay, queued result, authenticated export and deletion/ownership denial requests; exact raw-version erasure, delete-marker limitations, unchanged neighbors and late-arrival reconciliation. |
+| Additional required checks | Contracts/OpenSpec/schema drift including all canonical follow-up changes, CDK assertions, Android module tests and both APK builds, Swift golden tests and complete iOS simulator build, portable signed-reader tests, actual Nano ESP32 synthetic/signed reader firmware compiles and the actual security-enabled ESP-IDF reader branch. The latter uses a fictional ephemeral boot-signing key and performs no hardware provisioning. |
 
 Mobile TSX views are covered by the separate browser component/journey checks; the TypeScript unit percentage measures the explicitly reported business-module inventory. Native, firmware and infrastructure coverage percentages are not inferred from Python or TypeScript coverage. Software checks do not establish AWS network/IAM/KMS behavior, physical-phone timing, qualified sensing or clinical model validity.
 

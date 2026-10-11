@@ -6,8 +6,11 @@ import type {
   NoticeRef,
   PrivacyJob,
 } from "../core/types";
+import { fromBase64 } from "../device/protocol";
+import { parseRawExportManifest } from "../core/rawExport";
 import {
   digestText,
+  digestBytes,
   IntegrityError,
   knownKeys,
   parseBoundedJson,
@@ -86,6 +89,7 @@ export class ApiClient {
       code: "ready",
       message: "Synchronization is available.",
     }),
+    private readonly networkAllowed: () => boolean = () => true,
   ) {}
   cancelAll(): void {
     for (const controller of this.pending)
@@ -107,6 +111,11 @@ export class ApiClient {
       signal?: AbortSignal;
     } = {},
   ): Promise<ApiResponse<T>> {
+    if (!this.networkAllowed())
+      throw new IntegrityError(
+        "HOSTED_PREVIEW_LOCAL_ONLY",
+        "This fictional preview does not connect to account services or upload data.",
+      );
     if (!path.startsWith("/v1/") && !path.startsWith("/health/"))
       throw new IntegrityError("INVALID_ROUTE", "Unsupported service route.");
     const method = options.method ?? "GET";
@@ -243,11 +252,164 @@ export class ApiClient {
       this.pending.delete(controller);
     }
   }
+  async putArtifact(
+    ticket: unknown,
+    bytes: Uint8Array,
+    sha256: string,
+    mediaType: string,
+  ): Promise<number> {
+    if (!this.networkAllowed())
+      throw new IntegrityError(
+        "HOSTED_PREVIEW_LOCAL_ONLY",
+        "Raw upload is unavailable in the fictional preview.",
+      );
+    const readiness = this.ordinaryWritesAllowed();
+    if (!readiness.allowed)
+      throw new IntegrityError(readiness.code, readiness.message);
+    const t = requireObject(ticket),
+      headers = requireObject(t.required_headers);
+    knownKeys(t, [
+      "artifact_id",
+      "method",
+      "upload_url",
+      "required_headers",
+      "expires_in_seconds",
+      "expires_at",
+    ]);
+    knownKeys(headers, [
+      "Content-Length",
+      "Content-Type",
+      "x-amz-checksum-sha256",
+      "If-None-Match",
+      "x-amz-server-side-encryption",
+      "x-amz-server-side-encryption-aws-kms-key-id",
+    ]);
+    let url: URL;
+    try {
+      url = new URL(String(t.upload_url));
+    } catch {
+      throw new IntegrityError(
+        "RAW_TICKET_INVALID",
+        "The raw upload destination is unsupported.",
+      );
+    }
+    const host = url.hostname.replace(/^\[|\]$/g, ""),
+      local =
+        /^(localhost|127(?:\.\d{1,3}){3}|10(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|172\.(1[6-9]|2\d|3[01])(?:\.\d{1,3}){2}|::1|[fd][cd][0-9a-f]*:.*|localstack)$/i.test(
+          host,
+        );
+    const checksum =
+      typeof headers["x-amz-checksum-sha256"] === "string"
+        ? headers["x-amz-checksum-sha256"]
+        : "";
+    let checksumBytes: Uint8Array;
+    try {
+      checksumBytes = fromBase64(checksum, 32);
+    } catch {
+      throw new IntegrityError(
+        "RAW_TICKET_INVALID",
+        "The raw upload checksum is malformed.",
+      );
+    }
+    if (
+      !/^[a-f0-9]{64}$/.test(sha256) ||
+      Object.values(headers).some((value) => typeof value !== "string") ||
+      digestBytes(bytes) !== sha256 ||
+      t.method !== "PUT" ||
+      url.href.length > 8192 ||
+      url.username ||
+      url.password ||
+      url.hash ||
+      (url.protocol !== "https:" &&
+        !(
+          this.origin.startsWith("http:") &&
+          url.protocol === "http:" &&
+          local
+        )) ||
+      String(headers["Content-Length"]) !== String(bytes.length) ||
+      headers["Content-Type"] !== mediaType ||
+      headers["If-None-Match"] !== "*" ||
+      !["AES256", "aws:kms"].includes(
+        String(headers["x-amz-server-side-encryption"]),
+      ) ||
+      [...checksumBytes]
+        .map((n) => n.toString(16).padStart(2, "0"))
+        .join("") !== sha256 ||
+      typeof t.expires_at !== "string" ||
+      !Number.isFinite(Date.parse(t.expires_at)) ||
+      Date.parse(t.expires_at) > Date.now() + 301_000
+    )
+      throw new IntegrityError(
+        "RAW_TICKET_INVALID",
+        "The exact raw size, checksum, encryption headers or ticket expiry differ from this recording.",
+      );
+    if (Date.parse(String(t.expires_at)) <= Date.now())
+      throw new ApiError(
+        410,
+        "RAW_TICKET_EXPIRED",
+        "The acknowledged ticket expired. Retry keeps unknown outcomes intact and requests a new eligible ticket.",
+        true,
+      );
+    const controller = new AbortController();
+    this.pending.add(controller);
+    const timeout = setTimeout(
+      () =>
+        controller.abort(
+          new ApiError(
+            0,
+            "RAW_UPLOAD_TIMEOUT",
+            "Raw upload did not finish within 60 seconds. Its encrypted local copy remains available.",
+            true,
+          ),
+        ),
+      60_000,
+    );
+    try {
+      const response = await withAbort(controller.signal, () =>
+        fetch(url.href, {
+          method: "PUT",
+          headers: headers as Record<string, string>,
+          body: bytes as unknown as BodyInit,
+          signal: controller.signal,
+          redirect: "error",
+          credentials: "omit",
+        }),
+      );
+      if (!response.ok && response.status !== 412)
+        throw new ApiError(
+          response.status,
+          Date.parse(String(t.expires_at)) <= Date.now()
+            ? "RAW_TICKET_EXPIRED"
+            : "RAW_UPLOAD_FAILED",
+          "Raw upload was not accepted. Its encrypted local copy remains available.",
+          response.status >= 500 ||
+            Date.parse(String(t.expires_at)) <= Date.now(),
+        );
+      return response.status;
+    } catch (error) {
+      if (error instanceof ApiError || error instanceof IntegrityError)
+        throw error;
+      throw new ApiError(
+        0,
+        "NETWORK_UNAVAILABLE",
+        "The raw object store could not be reached. Its encrypted local copy remains available.",
+        true,
+      );
+    } finally {
+      clearTimeout(timeout);
+      this.pending.delete(controller);
+    }
+  }
   async download(
     path: string,
     generation: number,
     expectedBytes?: number,
   ): Promise<Uint8Array> {
+    if (!this.networkAllowed())
+      throw new IntegrityError(
+        "HOSTED_PREVIEW_LOCAL_ONLY",
+        "Cloud downloads are unavailable in the fictional guest preview.",
+      );
     if (!/^\/v1\/privacy\/jobs\/[0-9a-f-]+\/download$/i.test(path))
       throw new IntegrityError(
         "DOWNLOAD_ORIGIN",
@@ -447,7 +609,18 @@ export function parseAppConfig(
     "scientific",
     "capture_evidence",
     "native_task",
+    "research_result",
   ]);
+  if (
+    contracts.research_result !== undefined &&
+    (!Array.isArray(contracts.research_result) ||
+      !contracts.research_result.length ||
+      contracts.research_result.some((version) => version !== "1.1.0"))
+  )
+    throw new IntegrityError(
+      "CONTRACT_READINESS_INVALID",
+      "The advertised research result format is unsupported. Format support does not grant model authority.",
+    );
   for (const family of [
     "application",
     "scientific",
@@ -541,7 +714,8 @@ export function isOrdinaryWrite(path: string, method: string): boolean {
     path === "/v1/me/acknowledgments" ||
     path === "/v1/me/data-generation/acknowledgments" ||
     path === "/v1/auth/logout" ||
-    /^\/v1\/studies\/[^/]+\/withdrawals$/.test(path)
+    (method === "DELETE" && /^\/v1\/device-bindings\/[^/]+$/.test(path)) ||
+    /^\/v1\/studies\/[^/]+\/(withdrawals|raw-recording-revocations)$/.test(path)
   );
 }
 export function parseCapabilities(value: unknown): Capabilities {
@@ -554,12 +728,20 @@ export function parseCapabilities(value: unknown): Capabilities {
     "server_time",
     "notice",
     "inference_available",
+    "model_execution_supported",
+    "model_reason_codes",
     "channels",
     "studies",
     "auth_time",
   ]);
   if (
-    v.inference_available !== false ||
+    typeof v.inference_available !== "boolean" ||
+    (v.inference_available && v.model_execution_supported !== true) ||
+    (v.model_execution_supported !== undefined &&
+      typeof v.model_execution_supported !== "boolean") ||
+    (v.model_reason_codes !== undefined &&
+      (!Array.isArray(v.model_reason_codes) ||
+        v.model_reason_codes.some((reason) => typeof reason !== "string"))) ||
     !["active", "deleting", "awaiting_generation_ack", "deleted"].includes(
       String(v.account_state),
     )
@@ -574,6 +756,100 @@ export function parseCapabilities(value: unknown): Capabilities {
   const channels = requireObject(v.channels);
   for (const c of Object.values(channels)) {
     const item = requireObject(c);
+    knownKeys(item, [
+      "available",
+      "reason_codes",
+      "authorization_available",
+      "software_available",
+      "configurations",
+      "configuration_id",
+      "configuration_sha256",
+    ]);
+    if (item.configurations !== undefined) {
+      if (
+        !Array.isArray(item.configurations) ||
+        item.configurations.length > 64
+      )
+        throw new IntegrityError(
+          "CAPABILITY_UNSUPPORTED",
+          "Capture configurations exceed their bounded scope.",
+        );
+      for (const value of item.configurations) {
+        const config = requireObject(value);
+        knownKeys(config, [
+          "study_id",
+          "protocol_id",
+          "configuration_id",
+          "configuration_hash",
+          "configuration_version",
+          "submitted_sha256",
+          "expires_at",
+          "supported_phone_models",
+          "supported_os_versions",
+          "supported_native_builds",
+          "software_adapter_id",
+        ]);
+        for (const key of [
+          "study_id",
+          "protocol_id",
+          "configuration_id",
+          "configuration_version",
+          "software_adapter_id",
+        ])
+          requiredString(config[key]);
+        for (const key of ["configuration_hash", "submitted_sha256"])
+          if (!/^[a-f0-9]{64}$/.test(String(config[key])))
+            throw new IntegrityError(
+              "CAPABILITY_UNSUPPORTED",
+              "An approved capture digest is invalid.",
+            );
+        for (const list of [
+          "supported_phone_models",
+          "supported_os_versions",
+          "supported_native_builds",
+        ]) {
+          if (
+            config[list] !== undefined &&
+            (!Array.isArray(config[list]) ||
+              config[list].length > 128 ||
+              config[list].some(
+                (value) =>
+                  typeof value !== "string" || !value || value.length > 256,
+              ))
+          )
+            throw new IntegrityError(
+              "CAPABILITY_UNSUPPORTED",
+              "Approved runtime compatibility scope is invalid.",
+            );
+        }
+        if (
+          typeof config.expires_at !== "string" ||
+          !config.expires_at.endsWith("Z") ||
+          !Number.isFinite(Date.parse(config.expires_at)) ||
+          !Array.isArray(config.supported_phone_models) ||
+          config.supported_phone_models.some(
+            (phone) => typeof phone !== "string",
+          )
+        )
+          throw new IntegrityError(
+            "CAPABILITY_UNSUPPORTED",
+            "Approved phone scope or expiry is invalid.",
+          );
+      }
+    }
+    if (
+      (item.authorization_available !== undefined &&
+        typeof item.authorization_available !== "boolean") ||
+      (item.software_available !== undefined &&
+        typeof item.software_available !== "boolean") ||
+      (item.available === true &&
+        (item.software_available === false ||
+          item.authorization_available === false))
+    )
+      throw new IntegrityError(
+        "CAPABILITY_UNSUPPORTED",
+        "Capture availability contradicts its software or authorization scope.",
+      );
     if (
       typeof item.available !== "boolean" ||
       !Array.isArray(item.reason_codes)
@@ -645,6 +921,7 @@ export function parsePrivacyJob(value: unknown): PrivacyJob {
     "sha256",
     "size_bytes",
     "completed_steps",
+    "raw_export",
   ]);
   const state = v.state ?? v.status;
   if (
@@ -656,9 +933,10 @@ export function parsePrivacyJob(value: unknown): PrivacyJob {
       "completed",
       "failed",
       "expired",
+      "revoked",
       "partially_retained",
     ].includes(String(state)) ||
-    (state === "expired" && v.kind !== "export") ||
+    (["expired", "revoked"].includes(String(state)) && v.kind !== "export") ||
     (state === "partially_retained" && v.kind !== "deletion")
   )
     throw new IntegrityError(
@@ -666,6 +944,14 @@ export function parsePrivacyJob(value: unknown): PrivacyJob {
       "This privacy job state is unsupported. Refresh status or use the request reference for support.",
     );
   requiredString(v.job_id);
+  if (v.raw_export !== undefined) {
+    if (v.kind !== "export" || ["expired", "revoked"].includes(String(state)))
+      throw new IntegrityError(
+        "PRIVACY_JOB_UNSUPPORTED",
+        "A deletion or unavailable export receipt cannot contain export authority.",
+      );
+    parseRawExportManifest(v.raw_export);
+  }
   safeInteger(v.data_generation, 1);
   requiredString(v.accepted_at);
   if (

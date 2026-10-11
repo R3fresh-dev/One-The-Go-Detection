@@ -1,17 +1,17 @@
-import base64, hashlib, io, time, zipfile
+import hashlib
+import io
+import zipfile
 from copy import deepcopy
 from uuid import uuid4
 import pytest
-from sqlalchemy import select
-from otgd.canonical import canonical, digest, strict_loads
-from otgd.db import Account, Check, Dedup, Job, Record, SystemState, factory, iso, now
-from otgd.domain import NOTICE_SHA
+from otgd.canonical import digest, strict_loads
+from otgd.db import Account, Check, Job, SystemState, factory, iso, now
 from otgd.dto import Alcohol
 from otgd.errors import Problem
 from otgd import storage
 from otgd.worker import run_job, claim_job, commit_output, LeaseLost
-from .conftest import headers, token
-from .helpers import upload, session_fixture
+from .conftest import headers
+from .helpers import upload
 
 
 class MockVersionedStorage:
@@ -55,7 +55,8 @@ class MockVersionedStorage:
         data = self.read(
             kwargs["Bucket"], kwargs["Key"], kwargs["VersionId"], 64 * 1024 * 1024
         )
-        return {"ContentLength": len(data), "Body": io.BytesIO(data)}
+        return {"ContentLength": len(data), "Body": io.BytesIO(data),
+                "VersionId": kwargs["VersionId"], "ContentType": "application/zip"}
 
 
 @pytest.fixture
@@ -82,6 +83,8 @@ def finalize(client, s, m):
 def test_health_and_compile_time_inference(client):
     assert client.get("/health/ready").json()["status"] == "ready"
     assert client.get("/v1/app-config").json()["inference_available"] is False
+    assert client.get("/v1/app-config").json()["contract_versions"]["research_result"] == ["1.1.0"]
+    assert client.get("/v1/app-config").json()["contract_versions"]["scientific"] == ["0.1.0"]
 
 
 @pytest.mark.parametrize(
@@ -111,7 +114,7 @@ def test_notice_exact_text_hash(client):
 
 
 def test_no_write_without_current_notice(client):
-    a = client.get("/v1/me/capabilities", headers=headers()).json()
+    client.get("/v1/me/capabilities", headers=headers())
     r = client.post(
         "/v1/sessions",
         headers=headers(),

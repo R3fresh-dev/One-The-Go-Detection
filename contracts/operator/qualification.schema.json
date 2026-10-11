@@ -1,0 +1,116 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "channel": {
+      "enum": [
+        "saliva",
+        "eyes",
+        "cardiac",
+        "ecg",
+        "task",
+        "alcohol"
+      ],
+      "title": "Channel",
+      "type": "string"
+    },
+    "configuration_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Configuration Sha256",
+      "type": "string"
+    },
+    "document_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Document Sha256",
+      "type": "string"
+    },
+    "reviewed_by": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Reviewed By",
+      "type": "string"
+    },
+    "approval_status": {
+      "const": "approved",
+      "title": "Approval Status",
+      "type": "string"
+    },
+    "purpose": {
+      "enum": [
+        "measurement_collection",
+        "qualified_measurement"
+      ],
+      "title": "Purpose",
+      "type": "string"
+    },
+    "configuration_registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Configuration Registry Id",
+      "type": "string"
+    },
+    "configuration_version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Configuration Version",
+      "type": "string"
+    },
+    "configuration_submitted_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Configuration Submitted Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "registry_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "channel",
+    "configuration_sha256",
+    "document_sha256",
+    "reviewed_by",
+    "approval_status",
+    "purpose",
+    "configuration_registry_id",
+    "configuration_version",
+    "configuration_submitted_sha256"
+  ],
+  "title": "Qualification",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/qualification.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

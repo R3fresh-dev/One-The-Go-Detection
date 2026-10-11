@@ -1,10 +1,24 @@
 # One The Go — Android and iOS application
 
-An Expo 57 / React Native application for the reviewed **measurement-only** platform. The application implements guest and account workspaces, optional profile context, a guided check, the native reaction task, synthetic reader transport, immutable evidence, explicit uploads, history, exact-scope export, privacy jobs, study consent/withdrawal, and accessibility/settings flows.
+An Expo 57 / React Native research measurement application. It implements guest and account workspaces, optional profile context, approved study acquisition, native camera ROI and reaction modules, a device-signed reader dialect, immutable evidence, explicit uploads, history, exact-scope export, privacy jobs, study consent/withdrawal, and accessibility/settings flows. Installed software is separate from scientific and device qualification.
 
-**This release cannot classify cannabis intoxication, calculate a metabolic rate, estimate a clearance time, or tell a person that they are safe to drive.** Qualified human saliva, pupil, PPG, ECG and alcohol measurement configurations are unavailable. The native reaction task records real taps as uncalibrated practice. Fictional sensor examples are labeled individually; account engineering fixtures use an entirely fictional, separate profile. These restrictions are enforced in the application and API, rather than being a selectable model setting.
+**The app does not provide driving clearance, a metabolic rate, or a clearance-time estimate.** No approved human configuration, participant study or active model is bundled. Ordinary and guest checks remain measurements. A separately admitted version 1.1 research result is accepted only with its immutable context, evidence, model authority and named historical endpoint; unapproved and simulated measurements cannot become an estimate. The native reaction practice remains uncalibrated. Fictional examples and account engineering fixtures carry their own provenance.
 
 Read [verification evidence and outstanding device checks](VERIFICATION.md), the [reviewed requirements](../../openspec/changes/production-mobile-platform/proposal.md), [shared contracts](../../openspec/changes/production-mobile-platform/shared-contracts.md), and [platform contract](../../openspec/changes/production-mobile-platform/platform-contract.md). The backend and deployment guides are [services/api](../../services/api/README.md), [infra](../../infra/README.md), and [deploy](../../deploy/README.md).
+
+## Standalone fictional browser and hosted native preview
+
+Run `npm run export:preview` to build `dist-preview/`, then serve that directory with `OTGD_WEB_DIST=dist-preview npm run serve:web`. The static files can be hosted by an ordinary static website provider without AWS or an OAuth account. This build is restricted to local fictional guest use: no sign-in, network calls, camera/Bluetooth permissions, native reaction acquisition, raw recording or uploads. Browser records exist only in memory and disappear when the page reloads. Never enter real participant information.
+
+Both web export commands clear Metro's transform cache so compiled environment, service origins and the hosted-preview guard are rebuilt rather than inherited from a previous environment's bundle.
+
+For native iOS/Android in a browser, read [HOSTED_PREVIEW.md](HOSTED_PREVIEW.md). Successful reviewed hosted workflow provenance and the actual package preview markers are required; changing environment variables cannot relabel an older ordinary APK or simulator app. Scientific or hardware approval is not established by a simulator.
+
+Separate raw recording choices and retention are specified in the [optional-purpose customer flow](../../openspec/changes/optional-raw-recording-lifecycle/specs/raw-recording-customer-flow/spec.md). The account UI verifies the exact policy and notice and displays immutable receipts independently from pending physical cleanup.
+
+Optional native ROI/ECG recording starts off for each capture. A fresh online start must pin the separate consent receipt and approved codec. The app stores the bounded handoff and metadata together in SQLCipher, releases native memory, and never queues raw bytes merely because a check was saved. Select each retained file explicitly before Upload check; files upload before server finalization. Ticket retries preserve unknown request outcomes, and later acknowledged expired tickets receive a new bounded renewal identity. Revocation stops acquisition immediately and blocks dependent uploads. Expired and unindexed local bytes are purged before an unlocked workspace is exposed and on foreground maintenance; a stopped app cannot execute deletion at an exact wall-clock deadline, and reads are denied immediately when the deadline has passed.
+
+Cloud exports keep raw data excluded by default. An independently approved export purpose, exact notice acknowledgment and explicit artifact selection are required to add eligible recordings. The downloaded ZIP must match the owned job receipt, selected study/checks, exact versioned source digests and bounded binary paths. Export permission is separate from permission to record or upload. Shared recipient copies cannot be recalled.
 
 ## Prerequisites and installation
 

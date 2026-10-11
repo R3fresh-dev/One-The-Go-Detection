@@ -1,0 +1,283 @@
+{
+  "$defs": {
+    "AttestationEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "environment": {
+          "enum": [
+            "local",
+            "qa",
+            "prod",
+            "test"
+          ],
+          "title": "Environment",
+          "type": "string"
+        },
+        "owner_ref": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Owner Ref",
+          "type": "string"
+        },
+        "data_generation": {
+          "exclusiveMinimum": 0,
+          "title": "Data Generation",
+          "type": "integer"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "authorization_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Authorization Id",
+          "type": "string"
+        },
+        "binding_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Binding Id",
+          "type": "string"
+        },
+        "device_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Device Id",
+          "type": "string"
+        },
+        "key_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Key Id",
+          "type": "string"
+        },
+        "boot_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "configuration_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Hash",
+          "type": "string"
+        },
+        "payload_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Payload Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "environment",
+        "owner_ref",
+        "data_generation",
+        "session_id",
+        "attempt_id",
+        "authorization_id",
+        "binding_id",
+        "device_id",
+        "key_id",
+        "boot_id",
+        "sequence",
+        "configuration_hash",
+        "payload_sha256"
+      ],
+      "title": "AttestationEnvelope",
+      "type": "object"
+    },
+    "Chunk": {
+      "additionalProperties": false,
+      "properties": {
+        "envelope": {
+          "$ref": "#/$defs/AttestationEnvelope"
+        },
+        "signature": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Signature",
+          "type": "string"
+        },
+        "normalized_payload": {
+          "$ref": "#/$defs/Samples"
+        }
+      },
+      "required": [
+        "envelope",
+        "signature",
+        "normalized_payload"
+      ],
+      "title": "Chunk",
+      "type": "object"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "monotonic_us": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Monotonic Us",
+          "type": "integer"
+        },
+        "value": {
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "monotonic_us",
+        "value"
+      ],
+      "title": "Observation",
+      "type": "object"
+    },
+    "Samples": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "channel": {
+          "const": "ecg",
+          "title": "Channel",
+          "type": "string"
+        },
+        "first_sample_index": {
+          "maximum": 1024,
+          "minimum": 0,
+          "title": "First Sample Index",
+          "type": "integer"
+        },
+        "sample_rate_hz": {
+          "maximum": 1000,
+          "minimum": 20,
+          "title": "Sample Rate Hz",
+          "type": "integer"
+        },
+        "acquisition_started_monotonic_us": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Acquisition Started Monotonic Us",
+          "type": "integer"
+        },
+        "acquisition_ended_monotonic_us": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Acquisition Ended Monotonic Us",
+          "type": "integer"
+        },
+        "units": {
+          "const": "uV",
+          "title": "Units",
+          "type": "string"
+        },
+        "contact": {
+          "enum": [
+            "good",
+            "poor",
+            "lost",
+            "unknown"
+          ],
+          "title": "Contact",
+          "type": "string"
+        },
+        "dropped_before": {
+          "maximum": 1024,
+          "minimum": 0,
+          "title": "Dropped Before",
+          "type": "integer"
+        },
+        "samples": {
+          "items": {
+            "$ref": "#/$defs/Observation"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Samples",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "channel",
+        "first_sample_index",
+        "sample_rate_hz",
+        "acquisition_started_monotonic_us",
+        "acquisition_ended_monotonic_us",
+        "units",
+        "contact",
+        "dropped_before",
+        "samples"
+      ],
+      "title": "Samples",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attestation_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Attestation Id",
+      "type": "string"
+    },
+    "envelope": {
+      "$ref": "#/$defs/AttestationEnvelope"
+    },
+    "signature": {
+      "maxLength": 256,
+      "title": "Signature",
+      "type": "string"
+    },
+    "normalized_payload": {
+      "additionalProperties": true,
+      "title": "Normalized Payload",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sample_chunks": {
+      "items": {
+        "$ref": "#/$defs/Chunk"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Sample Chunks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "attestation_id",
+    "envelope",
+    "signature",
+    "normalized_payload",
+    "schema_version",
+    "sample_chunks"
+  ],
+  "title": "ECGRecording",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "After OTGD-ECG-SAMPLES-v1 newline magic, RFC 8785 canonical JSON. Device signatures, current owned accepted evidence and independent scope/bounds verification remain mandatory."
+}

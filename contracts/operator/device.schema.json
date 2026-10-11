@@ -1,0 +1,107 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "device_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Device Id",
+      "type": "string"
+    },
+    "key_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Key Id",
+      "type": "string"
+    },
+    "public_key_spki": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "title": "Public Key Spki",
+      "type": "string"
+    },
+    "hardware_revision": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Hardware Revision",
+      "type": "string"
+    },
+    "firmware_version": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Firmware Version",
+      "type": "string"
+    },
+    "approved_protocol_ids": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Approved Protocol Ids",
+      "type": "array"
+    },
+    "account_refs": {
+      "items": {
+        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+        "type": "string"
+      },
+      "maxItems": 1000,
+      "title": "Account Refs",
+      "type": "array"
+    }
+  },
+  "required": [
+    "registry_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "device_id",
+    "key_id",
+    "public_key_spki",
+    "hardware_revision",
+    "firmware_version",
+    "approved_protocol_ids",
+    "account_refs"
+  ],
+  "title": "Device",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/device.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

@@ -54,6 +54,7 @@ const fields = {
     "storage_handling_events",
   ],
   eyes: [
+    "native_result",
     "camera_id",
     "geometry_id",
     "illumination_id",

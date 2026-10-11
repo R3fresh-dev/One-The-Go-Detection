@@ -7,10 +7,31 @@
       "type": "string"
     },
     "device_boot_id": {
-      "maxLength": 256,
-      "minLength": 1,
-      "title": "Device Boot Id",
-      "type": "string"
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Device Boot Id"
+    },
+    "device_nonce": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Device Nonce"
     }
   },
   "required": [

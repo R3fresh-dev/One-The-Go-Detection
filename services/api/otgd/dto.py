@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .canonical import canonical
 
@@ -229,10 +229,41 @@ class ExportSelection(DTO):
         return self
 
 
+class RawExportScope(DTO):
+    authorization_id: Name
+    authorization_version: Name
+    authorization_sha256: SHA
+    export_notice_version: Name
+    export_notice_sha256: SHA
+    acknowledged_at: UTC
+    confirmed: Literal[True]
+    artifact_ids: Annotated[list[UUID], Field(min_length=1, max_length=128)]
+
+    @field_validator("confirmed", mode="before")
+    @classmethod
+    def explicit_confirmation(cls, value):
+        if value is not True:
+            raise ValueError("An explicit raw export confirmation is required")
+        return value
+
+    @model_validator(mode="after")
+    def unique(self):
+        if len(set(self.artifact_ids)) != len(self.artifact_ids):
+            raise ValueError("Duplicate raw artifact selection")
+        return self
+
+
 class ExportRequest(DTO):
     selection: ExportSelection
     format: Literal["json_zip"]
-    include_raw: Literal[False]
+    include_raw: bool
+    raw_scope: RawExportScope | None = None
+
+    @model_validator(mode="after")
+    def separate_raw_scope(self):
+        if self.include_raw != (self.raw_scope is not None):
+            raise ValueError("Raw inclusion requires its separate exact confirmed scope")
+        return self
 
 
 class DeleteRequest(Confirm):
@@ -248,6 +279,11 @@ class ArtifactRequest(DTO):
     sha256: SHA
     size_bytes: Annotated[int, Field(gt=0, le=64 * 1024 * 1024)]
     media_type: Literal["video/mp4", "application/octet-stream", "application/pdf"]
+    # Participant raw capture requires an immutable optional-purpose receipt
+    # and owned acquisition; administrative report uploads use their own route.
+    raw_consent_record_id: UUID | None = None
+    attempt_id: UUID | None = None
+    capture_started_at: UTC | None = None
 
 
 class CompleteArtifact(DTO):
@@ -273,11 +309,13 @@ class CaptureAuthorization(DTO):
     device_id: Name | None
     configuration_id: Name
     configuration_hash: SHA
+    raw_recording_kind: Literal["eye_video", "ecg_waveform"] | None = None
 
 
 class StartAuthorization(DTO):
     attempt_id: UUID
-    device_boot_id: Name
+    device_boot_id: Name | None
+    device_nonce: Name | None = None
 
 
 class AttestationEnvelope(DTO):

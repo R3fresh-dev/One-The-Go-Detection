@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import Mock
+from datetime import datetime, timezone, timedelta
 
 ROOT=Path(__file__).resolve().parents[2]
 spec=importlib.util.spec_from_file_location('maintenance_deployment',ROOT/'deploy/platform.py')
@@ -67,6 +68,20 @@ class MaintenanceTest(unittest.TestCase):
         with self.assertRaises(d.Gate):self.verify({**cfg,'recoveryRequired':False},out,receipt,aws,'restore')
         for point in (None,'2026-10-10T12:00:00','2099-10-10T12:00:00Z'):
             with self.assertRaises(d.Gate):self.verify(cfg,out,{**receipt,'backup_created_at':point},aws,'restore')
+
+    def test_activation_requires_fresh_exact_independent_admission_task(self):
+        cfg,out,receipt,task,definition,ecs,aws=fixture()
+        now=datetime.now(timezone.utc)
+        receipt.update(operation='verify-admission',finished_at=now.isoformat())
+        task['stoppedAt']=now
+        task['overrides']['containerOverrides'][0]['command']=['uv','run','--no-sync','python','-m','otgd.recovery_authority']
+        self.verify(cfg,out,receipt,aws,'verify-admission')
+        for stopped,finished in [(now-timedelta(minutes=16),now),(now,now-timedelta(minutes=2)),(now+timedelta(minutes=1),now),(now,now+timedelta(minutes=1))]:
+            task['stoppedAt']=stopped;changed={**receipt,'finished_at':finished.isoformat()}
+            with self.subTest(stopped=stopped,finished=finished),self.assertRaises(d.Gate):self.verify(cfg,out,changed,aws,'verify-admission')
+        task['stoppedAt']=now
+        task['overrides']['containerOverrides'][0]['command']=['python','-c','pass','otgd.recovery_authority']
+        with self.assertRaises(d.Gate):self.verify(cfg,out,receipt,aws,'verify-admission')
 
 
 if __name__=='__main__':unittest.main()

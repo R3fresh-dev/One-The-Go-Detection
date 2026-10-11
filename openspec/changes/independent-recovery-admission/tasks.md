@@ -1,0 +1,6 @@
+- [ ] Implement pinned establishment continuity and explicit legacy import.
+- [ ] Verify independent retained journal authority at API and worker boundaries.
+- [ ] Implement fresh three-principal per-study reapproval seals and consent.
+- [ ] Verify runtime denial of authority writes and exact retained seal reads.
+- [ ] Complete adversarial review and exact-revision mandatory gates.
+- [ ] Demonstrate actual AWS QA recovery and retention before production release.

@@ -101,7 +101,7 @@ def test_terminal_outbox_rows_cannot_starve_eligible_job(client, account, monkey
     assert sent == [eligible]
 
 
-def test_artifact_completion_cannot_resurrect_cleanup_claim(
+def test_unmanaged_expired_artifact_is_denied_before_storage_verification(
     client, account, monkeypatch
 ):
     snapshot, _, _ = upload(client, account)
@@ -126,10 +126,7 @@ def test_artifact_completion_cannot_resurrect_cleanup_claim(
         )
 
     def verify_then_cleanup(_artifact):
-        # The immutable object was observed before cleanup won the disposition lock.
-        with factory().begin() as other:
-            other.get(Artifact, artifact_id).state = "cleanup_pending"
-        return "observed-but-retired-version"
+        raise AssertionError("Unmanaged raw data must never reach storage verification")
 
     monkeypatch.setattr(storage, "verify_artifact", verify_then_cleanup)
     response = client.post(
@@ -137,7 +134,8 @@ def test_artifact_completion_cannot_resurrect_cleanup_claim(
         headers=headers(),
         json={"sha256": "a" * 64, "size_bytes": 12, "media_type": "application/pdf"},
     )
-    assert response.status_code == 410, response.text
+    assert response.status_code == 403, response.text
+    assert response.json()["code"] == "RAW_RETENTION_WINDOW_CLOSED"
     with factory()() as db:
         artifact = db.get(Artifact, artifact_id)
-        assert artifact.state == "cleanup_pending" and artifact.version_id is None
+        assert artifact.state == "quarantine" and artifact.version_id is None
