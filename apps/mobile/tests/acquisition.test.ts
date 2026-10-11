@@ -3,7 +3,10 @@ import assert from "node:assert/strict";
 import { randomUUID, generateKeyPairSync, sign } from "node:crypto";
 import rawFixture from "../testfixtures/backend-raw-recordings.json";
 import participantFixture from "../testfixtures/backend-participant-acquisition.json";
-import type { InstructionInput } from "../src/core/participantAcquisition";
+import {
+  validateInstructionInput,
+  type InstructionInput,
+} from "../src/core/participantAcquisition";
 import readerFixture from "../testfixtures/signed-reader-raw-ecg.json";
 import { readerRawRecording } from "../src/device/physicalRaw";
 import type {
@@ -435,19 +438,74 @@ async function approvedAccount(
 }
 
 function instruction(config: any): InstructionInput {
-  const p = config.participant_protocol;
+  const p = config.participant_protocol,
+    acknowledgedAt = new Date().toISOString();
   return {
     participant_protocol_sha256: config.participant_protocol_sha256,
-    acknowledged_at: new Date().toISOString(),
+    acknowledged_at: acknowledgedAt,
     confirmed: true,
     confirmations: p.required_confirmations.map((c: any) => c.id),
     setup_id: p.kind === "cardiac" ? p.permitted_setups[0].id : null,
-    rest_started_at: p.kind === "cardiac" ? new Date().toISOString() : null,
+    rest_started_at:
+      p.kind === "cardiac"
+        ? new Date(
+            Date.parse(acknowledgedAt) - p.rest_duration_seconds * 1000,
+          ).toISOString()
+        : null,
     collection_method_id: p.kind === "reference_lab" ? p.methods[0].id : null,
     collection_method_version:
       p.kind === "reference_lab" ? p.methods[0].version : null,
   };
 }
+test("instruction fixture samples one acknowledgment instant across clock rollover and preserves the approved rest duration", async () => {
+  const h = await approvedAccount(),
+    OriginalDate = Date,
+    instant = OriginalDate.parse("2026-10-11T12:00:00.999Z");
+  let clockReads = 0;
+  const RollingDate = class extends OriginalDate {
+    constructor(value?: string | number) {
+      super(value === undefined ? instant + clockReads++ : value);
+    }
+    static now() {
+      return instant + 100;
+    }
+  } as DateConstructor;
+  try {
+    globalThis.Date = RollingDate;
+    for (const seconds of [0, 30]) {
+      const config = clone(h.config);
+      config.participant_protocol.rest_duration_seconds = seconds;
+      config.participant_protocol_sha256 = digest(config.participant_protocol);
+      const before = clockReads,
+        value = instruction(config);
+      assert.equal(clockReads - before, 1);
+      assert.equal(
+        Date.parse(value.acknowledged_at) - Date.parse(value.rest_started_at!),
+        seconds * 1000,
+      );
+      assert.doesNotThrow(() =>
+        validateInstructionInput(config, value, "cardiac"),
+      );
+      assert.throws(
+        () =>
+          validateInstructionInput(
+            config,
+            {
+              ...value,
+              rest_started_at: new OriginalDate(
+                Date.parse(value.acknowledged_at) - seconds * 1000 + 1,
+              ).toISOString(),
+            },
+            "cardiac",
+          ),
+        /approved rest period/,
+      );
+    }
+  } finally {
+    globalThis.Date = OriginalDate;
+    await h.close();
+  }
+});
 function currentInstruction(
   app: InstanceType<typeof AppController>,
   channel: string,

@@ -3436,7 +3436,7 @@
   "followup_review": {
     "recorded_at": "2026-10-11T09:36:01.512985+00:00",
     "scope": "Independent working-source review and focused execution, preserving original historical requirements and later frozen-source digests. Final committed-revision aggregate/live/native gates and genuine release qualification remain separate.",
-    "findings": "ALIGN-01 through ALIGN-49 in docs/REQUIREMENTS_ALIGNMENT_AUDIT.md; source fixes, focused execution, participant/HR/evaluation positive-flow work and actual CI harness/artifact-parser follow-up remain separate from final gates and external qualification.",
+    "findings": "ALIGN-01 through ALIGN-52 in docs/REQUIREMENTS_ALIGNMENT_AUDIT.md; source fixes, focused execution, participant/HR/evaluation positive-flow work and actual CI harness/artifact-parser/clock-fixture/retained-environment follow-ups remain separate from final gates and external qualification.",
     "capability_delta_inventory": [
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-dashboard/spec.md",
@@ -4831,7 +4831,7 @@
       },
       {
         "file": "apps/mobile/tests/acquisition.test.ts",
-        "sha256": "a02cccbab342b94414961e9a2c602014910fd31e713512c59cada2f7c7e21553",
+        "sha256": "5a87445ae4174cdf15eccd8ec0b6b67105fea10d338aec183d1362ae6f8bfb9b",
         "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
@@ -4891,7 +4891,7 @@
       },
       {
         "file": "docs/CI_GATES.md",
-        "sha256": "8390ec4c1eb5bb7daf266c72fd638ca2e4414db8d72a9838876af841b5527d5c",
+        "sha256": "8093374001c6ae46bb959b2d6390552c2961d37dae706c935e3d9ebf516aa675",
         "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
@@ -5393,6 +5393,176 @@
         "native_build_or_hosted_launch_claim": false
       },
       "preview_artifact_parser_changed": true
+    },
+    "post_clock_ci_followup": {
+      "failed_revision": "25fc361",
+      "scope": "Test-only signed JWT/instruction declarations sampled inconsistent clock instants; production authentication/rest strictness unchanged",
+      "findings": [
+        {
+          "id": "ALIGN-50",
+          "finding": "Separate signed-test iat/auth_time clock reads can cross seconds and correctly fail real JWT verifier",
+          "source_fix": "Single issue instant for defaults; deterministic actual RS256 Verifier case preserves explicit overrides and401 forauth_time>iat",
+          "production_auth_source_changed": false
+        },
+        {
+          "id": "ALIGN-51",
+          "finding": "Separate instruction acknowledgment/rest-start clock reads can cross milliseconds and correctly fail approvedrest check",
+          "source_fix": "Single acknowledgment instant; rest derived byexact approvedduration; deterministic0/30second cases and1msinsufficientrest refusal",
+          "production_rest_source_changed": false
+        }
+      ],
+      "additional_test_snapshots": [
+        {
+          "file": "services/api/tests/conftest.py",
+          "sha256": "9805699e452fcbdfdbefb1206798bdaa929be70798d2da6dfecd5abe80a6849c"
+        },
+        {
+          "file": "services/api/tests/test_auth_fixture.py",
+          "sha256": "c6956358fdf5942b2464724a662cf45817d4a1cd6c973fcd91e9898e4b26fcff"
+        }
+      ],
+      "focused_reports": [
+        {
+          "report": "/tmp/otgd-jwt-fixture-rollover.xml",
+          "sha256": "7101b5985bd904ec59c2b2e18fac48f920176cec0b0a3456377743b999ea917c",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "observer": "Reviewer inspected owner focused signed-identity report"
+        },
+        {
+          "report": "/tmp/otgd-independent-jwt-fixture-rollover.xml",
+          "sha256": "6a7b29dbaf012f3d71d7c0cc9ce5487d3138c741f5ae961bea0a144a95c9d834",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "observer": "Reviewer independently executed real signed Verifier rollover regression usingSQLite/noPG"
+        },
+        {
+          "report": "/tmp/otgd-mobile-rollover-ordinary-report.json",
+          "sha256": "8d255e99810549a1ec49f325013fc6e09dadf9edeb7c4a961d16525fc15a694e",
+          "observer": "Reviewer inspected owner executableTypeScript unitcoverage report",
+          "mode": "ordinary",
+          "counts": {
+            "tests": 260,
+            "failed": 0,
+            "passed": 260,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0,
+            "topLevel": 260,
+            "suites": 0
+          },
+          "coverage_percent": 90.0791610979747,
+          "source_sha256": "8e13e840479dbeb561393764d7aa06a00b7572e1f3f4b4416825acfd08b7a220",
+          "browser_native_or_whole_gate_claim": false
+        },
+        {
+          "report": "/tmp/otgd-mobile-rollover-hosted-report.json",
+          "sha256": "f9de0814e3c07e46516d64e09118cea6d61a4860201a14277a6a4d37419637e2",
+          "observer": "Reviewer inspected owner executableTypeScript unitcoverage report",
+          "mode": "hosted",
+          "counts": {
+            "tests": 260,
+            "failed": 0,
+            "passed": 260,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0,
+            "topLevel": 260,
+            "suites": 0
+          },
+          "coverage_percent": 90.0791610979747,
+          "source_sha256": "8e13e840479dbeb561393764d7aa06a00b7572e1f3f4b4416825acfd08b7a220",
+          "browser_native_or_whole_gate_claim": false
+        }
+      ],
+      "independent_client_selection": {
+        "command": "node --import tsx --test --test-name-pattern='instruction fixture samples one acknowledgment instant' tests/acquisition.test.ts",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0
+      },
+      "thresholds_relaxed": false,
+      "whole_gate_pass_claim": false,
+      "completion_claim": false,
+      "merge_approval": false,
+      "subsequent_retained_local_failure": {
+        "stage": "participant fixture provisioning",
+        "cause": "Inherited disposable test key overrode retained Compose env-file identity key; seeALIGN-52",
+        "whole_gate_pass_claim": false,
+        "source_fix_reviewed": true
+      },
+      "external_github_evidence_boundary": {
+        "report": "/tmp/otgd-ci-38130238410-access-blocker.json",
+        "sha256": "c8819cebefedeb223fbb9188c5816f13ad30888198f88f7dd616d513da5195df",
+        "checked_at_utc": "2026-10-11T10:12:03.399104+00:00",
+        "actions_http_status": 401,
+        "ordinary_authenticated_git_route_available": false,
+        "latest_pushed_head": "25fc361",
+        "newer_local_fixes_pushed": false,
+        "prior_branch_protection_administration_http_status": 403,
+        "branch_protection_verified": false,
+        "authentication_bypass_attempted": false,
+        "new_token_requested": false,
+        "thirteen_job_aggregate_pass_claim": false
+      }
+    },
+    "retained_local_gate_followup": {
+      "id": "ALIGN-52",
+      "scope": "Read-only retained environment diagnosis and narrow gate-runner childenvironment fix",
+      "finding": "Compose parent environment disposable OTGD_TOMBSTONE_KEY overrode retained.env and broke maintenance staffHMAClookup",
+      "source_fix": "Onlycanonical retainedCompose children remove inheritedOTGD_TOMBSTONE_KEY; ordinaryunit/PG children andallotherenvironment values retained",
+      "owner_readonly_evidence": {
+        "report": "/tmp/otgd-retained-compose-environment-proof.json",
+        "sha256": "0a35a0f9d156785e84be50564f96d017dc178f708cf36220abd5de04754f188f",
+        "reviewer_inspected": true,
+        "inherited_override": {
+          "key_anchor_matches": false,
+          "dedicated_staff_lookup_found": false
+        },
+        "isolated_child": {
+          "key_anchor_matches": true,
+          "dedicated_staff_lookup_matches_latest_api_receipt": true,
+          "dedicated_staff_state": "active",
+          "orm_changes": 0,
+          "transaction_rolled_back": true
+        }
+      },
+      "additional_gate_snapshots": [
+        {
+          "file": "scripts/ci_gate.py",
+          "sha256": "4484174f3579687153aabe218a369b5255315283308b26b2a1df18acb7804101"
+        },
+        {
+          "file": "infra/test/test_ci_gates.py",
+          "sha256": "033a1353e6342778e367e214ad480bc4fabc597d74e640709507482dbacc2ce6"
+        }
+      ],
+      "independent_execution": {
+        "command": "python3 -m unittest infra.test.test_ci_gates -v",
+        "tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "owner_log": {
+        "log": "/tmp/otgd-ci-environment-tests.log",
+        "sha256": "237a7f789839af23315da6f8e7c252eb7d369fa01064ee64ad3b7afb4f38db6a"
+      },
+      "participant_probe_changed": false,
+      "production_identity_admission_changed": false,
+      "canonical_accounts_records_and_journal_mutated": false,
+      "thresholds_relaxed": false,
+      "whole_gate_pass_claim": false,
+      "completion_claim": false,
+      "merge_approval": false
     }
   }
 }

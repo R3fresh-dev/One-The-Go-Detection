@@ -52,6 +52,7 @@ def client():
 def token(sub="a", family=None, **overrides):
     from otgd.db import now
 
+    issued = int(now())
     claims = {
         "iss": settings().issuer,
         "sub": sub,
@@ -59,9 +60,9 @@ def token(sub="a", family=None, **overrides):
         "token_use": "access",
         "origin_jti": family or "family-" + sub,
         "jti": "token-" + sub,
-        "iat": int(now()),
-        "exp": int(now()) + 900,
-        "auth_time": int(now()),
+        "iat": issued,
+        "exp": issued + 900,
+        "auth_time": issued,
         **overrides,
     }
     return jwt.encode(claims, KEY, algorithm="RS256", headers={"kid": "test"})

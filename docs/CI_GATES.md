@@ -44,6 +44,8 @@ The additional [participant probe](../infra/local/participant_probe.py) runs ins
 
 Provide `OTGD_DATABASE_URL` pointing to a **separate disposable PostgreSQL test database**, `OTGD_ENVIRONMENT=test`, `OTGD_DISPOSABLE_DATABASE=true`, its `OTGD_DATABASE_NAME`, test runtime-role user/password and a test `OTGD_TOMBSTONE_KEY` before the live-dependency check. The suite recreates its test schema. Never point it at the application's persistent database. The GitHub workflow supplies an isolated service and fictional fixture credentials.
 
+The shared gate removes the caller's `OTGD_TOMBSTONE_KEY` only when launching retained local Compose checks, including their nested scripts and performance command. Compose otherwise gives that disposable test key precedence over `infra/local/.env`, breaking the retained identity anchor and maintenance account lookup. The protected local `.env` remains the authority for those commands; Docker configuration, proxy settings and supported local origin/password overrides are preserved. Disposable database test commands keep their test key.
+
 ```bash
 python scripts/ci_gate.py unit-coverage
 python scripts/ci_gate.py atdd
