@@ -3708,7 +3708,7 @@
       },
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-dashboard/spec.md",
-        "sha256": "de38da1de2cf79a134dd3951e9fb6a3bd52539e64d87253c9d0bb58f16ea3f1a",
+        "sha256": "c8e2d63aad6f7f973a181d917ef645e8d32b012ca41df1f2abd7d7a0b7525fe4",
         "disposition": "Conditional versioned inference, calibrated abstention, frozen evaluation and client semantic authority reviewed with fictional engineering fixtures; genuine model/data/endpoint qualification remains external.",
         "requirements": [
           {
@@ -3722,7 +3722,7 @@
       },
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-guided-check/spec.md",
-        "sha256": "4bb6ae6a058ab6c010f010f568bbb5821ba74290ad16281b1335a233f72513d9",
+        "sha256": "c171a3fd1d7705d710dd172ebe5d59046cc0023a2ddfedaf162092008703e648",
         "disposition": "Conditional versioned inference, calibrated abstention, frozen evaluation and client semantic authority reviewed with fictional engineering fixtures; genuine model/data/endpoint qualification remains external.",
         "requirements": [
           {
@@ -3736,7 +3736,7 @@
       },
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-history/spec.md",
-        "sha256": "3dc93d7374aa47a9772f9feb878595a9d6cf44e419d6afb4eb2f1f71635a4c12",
+        "sha256": "b29801322e8700aa11edce8289d84290485834005cba2fa80ee5695dd3d248ce",
         "disposition": "Conditional versioned inference, calibrated abstention, frozen evaluation and client semantic authority reviewed with fictional engineering fixtures; genuine model/data/endpoint qualification remains external.",
         "requirements": [
           {
@@ -3750,7 +3750,7 @@
       },
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-onboarding/spec.md",
-        "sha256": "7cd60ff92f11e8361fc03f7d0117c64b8262aa694cd76006f7ecf6a459821ca9",
+        "sha256": "1b82b7101ffe6bf0538ffe24b814aea01369f322c9bb8e96808e05f0dd70e369",
         "disposition": "Conditional versioned inference, calibrated abstention, frozen evaluation and client semantic authority reviewed with fictional engineering fixtures; genuine model/data/endpoint qualification remains external.",
         "requirements": [
           {
@@ -3764,7 +3764,7 @@
       },
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
-        "sha256": "b18f592b4245fa6f119991361a9c31c4971339f882d9f44f90ec0079a5fc60c6",
+        "sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
         "disposition": "Conditional versioned inference, calibrated abstention, frozen evaluation and client semantic authority reviewed with fictional engineering fixtures; genuine model/data/endpoint qualification remains external.",
         "requirements": [
           {
@@ -3778,7 +3778,7 @@
       },
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-settings-accessibility/spec.md",
-        "sha256": "e031186197da806e7c8c25f9ba8afd259d68acbe8dd4f35c83fa0f03e49f5711",
+        "sha256": "8dc5faf4274edf798f4828bacff599c2c34c5aa6f5cb594481f2ca365ef401f6",
         "disposition": "Conditional versioned inference, calibrated abstention, frozen evaluation and client semantic authority reviewed with fictional engineering fixtures; genuine model/data/endpoint qualification remains external.",
         "requirements": [
           {

@@ -10,4 +10,3 @@ History SHALL preserve canonical and original units, assay basis, qualifiers, co
 #### Scenario: Legacy or unapproved claim
 - **WHEN** a legacy result, local preference or valid-looking manifest claims research authority without current complete admission
 - **THEN** no score is admitted and the historical measurement-only or unsupported-result boundary remains in force
-

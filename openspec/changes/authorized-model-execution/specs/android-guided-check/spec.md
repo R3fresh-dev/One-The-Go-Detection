@@ -10,4 +10,3 @@ Review SHALL offer Save on this device before any explicit account upload. Ordin
 #### Scenario: Legacy or unapproved claim
 - **WHEN** a legacy result, local preference or valid-looking manifest claims research authority without current complete admission
 - **THEN** no score is admitted and the historical measurement-only or unsupported-result boundary remains in force
-
