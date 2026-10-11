@@ -17,4 +17,8 @@ android {
 dependencies {
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.json:json:20240303'
+  // Expo adds modules-core to testImplementation, but its internal React
+  // implementation dependency is not exposed on our test compile classpath.
+  // The app's React Gradle plugin resolves this to package.json's pinned version.
+  testImplementation 'com.facebook.react:react-android'
 }
