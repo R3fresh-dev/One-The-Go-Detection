@@ -171,10 +171,12 @@ Current-release demonstration, refusal and available measurement paths are suppl
 
 ## 22. Study Enrollment — AND-STUDY-001–AND-STUDY-006
 
-- [x] 22.1 Implement the specified screen journey, copy, navigation, field validation, and accessible controls for Android and iOS.
-- [x] 22.2 Implement the feature data/state contract, authorized API or native integration, provenance, and persistence boundaries in [android-study-enrollment](specs/android-study-enrollment/spec.md).
+- [ ] 22.1 Implement the specified screen journey, copy, navigation, field validation, and accessible controls for Android and iOS.
+- [ ] 22.2 Implement the feature data/state contract, authorized API or native integration, provenance, and persistence boundaries in [android-study-enrollment](specs/android-study-enrollment/spec.md).
 - [ ] 22.3 Verify positive, failure, cancel/restart, permission, ownership, and offline scenarios applicable to this feature; record test references for its 6 requirements.
 - [x] 22.4 Record platform evidence and any hardware, clinical configuration, credentials, or device-only verification still required; do not substitute simulated evidence.
+
+The enrollment, exact-version consent and withdrawal journeys are supplied. Full feature implementation remains open for **AND-STUDY-004 / BR-001–004: mobile fresh-start orchestration for approved physical channels**, consistent with the requirement map. Server authorization and the current unavailable state do not supply that positive client flow.
 
 ## 23. LocalStack, AWS QA, and AWS production
 
@@ -192,16 +194,18 @@ Current-release demonstration, refusal and available measurement paths are suppl
 - [x] 24.1 Run existing 41 contract checks and adapt only intentionally superseded inventory assumptions; preserve semantic rejection checks.
 - [ ] 24.2 Run mobile/service tests and cross-language contracts; exercise complete fictional check, upload retry, privacy jobs, account changes, and result rendering.
 - [x] 24.3 Run PostgreSQL concurrency and owner-isolation cases, including duplicate finalization and deletion racing queued work.
-- [ ] 24.4 Compile Android native code, execute Kotlin suites and produce the verified local preview/debug APKs in actual CI.
+- [x] 24.4 Compile Android native code, execute Kotlin suites and produce the verified local preview/debug APKs in actual CI.
 - [ ] 24.4a Execute Android emulator/physical-device journeys, permissions, lifecycle, secure storage, BLE and accessibility checks; compilation alone does not close this task.
-- [x] 24.5 Compile the complete iOS simulator app and execute Swift suites on actual macOS/Xcode CI; initial checkpoint passed, and changed source requires a fresh build artifact.
+- [x] 24.5 Compile the complete iOS simulator app and execute Swift suites on actual macOS/Xcode CI; the final `9376dba` checkpoint passed and produced its own artifact.
 - [ ] 24.5a Execute iOS simulator/physical-device journeys, permissions, lifecycle, secure storage, BLE and VoiceOver checks; compilation alone does not close this task.
-- [ ] 24.6 Review implementation against adversarial findings; fix material regressions and document release limitations.
-- [ ] 24.7 Update shopping list, root quick start, API reference, environment/deployment runbooks, feature implementation ledger, and verification report.
-- [ ] 24.8 Commit implemented artifacts and lockfiles; report commit IDs, local start commands, verified checks, and outstanding external release prerequisites.
+- [x] 24.6 Review implementation against adversarial findings; fix material regressions and document release limitations.
+- [x] 24.7 Update shopping list, root quick start, API reference, environment/deployment runbooks, feature implementation ledger, and verification report.
+- [x] 24.8 Commit implemented artifacts and lockfiles; report commit IDs, local start commands, verified checks, and outstanding external release prerequisites.
+
+For 24.2, the host/API/cross-language suites and six browser journeys passed. The complete account/native application integration against actual LocalStack, including its asynchronous upload/privacy path, still requires the declared runtime and token; the combined task remains open for that execution.
 
 ## Evidence scope at the current implementation checkpoint
 
 The [requirement map](verification/implementation-map.md) links every requirement to source, named tests and remaining native/cloud/qualification evidence. Section 3–22 scenario tasks remain open until their entire applicable acceptance matrix has been executed; passing host or browser tests do not automatically execute all 321 written scenarios. The positive qualified-acquisition branches remain explicit additional software and qualification work.
 
-The [CI evidence ledger](verification/ci-evidence.md) records actual iOS/firmware compilation and PostgreSQL execution. At service checkpoint `cf5df00`, all 168 PostgreSQL tests passed, including competing report revisions, with two migration replays and least-privilege checks. Actual LocalStack, AWS QA, production, store distribution and physical-phone evidence remain open.
+The [CI evidence ledger](verification/ci-evidence.md) records actual Android/iOS/firmware compilation and PostgreSQL execution. At final build checkpoint `9376dba`, native and platform workflows both passed: **7/7 Android JUnit tests, 146/146 mobile host tests, the Swift test/build steps, both APKs, the iOS simulator package, actual Nano ESP32 compilation and 171 actual-PostgreSQL tests with no skips**. Two migration replays and least-privilege checks passed. Actual LocalStack, AWS QA, production, store distribution and native emulator/physical-phone interaction remain open. Source dispositions remain 121 source-present requirements, 15 conditional positive-code gaps and 4 operations-source requirements; an artifact does not close those gaps.

@@ -16,6 +16,28 @@ This file records **source/host evidence**, with native and deployment checks ke
 
 The standard Playwright browser download failed with truncated/corrupt ZIP files. An isolated temporary `@sparticuz/chromium` 153.0.0 runtime (Chromium 153.0.8010.0) then executed the browser suite. Its initial Fontconfig file referenced an empty font directory, producing blank glyphs and a renderer crash. With an explicit host-only Fontconfig file pointing at the package's OpenSans files and the system DejaVu fonts, **all six browser journeys passed**. They cover mobile/desktop guest checks, exact export, settings/privacy, profile validation, displayed BMI, reload isolation, live synthetic reader status, an explicit failed ECG scenario, and bidirectional replacement navigation. The primary Home action is asserted to be in the initial 390×844 viewport. The final rerun took **14.2 seconds**, after the result title/card-order and ASCII navigation-glyph corrections. Final bundle/browser reproduction is recorded below. Heading visibility and unexpected-page-error assertions were retained. The Home screenshot was visually inspected after compacting the persistent factual notices and adding their Details disclosure; the primary action is fully visible above navigation. This is actual browser preview evidence; native execution remains separate.
 
+## Observed native CI — 9376dba
+
+[Workflow run 38114016108](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108) completed with **success** for commit `9376dbaac603252bb49ad2bb5ec5ba8cc5be5017`. GitHub's final run record and all three job conclusions were observed; this section records the separately inspected iOS and shared/firmware jobs. The commit changes Android test/build support rather than the production mobile application source. Exact Android test and APK evidence is maintained in [native verification](modules/VERIFICATION.md).
+
+| Monitored job | Actual observed evidence | Start → completion, UTC on 2026-10-11 |
+|---|---|---|
+| [iOS — 114395188325](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/job/114395188325) | **Success.** Swift core golden-suite step, native dependency generation, complete Xcode simulator application compilation and artifact upload all completed successfully. | 05:12:04 → 05:18:20 |
+| [Shared/firmware — 114395188235](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/job/114395188235) | **Success.** TypeScript, native assets, **146/146 host tests** (0 failed/skipped; 9.15 s), portable C++ protocol tests and the actual Nano ESP32 target compile completed successfully. | 05:12:01 → 05:13:19 |
+
+The retrieved shared log reports 956,469 program-storage bytes and 75,068 bytes of global data for the Nano ESP32 build. The iOS job/step statuses are directly observed, but its full-log connector request returned **Transport closed**; no exact Swift test count is inferred from source or earlier runs.
+
+GitHub reported these immutable artifacts for that exact run and commit:
+
+| Artifact | Artifact ID | ZIP size, bytes | SHA-256 of artifact ZIP | Expiry, UTC |
+|---|---|---:|---|---|
+| `ios-simulator-app` | `11693001318` | 18,260,845 | `4d39d844a786c52294ae552032b687e832720f5f8d0d2da3aea90aa2732cf145` | 2026-10-25T05:18:10Z |
+| `nano-esp32-synthetic-firmware` | `11693465040` | 9,182,420 | `facde6cd7bdb135f1dc3419524e8f787331b225d972c3245718361a8f6bf47bd` | 2026-10-25T05:13:15Z |
+
+The artifact API metadata supplies these sizes, digests and expiry times; the shared upload log independently reports the same firmware digest and artifact ID. Download artifacts from the linked run while available. The iOS output is an unsigned simulator application, not a physical-iPhone or TestFlight package. The firmware is a compiled synthetic peripheral, with no flashing or physical sensor qualification implied.
+
+These observed CI results supersede the earlier pending compilation status for this exact commit. They establish successful build/test/upload execution, while the native installation, keychain/SQLCipher, sharing, camera/Bluetooth, lifecycle, accessibility and physical timing checks listed below remain separate acceptance work.
+
 ## Follow-up integration evidence
 
 | Scope                                                     | Implemented behavior                                                                                                                                                                  | Executed evidence                                                                                                                                                                                                             |
