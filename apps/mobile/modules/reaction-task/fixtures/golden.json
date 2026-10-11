@@ -1,0 +1,1951 @@
+{
+  "schema_version": "1.0.0",
+  "configuration_sha256": "61bd03244a9f82fdc5a1a2b6658483ca201ab5d39a95e64cde0d00f1d5a666c3",
+  "fixture_semantics": "Spec fixtures only; trial vectors are extractor unit cases, not valid complete checks or physical timing evidence. Native fixture tests must consume literal expected results independently of runtime schedule generation.",
+  "schedules": [
+    {
+      "schedule": {
+        "schema_version": "1.0.0",
+        "configuration_sha256": "61bd03244a9f82fdc5a1a2b6658483ca201ab5d39a95e64cde0d00f1d5a666c3",
+        "seed": 0,
+        "trials": [
+          {
+            "index": 0,
+            "phase": "practice",
+            "stimulus": "left",
+            "planned_onset_ms": 2000,
+            "onset_interval_ms": 1787
+          },
+          {
+            "index": 1,
+            "phase": "practice",
+            "stimulus": "right",
+            "planned_onset_ms": 3787,
+            "onset_interval_ms": 1702
+          },
+          {
+            "index": 2,
+            "phase": "practice",
+            "stimulus": "no_go",
+            "planned_onset_ms": 5489,
+            "onset_interval_ms": 1635
+          },
+          {
+            "index": 3,
+            "phase": "practice",
+            "stimulus": "no_go",
+            "planned_onset_ms": 7124,
+            "onset_interval_ms": 1804
+          },
+          {
+            "index": 4,
+            "phase": "practice",
+            "stimulus": "right",
+            "planned_onset_ms": 8928,
+            "onset_interval_ms": 1875
+          },
+          {
+            "index": 5,
+            "phase": "practice",
+            "stimulus": "left",
+            "planned_onset_ms": 10803,
+            "onset_interval_ms": 1626
+          },
+          {
+            "index": 6,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 12429,
+            "onset_interval_ms": 1842
+          },
+          {
+            "index": 7,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 14271,
+            "onset_interval_ms": 1747
+          },
+          {
+            "index": 8,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 16018,
+            "onset_interval_ms": 1831
+          },
+          {
+            "index": 9,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 17849,
+            "onset_interval_ms": 1623
+          },
+          {
+            "index": 10,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 19472,
+            "onset_interval_ms": 1692
+          },
+          {
+            "index": 11,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 21164,
+            "onset_interval_ms": 1704
+          },
+          {
+            "index": 12,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 22868,
+            "onset_interval_ms": 1566
+          },
+          {
+            "index": 13,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 24434,
+            "onset_interval_ms": 1763
+          },
+          {
+            "index": 14,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 26197,
+            "onset_interval_ms": 1601
+          },
+          {
+            "index": 15,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 27798,
+            "onset_interval_ms": 1508
+          },
+          {
+            "index": 16,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 29306,
+            "onset_interval_ms": 1524
+          },
+          {
+            "index": 17,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 30830,
+            "onset_interval_ms": 1694
+          },
+          {
+            "index": 18,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 32524,
+            "onset_interval_ms": 1563
+          },
+          {
+            "index": 19,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 34087,
+            "onset_interval_ms": 1547
+          },
+          {
+            "index": 20,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 35634,
+            "onset_interval_ms": 1632
+          },
+          {
+            "index": 21,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 37266,
+            "onset_interval_ms": 1897
+          },
+          {
+            "index": 22,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 39163,
+            "onset_interval_ms": 1746
+          },
+          {
+            "index": 23,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 40909,
+            "onset_interval_ms": 1820
+          },
+          {
+            "index": 24,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 42729,
+            "onset_interval_ms": 1589
+          },
+          {
+            "index": 25,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 44318,
+            "onset_interval_ms": 1746
+          },
+          {
+            "index": 26,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 46064,
+            "onset_interval_ms": 1843
+          },
+          {
+            "index": 27,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 47907,
+            "onset_interval_ms": 1810
+          },
+          {
+            "index": 28,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 49717,
+            "onset_interval_ms": 1557
+          },
+          {
+            "index": 29,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 51274,
+            "onset_interval_ms": 1652
+          },
+          {
+            "index": 30,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 52926,
+            "onset_interval_ms": 1783
+          },
+          {
+            "index": 31,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 54709,
+            "onset_interval_ms": 1825
+          },
+          {
+            "index": 32,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 56534,
+            "onset_interval_ms": 1749
+          },
+          {
+            "index": 33,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 58283,
+            "onset_interval_ms": 1860
+          },
+          {
+            "index": 34,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 60143,
+            "onset_interval_ms": 1617
+          },
+          {
+            "index": 35,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 61760,
+            "onset_interval_ms": 1812
+          },
+          {
+            "index": 36,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 63572,
+            "onset_interval_ms": 1765
+          },
+          {
+            "index": 37,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 65337,
+            "onset_interval_ms": 1531
+          },
+          {
+            "index": 38,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 66868,
+            "onset_interval_ms": 1764
+          },
+          {
+            "index": 39,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 68632,
+            "onset_interval_ms": 1617
+          },
+          {
+            "index": 40,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 70249,
+            "onset_interval_ms": 1526
+          },
+          {
+            "index": 41,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 71775,
+            "onset_interval_ms": 1726
+          },
+          {
+            "index": 42,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 73501,
+            "onset_interval_ms": 1797
+          },
+          {
+            "index": 43,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 75298,
+            "onset_interval_ms": 1862
+          },
+          {
+            "index": 44,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 77160,
+            "onset_interval_ms": 1703
+          },
+          {
+            "index": 45,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 78863,
+            "onset_interval_ms": 1886
+          },
+          {
+            "index": 46,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 80749,
+            "onset_interval_ms": 1797
+          },
+          {
+            "index": 47,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 82546,
+            "onset_interval_ms": 1687
+          },
+          {
+            "index": 48,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 84233,
+            "onset_interval_ms": 1735
+          },
+          {
+            "index": 49,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 85968,
+            "onset_interval_ms": 1557
+          },
+          {
+            "index": 50,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 87525,
+            "onset_interval_ms": 1610
+          },
+          {
+            "index": 51,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 89135,
+            "onset_interval_ms": 1641
+          },
+          {
+            "index": 52,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 90776,
+            "onset_interval_ms": 1502
+          },
+          {
+            "index": 53,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 92278,
+            "onset_interval_ms": 1874
+          },
+          {
+            "index": 54,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 94152,
+            "onset_interval_ms": 1709
+          },
+          {
+            "index": 55,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 95861,
+            "onset_interval_ms": 1516
+          },
+          {
+            "index": 56,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 97377,
+            "onset_interval_ms": 1791
+          },
+          {
+            "index": 57,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 99168,
+            "onset_interval_ms": 1821
+          },
+          {
+            "index": 58,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 100989,
+            "onset_interval_ms": 1579
+          },
+          {
+            "index": 59,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 102568,
+            "onset_interval_ms": 1703
+          },
+          {
+            "index": 60,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 104271,
+            "onset_interval_ms": 1602
+          },
+          {
+            "index": 61,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 105873,
+            "onset_interval_ms": 1753
+          },
+          {
+            "index": 62,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 107626,
+            "onset_interval_ms": 1586
+          },
+          {
+            "index": 63,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 109212,
+            "onset_interval_ms": 1871
+          },
+          {
+            "index": 64,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 111083,
+            "onset_interval_ms": 1505
+          },
+          {
+            "index": 65,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 112588,
+            "onset_interval_ms": 1795
+          }
+        ]
+      },
+      "schedule_sha256": "72dbc75ad0105d977a88e444dabeffe6dd207146ce6157da85bc29a0587b064c",
+      "expected_no_lateness_terminal_cutoff_ms": 113688
+    },
+    {
+      "schedule": {
+        "schema_version": "1.0.0",
+        "configuration_sha256": "61bd03244a9f82fdc5a1a2b6658483ca201ab5d39a95e64cde0d00f1d5a666c3",
+        "seed": 1,
+        "trials": [
+          {
+            "index": 0,
+            "phase": "practice",
+            "stimulus": "right",
+            "planned_onset_ms": 2000,
+            "onset_interval_ms": 1789
+          },
+          {
+            "index": 1,
+            "phase": "practice",
+            "stimulus": "no_go",
+            "planned_onset_ms": 3789,
+            "onset_interval_ms": 1898
+          },
+          {
+            "index": 2,
+            "phase": "practice",
+            "stimulus": "left",
+            "planned_onset_ms": 5687,
+            "onset_interval_ms": 1595
+          },
+          {
+            "index": 3,
+            "phase": "practice",
+            "stimulus": "no_go",
+            "planned_onset_ms": 7282,
+            "onset_interval_ms": 1899
+          },
+          {
+            "index": 4,
+            "phase": "practice",
+            "stimulus": "right",
+            "planned_onset_ms": 9181,
+            "onset_interval_ms": 1517
+          },
+          {
+            "index": 5,
+            "phase": "practice",
+            "stimulus": "left",
+            "planned_onset_ms": 10698,
+            "onset_interval_ms": 1722
+          },
+          {
+            "index": 6,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 12420,
+            "onset_interval_ms": 1858
+          },
+          {
+            "index": 7,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 14278,
+            "onset_interval_ms": 1605
+          },
+          {
+            "index": 8,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 15883,
+            "onset_interval_ms": 1519
+          },
+          {
+            "index": 9,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 17402,
+            "onset_interval_ms": 1570
+          },
+          {
+            "index": 10,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 18972,
+            "onset_interval_ms": 1664
+          },
+          {
+            "index": 11,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 20636,
+            "onset_interval_ms": 1816
+          },
+          {
+            "index": 12,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 22452,
+            "onset_interval_ms": 1523
+          },
+          {
+            "index": 13,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 23975,
+            "onset_interval_ms": 1515
+          },
+          {
+            "index": 14,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 25490,
+            "onset_interval_ms": 1851
+          },
+          {
+            "index": 15,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 27341,
+            "onset_interval_ms": 1856
+          },
+          {
+            "index": 16,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 29197,
+            "onset_interval_ms": 1551
+          },
+          {
+            "index": 17,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 30748,
+            "onset_interval_ms": 1680
+          },
+          {
+            "index": 18,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 32428,
+            "onset_interval_ms": 1847
+          },
+          {
+            "index": 19,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 34275,
+            "onset_interval_ms": 1835
+          },
+          {
+            "index": 20,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 36110,
+            "onset_interval_ms": 1823
+          },
+          {
+            "index": 21,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 37933,
+            "onset_interval_ms": 1515
+          },
+          {
+            "index": 22,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 39448,
+            "onset_interval_ms": 1579
+          },
+          {
+            "index": 23,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 41027,
+            "onset_interval_ms": 1877
+          },
+          {
+            "index": 24,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 42904,
+            "onset_interval_ms": 1633
+          },
+          {
+            "index": 25,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 44537,
+            "onset_interval_ms": 1685
+          },
+          {
+            "index": 26,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 46222,
+            "onset_interval_ms": 1632
+          },
+          {
+            "index": 27,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 47854,
+            "onset_interval_ms": 1551
+          },
+          {
+            "index": 28,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 49405,
+            "onset_interval_ms": 1789
+          },
+          {
+            "index": 29,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 51194,
+            "onset_interval_ms": 1529
+          },
+          {
+            "index": 30,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 52723,
+            "onset_interval_ms": 1734
+          },
+          {
+            "index": 31,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 54457,
+            "onset_interval_ms": 1508
+          },
+          {
+            "index": 32,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 55965,
+            "onset_interval_ms": 1661
+          },
+          {
+            "index": 33,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 57626,
+            "onset_interval_ms": 1723
+          },
+          {
+            "index": 34,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 59349,
+            "onset_interval_ms": 1603
+          },
+          {
+            "index": 35,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 60952,
+            "onset_interval_ms": 1584
+          },
+          {
+            "index": 36,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 62536,
+            "onset_interval_ms": 1591
+          },
+          {
+            "index": 37,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 64127,
+            "onset_interval_ms": 1822
+          },
+          {
+            "index": 38,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 65949,
+            "onset_interval_ms": 1537
+          },
+          {
+            "index": 39,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 67486,
+            "onset_interval_ms": 1644
+          },
+          {
+            "index": 40,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 69130,
+            "onset_interval_ms": 1782
+          },
+          {
+            "index": 41,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 70912,
+            "onset_interval_ms": 1659
+          },
+          {
+            "index": 42,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 72571,
+            "onset_interval_ms": 1748
+          },
+          {
+            "index": 43,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 74319,
+            "onset_interval_ms": 1863
+          },
+          {
+            "index": 44,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 76182,
+            "onset_interval_ms": 1820
+          },
+          {
+            "index": 45,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 78002,
+            "onset_interval_ms": 1673
+          },
+          {
+            "index": 46,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 79675,
+            "onset_interval_ms": 1579
+          },
+          {
+            "index": 47,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 81254,
+            "onset_interval_ms": 1794
+          },
+          {
+            "index": 48,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 83048,
+            "onset_interval_ms": 1536
+          },
+          {
+            "index": 49,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 84584,
+            "onset_interval_ms": 1519
+          },
+          {
+            "index": 50,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 86103,
+            "onset_interval_ms": 1760
+          },
+          {
+            "index": 51,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 87863,
+            "onset_interval_ms": 1667
+          },
+          {
+            "index": 52,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 89530,
+            "onset_interval_ms": 1747
+          },
+          {
+            "index": 53,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 91277,
+            "onset_interval_ms": 1581
+          },
+          {
+            "index": 54,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 92858,
+            "onset_interval_ms": 1727
+          },
+          {
+            "index": 55,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 94585,
+            "onset_interval_ms": 1727
+          },
+          {
+            "index": 56,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 96312,
+            "onset_interval_ms": 1718
+          },
+          {
+            "index": 57,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 98030,
+            "onset_interval_ms": 1786
+          },
+          {
+            "index": 58,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 99816,
+            "onset_interval_ms": 1688
+          },
+          {
+            "index": 59,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 101504,
+            "onset_interval_ms": 1565
+          },
+          {
+            "index": 60,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 103069,
+            "onset_interval_ms": 1581
+          },
+          {
+            "index": 61,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 104650,
+            "onset_interval_ms": 1574
+          },
+          {
+            "index": 62,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 106224,
+            "onset_interval_ms": 1786
+          },
+          {
+            "index": 63,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 108010,
+            "onset_interval_ms": 1774
+          },
+          {
+            "index": 64,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 109784,
+            "onset_interval_ms": 1524
+          },
+          {
+            "index": 65,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 111308,
+            "onset_interval_ms": 1582
+          }
+        ]
+      },
+      "schedule_sha256": "acbb4f32f0653ab02628e9a25edfb3c0474dbbadcf1fed8f85fc6c981751f49d",
+      "expected_no_lateness_terminal_cutoff_ms": 112408
+    },
+    {
+      "schedule": {
+        "schema_version": "1.0.0",
+        "configuration_sha256": "61bd03244a9f82fdc5a1a2b6658483ca201ab5d39a95e64cde0d00f1d5a666c3",
+        "seed": 4294967295,
+        "trials": [
+          {
+            "index": 0,
+            "phase": "practice",
+            "stimulus": "left",
+            "planned_onset_ms": 2000,
+            "onset_interval_ms": 1785
+          },
+          {
+            "index": 1,
+            "phase": "practice",
+            "stimulus": "no_go",
+            "planned_onset_ms": 3785,
+            "onset_interval_ms": 1761
+          },
+          {
+            "index": 2,
+            "phase": "practice",
+            "stimulus": "right",
+            "planned_onset_ms": 5546,
+            "onset_interval_ms": 1675
+          },
+          {
+            "index": 3,
+            "phase": "practice",
+            "stimulus": "left",
+            "planned_onset_ms": 7221,
+            "onset_interval_ms": 1855
+          },
+          {
+            "index": 4,
+            "phase": "practice",
+            "stimulus": "no_go",
+            "planned_onset_ms": 9076,
+            "onset_interval_ms": 1686
+          },
+          {
+            "index": 5,
+            "phase": "practice",
+            "stimulus": "right",
+            "planned_onset_ms": 10762,
+            "onset_interval_ms": 1785
+          },
+          {
+            "index": 6,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 12547,
+            "onset_interval_ms": 1571
+          },
+          {
+            "index": 7,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 14118,
+            "onset_interval_ms": 1634
+          },
+          {
+            "index": 8,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 15752,
+            "onset_interval_ms": 1596
+          },
+          {
+            "index": 9,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 17348,
+            "onset_interval_ms": 1530
+          },
+          {
+            "index": 10,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 18878,
+            "onset_interval_ms": 1720
+          },
+          {
+            "index": 11,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 20598,
+            "onset_interval_ms": 1738
+          },
+          {
+            "index": 12,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 22336,
+            "onset_interval_ms": 1755
+          },
+          {
+            "index": 13,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 24091,
+            "onset_interval_ms": 1610
+          },
+          {
+            "index": 14,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 25701,
+            "onset_interval_ms": 1752
+          },
+          {
+            "index": 15,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 27453,
+            "onset_interval_ms": 1707
+          },
+          {
+            "index": 16,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 29160,
+            "onset_interval_ms": 1643
+          },
+          {
+            "index": 17,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 30803,
+            "onset_interval_ms": 1708
+          },
+          {
+            "index": 18,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 32511,
+            "onset_interval_ms": 1680
+          },
+          {
+            "index": 19,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 34191,
+            "onset_interval_ms": 1660
+          },
+          {
+            "index": 20,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 35851,
+            "onset_interval_ms": 1696
+          },
+          {
+            "index": 21,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 37547,
+            "onset_interval_ms": 1878
+          },
+          {
+            "index": 22,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 39425,
+            "onset_interval_ms": 1767
+          },
+          {
+            "index": 23,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 41192,
+            "onset_interval_ms": 1763
+          },
+          {
+            "index": 24,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 42955,
+            "onset_interval_ms": 1800
+          },
+          {
+            "index": 25,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 44755,
+            "onset_interval_ms": 1807
+          },
+          {
+            "index": 26,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 46562,
+            "onset_interval_ms": 1507
+          },
+          {
+            "index": 27,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 48069,
+            "onset_interval_ms": 1668
+          },
+          {
+            "index": 28,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 49737,
+            "onset_interval_ms": 1726
+          },
+          {
+            "index": 29,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 51463,
+            "onset_interval_ms": 1775
+          },
+          {
+            "index": 30,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 53238,
+            "onset_interval_ms": 1577
+          },
+          {
+            "index": 31,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 54815,
+            "onset_interval_ms": 1741
+          },
+          {
+            "index": 32,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 56556,
+            "onset_interval_ms": 1837
+          },
+          {
+            "index": 33,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 58393,
+            "onset_interval_ms": 1851
+          },
+          {
+            "index": 34,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 60244,
+            "onset_interval_ms": 1631
+          },
+          {
+            "index": 35,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 61875,
+            "onset_interval_ms": 1639
+          },
+          {
+            "index": 36,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 63514,
+            "onset_interval_ms": 1538
+          },
+          {
+            "index": 37,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 65052,
+            "onset_interval_ms": 1787
+          },
+          {
+            "index": 38,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 66839,
+            "onset_interval_ms": 1736
+          },
+          {
+            "index": 39,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 68575,
+            "onset_interval_ms": 1845
+          },
+          {
+            "index": 40,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 70420,
+            "onset_interval_ms": 1671
+          },
+          {
+            "index": 41,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 72091,
+            "onset_interval_ms": 1793
+          },
+          {
+            "index": 42,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 73884,
+            "onset_interval_ms": 1591
+          },
+          {
+            "index": 43,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 75475,
+            "onset_interval_ms": 1606
+          },
+          {
+            "index": 44,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 77081,
+            "onset_interval_ms": 1841
+          },
+          {
+            "index": 45,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 78922,
+            "onset_interval_ms": 1844
+          },
+          {
+            "index": 46,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 80766,
+            "onset_interval_ms": 1760
+          },
+          {
+            "index": 47,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 82526,
+            "onset_interval_ms": 1726
+          },
+          {
+            "index": 48,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 84252,
+            "onset_interval_ms": 1533
+          },
+          {
+            "index": 49,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 85785,
+            "onset_interval_ms": 1850
+          },
+          {
+            "index": 50,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 87635,
+            "onset_interval_ms": 1861
+          },
+          {
+            "index": 51,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 89496,
+            "onset_interval_ms": 1615
+          },
+          {
+            "index": 52,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 91111,
+            "onset_interval_ms": 1512
+          },
+          {
+            "index": 53,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 92623,
+            "onset_interval_ms": 1766
+          },
+          {
+            "index": 54,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 94389,
+            "onset_interval_ms": 1545
+          },
+          {
+            "index": 55,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 95934,
+            "onset_interval_ms": 1560
+          },
+          {
+            "index": 56,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 97494,
+            "onset_interval_ms": 1864
+          },
+          {
+            "index": 57,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 99358,
+            "onset_interval_ms": 1601
+          },
+          {
+            "index": 58,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 100959,
+            "onset_interval_ms": 1725
+          },
+          {
+            "index": 59,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 102684,
+            "onset_interval_ms": 1841
+          },
+          {
+            "index": 60,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 104525,
+            "onset_interval_ms": 1623
+          },
+          {
+            "index": 61,
+            "phase": "scored",
+            "stimulus": "right",
+            "planned_onset_ms": 106148,
+            "onset_interval_ms": 1677
+          },
+          {
+            "index": 62,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 107825,
+            "onset_interval_ms": 1787
+          },
+          {
+            "index": 63,
+            "phase": "scored",
+            "stimulus": "no_go",
+            "planned_onset_ms": 109612,
+            "onset_interval_ms": 1567
+          },
+          {
+            "index": 64,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 111179,
+            "onset_interval_ms": 1887
+          },
+          {
+            "index": 65,
+            "phase": "scored",
+            "stimulus": "left",
+            "planned_onset_ms": 113066,
+            "onset_interval_ms": 1862
+          }
+        ]
+      },
+      "schedule_sha256": "5deacc41563d6b207cd371a286dde6a8a6ead2e986bdeabd796cc17fb2b1ac19",
+      "expected_no_lateness_terminal_cutoff_ms": 114166
+    }
+  ],
+  "trial_scoring_vectors": [
+    {
+      "case_id": "first_response_wrong_then_correct",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "right",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        },
+        {
+          "native_timestamp_ms": 10300,
+          "dispatch_timestamp_ms": 10305,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 1,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "wrong_choice",
+        "selected_input_sequence": 0,
+        "response_time_ms": 200,
+        "correct_go_rt_ms": null
+      }
+    },
+    {
+      "case_id": "response_at_onset_included",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10000,
+          "dispatch_timestamp_ms": 10000,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 0,
+        "response_time_ms": 0,
+        "correct_go_rt_ms": 0
+      }
+    },
+    {
+      "case_id": "response_at_deadline_excluded",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 11000,
+          "dispatch_timestamp_ms": 11010,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "omission",
+        "selected_input_sequence": null,
+        "response_time_ms": null,
+        "correct_go_rt_ms": null,
+        "input_dispositions": [
+          "late"
+        ]
+      }
+    },
+    {
+      "case_id": "before_onset_does_not_fill_omission",
+      "stimulus": "right",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 9999,
+          "dispatch_timestamp_ms": 10001,
+          "target": "right",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "omission",
+        "selected_input_sequence": null,
+        "response_time_ms": null,
+        "correct_go_rt_ms": null,
+        "input_dispositions": [
+          "anticipatory"
+        ]
+      }
+    },
+    {
+      "case_id": "no_go_commission",
+      "stimulus": "no_go",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10180,
+          "dispatch_timestamp_ms": 10190,
+          "target": "right",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "commission",
+        "selected_input_sequence": 0,
+        "response_time_ms": 180,
+        "correct_go_rt_ms": null
+      }
+    },
+    {
+      "case_id": "no_go_withheld",
+      "stimulus": "no_go",
+      "onset_ms": 10000,
+      "inputs": [],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct_withhold",
+        "selected_input_sequence": null,
+        "response_time_ms": null,
+        "correct_go_rt_ms": null
+      }
+    },
+    {
+      "case_id": "outside_target_is_not_response",
+      "stimulus": "right",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10150,
+          "dispatch_timestamp_ms": 10160,
+          "target": "outside",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "omission",
+        "selected_input_sequence": null,
+        "response_time_ms": null,
+        "correct_go_rt_ms": null,
+        "input_dispositions": [
+          "outside"
+        ]
+      }
+    },
+    {
+      "case_id": "same_time_opposing_targets_left_wins",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "right",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        },
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "left",
+          "pointer_id": 9,
+          "native_sequence": 1,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 1,
+        "response_time_ms": 200,
+        "correct_go_rt_ms": 200,
+        "sorted_native_sequences": [
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "case_id": "native_timestamp_beats_receipt_order",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10210,
+          "dispatch_timestamp_ms": 10211,
+          "target": "right",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        },
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10290,
+          "target": "left",
+          "pointer_id": 1,
+          "native_sequence": 1,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 1,
+        "response_time_ms": 200,
+        "correct_go_rt_ms": 200,
+        "sorted_native_sequences": [
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "case_id": "last_trial_event_within_dispatch_drain",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "is_final_trial": true,
+      "terminal_cutoff_ms": 11100,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10999,
+          "dispatch_timestamp_ms": 11079,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 0,
+        "response_time_ms": 999,
+        "correct_go_rt_ms": 999
+      }
+    },
+    {
+      "case_id": "exact_dispatch_budget_is_valid",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "is_final_trial": true,
+      "terminal_cutoff_ms": 11100,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10999,
+          "dispatch_timestamp_ms": 11099,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 0,
+        "response_time_ms": 999,
+        "correct_go_rt_ms": 999
+      }
+    },
+    {
+      "case_id": "dispatch_over_budget_invalidates",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "is_final_trial": true,
+      "terminal_cutoff_ms": 11100,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10998,
+          "dispatch_timestamp_ms": 11099,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "invalid",
+        "quality_flags": [
+          "INPUT_DISPATCH_DELAY_EXCEEDED"
+        ],
+        "features": null
+      }
+    },
+    {
+      "case_id": "arrival_at_terminal_cutoff_excluded",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "is_final_trial": true,
+      "terminal_cutoff_ms": 11100,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10999,
+          "dispatch_timestamp_ms": 11100,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "omission",
+        "selected_input_sequence": null,
+        "response_time_ms": null,
+        "correct_go_rt_ms": null,
+        "ignored_after_terminal_count": 1
+      }
+    },
+    {
+      "case_id": "negative_dispatch_invalidates",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10199,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "invalid",
+        "quality_flags": [
+          "NATIVE_CLOCK_INCONSISTENCY"
+        ],
+        "features": null
+      }
+    }
+  ],
+  "aggregate_vectors": [
+    {
+      "case_id": "quantile_interpolation",
+      "eligible_correct_go_rt_ms": [
+        200,
+        250,
+        300,
+        350,
+        400
+      ],
+      "expected": {
+        "q25_ms": 250,
+        "median_rt_ms": 300,
+        "q75_ms": 350,
+        "iqr_rt_ms": 100,
+        "p90_rt_ms": 380
+      }
+    },
+    {
+      "case_id": "intact_all_correct_seed_1",
+      "schedule_seed": 1,
+      "event_recipe": {
+        "for_each_presented_go": "tap matching target at onset + 300ms; dispatch at onset + 305ms",
+        "for_each_no_go": "withhold",
+        "actual_onsets": "equal planned onsets",
+        "native_frame_integrity": "within every development budget"
+      },
+      "expected": {
+        "status": "valid",
+        "features": {
+          "presented_practice_count": 6,
+          "presented_scored_count": 60,
+          "eligible_go_count": 48,
+          "eligible_no_go_count": 12,
+          "correct_go_count": 48,
+          "omission_count": 0,
+          "wrong_go_count": 0,
+          "no_go_error_count": 0,
+          "correct_withhold_count": 12,
+          "median_rt_ms": 300,
+          "iqr_rt_ms": 0,
+          "p90_rt_ms": 300,
+          "omission_rate": 0,
+          "wrong_go_rate": 0,
+          "no_go_error_rate": 0
+        },
+        "domain_source": "prototype_sensor",
+        "calibration_status": "uncalibrated",
+        "model_eligible": false
+      }
+    },
+    {
+      "case_id": "intact_all_omitted_seed_0",
+      "schedule_seed": 0,
+      "inputs": [],
+      "expected": {
+        "status": "valid",
+        "features": {
+          "presented_practice_count": 6,
+          "presented_scored_count": 60,
+          "eligible_go_count": 48,
+          "eligible_no_go_count": 12,
+          "correct_go_count": 0,
+          "omission_count": 48,
+          "wrong_go_count": 0,
+          "no_go_error_count": 0,
+          "correct_withhold_count": 12,
+          "median_rt_ms": null,
+          "iqr_rt_ms": null,
+          "p90_rt_ms": null,
+          "omission_rate": 1,
+          "wrong_go_rate": 0,
+          "no_go_error_rate": 0
+        },
+        "missing_reason": "NO_CORRECT_GO_RESPONSES"
+      }
+    },
+    {
+      "case_id": "partial_run_cancel",
+      "presented_practice_count": 6,
+      "presented_scored_count": 10,
+      "planned_trial_count": 66,
+      "expected": {
+        "status": "invalid",
+        "features": null,
+        "quality_flags": [
+          "USER_CANCELED"
+        ],
+        "retain_partial_evidence": true
+      }
+    },
+    {
+      "case_id": "cancel_and_terminal_same_turn",
+      "pending_cancel_before_terminal_commit": true,
+      "expected": {
+        "status": "invalid",
+        "features": null,
+        "quality_flags": [
+          "USER_CANCELED"
+        ],
+        "terminal_event_count": 1
+      }
+    },
+    {
+      "case_id": "input_buffer_overflow",
+      "accepted_touch_down_count": 1024,
+      "next_touch_down_arrives": true,
+      "expected": {
+        "status": "invalid",
+        "features": null,
+        "quality_flags": [
+          "INPUT_BUFFER_OVERFLOW"
+        ],
+        "retained_input_count": 1024,
+        "overflow_trigger_count": 1,
+        "terminal_event_count": 1
+      }
+    },
+    {
+      "case_id": "frame_budget_equal_boundary",
+      "frame_gap_ms": 100,
+      "frame_callback_dispatch_delay_ms": 100,
+      "scheduled_onset_lateness_ms": 100,
+      "expected": {
+        "run_integrity": "intact"
+      }
+    },
+    {
+      "case_id": "frame_gap_above_boundary",
+      "frame_gap_ms": 101,
+      "expected": {
+        "status": "invalid",
+        "features": null,
+        "quality_flags": [
+          "FRAME_GAP_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "case_id": "frame_dispatch_above_boundary",
+      "frame_callback_dispatch_delay_ms": 101,
+      "expected": {
+        "status": "invalid",
+        "features": null,
+        "quality_flags": [
+          "FRAME_CALLBACK_DELAY_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "case_id": "onset_late_above_boundary",
+      "scheduled_onset_lateness_ms": 101,
+      "expected": {
+        "status": "invalid",
+        "features": null,
+        "quality_flags": [
+          "SCHEDULED_ONSET_LATE"
+        ]
+      }
+    },
+    {
+      "case_id": "layout_or_hidden_view",
+      "reason": "ROUTE_HIDDEN",
+      "confirmation_choice": "keep_draft",
+      "expected": {
+        "status": "invalid",
+        "features": null,
+        "quality_flags": [
+          "ROUTE_HIDDEN"
+        ],
+        "resumable": false
+      }
+    }
+  ]
+}

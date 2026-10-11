@@ -1,0 +1,17 @@
+node_modules/
+.expo/
+dist/
+/android/
+/ios/
+.env
+.env.local
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+coverage/
+
+
+/playwright-report/
+/test-results/
+/artifacts/

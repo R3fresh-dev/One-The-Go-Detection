@@ -1,0 +1,142 @@
+name: otgd-local
+
+x-runtime: &runtime
+  image: otgd-api:local
+  build:
+    context: ../..
+    dockerfile: infra/local/service.Dockerfile
+  init: true
+  read_only: true
+  tmpfs:
+    - /tmp:size=134217728,mode=1777
+  security_opt:
+    - no-new-privileges:true
+  cap_drop: [ALL]
+  stop_grace_period: 120s
+
+x-environment: &environment
+  OTGD_ENVIRONMENT: local
+  OTGD_DATABASE_HOST: postgres
+  OTGD_DATABASE_PORT: "5432"
+  OTGD_DATABASE_NAME: otgd
+  OTGD_DATABASE_USER: otgd_app
+  OTGD_DATABASE_PASSWORD: ${OTGD_LOCAL_APP_PASSWORD:?Run scripts/local-platform.py prepare}
+  OTGD_ISSUER: ${OTGD_LOCAL_IDENTITY_ORIGIN:-http://localhost:8081}
+  OTGD_IDENTITY_ORIGIN: ${OTGD_LOCAL_IDENTITY_ORIGIN:-http://localhost:8081}
+  OTGD_JWKS_URL: http://identity:8081/.well-known/jwks.json
+  OTGD_CLIENT_ID: otgd-local-mobile
+  OTGD_API_ORIGIN: ${OTGD_LOCAL_API_ORIGIN:-http://localhost:8000}
+  OTGD_OAUTH_REDIRECT_URIS: '${OTGD_LOCAL_OAUTH_REDIRECT_URIS:-["otgd-local://oauth/callback","http://localhost:8082/"]}'
+  OTGD_AWS_REGION: us-east-2
+  OTGD_AWS_ENDPOINT_URL: http://localstack:4566
+  OTGD_S3_PUBLIC_ENDPOINT_URL: ${OTGD_LOCAL_S3_ORIGIN:-http://localhost:4566}
+  OTGD_ARTIFACT_BUCKET: otgd-local-artifacts
+  OTGD_EXPORT_BUCKET: otgd-local-exports
+  OTGD_JOURNAL_BUCKET: otgd-local-deletion-journal
+  OTGD_QUEUE_URL: http://localstack:4566/queue/us-east-2/000000000000/otgd-local-jobs
+  OTGD_DLQ_URL: http://localstack:4566/queue/us-east-2/000000000000/otgd-local-dlq
+  OTGD_TOMBSTONE_KEY: ${OTGD_TOMBSTONE_KEY:?Run scripts/local-platform.py prepare}
+  OTGD_TOMBSTONE_KEY_ID: v1
+  OTGD_LOCAL_SIGNING_KEY_PATH: /run/otgd/identity-key.pem
+  AWS_ACCESS_KEY_ID: test
+  AWS_SECRET_ACCESS_KEY: test
+  AWS_DEFAULT_REGION: us-east-2
+  AWS_EC2_METADATA_DISABLED: "true"
+
+services:
+  postgres:
+    image: postgres:16-bookworm@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4
+    environment:
+      POSTGRES_DB: otgd
+      POSTGRES_USER: otgd_migrator
+      POSTGRES_PASSWORD: ${OTGD_LOCAL_MIGRATION_PASSWORD:?Run scripts/local-platform.py prepare}
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U otgd_migrator -d otgd"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  localstack:
+    image: localstack/localstack:2026.09.1@sha256:0c644ede65c2d0c95737e09a39007828bd381bdb07ca8200c6bf17d66a4ed191
+    environment:
+      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:?Supply your LocalStack developer or CI token}
+      SERVICES: s3,sqs
+      LOCALSTACK_HOST: localstack:4566
+      SQS_ENDPOINT_STRATEGY: path
+      SQS_ENABLE_MESSAGE_RETENTION_PERIOD: "1"
+      PERSISTENCE: "1"
+      LS_LOG: warn
+    ports: ["${OTGD_BIND_ADDRESS:-127.0.0.1}:4566:4566"]
+    volumes: [localstack-data:/var/lib/localstack]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:4566/_localstack/health',timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 30
+      start_period: 15s
+    restart: unless-stopped
+  resource-init:
+    <<: *runtime
+    environment: *environment
+    command: [uv, run, --no-sync, python, /app/infra/local/bootstrap_resources.py]
+    depends_on:
+      localstack: {condition: service_healthy}
+  migrate:
+    <<: *runtime
+    environment:
+      <<: *environment
+      OTGD_DATABASE_USER: otgd_migrator
+      OTGD_DATABASE_PASSWORD: ${OTGD_LOCAL_MIGRATION_PASSWORD}
+      OTGD_DATABASE_POOL_SIZE: "1"
+      OTGD_APP_DATABASE_USER: otgd_app
+      OTGD_APP_DATABASE_PASSWORD: ${OTGD_LOCAL_APP_PASSWORD}
+    command: [uv, run, --no-sync, python, -m, otgd.migrate]
+    depends_on:
+      postgres: {condition: service_healthy}
+      resource-init: {condition: service_completed_successfully}
+  identity:
+    <<: *runtime
+    user: "${OTGD_LOCAL_UID:-1000}:${OTGD_LOCAL_GID:-1000}"
+    environment:
+      <<: *environment
+      OTGD_DATABASE_POOL_SIZE: "2"
+    command: [uv, run, --no-sync, uvicorn, otgd.local_identity:app, --host, 0.0.0.0, --port, "8081", --no-access-log]
+    volumes:
+      - ./secrets/identity-key.pem:/run/otgd/identity-key.pem:ro
+    ports: ["${OTGD_BIND_ADDRESS:-127.0.0.1}:8081:8081"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8081/.well-known/jwks.json',timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    restart: unless-stopped
+  api:
+    <<: *runtime
+    environment:
+      <<: *environment
+      OTGD_DATABASE_POOL_SIZE: "5"
+    ports: ["${OTGD_BIND_ADDRESS:-127.0.0.1}:8000:8000"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready',timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      identity: {condition: service_healthy}
+    restart: unless-stopped
+  worker:
+    <<: *runtime
+    environment:
+      <<: *environment
+      OTGD_DATABASE_POOL_SIZE: "3"
+    command: [uv, run, --no-sync, python, -m, otgd.worker]
+    depends_on:
+      api: {condition: service_healthy}
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  localstack-data:

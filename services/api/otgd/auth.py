@@ -1,0 +1,161 @@
+import hashlib
+import hmac
+import threading
+import time
+
+import httpx
+import jwt
+from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+
+from .canonical import canonical
+from .config import settings
+from .db import Account, Revocation, SystemState, now, uid
+from .errors import Problem
+
+
+class Verifier:
+    def __init__(self):
+        self.keys = {}
+        self.expires = 0
+        self.last_refresh = 0
+        self.lock = threading.Lock()
+
+    def verify(self, token):
+        s = settings()
+        try:
+            head = jwt.get_unverified_header(token)
+            if (
+                head.get("alg") != "RS256"
+                or not isinstance(head.get("kid"), str)
+                or len(head["kid"]) > 128
+            ):
+                raise ValueError()
+            with self.lock:
+                current = time.monotonic()
+                if current >= self.expires or head["kid"] not in self.keys:
+                    if current - self.last_refresh < 10:
+                        raise ValueError("JWKS refresh bound")
+                    self.last_refresh = current
+                    r = httpx.get(s.jwks_url, timeout=5, follow_redirects=False)
+                    if r.status_code != 200 or len(r.content) > 65536:
+                        raise ValueError()
+                    keys = r.json().get("keys", [])
+                    if len(keys) > 16:
+                        raise ValueError()
+                    self.keys = {
+                        k["kid"]: jwt.PyJWK.from_dict(k).key
+                        for k in keys
+                        if k.get("kty") == "RSA"
+                        and k.get("alg", "RS256") == "RS256"
+                        and k.get("use", "sig") == "sig"
+                    }
+                    self.expires = current + 300
+                key = self.keys[head["kid"]]
+            claims = jwt.decode(
+                token,
+                key,
+                algorithms=["RS256"],
+                issuer=s.issuer,
+                options={
+                    "verify_aud": False,
+                    "require": [
+                        "exp",
+                        "iat",
+                        "iss",
+                        "sub",
+                        "client_id",
+                        "token_use",
+                        "jti",
+                        "origin_jti",
+                        "auth_time",
+                    ],
+                },
+            )
+            if claims["token_use"] != "access" or claims["client_id"] != s.client_id:
+                raise ValueError()
+            for field in ["sub", "origin_jti", "jti"]:
+                if (
+                    not isinstance(claims[field], str)
+                    or not 1 <= len(claims[field]) <= 128
+                ):
+                    raise ValueError()
+            if (
+                not isinstance(claims["auth_time"], int)
+                or claims["auth_time"] > now() + 5
+            ):
+                raise ValueError()
+            return claims
+        except (jwt.PyJWTError, ValueError, KeyError, TypeError, httpx.HTTPError):
+            raise Problem(401, "AUTH_REQUIRED") from None
+
+
+verifier = Verifier()
+
+
+def subject_hash(claims):
+    s = settings()
+    key = bytes.fromhex(s.tombstone_key or "00" * 32)
+    return hmac.new(
+        key, canonical([s.issuer, claims["sub"]]), hashlib.sha256
+    ).hexdigest()
+
+
+def family_hash(account_id, family):
+    return hashlib.sha256(canonical([account_id, family])).hexdigest()
+
+
+def authenticate(db, authorization, receipt=False):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise Problem(401, "AUTH_REQUIRED")
+    claims = verifier.verify(authorization[7:])
+    subject = subject_hash(claims)
+    recovery = db.get(SystemState, "recovery")
+    if settings().recovery_required and (
+        not recovery or not recovery.body.get("verified")
+    ):
+        raise Problem(503, "RECOVERY_NOT_VERIFIED", retryable=True)
+    if recovery and claims["auth_time"] < recovery.body.get("authentication_cutoff", 0):
+        raise Problem(401, "FRESH_SIGN_IN_REQUIRED")
+    restored = db.get(SystemState, "subject:" + subject)
+    account = db.scalar(
+        select(Account)
+        .where(Account.subject_hash == subject)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    if account is None:
+        if restored:
+            data = restored.body
+            values = dict(
+                id=data["account_ref"],
+                subject_hash=subject,
+                generation=data["generation"],
+                state=data["state"],
+            )
+        else:
+            values = dict(id=uid(), subject_hash=subject, generation=1, state="active")
+        insert = pg_insert if db.bind.dialect.name == "postgresql" else sqlite_insert
+        db.execute(
+            insert(Account)
+            .values(**values)
+            .on_conflict_do_nothing(index_elements=["subject_hash"])
+        )
+        account = db.scalar(
+            select(Account)
+            .where(Account.subject_hash == subject)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+    revoked = db.get(Revocation, family_hash(account.id, claims["origin_jti"]))
+    if revoked and not receipt:
+        raise Problem(401, "AUTH_REQUIRED")
+    if account.state == "deleted" and not receipt:
+        raise Problem(403, "ACCOUNT_DELETED")
+    return account, claims, bool(revoked)
+
+
+def recent(claims):
+    if now() - claims["auth_time"] > 300:
+        raise Problem(401, "REAUTHENTICATION_REQUIRED")

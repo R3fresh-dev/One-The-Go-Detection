@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["reaction-task/**/*.ts", "device-transport/**/*.ts", "../src/device/**/*.ts", "../src/device/**/*.tsx"],
+  "exclude": ["**/node_modules", "**/android", "**/ios"]
+}

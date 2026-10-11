@@ -1,21 +1,86 @@
 # One-The-Go Detection
 
-Design and development starter for a portable cannabis-assessment device and mobile application, with a separate future breath-alcohol channel.
+A mobile and device development platform for one saliva sample, physiological measurements, and one continuous reaction task, with a separate future breath-alcohol channel.
 
-**Status: engineering specification v0.1 and synthetic integration starter.** The intended cannabis workflow is one saliva collection, one continuous reaction task with repeated trials, and synchronized physiological measurements. The scientific question is whether these measurements can predict a defined functional-impairment endpoint. That question remains open: this repository contains no trained model, validated cannabis assay, working mobile app, or production hardware.
+**The repository now contains the reviewed OpenSpec feature set, Android/iOS application source, native modules, API/worker, Arduino BLE simulator and LocalStack/QA/production infrastructure.** The software records measurements and uncalibrated practice. It does not predict intoxication, metabolic clearance or fitness to drive. There is no trained/qualified clinical model, validated saliva assay or approved human sensor configuration in this release.
 
-The initial hardware recommendation is an **Arduino Nano ESP32**. Start with the supplied synthetic USB-serial sketch, then implement BLE transport and PPG acquisition. Develop the saliva chemistry with an analytical laboratory in parallel. See the [hardware starter guide](specs/HARDWARE_STARTER_GUIDE.md) for the shopping list, wiring proposal, development sequence, and sources.
+Read the [implementation and verification status](IMPLEMENTATION_STATUS.md) for the exact distinction between supplied source, passing checks, native builds and external release prerequisites. No AWS deployment or clinical qualification is implied by source or infrastructure synthesis.
 
-## Requested design documents
+## Start here
 
-| Document | What it defines |
+| What you want | Start here |
 |---|---|
-| [Product Requirements Document](specs/PRD.md) | Intended users, scope, workflow, product requirements, success criteria, release boundaries, and commercial assumptions |
-| [High-Level Design](specs/HLD.md) | Device, mobile, backend, research, and assay responsibilities; system flow; security and deployment boundaries |
-| [Low-Level Design](specs/LLD.md) | Record semantics, timing, reaction-task proposal, BLE framing, API behavior, storage, model gating, and errors |
-| [Full Specification Sheet](specs/FULL_SPECIFICATION.md) | Normative requirements, subsystem specifications, acceptance evidence, traceability, and decisions required before release |
+| Buy the initial bench parts | [Exact shopping list and vendor links](specs/SHOPPING_LIST.md): **$94.40**, or **$115.90 with a multimeter**, before tax/shipping. |
+| Review the product and architecture | [PRD](specs/PRD.md), [HLD](specs/HLD.md), [LLD](specs/LLD.md), [full specification](specs/FULL_SPECIFICATION.md). |
+| Implement/review one app feature | [20-feature OpenSpec index](openspec/changes/production-mobile-platform/README.md), [shared contracts](openspec/changes/production-mobile-platform/shared-contracts.md), [tasks](openspec/changes/production-mobile-platform/tasks.md). |
+| See the adversarial review | [Findings and re-review ledger](openspec/changes/production-mobile-platform/reviews/RESOLUTION_LEDGER.md). |
+| Run Android/iOS | [Mobile application](apps/mobile/README.md), native modules under `apps/mobile/modules`. |
+| Run actual local service dependencies | [LocalStack and PostgreSQL quick start](infra/README.md), [routing/environment settings](infra/ENVIRONMENT.md). |
+| Deploy an approved release to AWS | [Deployment tooling](deploy/README.md), [operator runbooks](infra/runbooks/OPERATIONS.md), [dated cost estimate](infra/costs/README.md). |
+| Work on the backend/API | [Service engineering guide](services/api/README.md), [generated application contract](contracts/application/README.md). |
 
-Supporting documents: [reading order](specs/README.md), [hardware starter guide](specs/HARDWARE_STARTER_GUIDE.md), [validation plan](specs/VALIDATION_PLAN.md), [roadmap](specs/ROADMAP.md), [decision log](specs/DECISIONS.md), [sources](specs/SOURCES.md), and [verification report](specs/VERIFICATION_REPORT.md).
+## Specifications before implementation
+
+The reviewed specification checkpoint is commit [`47d8ecb`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/47d8ecbfc871b5026f32d4f5f474908e9c0e1b14). It contains **20 Android feature capabilities, 140 requirements and 321 acceptance scenarios**, with iOS parity, detailed customer flows and engineering contracts. Three independent review perspectives covered product/domain, security/data and platform/operations. The ledger preserves 38 original findings, their corrections and targeted re-reviews; no critical/high specification blocker remained before implementation began.
+
+The latest AWS requirement is implemented as three separate environments. The scientific gates in the original PRD/HLD/LLD remain open. Later commercial-strategy research is preserved as proposed alternative scope, not silently substituted for this application.
+
+## Application and platform source
+
+The mobile application uses Expo/React Native with shared Android/iOS journeys and native Kotlin/Swift modules for the reaction task, BLE transport and protected storage support. It includes first-run introduction, notice acknowledgment, PKCE sign-in, profile/context, Home, guided checks, sensor steps, history, results, explicit uploads, export, deletion, settings and study membership/withdrawal.
+
+Native account data uses SQLCipher with protected per-workspace keys and an encrypted outbox. The browser preview is deliberately memory-only. The reaction module retains full trial/input/timing evidence, checks the frozen task configuration and marks practice uncalibrated. Sensor simulators retain fictional provenance. Phone preview and a generic board are not treated as selective cannabinoid sensors.
+
+The FastAPI/PostgreSQL service supplies owner/generation isolation, immutable evidence, RFC 8785 hashes, conditional versioned S3 uploads, SQS workers, authenticated exports and deletion recovery. QA/prod CDK stacks provide private Fargate/RDS, TLS ingress, Cognito, private encrypted buckets/queues, secrets, backups, budget inputs and alarms. Exact image digests and dependency lockfiles are committed.
+
+## Run the mobile preview
+
+Use Node 24.19.0 and npm 11 with the committed lockfile:
+
+```bash
+npm ci --prefix apps/mobile
+npm run typecheck --prefix apps/mobile
+npm test --prefix apps/mobile
+npm run web --prefix apps/mobile
+```
+
+The preview runs on port **8082**, leaving **8081** for the local identity issuer. Guest demo works without the backend. Web preview does not implement native reaction acquisition, Bluetooth, OS-protected account storage or native sharing behavior. Use a development client for those paths.
+
+For Android, install the documented SDK/JDK and run `npm run android` from `apps/mobile`. For iOS, use the documented macOS/Xcode toolchain and `npm run ios`. The mobile guide gives exact emulator/phone environment settings and explains the difference between a debug APK, simulator app and signed store build. Expo Go cannot supply these custom native modules or SQLCipher configuration.
+
+## Run LocalStack and the service
+
+Install Docker with Compose v2, Python 3.12 and `uv` 0.13.0. Supply an appropriate LocalStack authentication token in your environment, then run:
+
+```bash
+uv sync --project services/api --locked
+python scripts/local-platform.py prepare --host localhost
+python scripts/local-platform.py up
+python scripts/local-platform.py check
+```
+
+Choose the correct host **before preparing the environment and building the app**: `localhost` for the iOS simulator, `10.0.2.2` for the Android emulator, or your computer's LAN IP with `--lan` for a physical phone. Configure API and OAuth origins consistently; identity issuer URLs must match exactly. See the [routing table](infra/ENVIRONMENT.md#local-phone-routing).
+
+For a disposable fictional local workspace, `python scripts/local-platform.py check-app --confirm-fictional-workspace` exercises actual PKCE → HTTP API → SQS worker → export → all-data deletion. This command deletes Fictional Account A's local data. The script requires real local services and never calls an in-process replacement worker.
+
+## Verify contracts and backend source
+
+```bash
+uv run --project services/api python tools/verify_specs.py
+uv run --project services/api pytest -q services/api/tests
+uv run --project services/api python tools/generate_application_contracts.py
+npm ci --ignore-scripts --prefix infra
+npm run verify --prefix infra
+OPENSPEC_TELEMETRY=0 npx --yes @fission-ai/openspec@1.14.1 validate production-mobile-platform --strict
+```
+
+Read the verification report for actual counts and externally unexecuted gates. CI separates ordinary source checks, a real PostgreSQL service, native builds, firmware compilation and an explicitly requested LocalStack integration run. A green source job does not satisfy the AWS or device release gates.
+
+## Hardware sequence
+
+Start with the **Arduino Nano ESP32 with headers (ABX00083)** and the exact [shopping basket](specs/SHOPPING_LIST.md). The new `firmware/nano_esp32_ble_simulator` firmware exercises the app's bounded synthetic BLE transport. The original [USB serial sketch](examples/arduino/synthetic_serial/synthetic_serial.ino) remains useful for the first board/USB check.
+
+First establish repeatable board power, USB upload and explicitly fictional BLE exchange. Then develop the PPG driver and finger fixture using the documented 3.3 V wiring. Develop selective saliva chemistry, collection and reference-method comparison with a suitable laboratory in parallel. ECG begins with simulator/circuit review; qualified optics, human-contact electronics and chemical measurement are separate engineering milestones. A custom PCB follows demonstrated sensing and power requirements.
 
 ## Research reports
 
@@ -23,59 +88,16 @@ Supporting documents: [reading order](specs/README.md), [hardware starter guide]
 - [FDA regulatory and compliance assessment](specs/research/FDA_REGULATORY_ASSESSMENT.md): current US classification, study, quality, software, cybersecurity, and postmarket requirements mapped to the repository's evidence gates. [PDF edition](specs/research/FDA_Regulatory_Assessment.pdf).
 - [Faster market-entry strategy](specs/research/FAST_MARKET_STRATEGY.md): proposed staged launch using existing products and a limited app, followed by an OEM all-in-one exposure device; includes a 30-day readiness sprint and illustrative $20/month economics. These research recommendations do not change the current product requirements or close release gates. [PDF edition](specs/research/Fast_Market_Strategy.pdf).
 
-## What is implemented
-
-- Five JSON Schemas for measurements, sessions, model manifests, results, and synthetic telemetry.
-- An OpenAPI 3.1 design describing eight proposed API paths; no server is deployed.
-- Fictional, explicitly simulated example data, including pg/mL-to-ng/mL conversion.
-- A Python measurement-only demo and contract-verification tools.
-- An Arduino sketch that emits synthetic NDJSON over USB serial at 115200 baud.
-
-The sketch has no sensor drivers, BLE implementation, chemical measurement, or impairment inference. It has not been compiled with an Arduino board toolchain or tested on physical hardware. Those are recorded development steps, not implied deliverables.
-
-## Run the local demonstration
-
-Python 3.12 was used for the recorded verification. These commands assume a POSIX shell; activate the virtual environment using the corresponding command on Windows.
-
-```bash
-git clone https://github.com/R3fresh-dev/One-The-Go-Detection.git
-cd One-The-Go-Detection
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements-dev.txt
-python tools/verify_specs.py
-python tools/run_demo.py
-python tools/check_telemetry.py examples/synthetic_telemetry.ndjson
-```
-
-The demo validates the fictional session and emits JSON with `state: "measurement_only"` and `probability: null`. It does not train a model or estimate an individual's intoxication, metabolic rate, or clearance time. The verifier checks software contracts and documented consistency; passing it does not establish clinical or analytical validity.
-
-See [examples/README.md](examples/README.md) for the fixture meanings and Arduino upload steps, and [contracts/README.md](contracts/README.md) for unit, provenance, missingness, and lifecycle rules.
-
-## Hardware: the first useful milestone
-
-1. Obtain a Nano ESP32, a data-capable USB cable, and basic bench accessories.
-2. Open [synthetic_serial.ino](examples/arduino/synthetic_serial/synthetic_serial.ino) in Arduino IDE, select the actual board and port, record the installed toolchain versions, and upload it.
-3. Inspect the explicitly synthetic JSON lines. Resetting or reconnecting starts a fresh receiver capture; the starter does not yet provide persistent session identity.
-4. Implement and verify the proposed BLE protocol using synthetic data.
-5. Add the selected SparkFun MAX30101 + MAX32664 PPG breakout and a repeatable finger fixture. Use the exact wiring and driver configuration described in the hardware guide.
-6. In parallel, define the oral-fluid collection method and commission assay feasibility against a qualified reference method.
-
-Phone-camera capture and the reaction task are mobile-development work. ECG begins with simulator evaluation and review of the complete human-contact circuit. Optical stimulus configuration also needs device-specific review before human experiments. A custom PCB follows demonstrated sensing and power requirements.
-
 ## Result and release boundaries
 
-| Phase | Purpose | Permitted result |
-|---|---|---|
-| P0 | Synthetic device/software integration | Measurement-only demonstration |
-| P1 | Analytical and acquisition feasibility | Measurements and quality states; no intoxication probability |
-| P2 | Authorized controlled research with an independently evaluated endpoint | Gated research estimates only after the specified model and protocol requirements are met |
-| P3 | Possible future product | Requires additional validation, a new release contract, and a reviewed intended-use claim |
+| Release area | Current behavior / evidence needed |
+|---|---|
+| Demonstration | Fictional sensor values and separately labeled native practice; guest records stay local. |
+| Account data | Explicit profile saves and check uploads, current notice, account ownership and data-generation enforcement. |
+| Human channel | Requires actual qualified hardware/configuration, current study/consent where applicable, and exact provenance; no approved real configuration is seeded. |
+| Intoxication prediction | Compiled unavailable. A new reviewed release, independent endpoint labels and prospective validation are required to make an impairment claim. |
+| AWS production | Infrastructure and promotion controls supplied; actual QA evidence, deployment inputs, credentials, operator ownership and release gates are required. |
 
-Cannabinoid detection establishes evidence about exposure. An impairment claim needs independently collected outcome labels and prospective validation of the complete workflow. Adding biometrics does not by itself establish that claim. The evidence and proposed experiments are detailed in the [validation plan](specs/VALIDATION_PLAN.md) and [source register](specs/SOURCES.md).
+Keep real participant recordings, identifiable measurements and credentials out of this repository. Examples and test fixtures are fictional. Qualification cannot be manufactured with a `validated_sensor` string, a device name, a CRC or an approval flag. Changes to units, assay basis, collection matrix, task configuration, feature extraction, hardware scope or model eligibility require coordinated changes to contracts and evidence.
 
-## Working rules
-
-Keep real participant measurements, identifiable recordings, credentials, and production secrets out of this public repository. Use approved private study storage for research data. The included examples are entirely fictional. Schema-valid data, source labels, or manifest approval strings do not independently authorize research or establish measurement validity.
-
-Changes to units, assay basis, collection matrix, task configuration, feature extraction, hardware scope, or model eligibility require coordinated updates to the specification, contracts, examples, and relevant validation evidence. Use the [decision log](specs/DECISIONS.md) to distinguish settled engineering choices from open scientific and product decisions.
+Supporting documents: [reading order](specs/README.md), [validation plan](specs/VALIDATION_PLAN.md), [decision log](specs/DECISIONS.md), [source register](specs/SOURCES.md) and [hardware development guide](specs/HARDWARE_STARTER_GUIDE.md).

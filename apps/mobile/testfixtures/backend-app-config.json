@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "environment": "test",
+  "maintenance": false,
+  "minimum_app_version": "0.2.0",
+  "supported_app_versions": [
+    "0.2.0"
+  ],
+  "contract_versions": {
+    "application": [
+      "1.0.0"
+    ],
+    "scientific": [
+      "0.1.0"
+    ],
+    "capture_evidence": [
+      "1.0.0"
+    ],
+    "native_task": [
+      "1.0.0"
+    ]
+  },
+  "inference_available": false,
+  "notice": {
+    "version": "v1",
+    "sha256": "d7cbc95af587b78603d5c1f7158eebe227f67289100f99f9763f01b30b45f12c",
+    "locale": "en",
+    "content_path": "/v1/notices/v1",
+    "mandatory": true
+  },
+  "auth": {
+    "issuer": "http://localhost:8081",
+    "client_id": "otgd-local-mobile",
+    "authorization_endpoint": "http://localhost:8081/oauth2/authorize",
+    "token_endpoint": "http://localhost:8081/oauth2/token",
+    "revocation_endpoint": "http://localhost:8081/oauth2/revoke",
+    "logout_endpoint": "http://localhost:8081/logout",
+    "redirect_uris": [
+      "otgd-local://oauth/callback",
+      "http://localhost:8082/"
+    ]
+  },
+  "limits": {
+    "request_bytes": 1048576,
+    "attempt_bytes": 524288,
+    "export_sessions": 500
+  }
+}

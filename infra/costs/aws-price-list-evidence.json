@@ -1,0 +1,2639 @@
+[
+  {
+    "service": "AmazonECS",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECS/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:44:25Z",
+    "rates": [
+      {
+        "sku": "UGSJ89BUWB7SMJ6A",
+        "attributes": {
+          "servicecode": "AmazonECS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "tenancy": "Shared",
+          "usagetype": "USE2-Fargate-vCPU-Hours:perCPU",
+          "operation": "",
+          "cputype": "perCPU",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Elastic Container Service"
+        },
+        "price": {
+          "rateCode": "UGSJ89BUWB7SMJ6A.JRTCKXETXF.6YS6EN2CT7",
+          "description": "AWS Fargate - vCPU  - US East 2 (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "hours",
+          "pricePerUnit": {
+            "USD": "0.0404800000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "HH5EE3ZFWSFKGKWM",
+        "attributes": {
+          "servicecode": "AmazonECS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "tenancy": "Shared",
+          "usagetype": "USE2-Fargate-GB-Hours",
+          "operation": "",
+          "memorytype": "perGB",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Elastic Container Service"
+        },
+        "price": {
+          "rateCode": "HH5EE3ZFWSFKGKWM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "AWS Fargate - Memory  - US East 2 (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "hours",
+          "pricePerUnit": {
+            "USD": "0.0044450000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AWSELB",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSELB/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:45:44Z",
+    "rates": [
+      {
+        "sku": "S3YDM2U7G69S4W5C",
+        "attributes": {
+          "servicecode": "AWSELB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "ELB:Balancing",
+          "groupDescription": "Used Application Load Balancer capacity units-hr",
+          "usagetype": "USE2-LCUUsage",
+          "operation": "LoadBalancing:Application",
+          "regionCode": "us-east-2",
+          "servicename": "Elastic Load Balancing"
+        },
+        "price": {
+          "rateCode": "S3YDM2U7G69S4W5C.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.008 per used Application load balancer capacity unit-hour (or partial hour)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "LCU-Hrs",
+          "pricePerUnit": {
+            "USD": "0.0080000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "6SJQ6E3S7S5VCFJ2",
+        "attributes": {
+          "servicecode": "AWSELB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "ELB:Balancing",
+          "groupDescription": "Reserved Application Load Balancer capacity units-hr",
+          "usagetype": "USE2-ReservedLCUUsage",
+          "operation": "LoadBalancing:Application",
+          "regionCode": "us-east-2",
+          "servicename": "Elastic Load Balancing"
+        },
+        "price": {
+          "rateCode": "6SJQ6E3S7S5VCFJ2.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.008 per reserved Application load balancer capacity unit-hour",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "ReservedLCU-Hr",
+          "pricePerUnit": {
+            "USD": "0.0080000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "UET6TJH8GGYYTDCR",
+        "attributes": {
+          "servicecode": "AWSELB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Outposts",
+          "group": "ELB:Balancing",
+          "groupDescription": "LoadBalancer hourly usage by Application Load Balancer on Outposts",
+          "usagetype": "USE2-Outposts-LoadBalancerUsage",
+          "operation": "LoadBalancing:Application",
+          "regionCode": "us-east-2",
+          "servicename": "Elastic Load Balancing"
+        },
+        "price": {
+          "rateCode": "UET6TJH8GGYYTDCR.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.0225 per Hrs for Outposts-LoadBalancerUsage:LoadBalancing:Application in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0225000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "RPDPKNT98CDEU7RX",
+        "attributes": {
+          "servicecode": "AWSELB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Outposts",
+          "group": "ELB:Balancing",
+          "groupDescription": "Used Application Load Balancer capacity On Outposts units-hr",
+          "usagetype": "USE2-Outposts-LCUUsage",
+          "operation": "LoadBalancing:Application",
+          "regionCode": "us-east-2",
+          "servicename": "Elastic Load Balancing"
+        },
+        "price": {
+          "rateCode": "RPDPKNT98CDEU7RX.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.0 per LCU-Hrs for Outposts-LCUUsage:LoadBalancing:Application in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "LCU-Hrs",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "TV65NGUNJKJ5DXHE",
+        "attributes": {
+          "servicecode": "AWSELB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "ELB:Balancing",
+          "groupDescription": "TS hourly usage by Application Load Balancer",
+          "usagetype": "USE2-TS-LoadBalancerUsage",
+          "operation": "LoadBalancing:Application",
+          "regionCode": "us-east-2",
+          "servicename": "Elastic Load Balancing"
+        },
+        "price": {
+          "rateCode": "TV65NGUNJKJ5DXHE.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.005 per associated Application load balancer Trust Store unit-hour ",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0050000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "HCVPZW9WEWSJKJWJ",
+        "attributes": {
+          "servicecode": "AWSELB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "ELB:Balancing",
+          "groupDescription": "LoadBalancer hourly usage by Application Load Balancer",
+          "usagetype": "USE2-LoadBalancerUsage",
+          "operation": "LoadBalancing:Application",
+          "regionCode": "us-east-2",
+          "servicename": "Elastic Load Balancing"
+        },
+        "price": {
+          "rateCode": "HCVPZW9WEWSJKJWJ.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.0225 per Application LoadBalancer-hour (or partial hour)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0225000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonRDS",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.json",
+    "published_at": "2026-10-06T22:40:50Z",
+    "rates": [
+      {
+        "sku": "ATUDCTTG2W8H2WEK",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceType": "db.t4g.medium",
+          "currentGeneration": "Yes",
+          "instanceFamily": "General purpose",
+          "vcpu": "2",
+          "physicalProcessor": "AWS Graviton2",
+          "memory": "4 GiB",
+          "storage": "EBS Only",
+          "networkPerformance": "Up to 5 Gigabit",
+          "processorArchitecture": "64-bit",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "licenseModel": "No license required",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-InstanceUsage:db.t4g.medium",
+          "operation": "CreateDBInstance:0014",
+          "instanceTypeFamily": "T4G",
+          "normalizationSizeFactor": "2",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service",
+          "unbundledLicensing": "FALSE"
+        },
+        "price": {
+          "rateCode": "ATUDCTTG2W8H2WEK.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$ 0.065 per RDS db.t4g.medium Single-AZ instance hour (or partial hour) running PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0650000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3ACZ8T48EMVC2JAD",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceType": "db.t4g.small",
+          "currentGeneration": "Yes",
+          "instanceFamily": "General purpose",
+          "vcpu": "2",
+          "physicalProcessor": "AWS Graviton2",
+          "memory": "2 GiB",
+          "storage": "EBS Only",
+          "networkPerformance": "Up to 5 Gigabit",
+          "processorArchitecture": "64-bit",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "licenseModel": "No license required",
+          "deploymentOption": "Multi-AZ",
+          "usagetype": "USE2-Multi-AZUsage:db.t4g.small",
+          "operation": "CreateDBInstance:0014",
+          "instanceTypeFamily": "T4G",
+          "normalizationSizeFactor": "2",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service",
+          "unbundledLicensing": "FALSE"
+        },
+        "price": {
+          "rateCode": "3ACZ8T48EMVC2JAD.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$ 0.065 per RDS db.t4g.small Multi-AZ instance hour (or partial hour) running PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0650000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "JQQGK6D789TWJF8B",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "SSD",
+          "volumeType": "General Purpose-GP3",
+          "minVolumeSize": "5 GB",
+          "maxVolumeSize": "16 TB",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:GP3-Storage",
+          "operation": "CreateDBInstance:0014",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "JQQGK6D789TWJF8B.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.115 per GB-month of provisioned GP3 storage running PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.1150000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "JBDFT6PN9ME2D9FK",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceType": "db.t4g.small",
+          "currentGeneration": "Yes",
+          "instanceFamily": "General purpose",
+          "vcpu": "2",
+          "physicalProcessor": "AWS Graviton2",
+          "memory": "2 GiB",
+          "storage": "EBS Only",
+          "networkPerformance": "Up to 5 Gigabit",
+          "processorArchitecture": "64-bit",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "licenseModel": "No license required",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-InstanceUsage:db.t4g.small",
+          "operation": "CreateDBInstance:0014",
+          "instanceTypeFamily": "T4G",
+          "normalizationSizeFactor": "1",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service",
+          "unbundledLicensing": "FALSE"
+        },
+        "price": {
+          "rateCode": "JBDFT6PN9ME2D9FK.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$ 0.032 per RDS db.t4g.small Single-AZ instance hour (or partial hour) running PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0320000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "TG4JJV2SAY6GV8HK",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "SSD",
+          "volumeType": "General Purpose-GP3",
+          "minVolumeSize": "5 GB",
+          "maxVolumeSize": "16 TB",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "deploymentOption": "Multi-AZ (readable standbys)",
+          "usagetype": "USE2-RDS:Multi-AZCluster-GP3-Storage",
+          "operation": "CreateDBInstance:0014",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "TG4JJV2SAY6GV8HK.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.345 per GB-month of provisioned GP3 storage Multi-AZ (readable standbys) deployments running PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.3450000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "CV3XZCH8KVNFGA7S",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "SSD",
+          "volumeType": "General Purpose-GP3",
+          "minVolumeSize": "5 GB",
+          "maxVolumeSize": "16 TB",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "deploymentOption": "Multi-AZ",
+          "usagetype": "USE2-RDS:Multi-AZ-GP3-Storage",
+          "operation": "CreateDBInstance:0014",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "CV3XZCH8KVNFGA7S.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.23 per GB-month of provisioned GP3 storage for Multi-AZ deployments running PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.2300000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "TSD7ATBERYCKUUSA",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceType": "db.t4g.medium",
+          "currentGeneration": "Yes",
+          "instanceFamily": "General purpose",
+          "vcpu": "2",
+          "physicalProcessor": "AWS Graviton2",
+          "memory": "4 GiB",
+          "storage": "EBS Only",
+          "networkPerformance": "Up to 5 Gigabit",
+          "processorArchitecture": "64-bit",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "licenseModel": "No license required",
+          "deploymentOption": "Multi-AZ",
+          "usagetype": "USE2-Multi-AZUsage:db.t4g.medium",
+          "operation": "CreateDBInstance:0014",
+          "instanceTypeFamily": "T4G",
+          "normalizationSizeFactor": "4",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service",
+          "unbundledLicensing": "FALSE"
+        },
+        "price": {
+          "rateCode": "TSD7ATBERYCKUUSA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$ 0.129 per RDS db.t4g.medium Multi-AZ instance hour (or partial hour) running PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.1290000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonS3",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-2/index.json",
+    "published_at": "2026-09-28T23:04:16Z",
+    "rates": [
+      {
+        "sku": "GJKK9PMSTKPNGZS9",
+        "attributes": {
+          "servicecode": "AmazonS3",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "S3-API-Tier1",
+          "groupDescription": "PUT/COPY/POST or LIST requests",
+          "usagetype": "USE2-Requests-Tier1",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Storage Service"
+        },
+        "price": {
+          "rateCode": "GJKK9PMSTKPNGZS9.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.005 per 1,000 PUT, COPY, POST, or LIST requests",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000050000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "8ZFQ57FZ52W4PZV7",
+        "attributes": {
+          "servicecode": "AmazonS3",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageClass": "General Purpose",
+          "volumeType": "Annotations",
+          "usagetype": "USE2-Annotation-TimedStorage-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Storage Service"
+        },
+        "price": {
+          "rateCode": "8ZFQ57FZ52W4PZV7.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.023 per GB-Mo of Storage in Annotations ",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0230000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "KSZXZTTPT2XVPMRN",
+        "attributes": {
+          "servicecode": "AmazonS3",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "S3-API-Tables-Tier2",
+          "groupDescription": "GET and all other requests to S3 Table Buckets",
+          "usagetype": "USE2-Tables-Requests-Tier2",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Storage Service"
+        },
+        "price": {
+          "rateCode": "KSZXZTTPT2XVPMRN.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.0004 per 1,000 GET and All Other Requests to S3 Table Buckets in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000004000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "C83D4NGJH8PXXPSS",
+        "attributes": {
+          "servicecode": "AmazonS3",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "S3-API-Tables-Tier1",
+          "groupDescription": "PUT/COPY/POST or LIST requests to S3 Table Buckets",
+          "usagetype": "USE2-Tables-Requests-Tier1",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Storage Service"
+        },
+        "price": {
+          "rateCode": "C83D4NGJH8PXXPSS.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.005 per 1,000 PUT Requests/COPY/POST or LIST Requests to S3 Table Buckets in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000050000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "DJEKB32FV4HNZJZY",
+        "attributes": {
+          "servicecode": "AmazonS3",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "S3-API-Tier2",
+          "groupDescription": "GET and all other requests",
+          "usagetype": "USE2-Requests-Tier2",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Storage Service"
+        },
+        "price": {
+          "rateCode": "DJEKB32FV4HNZJZY.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.004 per 10,000 GET and all other requests",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000004000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "YPGKVRB2EKTVDJDT",
+        "attributes": {
+          "servicecode": "AmazonS3",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "availability": "99.99%",
+          "storageClass": "General Purpose",
+          "volumeType": "Standard",
+          "usagetype": "USE2-TimedStorage-ByteHrs",
+          "operation": "",
+          "durability": "99.999999999%",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Storage Service"
+        },
+        "price": {
+          "rateCode": "YPGKVRB2EKTVDJDT.JRTCKXETXF.PGHJ3S3EYE",
+          "description": "$0.023 per GB - first 50 TB / month of storage used",
+          "beginRange": "0",
+          "endRange": "51200",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0230000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "YPGKVRB2EKTVDJDT",
+        "attributes": {
+          "servicecode": "AmazonS3",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "availability": "99.99%",
+          "storageClass": "General Purpose",
+          "volumeType": "Standard",
+          "usagetype": "USE2-TimedStorage-ByteHrs",
+          "operation": "",
+          "durability": "99.999999999%",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Storage Service"
+        },
+        "price": {
+          "rateCode": "YPGKVRB2EKTVDJDT.JRTCKXETXF.D42MF2PVJS",
+          "description": "$0.022 per GB - next 450 TB / month of storage used",
+          "beginRange": "51200",
+          "endRange": "512000",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0220000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "YPGKVRB2EKTVDJDT",
+        "attributes": {
+          "servicecode": "AmazonS3",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "availability": "99.99%",
+          "storageClass": "General Purpose",
+          "volumeType": "Standard",
+          "usagetype": "USE2-TimedStorage-ByteHrs",
+          "operation": "",
+          "durability": "99.999999999%",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Storage Service"
+        },
+        "price": {
+          "rateCode": "YPGKVRB2EKTVDJDT.JRTCKXETXF.PXJDJ3YRG3",
+          "description": "$0.021 per GB - storage used / month over 500 TB",
+          "beginRange": "512000",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0210000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AWSQueueService",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSQueueService/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:46:07Z",
+    "rates": [
+      {
+        "sku": "9C8YFGPNBKF9HP9A",
+        "attributes": {
+          "servicecode": "AWSQueueService",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "SQS-APIRequest-Tier1",
+          "groupDescription": "Amazon SQS Requests",
+          "usagetype": "USE2-Requests-Tier1",
+          "operation": "",
+          "messageDeliveryFrequency": "At Least Once",
+          "messageDeliveryOrder": "Not Guaranteed",
+          "queueType": "Standard",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Queue Service"
+        },
+        "price": {
+          "rateCode": "9C8YFGPNBKF9HP9A.JRTCKXETXF.VXGXCWQKTY",
+          "description": "$0.40 per million Amazon SQS standard requests in Tier1 in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "100000000000",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000004000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "9C8YFGPNBKF9HP9A",
+        "attributes": {
+          "servicecode": "AWSQueueService",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "SQS-APIRequest-Tier1",
+          "groupDescription": "Amazon SQS Requests",
+          "usagetype": "USE2-Requests-Tier1",
+          "operation": "",
+          "messageDeliveryFrequency": "At Least Once",
+          "messageDeliveryOrder": "Not Guaranteed",
+          "queueType": "Standard",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Queue Service"
+        },
+        "price": {
+          "rateCode": "9C8YFGPNBKF9HP9A.JRTCKXETXF.9JVYQWEJJY",
+          "description": "$0.30 per million Amazon SQS standard requests in Tier2 in US East (Ohio)",
+          "beginRange": "100000000000",
+          "endRange": "200000000000",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000003000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "9C8YFGPNBKF9HP9A",
+        "attributes": {
+          "servicecode": "AWSQueueService",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "SQS-APIRequest-Tier1",
+          "groupDescription": "Amazon SQS Requests",
+          "usagetype": "USE2-Requests-Tier1",
+          "operation": "",
+          "messageDeliveryFrequency": "At Least Once",
+          "messageDeliveryOrder": "Not Guaranteed",
+          "queueType": "Standard",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Queue Service"
+        },
+        "price": {
+          "rateCode": "9C8YFGPNBKF9HP9A.JRTCKXETXF.27HCEGFCXT",
+          "description": "$0.24 per million Amazon SQS standard requests in Tier3 in US East (Ohio)",
+          "beginRange": "200000000000",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000002400"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonCognito",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCognito/current/us-east-2/index.json",
+    "published_at": "2026-09-25T19:31:08Z",
+    "rates": [
+      {
+        "sku": "4JH3F2K67P2NBF3J",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsMRRFull",
+          "operation": "CognitoUserPoolsM2MTokenMRROp",
+          "duration": "Full",
+          "m2mCategory": "Tokens - MRR",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "4JH3F2K67P2NBF3J.JRTCKXETXF.925HBHWMHV",
+          "description": "$0.002925 per multi-region-replication client credential flow (M2M) token requests in tier 1 in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "250000",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0029250000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "4JH3F2K67P2NBF3J",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsMRRFull",
+          "operation": "CognitoUserPoolsM2MTokenMRROp",
+          "duration": "Full",
+          "m2mCategory": "Tokens - MRR",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "4JH3F2K67P2NBF3J.JRTCKXETXF.QFSY5JDYF6",
+          "description": "$0.00195 per multi-region-replication client credential flow (M2M) token requests in tier 2 in US East (Ohio)",
+          "beginRange": "250000",
+          "endRange": "5000000",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0019500000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "4JH3F2K67P2NBF3J",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsMRRFull",
+          "operation": "CognitoUserPoolsM2MTokenMRROp",
+          "duration": "Full",
+          "m2mCategory": "Tokens - MRR",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "4JH3F2K67P2NBF3J.JRTCKXETXF.XCXBHCFFQ2",
+          "description": "$0.0014625 per multi-region-replication client credential flow (M2M) token requests in tier 3 in US East (Ohio)",
+          "beginRange": "5000000",
+          "endRange": "Inf",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0014625000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "JRGNUYCVEBKA6U9J",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "usagetype": "Global-CognitoUserPoolMAU",
+          "operation": "CognitoUserPoolsOperation",
+          "regionCode": "",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "JRGNUYCVEBKA6U9J.A429C66SYZ.ZM2XF3EGYR",
+          "description": "Cognito User Pools global free tier pricing",
+          "beginRange": "0",
+          "endRange": "50000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "KPWUACHJQEQQ5SAB",
+            "YHFNUF6PN2GDAETC",
+            "FUE47UCUJ3EM92TN",
+            "RUZVV46ZG267KS5G",
+            "6X4DTEBVSFYKKK58",
+            "S2S549DFNTJJS9ZT",
+            "6P6MNAHPD4AWVTYV",
+            "A7ZZQ9HSSR2SA5RQ",
+            "2DHUBGW799QWJ7K2",
+            "JB7EQU5EGJABZSBG",
+            "AV3AT95VBDPKCN7Q",
+            "QPUU797YAECSZFMT",
+            "S5UMR9TJNRZSBCWS",
+            "3K8FNSFZ78DTGJEX",
+            "QJC3UE86XSTPJMMZ",
+            "GEM568PKAS9ZHFB7",
+            "WRTHZ3VYJTEJVHN4",
+            "9PCA77APJSGK93BX",
+            "SFR2YW74GW784U2M",
+            "E6JRDQP3G56Y9N7M",
+            "886UYXNP3ZGBUBYN",
+            "CPPZG83Y8JKFV9CE",
+            "3TYUUNY2VV5YJPXN",
+            "47JUGDNC5N3DZT85",
+            "TEQY6CZWWUAV7AU3",
+            "MVD92S3FM3N8M2E5",
+            "SJDJQB52YRYNVHRN",
+            "YP8N49B32GN7P8ZR",
+            "PDWYSF9WEFCNUQWX",
+            "MFADPXYUTRVZGFXF",
+            "AEA8HJGFVCZD3FKC",
+            "QFPS9M9JEAF83EED",
+            "Z7W3Z8V9CNY3HCTF",
+            "8VEPRJK2R7H9653S"
+          ]
+        }
+      },
+      {
+        "sku": "9HSJRU2JJKYSV87P",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MAppClientsFull",
+          "operation": "CognitoUserPoolsM2MAppClientOp",
+          "duration": "Full",
+          "m2mCategory": "AppClients",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "9HSJRU2JJKYSV87P.JRTCKXETXF.ETY2894C67",
+          "description": "$0.00 per client credential flow app client, pro-rated by the second in tier 1 in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "100",
+          "unit": "CognitoUserPools-M2MAppClientMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "9HSJRU2JJKYSV87P",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MAppClientsFull",
+          "operation": "CognitoUserPoolsM2MAppClientOp",
+          "duration": "Full",
+          "m2mCategory": "AppClients",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "9HSJRU2JJKYSV87P.JRTCKXETXF.WQ4TY4VCYZ",
+          "description": "$0.00 per client credential flow app client, pro-rated by the second in tier 2 in US East (Ohio)",
+          "beginRange": "100",
+          "endRange": "500",
+          "unit": "CognitoUserPools-M2MAppClientMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "9HSJRU2JJKYSV87P",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MAppClientsFull",
+          "operation": "CognitoUserPoolsM2MAppClientOp",
+          "duration": "Full",
+          "m2mCategory": "AppClients",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "9HSJRU2JJKYSV87P.JRTCKXETXF.TAV9HKW45C",
+          "description": "$0.00 per client credential flow app client, pro-rated by the second in tier 3 in US East (Ohio)",
+          "beginRange": "500",
+          "endRange": "Inf",
+          "unit": "CognitoUserPools-M2MAppClientMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "D7UFP5TDYG2PN8M7",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoLiteMAU",
+          "operation": "CognitoLiteOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "D7UFP5TDYG2PN8M7.JRTCKXETXF.VV2AUKAVFP",
+          "description": "Cognito Lite us-east-2 tier 1 pricing",
+          "beginRange": "0",
+          "endRange": "90000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0055000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "D7UFP5TDYG2PN8M7",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoLiteMAU",
+          "operation": "CognitoLiteOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "D7UFP5TDYG2PN8M7.JRTCKXETXF.Q9R5NSMVGC",
+          "description": "Cognito Lite us-east-2 tier 2 pricing",
+          "beginRange": "90000",
+          "endRange": "990000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0046000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "D7UFP5TDYG2PN8M7",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoLiteMAU",
+          "operation": "CognitoLiteOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "D7UFP5TDYG2PN8M7.JRTCKXETXF.KQSJQ3YMHA",
+          "description": "Cognito Lite us-east-2 tier 3 pricing",
+          "beginRange": "990000",
+          "endRange": "9990000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0032500000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "D7UFP5TDYG2PN8M7",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoLiteMAU",
+          "operation": "CognitoLiteOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "D7UFP5TDYG2PN8M7.JRTCKXETXF.75WZUA4FXN",
+          "description": "Cognito Lite us-east-2 tier 4 pricing",
+          "beginRange": "9990000",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0025000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "NQKE2UA6GA2HDANG",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoEssentialsMAU",
+          "operation": "CognitoEssentialsOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "NQKE2UA6GA2HDANG.JRTCKXETXF.6YS6EN2CT7",
+          "description": "Cognito Essentials us-east-2 tier 1 pricing",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0150000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "R8NZ97JM9DDWYMYC",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoEssentialsMRRMAU",
+          "operation": "CognitoMRROperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "R8NZ97JM9DDWYMYC.JRTCKXETXF.6YS6EN2CT7",
+          "description": "Cognito Essentials multi-region-replication add-on us-east-2 tier 1 pricing",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0045000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MZQVAREXZHQHG26B",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserReadRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserRead",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "MZQVAREXZHQHG26B.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserRead (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "YAVDHADTK5D7SZT5",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-Bedrock-Agent-Core:Auth-Request:Oauth2",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "YAVDHADTK5D7SZT5.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.00001 per Request for Bedrock-Agent-Core:Auth-Request:Oauth2 in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000100000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "CPYJWSAWFX7ENKJ3",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserFederationRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserFederation",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "CPYJWSAWFX7ENKJ3.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserFederation (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AH8UFFURUFH2VCD9",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "usagetype": "Global-CognitoFreeTierMAU",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "AH8UFFURUFH2VCD9.A429C66SYZ.A6VD9GXV7W",
+          "description": "Cognito  global free tier pricing",
+          "beginRange": "0",
+          "endRange": "10000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "PAWEFWT3AVM5G88J",
+            "JVU799QJR37664RR",
+            "EVZAYBBFN7P2HUZQ",
+            "DUEYJN2PTYBG4J3T",
+            "BEFSFEYNF4BZA7MC",
+            "Y63YB6CSPG7WZHBK",
+            "Y8KDQDK39UDRG6XJ",
+            "FCGBT3RQAZU8XG3H",
+            "BXAB68AG56DFTJ7J",
+            "RDQXCR9N423N6FHP",
+            "PUSB2GCP8RF2MEMH",
+            "SCWNSEWJPCRKJ4PU",
+            "RB4QWZK5J9YCU7Q9",
+            "5YCEBXG4JEW286ZP",
+            "5J74Y3YBXDR26WXU",
+            "536563UHCHJXTENY",
+            "EWGAQDDF3DMFK2N3",
+            "K3SY4K7YCTNPBUPK",
+            "NQKE2UA6GA2HDANG",
+            "PVNJNQNM2RM23UTB",
+            "AQXZ7B2EDGBA5387",
+            "3MY5CTD2GSP5F45Y",
+            "CWU8WFA2ZYMH5EK9",
+            "M6TB36F68GMWUH6T",
+            "YZZRGFGGZZPMR92V",
+            "3SBZU3S3XSNTN9XK",
+            "YJ4TYMGXRS5N6ACK",
+            "XK94SPH8SW72KYTT",
+            "CNHN82F3S2AZPTXR",
+            "5PJHSZU2XZMWHNTW",
+            "3GVVE46F3BD9CRPA",
+            "63GYR4KMEWCBT6DY",
+            "Y4HPSE6CS9SD96JP",
+            "UJ4M5FKHAN4TA9VD",
+            "TTFFBJP2K9P7RKHQ",
+            "XGDZTUEKH8EGQHEM",
+            "2BTX6F7Y357WASFT",
+            "ZZG43CRJJFCYX26Z",
+            "SS63SQ6T3Y6ASC3Q",
+            "BARM6XXPJNRY73CQ",
+            "QKGZH5UTDUJE649F",
+            "G2B28QW9VSYB6UVB",
+            "5HKYV426P4G9BMSG",
+            "YR928W49T5QRMP6S",
+            "8ZY7Q5SKS4WKZHYF",
+            "A7WPS857FB7PHDGS",
+            "DYBNEDWSCPCS2BUZ",
+            "BN6V69DXVARP9XZQ",
+            "4YCJTDX7BUH9V54R",
+            "7YJ8S5JYQJ6MZWSW",
+            "BSXW287GKHPP2CFM",
+            "TJFUTGYWGKNBSHG2",
+            "XVYWD6TWRYVQWN85",
+            "F4M2AY3YMYJKWJBS",
+            "EBSF4REW8Q54M9PN",
+            "YPQMGWCVPGDBE4V5",
+            "CQDYDGHKVVFVZZRP",
+            "CJUNATY8K3J8WJ5U",
+            "QA55XHQT8NAY3D4U",
+            "KSXMU6NXDGDEEHXQ",
+            "NBCHU5WKQQ2GJ947",
+            "BR4R96M4DGMHCFJE",
+            "KXPEEH5NVRPPH6UH",
+            "WZTQ7QDE9T262WNY",
+            "EYGK5MNEV88JRZDR",
+            "AHWP4TMEFUMZNQ7T",
+            "VF5M4Q43UHW79W35",
+            "D7UFP5TDYG2PN8M7"
+          ]
+        }
+      },
+      {
+        "sku": "DDTPNMQGEGYKCNRA",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoPlusMRRMAU",
+          "operation": "CognitoMRROperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "DDTPNMQGEGYKCNRA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "Cognito Plus multi-region-replication add-on us-east-2 tier 1 pricing",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0060000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "2UZ329AMHSY5GN99",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserFederationRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserFederation",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "2UZ329AMHSY5GN99.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserFederation (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "ZCXDK2WMDGHEMRBX",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MAppClientsFree",
+          "operation": "CognitoUserPoolsM2MAppClientOp",
+          "duration": "Free",
+          "m2mCategory": "AppClients",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "ZCXDK2WMDGHEMRBX.JRTCKXETXF.ETY2894C67",
+          "description": "USD 0.00 per client credential flow app client, pro-rated by the second, in tier 1  in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "100",
+          "unit": "CognitoUserPools-M2MAppClientMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "ZCXDK2WMDGHEMRBX",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MAppClientsFree",
+          "operation": "CognitoUserPoolsM2MAppClientOp",
+          "duration": "Free",
+          "m2mCategory": "AppClients",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "ZCXDK2WMDGHEMRBX.JRTCKXETXF.WQ4TY4VCYZ",
+          "description": "USD 0.00 per client credential flow app client, pro-rated by the second, in tier 2  in US East (Ohio)",
+          "beginRange": "100",
+          "endRange": "500",
+          "unit": "CognitoUserPools-M2MAppClientMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "ZCXDK2WMDGHEMRBX",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MAppClientsFree",
+          "operation": "CognitoUserPoolsM2MAppClientOp",
+          "duration": "Free",
+          "m2mCategory": "AppClients",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "ZCXDK2WMDGHEMRBX.JRTCKXETXF.TAV9HKW45C",
+          "description": "USD 0.00 per client credential flow app client, pro-rated by the second, in tier 3  in US East (Ohio)",
+          "beginRange": "500",
+          "endRange": "Inf",
+          "unit": "CognitoUserPools-M2MAppClientMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "EY9QB3PMSYTP6DZ2",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "usagetype": "Globalv1-CognitoEnterpriseMAU",
+          "operation": "CognitoEnterpriseOperation",
+          "regionCode": "",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "EY9QB3PMSYTP6DZ2.A429C66SYZ.ZRBZXHZTV5",
+          "description": "Cognito User Pools global enterprise users free tier pricing",
+          "beginRange": "0",
+          "endRange": "50",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "7XXGJPH5796APDTF",
+            "DC7SJMH5CRSGKV6J",
+            "VTJ85EU3DBNX3SB4",
+            "NWMH8T6AC53W8YY4",
+            "MJVKEDY4DD2B6Y58",
+            "BBNTE25DFBR6DDUE",
+            "NXW6CJJZPUH3D3CK",
+            "TQFZZH26BBQA7GHH",
+            "YZAGEJXZYAYR4WPV",
+            "CS95M753FYJSYV2X",
+            "MZB3R9M6VWVQPZVM",
+            "Y8U7C9MHJSHW93G3",
+            "DTP9Z65M7XXHYSFK",
+            "BR6GNFXHPBACDKCM",
+            "Q7BUCXU6C7FTXQU9",
+            "2DHDTAQF7ACQETPT",
+            "RX5H9JUWTXXVX875",
+            "9CANBKTG5GKQUTYF",
+            "FDFZG73V5QPZ2E6C",
+            "QKZF6ZJJWDCFJEY2",
+            "Y6ETJKK6T97XKSN3",
+            "5CNZF82JRTXMWNC7",
+            "F9EHJCADN6DGW823",
+            "BVM9Q7QAZJ4FM7EG",
+            "R9U9TGJ7JRJ6FPB9",
+            "Q7YZDW7FTCA4KMBS",
+            "GBG62C5SXBV8QNED",
+            "ASTVU4472MWWRC3R",
+            "EMJP7BJQXANKVJHW",
+            "R8DBG27YA28VMKCV",
+            "SFMQKUKJ3VJVCF8D",
+            "8P3C9KAFXS5DUGHH",
+            "67JBKJUC2F4KMGXB",
+            "KEBTA5UPTFZX5A9J"
+          ]
+        }
+      },
+      {
+        "sku": "PGPMS2RMRSQDC7V8",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserResourceUpdateRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserResourceUpdate",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "PGPMS2RMRSQDC7V8.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserResourceUpdate (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "BV2SD85ZES7S4TTD",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserResourceUpdateRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserResourceUpdate",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "BV2SD85ZES7S4TTD.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserResourceUpdate (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "CSAB56CRH7YZMWXG",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserAccountRecoveryRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserAccountRecovery",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "CSAB56CRH7YZMWXG.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserAccountRecovery (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3TYUUNY2VV5YJPXN",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserPoolsMAU",
+          "operation": "CognitoUserPoolsOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "3TYUUNY2VV5YJPXN.JRTCKXETXF.ZM2XF3EGYR",
+          "description": "Cognito User Pools us-east-2 tier 1 pricing",
+          "beginRange": "0",
+          "endRange": "50000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0055000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3TYUUNY2VV5YJPXN",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserPoolsMAU",
+          "operation": "CognitoUserPoolsOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "3TYUUNY2VV5YJPXN.JRTCKXETXF.25RY46V5GS",
+          "description": "Cognito User Pools us-east-2 tier 2 pricing",
+          "beginRange": "50000",
+          "endRange": "950000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0046000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3TYUUNY2VV5YJPXN",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserPoolsMAU",
+          "operation": "CognitoUserPoolsOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "3TYUUNY2VV5YJPXN.JRTCKXETXF.HQHRVXU2H3",
+          "description": "Cognito User Pools us-east-2 tier 3 pricing",
+          "beginRange": "950000",
+          "endRange": "9950000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0032500000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3TYUUNY2VV5YJPXN",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserPoolsMAU",
+          "operation": "CognitoUserPoolsOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "3TYUUNY2VV5YJPXN.JRTCKXETXF.JVCK9G2KFH",
+          "description": "Cognito User Pools us-east-2 tier 4 pricing",
+          "beginRange": "9950000",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0025000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "8NV2RPZFA5T445XA",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserCreationRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserCreation",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "8NV2RPZFA5T445XA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserCreation (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "WGWFHJZTJWU8P7QR",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserAuthenticationRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserAuthentication",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "WGWFHJZTJWU8P7QR.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserAuthentication (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3WGEMDUGKVVSZZVP",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserUpdateRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserUpdate",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "3WGEMDUGKVVSZZVP.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserUpdate (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "RG8BCTZV38QPUMFS",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserAccountRecoveryRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserAccountRecovery",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "RG8BCTZV38QPUMFS.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserAccountRecovery (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AXGZRUSQG8QUYSRJ",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsFree",
+          "operation": "CognitoUserPoolsM2MTokenOp",
+          "duration": "Free",
+          "m2mCategory": "Tokens",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "AXGZRUSQG8QUYSRJ.JRTCKXETXF.925HBHWMHV",
+          "description": "USD 0.00 per client credential flow (M2M) token request in tier 1  in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "250000",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AXGZRUSQG8QUYSRJ",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsFree",
+          "operation": "CognitoUserPoolsM2MTokenOp",
+          "duration": "Free",
+          "m2mCategory": "Tokens",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "AXGZRUSQG8QUYSRJ.JRTCKXETXF.QFSY5JDYF6",
+          "description": "USD 0.00 per client credential flow (M2M) token request in tier 2  in US East (Ohio)",
+          "beginRange": "250000",
+          "endRange": "5000000",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AXGZRUSQG8QUYSRJ",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsFree",
+          "operation": "CognitoUserPoolsM2MTokenOp",
+          "duration": "Free",
+          "m2mCategory": "Tokens",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "AXGZRUSQG8QUYSRJ.JRTCKXETXF.XCXBHCFFQ2",
+          "description": "USD 0.00 per client credential flow (M2M) token request in tier 3  in US East (Ohio)",
+          "beginRange": "5000000",
+          "endRange": "Inf",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "XHRQS6PVYYJRZTF8",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserReadRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserRead",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "XHRQS6PVYYJRZTF8.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserRead (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "NTXGJMYZG9WENMY5",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserAuthenticationRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserAuthentication",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "NTXGJMYZG9WENMY5.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserAuthentication (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "K5MYW6Y26FQDHY5E",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserReadRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserRead",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "K5MYW6Y26FQDHY5E.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserRead (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "F972225VGB5ZU6X4",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserResourceReadRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserResourceRead",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "F972225VGB5ZU6X4.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserResourceRead (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "S7ZYH9827KPYN5Y4",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserUpdateRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserUpdate",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "S7ZYH9827KPYN5Y4.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserUpdate (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "W2XJRJB6WMCTVYVW",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoPlusMAU",
+          "operation": "CognitoPlusOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "W2XJRJB6WMCTVYVW.JRTCKXETXF.6YS6EN2CT7",
+          "description": "Cognito Plus us-east-2 tier 1 pricing",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0200000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "6XQ94WM8WC3KFDNG",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserTokenRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserToken",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "6XQ94WM8WC3KFDNG.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserToken (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "FV628XVRBG475SZM",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserTokenRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserToken",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "FV628XVRBG475SZM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserToken (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "DJDVJWJ5TAJAWQ9N",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsFull",
+          "operation": "CognitoUserPoolsM2MTokenOp",
+          "duration": "Full",
+          "m2mCategory": "Tokens",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "DJDVJWJ5TAJAWQ9N.JRTCKXETXF.925HBHWMHV",
+          "description": "USD 0.00225 per client credential flow (M2M) token request in tier 1  in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "250000",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0022500000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "DJDVJWJ5TAJAWQ9N",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsFull",
+          "operation": "CognitoUserPoolsM2MTokenOp",
+          "duration": "Full",
+          "m2mCategory": "Tokens",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "DJDVJWJ5TAJAWQ9N.JRTCKXETXF.QFSY5JDYF6",
+          "description": "USD 0.0015 per client credential flow (M2M) token request in tier 2  in US East (Ohio)",
+          "beginRange": "250000",
+          "endRange": "5000000",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0015000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "DJDVJWJ5TAJAWQ9N",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CUPM2MTokenRequestsFull",
+          "operation": "CognitoUserPoolsM2MTokenOp",
+          "duration": "Full",
+          "m2mCategory": "Tokens",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "DJDVJWJ5TAJAWQ9N.JRTCKXETXF.XCXBHCFFQ2",
+          "description": "USD 0.001125 per client credential flow (M2M) token request in tier 3  in US East (Ohio)",
+          "beginRange": "5000000",
+          "endRange": "Inf",
+          "unit": "CognitoUserPools-M2MTokens",
+          "pricePerUnit": {
+            "USD": "0.0011250000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MHXU3KGBAY2CNZND",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoASFMAU",
+          "operation": "CognitoASFOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "MHXU3KGBAY2CNZND.JRTCKXETXF.ZM2XF3EGYR",
+          "description": "Cognito User Pools us-east-2 advanced security features users tier 1 pricing",
+          "beginRange": "0",
+          "endRange": "50000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0500000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MHXU3KGBAY2CNZND",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoASFMAU",
+          "operation": "CognitoASFOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "MHXU3KGBAY2CNZND.JRTCKXETXF.MY3WCTDBMM",
+          "description": "Cognito User Pools us-east-2 advanced security features users tier 2 pricing",
+          "beginRange": "50000",
+          "endRange": "100000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0350000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MHXU3KGBAY2CNZND",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoASFMAU",
+          "operation": "CognitoASFOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "MHXU3KGBAY2CNZND.JRTCKXETXF.9H3PSG253F",
+          "description": "Cognito User Pools us-east-2 advanced security features users tier 3 pricing",
+          "beginRange": "100000",
+          "endRange": "1000000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0200000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MHXU3KGBAY2CNZND",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoASFMAU",
+          "operation": "CognitoASFOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "MHXU3KGBAY2CNZND.JRTCKXETXF.H9V8AVEXGG",
+          "description": "Cognito User Pools us-east-2 advanced security features users tier 4 pricing",
+          "beginRange": "1000000",
+          "endRange": "10000000",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0150000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MHXU3KGBAY2CNZND",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoASFMAU",
+          "operation": "CognitoASFOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "MHXU3KGBAY2CNZND.JRTCKXETXF.EFRCQPS26J",
+          "description": "Cognito User Pools us-east-2 advanced security features users tier 5 pricing",
+          "beginRange": "10000000",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0100000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "KUMVCY3D42VVBJ69",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserCreationRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserCreation",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "KUMVCY3D42VVBJ69.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserCreation (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "R8C75PJENBVZ44S4",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserCreationRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserCreation",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "R8C75PJENBVZ44S4.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserCreation (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "6ZVGVWSAW3XCJMNM",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserResourceUpdateRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserResourceUpdate",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "6ZVGVWSAW3XCJMNM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserResourceUpdate (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3KYBXJ5AVENXW274",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserAccountRecoveryRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserAccountRecovery",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "3KYBXJ5AVENXW274.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserAccountRecovery (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "X7NMGYTB842Y3STM",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserResourceReadRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserResourceRead",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "X7NMGYTB842Y3STM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserResourceRead (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "Y72KC9XYGA3YM8N5",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserFederationRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserFederation",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "Y72KC9XYGA3YM8N5.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserFederation (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "4RWKPD5DJCSMJFXD",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserUpdateRPSFull",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserUpdate",
+          "duration": "Full",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "4RWKPD5DJCSMJFXD.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 20.00 per RPS-Month incremental RPS for UserUpdate (full month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "20.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "26KXJ9CZ3T3Z2KNC",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserResourceReadRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserResourceRead",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "26KXJ9CZ3T3Z2KNC.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserResourceRead (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "BVM9Q7QAZJ4FM7EG",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoEnterpriseMAU",
+          "operation": "CognitoEnterpriseOperation",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "BVM9Q7QAZJ4FM7EG.JRTCKXETXF.6YS6EN2CT7",
+          "description": "Cognito User Pools us-east-2 enterprise users tier 1 pricing",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsMAU",
+          "pricePerUnit": {
+            "USD": "0.0150000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "2NY9QHUM4G3XEYCV",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserTokenRPSPartial",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserToken",
+          "duration": "Partial",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "2NY9QHUM4G3XEYCV.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 45.00 per RPS-Month incremental RPS for UserToken (partial month) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "45.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "H4FFFV45S8EF5FBQ",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-Bedrock-Agent-Core:Auth-Request:API-Keys",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "H4FFFV45S8EF5FBQ.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.00001 per Request for Bedrock-Agent-Core:Auth-Request:API-Keys in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000100000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "9CAXCCFZ9KT9MEDN",
+        "attributes": {
+          "servicecode": "AmazonCognito",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-CognitoUserAuthenticationRPSFree",
+          "operation": "CognitoRPSOperation",
+          "apiCategory": "UserAuthentication",
+          "duration": "Free",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Cognito"
+        },
+        "price": {
+          "rateCode": "9CAXCCFZ9KT9MEDN.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.00 per RPS-Month incremental RPS for UserAuthentication (exempt) for users in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "CognitoUserPoolsRPSMo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AWSSecretsManager",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSSecretsManager/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:46:10Z",
+    "rates": [
+      {
+        "sku": "DYZUZWKV5HMGF5A9",
+        "attributes": {
+          "servicecode": "AWSSecretsManager",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "AWSSecretsManager-APIRequest",
+          "usagetype": "USE2-AWSSecretsManagerAPIRequest",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Secrets Manager"
+        },
+        "price": {
+          "rateCode": "DYZUZWKV5HMGF5A9.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.05 per 10000 API Requests",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "API Requests",
+          "pricePerUnit": {
+            "USD": "0.0000050000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "HHK3AZN6HN5CFDJM",
+        "attributes": {
+          "servicecode": "AWSSecretsManager",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "AWSSecretsManager-Secret",
+          "usagetype": "USE2-AWSSecretsManager-Secrets",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Secrets Manager"
+        },
+        "price": {
+          "rateCode": "HHK3AZN6HN5CFDJM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.40 per Secret",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Secrets",
+          "pricePerUnit": {
+            "USD": "0.4000000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AWSKMS",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "service": "AmazonVPC",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonVPC/current/us-east-2/index.json",
+    "published_at": "2026-09-17T19:05:28Z",
+    "rates": [
+      {
+        "sku": "8HFJK44D9234XNWA",
+        "attributes": {
+          "servicecode": "AmazonVPC",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "VPCPublicIPv4Address",
+          "groupDescription": "Hourly charge for In-use Public IPv4 Addresses",
+          "usagetype": "USE2-PublicIPv4:InUseAddress",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Virtual Private Cloud"
+        },
+        "price": {
+          "rateCode": "8HFJK44D9234XNWA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.005 per In-use public IPv4 address per hour",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0050000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MUC9B6W5USYHKHM7",
+        "attributes": {
+          "servicecode": "AmazonVPC",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "VPCIPv4ContiguousBlocks",
+          "groupDescription": "Hourly charge for IPv4 address in a contiguous block of IPv4 address",
+          "usagetype": "USE2-PublicIPv4:ContiguousBlock",
+          "operation": "ProvisionIpamPoolCidr",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Virtual Private Cloud"
+        },
+        "price": {
+          "rateCode": "MUC9B6W5USYHKHM7.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.008 per hour per IPv4 address in contiguous IPv4 block",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0080000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "KYJDP25537AFDVZN",
+        "attributes": {
+          "servicecode": "AmazonVPC",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "VPCPublicIPv4Address",
+          "groupDescription": "Hourly charge for Idle Public IPv4 Addresses",
+          "usagetype": "USE2-PublicIPv4:IdleAddress",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Virtual Private Cloud"
+        },
+        "price": {
+          "rateCode": "KYJDP25537AFDVZN.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.005 per Idle public IPv4 address per hour",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0050000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  }
+]

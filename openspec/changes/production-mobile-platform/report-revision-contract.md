@@ -1,0 +1,133 @@
+# Administrative laboratory report revisions — implementation amendment
+
+**Status:** normative implementation contract, authored before its follow-up implementation. **Date:** 2026-10-11. This amendment closes the concrete software gap in AND-SAL-006, AND-HIST-004, AND-RES-005 and AND-EXP-003. It also constrains the delayed-analysis behavior of AND-SYNC-007. It adds no assay, research authorization, participant acquisition, clinical model or active registry record.
+
+The [shared contracts](shared-contracts.md), [platform contract](platform-contract.md), [saliva specification](specs/android-saliva-measurement/spec.md), [history specification](specs/android-history/spec.md), [results specification](specs/android-results/spec.md) and [export specification](specs/android-data-export/spec.md) remain normative. This is the concrete administrative revision mechanism required by those specifications; it does not alter their 140 requirement IDs or equate report correction with physical reacquisition.
+
+## 1. Scope and immutability
+
+An authorized operator may record a corrected laboratory report or later analysis of the **same already-collected specimen**. The original finalized `Check.snapshot`, `snapshot_sha256`, `CaptureContext`, all `CaptureAttempt` records, selected `EvidenceManifest`, `evidence_sha256`, original result and original acquisition/target times SHALL remain unchanged.
+
+A revision SHALL be a separate version 1.0.0 companion record. It SHALL NOT be submitted as a replacement `SessionSnapshot`, appended as a physical capture attempt, or passed through original-session finalization. In particular, a laboratory `measured_at` after `capture_completed_at` is a later analytical event; it SHALL NOT move capture completion, target time or the observed physiological interval forward. The revision record does not claim that its revised report values were in the original selected capture manifest.
+
+New specimen collection, eye/PPG/ECG acquisition or a new reaction run SHALL use **Start replacement check** with a new session and target time under shared §5. This administrative API has no fields or authority for that operation. It SHALL reject another `sample_id`, another `collected_at`, changes to original demographic/context/physiological evidence and any attempted inference output.
+
+## 2. API boundary
+
+All routes use the existing strict JSON parser, body limits, error envelope, current access-token/account/generation policy, request IDs and application audit. The existing strict `GET /v1/sessions/{id}` payload stays unchanged; clients explicitly fetch revisions from the separate routes.
+
+| Route | Behavior |
+|---|---|
+| `POST /v1/research/sessions/{session_id}/report-artifact-uploads` | Creates an operator-authorized, report-only quarantine upload ticket for a finalized owned check. Uses the existing `ArtifactRequest` fields and requires `artifact_kind=source_lab_report`, matching session/study, PDF media type, current explicit report-retention consent/policy and the same bounded upload quotas. |
+| `POST /v1/research/sessions/{session_id}/report-artifact-uploads/{artifact_id}/complete` | Purpose-specific operator report completion verifies the PDF through the same bounded conditional/versioned storage helpers. It authorizes finalized-check report scope before external I/O and again under the commit lock. Completion creates no report revision by itself. |
+| `POST /v1/research/sessions/{session_id}/report-revisions` | Creates one immutable report revision and one immutable companion result version in a single authorized transaction. Requires `Idempotency-Key` and current `X-Data-Generation`. Returns the persisted revision with HTTP 201. |
+| `GET /v1/sessions/{session_id}/report-revisions` | Returns a bounded, owner/generation-authorized sequence of revision summaries, original base result identity, and explicit previous/next identities. Does not fetch or disclose raw report bytes. |
+| `GET /v1/sessions/{session_id}/report-revisions/{revision_id}` | Returns the named immutable companion, its versioned result and independently checked lineage. An inaccessible/foreign revision uses the shared non-enumerating 404 policy. |
+
+The mutation is available only after the base check has completed its original finalization and has a stored valid measurement-only/invalid/inconclusive result. A processing/draft/missing-snapshot check returns `409 BASE_RESULT_NOT_FINALIZED`. A synthetic parent SHALL NOT acquire `reference_lab` provenance through this API. All shipped configuration/role absence continues to deny the mutation; test fixtures are not production registry provisioning.
+
+## 3. Authorization and verified source report
+
+Creation SHALL require all of the following within the current account/generation transaction:
+
+1. Current owning account is active, current notice acknowledged and browser authentication is recent under the shared sensitive-operation policy. This first implementation authorizes an operator role in the same owning account; it creates no cross-participant impersonation or administrative owner-override API.
+2. An active operator-managed `role` registry record for this account contains `lab_report_revision`, permits the check's study and is not expired. A payload field or OAuth display claim SHALL NOT grant the role.
+3. The original check's study/protocol, current consent and current saliva configuration/qualification/retention authority still resolve successfully. Recovered/suspended authority, withdrawal, deletion, expired qualification or missing approved method SHALL fail closed. The revision configuration SHALL match the original protocol; an unrelated newly available protocol is insufficient.
+4. The source artifact belongs to the same account, generation and original session, has `kind=source_lab_report`, is `verified` and has a nonempty accepted S3 `VersionId`. Its immutable ID, VersionId, SHA-256, media type and byte length SHALL be pinned in the revision evidence. No caller-supplied bucket, key, current-version alias or raw URL is accepted.
+5. Every analytical replacement uses the current approved laboratory method/calibration/instrument mapping. The operator-managed saliva configuration supplies `lab_methods`, keyed by method ID, with bounded permitted `calibration_ids` and `instrument_ids`. Missing approved configuration denies this administrative path; no active mapping is automatically created. The explicit `not_measured` exception in §4 records withdrawal/nonmeasurement, with null analytical identities and time, rather than claiming a performed method. Lot and original report metadata remain retained, not guessed.
+
+The report-specific ticket path pins server-owned `scope.purpose=administrative_report_revision`; the caller cannot supply or override this purpose. The report completion route rejects any other purpose, session, generation or artifact kind. The existing generic artifact completion route rejects this administrative purpose and retains its original draft/capture rules. Both report completion authorization phases check current owner/generation, active operator role, study/protocol/consent, finalized base check and exact retention scope. The first check precedes S3 I/O; the second follows a refreshed row lock before commit and rechecks unchanged immutable ticket metadata. A stale completion cannot resurrect a cleanup-claimed artifact. The report-specific ticket path repeats the role/policy checks and existing artifact hard limits: one conditional object per five-minute ticket, signed `If-None-Match:*`, checksum/length/media headers, 8 MiB maximum PDF, at most three pending tickets, 128 MiB pending and 1 GiB account artifact quota. It SHALL not loosen the original draft-only generic upload route. Existing versioned storage verification helpers and cleanup remain authoritative; the new purpose-specific completion supplies the additional administrative authorization and cannot relax the generic capture path. Source-report creation is an administrative document upload; it authorizes no new specimen or human stimulus.
+
+Authorization SHALL be rechecked when the revision is accepted; a previously completed report upload is insufficient after role/consent/generation changes. Raw report download or inclusion in an export remains subject to the separate current raw-data policy. Ordinary revision metadata/history may remain readable according to the owning account's retained-record policy without granting new acquisition/import authority.
+
+## 4. Strict request and canonical evidence
+
+`ReportRevisionRequest` version 1.0.0 has only these fields. Additional fields are rejected.
+
+| Field | Contract |
+|---|---|
+| `schema_version` | Exact `1.0.0`. |
+| `revision_id` | Caller-generated UUID, stable across retry. |
+| `study_id` | Exact original check study, authorized server-side. |
+| `sample_id` | Exact original specimen ID. |
+| `base_snapshot_sha256` | Exact original immutable snapshot hash. |
+| `expected_previous_revision_id` | UUID of the latest accepted report revision, or null for the first revision. |
+| `expected_previous_revision_sha256` | Exact predecessor evidence hash, or null together with a null predecessor ID. |
+| `kind` | `correction` or `reanalysis`. |
+| `reason_code` | `CORRECTED_LABORATORY_REPORT` for correction or `SPECIMEN_REANALYSIS` for reanalysis. No arbitrary diagnostic/free-text narrative. |
+| `reported_at` | Explicit UTC report-issue time, not earlier than collection or any changed reading's analytical time, and not more than **60 seconds** ahead of the current server time. |
+| `source_report_artifact_id` | UUID of the verified report above. |
+| `replacement_measurements` | One to three complete canonical measurement objects; unique among `THC`, `THC_COOH`, `OH11_THC`. Every changed record has a fresh measurement ID and `source=reference_lab`. |
+
+Each replacement SHALL pass the existing canonical measurement schema and semantic unit/limit/null/timestamp rules. `sample_id` and `collected_at` SHALL equal the original specimen. A measured analytical time SHALL be at or after collection and may be later than the original capture interval. All nonquantified qualifiers retain `value_ng_ml=null`; pg/mL conversion, assay basis, concentration basis, correction status, uncertainty, limits and original report remain exact. The operator cannot use the API to assert a concentration from a timer or electrical signal.
+
+An authorized report may explicitly withdraw an earlier analyte result with `qualifier=not_measured`. It SHALL retain `value_ng_ml`, `method_id`, `calibration_id`, `instrument_id` and `measured_at` as null, as required by the canonical measurement schema. It is not checked as a performed method and is never relabeled as analyzed, detected or zero. The same original specimen identity, fresh measurement UUID, operator/study/consent/approved-configuration authority and verified source-report requirements still apply. Every other replacement, including a laboratory-declared invalid analysis, SHALL name a permitted method/calibration/instrument and an analytical time. This API cannot invent absent metadata to turn a nonmeasurement into a performed analysis.
+
+Changed analytes replace only their corresponding report entries in the **revision's effective report view**. Unchanged analytes remain linked to the preceding revision or original report; they are not relabeled as newly analyzed. The base snapshot may have no analytical results yet if it contains a genuinely collected identified specimen. A revision may then add the later report. It cannot create a specimen for an original `not_collected` sample. Fresh measurement IDs cannot duplicate one another or any original/prior revision measurement ID; identity reuse does not conceal a change.
+
+The immutable canonical evidence descriptor SHALL contain:
+
+```text
+schema_version, revision_id, session_id, data_generation,
+base_snapshot_sha256, base_evidence_sha256,
+previous_revision_id, previous_revision_sha256,
+original_target_at, original_collected_at, original_capture_completed_at,
+report { kind, reason_code, reported_at, replacement_measurements,
+         source_report { artifact_id, version_id, sha256, media_type, size_bytes },
+         authorization { operator_account_ref, study_id, protocol_id,
+                         configuration_id, configuration_sha256,
+                         consent_record_id, retention_policy_id,
+                         approved_lab_methods } }
+```
+
+`revision_sha256` is SHA-256 over RFC 8785 JCS of that descriptor. `approved_lab_methods` contains exactly the used analytical method keys and their approved `calibration_ids` and `instrument_ids`, each sorted and deduplicated. It is an empty object when every changed entry is explicitly not measured. This pins the public approval provenance without inventing analytical metadata. The request hash is retained separately for stable-ID/idempotency conflict checks. `effective_measurements` is a deterministic, analyte-sorted read projection of the entire chain; it SHALL not be substituted into the original immutable session or counted as contemporaneous sensor evidence.
+
+## 5. Persisted report and result versions
+
+The existing bounded `Record` table may store immutable `kind=report_revision` and `kind=result_revision` records. Both carry server-owned account/generation and `parent_id=original_session_id`. Each report has a strictly increasing integer revision sequence, one UUID and one predecessor. The owning account/check lock serializes creation; there is no UPDATE or DELETE revision API. The original `Check.revision` is not repurposed as a report counter or mutated merely to publish a report correction.
+
+The service SHALL persist a distinct companion `ReportRevisionResult` version 1.0.0 in the same transaction. Its fields include `result_id`, `session_id`, `revision_id`, `revision_sha256`, `base_snapshot_sha256`, original `target_at`, actual `evaluated_at`, `state`, `reason_codes`, provenance and `replaces_result_id`. `replaces_result_id` points to the preceding report-result version or the original base result for the first revision. It SHALL be explicitly identified as an **administrative report result**, never treated as the original v0.1 result for a different input digest.
+
+`state` is `measurement_only` unless the base result or revised analytical report is invalid, in which case it is `invalid`, or the base result is inconclusive without a new invalidity, in which case it remains `inconclusive`; quality/missing/censored values stay explicit and are never interpreted as clinical normality. An originally invalid physiological component is not silently repaired by a valid chemistry correction. A base invalid result therefore remains invalid, and a base inconclusive result remains inconclusive unless an invalid report makes the revised summary invalid. Valid chemistry cannot promote either base state to measurement-only. `inference_available` is false, and `probability`, `classification` and `model_id` are null. No clinical model runs. The result version and its own SHA-256 are immutable and verified on read.
+
+The operator `roles` list has at most **16** entries of **1–64** characters, and its `study_ids` list has at most **64** entries of **1–256** characters. `expires_at` is a finite positive UTC epoch-seconds number and must be later than server time. The selected `lab_methods` mapping has **1–16** method keys of **1–256** characters; each method has **1–32** unique calibration IDs and **1–32** unique instrument IDs, each **1–256** characters. Missing, malformed, nonfinite, overlong or overbound operator/configuration metadata is refused; none is inferred. The `reported_at` future allowance is exactly **60 seconds**, an engineering clock allowance rather than an analytical validity threshold.
+
+The practical bounds are **20 revisions per original check**, **three changed analytes per revision**, **512 KiB canonical descriptor/result envelope per revision**, and the existing **1 MiB HTTP request** limit. Reads SHALL reject corrupted, missing, cyclic, branched, duplicate-sequence or hash-inconsistent chains rather than returning a plausible latest report. The system SHALL not silently truncate history at the limit; another mutation is refused with an explicit capacity error.
+
+### 5.1 Exact companion and read response shapes
+
+The immutable companion has exactly `schema_version:'1.0.0'`, `record_type:'administrative_report_revision'`, `revision_id`, `session_id`, `data_generation`, `sequence`, `accepted_at`, `descriptor`, `revision_sha256`, `effective_measurements`, `result` and `result_sha256`. Repeated identity/generation fields SHALL agree with the descriptor. `sequence` is 1–20; `accepted_at` is a server UTC instant. The canonical bytes of this complete companion, including its effective view and result, SHALL fit 512 KiB. `result_sha256` is JCS/SHA-256 of `result`.
+
+The exact result fields are `schema_version:'1.0.0'`, `result_kind:'administrative_report_result'`, `result_id`, `session_id`, `revision_id`, `revision_sha256`, `base_snapshot_sha256`, `target_at`, `evaluated_at`, `state`, `reason_codes`, `provenance_summary`, `replaces_result_id`, `inference_available:false`, `probability:null`, `classification:null` and `model_id:null`. Reason codes preserve the base codes plus the explicit correction/reanalysis reason and any `INVALID_ANALYTICAL_REPORT`; they are deduplicated and sorted. Provenance is the sorted set of the effective saliva sources and unchanged base physiological sources. No field of this companion is accepted as an original v0.1 result.
+
+POST creation returns the immutable companion. GET list returns exactly `schema_version:'1.0.0'`, `session_id`, `data_generation`, `base_snapshot_sha256`, `base_result_id`, `original_target_at`, `original_collected_at`, `original_capture_completed_at`, `latest_revision_id` and `items`. Each of at most 20 items has `revision_id`, `revision_sha256`, `sequence`, `kind`, `reported_at`, `accepted_at`, `previous_revision_id`, `next_revision_id`, `result_id` and `result_state`. Nullable latest/previous/next identities remain null when absent. GET detail returns exactly `schema_version:'1.0.0'`, `session_id`, `data_generation`, `revision` (the immutable companion), `previous_revision_id` and `next_revision_id`. Navigation identities live outside the immutable companion because a subsequent revision may add a newer link.
+
+All routes require a current bearer access token; ordinary GET routes use current owner/generation authorization and return their generation for the client's originating-scope check. Every POST additionally requires `Idempotency-Key`, current `X-Data-Generation`, JSON content type and the shared application-version policy. No new `If-Match` or mutable original-session revision is used; the explicit predecessor pair is the report-chain precondition. Unknown fields/versions are rejected, and clients validate session, account, generation and original hashes before storing a response.
+
+## 6. Concurrency, replay and errors
+
+Creation uses the existing account/generation/idempotency transaction and a refreshed `SELECT FOR UPDATE` of the original check. **Current owner/generation, recent authentication, operator role, study/protocol/consent and verified report authority are checked before the idempotency replay decision**, not only inside a new-mutation handler after replay. The report-ticket and purpose-specific completion routes follow the same current-authority-before-replay rule. A previously accepted mutation response is not an exception to current administrative authority; an owner who can no longer mutate may use the ordinary authorized historical GET route instead. This avoids a role/consent bypass through a retained dedup response. The supplied predecessor ID/hash SHALL match the latest accepted revision at that lock. Two competing corrections cannot both branch from one predecessor. A stale predecessor returns `409 REPORT_REVISION_CONFLICT`, with only owner-authorized current revision metadata needed to reload and explicitly review.
+
+The same idempotency key/body returns the same revision/result identities and hashes. Changed content under the same key returns the existing shared 409 conflict. A repeated stable revision ID with the exact original request can resolve to its stored record; a different body under that ID is a conflict. No retry changes the target, collection time, source or report values. Current generation/account policy still governs ordinary reads and mutation acceptance; deletion does not permit old revisions to recreate data in a new generation.
+
+Named failures include `LAB_REPORT_REVISION_ROLE_REQUIRED`, `VERIFIED_REPORT_REQUIRED`, `REPORT_METHOD_UNAVAILABLE`, `BASE_RESULT_NOT_FINALIZED`, `REPORT_SAMPLE_MISMATCH`, `REPORT_REVISION_CONFLICT`, `REPORT_REVISION_LIMIT`, `REPORT_REVISION_INTEGRITY` and existing current-consent/qualification/generation errors. API error bodies and logs SHALL exclude reports, concentrations, sample identifiers, profile values, raw artifacts and arbitrary exception text.
+
+## 7. History, export and deletion integration
+
+The owner-facing list/detail routes return an explicit original base link, predecessor and next revision links, original collection/target/capture times, report issue/analysis times and result evaluation time. The UI SHALL show **Original captured record** separately from **Corrected laboratory report** or **Later specimen analysis**. Selecting a revision SHALL not silently replace the original check displayed elsewhere. All dates remain absolute and labeled; a Thursday report about a Monday sample is not a Thursday physiological assessment.
+
+The original session payload remains strict and unchanged. Mobile integration SHALL fetch the companion routes explicitly, verify the companion version/hash/owner/session/base links and render a read-only revision section. Unknown companion versions are unsupported; they do not fall back to the original result or a zero concentration. Acquisition replacement links and report revision links are different labeled actions.
+
+Cloud and permitted cached-local exports SHALL include only the selected session's exact report/result chain, while preserving the original snapshot/context/manifest/attempts. **The chain is not embedded in a check file.** Each immutable companion is a separate structured archive record at the exact generated path `report-revisions/{session_uuid}/{revision_uuid}.json`; each remains at most **512 KiB**. The fixed existing `checks/{session_uuid}.json` export object gains only `report_revision_index`, with exactly `schema_version:'1.0.0'`, `session_id`, `data_generation`, `base_snapshot_sha256` and `items`. Each item has exactly `revision_id`, `sequence`, `revision_sha256`, `result_id`, `result_sha256`, `path`, `sha256` and `size_bytes`. `sha256` and `size_bytes` refer to the complete canonical companion file. Items are ordered by sequence, number at most 20 and form a complete chain from sequence 1. The entire canonical index is bounded to **16 KiB**. An empty chain uses an explicit empty `items` list. The ordinary `GET /sessions` DTO remains unchanged.
+
+At cloud export acceptance, the job stores the exact latest revision ID/hash pair (both null when absent) for every selected session. The worker exports only the complete chain ending at that frozen head. A revision accepted later cannot silently expand an already-requested archive or alter its scope on worker retry. Existing jobs without a revision-head field mean no report revisions, never an implicit request for whatever revisions exist at execution. A cached-local export snapshots its exact verified cached chain; a known but missing companion is an actionable incomplete-cache error, not a silently omitted report.
+
+The archive manifest lists every companion path/hash/byte length in addition to the check's bounded index. The parser admits only the exact report-revisions path grammar with two UUIDs, requires both IDs to match the file and indexed parent, and rejects missing, duplicate, orphan, foreign-session, unindexed, out-of-order or unselected report files. It verifies byte lengths, file hashes, each companion version, descriptor/result hashes, original target/base links, predecessor chain, result replacement links and the final indexed head before sharing. Index entries and archive-manifest entries SHALL agree exactly. Unknown versions fail unsupported; they are never treated as unknown blobs or original session results. The existing **50 MiB uncompressed**, **64 MiB archive**, **500 selected checks** and **65,000 archive entries** bounds still apply; exceeding any bound fails the whole export without truncation or a scope expansion. Raw source PDFs remain excluded unless separately selected and currently authorized.
+
+Revision/result records use the same original account/generation and parent session, so all-data/account deletion, recovery journal reconciliation and selected-session retention cover them. No separate untracked storage namespace is introduced. A completed deletion or retired generation SHALL make revisions inaccessible; old queued creation/download/share operations SHALL not repopulate local or cloud data. The existing accepted source-report artifact is cleaned through the same version-pinned policy; already-shared bytes cannot be recalled.
+
+## 8. Required implementation evidence
+
+Host tests SHALL cover a successful same-specimen correction and delayed reanalysis with frozen original evidence; role/owner/study/protocol/consent rejection; no active registry default; foreign or unverified report/VersionId rejection; method/calibration rejection; sample/collection/measurement-ID mismatch; exact pg/mL and null qualifier preservation; unchanged-analyte carryforward; predecessor conflicts; same-key and stable-ID replay; no branching or mutation of the original result; corrupt-chain read rejection; revision bounds; retired-generation/deletion denial; and export scope/hash inclusion. Test operator/configuration records SHALL be explicitly fictional test fixtures.
+
+PostgreSQL concurrent revision creation and deletion races SHALL be tested in the real-service CI environment. Native UI/accessible revision navigation and actual S3 report-upload/verification/export flows require separate integration execution. A host test with a fabricated laboratory record is software evidence; it does not qualify a portable assay, validate a clinical interpretation or create permission to collect participant samples.

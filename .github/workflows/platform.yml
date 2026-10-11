@@ -1,0 +1,138 @@
+name: Platform validation
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+      - 'deploy/**'
+      - 'scripts/**'
+      - 'services/api/**'
+      - 'contracts/**'
+      - 'tools/**'
+      - '.github/workflows/platform.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/**'
+      - 'deploy/**'
+      - 'scripts/**'
+      - 'services/api/**'
+      - 'contracts/**'
+      - 'tools/**'
+      - '.github/workflows/platform.yml'
+  workflow_dispatch:
+    inputs:
+      run_localstack:
+        description: 'Run actual LocalStack integration; requires LOCALSTACK_AUTH_TOKEN CI secret'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts-and-synthesis:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified 2026-10-11
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: infra/package-lock.json
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+          enable-cache: true
+      - run: npm ci --ignore-scripts
+        working-directory: infra
+      - run: npm run verify
+        working-directory: infra
+      - run: uv sync --project services/api --locked
+      - run: uv run --project services/api python -m unittest discover -s infra/test -p 'test_*.py' -v
+      - run: uv run --project services/api python -m compileall -q scripts deploy infra/local
+      - name: Integration status
+        run: echo 'Source and synthesis checks do not establish Docker, LocalStack, AWS, Android or iOS execution. The LocalStack workflow_dispatch job is a separate required release gate.' >> "$GITHUB_STEP_SUMMARY"
+
+  postgres-integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-bookworm@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4
+        env:
+          POSTGRES_DB: otgd_ci
+          POSTGRES_USER: otgd_ci
+          POSTGRES_PASSWORD: disposable_ci_fixture_only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U otgd_ci -d otgd_ci"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      OTGD_ENVIRONMENT: test
+      OTGD_DATABASE_URL: postgresql+psycopg://otgd_ci:disposable_ci_fixture_only@localhost:5432/otgd_ci
+      OTGD_DATABASE_NAME: otgd_ci
+      OTGD_DATABASE_POOL_SIZE: '5'
+      OTGD_DISPOSABLE_DATABASE: 'true'
+      OTGD_APP_DATABASE_USER: otgd_app_ci
+      OTGD_APP_DATABASE_PASSWORD: disposable_runtime_fixture_only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --project services/api --locked
+      - name: API semantics against actual PostgreSQL
+        run: uv run --project services/api pytest services/api/tests -v --junitxml=postgres-results.xml
+      - name: Migration replay and separate runtime authority
+        run: uv run --project services/api python infra/test/postgres_roles.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: postgres-test-results
+          path: postgres-results.xml
+          retention-days: 7
+
+  localstack-integration:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_localstack
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Require actual CI token
+        shell: bash
+        run: |
+          if [ -z "$LOCALSTACK_AUTH_TOKEN" ]; then
+            echo 'UNEXECUTED: configure the LocalStack CI auth token; this integration gate has not passed.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --project services/api --locked
+      - run: uv run --project services/api python scripts/local-platform.py prepare
+      - name: Build and start real dependencies
+        run: python scripts/local-platform.py up
+      - name: Repeat bootstrap without data reset
+        run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps resource-init
+      - name: Actual versioned conditional S3 and SQS probe
+        run: python scripts/local-platform.py check
+      - name: Fictional OAuth, HTTP, worker, export and deletion flow
+        run: python scripts/local-platform.py check-app --confirm-fictional-workspace
+      - name: Record limits of this evidence
+        run: echo 'Actual local S3/SQS/PostgreSQL transport checks completed. AWS IAM/KMS/private-network behavior, queue kill matrix, native-device evidence, and clinical validity require their own release evidence.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Stop disposable CI project
+        if: always()
+        run: python scripts/local-platform.py down

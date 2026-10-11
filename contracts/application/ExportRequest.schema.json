@@ -1,0 +1,56 @@
+{
+  "$defs": {
+    "ExportSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "single",
+            "selected",
+            "all"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "session_ids": {
+          "items": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "type": "string"
+          },
+          "maxItems": 500,
+          "title": "Session Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "session_ids"
+      ],
+      "title": "ExportSelection",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "selection": {
+      "$ref": "#/$defs/ExportSelection"
+    },
+    "format": {
+      "const": "json_zip",
+      "title": "Format",
+      "type": "string"
+    },
+    "include_raw": {
+      "const": false,
+      "title": "Include Raw",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "selection",
+    "format",
+    "include_raw"
+  ],
+  "title": "ExportRequest",
+  "type": "object"
+}

@@ -1,0 +1,171 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "attempt_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "component": {
+      "enum": [
+        "saliva",
+        "eyes",
+        "cardiac",
+        "task",
+        "alcohol"
+      ],
+      "title": "Component",
+      "type": "string"
+    },
+    "record_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Record Id",
+      "type": "string"
+    },
+    "supersedes_attempt_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Supersedes Attempt Id"
+    },
+    "status": {
+      "enum": [
+        "started",
+        "valid",
+        "invalid",
+        "canceled",
+        "not_collected"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "source": {
+      "enum": [
+        "simulated",
+        "prototype_sensor",
+        "reference_lab",
+        "validated_sensor"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Started At"
+    },
+    "ended_at": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Ended At"
+    },
+    "configuration_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Configuration Id"
+    },
+    "configuration_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Configuration Hash"
+    },
+    "quality_flags": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Quality Flags",
+      "type": "array"
+    },
+    "component_metadata": {
+      "additionalProperties": true,
+      "title": "Component Metadata",
+      "type": "object"
+    },
+    "artifact_refs": {
+      "default": [],
+      "items": {
+        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+        "type": "string"
+      },
+      "maxItems": 16,
+      "title": "Artifact Refs",
+      "type": "array"
+    },
+    "attestation_refs": {
+      "default": [],
+      "items": {
+        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+        "type": "string"
+      },
+      "maxItems": 16,
+      "title": "Attestation Refs",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "session_id",
+    "attempt_id",
+    "component",
+    "record_id",
+    "supersedes_attempt_id",
+    "status",
+    "source",
+    "started_at",
+    "ended_at",
+    "configuration_id",
+    "configuration_hash",
+    "quality_flags",
+    "component_metadata"
+  ],
+  "title": "CaptureAttempt",
+  "type": "object"
+}

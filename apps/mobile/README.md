@@ -1,0 +1,155 @@
+# One The Go — Android and iOS application
+
+An Expo 57 / React Native application for the reviewed **measurement-only** platform. The application implements guest and account workspaces, optional profile context, a guided check, the native reaction task, synthetic reader transport, immutable evidence, explicit uploads, history, exact-scope export, privacy jobs, study consent/withdrawal, and accessibility/settings flows.
+
+**This release cannot classify cannabis intoxication, calculate a metabolic rate, estimate a clearance time, or tell a person that they are safe to drive.** Qualified human saliva, pupil, PPG, ECG and alcohol measurement configurations are unavailable. The native reaction task records real taps as uncalibrated practice. Fictional sensor examples are labeled individually; account engineering fixtures use an entirely fictional, separate profile. These restrictions are enforced in the application and API, rather than being a selectable model setting.
+
+Read [verification evidence and outstanding device checks](VERIFICATION.md), the [reviewed requirements](../../openspec/changes/production-mobile-platform/proposal.md), [shared contracts](../../openspec/changes/production-mobile-platform/shared-contracts.md), and [platform contract](../../openspec/changes/production-mobile-platform/platform-contract.md). The backend and deployment guides are [services/api](../../services/api/README.md), [infra](../../infra/README.md), and [deploy](../../deploy/README.md).
+
+## Prerequisites and installation
+
+| Component | Pinned or required value |
+|---|---|
+| Node | 22.13 or later; the checked-in CI workflow uses 24.19.0 |
+| Expo / React Native / React | 57.0.27 / 0.86.3 / 19.2.3, with the independent `package-lock.json` |
+| Android | API 24 minimum; compile/target 36; JDK 17 and Android SDK 36 |
+| iOS | iOS 16.4 minimum; Xcode 26.4 or newer compatible toolchain; CocoaPods |
+| Development networking | API 8000, fictional issuer 8081, Metro/web 8082 |
+
+Run from this directory:
+
+```bash
+npm ci
+npm run typecheck
+npm test
+npm run config:check
+```
+
+This directory has its own lockfile. Run `npm ci` here; do not create a second root workspace lock. The project uses local Expo modules under `modules/`. Their Kotlin, Swift, Gradle and podspec sources must be committed. Only generated top-level `/android/` and `/ios/` directories are ignored.
+
+## Start the local account backend
+
+From the repository root, follow [infra/README.md](../../infra/README.md) to install Python/uv, Docker Compose and the required LocalStack credentials. For iOS simulator and desktop browser development:
+
+```bash
+uv sync --project services/api --locked
+python scripts/local-platform.py prepare --host localhost
+python scripts/local-platform.py up
+python scripts/local-platform.py check
+```
+
+`prepare` writes local secrets to protected ignored settings. It does not print credentials. LocalStack startup requires its valid token. The isolated local issuer offers **Fictional Account A** and **Fictional Account B** for engineering; it is not a production identity provider. Use synthetic accounts/data with this stack.
+
+Copy `.env.example` to `.env` inside `apps/mobile` and choose one consistent network origin before generating the native build:
+
+| Environment | API | OAuth issuer | Callback |
+|---|---|---|---|
+| iOS simulator | `http://localhost:8000` | `http://localhost:8081` | `otgd-local://oauth/callback` |
+| Android emulator | `http://10.0.2.2:8000` | `http://10.0.2.2:8081` | `otgd-local://oauth/callback` |
+| Browser preview | `http://localhost:8000` | `http://localhost:8081` | `http://localhost:8082/` |
+| Physical local phone | Computer's explicitly configured reachable LAN origin, port 8000 | Same hostname/IP, port 8081 | `otgd-local://oauth/callback` |
+
+For Android, run backend preparation with `--host 10.0.2.2` and set **both** mobile public origins to `10.0.2.2`. For a physical phone, use the backend helper's documented `--lan` mode and matching local build configuration. Backend issuer metadata, token issuer, app build issuer and redirect registration must match exactly; `localhost` and `127.0.0.1` are different OAuth identities. A build configured for localhost cannot use localhost to reach a laptop from a physical phone.
+
+Example Android settings:
+
+```dotenv
+APP_ENV=local
+APP_BUILD_NUMBER=1
+EXPO_PUBLIC_API_URL=http://10.0.2.2:8000
+EXPO_PUBLIC_OAUTH_ISSUER=http://10.0.2.2:8081
+EXPO_PUBLIC_OAUTH_CLIENT_ID=otgd-local-mobile
+```
+
+Local HTTP exceptions are limited to the configured development hosts. QA and production require real HTTPS origins and their Cognito public client IDs. Secrets, tokens and signing credentials do not belong in `EXPO_PUBLIC_*` values.
+
+## Run Android or iOS
+
+These are **native development builds**, because the reaction task, Bluetooth transport, storage protection and SQLCipher configuration need compiled native code. Expo Go cannot provide those guarantees and is not the supported test runtime.
+
+```bash
+# Android emulator/device; generates the native project when needed.
+npm run android
+
+# iOS simulator/device, on a supported macOS/Xcode machine.
+npm run ios
+
+# Start Metro for an already-installed development build.
+npm start
+```
+
+All three scripts select port **8082**, because the local OAuth issuer occupies 8081. Keep the same environment variables when generating/building and starting Metro. Changing an origin, scheme, native plugin or module requires rebuilding the development client; a JavaScript reload cannot replace a native configuration.
+
+The [native build workflow](../../.github/workflows/native-build.yml) generates projects from committed configuration, verifies local-module assets, compiles Android Kotlin tests/APK, runs Swift core fixtures, and compiles an iOS simulator application. Consult the actual run result and downloadable artifacts. A debug APK requires Metro. An unsigned simulator `.app` cannot be installed on a physical iPhone and is not a TestFlight package.
+
+## Guest demonstration and browser preview
+
+```bash
+npm run web
+```
+
+Choose **Explore demo**, read the limitations, acknowledge the local notice, review optional context and start a demo check. The guided stages provide fictional saliva/eye/cardiac examples and a camera-positioning preview. On native builds, a separate action starts the real native reaction task. On web, the native task is explicitly unavailable; the app does not substitute a JavaScript timer for native acquisition.
+
+Guest checks never upload or migrate into a signed-in workspace. The **browser preview keeps records and tokens in memory only**; reload clears them. It does not claim encrypted browser persistence. Native storage uses SQLCipher with a random per-workspace key protected by SecureStore. Account unlocking uses the device credential/biometric prompt and owner namespace; signed-out records need the same issuer/account to sign in again.
+
+A check is first saved using **Save on this device**. Account checks then offer a separate **Upload check** action. “Retry queued uploads automatically” starts off and applies only to already explicitly queued operations. It never queues a future check. Guest upload is rejected by the domain layer. Account-owned fictional fixtures are limited to local/QA engineering environments and do not include personal profile values or real native task data.
+
+## Evidence, profile and capture behavior
+
+- Optional demographics are nullable. Locale decimal input is normalized to SI units. US customary height uses feet plus inches; conversion factors are exact. Unit display rounding does not replace retained canonical values. Entry bounds are software guardrails, not clinical thresholds.
+- Profile and time-varying context freeze at **Start check**. A known last-use timestamp is retained and elapsed time is derived for that check's frozen target time. Later profile edits apply only to new checks.
+- An attempt ID is persisted before acquisition. Terminal attempts are immutable. Invalid attempts can be retried with new IDs. A valid acquisition cannot be repeated merely to choose a preferred value.
+- One valid PPG and one valid ECG alternative can coexist. Both stay in the ledger, and Review requires an explicit final cardiac selection. PPG does not acquire ECG features.
+- Native cancellation is requested before radio/storage waits. Route changes/backgrounding invalidate pending starts. The callback and cancellation receipt share the exact native terminal ledger and one durable write. There is no time-based discard of delayed native evidence.
+- The frozen manifest binds context, every attempt and the selected component projections. Local verification checks supported schemas, canonical JSON and SHA-256 before upload/display/export. Results must bind the frozen session, target time and input digest; every `research_estimate` is rejected.
+- A local read-only camera preview neither measures pupils nor records images. Permission denial remains an explicit recoverable state. The native simulator includes framed packets, CRC/replay validation and clock evidence; a connection never establishes measurement qualification.
+
+See [reaction task](modules/reaction-task/README.md), [device transport](src/device/README.md), [native module build evidence](modules/VERIFICATION.md), and [firmware](../../firmware/README.md) for the complete developmental protocol and board simulator.
+
+## Account, synchronization and privacy
+
+Hosted OAuth uses a public client, authorization code, PKCE S256, state verification, a ten-minute single-use attempt, and an allowlisted native/browser callback. API requests use the access token, never the ID token. A new authorization-code grant cannot inherit another account's refresh token. Refresh is single-flight; definitive rejection clears credentials and requires reauthentication. SecureStore writes and removals are serialized to prevent a late write restoring a signed-out session.
+
+Every protected mutation carries a stable idempotency key and `X-Data-Generation`. Profile writes use ETag/If-Match. Snapshot, context, attempts and manifest keep distinct resource revisions. Conflict responses stop automatic overwrite; retired generations quarantine ordinary queues. Notice acknowledgments, deletion and withdrawal intents are persisted before sending, so a lost response replays the same exact request.
+
+Maintenance, unsupported app versions and incompatible contract versions pause ordinary synchronization, including previously queued writes. Local history/practice and privacy escape routes remain available. `X-App-Version` identifies the installed version. No capability response can enable inference in this compiled release.
+
+Cloud deletion requires fresh same-account sign-in followed by a final **Request deletion** confirmation. Jobs distinguish pending/running/completed/failed and the applicable partially-retained/expired states. Acknowledging a new generation after completed all-data deletion opens an empty workspace; old queues cannot restore erased records.
+
+Export selection records source and exact check IDs. One-check exports cannot silently expand. Local/cloud archives include verified profile/context, selected snapshots/results, all attempts and manifests. Limits are 500 selected checks, 512 KiB per attempt, 50 MiB uncompressed and 64 MiB archive. An oversized selection fails as a whole. Share sheets receive a temporary copy, which the app removes afterward; already shared copies cannot be recalled.
+
+Research invitations and exact-version consent are separate from sign-in and application notice acknowledgment. Withdrawal first stops local study work and persists its exact request. This release contains no approved human study acquisition configuration; consent does not change that gate.
+
+## Verify the implementation
+
+```bash
+npm run typecheck
+npm test
+npm run fixtures:generate
+npm run config:check
+npm run export:web
+
+# Browser journeys against the exported application:
+npx playwright install chromium
+npm run test:e2e
+```
+
+The browser suite covers phone-size and desktop guest journeys, saved evidence, exact local export, profile validation and privacy/settings. It is distinct from native timing, camera, OS unlock and Bluetooth validation. An optional `OTGD_CHROMIUM_PATH` can point Playwright at an explicitly installed local Chromium executable; record its actual version when using that override. The default workflow uses Playwright's browser.
+
+For a serverless Chromium alternative, verify that `FONTCONFIG_FILE` points to a readable Fontconfig file whose `<dir>` elements contain actual fonts. The temporary host verification used the package's OpenSans files plus `/usr/share/fonts/truetype` (DejaVu), a writable temporary font cache, and the runtime's library directory in `LD_LIBRARY_PATH`. A Fontconfig file referring only to an empty extraction path causes blank labels and zero-width headings; do not weaken UI visibility assertions to accommodate that configuration error. The verified alternative version and journey result are recorded in `VERIFICATION.md`; it is not an application dependency.
+
+`fixtures:generate` writes reproducible **fictional contract fixtures** under `testfixtures/` and temporary `/tmp/mobile-*-check-bundle.json` files for independent backend parsing/upload tests. The native-result fixture was generated on a host from the frozen schedule; it is not an acquired human or hardware result. Exact backend app-config/capabilities response fixtures are also retained for boundary-decoder tests.
+
+## QA, production and store builds
+
+Configure the real environment's API origin, issuer, Cognito public client, OAuth redirects and EAS project ID before building. The build fails on missing cloud origins or local/example identities. `APP_BUILD_NUMBER` supplies a positive iOS build number / Android version code for local reproducibility; coordinate unique release numbering with EAS auto-increment when publishing.
+
+```bash
+# On an authenticated Expo/EAS workstation with configured environment values:
+npx eas-cli build --profile qa --platform all
+npx eas-cli build --profile production --platform all
+```
+
+`eas.json` defines development, internal QA and production profiles. Actual Apple/Google signing identities, provisioning, store entries, privacy declarations, any required encryption declaration, production domains and environment secrets must be supplied by the project owner/operator. No signing identity, store submission, deployed cloud environment or downloadable production binary is implied by source compilation.
+
+Record the exact release digest and actual device evidence in [VERIFICATION.md](VERIFICATION.md). Run native installation/account transitions, lock/key-loss, cancellation/background races, VoiceOver/TalkBack and text scaling, Bluetooth denial/disconnect/replay, camera denial/restriction, export cancellation/temp cleanup, deletion/recovery and environment isolation on representative Android/iOS devices. Human hardware qualification and clinical inference validation remain separate evidence gates.

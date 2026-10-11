@@ -1,0 +1,723 @@
+{
+  "$defs": {
+    "Analyte": {
+      "additionalProperties": false,
+      "properties": {
+        "analyte": {
+          "enum": [
+            "delta9_thc",
+            "11_hydroxy_thc",
+            "thc_cooh"
+          ],
+          "title": "Analyte",
+          "type": "string"
+        },
+        "qualifier": {
+          "enum": [
+            "quantified",
+            "not_detected"
+          ],
+          "title": "Qualifier",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "unit": {
+          "const": "ng/mL",
+          "title": "Unit",
+          "type": "string"
+        },
+        "lod": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Lod",
+          "type": "number"
+        },
+        "loq": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Loq",
+          "type": "number"
+        },
+        "uloq": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Uloq",
+          "type": "number"
+        }
+      },
+      "required": [
+        "analyte",
+        "qualifier",
+        "value",
+        "unit",
+        "lod",
+        "loq",
+        "uloq"
+      ],
+      "title": "Analyte",
+      "type": "object"
+    },
+    "Association": {
+      "additionalProperties": false,
+      "properties": {
+        "peripheralId": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Peripheralid",
+          "type": "string"
+        },
+        "deviceId": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Deviceid",
+          "type": "string"
+        },
+        "bootId": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Bootid",
+          "type": "string"
+        },
+        "hardwareRevision": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Hardwarerevision",
+          "type": "string"
+        },
+        "firmwareVersion": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Firmwareversion",
+          "type": "string"
+        },
+        "protocolVersion": {
+          "const": 1,
+          "title": "Protocolversion",
+          "type": "integer"
+        },
+        "source": {
+          "const": "simulated",
+          "title": "Source",
+          "type": "string"
+        },
+        "verifiedBindingId": {
+          "title": "Verifiedbindingid",
+          "type": "null"
+        },
+        "transport": {
+          "enum": [
+            "ble_unprovisioned",
+            "local_simulator"
+          ],
+          "title": "Transport",
+          "type": "string"
+        },
+        "capabilities": {
+          "$ref": "#/$defs/SyntheticCapabilities"
+        }
+      },
+      "required": [
+        "peripheralId",
+        "deviceId",
+        "bootId",
+        "hardwareRevision",
+        "firmwareVersion",
+        "protocolVersion",
+        "source",
+        "verifiedBindingId",
+        "transport",
+        "capabilities"
+      ],
+      "title": "Association",
+      "type": "object"
+    },
+    "ClockEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "const": "synthetic_interval_v1",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "source": {
+          "const": "simulated",
+          "title": "Source",
+          "type": "string"
+        },
+        "boot_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "exchanges": {
+          "items": {
+            "$ref": "#/$defs/ClockExchange"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Exchanges",
+          "type": "array"
+        },
+        "selected_exchange": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Selected Exchange",
+          "type": "integer"
+        },
+        "offset_ms": {
+          "title": "Offset Ms",
+          "type": "number"
+        },
+        "uncertainty_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Uncertainty Ms",
+          "type": "number"
+        },
+        "calibrated": {
+          "const": false,
+          "title": "Calibrated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "policy_id",
+        "source",
+        "boot_id",
+        "exchanges",
+        "selected_exchange",
+        "offset_ms",
+        "uncertainty_ms",
+        "calibrated"
+      ],
+      "title": "ClockEvidence",
+      "type": "object"
+    },
+    "ClockExchange": {
+      "additionalProperties": false,
+      "properties": {
+        "phone_send_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Phone Send Ms",
+          "type": "number"
+        },
+        "device_receive_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Device Receive Ms",
+          "type": "number"
+        },
+        "device_send_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Device Send Ms",
+          "type": "number"
+        },
+        "phone_receive_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Phone Receive Ms",
+          "type": "number"
+        },
+        "phone_timestamp_resolution_ms": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000,
+          "title": "Phone Timestamp Resolution Ms",
+          "type": "number"
+        },
+        "device_timestamp_resolution_ms": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000,
+          "title": "Device Timestamp Resolution Ms",
+          "type": "number"
+        },
+        "offset_lower_ms": {
+          "title": "Offset Lower Ms",
+          "type": "number"
+        },
+        "offset_upper_ms": {
+          "title": "Offset Upper Ms",
+          "type": "number"
+        },
+        "round_trip_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Round Trip Ms",
+          "type": "number"
+        }
+      },
+      "required": [
+        "phone_send_ms",
+        "device_receive_ms",
+        "device_send_ms",
+        "phone_receive_ms",
+        "phone_timestamp_resolution_ms",
+        "device_timestamp_resolution_ms",
+        "offset_lower_ms",
+        "offset_upper_ms",
+        "round_trip_ms"
+      ],
+      "title": "ClockExchange",
+      "type": "object"
+    },
+    "Ecg": {
+      "additionalProperties": false,
+      "properties": {
+        "heart_rate_bpm": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Heart Rate Bpm",
+          "type": "number"
+        },
+        "duration_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Duration Seconds",
+          "type": "number"
+        },
+        "method": {
+          "const": "ecg",
+          "title": "Method",
+          "type": "string"
+        },
+        "sample_rate_hz": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Sample Rate Hz",
+          "type": "number"
+        },
+        "lead_count": {
+          "const": 1,
+          "title": "Lead Count",
+          "type": "integer"
+        },
+        "units": {
+          "const": "arbitrary_counts",
+          "title": "Units",
+          "type": "string"
+        },
+        "samples": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 200,
+          "minItems": 200,
+          "title": "Samples",
+          "type": "array"
+        }
+      },
+      "required": [
+        "heart_rate_bpm",
+        "duration_seconds",
+        "method",
+        "sample_rate_hz",
+        "lead_count",
+        "units",
+        "samples"
+      ],
+      "title": "Ecg",
+      "type": "object"
+    },
+    "Message": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": 1,
+          "title": "Protocol Version",
+          "type": "integer"
+        },
+        "message_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Message Id",
+          "type": "string"
+        },
+        "device_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Device Id",
+          "type": "string"
+        },
+        "boot_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "monotonic_ms": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Monotonic Ms",
+          "type": "number"
+        },
+        "type": {
+          "enum": [
+            "ack",
+            "hello",
+            "clock_sync",
+            "capture_complete"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "payload": {
+          "additionalProperties": true,
+          "title": "Payload",
+          "type": "object"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "message_id",
+        "device_id",
+        "boot_id",
+        "session_id",
+        "sequence",
+        "monotonic_ms",
+        "type",
+        "payload"
+      ],
+      "title": "Message",
+      "type": "object"
+    },
+    "Ppg": {
+      "additionalProperties": false,
+      "properties": {
+        "heart_rate_bpm": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Heart Rate Bpm",
+          "type": "number"
+        },
+        "duration_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Duration Seconds",
+          "type": "number"
+        },
+        "method": {
+          "const": "ppg",
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "heart_rate_bpm",
+        "duration_seconds",
+        "method"
+      ],
+      "title": "Ppg",
+      "type": "object"
+    },
+    "Saliva": {
+      "additionalProperties": false,
+      "properties": {
+        "specimen": {
+          "const": "oral_fluid",
+          "title": "Specimen",
+          "type": "string"
+        },
+        "assay_id": {
+          "const": "synthetic_assay_v1",
+          "title": "Assay Id",
+          "type": "string"
+        },
+        "analytes": {
+          "items": {
+            "$ref": "#/$defs/Analyte"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Analytes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "specimen",
+        "assay_id",
+        "analytes"
+      ],
+      "title": "Saliva",
+      "type": "object"
+    },
+    "SyntheticCapabilities": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": 1,
+          "title": "Protocol Version",
+          "type": "integer"
+        },
+        "encodings": {
+          "items": {
+            "const": 1,
+            "type": "integer"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "title": "Encodings",
+          "type": "array"
+        },
+        "max_logical_bytes": {
+          "const": 8192,
+          "title": "Max Logical Bytes",
+          "type": "integer"
+        },
+        "max_att_bytes": {
+          "maximum": 512,
+          "minimum": 20,
+          "title": "Max Att Bytes",
+          "type": "integer"
+        },
+        "source": {
+          "const": "simulated",
+          "title": "Source",
+          "type": "string"
+        },
+        "device_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Device Id",
+          "type": "string"
+        },
+        "boot_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "hardware_revision": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Hardware Revision",
+          "type": "string"
+        },
+        "firmware_version": {
+          "maxLength": 32,
+          "minLength": 1,
+          "title": "Firmware Version",
+          "type": "string"
+        },
+        "channels": {
+          "items": {
+            "enum": [
+              "ppg",
+              "ecg",
+              "saliva"
+            ],
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Channels",
+          "type": "array"
+        },
+        "configuration_id": {
+          "const": "synthetic_bench_v1",
+          "title": "Configuration Id",
+          "type": "string"
+        },
+        "calibration_status": {
+          "const": "not_applicable",
+          "title": "Calibration Status",
+          "type": "string"
+        },
+        "timestamp_resolution_ms": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000,
+          "title": "Timestamp Resolution Ms",
+          "type": "number"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "encodings",
+        "max_logical_bytes",
+        "max_att_bytes",
+        "source",
+        "device_id",
+        "boot_id",
+        "hardware_revision",
+        "firmware_version",
+        "channels",
+        "configuration_id",
+        "calibration_status",
+        "timestamp_resolution_ms"
+      ],
+      "title": "SyntheticCapabilities",
+      "type": "object"
+    },
+    "SyntheticContext": {
+      "additionalProperties": false,
+      "properties": {
+        "sessionId": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Sessionid",
+          "type": "string"
+        },
+        "attemptId": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attemptid",
+          "type": "string"
+        },
+        "captureId": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Captureid",
+          "type": "string"
+        },
+        "workspaceEpoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Workspaceepoch",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sessionId",
+        "attemptId",
+        "captureId",
+        "workspaceEpoch"
+      ],
+      "title": "SyntheticContext",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "const": "simulated",
+      "title": "Source",
+      "type": "string"
+    },
+    "channel": {
+      "enum": [
+        "ppg",
+        "ecg",
+        "saliva"
+      ],
+      "title": "Channel",
+      "type": "string"
+    },
+    "context": {
+      "$ref": "#/$defs/SyntheticContext"
+    },
+    "association": {
+      "$ref": "#/$defs/Association"
+    },
+    "clockEvidence": {
+      "$ref": "#/$defs/ClockEvidence"
+    },
+    "startedAt": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Startedat",
+      "type": "string"
+    },
+    "endedAt": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Endedat",
+      "type": "string"
+    },
+    "deviceStartedMonotonicMs": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Devicestartedmonotonicms",
+      "type": "number"
+    },
+    "deviceEndedMonotonicMs": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Deviceendedmonotonicms",
+      "type": "number"
+    },
+    "values": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Ppg"
+        },
+        {
+          "$ref": "#/$defs/Ecg"
+        },
+        {
+          "$ref": "#/$defs/Saliva"
+        }
+      ],
+      "title": "Values"
+    },
+    "fixtureId": {
+      "const": "synthetic_bench_v1",
+      "title": "Fixtureid",
+      "type": "string"
+    },
+    "messages": {
+      "items": {
+        "$ref": "#/$defs/Message"
+      },
+      "maxItems": 32,
+      "minItems": 10,
+      "title": "Messages",
+      "type": "array"
+    },
+    "evidenceSha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidencesha256",
+      "type": "string"
+    },
+    "qualityFlags": {
+      "items": {
+        "enum": [
+          "SIMULATED",
+          "UNVERIFIED_DEVICE"
+        ],
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Qualityflags",
+      "type": "array"
+    },
+    "modelEligible": {
+      "const": false,
+      "title": "Modeleligible",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "source",
+    "channel",
+    "context",
+    "association",
+    "clockEvidence",
+    "startedAt",
+    "endedAt",
+    "deviceStartedMonotonicMs",
+    "deviceEndedMonotonicMs",
+    "values",
+    "fixtureId",
+    "messages",
+    "evidenceSha256",
+    "qualityFlags",
+    "modelEligible"
+  ],
+  "title": "SyntheticDeviceCapture",
+  "type": "object"
+}

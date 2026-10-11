@@ -1,0 +1,7 @@
+node_modules/
+cdk.out/
+config/*.local.json
+local/.env
+local/secrets/
+local/verification/
+__pycache__/

@@ -1,0 +1,10 @@
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+
+group = 'expo.modules.otgddevice'
+version = '1.0.0'
+
+android {
+  namespace 'expo.modules.otgddevice'
+  defaultConfig { minSdkVersion 24 }
+}

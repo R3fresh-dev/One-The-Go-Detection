@@ -78,7 +78,7 @@ def no_acquisition(session):
 def check_document_links():
     count = 0
     for path in ROOT.rglob("*.md"):
-        if any(part.startswith(".") for part in path.relative_to(ROOT).parts):
+        if any(part.startswith(".") or part in {"node_modules", "cdk.out", "dist", "build", "coverage"} for part in path.relative_to(ROOT).parts):
             continue
         for match in re.finditer(r"\[[^\]]*\]\(([^\s)]+)(?:\s+[^)]*)?\)", path.read_text()):
             target = match.group(1)

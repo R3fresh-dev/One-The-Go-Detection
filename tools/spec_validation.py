@@ -153,9 +153,10 @@ def validate_manifest(value):
 
 
 def snapshot_hash(value) -> str:
-    """Python-demo digest only; cross-language canonicalization remains a design gate."""
-    serialized = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
-    return hashlib.sha256(serialized.encode()).hexdigest()
+    """RFC 8785 SHA-256 shared with the mobile and service contracts."""
+    import rfc8785
+    serialized = rfc8785.dumps(value)
+    return hashlib.sha256(serialized).hexdigest()
 
 
 def validate_demo_result(session, result):

@@ -1,0 +1,16 @@
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+
+group = 'expo.modules.otgdreaction'
+version = '1.0.0'
+
+android {
+  namespace 'expo.modules.otgdreaction'
+  defaultConfig { minSdkVersion 24 }
+  testOptions { unitTests.returnDefaultValues = true }
+  sourceSets { test.resources.srcDirs += ['../fixtures'] }
+}
+dependencies {
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.json:json:20240303'
+}

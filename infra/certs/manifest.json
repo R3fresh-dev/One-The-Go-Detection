@@ -1,0 +1,7 @@
+{
+  "source": "https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem",
+  "checked_at": "2026-10-11T00:00:00Z",
+  "sha256": "fe45bbebf92ad3e27a583bbb2ddd1553c521ed4d49af5514dc0a40372ea5395c",
+  "bytes": 169984,
+  "role": "Public AWS RDS CA trust bundle; contains no private key"
+}

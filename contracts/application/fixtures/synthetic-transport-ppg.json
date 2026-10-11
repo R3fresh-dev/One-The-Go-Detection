@@ -1,0 +1,262 @@
+{
+  "source": "simulated",
+  "channel": "ppg",
+  "context": {
+    "attemptId": "1d0582b3-4777-460c-9e19-88aa7ea5b524",
+    "captureId": "f56171f2-ec70-4e79-9e08-ddb4cb9b8ed5",
+    "sessionId": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+    "workspaceEpoch": "software-fixture:1"
+  },
+  "association": {
+    "bootId": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+    "capabilities": {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "calibration_status": "not_applicable",
+      "channels": [
+        "ppg",
+        "ecg",
+        "saliva"
+      ],
+      "configuration_id": "synthetic_bench_v1",
+      "device_id": "SIM-LOCAL-01",
+      "encodings": [
+        1
+      ],
+      "firmware_version": "1.0.0",
+      "hardware_revision": "software_simulator_1",
+      "max_att_bytes": 20,
+      "max_logical_bytes": 8192,
+      "protocol_version": 1,
+      "source": "simulated",
+      "timestamp_resolution_ms": 1
+    },
+    "deviceId": "SIM-LOCAL-01",
+    "firmwareVersion": "1.0.0",
+    "hardwareRevision": "software_simulator_1",
+    "peripheralId": "local-simulator",
+    "protocolVersion": 1,
+    "source": "simulated",
+    "transport": "local_simulator",
+    "verifiedBindingId": null
+  },
+  "clockEvidence": {
+    "policy_id": "synthetic_interval_v1",
+    "source": "simulated",
+    "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+    "exchanges": [
+      {
+        "phone_send_ms": 247,
+        "device_receive_ms": 249.492179,
+        "device_send_ms": 249.730587,
+        "phone_receive_ms": 249.93173,
+        "phone_timestamp_resolution_ms": 1,
+        "device_timestamp_resolution_ms": 1,
+        "offset_lower_ms": -2.2011429999999734,
+        "offset_upper_ms": 4.492178999999993,
+        "round_trip_ms": 2.9317299999999875
+      },
+      {
+        "phone_send_ms": 251,
+        "device_receive_ms": 252.895609,
+        "device_send_ms": 253.112615,
+        "phone_receive_ms": 253.276291,
+        "phone_timestamp_resolution_ms": 1,
+        "device_timestamp_resolution_ms": 1,
+        "offset_lower_ms": -2.163675999999981,
+        "offset_upper_ms": 3.8956090000000074,
+        "round_trip_ms": 2.2762909999999863
+      },
+      {
+        "phone_send_ms": 255,
+        "device_receive_ms": 257.002541,
+        "device_send_ms": 257.243844,
+        "phone_receive_ms": 257.399989,
+        "phone_timestamp_resolution_ms": 1,
+        "device_timestamp_resolution_ms": 1,
+        "offset_lower_ms": -2.156144999999981,
+        "offset_upper_ms": 4.002541000000008,
+        "round_trip_ms": 2.399989000000005
+      }
+    ],
+    "selected_exchange": 1,
+    "offset_ms": 0.8659665000000132,
+    "uncertainty_ms": 3.0296424999999942,
+    "calibrated": false
+  },
+  "startedAt": "2026-10-11T03:21:05.714Z",
+  "endedAt": "2026-10-11T03:21:08.736Z",
+  "deviceStartedMonotonicMs": 260.949339,
+  "deviceEndedMonotonicMs": 3262.226417,
+  "values": {
+    "heart_rate_bpm": 72,
+    "duration_seconds": 3,
+    "method": "ppg"
+  },
+  "fixtureId": "synthetic_bench_v1",
+  "messages": [
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "3ff4e8ca-d3fc-4b3c-992d-09bb9e3b4b0f",
+      "monotonic_ms": 242.916767,
+      "payload": {
+        "ack_message_id": "0c56975e-a0af-48d9-b4de-ae515304422e",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 8,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "ack"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "5874e6ef-f1be-4d0f-938a-9efc727552e4",
+      "monotonic_ms": 243.235016,
+      "payload": {
+        "configuration_id": "synthetic_bench_v1",
+        "request_message_id": "0c56975e-a0af-48d9-b4de-ae515304422e",
+        "source": "simulated"
+      },
+      "protocol_version": 1,
+      "sequence": 9,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "hello"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "649eca19-49ad-4302-959a-ec3e78fc71ce",
+      "monotonic_ms": 249.497166,
+      "payload": {
+        "ack_message_id": "19396b03-0123-4141-9288-262f8bc46a80",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 10,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "ack"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "3ede5385-2e6c-4d1e-a9e5-e7a45300de94",
+      "monotonic_ms": 249.733271,
+      "payload": {
+        "device_receive_ms": 249.492179,
+        "device_send_ms": 249.730587,
+        "phone_send_ms": 247,
+        "request_message_id": "19396b03-0123-4141-9288-262f8bc46a80"
+      },
+      "protocol_version": 1,
+      "sequence": 11,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "clock_sync"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "9c709368-d5a5-4d63-83b6-d30262085017",
+      "monotonic_ms": 252.899034,
+      "payload": {
+        "ack_message_id": "4e9058dd-d753-49ca-af69-81e0ff99fd95",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 12,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "ack"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "be2ba172-7d09-41e5-965c-0a74f42388c6",
+      "monotonic_ms": 253.114939,
+      "payload": {
+        "device_receive_ms": 252.895609,
+        "device_send_ms": 253.112615,
+        "phone_send_ms": 251,
+        "request_message_id": "4e9058dd-d753-49ca-af69-81e0ff99fd95"
+      },
+      "protocol_version": 1,
+      "sequence": 13,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "clock_sync"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "bb19b88e-7b8c-417e-b770-7afc72d764c6",
+      "monotonic_ms": 257.006377,
+      "payload": {
+        "ack_message_id": "e7f86fe7-0ded-4a09-a3e3-859e94330a32",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 14,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "ack"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "5921483e-dd02-4ce8-93d3-a72d78d3f9da",
+      "monotonic_ms": 257.246308,
+      "payload": {
+        "device_receive_ms": 257.002541,
+        "device_send_ms": 257.243844,
+        "phone_send_ms": 255,
+        "request_message_id": "e7f86fe7-0ded-4a09-a3e3-859e94330a32"
+      },
+      "protocol_version": 1,
+      "sequence": 15,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "clock_sync"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "263b4769-275e-49e9-8617-828f7f2995c0",
+      "monotonic_ms": 260.954777,
+      "payload": {
+        "ack_message_id": "665333bc-f4ad-4269-bd89-e97c228f4b62",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 16,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "ack"
+    },
+    {
+      "boot_id": "1feb1b01-7903-4115-879b-5d42b642ea7e",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "0fdf18b2-4e93-444b-a52c-9972eb61be5e",
+      "monotonic_ms": 3262.268561,
+      "payload": {
+        "attempt_id": "1d0582b3-4777-460c-9e19-88aa7ea5b524",
+        "capture_id": "f56171f2-ec70-4e79-9e08-ddb4cb9b8ed5",
+        "channel": "ppg",
+        "ended_monotonic_ms": 3262.226417,
+        "fixture_id": "synthetic_bench_v1",
+        "source": "simulated",
+        "started_monotonic_ms": 260.949339,
+        "values": {
+          "duration_seconds": 3,
+          "heart_rate_bpm": 72,
+          "method": "ppg"
+        },
+        "workspace_epoch": "software-fixture:1"
+      },
+      "protocol_version": 1,
+      "sequence": 17,
+      "session_id": "32176aea-a2bc-433a-b0b4-d64e360929c6",
+      "type": "capture_complete"
+    }
+  ],
+  "qualityFlags": [
+    "SIMULATED",
+    "UNVERIFIED_DEVICE"
+  ],
+  "modelEligible": false,
+  "evidenceSha256": "338fe767856586603890f494500329a3d2eaa7bcbef43372b04a55dc9c6b39eb"
+}

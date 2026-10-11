@@ -13,3 +13,27 @@ captures/
 artifacts-private/
 build/
 dist/
+
+# Application toolchains and generated local data
+node_modules/
+.venv/
+.expo/
+cdk.out/
+coverage/
+.pytest_cache/
+*.egg-info/
+.env
+.env.*.local
+*.pem
+*.key
+*.db
+*.sqlite*
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/dist/
+infra/dist/
+services/api/htmlcov/
+.local/
+
+# Official public RDS trust anchors, verified by manifest (not private keys)
+!infra/certs/global-bundle.pem

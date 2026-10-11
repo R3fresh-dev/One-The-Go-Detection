@@ -1,0 +1,230 @@
+{
+  "$defs": {
+    "AlcoholLimits": {
+      "additionalProperties": false,
+      "properties": {
+        "lod_mg_l": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Lod Mg L"
+        },
+        "loq_mg_l": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Loq Mg L"
+        },
+        "upper_mg_l": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Upper Mg L"
+        }
+      },
+      "required": [
+        "lod_mg_l",
+        "loq_mg_l",
+        "upper_mg_l"
+      ],
+      "title": "AlcoholLimits",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "measurement_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Measurement Id",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "collected_at": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Collected At"
+    },
+    "measured_at": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Measured At"
+    },
+    "source": {
+      "enum": [
+        "simulated",
+        "prototype_sensor",
+        "reference_lab",
+        "validated_sensor"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "qualifier": {
+      "enum": [
+        "quantified",
+        "not_measured",
+        "invalid",
+        "below_loq",
+        "above_range",
+        "not_detected"
+      ],
+      "title": "Qualifier",
+      "type": "string"
+    },
+    "value_mg_l": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Value Mg L"
+    },
+    "unit": {
+      "const": "mg/L",
+      "title": "Unit",
+      "type": "string"
+    },
+    "limits": {
+      "$ref": "#/$defs/AlcoholLimits"
+    },
+    "method_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Method Id"
+    },
+    "calibration_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Calibration Id"
+    },
+    "device_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Device Id"
+    },
+    "boot_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Boot Id"
+    },
+    "configuration_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Configuration Hash"
+    },
+    "quality_flags": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Quality Flags",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "measurement_id",
+    "session_id",
+    "collected_at",
+    "measured_at",
+    "source",
+    "qualifier",
+    "value_mg_l",
+    "unit",
+    "limits",
+    "method_id",
+    "calibration_id",
+    "device_id",
+    "boot_id",
+    "configuration_hash",
+    "quality_flags"
+  ],
+  "title": "Alcohol",
+  "type": "object"
+}

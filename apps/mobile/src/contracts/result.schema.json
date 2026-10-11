@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/result.schema.json",
+  "title": "Result",
+  "description": "Proposed output envelope. A well-formed research_estimate is not authorized without server-side study and manifest checks. No consumer release mode exists in v0.1.0.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "result_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "session_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "enum": [
+        "measurement_only",
+        "research_estimate",
+        "inconclusive",
+        "invalid"
+      ]
+    },
+    "target_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "model_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "model_lifecycle": {
+      "enum": [
+        "unvalidated",
+        "active_research",
+        "retired",
+        null
+      ]
+    },
+    "endpoint_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "probability": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "classification": {
+      "enum": [
+        "above_threshold",
+        "below_threshold",
+        null
+      ]
+    },
+    "operating_threshold": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1
+    },
+    "uncertainty_policy_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "SIMULATED_INPUT",
+          "MODEL_UNVALIDATED",
+          "MODEL_UNAVAILABLE",
+          "MODEL_RETIRED",
+          "STUDY_UNAUTHORIZED",
+          "INVALID_ACQUISITION",
+          "MISSING_REQUIRED_CHANNEL",
+          "INCOMPATIBLE_METHOD",
+          "UNKNOWN_ASSAY_BASIS",
+          "INCOMPATIBLE_TASK",
+          "OUTSIDE_SCOPE",
+          "TIMING_UNCERTAIN",
+          "STALE_COMPONENT",
+          "UNCERTAINTY_ABSTENTION",
+          "ANALYTICAL_ONLY",
+          "PENDING_VALIDATION",
+          "DEMO_ONLY"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "input_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "provenance_summary": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "simulated",
+          "reference_lab",
+          "prototype_sensor",
+          "validated_sensor"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "replaces_result_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "result_id",
+    "session_id",
+    "state",
+    "target_at",
+    "evaluated_at",
+    "model_id",
+    "model_lifecycle",
+    "endpoint_id",
+    "probability",
+    "classification",
+    "operating_threshold",
+    "uncertainty_policy_id",
+    "reason_codes",
+    "input_sha256",
+    "provenance_summary",
+    "replaces_result_id"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "research_estimate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "model_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "model_lifecycle": {
+            "const": "active_research"
+          },
+          "endpoint_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "probability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "classification": {
+            "enum": [
+              "above_threshold",
+              "below_threshold"
+            ]
+          },
+          "operating_threshold": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "uncertainty_policy_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "provenance_summary": {
+            "not": {
+              "contains": {
+                "const": "simulated"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "probability": {
+            "type": "null"
+          },
+          "classification": {
+            "type": "null"
+          },
+          "operating_threshold": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

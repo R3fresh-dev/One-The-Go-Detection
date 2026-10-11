@@ -1,0 +1,318 @@
+{
+  "source": "simulated",
+  "channel": "saliva",
+  "context": {
+    "attemptId": "e25bedc4-59ce-442c-b76c-6bb19cfbd9f0",
+    "captureId": "1413a9ef-54cc-478c-b742-dfccf4e9cc83",
+    "sessionId": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+    "workspaceEpoch": "software-fixture:1"
+  },
+  "association": {
+    "bootId": "89570990-f62a-4550-8744-ac032bed35a7",
+    "capabilities": {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "calibration_status": "not_applicable",
+      "channels": [
+        "ppg",
+        "ecg",
+        "saliva"
+      ],
+      "configuration_id": "synthetic_bench_v1",
+      "device_id": "SIM-LOCAL-01",
+      "encodings": [
+        1
+      ],
+      "firmware_version": "1.0.0",
+      "hardware_revision": "software_simulator_1",
+      "max_att_bytes": 20,
+      "max_logical_bytes": 8192,
+      "protocol_version": 1,
+      "source": "simulated",
+      "timestamp_resolution_ms": 1
+    },
+    "deviceId": "SIM-LOCAL-01",
+    "firmwareVersion": "1.0.0",
+    "hardwareRevision": "software_simulator_1",
+    "peripheralId": "local-simulator",
+    "protocolVersion": 1,
+    "source": "simulated",
+    "transport": "local_simulator",
+    "verifiedBindingId": null
+  },
+  "clockEvidence": {
+    "policy_id": "synthetic_interval_v1",
+    "source": "simulated",
+    "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+    "exchanges": [
+      {
+        "phone_send_ms": 247,
+        "device_receive_ms": 250.893016,
+        "device_send_ms": 251.402012,
+        "phone_receive_ms": 251.579579,
+        "phone_timestamp_resolution_ms": 1,
+        "device_timestamp_resolution_ms": 1,
+        "offset_lower_ms": -2.177566999999982,
+        "offset_upper_ms": 5.893015999999989,
+        "round_trip_ms": 4.579578999999995
+      },
+      {
+        "phone_send_ms": 251,
+        "device_receive_ms": 254.645416,
+        "device_send_ms": 254.842041,
+        "phone_receive_ms": 255.14041,
+        "phone_timestamp_resolution_ms": 1,
+        "device_timestamp_resolution_ms": 1,
+        "offset_lower_ms": -2.298369000000008,
+        "offset_upper_ms": 5.6454160000000115,
+        "round_trip_ms": 4.140410000000003
+      },
+      {
+        "phone_send_ms": 255,
+        "device_receive_ms": 257.969696,
+        "device_send_ms": 258.268175,
+        "phone_receive_ms": 258.423078,
+        "phone_timestamp_resolution_ms": 1,
+        "device_timestamp_resolution_ms": 1,
+        "offset_lower_ms": -2.1549029999999902,
+        "offset_upper_ms": 4.969695999999999,
+        "round_trip_ms": 3.4230779999999754
+      }
+    ],
+    "selected_exchange": 2,
+    "offset_ms": 1.4073965000000044,
+    "uncertainty_ms": 3.5622994999999946,
+    "calibrated": false
+  },
+  "startedAt": "2026-10-11T03:21:05.714Z",
+  "endedAt": "2026-10-11T03:21:07.736Z",
+  "deviceStartedMonotonicMs": 261.431525,
+  "deviceEndedMonotonicMs": 2261.604721,
+  "values": {
+    "specimen": "oral_fluid",
+    "assay_id": "synthetic_assay_v1",
+    "analytes": [
+      {
+        "analyte": "delta9_thc",
+        "qualifier": "quantified",
+        "value": 12,
+        "unit": "ng/mL",
+        "lod": 1,
+        "loq": 2,
+        "uloq": 100
+      },
+      {
+        "analyte": "11_hydroxy_thc",
+        "qualifier": "not_detected",
+        "value": null,
+        "unit": "ng/mL",
+        "lod": 1,
+        "loq": 2,
+        "uloq": 100
+      },
+      {
+        "analyte": "thc_cooh",
+        "qualifier": "not_detected",
+        "value": null,
+        "unit": "ng/mL",
+        "lod": 1,
+        "loq": 2,
+        "uloq": 100
+      }
+    ]
+  },
+  "fixtureId": "synthetic_bench_v1",
+  "messages": [
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "4f30d6f8-b6b3-4f8f-9c6a-954a3dd20fff",
+      "monotonic_ms": 246.031432,
+      "payload": {
+        "ack_message_id": "0134a837-49c4-4fbf-8627-1d99a1aa44bd",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 8,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "ack"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "8a3d163f-0307-4c3f-92cb-0c760f23a693",
+      "monotonic_ms": 246.579597,
+      "payload": {
+        "configuration_id": "synthetic_bench_v1",
+        "request_message_id": "0134a837-49c4-4fbf-8627-1d99a1aa44bd",
+        "source": "simulated"
+      },
+      "protocol_version": 1,
+      "sequence": 9,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "hello"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "30008517-5911-4d48-bf7f-090e8289e49d",
+      "monotonic_ms": 250.895139,
+      "payload": {
+        "ack_message_id": "2f5a3e30-57f3-448c-80d7-b0c36744d63a",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 10,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "ack"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "0b9bf021-30cd-41b5-98fd-5cb6cdcf6d35",
+      "monotonic_ms": 251.405497,
+      "payload": {
+        "device_receive_ms": 250.893016,
+        "device_send_ms": 251.402012,
+        "phone_send_ms": 247,
+        "request_message_id": "2f5a3e30-57f3-448c-80d7-b0c36744d63a"
+      },
+      "protocol_version": 1,
+      "sequence": 11,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "clock_sync"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "eebefa09-102d-4b24-a212-85869abd0518",
+      "monotonic_ms": 254.647469,
+      "payload": {
+        "ack_message_id": "a4860b18-5422-4202-9810-65465fa13734",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 12,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "ack"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "b415672b-e539-4f78-ac68-784bfceb6d08",
+      "monotonic_ms": 254.843864,
+      "payload": {
+        "device_receive_ms": 254.645416,
+        "device_send_ms": 254.842041,
+        "phone_send_ms": 251,
+        "request_message_id": "a4860b18-5422-4202-9810-65465fa13734"
+      },
+      "protocol_version": 1,
+      "sequence": 13,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "clock_sync"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "5860b720-c8fd-4242-9280-a9e63e9d2d77",
+      "monotonic_ms": 257.971589,
+      "payload": {
+        "ack_message_id": "71614008-2b57-41bd-828a-57c484683ed1",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 14,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "ack"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "e2c6cc01-21b1-42c2-aacf-ee3a8db782ea",
+      "monotonic_ms": 258.27111,
+      "payload": {
+        "device_receive_ms": 257.969696,
+        "device_send_ms": 258.268175,
+        "phone_send_ms": 255,
+        "request_message_id": "71614008-2b57-41bd-828a-57c484683ed1"
+      },
+      "protocol_version": 1,
+      "sequence": 15,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "clock_sync"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "0937e875-37fb-42f4-ad46-ac78d839aebf",
+      "monotonic_ms": 261.43496,
+      "payload": {
+        "ack_message_id": "364d9397-da3f-4624-8147-49cf00beffc0",
+        "status": "accepted"
+      },
+      "protocol_version": 1,
+      "sequence": 16,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "ack"
+    },
+    {
+      "boot_id": "89570990-f62a-4550-8744-ac032bed35a7",
+      "device_id": "SIM-LOCAL-01",
+      "message_id": "b6b1e4c4-c081-4374-8be1-4e8a2d8489a7",
+      "monotonic_ms": 2261.71054,
+      "payload": {
+        "attempt_id": "e25bedc4-59ce-442c-b76c-6bb19cfbd9f0",
+        "capture_id": "1413a9ef-54cc-478c-b742-dfccf4e9cc83",
+        "channel": "saliva",
+        "ended_monotonic_ms": 2261.604721,
+        "fixture_id": "synthetic_bench_v1",
+        "source": "simulated",
+        "started_monotonic_ms": 261.431525,
+        "values": {
+          "analytes": [
+            {
+              "analyte": "delta9_thc",
+              "lod": 1,
+              "loq": 2,
+              "qualifier": "quantified",
+              "uloq": 100,
+              "unit": "ng/mL",
+              "value": 12
+            },
+            {
+              "analyte": "11_hydroxy_thc",
+              "lod": 1,
+              "loq": 2,
+              "qualifier": "not_detected",
+              "uloq": 100,
+              "unit": "ng/mL",
+              "value": null
+            },
+            {
+              "analyte": "thc_cooh",
+              "lod": 1,
+              "loq": 2,
+              "qualifier": "not_detected",
+              "uloq": 100,
+              "unit": "ng/mL",
+              "value": null
+            }
+          ],
+          "assay_id": "synthetic_assay_v1",
+          "specimen": "oral_fluid"
+        },
+        "workspace_epoch": "software-fixture:1"
+      },
+      "protocol_version": 1,
+      "sequence": 17,
+      "session_id": "68667440-ef26-4e89-ab35-7437d84a5b9d",
+      "type": "capture_complete"
+    }
+  ],
+  "qualityFlags": [
+    "SIMULATED",
+    "UNVERIFIED_DEVICE"
+  ],
+  "modelEligible": false,
+  "evidenceSha256": "6f2e2b8274a551a9fe0c478a7ff7d771cdf94484d33e4ceae41474a93e5fc4cb"
+}

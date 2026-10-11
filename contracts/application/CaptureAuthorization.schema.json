@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attempt_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "channel": {
+      "enum": [
+        "saliva",
+        "eyes",
+        "cardiac",
+        "ecg",
+        "task",
+        "alcohol"
+      ],
+      "title": "Channel",
+      "type": "string"
+    },
+    "binding_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Binding Id"
+    },
+    "device_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Device Id"
+    },
+    "configuration_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Configuration Id",
+      "type": "string"
+    },
+    "configuration_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Configuration Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "attempt_id",
+    "channel",
+    "binding_id",
+    "device_id",
+    "configuration_id",
+    "configuration_hash"
+  ],
+  "title": "CaptureAuthorization",
+  "type": "object"
+}

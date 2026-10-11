@@ -1,0 +1,230 @@
+{
+  "$defs": {
+    "History": {
+      "additionalProperties": false,
+      "properties": {
+        "use_frequency": {
+          "default": "unknown",
+          "enum": [
+            "never",
+            "occasional",
+            "frequent",
+            "daily",
+            "unknown",
+            "declined"
+          ],
+          "title": "Use Frequency",
+          "type": "string"
+        },
+        "route": {
+          "default": "unknown",
+          "enum": [
+            "inhaled",
+            "oral",
+            "other",
+            "unknown",
+            "declined"
+          ],
+          "title": "Route",
+          "type": "string"
+        },
+        "time_since_use_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Since Use Min"
+        },
+        "recent_exercise": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recent Exercise"
+        },
+        "sleep_hours": {
+          "anyOf": [
+            {
+              "maximum": 24,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sleep Hours"
+        },
+        "alcohol_co_use": {
+          "default": "unknown",
+          "enum": [
+            "reported",
+            "not_reported",
+            "unknown",
+            "declined"
+          ],
+          "title": "Alcohol Co Use",
+          "type": "string"
+        }
+      },
+      "title": "History",
+      "type": "object"
+    },
+    "Profile": {
+      "additionalProperties": false,
+      "properties": {
+        "age_years": {
+          "anyOf": [
+            {
+              "maximum": 125,
+              "minimum": 18,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Age Years"
+        },
+        "height_cm": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 300,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Height Cm"
+        },
+        "weight_kg": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 500,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weight Kg"
+        },
+        "bmi": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bmi"
+        },
+        "recorded_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Recorded At",
+          "type": "string"
+        },
+        "source": {
+          "default": "self_report",
+          "enum": [
+            "self_report",
+            "study_measurement",
+            "synthetic"
+          ],
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "recorded_at"
+      ],
+      "title": "Profile",
+      "type": "object"
+    },
+    "SelfReport": {
+      "additionalProperties": false,
+      "properties": {
+        "last_use_status": {
+          "enum": [
+            "known",
+            "unknown",
+            "declined"
+          ],
+          "title": "Last Use Status",
+          "type": "string"
+        },
+        "last_use_at": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Use At"
+        },
+        "confirmed_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Confirmed At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "last_use_status",
+        "last_use_at",
+        "confirmed_at"
+      ],
+      "title": "SelfReport",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "profile": {
+      "$ref": "#/$defs/Profile"
+    },
+    "history": {
+      "$ref": "#/$defs/History"
+    },
+    "context": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SelfReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "profile",
+    "history"
+  ],
+  "title": "ProfileWrite",
+  "type": "object"
+}

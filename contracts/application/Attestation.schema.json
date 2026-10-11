@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "AttestationEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "environment": {
+          "enum": [
+            "local",
+            "qa",
+            "prod",
+            "test"
+          ],
+          "title": "Environment",
+          "type": "string"
+        },
+        "owner_ref": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Owner Ref",
+          "type": "string"
+        },
+        "data_generation": {
+          "exclusiveMinimum": 0,
+          "title": "Data Generation",
+          "type": "integer"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "authorization_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Authorization Id",
+          "type": "string"
+        },
+        "binding_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Binding Id",
+          "type": "string"
+        },
+        "device_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Device Id",
+          "type": "string"
+        },
+        "key_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Key Id",
+          "type": "string"
+        },
+        "boot_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "configuration_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Hash",
+          "type": "string"
+        },
+        "payload_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Payload Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "environment",
+        "owner_ref",
+        "data_generation",
+        "session_id",
+        "attempt_id",
+        "authorization_id",
+        "binding_id",
+        "device_id",
+        "key_id",
+        "boot_id",
+        "sequence",
+        "configuration_hash",
+        "payload_sha256"
+      ],
+      "title": "AttestationEnvelope",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attestation_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Attestation Id",
+      "type": "string"
+    },
+    "envelope": {
+      "$ref": "#/$defs/AttestationEnvelope"
+    },
+    "signature": {
+      "maxLength": 256,
+      "title": "Signature",
+      "type": "string"
+    },
+    "normalized_payload": {
+      "additionalProperties": true,
+      "title": "Normalized Payload",
+      "type": "object"
+    }
+  },
+  "required": [
+    "attestation_id",
+    "envelope",
+    "signature",
+    "normalized_payload"
+  ],
+  "title": "Attestation",
+  "type": "object"
+}

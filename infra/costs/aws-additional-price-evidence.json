@@ -1,0 +1,3553 @@
+[
+  {
+    "service": "AmazonCloudWatch",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+    "published_at": "2026-10-07T11:55:40Z",
+    "rates": [
+      {
+        "sku": "28VSMYRVQXUWCTMA",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "Alarm",
+          "groupDescription": "CloudWatch Alarms",
+          "usagetype": "USE2-CW:AlarmMonitorUsage",
+          "operation": "",
+          "alarmType": "Standard",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "28VSMYRVQXUWCTMA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.10 per alarm metric month (standard resolution) - US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Alarms",
+          "pricePerUnit": {
+            "USD": "0.1000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "5T6Z6V26DSR7SZ49",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "Ingested Logs",
+          "groupDescription": "Existing system, application, and custom log files",
+          "usagetype": "USE2-DataProcessing-Bytes",
+          "operation": "PutLogEvents",
+          "logsDestination": "Amazon CloudWatch Logs",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch",
+          "version": "Current"
+        },
+        "price": {
+          "rateCode": "5T6Z6V26DSR7SZ49.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.50 per GB custom log data ingested in Standard log class - US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.5000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "VE63M6QDRWUAS2VN",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "CW-MonthlyFree-Request",
+          "groupDescription": "Monthly free usage of requests",
+          "usagetype": "Global-CW:Requests",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "VE63M6QDRWUAS2VN.A429C66SYZ.SB2VSFF4TP",
+          "description": "Global",
+          "beginRange": "0",
+          "endRange": "1000000",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "CYU8RW98BHHB7ZHH",
+            "59JTUA3UTY3GUSNC",
+            "PX3AM89Q5T9PKFHU",
+            "MGEWJ3PEBG5NDEHU",
+            "54PWRUJ8PXPVYBMK",
+            "YRB3BBQUVRVAHWSF",
+            "UXZAA7SJ869WSMM5",
+            "KGDM4JE5GNVMBM2U",
+            "8487H8HV573SSGQ7",
+            "6YNRQJSZYEK9JAGH",
+            "CY5JMB5JBHJAY5XB",
+            "WDBP4DBUYPA5ZN3Q",
+            "A2G4RWMJT5UURRK3",
+            "UTXVGKBT732UDP5N",
+            "JAJH5U2Z5CRKQF8R",
+            "WDK5M58U88ZAXS78",
+            "CJVHZR3T2SF4S2DM",
+            "H3QRH5VKH3HG23SA",
+            "C84XQR3BMRP9KYD6",
+            "A45VVQ8BDDDQ9RGE",
+            "EPEDMD8JEQSJS958",
+            "HC85RVEHWWDD3CPS",
+            "CUFZNHWV2E728J9H",
+            "669TB9D576EWYZN3",
+            "SWAXHGSHBK9AGCAR",
+            "RMERP3FSSCEYGXJH",
+            "RNBFYPDDNCYWPZXM",
+            "6YXWM6VW5RNR9ZA7",
+            "3WG4PACR975S7XR4",
+            "VV3M4ZHJ6UJAUJU6",
+            "U3NDM5SKT6U2TDUV",
+            "56AV46QM2UTHJB3Y",
+            "E8EJRPPEYV2J3CDF",
+            "T3382F3WY8W5UTQS",
+            "FHJJSK3PT3TG4VBQ"
+          ]
+        }
+      },
+      {
+        "sku": "X7X4WD4A95NDR9U5",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "Amazon S3",
+          "group": "Amazon CloudWatch Standard Storage pricing current",
+          "groupDescription": "Amazon CloudWatch Logs Storage Current version",
+          "usagetype": "USE2-TimedStorage-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch",
+          "version": "Current"
+        },
+        "price": {
+          "rateCode": "X7X4WD4A95NDR9U5.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.03 per GB-mo of log storage - US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0300000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "BW7H4WPX3XKVNNE9",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-TimedStorage-IA-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch",
+          "version": "Current"
+        },
+        "price": {
+          "rateCode": "BW7H4WPX3XKVNNE9.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.018 per GB-Mo for TimedStorage-IA-ByteHrs in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0180000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "BD3NGRK34EKVGAZ8",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "Log Alarm",
+          "groupDescription": "CloudWatch Alarms evaluting log queries",
+          "usagetype": "USE2-CW:LogAlarmMonitorUsage",
+          "operation": "",
+          "alarmType": "Standard",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "BD3NGRK34EKVGAZ8.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.10 per Alarm in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Alarms",
+          "pricePerUnit": {
+            "USD": "0.1000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "5AFZE3M2V3FQYUWB",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "Alarm",
+          "groupDescription": "CloudWatch Alarms",
+          "usagetype": "USE2-CW:HighResAlarmMonitorUsage",
+          "operation": "",
+          "alarmType": "High Resolution",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "5AFZE3M2V3FQYUWB.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.30 per alarm metric month (high resolution) - US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Alarms",
+          "pricePerUnit": {
+            "USD": "0.3000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "XK7C3D2X45XTHURD",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "Metric",
+          "groupDescription": "CloudWatch Custom Metrics",
+          "usagetype": "USE2-CW:MetricMonitorUsage",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "XK7C3D2X45XTHURD.JRTCKXETXF.A6VD9GXV7W",
+          "description": "$0.30 per metric-month for the first 10,000 metrics - US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "10000",
+          "unit": "Metrics",
+          "pricePerUnit": {
+            "USD": "0.3000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3ZJZSGX8K87XPW4R",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "CW-MonthlyFree-Metric",
+          "groupDescription": "Monthly free usage of metrics",
+          "usagetype": "Global-CW:MetricMonitorUsage",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "3ZJZSGX8K87XPW4R.A429C66SYZ.DGNP37V5JW",
+          "description": "Global",
+          "beginRange": "0",
+          "endRange": "10",
+          "unit": "Metrics",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "2BF5WZ4QVWF9XRRT",
+            "334SFV86A6WNMFNJ",
+            "87QZ4R3ZZFSYDE9H",
+            "F52S8X9YS2XFUA7F",
+            "WJ3EWCKXHHAM5583",
+            "7EGPKS3JK9S6Q5CN",
+            "8CM49YJM6J2SHVD6",
+            "7SYRGKEV5V5MPRNN",
+            "9UKGFPRV59MVNQ9B",
+            "KG586CTNGQ4VRZKZ",
+            "PN3YV46EU5ACM6BK",
+            "HG8MEN8HX36WXZEB",
+            "58YXNUN4MF8JD9ZA",
+            "UGRFB4VC4JYPMT8N",
+            "D2PNJKT8WN7K2RVT",
+            "FTCJZJXP4KVANG9Z",
+            "JKURJ8SGYYTKEM35",
+            "92QAN7T7PQUAG6NQ",
+            "F96ZRPX8AM4T93NV",
+            "39ZCDVRBDD64YRU5",
+            "S22PNETSG7RFR82N",
+            "WJAN9NR7AQ8KWB2U",
+            "XYVXGVVGJFDZSJPN",
+            "3BA3NXPZKGKAV6N5",
+            "XK7C3D2X45XTHURD",
+            "U85NJU5Y5H86CA23",
+            "FCAUCKXNQCW596F7",
+            "N47P8G79TMZTGMFR",
+            "7P2NFGK75QN2W5S9",
+            "P8WWN4FPGA3H5CMY",
+            "CN6TP6ZEVS58RK7M",
+            "ZZJWHRRU5C9SD452",
+            "DUQMFHT4YRFWADP8",
+            "69U4T5WYC2VZMA9G",
+            "25WHJB4GX3FRTNER",
+            "9X3C8NV865ERU3CD",
+            "D8QWPGZQF8DEFNQD"
+          ]
+        }
+      },
+      {
+        "sku": "EPEDMD8JEQSJS958",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "CW-Requests",
+          "groupDescription": "CloudWatch API Requests",
+          "usagetype": "USE2-CW:Requests",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "EPEDMD8JEQSJS958.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.01 per 1,000 requests",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000100000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "FCH8WPMWVXA4B6VM",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "CW-MonthlyFree-Alarm",
+          "groupDescription": "Monthly free usage of alarms",
+          "usagetype": "Global-CW:AlarmMonitorUsage",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "FCH8WPMWVXA4B6VM.A429C66SYZ.DGNP37V5JW",
+          "description": "Global",
+          "beginRange": "0",
+          "endRange": "10",
+          "unit": "Alarms",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "H7K9WCM7G7GJWU8G",
+            "UAUWCAX3V7YSU8JB",
+            "5BQR3BDGFPFQSNDF",
+            "5N7VW7DQ2PTDRMTN",
+            "VJ934U28PCG8EKRA",
+            "3MF6FXCJU86TGGBQ",
+            "2BEDYVXZZ2HP3NDC",
+            "PRDBYUGVEHFG9C2J",
+            "RMVZFCS654FAQEU4",
+            "C35BNHBF5J24QNGG",
+            "UCRWJMR8A6TBZNRB",
+            "8JFRJZU4SGUUHYGZ",
+            "JG84GZN6AVPA7YPG",
+            "Y6CMMZRHD9WZV9UY",
+            "KHXSGTZMMGBPGXCK",
+            "FBMB6TVC844YGZ3J",
+            "SJTFAZNHSW2WVZB2",
+            "SVP946B565GUWCW8",
+            "GDMKAEDCSYJAKBZQ",
+            "6635AWWTXTJVSCUQ",
+            "VU6CBY3UVQ6KVEAN",
+            "XWA5C8TQDRYG6RN7",
+            "9FZA8ZKS9CGQBUTK",
+            "A7TRWKDQUDZB33E6",
+            "XR2MH4YW2VKGCB7S",
+            "EVETVUGEN3MUTMXM",
+            "KA492SRV4GHWCEFX",
+            "UXRHCNMUCGV73M7Q",
+            "MBFPHE42AKJWSCZH",
+            "ERS2PGV5BX4XH4WQ",
+            "C4ZR2PYDTCXZP6AW",
+            "GRKUN5HJWB3DHKUV",
+            "HNAU5YRN3PNFRYMT",
+            "9C2QWAEUK46DHUMX",
+            "28VSMYRVQXUWCTMA"
+          ]
+        }
+      },
+      {
+        "sku": "SSNSJENVU973ECHE",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "CW-MonthlyFree-DataProcessing",
+          "groupDescription": "Monthly free usage of data ingestion",
+          "usagetype": "Global-DataProcessing-Bytes",
+          "operation": "PutLogEvents",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "SSNSJENVU973ECHE.A429C66SYZ.V7GB4D473V",
+          "description": "Global",
+          "beginRange": "0",
+          "endRange": "5",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "MU4VYEK7567CBFM8",
+            "UWFXSEC78NVKJ866",
+            "3YB7X822BH75JRG8",
+            "8ADEUCE83N5DGRGQ",
+            "P3922U6DZD3KYH67",
+            "AZ9Y8SWTB6NPRKUH",
+            "8746XTRS8JT9UQWQ",
+            "2K34FXXNGZYAEDYQ",
+            "BETNE3ZXTBDY4N53",
+            "6TJW6C3DAH7ZU9BT",
+            "T9SSZSYCYBFHG4D6",
+            "3QNCYBJPMHGVX4CR",
+            "FWS8E495NB7QWUA8",
+            "X4FEGEYQBY79N6ES",
+            "T823CHHAN8KYRRAD",
+            "2WR8HHAGXYTTC2QM",
+            "H8JBQRYKZM5XXBPS",
+            "KM89CSTAVUNWAFKE",
+            "V37HB4UFT9TAPYP4",
+            "EYGDVU35MAYMYMB3",
+            "DSMG4X852GQURSNZ",
+            "HAPXVH832K2PZY5N",
+            "S9T455EP2J2BR9R9",
+            "TEGV4YYYZV52BCEY",
+            "VS7PC55ANPDDDDHA",
+            "YJ9RHYP3NGTZ42J2",
+            "HUTS4YUF7528PRXB",
+            "DH4TGQJVH62Z8F6H",
+            "HCHHF6QQ5Q5TVCV6",
+            "N22RBVSYYBS6RVQR",
+            "GX6TH5TJ9BZ2GC3Q",
+            "5K24Y2B74CCWQGP6",
+            "UUM422255FNUXTNZ",
+            "EG94SH6HSR99TH2Q",
+            "UWR3X4AAHG36DM9X",
+            "U6DKW5J9QDXNY8C3",
+            "DS2JWSP85U8MUZZ5",
+            "843KMSNV3BEUDUSV",
+            "9P2ZW8U8WJ99HZKX",
+            "ZKHNZ649UTPXJAAE",
+            "FBMSUYQSNNFTZJ7Q",
+            "DRBTN6B33X4VMRF6",
+            "9M6C7WBCHT2UCEJZ",
+            "JJD7ETHQRCRPV2E7",
+            "GEMV55Q7E32YTXC5",
+            "4F8XH5736XHF7G7D",
+            "B92ZFFJEMMCRT56E",
+            "K6GZJZH7GJE4J6GR",
+            "KJBTQPDHW2H92B8Y",
+            "HDXEHTHRPCEXBV9S",
+            "3EGQC4SXGQRXZ5HW",
+            "7UQAEKYNQRQFZSNU",
+            "2WXCZPMH3FF7XAAZ",
+            "JKW4EKWH654WGP55",
+            "WMNA5ZB3WX336Z89",
+            "AZY8NTRUZXE2UBMV",
+            "FMJ8PB8PGJSBYBJR",
+            "828F3YCWG3C62QPP",
+            "YKB48866348783H8",
+            "937PEEG5P5VVDPCA",
+            "3Q73U9ZHRERYQ3UC",
+            "GHRXAWYBWDN7X39F",
+            "N5RGUJR4ZRMDUDV7",
+            "ABGBCZ7MJCXV27PS",
+            "QSAUWHUAMRV524T4",
+            "363UNFAAD2EV4TKV",
+            "5T6Z6V26DSR7SZ49",
+            "W4BWT7VF6GWTJZQ9",
+            "TH5QAY5JZZD6U7GV",
+            "8X7RBKCDP3W8T38F",
+            "DT6GH6EZ832BXU25",
+            "CVBCEPVBU74WNUEB",
+            "F3YY5GF4V4PF6WRW",
+            "2ERU965RBAKY8CBH",
+            "ANTPRG5Q64AAEAPM",
+            "V83ZMXGTQFZA3HP2",
+            "V757EAXTZGQ6DB7P",
+            "AW4EB5RGNN8S75Q8",
+            "G47NP568D8ZB4SY8",
+            "5VW3S7BAB2MHTQS3",
+            "SE32AUTPX8WYQ7ZG",
+            "MQJTDXBKPTCGNRCF",
+            "GB65G5RZA75AHM8W",
+            "MNUN3FXBXDMY2ADM",
+            "VZZBDGCSPVEBT2WE",
+            "T4VETUGV9G6G2YV8",
+            "ZA2W7A6M3NTXDRBC",
+            "V8W3W7ZJ946FHS6E",
+            "QFUY425SYUQ952PA",
+            "EJYMG2ZG33QGAQD3",
+            "YAPY2PNXMS8653NP",
+            "64X9TQ9T333MVUBS",
+            "RF5WYSBKEE29WJ8F",
+            "Z8D9MJY62N5AQG4D",
+            "E8CCM9AP7VGG6WJB",
+            "2993PWAAFGFX88UU",
+            "FF4UR7H9QS2XTH44",
+            "RAZ3276X95W4AQJB",
+            "YAKFM6Y6QVBWFXVE",
+            "QE6NSKVEDRXDRB3M",
+            "YUS6XF2GUCZP8YRA",
+            "F7T7X4XJ36CK9JE6",
+            "FRNS744C2V67KB8K",
+            "J7BMBJ7VXGT7BA4B",
+            "CC7U9J2PR97DTXQC",
+            "98C9K3W7XUC89RF9",
+            "5ZMGB8RQ4VVKKXG3",
+            "K7DUHGFTRU72EV8G",
+            "VEV24XRJ8B79XENZ",
+            "ATDCUXNPBY2G9K7X",
+            "J363T28JMFCAX67H",
+            "5REUTR6B8PQK6ZVP",
+            "BRJJH4QD66CDAC79",
+            "NC5ZRDSGXUMRV5DE",
+            "UXQAZ4S3WTT4S5HM",
+            "82HEF545XWU5KFVP",
+            "NPHCPMBKPYU83H2M",
+            "W47259G39TKQB7G7",
+            "HCJJPFF4ZVEPCFRV",
+            "467VTCQDZUVP3S5E",
+            "D7P3ZZ53Q49BUPAQ",
+            "9W76CXUDDPH7P7XJ",
+            "NSFN9RBTR77BZ3Q3",
+            "5DK397DECESU9D9E",
+            "X9ABQTJ25QPMNEV7",
+            "PT398JDKAWJQ4JK5",
+            "3J4T745N7D37NHNB",
+            "EAZF8MQREYYR5XDV",
+            "XZTC7X65S94HT73Y",
+            "TWKRGUYYSX5XVKR9",
+            "VNWUKAP85K467VXM",
+            "ZGZRUQ3995QJW8GQ",
+            "HGVP7H52EUY69A69",
+            "KSVH23BH2A49SVM4",
+            "DTHQBHKEUATGFU5F",
+            "DN2XNRPNQVETWAE7",
+            "PF7ZK6UHNQYNQXWK",
+            "6UFJRKKRPQE5FRVT",
+            "FEY43V68MGC79HUY",
+            "7BTCU3S22RYWY8GP",
+            "Z6HS6ZBZ2F3GHQSF",
+            "A3AVM3BGV5X7AURK",
+            "YRZ9U6YKVFHBTPFU",
+            "9SMM2FUEBKEVJYZB",
+            "S3DYWJV2KFZU83A7",
+            "V4BXPQG5EZS9G75B",
+            "BBNTCQB6YQUV9DVX",
+            "AY544984PCPXFEAD",
+            "Q54ZCCX6MXHXK3SX",
+            "CV9UTNXC4XT65GJE",
+            "GC5DG6JGUMNQSSRG",
+            "JQF5GQJUANQRC9HY",
+            "XTKXXASJGAMTNKGU",
+            "6YUV8TJDUM2SMVAP",
+            "Z3NZJQGYDQK52JBD",
+            "VF5Y59MSB8K58NN8",
+            "WAPVQP75TKAHVY3Y",
+            "XXRFXH4MFXP3FERE",
+            "UW6QY9MWVCYQ6WDK",
+            "TFZ6KWWKEB2WBA2T",
+            "BKB7V8VJBP777MAB",
+            "4V5RRT4PFB977CJQ",
+            "MGTYTNZN78CWRT7S",
+            "HF4Q3BTJCYQQX7J7",
+            "6XE3HQEGVEBTPDYD",
+            "CHAJACYVZXSFZFDH",
+            "KZ679BSP3MDWE3GC",
+            "VSJ57WXDQXM2VKQK",
+            "6C5Z3YCFSCK2MPZN",
+            "QG3RXUKXF67KG66U",
+            "EPN8XQQ6DVPYXUQT",
+            "NTFW2BATCBJ2M2DB",
+            "6HW7NQKTE2EV8CHY",
+            "SXCRFA49822ZJ8RV",
+            "AMAG2GCMAUCJ6FPG",
+            "82AN785DR83WPA2H",
+            "AE8F379985SPX4XJ",
+            "V5HPH6AJGNTRBA74",
+            "VGQ2HFAXNYY8F4NF",
+            "PVB64TZB37M8DNR3",
+            "KD4KZ56BE7TRMGZB",
+            "KXFGJ53B6BG8GEKG",
+            "32H6VZGQ943G9EC3",
+            "T4KR5PUCCAF3KZA2",
+            "Y8BPG58X6938X9RT",
+            "TXZXKP6MFDMFRA2R",
+            "JXNUVHXFZFU5RHH9",
+            "J72VV69AM2UVHTKN",
+            "Y89WVTJ9AEZQU5PE",
+            "HYGQDT54G4RKQKPX",
+            "EDW5ASC5MMDEUPE4",
+            "RWV3KK8NBRTCTMM7",
+            "C4ZDCDY2M578AXVN",
+            "A9FFCQD4ZRQGABNX",
+            "QCTVB68KD3VS4HZT",
+            "GWH4EJ8BP3RW82EJ",
+            "3W4W9FJUSD2XECDJ",
+            "CNBGYFZ4UUFZCHN7",
+            "3V9XCKZE6GNAFE78",
+            "E4SVQFAW3W652QMT",
+            "92JV9T35ZXEC5DMN",
+            "U7UCEAJVU9WQRHMT",
+            "YWUMKQNEN4876WQE",
+            "S8QGXX5R2BKKMDSJ",
+            "HNWVPEX9J57DXGCJ",
+            "KSFVF97SY9GVBX56",
+            "9DHW2ZQAS4WZNTSY",
+            "XAE7GPNAZR6AWCQK",
+            "C7RZ368GFBYRUJD6",
+            "85VJ6UXNV6CBA4Z2",
+            "REC3TM9A3PZTMGDU",
+            "ZQZVEJJY7MRQHAQV",
+            "ZEKCE7VGMSM5XZPW",
+            "TYESYJWZM8U22H4H",
+            "VMFD24YCB483ETH9",
+            "5AGVRB5ZW8NN444G",
+            "SQWWNN7DJU38ZK4J",
+            "8F6VXFPPPW3MWGAY",
+            "EKCEWM2X6E4X89F7",
+            "DUJKANM8S68EB3QT",
+            "TM4HQ3JXRH8P3VYN",
+            "TGVXFG4CFEHZXFYE",
+            "EZ678ZREMJ2ZQR7A",
+            "FBEH44HC4AMA9C2X",
+            "Q9AA2UKZN8J3MZ5X",
+            "3364S6PQZ8WNP6CS",
+            "96K55R2PV3ZZZ3AM",
+            "X2TA5KHSFS24YARW",
+            "ZQX4EQZDJ4P37NDG",
+            "W6ZRKEAN43XA8EA9",
+            "SRRNBUPDXXSNA5D3",
+            "DCYKMC2EYW3S259N",
+            "KTUAXBD6YRYWWDWD",
+            "VT8YJYBNHPX2Y3W2",
+            "3UJ4CNNE27C2XT9B",
+            "FQ9KY4HSWP5U6JEV",
+            "4GE37REQN34XY4QA",
+            "9EGJB4K96KA35T4T",
+            "S28KQA3N24PBFFX4",
+            "36A9UZ9C8WB6CTBA",
+            "5DE8QXFAAKPV54AC",
+            "VG5TD6VDQHEK9RZF",
+            "Z5YTDVRRND5R67NT",
+            "AQ53AYG3UWDJK89G",
+            "JQTEE42Z5HPHJ2KT",
+            "JBQP6QEETS2BK5DQ",
+            "FU6E9YYY5YV4DMX9",
+            "AK6XVVG8UD7USYTF",
+            "DK4R8ZB63HKYMD6J",
+            "452WTUS2DZ9HSNAF",
+            "BR2QFT9ZTTFDQ376",
+            "CWY7X4MZ4F3MP5SD",
+            "UP6HAQNVD4H7Q5R7",
+            "E6VKQFF7MF5V3QPF",
+            "RZ39UNNQQ9ARRG47",
+            "XGHNFX4XT79MBJ2U",
+            "TS3D8HDDH4M7DE98",
+            "7VZ7U7X6AVAP4GMF",
+            "6ZB7RM95XCBYM4TJ",
+            "HCNEBQ3AMS4Q2MQZ",
+            "YEASP5HXKY9HDU5U",
+            "3RZ87SJ3Z9H6G3ZQ",
+            "KRTQTJVMB3KBWRKQ",
+            "86TN7X56UY38DYBY",
+            "7EKVJYXRRKV4UN4Z",
+            "YN63VB9KKR2KECUB",
+            "ZPSDGYCHVPYJ36GJ",
+            "Z267DYTHRBSG6W8U",
+            "JFKSG7FCEM383WNS",
+            "BTZPA6X5CHFQZBX9",
+            "KAY4X4RHZ7GGAHB3",
+            "4RVDG642Y3ZTESVR",
+            "HB5KJ3VQFP9EFJZ5",
+            "C39BVYQ72323RDSJ",
+            "YPVNHSKKWGN8CKCP",
+            "KDR7BFFEQ6YUEKKB",
+            "G6BYFXDCZTW7Y85H",
+            "CTEUUAR6BATAA9HS",
+            "NMSSQWGD7JMSYGMZ",
+            "SY92ANYQC2R2CNBM",
+            "5QTYVDRMGQSNB3HQ",
+            "V6GEU2W68M6VAH37",
+            "PX8JWH5BQ2WDX3TS",
+            "P3U5A6X6CRJSDY5T",
+            "X47SZ7H38ED6QS5Y",
+            "J7D5QPW2U38VBTEG",
+            "7R4CQZA99P4J374Q",
+            "Y3TRTWWUZYZVS7A8",
+            "G2FTEKDCR2A3NJXJ",
+            "J77SWGFGQREUJMMP",
+            "QDB6CQWAGEKD98N8",
+            "V2VBGT3PQ6Y7MM3A",
+            "YCV7F8EWDUYYFCRN",
+            "6Q7YDD7AQPUZNWPQ",
+            "8WJB7YF3JJYY4A2Y",
+            "5HVN34RE5DBYRA86",
+            "4HCKZNT83DVYQ967",
+            "UC8WHRTDVPN53GSD",
+            "D34CGME7Z329T937",
+            "ZTZXYM48Z43DP2BT",
+            "MGH2C7Q6RBVDVDP9",
+            "PRXGWKFJ46PX74MD",
+            "TKUUCDBQ4U4W7RF3",
+            "U65VNQAHT6AAZD4A",
+            "Q66QSYMRQMGM69RZ",
+            "HR2W3QCECCC3DZ8B",
+            "7BEMJ64EM379PZU7",
+            "5P9Q77R2ADUJCNJ2",
+            "PYW69AFQ4NE3MMPT",
+            "E6SNEJU7Q3Y5CENX",
+            "RCYAKD7QW6WPJVYF",
+            "NPXB7RSMBUNWHGFS",
+            "TKW2ZA5JVQF2GVYV",
+            "XXFMBWKU94MQA9AR",
+            "EC4P6AAQW57AKVYX",
+            "9S6BM6E4HCB59BFR",
+            "R8SY33QBD2TCC8FN",
+            "WBFC5VDNJ4GYJWGK",
+            "DYBC4P9BZVMEKEYG",
+            "KE6P4ZQ7EFUTKPBE",
+            "TDKFZS2JHWZ5G8X2",
+            "GM54AHB4QPERAHYP",
+            "GS5366DJGXFAYS5A",
+            "UH2YAGGG5WBV3A3N",
+            "UWETXXM95WSXMPQY",
+            "JPJSEQMRVBRKT2MX",
+            "RNSXWDMY2XXXGGEX",
+            "UH7XX2ZWQQH4CDHR",
+            "4XWZGMKAPX4UR725",
+            "WMUESPUEJGUR2AMQ",
+            "QQHKV9BHWW5X53GD",
+            "94E63GRG2CNCBWSX",
+            "EPH6WSR2MQMZ5TUH",
+            "9H6CF78HYXNF6MRS",
+            "YNMHHX23Q74XFD74",
+            "ZK3MXZ64ZARVUJVV",
+            "Q6Q3EFG6PYMCN9E4",
+            "6H4GHNH9T8D46GMT",
+            "UJ6V5ETAHD4837NX",
+            "R7B33ZZFBXPS6QUV",
+            "RB6JKDQ5NE5HFZP4",
+            "PNFR8U52WDXBKT3W",
+            "MDX5ASP4VJJW7JVF",
+            "BE2YZJNECMM6RB8T",
+            "QNDJQTXQT845KEGP",
+            "UVFHC3WYJQNJUXAZ",
+            "FXC96JPT5C3MSJ75",
+            "QMA7HJHZJJ7HHEZU",
+            "P97BUJPXDNFGABD5",
+            "24R3DTNY5U3ATWVB",
+            "RDDG2CQS8MXWQMY6",
+            "ZRZA2KNZG7482AK5",
+            "ZUNTB4GP88UN9BYX",
+            "CWB2GTZJXNX3TA6H",
+            "WDA9FJKYMWEGFNJ9",
+            "BN4XSGJA9MMZKCP7",
+            "ZXT58JTHJR7JAV7P",
+            "WW28UNCFQ8BQCS9D",
+            "335T3H2NKGNBM5BG",
+            "F7S2QJE6Y6B2DWZS"
+          ]
+        }
+      },
+      {
+        "sku": "8KUJCN9S9P72TPXS",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "PromQL Alarm",
+          "groupDescription": "CloudWatch Alarms Evaluating PromQL Queries",
+          "usagetype": "USE2-CW:PromQLAlarmMonitorUsage",
+          "operation": "",
+          "alarmType": "Standard",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "8KUJCN9S9P72TPXS.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.10 per Alarm in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Alarms",
+          "pricePerUnit": {
+            "USD": "0.1000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "6XTVPDAM3VF25UTA",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "CW-MonthlyFree-Archival",
+          "groupDescription": "Monthly free usage  of archived storage",
+          "usagetype": "Global-TimedStorage-ByteHrs",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "6XTVPDAM3VF25UTA.A429C66SYZ.V7GB4D473V",
+          "description": "Global",
+          "beginRange": "0",
+          "endRange": "5",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "PPHQV9E7X7VR7VB5",
+            "STBFYZWB58P4MVPU",
+            "KMUK8K25JPDJ8HNM",
+            "M9PG5USRE2QBB6FU",
+            "WWDS9PE2PZJ2ZBNA",
+            "DY493XSZ7GX879VC",
+            "EN7BQG2DNS74U8PU",
+            "97DMBVS93ZXUQRKP",
+            "M2BK6EN5UBXJU9ZB",
+            "YT43EP9X6G2Y3FME",
+            "ZQM53HG8BZ5XNN4P",
+            "D8WRNJMGYSRNPEER",
+            "3T6BNWZT673PJUXY",
+            "ZCM3MJRQPU2BK43T",
+            "UFJNSHBBVW392WBE",
+            "39BBSWH5322BJZCW",
+            "Q62QABE8XVDSWYMG",
+            "SXS5MH23MB3SHA9C",
+            "SCQQQD62DYMMFZ3Q",
+            "BMS8PG9FH98TUEJA",
+            "VMG4B547G2TW72UB",
+            "BXP4TANAT8US6WEZ",
+            "UZ73JTNK9WU66Y7C",
+            "C8B8YK83MVE7Q8YQ",
+            "XKVME9XA4JZJXEAC",
+            "6K9ADYQAHV5KX9KZ",
+            "RKCBFFXUWXG8KUQY",
+            "Q66EE3E3KFUWYBX2",
+            "P37N4G6MGPJBAZBQ",
+            "4VRR4NRNWJWSSBV8",
+            "V8UFUXAG7QAKP43D",
+            "VDSHF2QYZZNWQXQK",
+            "469924TPM97ZXHVM",
+            "WFPV2P7684TGJBJK",
+            "8X6DH2P8VWE9MUAZ",
+            "AE9KVTFR6C7X294D",
+            "M8GRD2GQYW8PTTSF",
+            "22PYPNHZFW97E48U",
+            "MX92A75BCRXDYUJ6",
+            "FC3W9RUMP83VDX52",
+            "22RDCR2CGPGYFAET",
+            "5BNH7PS3QKAATSNN",
+            "SH89EVE8P5RJ8RGK",
+            "FBFJU32JSNXUXZZS",
+            "7YQ22RBNQBPK86VK",
+            "HTBGKZX92SMR7C7M",
+            "UX79W2ABYHCP7796",
+            "MHB7RSAKVPU2A4CS",
+            "JXPPEEC65JT5WGXV",
+            "3FU69WUQHC2VG2Y3",
+            "MN45SJANDTCPR9QA",
+            "JRHJQ2UMPUB5K73A",
+            "RAZY9E76R9JUCNQK",
+            "S5BUETMSYRVPJQ3E",
+            "X29B4N6M8XXU5FFH",
+            "PU4T2Y7PTXZTAYN2",
+            "WNKZXJZJN9UQFFK8",
+            "E7V5NF3GN7MQKCB6",
+            "BTV6924ZXEUV5BGS",
+            "FAWGXDNS4EYSENUA",
+            "XS3CKRHZW3T4FGSC",
+            "H2CVGDVKZM5DPVKJ",
+            "M93YPPU987S2T6U9",
+            "4V9YKJHUP3C55Q2R",
+            "RWXUQY9X8YFV2UM3",
+            "HU5XFM3B8NAR4CGP",
+            "TQE57M97TNHAHHPQ",
+            "EY2XK3FFHSSFGF36",
+            "6DNTFZY2MPPW5ZSD",
+            "55E45XT4XVXZM796",
+            "3T6X5KHFU2223A3S",
+            "6ZEZHSEF2C23NEDH",
+            "Y9D9AJXRG6XKG3GM",
+            "J36DJGHS7UWJKMP4",
+            "HBPDDTSQMQNYXVC6",
+            "A2U5G2V8PAN8BBGE",
+            "ARD5JQCWQSS5W94X",
+            "9HWF5X6FAUJBV5PS",
+            "5HWUHD5X4SGJ2X2K",
+            "SGDTPWUEKBXYTP87",
+            "42CVQU4BPES8AWHC",
+            "RGPMCX8H2XW8PNXT",
+            "DRQ4M2FZWK27BHWS",
+            "X7X4WD4A95NDR9U5",
+            "RCT78AHKABFEVSY4",
+            "WXWKYDHWQG2HJXRP",
+            "HQTF3SN9EXAENXWB",
+            "9EFY7HZP4AV78HZ6",
+            "NBPC97XNAGQK47NP",
+            "BW7H4WPX3XKVNNE9",
+            "Y2BERTJ9GBTB6UNF",
+            "G75GA44VZQKSXZUX",
+            "Y6NC5F9ADK3E6AMD",
+            "V4Z57YFP6RRKRH6B",
+            "BTXKN5Z2SQJXF5QK",
+            "WJVSQSNFECAUN2QQ",
+            "JFD7NSVT9M62HB3A",
+            "DWTSMZ8Q6EW55WCB",
+            "ZDUJA9MN7TRSFJTT",
+            "QKY45VTV7BQZA5M9",
+            "EX3KTWBGQYPT9RWT",
+            "ZYEXGHXNT2NRXUWY",
+            "Z92F9RWWJJDUQN7C",
+            "XE6KR5WJP66BR24V"
+          ]
+        }
+      },
+      {
+        "sku": "TAVNM49PAPXVHJ37",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "Alarm",
+          "groupDescription": "CloudWatch Alarms",
+          "usagetype": "USE2-CW:CompositeAlarmMonitorUsage",
+          "operation": "",
+          "alarmType": "Composite",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch"
+        },
+        "price": {
+          "rateCode": "TAVNM49PAPXVHJ37.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.50 per composite alarm month - US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Alarms",
+          "pricePerUnit": {
+            "USD": "0.5000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "5HWUHD5X4SGJ2X2K",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-TimedStorage-AIA-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AmazonCloudWatch",
+          "version": "Current AIA"
+        },
+        "price": {
+          "rateCode": "5HWUHD5X4SGJ2X2K.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.006 per GB-Mo for TimedStorage-AIA-ByteHrs in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0060000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "awskms",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/awskms/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:46:01Z",
+    "rates": [
+      {
+        "sku": "FEMX7ZQ4DJ6QE2KP",
+        "attributes": {
+          "servicecode": "awskms",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "us-east-2-KMS-Keys",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Key Management Service"
+        },
+        "price": {
+          "rateCode": "FEMX7ZQ4DJ6QE2KP.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$1 per customer managed KMS key version in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Keys",
+          "pricePerUnit": {
+            "USD": "1.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "4BRYVGW5AJRJTEX9",
+        "attributes": {
+          "servicecode": "awskms",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "aws-kms-Requests-Asymmetric-RSA_2048",
+          "groupDescription": "AWS KMS Asymmetric Requests RSA_2048",
+          "usagetype": "us-east-2-KMS-Requests-Asymmetric-RSA_2048",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Key Management Service"
+        },
+        "price": {
+          "rateCode": "4BRYVGW5AJRJTEX9.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.03 per 10000 KMS RSA 2048 requests in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000030000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AYQAHVFSSYFNSWHZ",
+        "attributes": {
+          "servicecode": "awskms",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "awskms-Requests-GenerateDatakeyPair-ECC",
+          "groupDescription": "AWS KMS API Requests GenerateDatakeyPair ECC",
+          "usagetype": "us-east-2-KMS-Requests-GenerateDatakeyPair-ECC",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Key Management Service"
+        },
+        "price": {
+          "rateCode": "AYQAHVFSSYFNSWHZ.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.1 per 10000 ECC Generate Data Key Pair Requests in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000100000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "SAWFH88S39A5ARYY",
+        "attributes": {
+          "servicecode": "awskms",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "awskms-Requests-GenerateDatakeyPair-RSA",
+          "groupDescription": "AWS KMS API Requests GenerateDatakeyPair RSA",
+          "usagetype": "us-east-2-KMS-Requests-GenerateDatakeyPair-RSA",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Key Management Service"
+        },
+        "price": {
+          "rateCode": "SAWFH88S39A5ARYY.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$12 per 10000 RSA Generate Data Key Pair Requests in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0012000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "5PJJDDVH775CRBC6",
+        "attributes": {
+          "servicecode": "awskms",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "awskms-Requests-Asymmetric",
+          "groupDescription": "AWS KMS Asymmetric Requests except RSA_2048API",
+          "usagetype": "us-east-2-KMS-Requests-Asymmetric",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Key Management Service"
+        },
+        "price": {
+          "rateCode": "5PJJDDVH775CRBC6.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.15  per 10000 KMS Asymmetric Requests excluding RSA 2048 in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000150000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "VTFSAGP364M6QE4A",
+        "attributes": {
+          "servicecode": "awskms",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "awskms-Requests",
+          "groupDescription": "Monthly free usage of KMS API Requests",
+          "usagetype": "Global-KMS-Requests",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "AWS Key Management Service"
+        },
+        "price": {
+          "rateCode": "VTFSAGP364M6QE4A.A429C66SYZ.7K6Z2V4Y4Q",
+          "description": "$0.00 per request - Monthly Global Free Tier for KMS requests",
+          "beginRange": "0",
+          "endRange": "20000",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "A3247YR2SJRYKDEX",
+            "MFEBZPX8NHM5FY7Z",
+            "GAG46BCKTJNCPRCD",
+            "H4VQ25AJP5STBY2V",
+            "MG69RRR3V9FG2YMF",
+            "WCDV7H2SEWSQDPHE",
+            "2S77H5MZU5BVWEXS",
+            "GKJ2WA9PUPY889NV",
+            "8XH9DBV4329CDSSS",
+            "74AFRTWKY4BVPBF7",
+            "22NGFM2U7FQGBC49",
+            "EZCZH4NG992U5FTR",
+            "XV5CERB5VJ728MSB",
+            "KHS2JMB7WKYW8C7Z",
+            "GNYCWMXMCTZC5JHT",
+            "Y2YQ2HC2B26TT67Y",
+            "UM499D63PU3S76VD",
+            "5Y7QS22JD2KZBNBG",
+            "9XXHSZC4PS7S6AY2",
+            "UBKP744W7HW7MT76",
+            "GKZE5RA8VKSV68NC",
+            "H9GF6XQC7UBUWPRJ",
+            "49JKURJSSQHXXAKH",
+            "4H6XVYZMMD8MKVZD",
+            "7AVHXGCZK6D9ARBK",
+            "3QRVDNCQFVZRB88M",
+            "HZSWET2JVDK3QKYM",
+            "N8ZHDTY86X2AN7DE",
+            "MPVASE9XEU8AVWM6",
+            "23PVFMNC6R4J3AB6",
+            "QCRBRVP4WHFE4RN9",
+            "SE9KXT6M6JTP7E4W",
+            "2V8H8RKD5G49TF84",
+            "ERNZKT7S85V564AK",
+            "SN4PUPSHPREACEHV",
+            "ZXP6ZS4WWG9FNXHG",
+            "EVSMZX4D7HGSBAQF"
+          ]
+        }
+      },
+      {
+        "sku": "9XXHSZC4PS7S6AY2",
+        "attributes": {
+          "servicecode": "awskms",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "awskms-APIRequest-All",
+          "groupDescription": "All AWS KMS API requests",
+          "usagetype": "us-east-2-KMS-Requests",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Key Management Service"
+        },
+        "price": {
+          "rateCode": "9XXHSZC4PS7S6AY2.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.03 per 10000 KMS requests in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000030000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonECR",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECR/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:44:25Z",
+    "rates": [
+      {
+        "sku": "NA4VZMZUEQGMXP2Y",
+        "attributes": {
+          "servicecode": "AmazonECR",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-TimedStorage-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon EC2 Container Registry (ECR)",
+          "storageType": "S3"
+        },
+        "price": {
+          "rateCode": "NA4VZMZUEQGMXP2Y.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.10 per GB-month of data storage",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.1000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "DZ4BJ626RDN9C336",
+        "attributes": {
+          "servicecode": "AmazonECR",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-TimedStorage-Archive-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon EC2 Container Registry (ECR)"
+        },
+        "price": {
+          "rateCode": "DZ4BJ626RDN9C336.JRTCKXETXF.TMYMY8RHJP",
+          "description": "$0.10 per GB-Mo from 0 to 153,600 for TimedStorage-Archive-ByteHrs in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "153600",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.1000000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonRDS",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.json",
+    "published_at": "2026-10-06T22:40:50Z",
+    "rates": [
+      {
+        "sku": "C6DVEFB62JR28PU8",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Outposts",
+          "storageMedia": "AmazonS3",
+          "engineCode": "220",
+          "databaseEngine": "PostgreSQL (on-premise for Outpost)",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0220",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "C6DVEFB62JR28PU8.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running PostgreSQL (on-premise for Outpost)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "98HF9YEC2DW3RPZ3",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "engineCode": "407",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Developer",
+          "usagetype": "USE2-RDSCustom:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0407",
+          "deploymentModel": "Custom",
+          "engineMediaType": "Customer-provided",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "98HF9YEC2DW3RPZ3.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "2DMCCFMNV5BFFZJA",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Outposts",
+          "storageMedia": "AmazonS3",
+          "engineCode": "230",
+          "databaseEngine": "SQL Server (on-premise for Outpost)",
+          "databaseEdition": "Enterprise",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0230",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "2DMCCFMNV5BFFZJA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  SQL Server (for Outpost) EE (LI)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "49D8B2TFDCPK9YPK",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "20",
+          "databaseEngine": "Oracle",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0020",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "49D8B2TFDCPK9YPK.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "45GUXJCCAF6XP6WP",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Outposts",
+          "storageMedia": "AmazonS3",
+          "engineCode": "231",
+          "databaseEngine": "SQL Server (on-premise for Outpost)",
+          "databaseEdition": "Standard",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0231",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "45GUXJCCAF6XP6WP.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  SQL Server (for Outpost) SE (LI)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "SMPA2EJ7473N4J26",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "34",
+          "databaseEngine": "Db2",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0034",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "SMPA2EJ7473N4J26.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "VR2F6ZHSZJZR3WAP",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "15",
+          "databaseEngine": "SQL Server",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0015",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "VR2F6ZHSZJZR3WAP.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "Z7FGB9NR7HGDBMTR",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "engineCode": "0",
+          "databaseEngine": "Any",
+          "databaseEdition": "Any",
+          "usagetype": "USE2-RDSCustom:ChargedBackupUsage",
+          "operation": "CreateDBInstance",
+          "deploymentModel": "Custom",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "Z7FGB9NR7HGDBMTR.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per GB-Month of snapshot storage",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "DJ4W8UXBMWPD82B2",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "engineCode": "411",
+          "databaseEngine": "Oracle",
+          "databaseEdition": "Standard Two",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDSCustom:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0411",
+          "deploymentModel": "Custom",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "DJ4W8UXBMWPD82B2.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per GB-Month of snapshot storage",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "PYNU7WJBSCTWR8XF",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "21",
+          "databaseEngine": "Aurora PostgreSQL",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-Aurora:BackupUsage",
+          "operation": "CreateDBInstance:0021",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "PYNU7WJBSCTWR8XF.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.021 per GB-month of backup storage exceeding free allocation for Aurora PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0210000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "YV5D9RUKM36UPSBK",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "16",
+          "databaseEngine": "Aurora MySQL",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0016",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "YV5D9RUKM36UPSBK.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.09 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0900000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "5GN8QTMF36GV37V8",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "21",
+          "databaseEngine": "Aurora PostgreSQL",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0021",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "5GN8QTMF36GV37V8.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.09 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0900000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "UKPYZ2FYX2QQ3MZN",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "28",
+          "databaseEngine": "Db2",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0028",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "UKPYZ2FYX2QQ3MZN.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "THUBJCUWKN8C84F9",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "19",
+          "databaseEngine": "Oracle",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0019",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "THUBJCUWKN8C84F9.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "XA7VME63PKPD2ZDK",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T4G",
+          "engineCode": "21",
+          "databaseEngine": "Aurora PostgreSQL",
+          "usagetype": "USE2-CPUCredits:db.t4g",
+          "operation": "CreateDBInstance:0021",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "XA7VME63PKPD2ZDK.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.09 per vCPU-Hour of T4g CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0900000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GCGAXV9D4CPMERF6",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "18",
+          "databaseEngine": "MariaDB",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0018",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "GCGAXV9D4CPMERF6.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running MariaDB",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "HDZG987V96YZPHGT",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "27",
+          "databaseEngine": "Db2",
+          "databaseEdition": "Community",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0027",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "HDZG987V96YZPHGT.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2 CE (BYOL)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "CUBB55EYD738DE47",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "5",
+          "databaseEngine": "Oracle",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0005",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "CUBB55EYD738DE47.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "UYGUENYCNTY2RNBP",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "12",
+          "databaseEngine": "SQL Server",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0012",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "UYGUENYCNTY2RNBP.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.144 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.1440000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "A9NDN5X9SWMZVD32",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "20",
+          "databaseEngine": "Oracle",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0020",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "A9NDN5X9SWMZVD32.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "9BVGRWV7TPDZEK67",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "21",
+          "databaseEngine": "Aurora PostgreSQL",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-Aurora:BackupUsage-LimitlessPreview",
+          "operation": "CreateDBInstance:0021",
+          "limitlesspreview": "Yes",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "9BVGRWV7TPDZEK67.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.00 per GB-month of backup storage exceeding free allocation for Aurora PostgreSQL-Limitless Database Preview",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3XCP9SWJ8ZKZFQ3J",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "52",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Standard-BYOM",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0052",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "3XCP9SWJ8ZKZFQ3J.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "SMY94VD6W264RBSZ",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "15",
+          "databaseEngine": "SQL Server",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0015",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "SMY94VD6W264RBSZ.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.144 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.1440000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "7CS7CGK649HF6G56",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T4G",
+          "engineCode": "16",
+          "databaseEngine": "Aurora MySQL",
+          "usagetype": "USE2-CPUCredits:db.t4g",
+          "operation": "CreateDBInstance:0016",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "7CS7CGK649HF6G56.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.09 per vCPU-Hour of T4g CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0900000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "FY88QTJHZUS65GZX",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "35",
+          "databaseEngine": "Db2",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0035",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "FY88QTJHZUS65GZX.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "EZ5SA6EPCX296FHV",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "51",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Enterprise Developer",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0051",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "EZ5SA6EPCX296FHV.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "HQRQUXJ6DAN3XS6X",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0014",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "HQRQUXJ6DAN3XS6X.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "JDW7HJRS8ZJD8FP6",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "4",
+          "databaseEngine": "Oracle",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0004",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "JDW7HJRS8ZJD8FP6.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AF696MTNNE4JVU6V",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "12",
+          "databaseEngine": "SQL Server",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0012",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "AF696MTNNE4JVU6V.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "WRH2GBC8RRZUG36E",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "6",
+          "databaseEngine": "Oracle",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0006",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "WRH2GBC8RRZUG36E.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MVF8B75EF77X3XSK",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Outposts",
+          "storageMedia": "AmazonS3",
+          "engineCode": "232",
+          "databaseEngine": "SQL Server (on-premise for Outpost)",
+          "databaseEdition": "Web",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0232",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "MVF8B75EF77X3XSK.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  SQL Server (for Outpost) Web (LI)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "TJQ6JR9FKYKD9TFR",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "11",
+          "databaseEngine": "SQL Server",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0011",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "TJQ6JR9FKYKD9TFR.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.144 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.1440000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "WTSYE422DS8MBXER",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "10",
+          "databaseEngine": "SQL Server",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0010",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "WTSYE422DS8MBXER.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3RZURG4N3XEGFAT3",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "5",
+          "databaseEngine": "Oracle",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0005",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "3RZURG4N3XEGFAT3.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "WQB7UU6RKTTC3YUQ",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "engineCode": "406",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Enterprise-BYOM",
+          "usagetype": "USE2-RDSCustom:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0406",
+          "deploymentModel": "Custom",
+          "engineMediaType": "Customer-provided",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "WQB7UU6RKTTC3YUQ.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "H6Z6BESYCHGUHMNA",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "241",
+          "databaseEngine": "Oracle (on-premises for Outposts)",
+          "databaseEdition": "Standard Two",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0241",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "H6Z6BESYCHGUHMNA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  Oracle SE2 on Outposts",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "X6J6TAGECW638PS2",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "29",
+          "databaseEngine": "Db2",
+          "databaseEdition": "Advanced",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0029",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "X6J6TAGECW638PS2.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "4KCEUGRJZQAR985Y",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Outposts",
+          "storageMedia": "AmazonS3",
+          "engineCode": "210",
+          "databaseEngine": "MySQL (on-premise for Outpost)",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0210",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "4KCEUGRJZQAR985Y.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running MySQL (on-premise for Outpost)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "N7CSUGT9AKQRXZAR",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "engineCode": "401",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Web",
+          "usagetype": "USE2-RDSCustom:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0401",
+          "deploymentModel": "Custom",
+          "engineMediaType": "AWS-provided",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "N7CSUGT9AKQRXZAR.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per GB-Month of snapshot storage",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "KB4B3SAF2XAQ6N9H",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "11",
+          "databaseEngine": "SQL Server",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0011",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "KB4B3SAF2XAQ6N9H.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "428SVC6UQMPUSVJS",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0014",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "428SVC6UQMPUSVJS.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "8XWSNX36R6XDW7N8",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T4G",
+          "engineCode": "14",
+          "databaseEngine": "PostgreSQL",
+          "usagetype": "USE2-CPUCredits:db.t4g",
+          "operation": "CreateDBInstance:0014",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "8XWSNX36R6XDW7N8.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T4g CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "RSWN59HPZM7AURYA",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "3",
+          "databaseEngine": "Oracle",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0003",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "RSWN59HPZM7AURYA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GDF76ASFAM8CB3V9",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "240",
+          "databaseEngine": "Oracle (on-premises for Outposts)",
+          "databaseEdition": "Enterprise",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0240",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "GDF76ASFAM8CB3V9.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running  Oracle EE on Outposts",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GEBPETMZKVBGNAST",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "engineCode": "405",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Standard-BYOM",
+          "usagetype": "USE2-RDSCustom:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0405",
+          "deploymentModel": "Custom",
+          "engineMediaType": "Customer-provided",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "GEBPETMZKVBGNAST.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "WP4BA4BW55344DBB",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "35",
+          "databaseEngine": "Db2",
+          "databaseEdition": "Advanced",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0035",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "WP4BA4BW55344DBB.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "773KMVVN45XNXCFB",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "2",
+          "databaseEngine": "MySQL",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0002",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "773KMVVN45XNXCFB.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running MySQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "U6YZF2EPVAX83T33",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T4G",
+          "engineCode": "2",
+          "databaseEngine": "MySQL",
+          "usagetype": "USE2-CPUCredits:db.t4g",
+          "operation": "CreateDBInstance:0002",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "U6YZF2EPVAX83T33.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T4g CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "Y6YT5BR98PERYVYM",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "53",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Enterprise-BYOM",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0053",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "Y6YT5BR98PERYVYM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running SQL Server",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MHGBMDCVMHKNM58Q",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "28",
+          "databaseEngine": "Db2",
+          "databaseEdition": "Standard",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0028",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "MHGBMDCVMHKNM58Q.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "KTM49QQ2GBUEMXWM",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "34",
+          "databaseEngine": "Db2",
+          "databaseEdition": "Standard",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0034",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "KTM49QQ2GBUEMXWM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per additional GB-month of backup storage exceeding free allocation running Db2",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "SJGTSAPJ7M63EY3B",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "6",
+          "databaseEngine": "Oracle",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0006",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "SJGTSAPJ7M63EY3B.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "MJCKU3EU7GTQ8FK4",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "19",
+          "databaseEngine": "Oracle",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0019",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "MJCKU3EU7GTQ8FK4.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GK8TYKVKRHTZYTPD",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "3",
+          "databaseEngine": "Oracle",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0003",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "GK8TYKVKRHTZYTPD.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "N25ECB67KFQ68SZ8",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "16",
+          "databaseEngine": "Aurora MySQL",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-Aurora:BackupUsage",
+          "operation": "CreateDBInstance:0016",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "N25ECB67KFQ68SZ8.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.021 per GB-month of backup storage exceeding free allocation for Aurora MySQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0210000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AVUPR7VHMDR3E9AB",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T4G",
+          "engineCode": "18",
+          "databaseEngine": "MariaDB",
+          "usagetype": "USE2-CPUCredits:db.t4g",
+          "operation": "CreateDBInstance:0018",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "AVUPR7VHMDR3E9AB.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T4g CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "F9CPU5SVMQTMS8MH",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "18",
+          "databaseEngine": "MariaDB",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0018",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "F9CPU5SVMQTMS8MH.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "438FYN7YZ6STSP3Y",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "0",
+          "databaseEngine": "Any",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "438FYN7YZ6STSP3Y.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per RDS additional GB-month of backup storage exceeding free allocation",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "VZGXHZRGDNRT639W",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "storageMedia": "AmazonS3",
+          "engineCode": "4",
+          "databaseEngine": "Oracle",
+          "deploymentOption": "Single-AZ",
+          "usagetype": "USE2-RDS:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0004",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "VZGXHZRGDNRT639W.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running Oracle",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "JHHET74GXNA3KAUA",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "2",
+          "databaseEngine": "MySQL",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0002",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "JHHET74GXNA3KAUA.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "PQWGRFC8UZYXYGKV",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "engineCode": "403",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Enterprise",
+          "usagetype": "USE2-RDSCustom:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0403",
+          "deploymentModel": "Custom",
+          "engineMediaType": "AWS-provided",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "PQWGRFC8UZYXYGKV.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per GB-Month of snapshot storage",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "T7QKGJ9Q62KVB49Y",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "engineCode": "402",
+          "databaseEngine": "SQL Server",
+          "databaseEdition": "Standard",
+          "usagetype": "USE2-RDSCustom:ChargedBackupUsage",
+          "operation": "CreateDBInstance:0402",
+          "deploymentModel": "Custom",
+          "engineMediaType": "AWS-provided",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "T7QKGJ9Q62KVB49Y.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.095 per GB-Month of snapshot storage",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0950000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "X3QX9PXXRVGPMSY8",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "29",
+          "databaseEngine": "Db2",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0029",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "X3QX9PXXRVGPMSY8.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.075 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.0750000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "7FUQHZANZEPMAUGU",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "instanceFamily": "T3",
+          "engineCode": "10",
+          "databaseEngine": "SQL Server",
+          "usagetype": "USE2-CPUCredits:db.t3",
+          "operation": "CreateDBInstance:0010",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Relational Database Service"
+        },
+        "price": {
+          "rateCode": "7FUQHZANZEPMAUGU.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.144 per vCPU-Hour of T3 CPU Credits",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "vCPU-Hours",
+          "pricePerUnit": {
+            "USD": "0.1440000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AWSDataTransfer",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSDataTransfer/current/us-east-2/index.json",
+    "published_at": "2026-09-16T13:22:08Z",
+    "rates": [
+      {
+        "sku": "PB257JUQ8U6E6UPM",
+        "attributes": {
+          "servicecode": "AWSDataTransfer",
+          "transferType": "AWS Outbound",
+          "fromLocation": "Global",
+          "fromLocationType": "AWS Region",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "Global-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "AWS Data Transfer",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "PB257JUQ8U6E6UPM.A429C66SYZ.ETY2894C67",
+          "description": "$0 for 100GB of data transfer out to the internet, aggregated globally, each month",
+          "beginRange": "0",
+          "endRange": "100",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "CRVNRMRA5H83V2WD",
+            "RABTJMKDJXCS3HGB",
+            "9AS8NERTGECRPGT7",
+            "G76TPCZ2YZDWHBS7",
+            "NRU3SDS8TSYM8YTF",
+            "FS8D4ZBTZC7SUQMG",
+            "X683FV9MX2WKH26R",
+            "HQEH3ZWJVT46JHRG",
+            "FSEU4E6BRE95JTX8",
+            "AB77HZFG3K75SMFC",
+            "HDAWR6N3TC9JG9B3",
+            "P8W29YK9AEVGT94F",
+            "42TWUMZ5BH3CJKRX",
+            "MNNUSPE9NHX4S3B8",
+            "HK88XZFB6UCBP764",
+            "2PCT4VCE7VU9ZA9A",
+            "299H935TQMDXYR6E",
+            "B4FDZPU7PUPW9KQN",
+            "XNRN4JUWNHCPRU5R",
+            "SDHP4R7WGBVJPQPY",
+            "36H7S3NU9B7S3UT5",
+            "98NENJDZV28SBXQ6",
+            "PMP8X4WW4QWE4MGM",
+            "D6KTGXDAJPW2JW7H",
+            "PXMGUQBUMZ57SWYS",
+            "63T8CCVERN79A9UF",
+            "ZUYBXJB9EDMGX4WE",
+            "RWNAG8EPMAPN6VGR",
+            "2FMZC5939UNK386P",
+            "ECTP3BJUBCHZH4H7",
+            "UC6KZM2N8C4EDSJ2",
+            "PKX2UMMN9JAK89YN",
+            "C9NU58VKT7GQUFST",
+            "HDJ56KY2V23XMT23",
+            "7W6FHP6D7SEAH4EE",
+            "XYEEZU9NCKCCQ5EY",
+            "AMWSPQUAP2ZAGZ4T",
+            "54UAZFW2RBKVZV3G",
+            "6UMEZT4ZXXYHPU5Z",
+            "UT2RMGBHHJPCHBHS",
+            "RFEMJE2PCZY94RM4",
+            "QZ73H5RGR5JYYB4D",
+            "VQMS46CX5NK8XV3M",
+            "NQT5EFPTVXZE5ZHD",
+            "X5BFEX42WPEB89TC",
+            "993ZEFNY27ZBY7TZ",
+            "T3ZB7Z9V83R7WSH5",
+            "ZQXZURWQEX3KAWYA",
+            "JQPUS395EKGJAF2K",
+            "4HCFHP6H6VZVQ74A",
+            "BXKEYE7ADT7EBZTW",
+            "VUM2J8K8UJEJW4B8",
+            "XGDSGND6MUTT3U74",
+            "RHTV8JPY64EV6GXS",
+            "N4GVKX3X58UM44HX",
+            "6KD65M6RHV7V5Q2E",
+            "DSDMYDNJ7MQXEU2V",
+            "BCP69A6RVUZ9PMM8",
+            "T8U8Q97DEK8DGHGG",
+            "GEPD6SRNJK9DQTE8",
+            "FAB99YP5WBFQW3XX",
+            "5JMQ42BDCQF6C5XP",
+            "NRC2X84NC7NGPKFS",
+            "83AXNP3KVHM7SGFU",
+            "FWPF54UVUR4G8P3A",
+            "3XF9TZNT6VRZFE5U",
+            "UJYCP67PNUR5V2VZ",
+            "HJ4VVW3YMNA9Q26W",
+            "SJS9GM3PBTUXSYNY",
+            "SYDVGMW59NNGKNXA",
+            "27T5YSJBHB3SGRQC",
+            "R5JG2AF383HK4W9U",
+            "CXWFSAS9ETSMBH2Y",
+            "CMEYEEYC485JXPYQ",
+            "72ZH453U7RKZCGDN",
+            "YXY6GTQNQVZSBWUJ",
+            "N44J3VJ5RHPRTG8D",
+            "GZ7W292S58B6PZPH",
+            "564JE6C26YQCZYX4",
+            "M542U2SUZMNSA4AX",
+            "KPEKDXDDQGKW7S6T",
+            "F62Y6TKR8NC6Q2ZB",
+            "48NJHP4M27UNGWY4",
+            "TCQ8QCXJC69VEBRZ",
+            "AHRNA43Y8M88C9BD",
+            "WSS4ANBAWGXGXC34",
+            "Z9CN5NK3WCBZ5KEP",
+            "QKTPK3975YUWDU3Q",
+            "G62VFTQ3CT4GZV9W",
+            "DDAWHKW59YPAQTQN",
+            "RXZRF5DV47TYQ2KB",
+            "SBC36TANNE54BYU7",
+            "6J7ZFAB6VQ5YYYQT",
+            "EZ7K9ETAHN6BAKV8",
+            "CEZ38U7Z5A3RB5US",
+            "TYMC6C8YMFPJS2V8",
+            "ZGDW3UE4SED9HUPP",
+            "R887Y68H9V7ZQRQD",
+            "5M4327XEUKBBTWAT",
+            "DJGAW6CFP8PPSX6T",
+            "4RDQASPKA563JSVH",
+            "8M89HETR2MTWZ9SP",
+            "MB9TZFPYFKH4SH6P",
+            "UYN6VMC5ANUD4H6S",
+            "5UF8HU3K3KB7SKF4",
+            "7SD6RBHJZGEXD3Q6",
+            "T44C9WQVFH9SJFEQ",
+            "P6NMSM6BC3R6A5U9",
+            "9ESU2G5WSY6FMZR3",
+            "SHM374E6Z6QUJCK6",
+            "MSZAHJKXS5P6AQS5",
+            "529SK7Q2XMH8G9FP",
+            "YF6GFTB9WP95A9XC",
+            "ZMC8J4VZQ9XHJHU2",
+            "A6YRDEXMRVAYW6TV",
+            "QEYS8NHYJ5TRWRWZ",
+            "DGR6MKFHTAYJ3QHP",
+            "T5N4YHB64DQFUPDP",
+            "6XEKAD627QFRWFAN",
+            "NYJP6UWWB8B2SK29",
+            "2V5MC7KNFF848QAH",
+            "U5BGAY9MY9MU9UPN",
+            "WF498XDS2SG5BUUC",
+            "VMAJ645H6RR4RKP7",
+            "UKQ34C8EAAJUUK8Q",
+            "DRTM7T5YA7E492Z3",
+            "EKHFDA69JK4PQAEQ",
+            "ZUA6XEPU6ERRATJ6",
+            "KRXM4TG87VW2NPHA",
+            "UQV95YZYZFMZS7AN",
+            "HJBGTC76QP7XKJ7V",
+            "UDF3MCPTCEY4BX4Q",
+            "8A562F3DJ7RB3YG4",
+            "HVHAF7W356YRMBKT",
+            "JMEVEQVMZEKRTJYK",
+            "4GUWTT4HTDRUU6H5",
+            "D74ZYPB8YW7KFWZX",
+            "M338S9DAQY5JUT7X",
+            "ZBCV9QFN6J64C7SR",
+            "JMVAJYUBDVF3WGR9",
+            "67T8V33BFQ7AUKD8",
+            "Q3KWYZ3TM7ZT645U"
+          ]
+        }
+      },
+      {
+        "sku": "M3RMABM2MPYQ8WDG",
+        "attributes": {
+          "servicecode": "AWSDataTransfer",
+          "transferType": "Accelerated AWS Outbound using edge locations outside US, Europe or Japan",
+          "fromLocation": "US East (Ohio)",
+          "fromLocationType": "AWS Region",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "USE2-DataTransfer-Out-ABytes-T2",
+          "operation": "",
+          "fromRegionCode": "us-east-2",
+          "servicename": "AWS Data Transfer",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "M3RMABM2MPYQ8WDG.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.040 per GB - Amazon S3 accelerated data transfer out (to outside US, Europe or Japan)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0400000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "UFS3N56WEYYKUV47",
+        "attributes": {
+          "servicecode": "AWSDataTransfer",
+          "transferType": "IntraRegion",
+          "fromLocation": "Global",
+          "fromLocationType": "AWS Region",
+          "toLocation": "Global",
+          "toLocationType": "AWS Region",
+          "usagetype": "Global-DataTransfer-Regional-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "AWS Data Transfer",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "UFS3N56WEYYKUV47.A429C66SYZ.8EEUB22XNJ",
+          "description": "$0.000 per GB - regional data transfer under the monthly global free tier",
+          "beginRange": "0",
+          "endRange": "1",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "9SM7SWX5Q58YJD7K",
+            "EZWZVQJCJG8AMT8A",
+            "294E9MQ5AYDK4NNS",
+            "FQAASNCUW2QJHGH9",
+            "4UC2MYDMA49FA5MR",
+            "N3985P5EZGXXU6SP",
+            "F75SHEQUMHZE7Q89",
+            "9DSCPX5A6YCG9NFN",
+            "KK3YAB3A442KQK3N",
+            "PNUBVW4CPC8XA46W",
+            "D8X833GY3T7AERDF",
+            "EUB9VK4Z677JXMDW",
+            "H3ANQWBR5TWCXMAT",
+            "7JWHRYB5EQYRDUGC",
+            "PKEN4BJWKT6VRQ8C",
+            "WN6QYK5CUUMPZX93",
+            "HDU6J2TRQTQE744T",
+            "YWNJ69BRRXURPR9X",
+            "4VV36CD3MDN8K86N",
+            "VTS3RZKDYPMKAEAZ",
+            "TAFRGPEYCVCR4382",
+            "VQ7GKHWX8FDD8U3P",
+            "3BMNGWPQ5WS77F82",
+            "Q2CVSFJQYMPZUTPE",
+            "ZE32JNKGVG34U34G",
+            "J34BR8UDYRM9SVFU",
+            "CBS7VMVM8BR9DGVU",
+            "HCZY7DD5AAJF5PRD",
+            "FXXPA79JTXMPXEG4",
+            "8WCAX2R7GE35EVVW",
+            "423FNW86YE4EAMJ4",
+            "BSKNS9ERBM7JPTQY",
+            "CTZ4HRRGDKCKARTN",
+            "JJMF4DA9CFR8VBFA",
+            "BJGRNR4PE3KCBN7U",
+            "2ZQGVG5RXZPE7HNP",
+            "BPS5PKRX6H7N96XG",
+            "PCZDT7JAE3SGUPAX",
+            "MEXJP3VCTYJKGHT6",
+            "HXACVNG3J2XGKMXY",
+            "C9B93FZW7BURE8UF",
+            "M3MP44KK9T8Z6WU8",
+            "53RP4JYQH8VY4QEM",
+            "5D2MW78KPJPRV7WA",
+            "62WNQUZDQQ6GRJC5",
+            "3ENVKMGQ4KWNCT2B",
+            "ZETVU8JJ55HQPU9M",
+            "SSF84WRP8E6MZAVA",
+            "M2JVSNSC5SFEZUMR",
+            "CSG5D62KHDW9ZXZG",
+            "XSUHRJGFYUNE8BKG",
+            "NGZUEPSC8GDUZXAK",
+            "VKDPCSSRWWGVCFCK",
+            "YR2FH85AY9B4PG8R",
+            "E5T75CYEH2CEG3SZ",
+            "RVH645383RKU285J",
+            "UVQKS675KP4US2FH",
+            "WH9S78SKVEQENJA7",
+            "XCA5NK58HAYFU6DB",
+            "F8E5RBBTWDY6X6HP",
+            "3H5XN9EF8YRFG5JF",
+            "WZQCV8GB2YGESC7V",
+            "Y9G5R44XR93ZMWAE",
+            "VSDFS983BS2XUWP4",
+            "MMVY4QM9V77HURQP",
+            "F88GX6SDHBEBNTS7",
+            "4X63DF5PMZWPNP7Z",
+            "7SW3QJGFC2RRN8MK",
+            "HQUX8ZA2BN4PD35C",
+            "C8BMXVTVJ4NFJRZ5",
+            "8R3M8ZWUR2CYTW9A",
+            "9JK3Z62VKT3Y5MYF",
+            "NWZ8FM5QJGVUDBWU",
+            "YZG3DMKV8XK8VZEK",
+            "AZWZGVDMDUNKBDTF",
+            "RKVEBKR3WT3XFXXW",
+            "5JUEGEBDYBTRPPHV",
+            "7V93DGTJVJNZBDQ3",
+            "2WXEGSGHHAAYXMBP",
+            "DGQ8P68HX5PN2C4A",
+            "ZNFEQTUSTMWTYCCX",
+            "G342F6EC7QMC47BF",
+            "R6K9S473JVJG6VH5",
+            "JR6MBZRBSGF7ZB4C",
+            "B644BHQCNVPYES6D",
+            "D3CFHKZBRQ3ZJRRD",
+            "YUJFG32NTYK52Q8D",
+            "UYG25KYFPV4AC97B",
+            "SB2KBZR7T4TRQ96W",
+            "KF338J7FCKZPUBD9",
+            "8QEZC7W8JUBSFG6U",
+            "DM9U4YEMJHK2ZM5X",
+            "G4WX3XY35RXA8ETG",
+            "S3R8R8WKVYUTHP66",
+            "CSKWP3DWESMECEE2",
+            "ZE4E4QX7N8PFY8CH",
+            "4WDEH626UBGNCHQT",
+            "P6S4PWNGQUAQPNPW",
+            "PJDAZDJV299ZFUGX",
+            "QPMCR9J5TQYAMV9W",
+            "RR2R5VB4J6MFT4DP",
+            "ZHG2QKSQVQQFZXJU",
+            "ZR38X3664XWY8AS2"
+          ]
+        }
+      },
+      {
+        "sku": "2RY4655W7Y35GFEZ",
+        "attributes": {
+          "servicecode": "AWSDataTransfer",
+          "transferType": "Accelerated AWS Outbound from close by location",
+          "fromLocation": "US East (Ohio)",
+          "fromLocationType": "AWS Region",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "USE2-DataTransfer-Out-ABytes",
+          "operation": "",
+          "fromRegionCode": "us-east-2",
+          "servicename": "AWS Data Transfer",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "2RY4655W7Y35GFEZ.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.040 per GB - Amazon S3 accelerated data transfer out",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0400000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "SS2T6PKCQV6JUTFM",
+        "attributes": {
+          "servicecode": "AWSDataTransfer",
+          "transferType": "Accelerated AWS Outbound using edge locations within US, Europe or Japan",
+          "fromLocation": "US East (Ohio)",
+          "fromLocationType": "AWS Region",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "USE2-DataTransfer-Out-ABytes-T1",
+          "operation": "",
+          "fromRegionCode": "us-east-2",
+          "servicename": "AWS Data Transfer",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "SS2T6PKCQV6JUTFM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.040 per GB - Amazon S3 accelerated data transfer out (to within US, Europe or Japan)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0400000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "36H7S3NU9B7S3UT5",
+        "attributes": {
+          "servicecode": "AWSDataTransfer",
+          "transferType": "AWS Outbound",
+          "fromLocation": "US East (Ohio)",
+          "fromLocationType": "AWS Region",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "USE2-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "us-east-2",
+          "servicename": "AWS Data Transfer",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "36H7S3NU9B7S3UT5.JRTCKXETXF.Q3Z75P77EN",
+          "description": "$0.090 per GB - first 10 TB / month data transfer out beyond the global free tier",
+          "beginRange": "0",
+          "endRange": "10240",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0900000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "KF338J7FCKZPUBD9",
+        "attributes": {
+          "servicecode": "AWSDataTransfer",
+          "transferType": "IntraRegion",
+          "fromLocation": "US East (Ohio)",
+          "fromLocationType": "AWS Region",
+          "toLocation": "US East (Ohio)",
+          "toLocationType": "AWS Region",
+          "usagetype": "USE2-DataTransfer-Regional-Bytes",
+          "operation": "",
+          "fromRegionCode": "us-east-2",
+          "servicename": "AWS Data Transfer",
+          "toRegionCode": "us-east-2"
+        },
+        "price": {
+          "rateCode": "KF338J7FCKZPUBD9.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.010 per GB - regional data transfer - in/out/between EC2 AZs or using elastic IPs or ELB",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0100000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonSNS",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSNS/current/us-east-2/index.json",
+    "published_at": "2026-09-15T15:19:44Z",
+    "rates": [
+      {
+        "sku": "X7V4MHE7G6GM98JT",
+        "attributes": {
+          "servicecode": "AmazonSNS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "SNS-Requests-Tier1",
+          "groupDescription": "Amazon SNS API Requests",
+          "usagetype": "USE2-Requests-Tier1",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Notification Service"
+        },
+        "price": {
+          "rateCode": "X7V4MHE7G6GM98JT.JRTCKXETXF.SB2VSFF4TP",
+          "description": "First 1,000,000 Amazon SNS API Requests per month are free",
+          "beginRange": "0",
+          "endRange": "1000000",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "X7V4MHE7G6GM98JT",
+        "attributes": {
+          "servicecode": "AmazonSNS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "SNS-Requests-Tier1",
+          "groupDescription": "Amazon SNS API Requests",
+          "usagetype": "USE2-Requests-Tier1",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Notification Service"
+        },
+        "price": {
+          "rateCode": "X7V4MHE7G6GM98JT.JRTCKXETXF.VNJQCFJPS4",
+          "description": "$0.50 per 1,000,000 Amazon SNS API Requests per month thereafter",
+          "beginRange": "1000000",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000005000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonSNS-email",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSNS/current/us-east-2/index.json",
+    "published_at": "2026-09-15T15:19:44Z",
+    "rates": [
+      {
+        "sku": "GZME75EE8UXWS6VZ",
+        "attributes": {
+          "servicecode": "AmazonSNS",
+          "description": "Charged for each 64KB chunk of published data",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "endpointType": "SMTP",
+          "usagetype": "USE2-DeliveryAttempts-SMTP",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Notification Service"
+        },
+        "price": {
+          "rateCode": "GZME75EE8UXWS6VZ.JRTCKXETXF.JXGPBPHWFF",
+          "description": "First 1,000 Amazon SNS Email/Email-JSON Notifications per month are free",
+          "beginRange": "0",
+          "endRange": "1000",
+          "unit": "Notifications",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GZME75EE8UXWS6VZ",
+        "attributes": {
+          "servicecode": "AmazonSNS",
+          "description": "Charged for each 64KB chunk of published data",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "endpointType": "SMTP",
+          "usagetype": "USE2-DeliveryAttempts-SMTP",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Simple Notification Service"
+        },
+        "price": {
+          "rateCode": "GZME75EE8UXWS6VZ.JRTCKXETXF.MUBTP6UPGZ",
+          "description": "$2.00 per 100,000 Amazon SNS Email/Email-JSON Notifications thereafter",
+          "beginRange": "1000",
+          "endRange": "Inf",
+          "unit": "Notifications",
+          "pricePerUnit": {
+            "USD": "0.0000200000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  }
+]

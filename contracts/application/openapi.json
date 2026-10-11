@@ -1,0 +1,5850 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "One-The-Go Detection",
+    "version": "1.0.0",
+    "description": "Versioned measurement-only application API. Clinical inference is compiled unavailable. See shared-contracts.md for state, idempotency, owner/generation and native evidence invariants. Unknown nested component metadata is rejected at runtime; CaptureAttempt carries a strict v0.1 projection plus the named typed companion evidence."
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "summary": "Live",
+        "operationId": "live_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "summary": "Ready",
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/app-config": {
+      "get": {
+        "summary": "App Config",
+        "operationId": "app_config_v1_app_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notices/{version}": {
+      "get": {
+        "summary": "Get Notice",
+        "operationId": "get_notice_v1_notices__version__get",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/capabilities": {
+      "get": {
+        "summary": "Capabilities",
+        "operationId": "capabilities_v1_me_capabilities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "422": {
+            "description": "Typed validation failed; no input values echoed."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/me/acknowledgments": {
+      "post": {
+        "summary": "Acknowledge",
+        "operationId": "acknowledge_v1_me_acknowledgments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Acknowledgment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/me/profile": {
+      "get": {
+        "summary": "Profile Get",
+        "operationId": "profile_get_v1_me_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "422": {
+            "description": "Typed validation failed; no input values echoed."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Profile Patch",
+        "operationId": "profile_patch_v1_me_profile_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quoted integer revision; use \"0\" for first creation of an immutable context/attempt/manifest."
+          }
+        ]
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "operationId": "logout_v1_auth_logout_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "422": {
+            "description": "Typed validation failed; no input values echoed."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/me/data-generation/acknowledgments": {
+      "post": {
+        "summary": "Generation Ack",
+        "operationId": "generation_ack_v1_me_data_generation_acknowledgments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Confirm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/sessions": {
+      "post": {
+        "summary": "Session Create",
+        "operationId": "session_create_v1_sessions_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCheck"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      },
+      "get": {
+        "summary": "Session List",
+        "operationId": "session_list_v1_sessions_get",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}": {
+      "get": {
+        "summary": "Session Get",
+        "operationId": "session_get_v1_sessions__session_id__get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/snapshot": {
+      "put": {
+        "summary": "Snapshot Put",
+        "operationId": "snapshot_put_v1_sessions__session_id__snapshot_put",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quoted integer revision; use \"0\" for first creation of an immutable context/attempt/manifest."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/context": {
+      "put": {
+        "summary": "Context Put",
+        "operationId": "context_put_v1_sessions__session_id__context_put",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quoted integer revision; use \"0\" for first creation of an immutable context/attempt/manifest."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureContext"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/attempts/{attempt_id}": {
+      "put": {
+        "summary": "Attempt Put",
+        "operationId": "attempt_put_v1_sessions__session_id__attempts__attempt_id__put",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Attempt Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quoted integer revision; use \"0\" for first creation of an immutable context/attempt/manifest."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureAttempt"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/evidence-manifest": {
+      "put": {
+        "summary": "Manifest Put",
+        "operationId": "manifest_put_v1_sessions__session_id__evidence_manifest_put",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quoted integer revision; use \"0\" for first creation of an immutable context/attempt/manifest."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvidenceManifest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/evidence": {
+      "get": {
+        "summary": "Evidence Get",
+        "operationId": "evidence_get_v1_sessions__session_id__evidence_get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/finalize": {
+      "post": {
+        "summary": "Finalize",
+        "operationId": "finalize_v1_sessions__session_id__finalize_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quoted integer revision; use \"0\" for first creation of an immutable context/attempt/manifest."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Finalize"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/result": {
+      "get": {
+        "summary": "Result Get",
+        "operationId": "result_get_v1_sessions__session_id__result_get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/me/studies": {
+      "get": {
+        "summary": "Studies",
+        "operationId": "studies_v1_me_studies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "422": {
+            "description": "Typed validation failed; no input values echoed."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/studies/{study_id}/consents": {
+      "post": {
+        "summary": "Consent",
+        "operationId": "consent_v1_studies__study_id__consents_post",
+        "parameters": [
+          {
+            "name": "study_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "title": "Study Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Consent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/studies/{study_id}/withdrawals": {
+      "post": {
+        "summary": "Withdraw",
+        "operationId": "withdraw_v1_studies__study_id__withdrawals_post",
+        "parameters": [
+          {
+            "name": "study_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "title": "Study Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Withdrawal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/device-bindings": {
+      "get": {
+        "summary": "Bindings Get",
+        "operationId": "bindings_get_v1_device_bindings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "422": {
+            "description": "Typed validation failed; no input values echoed."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Bind",
+        "operationId": "bind_v1_device_bindings_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Binding"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/device-bindings/challenges": {
+      "post": {
+        "summary": "Bind Challenge",
+        "operationId": "bind_challenge_v1_device_bindings_challenges_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BindChallenge"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/device-bindings/{binding_id}": {
+      "delete": {
+        "summary": "Unbind",
+        "operationId": "unbind_v1_device_bindings__binding_id__delete",
+        "parameters": [
+          {
+            "name": "binding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Binding Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/capture-authorizations": {
+      "post": {
+        "summary": "Authorize Capture",
+        "operationId": "authorize_capture_v1_sessions__session_id__capture_authorizations_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureAuthorization"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/capture-authorizations/{authorization_id}/start": {
+      "post": {
+        "summary": "Start Capture",
+        "operationId": "start_capture_v1_sessions__session_id__capture_authorizations__authorization_id__start_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "authorization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Authorization Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartAuthorization"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/attestations": {
+      "post": {
+        "summary": "Attest",
+        "operationId": "attest_v1_sessions__session_id__attestations_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Attestation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/artifact-uploads": {
+      "post": {
+        "summary": "Artifact Upload",
+        "operationId": "artifact_upload_v1_artifact_uploads_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtifactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/artifact-uploads/{artifact_id}": {
+      "get": {
+        "summary": "Artifact Status",
+        "operationId": "artifact_status_v1_artifact_uploads__artifact_id__get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Artifact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/artifact-uploads/{artifact_id}/complete": {
+      "post": {
+        "summary": "Artifact Complete",
+        "operationId": "artifact_complete_v1_artifact_uploads__artifact_id__complete_post",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteArtifact"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/research/lab-imports": {
+      "post": {
+        "summary": "Lab Import",
+        "operationId": "lab_import_v1_research_lab_imports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabImport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{session_id}/alcohol": {
+      "post": {
+        "summary": "Alcohol Post",
+        "operationId": "alcohol_post_v1_sessions__session_id__alcohol_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Alcohol"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Alcohol Get",
+        "operationId": "alcohol_get_v1_sessions__session_id__alcohol_get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/model-manifests/{model_id}": {
+      "get": {
+        "summary": "Model Get",
+        "operationId": "model_get_v1_model_manifests__model_id__get",
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "title": "Model Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/privacy/exports": {
+      "post": {
+        "summary": "Export Post",
+        "operationId": "export_post_v1_privacy_exports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/privacy/deletion-requests": {
+      "post": {
+        "summary": "Deletion Post",
+        "operationId": "deletion_post_v1_privacy_deletion_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-App-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Supported semantic app version; required for ordinary QA/prod writes. Minimum or support-policy mismatch receives 426. Privacy reconciliation remains available."
+          },
+          {
+            "name": "X-Data-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current writable account generation; stale ordinary writes receive410."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stable key for this exact operation, persisted across retries. Changed body with the same key receives409."
+          }
+        ]
+      }
+    },
+    "/v1/privacy/jobs/{job_id}": {
+      "get": {
+        "summary": "Privacy Status",
+        "operationId": "privacy_status_v1_privacy_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    },
+    "/v1/privacy/jobs/{job_id}/download": {
+      "get": {
+        "summary": "Privacy Download",
+        "operationId": "privacy_download_v1_privacy_jobs__job_id__download_get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "Current account, notice, consent or capability does not permit the operation."
+          },
+          "404": {
+            "description": "No currently owned record."
+          },
+          "409": {
+            "description": "Immutable state or idempotency conflict."
+          },
+          "410": {
+            "description": "Retired generation or expired data."
+          },
+          "412": {
+            "description": "Revision conflict."
+          },
+          "426": {
+            "description": "Application update required before ordinary writes."
+          },
+          "429": {
+            "description": "Bounded capacity exceeded; honor Retry-After."
+          },
+          "503": {
+            "description": "Required dependency unavailable; no success implied."
+          }
+        },
+        "security": [
+          {
+            "BearerAccess": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Acknowledgment": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "acknowledged_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Acknowledged At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version",
+          "sha256",
+          "acknowledged_at"
+        ],
+        "title": "Acknowledgment"
+      },
+      "Alcohol": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "measurement_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Measurement Id"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "collected_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collected At"
+          },
+          "measured_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measured At"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "prototype_sensor",
+              "reference_lab",
+              "validated_sensor"
+            ],
+            "title": "Source"
+          },
+          "qualifier": {
+            "type": "string",
+            "enum": [
+              "quantified",
+              "not_measured",
+              "invalid",
+              "below_loq",
+              "above_range",
+              "not_detected"
+            ],
+            "title": "Qualifier"
+          },
+          "value_mg_l": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Mg L"
+          },
+          "unit": {
+            "type": "string",
+            "const": "mg/L",
+            "title": "Unit"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/AlcoholLimits"
+          },
+          "method_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Id"
+          },
+          "calibration_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calibration Id"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id"
+          },
+          "boot_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Boot Id"
+          },
+          "configuration_hash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configuration Hash"
+          },
+          "quality_flags": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 64,
+            "title": "Quality Flags"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "measurement_id",
+          "session_id",
+          "collected_at",
+          "measured_at",
+          "source",
+          "qualifier",
+          "value_mg_l",
+          "unit",
+          "limits",
+          "method_id",
+          "calibration_id",
+          "device_id",
+          "boot_id",
+          "configuration_hash",
+          "quality_flags"
+        ],
+        "title": "Alcohol"
+      },
+      "AlcoholLimits": {
+        "properties": {
+          "lod_mg_l": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lod Mg L"
+          },
+          "loq_mg_l": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loq Mg L"
+          },
+          "upper_mg_l": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper Mg L"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lod_mg_l",
+          "loq_mg_l",
+          "upper_mg_l"
+        ],
+        "title": "AlcoholLimits"
+      },
+      "ArtifactRequest": {
+        "properties": {
+          "study_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Study Id"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "consent_record_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Consent Record Id"
+          },
+          "retention_policy_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Retention Policy Id"
+          },
+          "artifact_kind": {
+            "type": "string",
+            "enum": [
+              "eye_video",
+              "ecg_waveform",
+              "source_lab_report"
+            ],
+            "title": "Artifact Kind"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "maximum": 67108864.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          },
+          "media_type": {
+            "type": "string",
+            "enum": [
+              "video/mp4",
+              "application/octet-stream",
+              "application/pdf"
+            ],
+            "title": "Media Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "study_id",
+          "session_id",
+          "consent_record_id",
+          "retention_policy_id",
+          "artifact_kind",
+          "sha256",
+          "size_bytes",
+          "media_type"
+        ],
+        "title": "ArtifactRequest"
+      },
+      "AttemptHash": {
+        "properties": {
+          "attempt_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Attempt Id"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "sha256"
+        ],
+        "title": "AttemptHash"
+      },
+      "Attestation": {
+        "properties": {
+          "attestation_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Attestation Id"
+          },
+          "envelope": {
+            "$ref": "#/components/schemas/AttestationEnvelope"
+          },
+          "signature": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Signature"
+          },
+          "normalized_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Normalized Payload"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "attestation_id",
+          "envelope",
+          "signature",
+          "normalized_payload"
+        ],
+        "title": "Attestation"
+      },
+      "AttestationEnvelope": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "local",
+              "qa",
+              "prod",
+              "test"
+            ],
+            "title": "Environment"
+          },
+          "owner_ref": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Owner Ref"
+          },
+          "data_generation": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Data Generation"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "attempt_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Attempt Id"
+          },
+          "authorization_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Authorization Id"
+          },
+          "binding_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Binding Id"
+          },
+          "device_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Device Id"
+          },
+          "key_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Key Id"
+          },
+          "boot_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Boot Id"
+          },
+          "sequence": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Sequence"
+          },
+          "configuration_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Hash"
+          },
+          "payload_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Payload Sha256"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "environment",
+          "owner_ref",
+          "data_generation",
+          "session_id",
+          "attempt_id",
+          "authorization_id",
+          "binding_id",
+          "device_id",
+          "key_id",
+          "boot_id",
+          "sequence",
+          "configuration_hash",
+          "payload_sha256"
+        ],
+        "title": "AttestationEnvelope"
+      },
+      "BindChallenge": {
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Device Id"
+          },
+          "key_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Key Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "device_id",
+          "key_id"
+        ],
+        "title": "BindChallenge"
+      },
+      "Binding": {
+        "properties": {
+          "challenge_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Challenge Id"
+          },
+          "signature": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Signature"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "challenge_id",
+          "signature"
+        ],
+        "title": "Binding"
+      },
+      "CaptureAttempt": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "attempt_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Attempt Id"
+          },
+          "component": {
+            "type": "string",
+            "enum": [
+              "saliva",
+              "eyes",
+              "cardiac",
+              "task",
+              "alcohol"
+            ],
+            "title": "Component"
+          },
+          "record_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Record Id"
+          },
+          "supersedes_attempt_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes Attempt Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "started",
+              "valid",
+              "invalid",
+              "canceled",
+              "not_collected"
+            ],
+            "title": "Status"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "prototype_sensor",
+              "reference_lab",
+              "validated_sensor"
+            ],
+            "title": "Source"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At"
+          },
+          "configuration_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configuration Id"
+          },
+          "configuration_hash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configuration Hash"
+          },
+          "quality_flags": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 64,
+            "title": "Quality Flags"
+          },
+          "component_metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Component Metadata"
+          },
+          "artifact_refs": {
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+            },
+            "type": "array",
+            "maxItems": 16,
+            "title": "Artifact Refs",
+            "default": []
+          },
+          "attestation_refs": {
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+            },
+            "type": "array",
+            "maxItems": 16,
+            "title": "Attestation Refs",
+            "default": []
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "session_id",
+          "attempt_id",
+          "component",
+          "record_id",
+          "supersedes_attempt_id",
+          "status",
+          "source",
+          "started_at",
+          "ended_at",
+          "configuration_id",
+          "configuration_hash",
+          "quality_flags",
+          "component_metadata"
+        ],
+        "title": "CaptureAttempt"
+      },
+      "CaptureAuthorization": {
+        "properties": {
+          "attempt_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Attempt Id"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "saliva",
+              "eyes",
+              "cardiac",
+              "ecg",
+              "task",
+              "alcohol"
+            ],
+            "title": "Channel"
+          },
+          "binding_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Id"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id"
+          },
+          "configuration_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Configuration Id"
+          },
+          "configuration_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Configuration Hash"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "channel",
+          "binding_id",
+          "device_id",
+          "configuration_id",
+          "configuration_hash"
+        ],
+        "title": "CaptureAuthorization"
+      },
+      "CaptureContext": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "context_confirmed_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Context Confirmed At"
+          },
+          "profile_version_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Version Id"
+          },
+          "profile_snapshot_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Profile Snapshot Sha256"
+          },
+          "history_snapshot_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "History Snapshot Sha256"
+          },
+          "protocol_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol Id"
+          },
+          "configuration_refs": {
+            "items": {
+              "$ref": "#/components/schemas/ConfigurationRef"
+            },
+            "type": "array",
+            "maxItems": 16,
+            "title": "Configuration Refs"
+          },
+          "baseline_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Baseline Refs"
+          },
+          "device_associations": {
+            "items": {
+              "$ref": "#/components/schemas/DeviceAssociation"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Device Associations"
+          },
+          "self_report_context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SelfReport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "session_id",
+          "context_confirmed_at",
+          "profile_version_id",
+          "profile_snapshot_sha256",
+          "history_snapshot_sha256",
+          "protocol_id",
+          "configuration_refs",
+          "baseline_refs",
+          "device_associations"
+        ],
+        "title": "CaptureContext"
+      },
+      "CompleteArtifact": {
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "maximum": 67108864.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          },
+          "media_type": {
+            "type": "string",
+            "enum": [
+              "video/mp4",
+              "application/octet-stream",
+              "application/pdf"
+            ],
+            "title": "Media Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sha256",
+          "size_bytes",
+          "media_type"
+        ],
+        "title": "CompleteArtifact"
+      },
+      "ConfigurationRef": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Scope"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "sha256",
+          "scope"
+        ],
+        "title": "ConfigurationRef"
+      },
+      "Confirm": {
+        "properties": {
+          "confirmation": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirmation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "confirmation"
+        ],
+        "title": "Confirm"
+      },
+      "Consent": {
+        "properties": {
+          "invitation_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Invitation Id"
+          },
+          "document_version": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Document Version"
+          },
+          "document_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Document Sha256"
+          },
+          "accepted": {
+            "type": "boolean",
+            "const": true,
+            "title": "Accepted"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "invitation_id",
+          "document_version",
+          "document_sha256",
+          "accepted"
+        ],
+        "title": "Consent"
+      },
+      "CreateCheck": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "synthetic",
+              "analytical",
+              "controlled_research"
+            ],
+            "title": "Mode"
+          },
+          "protocol_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol Id"
+          },
+          "study_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Study Id"
+          },
+          "supersedes_session_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes Session Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "session_id",
+          "mode"
+        ],
+        "title": "CreateCheck"
+      },
+      "DeleteRequest": {
+        "properties": {
+          "confirmation": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirmation"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "all_data",
+              "account"
+            ],
+            "title": "Scope"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "confirmation",
+          "scope"
+        ],
+        "title": "DeleteRequest"
+      },
+      "DeviceAssociation": {
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Device Id"
+          },
+          "binding_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Id"
+          },
+          "boot_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Boot Id"
+          },
+          "hardware_revision": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Hardware Revision"
+          },
+          "firmware_version": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Firmware Version"
+          },
+          "clock_evidence_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clock Evidence Ref"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "device_id",
+          "boot_id",
+          "hardware_revision",
+          "firmware_version"
+        ],
+        "title": "DeviceAssociation"
+      },
+      "EvidenceManifest": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0.0",
+            "title": "Schema Version"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "context_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Context Sha256"
+          },
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/AttemptHash"
+            },
+            "type": "array",
+            "maxItems": 128,
+            "title": "Attempts"
+          },
+          "selected": {
+            "$ref": "#/components/schemas/Selection"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "session_id",
+          "context_sha256",
+          "attempts",
+          "selected"
+        ],
+        "title": "EvidenceManifest"
+      },
+      "ExportRequest": {
+        "properties": {
+          "selection": {
+            "$ref": "#/components/schemas/ExportSelection"
+          },
+          "format": {
+            "type": "string",
+            "const": "json_zip",
+            "title": "Format"
+          },
+          "include_raw": {
+            "type": "boolean",
+            "const": false,
+            "title": "Include Raw"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "selection",
+          "format",
+          "include_raw"
+        ],
+        "title": "ExportRequest"
+      },
+      "ExportSelection": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "single",
+              "selected",
+              "all"
+            ],
+            "title": "Kind"
+          },
+          "session_ids": {
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+            },
+            "type": "array",
+            "maxItems": 500,
+            "title": "Session Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "session_ids"
+        ],
+        "title": "ExportSelection"
+      },
+      "Finalize": {
+        "properties": {
+          "snapshot_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Snapshot Sha256"
+          },
+          "evidence_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Evidence Sha256"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot_sha256",
+          "evidence_sha256"
+        ],
+        "title": "Finalize"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "History": {
+        "properties": {
+          "use_frequency": {
+            "type": "string",
+            "enum": [
+              "never",
+              "occasional",
+              "frequent",
+              "daily",
+              "unknown",
+              "declined"
+            ],
+            "title": "Use Frequency",
+            "default": "unknown"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "inhaled",
+              "oral",
+              "other",
+              "unknown",
+              "declined"
+            ],
+            "title": "Route",
+            "default": "unknown"
+          },
+          "time_since_use_min": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Since Use Min"
+          },
+          "recent_exercise": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recent Exercise"
+          },
+          "sleep_hours": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 24.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sleep Hours"
+          },
+          "alcohol_co_use": {
+            "type": "string",
+            "enum": [
+              "reported",
+              "not_reported",
+              "unknown",
+              "declined"
+            ],
+            "title": "Alcohol Co Use",
+            "default": "unknown"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "History"
+      },
+      "LabImport": {
+        "properties": {
+          "study_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Study Id"
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id"
+          },
+          "source_report_artifact_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Source Report Artifact Id"
+          },
+          "measurements": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "maxItems": 16,
+            "title": "Measurements"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "study_id",
+          "session_id",
+          "source_report_artifact_id",
+          "measurements"
+        ],
+        "title": "LabImport"
+      },
+      "Profile": {
+        "properties": {
+          "age_years": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 125.0,
+                "minimum": 18.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Age Years"
+          },
+          "height_cm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 300.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height Cm"
+          },
+          "weight_kg": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 500.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Kg"
+          },
+          "bmi": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bmi"
+          },
+          "recorded_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Recorded At"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "self_report",
+              "study_measurement",
+              "synthetic"
+            ],
+            "title": "Source",
+            "default": "self_report"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "recorded_at"
+        ],
+        "title": "Profile"
+      },
+      "ProfileWrite": {
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "history": {
+            "$ref": "#/components/schemas/History"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SelfReport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "profile",
+          "history"
+        ],
+        "title": "ProfileWrite"
+      },
+      "Selection": {
+        "properties": {
+          "saliva": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saliva"
+          },
+          "eyes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eyes"
+          },
+          "cardiac": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cardiac"
+          },
+          "task": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Task"
+          },
+          "alcohol": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alcohol"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "saliva",
+          "eyes",
+          "cardiac",
+          "task",
+          "alcohol"
+        ],
+        "title": "Selection"
+      },
+      "SelfReport": {
+        "properties": {
+          "last_use_status": {
+            "type": "string",
+            "enum": [
+              "known",
+              "unknown",
+              "declined"
+            ],
+            "title": "Last Use Status"
+          },
+          "last_use_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Use At"
+          },
+          "confirmed_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Confirmed At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "last_use_status",
+          "last_use_at",
+          "confirmed_at"
+        ],
+        "title": "SelfReport"
+      },
+      "StartAuthorization": {
+        "properties": {
+          "attempt_id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Attempt Id"
+          },
+          "device_boot_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Device Boot Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "device_boot_id"
+        ],
+        "title": "StartAuthorization"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Withdrawal": {
+        "properties": {
+          "confirmation": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirmation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "confirmation"
+        ],
+        "title": "Withdrawal"
+      },
+      "SyntheticAnalyte": {
+        "additionalProperties": false,
+        "properties": {
+          "analyte": {
+            "enum": [
+              "delta9_thc",
+              "11_hydroxy_thc",
+              "thc_cooh"
+            ],
+            "title": "Analyte",
+            "type": "string"
+          },
+          "qualifier": {
+            "enum": [
+              "quantified",
+              "not_detected"
+            ],
+            "title": "Qualifier",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "const": "ng/mL",
+            "title": "Unit",
+            "type": "string"
+          },
+          "lod": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Lod",
+            "type": "number"
+          },
+          "loq": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Loq",
+            "type": "number"
+          },
+          "uloq": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Uloq",
+            "type": "number"
+          }
+        },
+        "required": [
+          "analyte",
+          "qualifier",
+          "value",
+          "unit",
+          "lod",
+          "loq",
+          "uloq"
+        ],
+        "title": "Analyte",
+        "type": "object"
+      },
+      "SyntheticAssociation": {
+        "additionalProperties": false,
+        "properties": {
+          "peripheralId": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Peripheralid",
+            "type": "string"
+          },
+          "deviceId": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Deviceid",
+            "type": "string"
+          },
+          "bootId": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Bootid",
+            "type": "string"
+          },
+          "hardwareRevision": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Hardwarerevision",
+            "type": "string"
+          },
+          "firmwareVersion": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Firmwareversion",
+            "type": "string"
+          },
+          "protocolVersion": {
+            "const": 1,
+            "title": "Protocolversion",
+            "type": "integer"
+          },
+          "source": {
+            "const": "simulated",
+            "title": "Source",
+            "type": "string"
+          },
+          "verifiedBindingId": {
+            "title": "Verifiedbindingid",
+            "type": "null"
+          },
+          "transport": {
+            "enum": [
+              "ble_unprovisioned",
+              "local_simulator"
+            ],
+            "title": "Transport",
+            "type": "string"
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/SyntheticSyntheticCapabilities"
+          }
+        },
+        "required": [
+          "peripheralId",
+          "deviceId",
+          "bootId",
+          "hardwareRevision",
+          "firmwareVersion",
+          "protocolVersion",
+          "source",
+          "verifiedBindingId",
+          "transport",
+          "capabilities"
+        ],
+        "title": "Association",
+        "type": "object"
+      },
+      "SyntheticClockEvidence": {
+        "additionalProperties": false,
+        "properties": {
+          "policy_id": {
+            "const": "synthetic_interval_v1",
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "source": {
+            "const": "simulated",
+            "title": "Source",
+            "type": "string"
+          },
+          "boot_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Boot Id",
+            "type": "string"
+          },
+          "exchanges": {
+            "items": {
+              "$ref": "#/components/schemas/SyntheticClockExchange"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Exchanges",
+            "type": "array"
+          },
+          "selected_exchange": {
+            "maximum": 2,
+            "minimum": 0,
+            "title": "Selected Exchange",
+            "type": "integer"
+          },
+          "offset_ms": {
+            "title": "Offset Ms",
+            "type": "number"
+          },
+          "uncertainty_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Uncertainty Ms",
+            "type": "number"
+          },
+          "calibrated": {
+            "const": false,
+            "title": "Calibrated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "policy_id",
+          "source",
+          "boot_id",
+          "exchanges",
+          "selected_exchange",
+          "offset_ms",
+          "uncertainty_ms",
+          "calibrated"
+        ],
+        "title": "ClockEvidence",
+        "type": "object"
+      },
+      "SyntheticClockExchange": {
+        "additionalProperties": false,
+        "properties": {
+          "phone_send_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Phone Send Ms",
+            "type": "number"
+          },
+          "device_receive_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Device Receive Ms",
+            "type": "number"
+          },
+          "device_send_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Device Send Ms",
+            "type": "number"
+          },
+          "phone_receive_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Phone Receive Ms",
+            "type": "number"
+          },
+          "phone_timestamp_resolution_ms": {
+            "exclusiveMinimum": 0,
+            "maximum": 1000,
+            "title": "Phone Timestamp Resolution Ms",
+            "type": "number"
+          },
+          "device_timestamp_resolution_ms": {
+            "exclusiveMinimum": 0,
+            "maximum": 1000,
+            "title": "Device Timestamp Resolution Ms",
+            "type": "number"
+          },
+          "offset_lower_ms": {
+            "title": "Offset Lower Ms",
+            "type": "number"
+          },
+          "offset_upper_ms": {
+            "title": "Offset Upper Ms",
+            "type": "number"
+          },
+          "round_trip_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Round Trip Ms",
+            "type": "number"
+          }
+        },
+        "required": [
+          "phone_send_ms",
+          "device_receive_ms",
+          "device_send_ms",
+          "phone_receive_ms",
+          "phone_timestamp_resolution_ms",
+          "device_timestamp_resolution_ms",
+          "offset_lower_ms",
+          "offset_upper_ms",
+          "round_trip_ms"
+        ],
+        "title": "ClockExchange",
+        "type": "object"
+      },
+      "SyntheticEcg": {
+        "additionalProperties": false,
+        "properties": {
+          "heart_rate_bpm": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Heart Rate Bpm",
+            "type": "number"
+          },
+          "duration_seconds": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Duration Seconds",
+            "type": "number"
+          },
+          "method": {
+            "const": "ecg",
+            "title": "Method",
+            "type": "string"
+          },
+          "sample_rate_hz": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sample Rate Hz",
+            "type": "number"
+          },
+          "lead_count": {
+            "const": 1,
+            "title": "Lead Count",
+            "type": "integer"
+          },
+          "units": {
+            "const": "arbitrary_counts",
+            "title": "Units",
+            "type": "string"
+          },
+          "samples": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 200,
+            "minItems": 200,
+            "title": "Samples",
+            "type": "array"
+          }
+        },
+        "required": [
+          "heart_rate_bpm",
+          "duration_seconds",
+          "method",
+          "sample_rate_hz",
+          "lead_count",
+          "units",
+          "samples"
+        ],
+        "title": "Ecg",
+        "type": "object"
+      },
+      "SyntheticMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "protocol_version": {
+            "const": 1,
+            "title": "Protocol Version",
+            "type": "integer"
+          },
+          "message_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Message Id",
+            "type": "string"
+          },
+          "device_id": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Device Id",
+            "type": "string"
+          },
+          "boot_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Boot Id",
+            "type": "string"
+          },
+          "session_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Monotonic Ms",
+            "type": "number"
+          },
+          "type": {
+            "enum": [
+              "ack",
+              "hello",
+              "clock_sync",
+              "capture_complete"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          }
+        },
+        "required": [
+          "protocol_version",
+          "message_id",
+          "device_id",
+          "boot_id",
+          "session_id",
+          "sequence",
+          "monotonic_ms",
+          "type",
+          "payload"
+        ],
+        "title": "Message",
+        "type": "object"
+      },
+      "SyntheticPpg": {
+        "additionalProperties": false,
+        "properties": {
+          "heart_rate_bpm": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Heart Rate Bpm",
+            "type": "number"
+          },
+          "duration_seconds": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Duration Seconds",
+            "type": "number"
+          },
+          "method": {
+            "const": "ppg",
+            "title": "Method",
+            "type": "string"
+          }
+        },
+        "required": [
+          "heart_rate_bpm",
+          "duration_seconds",
+          "method"
+        ],
+        "title": "Ppg",
+        "type": "object"
+      },
+      "SyntheticSaliva": {
+        "additionalProperties": false,
+        "properties": {
+          "specimen": {
+            "const": "oral_fluid",
+            "title": "Specimen",
+            "type": "string"
+          },
+          "assay_id": {
+            "const": "synthetic_assay_v1",
+            "title": "Assay Id",
+            "type": "string"
+          },
+          "analytes": {
+            "items": {
+              "$ref": "#/components/schemas/SyntheticAnalyte"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Analytes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "specimen",
+          "assay_id",
+          "analytes"
+        ],
+        "title": "Saliva",
+        "type": "object"
+      },
+      "SyntheticSyntheticCapabilities": {
+        "additionalProperties": false,
+        "properties": {
+          "protocol_version": {
+            "const": 1,
+            "title": "Protocol Version",
+            "type": "integer"
+          },
+          "encodings": {
+            "items": {
+              "const": 1,
+              "type": "integer"
+            },
+            "maxItems": 1,
+            "minItems": 1,
+            "title": "Encodings",
+            "type": "array"
+          },
+          "max_logical_bytes": {
+            "const": 8192,
+            "title": "Max Logical Bytes",
+            "type": "integer"
+          },
+          "max_att_bytes": {
+            "maximum": 512,
+            "minimum": 20,
+            "title": "Max Att Bytes",
+            "type": "integer"
+          },
+          "source": {
+            "const": "simulated",
+            "title": "Source",
+            "type": "string"
+          },
+          "device_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Device Id",
+            "type": "string"
+          },
+          "boot_id": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Boot Id",
+            "type": "string"
+          },
+          "hardware_revision": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Hardware Revision",
+            "type": "string"
+          },
+          "firmware_version": {
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Firmware Version",
+            "type": "string"
+          },
+          "channels": {
+            "items": {
+              "enum": [
+                "ppg",
+                "ecg",
+                "saliva"
+              ],
+              "type": "string"
+            },
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Channels",
+            "type": "array"
+          },
+          "configuration_id": {
+            "const": "synthetic_bench_v1",
+            "title": "Configuration Id",
+            "type": "string"
+          },
+          "calibration_status": {
+            "const": "not_applicable",
+            "title": "Calibration Status",
+            "type": "string"
+          },
+          "timestamp_resolution_ms": {
+            "exclusiveMinimum": 0,
+            "maximum": 1000,
+            "title": "Timestamp Resolution Ms",
+            "type": "number"
+          }
+        },
+        "required": [
+          "protocol_version",
+          "encodings",
+          "max_logical_bytes",
+          "max_att_bytes",
+          "source",
+          "device_id",
+          "boot_id",
+          "hardware_revision",
+          "firmware_version",
+          "channels",
+          "configuration_id",
+          "calibration_status",
+          "timestamp_resolution_ms"
+        ],
+        "title": "SyntheticCapabilities",
+        "type": "object"
+      },
+      "SyntheticSyntheticContext": {
+        "additionalProperties": false,
+        "properties": {
+          "sessionId": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Sessionid",
+            "type": "string"
+          },
+          "attemptId": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Attemptid",
+            "type": "string"
+          },
+          "captureId": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Captureid",
+            "type": "string"
+          },
+          "workspaceEpoch": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Workspaceepoch",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sessionId",
+          "attemptId",
+          "captureId",
+          "workspaceEpoch"
+        ],
+        "title": "SyntheticContext",
+        "type": "object"
+      },
+      "SyntheticDeviceCapture": {
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "const": "simulated",
+            "title": "Source",
+            "type": "string"
+          },
+          "channel": {
+            "enum": [
+              "ppg",
+              "ecg",
+              "saliva"
+            ],
+            "title": "Channel",
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/SyntheticSyntheticContext"
+          },
+          "association": {
+            "$ref": "#/components/schemas/SyntheticAssociation"
+          },
+          "clockEvidence": {
+            "$ref": "#/components/schemas/SyntheticClockEvidence"
+          },
+          "startedAt": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Startedat",
+            "type": "string"
+          },
+          "endedAt": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+            "title": "Endedat",
+            "type": "string"
+          },
+          "deviceStartedMonotonicMs": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Devicestartedmonotonicms",
+            "type": "number"
+          },
+          "deviceEndedMonotonicMs": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Deviceendedmonotonicms",
+            "type": "number"
+          },
+          "values": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SyntheticPpg"
+              },
+              {
+                "$ref": "#/components/schemas/SyntheticEcg"
+              },
+              {
+                "$ref": "#/components/schemas/SyntheticSaliva"
+              }
+            ],
+            "title": "Values"
+          },
+          "fixtureId": {
+            "const": "synthetic_bench_v1",
+            "title": "Fixtureid",
+            "type": "string"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/SyntheticMessage"
+            },
+            "maxItems": 32,
+            "minItems": 10,
+            "title": "Messages",
+            "type": "array"
+          },
+          "evidenceSha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Evidencesha256",
+            "type": "string"
+          },
+          "qualityFlags": {
+            "items": {
+              "enum": [
+                "SIMULATED",
+                "UNVERIFIED_DEVICE"
+              ],
+              "type": "string"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Qualityflags",
+            "type": "array"
+          },
+          "modelEligible": {
+            "const": false,
+            "title": "Modeleligible",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source",
+          "channel",
+          "context",
+          "association",
+          "clockEvidence",
+          "startedAt",
+          "endedAt",
+          "deviceStartedMonotonicMs",
+          "deviceEndedMonotonicMs",
+          "values",
+          "fixtureId",
+          "messages",
+          "evidenceSha256",
+          "qualityFlags",
+          "modelEligible"
+        ],
+        "title": "SyntheticDeviceCapture",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "BearerAccess": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT access token",
+        "description": "Pinned issuer/client, access token_use, current token family and owner generation are verified on every operation."
+      }
+    }
+  }
+}

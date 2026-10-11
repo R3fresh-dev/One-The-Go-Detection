@@ -1,0 +1,125 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import actualConfig from "../testfixtures/backend-app-config.json";
+import actualCapabilities from "../testfixtures/backend-capabilities.json";
+import {
+  ApiClient,
+  isOrdinaryWrite,
+  parseAppConfig,
+  parseCapabilities,
+  syncReadiness,
+} from "../src/services/api";
+import { clone } from "../src/core/integrity";
+
+const expected = {
+  environment: "test",
+  issuer: "http://localhost:8081",
+  clientId: "otgd-local-mobile",
+};
+test("actual backend app-config and capabilities responses decode without removing mandatory fields", () => {
+  const config = parseAppConfig(actualConfig, expected),
+    caps = parseCapabilities(actualCapabilities);
+  assert.equal(config.notice.mandatory, true);
+  assert.equal(caps.notice.mandatory, true);
+  assert.equal(caps.notice.acknowledged, true);
+  assert.equal(syncReadiness(config, "0.2.0").allowed, true);
+  assert.equal(caps.account_ref, actualCapabilities.account_ref);
+  assert.throws(
+    () =>
+      parseAppConfig(
+        {
+          ...actualConfig,
+          notice: { ...actualConfig.notice, mandatory: "true" },
+        },
+        expected,
+      ),
+    /notice metadata/,
+  );
+  assert.throws(
+    () =>
+      parseCapabilities({ ...actualCapabilities, inference_available: true }),
+    /unsupported/,
+  );
+});
+
+test("unsupported app version, minimum version or contract pauses synchronization; maintenance is separate", () => {
+  const config = parseAppConfig(actualConfig, expected);
+  assert.equal(syncReadiness(null, "0.2.0").code, "config_required");
+  assert.equal(
+    syncReadiness({ ...config, supported_app_versions: ["0.3.0"] }, "0.2.0")
+      .code,
+    "update_required",
+  );
+  assert.equal(
+    syncReadiness({ ...config, minimum_app_version: "0.3.0" }, "0.2.0").code,
+    "update_required",
+  );
+  const changed = clone(config);
+  changed.contract_versions.capture_evidence = ["2.0.0"];
+  assert.equal(syncReadiness(changed, "0.2.0").code, "update_required");
+  assert.equal(
+    syncReadiness({ ...config, maintenance: true }, "0.2.0").code,
+    "maintenance",
+  );
+  assert.equal(
+    syncReadiness({ ...config, minimum_app_version: "0.1.99" }, "0.2.0").code,
+    "ready",
+  );
+});
+
+test("maintenance blocks an ordinary HTTP write before fetch and preserves exact privacy escape routes", async () => {
+  const oldFetch = globalThis.fetch,
+    calls: { url: string; init: RequestInit }[] = [];
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url: String(url), init: init! });
+    return new Response("{}", {
+      headers: { "Content-Type": "application/json" },
+    });
+  };
+  try {
+    const client = new ApiClient(
+      "https://api.example.test",
+      { accessToken: async () => "access" },
+      "0.2.0",
+      () => ({
+        allowed: false,
+        code: "maintenance",
+        message: "Maintenance in progress.",
+      }),
+    );
+    await assert.rejects(
+      client.request("/v1/sessions", {
+        method: "POST",
+        generation: 1,
+        key: "stable",
+        body: {},
+      }),
+      /Maintenance/,
+    );
+    assert.equal(calls.length, 0);
+    for (const path of [
+      "/v1/me/acknowledgments",
+      "/v1/privacy/exports",
+      "/v1/privacy/deletion-requests",
+      "/v1/me/data-generation/acknowledgments",
+      "/v1/studies/study/withdrawals",
+      "/v1/auth/logout",
+    ])
+      await client.request(path, {
+        method: "POST",
+        generation: 1,
+        key: "stable",
+        body: {},
+      });
+    await client.request("/v1/sessions/session");
+    assert.equal(calls.length, 7);
+    for (const call of calls)
+      assert.equal(
+        (call.init.headers as Record<string, string>)["X-App-Version"],
+        "0.2.0",
+      );
+    assert.equal(isOrdinaryWrite("/v1/studies/study/consents", "POST"), true);
+  } finally {
+    globalThis.fetch = oldFetch;
+  }
+});

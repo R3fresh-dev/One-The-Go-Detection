@@ -1,0 +1,155 @@
+name: Android iOS and simulator firmware
+
+on:
+  pull_request:
+    paths: ['apps/mobile/**', 'firmware/**', 'openspec/changes/production-mobile-platform/fixtures/**', '.github/workflows/native-build.yml']
+  push:
+    branches: [main]
+    paths: ['apps/mobile/**', 'firmware/**', 'openspec/changes/production-mobile-platform/fixtures/**', '.github/workflows/native-build.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: '1'
+  APP_ENV: local
+  EXPO_NO_TELEMETRY: '1'
+
+jobs:
+  shared-and-firmware:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, official ref verified 2026-10-11
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - run: npm ci
+        working-directory: apps/mobile
+      - run: npm run typecheck
+        working-directory: apps/mobile
+      - run: node --import tsx --test tests/*.test.ts src/device/tests/*.test.ts
+        working-directory: apps/mobile
+      - run: node modules/scripts/verify-native-assets.mjs
+        working-directory: apps/mobile
+      - name: Compile and execute portable firmware protocol tests
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Werror firmware/tests/protocol_core_test.cpp -o "$RUNNER_TEMP/otgd-protocol-test"
+          "$RUNNER_TEMP/otgd-protocol-test"
+      - name: Install pinned Arduino CLI with release checksum
+        run: |
+          mkdir -p "$RUNNER_TEMP/otgd-arduino"
+          curl --fail --location --retry 2 https://github.com/arduino/arduino-cli/releases/download/v1.5.1/arduino-cli_1.5.1_Linux_64bit.tar.gz -o "$RUNNER_TEMP/otgd-arduino/cli.tar.gz"
+          echo "28a8e119c498a25607821c36cb2dc49e8463941b261a0d99091baa7bc692dd2b  $RUNNER_TEMP/otgd-arduino/cli.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/otgd-arduino/cli.tar.gz" -C "$RUNNER_TEMP/otgd-arduino"
+          echo "$RUNNER_TEMP/otgd-arduino" >> "$GITHUB_PATH"
+      - name: Compile Nano ESP32 synthetic peripheral
+        run: |
+          python3 -m venv "$RUNNER_TEMP/otgd-arduino-python"
+          "$RUNNER_TEMP/otgd-arduino-python/bin/pip" install pyserial==3.5
+          export PATH="$RUNNER_TEMP/otgd-arduino-python/bin:$PATH"
+          arduino-cli core update-index
+          arduino-cli core install arduino:esp32@2.0.18-arduino.5
+          arduino-cli lib install ArduinoJson@7.4.2
+          arduino-cli compile --fqbn arduino:esp32:nano_nora --warnings all --output-dir firmware/build/nano_esp32 firmware/nano_esp32_ble_simulator
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: nano-esp32-synthetic-firmware
+          path: firmware/build/nano_esp32/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Evidence boundary
+        run: echo 'Firmware compiled for the actual board package. This job does not flash a board, test radio behavior, qualify sensing hardware or establish impairment prediction.' >> "$GITHUB_STEP_SUMMARY"
+
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      EXPO_PUBLIC_API_URL: http://10.0.2.2:8000
+      EXPO_PUBLIC_OAUTH_ISSUER: http://10.0.2.2:8081
+      EXPO_PUBLIC_OAUTH_CLIENT_ID: otgd-local-mobile
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: npm ci
+        working-directory: apps/mobile
+      - run: node modules/scripts/verify-native-assets.mjs
+        working-directory: apps/mobile
+      - name: Generate Android project from committed configuration
+        run: node node_modules/expo/bin/cli prebuild --platform android --no-install
+        working-directory: apps/mobile
+      - name: Require Android SDK 36
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Compile native modules, run Kotlin golden suites, build debug APK
+        run: ./gradlew --no-daemon --max-workers=2 -PreactNativeDevServerPort=8082 -PreactNativeArchitectures=arm64-v8a,x86_64 :otgd-reaction-task:testDebugUnitTest :app:assembleDebug
+        working-directory: apps/mobile/android
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: android-debug-apk
+          path: apps/mobile/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: android-native-test-reports
+          path: apps/mobile/modules/reaction-task/android/build/reports/tests/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Evidence boundary
+        run: echo 'Android native code and Kotlin fixture tests compiled and the debug APK was built. The development APK uses Metro; no store signing, physical latency calibration, Bluetooth bench run or human sensing is claimed.' >> "$GITHUB_STEP_SUMMARY"
+
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.4.1.app/Contents/Developer
+      EXPO_PUBLIC_API_URL: http://localhost:8000
+      EXPO_PUBLIC_OAUTH_ISSUER: http://localhost:8081
+      EXPO_PUBLIC_OAUTH_CLIENT_ID: otgd-local-mobile
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - name: Require reviewed Xcode toolchain
+        run: xcodebuild -version
+      - run: npm ci
+        working-directory: apps/mobile
+      - run: node modules/scripts/verify-native-assets.mjs
+        working-directory: apps/mobile
+      - name: Run actual Swift core golden suites on macOS
+        run: swift test --package-path apps/mobile/modules/reaction-task
+      - name: Generate and install iOS native project dependencies
+        run: |
+          node node_modules/expo/bin/cli prebuild --platform ios --no-install
+          pod install --project-directory=ios
+        working-directory: apps/mobile
+      - name: Compile the complete iOS simulator application
+        run: python3 modules/scripts/build_ios.py
+        working-directory: apps/mobile
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ios-simulator-app
+          path: apps/mobile/native-build/otgd-ios-simulator.app.zip
+          if-no-files-found: error
+          retention-days: 14
+      - name: Evidence boundary
+        run: echo 'Swift fixture suites and the iOS simulator application compiled using Xcode 26.4.1. This simulator artifact is unsigned, is not an iPhone/TestFlight build, and does not establish physical timing, camera, Bluetooth or sensing qualification.' >> "$GITHUB_STEP_SUMMARY"

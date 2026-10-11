@@ -1,0 +1,48 @@
+{
+  "account_ref": "233b7bb6-dca9-4f83-b08f-1b6fe8dcea0e",
+  "data_generation": 1,
+  "account_state": "active",
+  "server_time": "2026-10-11T03:36:06.235Z",
+  "notice": {
+    "version": "v1",
+    "sha256": "d7cbc95af587b78603d5c1f7158eebe227f67289100f99f9763f01b30b45f12c",
+    "locale": "en",
+    "content_path": "/v1/notices/v1",
+    "mandatory": true,
+    "acknowledged": true
+  },
+  "inference_available": false,
+  "channels": {
+    "saliva": {
+      "available": false,
+      "reason_codes": [
+        "NO_QUALIFIED_CONFIGURATION"
+      ]
+    },
+    "eyes": {
+      "available": false,
+      "reason_codes": [
+        "NO_QUALIFIED_CONFIGURATION"
+      ]
+    },
+    "cardiac": {
+      "available": false,
+      "reason_codes": [
+        "NO_QUALIFIED_CONFIGURATION"
+      ]
+    },
+    "ecg": {
+      "available": false,
+      "reason_codes": [
+        "NO_QUALIFIED_CONFIGURATION"
+      ]
+    },
+    "alcohol": {
+      "available": false,
+      "reason_codes": [
+        "NO_QUALIFIED_CONFIGURATION"
+      ]
+    }
+  },
+  "studies": []
+}

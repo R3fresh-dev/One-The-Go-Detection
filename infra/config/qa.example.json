@@ -1,0 +1,21 @@
+{
+  "environment": "qa",
+  "account": "REPLACE_WITH_QA_AWS_ACCOUNT",
+  "region": "us-east-2",
+  "vpcCidr": "10.72.0.0/16",
+  "domain": "REPLACE_WITH_QA_API_DOMAIN",
+  "certificateArn": "REPLACE_WITH_ISSUED_REGIONAL_ACM_ARN",
+  "cognitoDomainPrefix": "REPLACE_WITH_UNIQUE_QA_PREFIX",
+  "oauthRedirectUris": ["otgd-qa://oauth/callback"],
+  "oauthLogoutUris": ["otgd-qa://oauth/callback"],
+  "imageDigest": "REPLACE_WITH_SIGNED_RELEASE_SHA256_DIGEST",
+  "releaseId": "REPLACE_WITH_REVIEWED_GIT_COMMIT",
+  "monthlyBudgetUsd": 0,
+  "alarmEmail": "REPLACE_WITH_ACTUAL_OPERATOR_DESTINATION",
+  "ownerRole": "REPLACE_WITH_ACCOUNTABLE_OPERATOR_ROLE",
+  "costCenter": "REPLACE_WITH_APPROVED_COST_CENTER",
+  "costEstimatePath": "costs/us-east-2-estimate.json",
+  "databaseEngineVersion": "16.14",
+  "activateServices": false,
+  "recoveryRequired": false
+}

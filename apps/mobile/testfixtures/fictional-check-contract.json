@@ -1,0 +1,595 @@
+{
+  "alcohol": {
+    "boot_id": "fictional-boot",
+    "calibration_id": "fictional-calibration",
+    "collected_at": "2026-10-11T00:00:00.000Z",
+    "configuration_hash": "a4d73ee2904f05b23f70acefa30c32b3e7611a3c5935aa73ce73c02248ede395",
+    "device_id": "fictional-breath-instrument",
+    "limits": {
+      "lod_mg_l": 0.01,
+      "loq_mg_l": 0.02,
+      "upper_mg_l": 1
+    },
+    "measured_at": "2026-10-11T00:00:00.000Z",
+    "measurement_id": "77777777-7777-4777-8777-000000000015",
+    "method_id": "fictional-alcohol-ppg-v1",
+    "qualifier": "quantified",
+    "quality_flags": [
+      "FICTIONAL_FIXTURE"
+    ],
+    "schema_version": "1.0.0",
+    "session_id": "77777777-7777-4777-8777-000000000001",
+    "source": "simulated",
+    "unit": "mg/L",
+    "value_mg_l": 0.1
+  },
+  "attempts": [
+    {
+      "artifact_refs": [],
+      "attempt_id": "77777777-7777-4777-8777-000000000004",
+      "attestation_refs": [],
+      "component": "saliva",
+      "component_metadata": {
+        "fixture_id": "fictional-saliva-ppg-v1",
+        "projection": {
+          "saliva": [
+            {
+              "analyte": "THC",
+              "assay_basis": "free",
+              "calibration_id": "fictional-calibration-v1",
+              "cartridge_lot": "FICTIONAL-LOT",
+              "collected_at": "2026-10-11T00:00:00.000Z",
+              "concentration_basis": "neat_oral_fluid",
+              "correction_status": "not_corrected",
+              "instrument_id": "fictional-reader",
+              "limits": {
+                "lod_ng_ml": 1,
+                "loq_ng_ml": 2,
+                "upper_ng_ml": 100
+              },
+              "measured_at": "2026-10-11T00:00:00.000Z",
+              "measurement_id": "77777777-7777-4777-8777-000000000007",
+              "method_id": "fictional-saliva-ppg-v1",
+              "operator_ref": null,
+              "original_report": {
+                "qualifier": "quantified",
+                "unit": "ng/mL",
+                "value": 12.5
+              },
+              "qualifier": "quantified",
+              "quality_flags": [
+                "FICTIONAL_FIXTURE"
+              ],
+              "sample_id": "77777777-7777-4777-8777-000000000006",
+              "schema_version": "0.1.0",
+              "source": "simulated",
+              "uncertainty_ng_ml": null,
+              "unit": "ng/mL",
+              "value_ng_ml": 12.5
+            },
+            {
+              "analyte": "THC_COOH",
+              "assay_basis": "free",
+              "calibration_id": null,
+              "cartridge_lot": null,
+              "collected_at": "2026-10-11T00:00:00.000Z",
+              "concentration_basis": "neat_oral_fluid",
+              "correction_status": "not_corrected",
+              "instrument_id": null,
+              "limits": {
+                "lod_ng_ml": null,
+                "loq_ng_ml": null,
+                "upper_ng_ml": null
+              },
+              "measured_at": null,
+              "measurement_id": "77777777-7777-4777-8777-000000000008",
+              "method_id": null,
+              "operator_ref": null,
+              "original_report": {
+                "qualifier": "not_measured",
+                "unit": "ng/mL",
+                "value": null
+              },
+              "qualifier": "not_measured",
+              "quality_flags": [
+                "FICTIONAL_FIXTURE"
+              ],
+              "sample_id": "77777777-7777-4777-8777-000000000006",
+              "schema_version": "0.1.0",
+              "source": "simulated",
+              "uncertainty_ng_ml": null,
+              "unit": "ng/mL",
+              "value_ng_ml": null
+            },
+            {
+              "analyte": "OH11_THC",
+              "assay_basis": "free",
+              "calibration_id": null,
+              "cartridge_lot": null,
+              "collected_at": "2026-10-11T00:00:00.000Z",
+              "concentration_basis": "neat_oral_fluid",
+              "correction_status": "not_corrected",
+              "instrument_id": null,
+              "limits": {
+                "lod_ng_ml": null,
+                "loq_ng_ml": null,
+                "upper_ng_ml": null
+              },
+              "measured_at": null,
+              "measurement_id": "77777777-7777-4777-8777-000000000009",
+              "method_id": null,
+              "operator_ref": null,
+              "original_report": {
+                "qualifier": "not_measured",
+                "unit": "ng/mL",
+                "value": null
+              },
+              "qualifier": "not_measured",
+              "quality_flags": [
+                "FICTIONAL_FIXTURE"
+              ],
+              "sample_id": "77777777-7777-4777-8777-000000000006",
+              "schema_version": "0.1.0",
+              "source": "simulated",
+              "uncertainty_ng_ml": null,
+              "unit": "ng/mL",
+              "value_ng_ml": null
+            }
+          ],
+          "sample": {
+            "collected_at": "2026-10-11T00:00:00.000Z",
+            "collection_method_id": "fictional-saliva-ppg-v1",
+            "dilution_factor": 1,
+            "quality_flags": [
+              "FICTIONAL_FIXTURE"
+            ],
+            "sample_id": "77777777-7777-4777-8777-000000000006",
+            "status": "valid",
+            "volume_ml": 1
+          }
+        }
+      },
+      "configuration_hash": "97b230e3374a5e5ad9e6f66b95fdd041ce2e603c07a72f75638413591667128a",
+      "configuration_id": "fictional-saliva-ppg-v1",
+      "ended_at": "2026-10-11T00:00:00.000Z",
+      "quality_flags": [
+        "FICTIONAL_FIXTURE"
+      ],
+      "record_id": "77777777-7777-4777-8777-000000000006",
+      "schema_version": "1.0.0",
+      "session_id": "77777777-7777-4777-8777-000000000001",
+      "source": "simulated",
+      "started_at": "2026-10-11T00:00:00.000Z",
+      "status": "valid",
+      "supersedes_attempt_id": null
+    },
+    {
+      "artifact_refs": [],
+      "attempt_id": "77777777-7777-4777-8777-000000000010",
+      "attestation_refs": [],
+      "component": "eyes",
+      "component_metadata": {
+        "fixture_id": "fictional-eyes-ppg-v1",
+        "projection": {
+          "baseline_diameter_mm": null,
+          "camera_id": "fictional-camera",
+          "capture_config_id": "fictional-eyes-ppg-v1",
+          "ended_at": "2026-10-11T00:00:00.000Z",
+          "frame_rate_hz": 60,
+          "latency_ms": 280,
+          "quality_flags": [
+            "FICTIONAL_FIXTURE"
+          ],
+          "raw_artifact_id": null,
+          "relative_constriction": 0.18,
+          "scale_basis": "normalized",
+          "source": "simulated",
+          "started_at": "2026-10-11T00:00:00.000Z",
+          "status": "valid"
+        }
+      },
+      "configuration_hash": "c97981906b2c63621aaa4efa27e5371a1974b5751254f19d96a8420ee8a9e6cc",
+      "configuration_id": "fictional-eyes-ppg-v1",
+      "ended_at": "2026-10-11T00:00:00.000Z",
+      "quality_flags": [
+        "FICTIONAL_FIXTURE"
+      ],
+      "record_id": "77777777-7777-4777-8777-000000000011",
+      "schema_version": "1.0.0",
+      "session_id": "77777777-7777-4777-8777-000000000001",
+      "source": "simulated",
+      "started_at": "2026-10-11T00:00:00.000Z",
+      "status": "valid",
+      "supersedes_attempt_id": null
+    },
+    {
+      "artifact_refs": [],
+      "attempt_id": "77777777-7777-4777-8777-000000000012",
+      "attestation_refs": [],
+      "component": "cardiac",
+      "component_metadata": {
+        "fixture_id": "fictional-cardiac-ecg-v1",
+        "modality": "ecg",
+        "projection": {
+          "acquisition_config_id": "fictional-cardiac-ecg-v1",
+          "ecg_rmssd_ms": 35,
+          "ecg_status": "valid",
+          "ended_at": "2026-10-11T00:00:00.000Z",
+          "heart_rate_bpm": 72,
+          "modality": "ecg",
+          "quality_flags": [
+            "FICTIONAL_FIXTURE"
+          ],
+          "raw_artifact_id": null,
+          "sample_rate_hz": 250,
+          "source": "simulated",
+          "started_at": "2026-10-11T00:00:00.000Z",
+          "status": "valid"
+        }
+      },
+      "configuration_hash": "6e24b3abc6e85fccf060d7ff5df06f7b407a590109524ef63eb30b020f4c779d",
+      "configuration_id": "fictional-cardiac-ecg-v1",
+      "ended_at": "2026-10-11T00:00:00.000Z",
+      "quality_flags": [
+        "FICTIONAL_FIXTURE"
+      ],
+      "record_id": "77777777-7777-4777-8777-000000000013",
+      "schema_version": "1.0.0",
+      "session_id": "77777777-7777-4777-8777-000000000001",
+      "source": "simulated",
+      "started_at": "2026-10-11T00:00:00.000Z",
+      "status": "valid",
+      "supersedes_attempt_id": null
+    },
+    {
+      "artifact_refs": [],
+      "attempt_id": "77777777-7777-4777-8777-000000000014",
+      "attestation_refs": [],
+      "component": "alcohol",
+      "component_metadata": {
+        "fixture_id": "fictional-alcohol-ppg-v1",
+        "projection": {
+          "boot_id": "fictional-boot",
+          "calibration_id": "fictional-calibration",
+          "collected_at": "2026-10-11T00:00:00.000Z",
+          "configuration_hash": "a4d73ee2904f05b23f70acefa30c32b3e7611a3c5935aa73ce73c02248ede395",
+          "device_id": "fictional-breath-instrument",
+          "limits": {
+            "lod_mg_l": 0.01,
+            "loq_mg_l": 0.02,
+            "upper_mg_l": 1
+          },
+          "measured_at": "2026-10-11T00:00:00.000Z",
+          "measurement_id": "77777777-7777-4777-8777-000000000015",
+          "method_id": "fictional-alcohol-ppg-v1",
+          "qualifier": "quantified",
+          "quality_flags": [
+            "FICTIONAL_FIXTURE"
+          ],
+          "schema_version": "1.0.0",
+          "session_id": "77777777-7777-4777-8777-000000000001",
+          "source": "simulated",
+          "unit": "mg/L",
+          "value_mg_l": 0.1
+        }
+      },
+      "configuration_hash": "a4d73ee2904f05b23f70acefa30c32b3e7611a3c5935aa73ce73c02248ede395",
+      "configuration_id": "fictional-alcohol-ppg-v1",
+      "ended_at": "2026-10-11T00:00:00.000Z",
+      "quality_flags": [
+        "FICTIONAL_FIXTURE"
+      ],
+      "record_id": "77777777-7777-4777-8777-000000000015",
+      "schema_version": "1.0.0",
+      "session_id": "77777777-7777-4777-8777-000000000001",
+      "source": "simulated",
+      "started_at": "2026-10-11T00:00:00.000Z",
+      "status": "valid",
+      "supersedes_attempt_id": null
+    }
+  ],
+  "context": {
+    "baseline_refs": [],
+    "configuration_refs": [
+      {
+        "id": "choice_inhibit_v0_native_dev_1",
+        "scope": "uncalibrated_practice",
+        "sha256": "61bd03244a9f82fdc5a1a2b6658483ca201ab5d39a95e64cde0d00f1d5a666c3",
+        "version": "1.0.0"
+      }
+    ],
+    "context_confirmed_at": "2026-10-11T00:00:00.000Z",
+    "device_associations": [],
+    "history_snapshot_sha256": "d88c0743ced64f55fb9073dbbee04b75f2f397311fe596c6a53a7bbbc76ea10f",
+    "profile_snapshot_sha256": "964a2cfa205d13c3750f22977a8c99208a5e2d9e84649a5924a39bb6c2d15222",
+    "profile_version_id": null,
+    "protocol_id": "mobile-demonstration-v1",
+    "schema_version": "1.0.0",
+    "self_report_context": {
+      "confirmed_at": "2026-10-11T00:00:00.000Z",
+      "last_use_at": null,
+      "last_use_status": "unknown"
+    },
+    "session_id": "77777777-7777-4777-8777-000000000001"
+  },
+  "delivery": "local_finalized",
+  "error": null,
+  "evidence_sha256": "70341ccd214ea08b14aa1a6372bd32e7c18f69ee4846415162509b1ec12e781b",
+  "frozen": true,
+  "generation": 1,
+  "id": "77777777-7777-4777-8777-000000000001",
+  "kind": "engineering_fixture",
+  "manifest": {
+    "schema_version": "1.0.0",
+    "session_id": "77777777-7777-4777-8777-000000000001",
+    "context_sha256": "48e37d52b077488e3cfe3044bfdd21d81441e27cb009cf53b3f5b3abddabefd3",
+    "attempts": [
+      {
+        "attempt_id": "77777777-7777-4777-8777-000000000004",
+        "sha256": "8cb777624559e33e581b92d4fa8617dbdecb6c8ac034e1072e0402a32514d0d9"
+      },
+      {
+        "attempt_id": "77777777-7777-4777-8777-000000000010",
+        "sha256": "b9d89c3fd4825d8f02004664391a634c8bd0d31c0b027a39c00d7f1d634b1775"
+      },
+      {
+        "attempt_id": "77777777-7777-4777-8777-000000000012",
+        "sha256": "92a8930de8ed7b4f3861812a6f22eeb205f6be7f558de51285257d636b433908"
+      },
+      {
+        "attempt_id": "77777777-7777-4777-8777-000000000014",
+        "sha256": "905455dd0760444b4cd3e00e04e205d784fbb787136ad7f1a67de7d30ea9ec01"
+      }
+    ],
+    "selected": {
+      "saliva": "77777777-7777-4777-8777-000000000004",
+      "eyes": "77777777-7777-4777-8777-000000000010",
+      "cardiac": "77777777-7777-4777-8777-000000000012",
+      "task": null,
+      "alcohol": "77777777-7777-4777-8777-000000000014"
+    }
+  },
+  "remote_etag": "\"0\"",
+  "remote_revision": 0,
+  "result": {
+    "schema_version": "0.1.0",
+    "result_id": "77777777-7777-4777-8777-000000000016",
+    "session_id": "77777777-7777-4777-8777-000000000001",
+    "state": "measurement_only",
+    "target_at": "2026-10-11T00:00:00.000Z",
+    "evaluated_at": "2026-10-11T00:00:00.000Z",
+    "model_id": null,
+    "model_lifecycle": null,
+    "endpoint_id": null,
+    "probability": null,
+    "classification": null,
+    "operating_threshold": null,
+    "uncertainty_policy_id": null,
+    "reason_codes": [
+      "MODEL_UNAVAILABLE",
+      "SIMULATED_INPUT",
+      "DEMO_ONLY"
+    ],
+    "input_sha256": "716c1f3ad0e0699dee6a93675d18b22a0f0be786f426529982e3c929e5d6fa5b",
+    "provenance_summary": [
+      "simulated"
+    ],
+    "replaces_result_id": null
+  },
+  "selected_cardiac_attempt_id": "77777777-7777-4777-8777-000000000012",
+  "snapshot": {
+    "acquisition_span_ms": 0,
+    "baseline_ref": null,
+    "capture_completed_at": "2026-10-11T00:00:00.000Z",
+    "cardiac": {
+      "acquisition_config_id": "fictional-cardiac-ecg-v1",
+      "ecg_rmssd_ms": 35,
+      "ecg_status": "valid",
+      "ended_at": "2026-10-11T00:00:00.000Z",
+      "heart_rate_bpm": 72,
+      "modality": "ecg",
+      "quality_flags": [
+        "FICTIONAL_FIXTURE"
+      ],
+      "raw_artifact_id": null,
+      "sample_rate_hz": 250,
+      "source": "simulated",
+      "started_at": "2026-10-11T00:00:00.000Z",
+      "status": "valid"
+    },
+    "clock_uncertainty_ms": null,
+    "created_at": "2026-10-11T00:00:00.000Z",
+    "device": {
+      "boot_id": "unassociated",
+      "device_id": "unassociated",
+      "firmware_version": "unknown",
+      "hardware_revision": "unknown"
+    },
+    "eyes": {
+      "baseline_diameter_mm": null,
+      "camera_id": "fictional-camera",
+      "capture_config_id": "fictional-eyes-ppg-v1",
+      "ended_at": "2026-10-11T00:00:00.000Z",
+      "frame_rate_hz": 60,
+      "latency_ms": 280,
+      "quality_flags": [
+        "FICTIONAL_FIXTURE"
+      ],
+      "raw_artifact_id": null,
+      "relative_constriction": 0.18,
+      "scale_basis": "normalized",
+      "source": "simulated",
+      "started_at": "2026-10-11T00:00:00.000Z",
+      "status": "valid"
+    },
+    "history": {
+      "alcohol_co_use": "unknown",
+      "recent_exercise": null,
+      "route": "unknown",
+      "sleep_hours": null,
+      "time_since_use_min": null,
+      "use_frequency": "unknown"
+    },
+    "mode": "synthetic",
+    "profile": {
+      "age_years": null,
+      "bmi": null,
+      "height_cm": null,
+      "recorded_at": "2026-10-11T00:00:00.000Z",
+      "source": "synthetic",
+      "weight_kg": null
+    },
+    "protocol_id": "mobile-demonstration-v1",
+    "saliva": [
+      {
+        "analyte": "THC",
+        "assay_basis": "free",
+        "calibration_id": "fictional-calibration-v1",
+        "cartridge_lot": "FICTIONAL-LOT",
+        "collected_at": "2026-10-11T00:00:00.000Z",
+        "concentration_basis": "neat_oral_fluid",
+        "correction_status": "not_corrected",
+        "instrument_id": "fictional-reader",
+        "limits": {
+          "lod_ng_ml": 1,
+          "loq_ng_ml": 2,
+          "upper_ng_ml": 100
+        },
+        "measured_at": "2026-10-11T00:00:00.000Z",
+        "measurement_id": "77777777-7777-4777-8777-000000000007",
+        "method_id": "fictional-saliva-ppg-v1",
+        "operator_ref": null,
+        "original_report": {
+          "qualifier": "quantified",
+          "unit": "ng/mL",
+          "value": 12.5
+        },
+        "qualifier": "quantified",
+        "quality_flags": [
+          "FICTIONAL_FIXTURE"
+        ],
+        "sample_id": "77777777-7777-4777-8777-000000000006",
+        "schema_version": "0.1.0",
+        "source": "simulated",
+        "uncertainty_ng_ml": null,
+        "unit": "ng/mL",
+        "value_ng_ml": 12.5
+      },
+      {
+        "analyte": "THC_COOH",
+        "assay_basis": "free",
+        "calibration_id": null,
+        "cartridge_lot": null,
+        "collected_at": "2026-10-11T00:00:00.000Z",
+        "concentration_basis": "neat_oral_fluid",
+        "correction_status": "not_corrected",
+        "instrument_id": null,
+        "limits": {
+          "lod_ng_ml": null,
+          "loq_ng_ml": null,
+          "upper_ng_ml": null
+        },
+        "measured_at": null,
+        "measurement_id": "77777777-7777-4777-8777-000000000008",
+        "method_id": null,
+        "operator_ref": null,
+        "original_report": {
+          "qualifier": "not_measured",
+          "unit": "ng/mL",
+          "value": null
+        },
+        "qualifier": "not_measured",
+        "quality_flags": [
+          "FICTIONAL_FIXTURE"
+        ],
+        "sample_id": "77777777-7777-4777-8777-000000000006",
+        "schema_version": "0.1.0",
+        "source": "simulated",
+        "uncertainty_ng_ml": null,
+        "unit": "ng/mL",
+        "value_ng_ml": null
+      },
+      {
+        "analyte": "OH11_THC",
+        "assay_basis": "free",
+        "calibration_id": null,
+        "cartridge_lot": null,
+        "collected_at": "2026-10-11T00:00:00.000Z",
+        "concentration_basis": "neat_oral_fluid",
+        "correction_status": "not_corrected",
+        "instrument_id": null,
+        "limits": {
+          "lod_ng_ml": null,
+          "loq_ng_ml": null,
+          "upper_ng_ml": null
+        },
+        "measured_at": null,
+        "measurement_id": "77777777-7777-4777-8777-000000000009",
+        "method_id": null,
+        "operator_ref": null,
+        "original_report": {
+          "qualifier": "not_measured",
+          "unit": "ng/mL",
+          "value": null
+        },
+        "qualifier": "not_measured",
+        "quality_flags": [
+          "FICTIONAL_FIXTURE"
+        ],
+        "sample_id": "77777777-7777-4777-8777-000000000006",
+        "schema_version": "0.1.0",
+        "source": "simulated",
+        "uncertainty_ng_ml": null,
+        "unit": "ng/mL",
+        "value_ng_ml": null
+      }
+    ],
+    "sample": {
+      "collected_at": "2026-10-11T00:00:00.000Z",
+      "collection_method_id": "fictional-saliva-ppg-v1",
+      "dilution_factor": 1,
+      "quality_flags": [
+        "FICTIONAL_FIXTURE"
+      ],
+      "sample_id": "77777777-7777-4777-8777-000000000006",
+      "status": "valid",
+      "volume_ml": 1
+    },
+    "schema_version": "0.1.0",
+    "session_id": "77777777-7777-4777-8777-000000000001",
+    "study_id": null,
+    "subject_ref": "00000000-0000-4000-8000-000000000001",
+    "supersedes_session_id": null,
+    "target_at": "2026-10-11T00:00:00.000Z",
+    "task": {
+      "config_sha256": "61bd03244a9f82fdc5a1a2b6658483ca201ab5d39a95e64cde0d00f1d5a666c3",
+      "ended_at": null,
+      "events_artifact_id": null,
+      "features": {
+        "iqr_rt_ms": null,
+        "median_rt_ms": null,
+        "no_go_error_rate": null,
+        "omission_rate": null,
+        "p90_rt_ms": null,
+        "wrong_go_rate": null
+      },
+      "go_trials": 0,
+      "no_go_trials": 0,
+      "practice_trials": 0,
+      "quality_flags": [
+        "NOT_COLLECTED"
+      ],
+      "scored_trials": 0,
+      "source": "simulated",
+      "started_at": null,
+      "status": "not_collected",
+      "task_id": "77777777-7777-4777-8777-000000000003",
+      "task_version": "choice_inhibit_v0",
+      "valid_correct_go_trials": 0
+    }
+  },
+  "snapshot_sha256": "716c1f3ad0e0699dee6a93675d18b22a0f0be786f426529982e3c929e5d6fa5b",
+  "stage": "profile",
+  "updated_at": "2026-10-11T00:00:00.000Z",
+  "workspace": "local:contract-fixture"
+}

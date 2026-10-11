@@ -4,3 +4,6 @@ jsonschema==4.26.0
 referencing==0.37.0
 PyYAML==6.0.3
 openapi-spec-validator==0.8.5
+
+# Cross-language canonicalization, shared by demo and application.
+rfc8785==0.1.4

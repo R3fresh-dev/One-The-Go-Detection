@@ -1,0 +1,246 @@
+{
+  "$defs": {
+    "ConfigurationRef": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "scope": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "sha256",
+        "scope"
+      ],
+      "title": "ConfigurationRef",
+      "type": "object"
+    },
+    "DeviceAssociation": {
+      "additionalProperties": false,
+      "properties": {
+        "device_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Device Id",
+          "type": "string"
+        },
+        "binding_id": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Binding Id"
+        },
+        "boot_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "hardware_revision": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Hardware Revision",
+          "type": "string"
+        },
+        "firmware_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Firmware Version",
+          "type": "string"
+        },
+        "clock_evidence_ref": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Clock Evidence Ref"
+        }
+      },
+      "required": [
+        "device_id",
+        "boot_id",
+        "hardware_revision",
+        "firmware_version"
+      ],
+      "title": "DeviceAssociation",
+      "type": "object"
+    },
+    "SelfReport": {
+      "additionalProperties": false,
+      "properties": {
+        "last_use_status": {
+          "enum": [
+            "known",
+            "unknown",
+            "declined"
+          ],
+          "title": "Last Use Status",
+          "type": "string"
+        },
+        "last_use_at": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Use At"
+        },
+        "confirmed_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Confirmed At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "last_use_status",
+        "last_use_at",
+        "confirmed_at"
+      ],
+      "title": "SelfReport",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "context_confirmed_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Context Confirmed At",
+      "type": "string"
+    },
+    "profile_version_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Profile Version Id"
+    },
+    "profile_snapshot_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Profile Snapshot Sha256",
+      "type": "string"
+    },
+    "history_snapshot_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "History Snapshot Sha256",
+      "type": "string"
+    },
+    "protocol_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Protocol Id"
+    },
+    "configuration_refs": {
+      "items": {
+        "$ref": "#/$defs/ConfigurationRef"
+      },
+      "maxItems": 16,
+      "title": "Configuration Refs",
+      "type": "array"
+    },
+    "baseline_refs": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 8,
+      "title": "Baseline Refs",
+      "type": "array"
+    },
+    "device_associations": {
+      "items": {
+        "$ref": "#/$defs/DeviceAssociation"
+      },
+      "maxItems": 8,
+      "title": "Device Associations",
+      "type": "array"
+    },
+    "self_report_context": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SelfReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "schema_version",
+    "session_id",
+    "context_confirmed_at",
+    "profile_version_id",
+    "profile_snapshot_sha256",
+    "history_snapshot_sha256",
+    "protocol_id",
+    "configuration_refs",
+    "baseline_refs",
+    "device_associations"
+  ],
+  "title": "CaptureContext",
+  "type": "object"
+}

@@ -1,0 +1,1454 @@
+{
+  "schema_version": "1.0.0",
+  "checked_at": "2026-10-11T00:00:00Z",
+  "region": "us-east-2",
+  "currency": "USD",
+  "pricing_basis": "On-demand gross before shared free tiers/credits, tax, negotiated discounts or savings plans",
+  "unverified_rates": [],
+  "rates": {
+    "fargate_vcpu_hour": {
+      "usd": 0.04048,
+      "unit": "hours",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECS/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:25Z",
+      "sku": "UGSJ89BUWB7SMJ6A",
+      "rate_code": "UGSJ89BUWB7SMJ6A.JRTCKXETXF.6YS6EN2CT7",
+      "description": "AWS Fargate - vCPU  - US East 2 (Ohio)"
+    },
+    "fargate_gb_hour": {
+      "usd": 0.004445,
+      "unit": "hours",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECS/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:25Z",
+      "sku": "HH5EE3ZFWSFKGKWM",
+      "rate_code": "HH5EE3ZFWSFKGKWM.JRTCKXETXF.6YS6EN2CT7",
+      "description": "AWS Fargate - Memory  - US East 2 (Ohio)"
+    },
+    "alb_hour": {
+      "usd": 0.0225,
+      "unit": "Hrs",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSELB/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:45:44Z",
+      "sku": "HCVPZW9WEWSJKJWJ",
+      "rate_code": "HCVPZW9WEWSJKJWJ.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.0225 per Application LoadBalancer-hour (or partial hour)"
+    },
+    "alb_lcu_hour": {
+      "usd": 0.008,
+      "unit": "LCU-Hrs",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSELB/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:45:44Z",
+      "sku": "S3YDM2U7G69S4W5C",
+      "rate_code": "S3YDM2U7G69S4W5C.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.008 per used Application load balancer capacity unit-hour (or partial hour)"
+    },
+    "rds_qa_hour": {
+      "usd": 0.032,
+      "unit": "Hrs",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.json",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "JBDFT6PN9ME2D9FK",
+      "rate_code": "JBDFT6PN9ME2D9FK.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$ 0.032 per RDS db.t4g.small Single-AZ instance hour (or partial hour) running PostgreSQL"
+    },
+    "rds_prod_hour": {
+      "usd": 0.129,
+      "unit": "Hrs",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.json",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "TSD7ATBERYCKUUSA",
+      "rate_code": "TSD7ATBERYCKUUSA.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$ 0.129 per RDS db.t4g.medium Multi-AZ instance hour (or partial hour) running PostgreSQL"
+    },
+    "rds_qa_gb_month": {
+      "usd": 0.115,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.json",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "JQQGK6D789TWJF8B",
+      "rate_code": "JQQGK6D789TWJF8B.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.115 per GB-month of provisioned GP3 storage running PostgreSQL"
+    },
+    "rds_prod_gb_month": {
+      "usd": 0.23,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.json",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "CV3XZCH8KVNFGA7S",
+      "rate_code": "CV3XZCH8KVNFGA7S.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.23 per GB-month of provisioned GP3 storage for Multi-AZ deployments running PostgreSQL"
+    },
+    "rds_backup_gb_month": {
+      "usd": 0.095,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.json",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "HQRQUXJ6DAN3XS6X",
+      "rate_code": "HQRQUXJ6DAN3XS6X.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.095 per additional GB-month of backup storage exceeding free allocation running PostgreSQL"
+    },
+    "rds_credit_vcpu_hour": {
+      "usd": 0.075,
+      "unit": "vCPU-Hours",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.json",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "8XWSNX36R6XDW7N8",
+      "rate_code": "8XWSNX36R6XDW7N8.JRTCKXETXF.6YS6EN2CT7",
+      "description": "USD 0.075 per vCPU-Hour of T4g CPU Credits"
+    },
+    "ipv4_hour": {
+      "usd": 0.005,
+      "unit": "Hrs",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonVPC/current/us-east-2/index.json",
+      "published_at": "2026-09-17T19:05:28Z",
+      "sku": "8HFJK44D9234XNWA",
+      "rate_code": "8HFJK44D9234XNWA.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.005 per In-use public IPv4 address per hour"
+    },
+    "s3_gb_month": {
+      "usd": 0.023,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-2/index.json",
+      "published_at": "2026-09-28T23:04:16Z",
+      "sku": "YPGKVRB2EKTVDJDT",
+      "rate_code": "YPGKVRB2EKTVDJDT.JRTCKXETXF.PGHJ3S3EYE",
+      "description": "$0.023 per GB - first 50 TB / month of storage used"
+    },
+    "s3_put": {
+      "usd": 5e-06,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-2/index.json",
+      "published_at": "2026-09-28T23:04:16Z",
+      "sku": "GJKK9PMSTKPNGZS9",
+      "rate_code": "GJKK9PMSTKPNGZS9.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.005 per 1,000 PUT, COPY, POST, or LIST requests"
+    },
+    "s3_get": {
+      "usd": 4e-07,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-2/index.json",
+      "published_at": "2026-09-28T23:04:16Z",
+      "sku": "DJEKB32FV4HNZJZY",
+      "rate_code": "DJEKB32FV4HNZJZY.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.004 per 10,000 GET and all other requests"
+    },
+    "sqs_request": {
+      "usd": 4e-07,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSQueueService/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:07Z",
+      "sku": "9C8YFGPNBKF9HP9A",
+      "rate_code": "9C8YFGPNBKF9HP9A.JRTCKXETXF.VXGXCWQKTY",
+      "description": "$0.40 per million Amazon SQS standard requests in Tier1 in US East (Ohio)"
+    },
+    "cognito_mau": {
+      "usd": 0.0055,
+      "unit": "CognitoUserPoolsMAU",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCognito/current/us-east-2/index.json",
+      "published_at": "2026-09-25T19:31:08Z",
+      "sku": "D7UFP5TDYG2PN8M7",
+      "rate_code": "D7UFP5TDYG2PN8M7.JRTCKXETXF.VV2AUKAVFP",
+      "description": "Cognito Lite us-east-2 tier 1 pricing"
+    },
+    "secret_month": {
+      "usd": 0.4,
+      "unit": "Secrets",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSSecretsManager/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:10Z",
+      "sku": "HHK3AZN6HN5CFDJM",
+      "rate_code": "HHK3AZN6HN5CFDJM.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.40 per Secret"
+    },
+    "secret_request": {
+      "usd": 5e-06,
+      "unit": "API Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSSecretsManager/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:10Z",
+      "sku": "DYZUZWKV5HMGF5A9",
+      "rate_code": "DYZUZWKV5HMGF5A9.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.05 per 10000 API Requests"
+    },
+    "kms_key_version_month": {
+      "usd": 1.0,
+      "unit": "Keys",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/awskms/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:01Z",
+      "sku": "FEMX7ZQ4DJ6QE2KP",
+      "rate_code": "FEMX7ZQ4DJ6QE2KP.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$1 per customer managed KMS key version in US East (Ohio)"
+    },
+    "kms_request": {
+      "usd": 3e-06,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/awskms/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:01Z",
+      "sku": "9XXHSZC4PS7S6AY2",
+      "rate_code": "9XXHSZC4PS7S6AY2.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.03 per 10000 KMS requests in US East (Ohio)"
+    },
+    "log_ingest_gb": {
+      "usd": 0.5,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "5T6Z6V26DSR7SZ49",
+      "rate_code": "5T6Z6V26DSR7SZ49.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.50 per GB custom log data ingested in Standard log class - US East (Ohio)"
+    },
+    "log_store_gb_month": {
+      "usd": 0.03,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "X7X4WD4A95NDR9U5",
+      "rate_code": "X7X4WD4A95NDR9U5.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.03 per GB-mo of log storage - US East (Ohio)"
+    },
+    "cw_metric_month": {
+      "usd": 0.3,
+      "unit": "Metrics",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "XK7C3D2X45XTHURD",
+      "rate_code": "XK7C3D2X45XTHURD.JRTCKXETXF.A6VD9GXV7W",
+      "description": "$0.30 per metric-month for the first 10,000 metrics - US East (Ohio)"
+    },
+    "cw_alarm_metric_month": {
+      "usd": 0.1,
+      "unit": "Alarms",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "28VSMYRVQXUWCTMA",
+      "rate_code": "28VSMYRVQXUWCTMA.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.10 per alarm metric month (standard resolution) - US East (Ohio)"
+    },
+    "cw_request": {
+      "usd": 1e-05,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "EPEDMD8JEQSJS958",
+      "rate_code": "EPEDMD8JEQSJS958.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.01 per 1,000 requests"
+    },
+    "ecr_gb_month": {
+      "usd": 0.1,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECR/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:25Z",
+      "sku": "NA4VZMZUEQGMXP2Y",
+      "rate_code": "NA4VZMZUEQGMXP2Y.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.10 per GB-month of data storage"
+    },
+    "sns_request": {
+      "usd": 5e-07,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSNS/current/us-east-2/index.json",
+      "published_at": "2026-09-15T15:19:44Z",
+      "sku": "X7V4MHE7G6GM98JT",
+      "rate_code": "X7V4MHE7G6GM98JT.JRTCKXETXF.VNJQCFJPS4",
+      "description": "$0.50 per 1,000,000 Amazon SNS API Requests per month thereafter"
+    },
+    "sns_email": {
+      "usd": 2e-05,
+      "unit": "Notifications",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSNS/current/us-east-2/index.json",
+      "published_at": "2026-09-15T15:19:44Z",
+      "sku": "GZME75EE8UXWS6VZ",
+      "rate_code": "GZME75EE8UXWS6VZ.JRTCKXETXF.MUBTP6UPGZ",
+      "description": "$2.00 per 100,000 Amazon SNS Email/Email-JSON Notifications thereafter"
+    },
+    "internet_egress_gb": {
+      "usd": 0.09,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSDataTransfer/current/us-east-2/index.json",
+      "published_at": "2026-09-16T13:22:08Z",
+      "sku": "36H7S3NU9B7S3UT5",
+      "rate_code": "36H7S3NU9B7S3UT5.JRTCKXETXF.Q3Z75P77EN",
+      "description": "$0.090 per GB - first 10 TB / month data transfer out beyond the global free tier"
+    },
+    "regional_directional_gb": {
+      "usd": 0.01,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSDataTransfer/current/us-east-2/index.json",
+      "published_at": "2026-09-16T13:22:08Z",
+      "sku": "KF338J7FCKZPUBD9",
+      "rate_code": "KF338J7FCKZPUBD9.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.010 per GB - regional data transfer - in/out/between EC2 AZs or using elastic IPs or ELB"
+    },
+    "nat_hour": {
+      "usd": 0.045,
+      "unit": "Hrs",
+      "source": "https://aws.amazon.com/vpc/pricing/",
+      "description": "Official US East (Ohio) NAT gateway example, retrieved 2026-10-11"
+    },
+    "nat_gb": {
+      "usd": 0.045,
+      "unit": "GB",
+      "source": "https://aws.amazon.com/vpc/pricing/",
+      "description": "Official US East (Ohio) NAT gateway data-processing example, retrieved 2026-10-11"
+    }
+  },
+  "scenarios": [
+    {
+      "environment": "qa",
+      "monthly_active_users": 0,
+      "checks_per_month": 0,
+      "raw_human_capture_enabled": false,
+      "database_allocated_gb": 20,
+      "items": [
+        {
+          "item": "Fargate Linux/x86 vCPU",
+          "quantity": 547.5,
+          "rate": "fargate_vcpu_hour",
+          "monthly_usd": 22.16
+        },
+        {
+          "item": "Fargate memory (metrics sidecar shares worker reservation)",
+          "quantity": 1095.0,
+          "rate": "fargate_gb_hour",
+          "monthly_usd": 4.87
+        },
+        {
+          "item": "ALB provisioned hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "ALB used LCU-hours",
+          "quantity": 73.0,
+          "rate": "alb_lcu_hour",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "RDS PostgreSQL db.t4g.small Single-AZ",
+          "quantity": 730,
+          "rate": "rds_qa_hour",
+          "monthly_usd": 23.36
+        },
+        {
+          "item": "RDS gp3 allocated logical storage",
+          "quantity": 20,
+          "rate": "rds_qa_gb_month",
+          "monthly_usd": 2.3
+        },
+        {
+          "item": "Additional billable retained backup/snapshot GB-months",
+          "quantity": 5.0,
+          "rate": "rds_backup_gb_month",
+          "monthly_usd": 0.48
+        },
+        {
+          "item": "Illustrative T4g surplus CPU-credit vCPU-hours",
+          "quantity": 0.0,
+          "rate": "rds_credit_vcpu_hour",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "NAT gateway hours (2 prod / 1 QA)",
+          "quantity": 730,
+          "rate": "nat_hour",
+          "monthly_usd": 32.85
+        },
+        {
+          "item": "NAT processed GB",
+          "quantity": 5.0,
+          "rate": "nat_gb",
+          "monthly_usd": 0.23
+        },
+        {
+          "item": "Public IPv4 hours (2 ALB plus NAT addresses)",
+          "quantity": 2190,
+          "rate": "ipv4_hour",
+          "monthly_usd": 10.95
+        },
+        {
+          "item": "Cross-AZ charged directional GB (includes NAT/DB planning allowance)",
+          "quantity": 5.0,
+          "rate": "regional_directional_gb",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "Internet data transfer out GB",
+          "quantity": 5.0,
+          "rate": "internet_egress_gb",
+          "monthly_usd": 0.45
+        },
+        {
+          "item": "S3 current/noncurrent/journal/export storage GB-months",
+          "quantity": 1.0,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 PUT/LIST requests",
+          "quantity": 1000,
+          "rate": "s3_put",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 GET/HEAD requests",
+          "quantity": 5000,
+          "rate": "s3_get",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
+          "quantity": 262800,
+          "rate": "sqs_request",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free-tier allowance",
+          "quantity": 0,
+          "rate": "cognito_mau",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Secrets Manager secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager API requests",
+          "quantity": 1000,
+          "rate": "secret_request",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "KMS data/journal key versions (initial year)",
+          "quantity": 2,
+          "rate": "kms_key_version_month",
+          "monthly_usd": 2.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 30000,
+          "rate": "kms_request",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "CloudWatch log GB ingested incl. DB/application",
+          "quantity": 1.0,
+          "rate": "log_ingest_gb",
+          "monthly_usd": 0.5
+        },
+        {
+          "item": "CloudWatch retained log GB-months",
+          "quantity": 0.23333333333333334,
+          "rate": "log_store_gb_month",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_metric_month",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch standard alarm metric-months",
+          "quantity": 8,
+          "rate": "cw_alarm_metric_month",
+          "monthly_usd": 0.8
+        },
+        {
+          "item": "CloudWatch PutMetricData requests",
+          "quantity": 43800,
+          "rate": "cw_request",
+          "monthly_usd": 0.44
+        },
+        {
+          "item": "ECR retained software image GB-months",
+          "quantity": 2,
+          "rate": "ecr_gb_month",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email",
+          "monthly_usd": 0.0
+        }
+      ],
+      "total_monthly_usd": 121.0
+    },
+    {
+      "environment": "qa",
+      "monthly_active_users": 100,
+      "checks_per_month": 3000,
+      "raw_human_capture_enabled": false,
+      "database_allocated_gb": 30,
+      "items": [
+        {
+          "item": "Fargate Linux/x86 vCPU",
+          "quantity": 547.5,
+          "rate": "fargate_vcpu_hour",
+          "monthly_usd": 22.16
+        },
+        {
+          "item": "Fargate memory (metrics sidecar shares worker reservation)",
+          "quantity": 1095.0,
+          "rate": "fargate_gb_hour",
+          "monthly_usd": 4.87
+        },
+        {
+          "item": "ALB provisioned hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "ALB used LCU-hours",
+          "quantity": 138.7,
+          "rate": "alb_lcu_hour",
+          "monthly_usd": 1.11
+        },
+        {
+          "item": "RDS PostgreSQL db.t4g.small Single-AZ",
+          "quantity": 730,
+          "rate": "rds_qa_hour",
+          "monthly_usd": 23.36
+        },
+        {
+          "item": "RDS gp3 allocated logical storage",
+          "quantity": 30,
+          "rate": "rds_qa_gb_month",
+          "monthly_usd": 3.45
+        },
+        {
+          "item": "Additional billable retained backup/snapshot GB-months",
+          "quantity": 7.0,
+          "rate": "rds_backup_gb_month",
+          "monthly_usd": 0.67
+        },
+        {
+          "item": "Illustrative T4g surplus CPU-credit vCPU-hours",
+          "quantity": 10.0,
+          "rate": "rds_credit_vcpu_hour",
+          "monthly_usd": 0.75
+        },
+        {
+          "item": "NAT gateway hours (2 prod / 1 QA)",
+          "quantity": 730,
+          "rate": "nat_hour",
+          "monthly_usd": 32.85
+        },
+        {
+          "item": "NAT processed GB",
+          "quantity": 6.0,
+          "rate": "nat_gb",
+          "monthly_usd": 0.27
+        },
+        {
+          "item": "Public IPv4 hours (2 ALB plus NAT addresses)",
+          "quantity": 2190,
+          "rate": "ipv4_hour",
+          "monthly_usd": 10.95
+        },
+        {
+          "item": "Cross-AZ charged directional GB (includes NAT/DB planning allowance)",
+          "quantity": 7.0,
+          "rate": "regional_directional_gb",
+          "monthly_usd": 0.07
+        },
+        {
+          "item": "Internet data transfer out GB",
+          "quantity": 10.0,
+          "rate": "internet_egress_gb",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "S3 current/noncurrent/journal/export storage GB-months",
+          "quantity": 2.0,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "S3 PUT/LIST requests",
+          "quantity": 7400,
+          "rate": "s3_put",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "S3 GET/HEAD requests",
+          "quantity": 13000,
+          "rate": "s3_get",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
+          "quantity": 275700,
+          "rate": "sqs_request",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free-tier allowance",
+          "quantity": 100,
+          "rate": "cognito_mau",
+          "monthly_usd": 0.55
+        },
+        {
+          "item": "Secrets Manager secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager API requests",
+          "quantity": 1100,
+          "rate": "secret_request",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "KMS data/journal key versions (initial year)",
+          "quantity": 2,
+          "rate": "kms_key_version_month",
+          "monthly_usd": 2.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 44000,
+          "rate": "kms_request",
+          "monthly_usd": 0.13
+        },
+        {
+          "item": "CloudWatch log GB ingested incl. DB/application",
+          "quantity": 1.3,
+          "rate": "log_ingest_gb",
+          "monthly_usd": 0.65
+        },
+        {
+          "item": "CloudWatch retained log GB-months",
+          "quantity": 0.30333333333333334,
+          "rate": "log_store_gb_month",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_metric_month",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch standard alarm metric-months",
+          "quantity": 8,
+          "rate": "cw_alarm_metric_month",
+          "monthly_usd": 0.8
+        },
+        {
+          "item": "CloudWatch PutMetricData requests",
+          "quantity": 43800,
+          "rate": "cw_request",
+          "monthly_usd": 0.44
+        },
+        {
+          "item": "ECR retained software image GB-months",
+          "quantity": 2,
+          "rate": "ecr_gb_month",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email",
+          "monthly_usd": 0.0
+        }
+      ],
+      "total_monthly_usd": 124.94
+    },
+    {
+      "environment": "qa",
+      "monthly_active_users": 1000,
+      "checks_per_month": 30000,
+      "raw_human_capture_enabled": false,
+      "database_allocated_gb": 70,
+      "items": [
+        {
+          "item": "Fargate Linux/x86 vCPU",
+          "quantity": 547.5,
+          "rate": "fargate_vcpu_hour",
+          "monthly_usd": 22.16
+        },
+        {
+          "item": "Fargate memory (metrics sidecar shares worker reservation)",
+          "quantity": 1095.0,
+          "rate": "fargate_gb_hour",
+          "monthly_usd": 4.87
+        },
+        {
+          "item": "ALB provisioned hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "ALB used LCU-hours",
+          "quantity": 730.0,
+          "rate": "alb_lcu_hour",
+          "monthly_usd": 5.84
+        },
+        {
+          "item": "RDS PostgreSQL db.t4g.small Single-AZ",
+          "quantity": 730,
+          "rate": "rds_qa_hour",
+          "monthly_usd": 23.36
+        },
+        {
+          "item": "RDS gp3 allocated logical storage",
+          "quantity": 70,
+          "rate": "rds_qa_gb_month",
+          "monthly_usd": 8.05
+        },
+        {
+          "item": "Additional billable retained backup/snapshot GB-months",
+          "quantity": 15.0,
+          "rate": "rds_backup_gb_month",
+          "monthly_usd": 1.43
+        },
+        {
+          "item": "Illustrative T4g surplus CPU-credit vCPU-hours",
+          "quantity": 100.0,
+          "rate": "rds_credit_vcpu_hour",
+          "monthly_usd": 7.5
+        },
+        {
+          "item": "NAT gateway hours (2 prod / 1 QA)",
+          "quantity": 730,
+          "rate": "nat_hour",
+          "monthly_usd": 32.85
+        },
+        {
+          "item": "NAT processed GB",
+          "quantity": 15.0,
+          "rate": "nat_gb",
+          "monthly_usd": 0.68
+        },
+        {
+          "item": "Public IPv4 hours (2 ALB plus NAT addresses)",
+          "quantity": 2190,
+          "rate": "ipv4_hour",
+          "monthly_usd": 10.95
+        },
+        {
+          "item": "Cross-AZ charged directional GB (includes NAT/DB planning allowance)",
+          "quantity": 25.0,
+          "rate": "regional_directional_gb",
+          "monthly_usd": 0.25
+        },
+        {
+          "item": "Internet data transfer out GB",
+          "quantity": 55.0,
+          "rate": "internet_egress_gb",
+          "monthly_usd": 4.95
+        },
+        {
+          "item": "S3 current/noncurrent/journal/export storage GB-months",
+          "quantity": 11.0,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.25
+        },
+        {
+          "item": "S3 PUT/LIST requests",
+          "quantity": 65000,
+          "rate": "s3_put",
+          "monthly_usd": 0.33
+        },
+        {
+          "item": "S3 GET/HEAD requests",
+          "quantity": 85000,
+          "rate": "s3_get",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
+          "quantity": 391800,
+          "rate": "sqs_request",
+          "monthly_usd": 0.16
+        },
+        {
+          "item": "Cognito Lite MAU before shared free-tier allowance",
+          "quantity": 1000,
+          "rate": "cognito_mau",
+          "monthly_usd": 5.5
+        },
+        {
+          "item": "Secrets Manager secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager API requests",
+          "quantity": 2000,
+          "rate": "secret_request",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "KMS data/journal key versions (initial year)",
+          "quantity": 2,
+          "rate": "kms_key_version_month",
+          "monthly_usd": 2.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 170000,
+          "rate": "kms_request",
+          "monthly_usd": 0.51
+        },
+        {
+          "item": "CloudWatch log GB ingested incl. DB/application",
+          "quantity": 4.0,
+          "rate": "log_ingest_gb",
+          "monthly_usd": 2.0
+        },
+        {
+          "item": "CloudWatch retained log GB-months",
+          "quantity": 0.9333333333333333,
+          "rate": "log_store_gb_month",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "CloudWatch custom aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_metric_month",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch standard alarm metric-months",
+          "quantity": 8,
+          "rate": "cw_alarm_metric_month",
+          "monthly_usd": 0.8
+        },
+        {
+          "item": "CloudWatch PutMetricData requests",
+          "quantity": 43800,
+          "rate": "cw_request",
+          "monthly_usd": 0.44
+        },
+        {
+          "item": "ECR retained software image GB-months",
+          "quantity": 2,
+          "rate": "ecr_gb_month",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email",
+          "monthly_usd": 0.0
+        }
+      ],
+      "total_monthly_usd": 153.68
+    },
+    {
+      "environment": "prod",
+      "monthly_active_users": 0,
+      "checks_per_month": 0,
+      "raw_human_capture_enabled": false,
+      "database_allocated_gb": 20,
+      "items": [
+        {
+          "item": "Fargate Linux/x86 vCPU",
+          "quantity": 1095.0,
+          "rate": "fargate_vcpu_hour",
+          "monthly_usd": 44.33
+        },
+        {
+          "item": "Fargate memory (metrics sidecar shares worker reservation)",
+          "quantity": 2190,
+          "rate": "fargate_gb_hour",
+          "monthly_usd": 9.73
+        },
+        {
+          "item": "ALB provisioned hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "ALB used LCU-hours",
+          "quantity": 73.0,
+          "rate": "alb_lcu_hour",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "RDS PostgreSQL db.t4g.medium Multi-AZ",
+          "quantity": 730,
+          "rate": "rds_prod_hour",
+          "monthly_usd": 94.17
+        },
+        {
+          "item": "RDS gp3 allocated logical storage",
+          "quantity": 20,
+          "rate": "rds_prod_gb_month",
+          "monthly_usd": 4.6
+        },
+        {
+          "item": "Additional billable retained backup/snapshot GB-months",
+          "quantity": 20,
+          "rate": "rds_backup_gb_month",
+          "monthly_usd": 1.9
+        },
+        {
+          "item": "Illustrative T4g surplus CPU-credit vCPU-hours",
+          "quantity": 0.0,
+          "rate": "rds_credit_vcpu_hour",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "NAT gateway hours (2 prod / 1 QA)",
+          "quantity": 1460,
+          "rate": "nat_hour",
+          "monthly_usd": 65.7
+        },
+        {
+          "item": "NAT processed GB",
+          "quantity": 5.0,
+          "rate": "nat_gb",
+          "monthly_usd": 0.23
+        },
+        {
+          "item": "Public IPv4 hours (2 ALB plus NAT addresses)",
+          "quantity": 2920,
+          "rate": "ipv4_hour",
+          "monthly_usd": 14.6
+        },
+        {
+          "item": "Cross-AZ charged directional GB (includes NAT/DB planning allowance)",
+          "quantity": 2.0,
+          "rate": "regional_directional_gb",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "Internet data transfer out GB",
+          "quantity": 5.0,
+          "rate": "internet_egress_gb",
+          "monthly_usd": 0.45
+        },
+        {
+          "item": "S3 current/noncurrent/journal/export storage GB-months",
+          "quantity": 1.0,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 PUT/LIST requests",
+          "quantity": 1000,
+          "rate": "s3_put",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 GET/HEAD requests",
+          "quantity": 5000,
+          "rate": "s3_get",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
+          "quantity": 262800,
+          "rate": "sqs_request",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free-tier allowance",
+          "quantity": 0,
+          "rate": "cognito_mau",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Secrets Manager secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager API requests",
+          "quantity": 1000,
+          "rate": "secret_request",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "KMS data/journal key versions (initial year)",
+          "quantity": 2,
+          "rate": "kms_key_version_month",
+          "monthly_usd": 2.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 30000,
+          "rate": "kms_request",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "CloudWatch log GB ingested incl. DB/application",
+          "quantity": 1.0,
+          "rate": "log_ingest_gb",
+          "monthly_usd": 0.5
+        },
+        {
+          "item": "CloudWatch retained log GB-months",
+          "quantity": 1.0,
+          "rate": "log_store_gb_month",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "CloudWatch custom aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_metric_month",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch standard alarm metric-months",
+          "quantity": 13,
+          "rate": "cw_alarm_metric_month",
+          "monthly_usd": 1.3
+        },
+        {
+          "item": "CloudWatch PutMetricData requests",
+          "quantity": 43800,
+          "rate": "cw_request",
+          "monthly_usd": 0.44
+        },
+        {
+          "item": "ECR retained software image GB-months",
+          "quantity": 2,
+          "rate": "ecr_gb_month",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email",
+          "monthly_usd": 0.0
+        }
+      ],
+      "total_monthly_usd": 259.55
+    },
+    {
+      "environment": "prod",
+      "monthly_active_users": 100,
+      "checks_per_month": 3000,
+      "raw_human_capture_enabled": false,
+      "database_allocated_gb": 30,
+      "items": [
+        {
+          "item": "Fargate Linux/x86 vCPU",
+          "quantity": 1095.0,
+          "rate": "fargate_vcpu_hour",
+          "monthly_usd": 44.33
+        },
+        {
+          "item": "Fargate memory (metrics sidecar shares worker reservation)",
+          "quantity": 2190,
+          "rate": "fargate_gb_hour",
+          "monthly_usd": 9.73
+        },
+        {
+          "item": "ALB provisioned hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "ALB used LCU-hours",
+          "quantity": 138.7,
+          "rate": "alb_lcu_hour",
+          "monthly_usd": 1.11
+        },
+        {
+          "item": "RDS PostgreSQL db.t4g.medium Multi-AZ",
+          "quantity": 730,
+          "rate": "rds_prod_hour",
+          "monthly_usd": 94.17
+        },
+        {
+          "item": "RDS gp3 allocated logical storage",
+          "quantity": 30,
+          "rate": "rds_prod_gb_month",
+          "monthly_usd": 6.9
+        },
+        {
+          "item": "Additional billable retained backup/snapshot GB-months",
+          "quantity": 30,
+          "rate": "rds_backup_gb_month",
+          "monthly_usd": 2.85
+        },
+        {
+          "item": "Illustrative T4g surplus CPU-credit vCPU-hours",
+          "quantity": 10.0,
+          "rate": "rds_credit_vcpu_hour",
+          "monthly_usd": 0.75
+        },
+        {
+          "item": "NAT gateway hours (2 prod / 1 QA)",
+          "quantity": 1460,
+          "rate": "nat_hour",
+          "monthly_usd": 65.7
+        },
+        {
+          "item": "NAT processed GB",
+          "quantity": 6.0,
+          "rate": "nat_gb",
+          "monthly_usd": 0.27
+        },
+        {
+          "item": "Public IPv4 hours (2 ALB plus NAT addresses)",
+          "quantity": 2920,
+          "rate": "ipv4_hour",
+          "monthly_usd": 14.6
+        },
+        {
+          "item": "Cross-AZ charged directional GB (includes NAT/DB planning allowance)",
+          "quantity": 4.0,
+          "rate": "regional_directional_gb",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "Internet data transfer out GB",
+          "quantity": 10.0,
+          "rate": "internet_egress_gb",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "S3 current/noncurrent/journal/export storage GB-months",
+          "quantity": 2.0,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "S3 PUT/LIST requests",
+          "quantity": 7400,
+          "rate": "s3_put",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "S3 GET/HEAD requests",
+          "quantity": 13000,
+          "rate": "s3_get",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
+          "quantity": 275700,
+          "rate": "sqs_request",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free-tier allowance",
+          "quantity": 100,
+          "rate": "cognito_mau",
+          "monthly_usd": 0.55
+        },
+        {
+          "item": "Secrets Manager secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager API requests",
+          "quantity": 1100,
+          "rate": "secret_request",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "KMS data/journal key versions (initial year)",
+          "quantity": 2,
+          "rate": "kms_key_version_month",
+          "monthly_usd": 2.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 44000,
+          "rate": "kms_request",
+          "monthly_usd": 0.13
+        },
+        {
+          "item": "CloudWatch log GB ingested incl. DB/application",
+          "quantity": 1.3,
+          "rate": "log_ingest_gb",
+          "monthly_usd": 0.65
+        },
+        {
+          "item": "CloudWatch retained log GB-months",
+          "quantity": 1.3,
+          "rate": "log_store_gb_month",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "CloudWatch custom aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_metric_month",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch standard alarm metric-months",
+          "quantity": 13,
+          "rate": "cw_alarm_metric_month",
+          "monthly_usd": 1.3
+        },
+        {
+          "item": "CloudWatch PutMetricData requests",
+          "quantity": 43800,
+          "rate": "cw_request",
+          "monthly_usd": 0.44
+        },
+        {
+          "item": "ECR retained software image GB-months",
+          "quantity": 2,
+          "rate": "ecr_gb_month",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email",
+          "monthly_usd": 0.0
+        }
+      ],
+      "total_monthly_usd": 265.41
+    },
+    {
+      "environment": "prod",
+      "monthly_active_users": 1000,
+      "checks_per_month": 30000,
+      "raw_human_capture_enabled": false,
+      "database_allocated_gb": 70,
+      "items": [
+        {
+          "item": "Fargate Linux/x86 vCPU",
+          "quantity": 1095.0,
+          "rate": "fargate_vcpu_hour",
+          "monthly_usd": 44.33
+        },
+        {
+          "item": "Fargate memory (metrics sidecar shares worker reservation)",
+          "quantity": 2190,
+          "rate": "fargate_gb_hour",
+          "monthly_usd": 9.73
+        },
+        {
+          "item": "ALB provisioned hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "ALB used LCU-hours",
+          "quantity": 730.0,
+          "rate": "alb_lcu_hour",
+          "monthly_usd": 5.84
+        },
+        {
+          "item": "RDS PostgreSQL db.t4g.medium Multi-AZ",
+          "quantity": 730,
+          "rate": "rds_prod_hour",
+          "monthly_usd": 94.17
+        },
+        {
+          "item": "RDS gp3 allocated logical storage",
+          "quantity": 70,
+          "rate": "rds_prod_gb_month",
+          "monthly_usd": 16.1
+        },
+        {
+          "item": "Additional billable retained backup/snapshot GB-months",
+          "quantity": 70,
+          "rate": "rds_backup_gb_month",
+          "monthly_usd": 6.65
+        },
+        {
+          "item": "Illustrative T4g surplus CPU-credit vCPU-hours",
+          "quantity": 100.0,
+          "rate": "rds_credit_vcpu_hour",
+          "monthly_usd": 7.5
+        },
+        {
+          "item": "NAT gateway hours (2 prod / 1 QA)",
+          "quantity": 1460,
+          "rate": "nat_hour",
+          "monthly_usd": 65.7
+        },
+        {
+          "item": "NAT processed GB",
+          "quantity": 15.0,
+          "rate": "nat_gb",
+          "monthly_usd": 0.68
+        },
+        {
+          "item": "Public IPv4 hours (2 ALB plus NAT addresses)",
+          "quantity": 2920,
+          "rate": "ipv4_hour",
+          "monthly_usd": 14.6
+        },
+        {
+          "item": "Cross-AZ charged directional GB (includes NAT/DB planning allowance)",
+          "quantity": 22.0,
+          "rate": "regional_directional_gb",
+          "monthly_usd": 0.22
+        },
+        {
+          "item": "Internet data transfer out GB",
+          "quantity": 55.0,
+          "rate": "internet_egress_gb",
+          "monthly_usd": 4.95
+        },
+        {
+          "item": "S3 current/noncurrent/journal/export storage GB-months",
+          "quantity": 11.0,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.25
+        },
+        {
+          "item": "S3 PUT/LIST requests",
+          "quantity": 65000,
+          "rate": "s3_put",
+          "monthly_usd": 0.33
+        },
+        {
+          "item": "S3 GET/HEAD requests",
+          "quantity": 85000,
+          "rate": "s3_get",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
+          "quantity": 391800,
+          "rate": "sqs_request",
+          "monthly_usd": 0.16
+        },
+        {
+          "item": "Cognito Lite MAU before shared free-tier allowance",
+          "quantity": 1000,
+          "rate": "cognito_mau",
+          "monthly_usd": 5.5
+        },
+        {
+          "item": "Secrets Manager secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager API requests",
+          "quantity": 2000,
+          "rate": "secret_request",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "KMS data/journal key versions (initial year)",
+          "quantity": 2,
+          "rate": "kms_key_version_month",
+          "monthly_usd": 2.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 170000,
+          "rate": "kms_request",
+          "monthly_usd": 0.51
+        },
+        {
+          "item": "CloudWatch log GB ingested incl. DB/application",
+          "quantity": 4.0,
+          "rate": "log_ingest_gb",
+          "monthly_usd": 2.0
+        },
+        {
+          "item": "CloudWatch retained log GB-months",
+          "quantity": 4.0,
+          "rate": "log_store_gb_month",
+          "monthly_usd": 0.12
+        },
+        {
+          "item": "CloudWatch custom aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_metric_month",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch standard alarm metric-months",
+          "quantity": 13,
+          "rate": "cw_alarm_metric_month",
+          "monthly_usd": 1.3
+        },
+        {
+          "item": "CloudWatch PutMetricData requests",
+          "quantity": 43800,
+          "rate": "cw_request",
+          "monthly_usd": 0.44
+        },
+        {
+          "item": "ECR retained software image GB-months",
+          "quantity": 2,
+          "rate": "ecr_gb_month",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email",
+          "monthly_usd": 0.0
+        }
+      ],
+      "total_monthly_usd": 301.85
+    }
+  ],
+  "exclusions": [
+    "Domain registration and an existing optional Route 53 hosted zone",
+    "Paid AWS support, LocalStack licensing, CI/macOS runners, app store accounts and taxes",
+    "Human study/laboratory/clinical validation, shipping and hardware",
+    "WAF, CloudTrail paid data-event selectors, externally selected audit archive, additional observability tools and independent security review",
+    "Excess load above stated LCU/traffic/log/storage/CPU-credit assumptions and autoscaling above baseline"
+  ],
+  "notes": [
+    "730-hour planning month; services stay provisioned at zero users. A stopped ECS service does not stop ALB/NAT/RDS costs.",
+    "100/1000-user scenarios are engineering workload models, not validated capacity or permission to collect/retain human data.",
+    "RDS storage models 12 months at 30 checks/user/month and 128 KiB/check plus 20 GB baseline, rounded up to 10 GB; approved retention can require less.",
+    "Raw eye/ECG/lab uploads are unavailable in this release; enabling them requires a new estimate.",
+    "RDS Multi-AZ instance/storage rates already include the standby; they are not doubled again.",
+    "Automated backup retention is QA 7 days and production 35 days. Additional charged snapshot allowances are explicit line items.",
+    "KMS annual key rotations can add retained key-version charges; reprice as keys rotate.",
+    "CloudWatch Container Insights is disabled. Basic AWS service metrics plus three custom metrics are used.",
+    "ALB aliases in an existing Route 53 zone add no ALB alias-query charge; hosting/domain costs belong to the owner supplied domain and are excluded.",
+    "AWS Budget alerts notify; they do not stop spending. The required monthly budget remains an owner input.",
+    "Free-tier allowances are account-wide and can reduce these gross estimates; no availability is assumed."
+  ]
+}

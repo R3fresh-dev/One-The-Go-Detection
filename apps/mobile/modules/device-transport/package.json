@@ -1,0 +1,7 @@
+{
+  "name": "otgd-device-transport",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "description": "Bounded native Bluetooth transport for synthetic-only OTGD peripherals"
+}
