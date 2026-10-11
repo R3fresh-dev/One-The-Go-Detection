@@ -1,0 +1,32 @@
+{
+  "schema_version": "0.1.0",
+  "measurement_id": "33333333-3333-4333-8333-000000000004",
+  "sample_id": "22222222-2222-4222-8222-222222222222",
+  "analyte": "THC_COOH",
+  "qualifier": "quantified",
+  "value_ng_ml": 0.075,
+  "unit": "ng/mL",
+  "assay_basis": "free",
+  "limits": {
+    "lod_ng_ml": 0.003,
+    "loq_ng_ml": 0.01,
+    "upper_ng_ml": 2.0
+  },
+  "source": "simulated",
+  "method_id": "synthetic-no-assay",
+  "calibration_id": null,
+  "cartridge_lot": null,
+  "instrument_id": "synthetic-reader",
+  "operator_ref": null,
+  "collected_at": "2026-10-10T18:00:10Z",
+  "measured_at": "2026-10-10T18:00:20Z",
+  "quality_flags": [],
+  "original_report": {
+    "value": 75.0,
+    "unit": "pg/mL",
+    "qualifier": "quantified"
+  },
+  "uncertainty_ng_ml": null,
+  "concentration_basis": "neat_oral_fluid",
+  "correction_status": "not_corrected"
+}

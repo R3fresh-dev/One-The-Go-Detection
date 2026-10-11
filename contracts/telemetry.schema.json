@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/telemetry.schema.json",
+  "title": "Telemetry",
+  "description": "USB bring-up telemetry only; no boot/session identity, assay reading, BLE implementation, or clinical output. Start a fresh capture on reset.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "device_id": {
+      "const": "synthetic-nano-001"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "monotonic_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "source": {
+      "const": "simulated"
+    },
+    "heart_rate_bpm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "assay_ready": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "device_id",
+    "seq",
+    "monotonic_ms",
+    "source",
+    "heart_rate_bpm",
+    "assay_ready"
+  ]
+}

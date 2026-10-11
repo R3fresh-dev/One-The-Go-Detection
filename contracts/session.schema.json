@@ -1,0 +1,1261 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/session.schema.json",
+  "title": "Session",
+  "description": "Proposed completed acquisition snapshot submitted for finalization. Server finalization is separate metadata. Incomplete/canceled drafts are not this record. All shipped examples are synthetic.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "session_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "supersedes_session_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mode": {
+      "enum": [
+        "synthetic",
+        "analytical",
+        "controlled_research"
+      ]
+    },
+    "subject_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "study_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "protocol_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "target_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "clock_uncertainty_ms": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "acquisition_span_ms": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "device_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "boot_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "hardware_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "firmware_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "device_id",
+        "boot_id",
+        "hardware_revision",
+        "firmware_version"
+      ]
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "age_years": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 125
+        },
+        "height_cm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "weight_kg": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "bmi": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "source": {
+          "enum": [
+            "self_report",
+            "study_measurement",
+            "synthetic"
+          ]
+        }
+      },
+      "required": [
+        "age_years",
+        "height_cm",
+        "weight_kg",
+        "bmi",
+        "recorded_at",
+        "source"
+      ]
+    },
+    "history": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "use_frequency": {
+          "enum": [
+            "never",
+            "occasional",
+            "frequent",
+            "daily",
+            "unknown",
+            "declined"
+          ]
+        },
+        "route": {
+          "enum": [
+            "inhaled",
+            "oral",
+            "other",
+            "unknown",
+            "declined"
+          ]
+        },
+        "time_since_use_min": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "recent_exercise": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "sleep_hours": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 24
+        },
+        "alcohol_co_use": {
+          "enum": [
+            "reported",
+            "not_reported",
+            "unknown",
+            "declined"
+          ]
+        }
+      },
+      "required": [
+        "use_frequency",
+        "route",
+        "time_since_use_min",
+        "recent_exercise",
+        "sleep_hours",
+        "alcohol_co_use"
+      ]
+    },
+    "baseline_ref": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sample_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Allocated collection-attempt identity. Its presence alone does not assert that collection occurred."
+        },
+        "collection_method_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "collected_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "volume_ml": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "dilution_factor": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "status": {
+          "enum": [
+            "valid",
+            "invalid",
+            "not_collected"
+          ]
+        },
+        "quality_flags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "sample_id",
+        "collection_method_id",
+        "collected_at",
+        "volume_ml",
+        "dilution_factor",
+        "status",
+        "quality_flags"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "valid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "collected_at": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_collected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "collected_at": {
+                "type": "null"
+              },
+              "volume_ml": {
+                "type": "null"
+              },
+              "dilution_factor": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "invalid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "quality_flags": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "saliva": {
+      "type": "array",
+      "items": {
+        "$ref": "measurement.schema.json"
+      },
+      "minItems": 0
+    },
+    "eyes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "valid",
+            "invalid",
+            "not_collected"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "simulated",
+            "reference_lab",
+            "prototype_sensor",
+            "validated_sensor"
+          ]
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ended_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quality_flags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0
+        },
+        "capture_config_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "camera_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "frame_rate_hz": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "scale_basis": {
+          "enum": [
+            "calibrated_mm",
+            "normalized",
+            "unscaled"
+          ]
+        },
+        "baseline_diameter_mm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "relative_constriction": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "latency_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "raw_artifact_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "source",
+        "started_at",
+        "ended_at",
+        "quality_flags",
+        "capture_config_id",
+        "camera_id",
+        "frame_rate_hz",
+        "scale_basis",
+        "baseline_diameter_mm",
+        "relative_constriction",
+        "latency_ms",
+        "raw_artifact_id"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "scale_basis": {
+                "enum": [
+                  "normalized",
+                  "unscaled"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "baseline_diameter_mm": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "valid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "started_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              "ended_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_collected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "started_at": {
+                "type": "null"
+              },
+              "ended_at": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_collected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "baseline_diameter_mm": {
+                "type": "null"
+              },
+              "relative_constriction": {
+                "type": "null"
+              },
+              "latency_ms": {
+                "type": "null"
+              },
+              "frame_rate_hz": {
+                "type": "null"
+              },
+              "raw_artifact_id": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "invalid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "quality_flags": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cardiac": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "valid",
+            "invalid",
+            "not_collected"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "simulated",
+            "reference_lab",
+            "prototype_sensor",
+            "validated_sensor"
+          ]
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ended_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quality_flags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0
+        },
+        "acquisition_config_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "modality": {
+          "enum": [
+            "ppg",
+            "ecg",
+            "simulated"
+          ]
+        },
+        "heart_rate_bpm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ecg_status": {
+          "enum": [
+            "valid",
+            "invalid",
+            "not_collected"
+          ]
+        },
+        "ecg_rmssd_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "sample_rate_hz": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "raw_artifact_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "source",
+        "started_at",
+        "ended_at",
+        "quality_flags",
+        "acquisition_config_id",
+        "modality",
+        "heart_rate_bpm",
+        "ecg_status",
+        "ecg_rmssd_ms",
+        "sample_rate_hz",
+        "raw_artifact_id"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "ecg_status": {
+                "enum": [
+                  "invalid",
+                  "not_collected"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ecg_rmssd_ms": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "valid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "started_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              "ended_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_collected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "started_at": {
+                "type": "null"
+              },
+              "ended_at": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_collected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "heart_rate_bpm": {
+                "type": "null"
+              },
+              "ecg_rmssd_ms": {
+                "type": "null"
+              },
+              "sample_rate_hz": {
+                "type": "null"
+              },
+              "raw_artifact_id": {
+                "type": "null"
+              },
+              "ecg_status": {
+                "const": "not_collected"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "valid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "heart_rate_bpm": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "invalid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "quality_flags": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "modality": {
+                "const": "ppg"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ecg_status": {
+                "const": "not_collected"
+              },
+              "ecg_rmssd_ms": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "ecg_status": {
+                "const": "valid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "modality": {
+                "const": "ecg"
+              },
+              "status": {
+                "const": "valid"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "modality": {
+                "const": "simulated"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "const": "simulated"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "valid",
+            "invalid",
+            "not_collected"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "simulated",
+            "reference_lab",
+            "prototype_sensor",
+            "validated_sensor"
+          ]
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ended_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quality_flags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0
+        },
+        "task_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "task_version": {
+          "const": "choice_inhibit_v0"
+        },
+        "config_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "practice_trials": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "scored_trials": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60
+        },
+        "go_trials": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 48
+        },
+        "no_go_trials": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "valid_correct_go_trials": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 48
+        },
+        "features": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "median_rt_ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "iqr_rt_ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "p90_rt_ms": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "omission_rate": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "wrong_go_rate": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "no_go_error_rate": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "median_rt_ms",
+            "iqr_rt_ms",
+            "p90_rt_ms",
+            "omission_rate",
+            "wrong_go_rate",
+            "no_go_error_rate"
+          ]
+        },
+        "events_artifact_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "source",
+        "started_at",
+        "ended_at",
+        "quality_flags",
+        "task_id",
+        "task_version",
+        "config_sha256",
+        "practice_trials",
+        "scored_trials",
+        "go_trials",
+        "no_go_trials",
+        "valid_correct_go_trials",
+        "features",
+        "events_artifact_id"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "valid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "started_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              },
+              "ended_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_collected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "started_at": {
+                "type": "null"
+              },
+              "ended_at": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "valid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "practice_trials": {
+                "const": 6
+              },
+              "scored_trials": {
+                "const": 60
+              },
+              "go_trials": {
+                "const": 48
+              },
+              "no_go_trials": {
+                "const": 12
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_collected"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "practice_trials": {
+                "const": 0
+              },
+              "scored_trials": {
+                "const": 0
+              },
+              "go_trials": {
+                "const": 0
+              },
+              "no_go_trials": {
+                "const": 0
+              },
+              "valid_correct_go_trials": {
+                "const": 0
+              },
+              "features": {
+                "properties": {
+                  "median_rt_ms": {
+                    "type": "null"
+                  },
+                  "iqr_rt_ms": {
+                    "type": "null"
+                  },
+                  "p90_rt_ms": {
+                    "type": "null"
+                  },
+                  "omission_rate": {
+                    "type": "null"
+                  },
+                  "wrong_go_rate": {
+                    "type": "null"
+                  },
+                  "no_go_error_rate": {
+                    "type": "null"
+                  }
+                }
+              },
+              "events_artifact_id": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "invalid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "quality_flags": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "capture_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "session_id",
+    "supersedes_session_id",
+    "mode",
+    "subject_ref",
+    "study_id",
+    "protocol_id",
+    "created_at",
+    "target_at",
+    "capture_completed_at",
+    "clock_uncertainty_ms",
+    "acquisition_span_ms",
+    "device",
+    "profile",
+    "history",
+    "baseline_ref",
+    "sample",
+    "saliva",
+    "eyes",
+    "cardiac",
+    "task"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "sample": {
+            "properties": {
+              "status": {
+                "const": "not_collected"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "saliva": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

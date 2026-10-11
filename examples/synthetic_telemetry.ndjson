@@ -1,0 +1,5 @@
+{"schema_version":"0.1.0","device_id":"synthetic-nano-001","seq":0,"monotonic_ms":0,"source":"simulated","heart_rate_bpm":70,"assay_ready":false}
+{"schema_version":"0.1.0","device_id":"synthetic-nano-001","seq":1,"monotonic_ms":1000,"source":"simulated","heart_rate_bpm":71,"assay_ready":false}
+{"schema_version":"0.1.0","device_id":"synthetic-nano-001","seq":2,"monotonic_ms":2000,"source":"simulated","heart_rate_bpm":72,"assay_ready":false}
+{"schema_version":"0.1.0","device_id":"synthetic-nano-001","seq":3,"monotonic_ms":3000,"source":"simulated","heart_rate_bpm":73,"assay_ready":false}
+{"schema_version":"0.1.0","device_id":"synthetic-nano-001","seq":4,"monotonic_ms":4000,"source":"simulated","heart_rate_bpm":74,"assay_ready":false}

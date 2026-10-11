@@ -1,0 +1,197 @@
+{
+  "schema_version": "0.1.0",
+  "session_id": "11111111-1111-4111-8111-111111111111",
+  "supersedes_session_id": null,
+  "mode": "synthetic",
+  "subject_ref": "synthetic-person-001",
+  "study_id": null,
+  "protocol_id": null,
+  "created_at": "2026-10-10T18:00:00Z",
+  "target_at": "2026-10-10T18:00:10Z",
+  "clock_uncertainty_ms": 20.0,
+  "acquisition_span_ms": 160000.0,
+  "device": {
+    "device_id": "synthetic-reader",
+    "boot_id": "synthetic-boot-001",
+    "hardware_revision": "simulated-hw",
+    "firmware_version": "synthetic-0.1.0"
+  },
+  "profile": {
+    "age_years": 35,
+    "height_cm": 175.0,
+    "weight_kg": 80.0,
+    "bmi": 26.122,
+    "recorded_at": "2026-10-10T17:59:00Z",
+    "source": "synthetic"
+  },
+  "history": {
+    "use_frequency": "unknown",
+    "route": "unknown",
+    "time_since_use_min": null,
+    "recent_exercise": null,
+    "sleep_hours": null,
+    "alcohol_co_use": "unknown"
+  },
+  "baseline_ref": null,
+  "sample": {
+    "sample_id": "22222222-2222-4222-8222-222222222222",
+    "collection_method_id": "synthetic-collection",
+    "collected_at": "2026-10-10T18:00:10Z",
+    "volume_ml": 1.0,
+    "dilution_factor": 1.0,
+    "status": "valid",
+    "quality_flags": []
+  },
+  "saliva": [
+    {
+      "schema_version": "0.1.0",
+      "measurement_id": "33333333-3333-4333-8333-000000000001",
+      "sample_id": "22222222-2222-4222-8222-222222222222",
+      "analyte": "THC",
+      "qualifier": "quantified",
+      "value_ng_ml": 12.0,
+      "unit": "ng/mL",
+      "assay_basis": "free",
+      "limits": {
+        "lod_ng_ml": 0.3,
+        "loq_ng_ml": 1.0,
+        "upper_ng_ml": 200.0
+      },
+      "source": "simulated",
+      "method_id": "synthetic-no-assay",
+      "calibration_id": null,
+      "cartridge_lot": null,
+      "instrument_id": "synthetic-reader",
+      "operator_ref": null,
+      "collected_at": "2026-10-10T18:00:10Z",
+      "measured_at": "2026-10-10T18:00:20Z",
+      "quality_flags": [],
+      "original_report": {
+        "value": 12.0,
+        "unit": "ng/mL",
+        "qualifier": "quantified"
+      },
+      "uncertainty_ng_ml": null,
+      "concentration_basis": "neat_oral_fluid",
+      "correction_status": "not_corrected"
+    },
+    {
+      "schema_version": "0.1.0",
+      "measurement_id": "33333333-3333-4333-8333-000000000002",
+      "sample_id": "22222222-2222-4222-8222-222222222222",
+      "analyte": "THC_COOH",
+      "qualifier": "below_loq",
+      "value_ng_ml": null,
+      "unit": "ng/mL",
+      "assay_basis": "free",
+      "limits": {
+        "lod_ng_ml": 0.03,
+        "loq_ng_ml": 0.1,
+        "upper_ng_ml": 2.0
+      },
+      "source": "simulated",
+      "method_id": "synthetic-no-assay",
+      "calibration_id": null,
+      "cartridge_lot": null,
+      "instrument_id": "synthetic-reader",
+      "operator_ref": null,
+      "collected_at": "2026-10-10T18:00:10Z",
+      "measured_at": "2026-10-10T18:00:20Z",
+      "quality_flags": [],
+      "original_report": {
+        "value": null,
+        "unit": "ng/mL",
+        "qualifier": "BLQ"
+      },
+      "uncertainty_ng_ml": null,
+      "concentration_basis": "neat_oral_fluid",
+      "correction_status": "not_corrected"
+    },
+    {
+      "schema_version": "0.1.0",
+      "measurement_id": "33333333-3333-4333-8333-000000000003",
+      "sample_id": "22222222-2222-4222-8222-222222222222",
+      "analyte": "OH11_THC",
+      "qualifier": "not_measured",
+      "value_ng_ml": null,
+      "unit": "ng/mL",
+      "assay_basis": "free",
+      "limits": {
+        "lod_ng_ml": null,
+        "loq_ng_ml": null,
+        "upper_ng_ml": null
+      },
+      "source": "simulated",
+      "method_id": null,
+      "calibration_id": null,
+      "cartridge_lot": null,
+      "instrument_id": null,
+      "operator_ref": null,
+      "collected_at": "2026-10-10T18:00:10Z",
+      "measured_at": null,
+      "quality_flags": [],
+      "original_report": {
+        "value": null,
+        "unit": "ng/mL",
+        "qualifier": "not_measured"
+      },
+      "uncertainty_ng_ml": null,
+      "concentration_basis": "neat_oral_fluid",
+      "correction_status": "not_corrected"
+    }
+  ],
+  "eyes": {
+    "status": "valid",
+    "source": "simulated",
+    "started_at": "2026-10-10T18:00:30Z",
+    "ended_at": "2026-10-10T18:00:40Z",
+    "quality_flags": [],
+    "capture_config_id": "synthetic-eyes",
+    "camera_id": "synthetic-camera",
+    "frame_rate_hz": 30,
+    "scale_basis": "normalized",
+    "baseline_diameter_mm": null,
+    "relative_constriction": 0.2,
+    "latency_ms": 250,
+    "raw_artifact_id": null
+  },
+  "cardiac": {
+    "status": "valid",
+    "source": "simulated",
+    "started_at": "2026-10-10T18:00:10Z",
+    "ended_at": "2026-10-10T18:00:40Z",
+    "quality_flags": [],
+    "acquisition_config_id": "synthetic-ppg",
+    "modality": "simulated",
+    "heart_rate_bpm": 72.0,
+    "ecg_status": "not_collected",
+    "ecg_rmssd_ms": null,
+    "sample_rate_hz": null,
+    "raw_artifact_id": null
+  },
+  "task": {
+    "status": "valid",
+    "source": "simulated",
+    "started_at": "2026-10-10T18:00:50Z",
+    "ended_at": "2026-10-10T18:02:50Z",
+    "quality_flags": [],
+    "task_id": "44444444-4444-4444-8444-444444444444",
+    "task_version": "choice_inhibit_v0",
+    "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "practice_trials": 6,
+    "scored_trials": 60,
+    "go_trials": 48,
+    "no_go_trials": 12,
+    "valid_correct_go_trials": 45,
+    "features": {
+      "median_rt_ms": 340.0,
+      "iqr_rt_ms": 80.0,
+      "p90_rt_ms": 470.0,
+      "omission_rate": 0.041666666666666664,
+      "wrong_go_rate": 0.020833333333333332,
+      "no_go_error_rate": 0.08333333333333333
+    },
+    "events_artifact_id": null
+  },
+  "capture_completed_at": "2026-10-10T18:03:00Z"
+}

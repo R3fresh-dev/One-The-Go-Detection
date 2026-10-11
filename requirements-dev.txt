@@ -1,0 +1,6 @@
+# Direct dependencies used for local contract and OpenAPI verification.
+# Tested on Python 3.12; this is not a full transitive supply-chain lock file.
+jsonschema==4.26.0
+referencing==0.37.0
+PyYAML==6.0.3
+openapi-spec-validator==0.8.5

@@ -1,0 +1,48 @@
+{
+  "schema_version": "0.1.0",
+  "model_id": "unvalidated-placeholder-v0",
+  "lifecycle": "unvalidated",
+  "artifact_sha256": null,
+  "endpoint_id": null,
+  "endpoint_definition": null,
+  "input_contract_version": "0.1.0",
+  "required_channels": [
+    "saliva_thc",
+    "pupil",
+    "cardiac_hr",
+    "task"
+  ],
+  "allowed_protocol_ids": [],
+  "allowed_collection_method_ids": [],
+  "allowed_assay_ids": [],
+  "allowed_assay_bases": [],
+  "allowed_hardware_revisions": [],
+  "allowed_task_versions": [
+    "choice_inhibit_v0"
+  ],
+  "allowed_provenance": [],
+  "feature_version": "unimplemented-v0",
+  "baseline_mode": "population",
+  "operating_threshold": null,
+  "calibration_id": null,
+  "quality_policy_id": null,
+  "co_use_policy_id": null,
+  "population": {
+    "description": null,
+    "min_age_years": null,
+    "max_age_years": null
+  },
+  "max_clock_uncertainty_ms": null,
+  "max_acquisition_span_ms": null,
+  "max_delivery_delay_ms": null,
+  "uncertainty_policy": {
+    "policy_id": null,
+    "method": "unresolved",
+    "lower": null,
+    "upper": null,
+    "rationale": null
+  },
+  "validation_report_uri": null,
+  "approval_refs": [],
+  "compatibility_policy_id": null
+}
