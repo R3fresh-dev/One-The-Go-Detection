@@ -2,6 +2,13 @@
 // but is signed ONLY with the generated public Android development key. This is
 // not a production signing configuration or an APK for Play distribution.
 gradle.projectsEvaluated {
+  // Init scripts also reach React Native/Expo composite plugin builds. Gradle's
+  // public parent-build API identifies those nested builds; only the top-level
+  // generated Android app is an artifact/signing target of this contract.
+  // https://docs.gradle.org/current/javadoc/org/gradle/api/invocation/Gradle.html#getParent()
+  if (gradle.parent != null) {
+    return
+  }
   def app = gradle.rootProject.findProject(':app')
   if (app == null || System.getenv('APP_ENV') != 'local') {
     throw new GradleException('Local preview builds require APP_ENV=local and the generated app project.')
