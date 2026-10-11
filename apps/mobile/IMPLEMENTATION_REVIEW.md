@@ -168,7 +168,7 @@ No finding is considered closed merely because a comment describes the intended 
 
 `PermissionsCard` guards asynchronous status results by query sequence and mounted state. Bluetooth and camera status helpers make no permission request. iOS uses the static `CBManager.authorization` and `AVCaptureDevice.authorizationStatus(for: .video)` APIs, with restricted, denied, not-determined and authorized cases. The podspec links CoreBluetooth and AVFoundation. Android uses `PermissionsAndroid.check` and labels false as not granted rather than claiming the OS distinguishes never requested from denied. The web adapter reports native unavailability/unknown explicitly.
 
-Apple's primary API references inspected for the signatures: [CBManager.authorization](https://developer.apple.com/documentation/corebluetooth/cbmanager/authorization-swift.type.property) and [AVCaptureDevice.authorizationStatus(for:)](<https://developer.apple.com/documentation/avfoundation/avcapturedevice/authorizationstatus(for:)>). Signature inspection and TypeScript checking do not establish OS permission behavior on a device.
+Apple's primary API references inspected for the signatures: [CBManager.authorization](https://developer.apple.com/documentation/corebluetooth/cbmanager/authorization-swift.type.property) and [AVCaptureDevice.authorizationStatus(for:)](https://developer.apple.com/documentation/avfoundation/avcapturedevice/authorizationstatus%28for:%29). Signature inspection and TypeScript checking do not establish OS permission behavior on a device.
 
 ### Exact export and privacy confirmation
 
