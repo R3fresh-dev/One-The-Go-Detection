@@ -1,0 +1,217 @@
+{
+  "schema_version": "1.0.0",
+  "configuration_id": "choice_inhibit_v0_native_dev_1",
+  "task_version": "choice_inhibit_v0",
+  "implementation_version": "1.0.0",
+  "extractor_version": "choice_inhibit_features_1",
+  "seed": {
+    "type": "uint32",
+    "min": 0,
+    "max": 4294967295
+  },
+  "rng": {
+    "algorithm": "lcg32",
+    "multiplier": 1664525,
+    "increment": 1013904223,
+    "modulus": 4294967296
+  },
+  "schedule": {
+    "shuffle": "fisher_yates_descending",
+    "initial_group_order": [
+      "left",
+      "right",
+      "no_go"
+    ],
+    "practice_counts": {
+      "left": 2,
+      "right": 2,
+      "no_go": 2
+    },
+    "scored_counts": {
+      "left": 24,
+      "right": 24,
+      "no_go": 12
+    },
+    "shuffle_order": [
+      "practice",
+      "scored"
+    ],
+    "interval_draws": 66,
+    "first_onset_ms": 2000,
+    "interval_min_ms": 1500,
+    "interval_modulus": 401,
+    "interval_semantics": "trial_i_to_trial_i_plus_one_final_draw_retained_unused"
+  },
+  "timing": {
+    "response_window_ms": 1000,
+    "response_start_inclusive": true,
+    "response_end_inclusive": false,
+    "max_input_dispatch_delay_ms": 100,
+    "max_frame_callback_dispatch_delay_ms": 100,
+    "max_frame_gap_ms": 100,
+    "max_scheduled_onset_lateness_ms": 100,
+    "final_event_drain_ms": 100,
+    "fault_comparison": "greater_than",
+    "negative_native_dispatch_is_fault": true,
+    "clock_regression_is_fault": true,
+    "terminal_cutoff": "last_actual_onset_plus_response_window_plus_drain",
+    "same_turn_cancel_precedes_terminal": true
+  },
+  "events": {
+    "max_touch_down_events": 1024,
+    "input_kinds": [
+      "direct_touch"
+    ],
+    "target_order": [
+      "left",
+      "right",
+      "outside"
+    ],
+    "sort_keys": [
+      "native_timestamp_ms",
+      "target_rank",
+      "pointer_id",
+      "native_sequence"
+    ],
+    "late_after_terminal": "ignore_without_mutating_terminal_evidence",
+    "overflow": "invalidate_and_stop"
+  },
+  "scoring": {
+    "practice_excluded": true,
+    "first_qualifying_response_only": true,
+    "quantile_method": "linear_index_n_minus_one_p",
+    "correct_go_quantiles_percent": [
+      25,
+      50,
+      75,
+      90
+    ],
+    "empty_quantiles": null,
+    "invalid_features": null,
+    "eligible_trial_policy": "every_presented_trial_if_run_intact",
+    "response_fault_excludes_entire_run": true,
+    "anticipatory_classification": "before_first_onset_or_between_trials",
+    "late_classification": "at_or_after_preceding_deadline_before_next_onset",
+    "full_precision_storage": true,
+    "display_ms_rounding": "nearest_integer_half_away_from_zero",
+    "numeric_fixture_absolute_tolerance_ms": "0.000001"
+  },
+  "presentation": {
+    "orientation": "portrait",
+    "minimum_view_width_points": 240,
+    "minimum_view_height_points": 400,
+    "rect_unit": "per_mille_of_view",
+    "stimulus_rect": [
+      200,
+      150,
+      600,
+      400
+    ],
+    "left_target_rect": [
+      20,
+      650,
+      460,
+      250
+    ],
+    "right_target_rect": [
+      520,
+      650,
+      460,
+      250
+    ],
+    "end_task_rect": [
+      750,
+      20,
+      230,
+      120
+    ],
+    "stimulus_labels": {
+      "left": "LEFT_ARROW",
+      "right": "RIGHT_ARROW",
+      "no_go": "WAIT"
+    },
+    "target_labels": {
+      "left": "Left",
+      "right": "Right"
+    },
+    "between_trials": "neutral_fixation",
+    "screen_reader_mode": "uncalibrated_adapted_practice",
+    "layout_change": "invalidate",
+    "style": {
+      "color_space": "sRGB",
+      "alpha": 255,
+      "background_hex": "#101820",
+      "stimulus_hex": "#FFFFFF",
+      "fixation_hex": "#B8C4CE",
+      "target_fill_hex": "#213547",
+      "target_text_hex": "#FFFFFF",
+      "border_hex": "#71899E",
+      "end_fill_hex": "#334155",
+      "end_text_hex": "#FFFFFF",
+      "border_width_points": 2,
+      "corner_radius_points": 12,
+      "fixation_dot_diameter_points": 8,
+      "right_arrow_polygon_per_mille": [
+        [
+          150,
+          400
+        ],
+        [
+          550,
+          400
+        ],
+        [
+          550,
+          200
+        ],
+        [
+          850,
+          500
+        ],
+        [
+          550,
+          800
+        ],
+        [
+          550,
+          600
+        ],
+        [
+          150,
+          600
+        ]
+      ],
+      "left_arrow_transform": "mirror_right_x_about_500",
+      "arrow_fit": "uniform_largest_centered_square_inside_stimulus_rect",
+      "arrow_stroke": "none",
+      "font_family": {
+        "android": "sans-serif",
+        "ios": "system_sans_serif"
+      },
+      "font_weight": "regular",
+      "wait_font_size_points": 32,
+      "response_font_size_points": 20,
+      "end_font_size_points": 16,
+      "text_alignment": "center",
+      "scored_text_scale": "fixed_1_0",
+      "text_overflow": "reject_layout_before_start",
+      "theme_invariant": true,
+      "os_brightness_changes": "do_not_request_or_override",
+      "physical_luminance": "unmeasured",
+      "between_trial_fixation": "filled_centered_dot"
+    },
+    "minimum_control_hit_target_points": {
+      "android": 48,
+      "ios": 44
+    }
+  },
+  "provenance": {
+    "bridge_source": "native_task",
+    "domain_source": "prototype_sensor",
+    "calibration_status": "uncalibrated",
+    "model_eligible": false,
+    "physical_onset_verified": false,
+    "android_onset_method": "choreographer_frame_time_nanos",
+    "ios_onset_method": "cadisplaylink_target_timestamp"
+  }
+}

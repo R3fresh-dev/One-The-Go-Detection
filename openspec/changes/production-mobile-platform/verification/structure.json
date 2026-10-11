@@ -1,0 +1,108 @@
+{
+  "features": [
+    {
+      "feature": "android-alcohol-channel",
+      "requirements": 6,
+      "scenarios": 12
+    },
+    {
+      "feature": "android-app-environment",
+      "requirements": 7,
+      "scenarios": 14
+    },
+    {
+      "feature": "android-dashboard",
+      "requirements": 7,
+      "scenarios": 17
+    },
+    {
+      "feature": "android-data-export",
+      "requirements": 7,
+      "scenarios": 14
+    },
+    {
+      "feature": "android-device-pairing",
+      "requirements": 8,
+      "scenarios": 19
+    },
+    {
+      "feature": "android-ecg-capture",
+      "requirements": 7,
+      "scenarios": 16
+    },
+    {
+      "feature": "android-eye-capture",
+      "requirements": 7,
+      "scenarios": 16
+    },
+    {
+      "feature": "android-guided-check",
+      "requirements": 8,
+      "scenarios": 21
+    },
+    {
+      "feature": "android-heart-rate",
+      "requirements": 7,
+      "scenarios": 16
+    },
+    {
+      "feature": "android-history",
+      "requirements": 7,
+      "scenarios": 17
+    },
+    {
+      "feature": "android-offline-sync",
+      "requirements": 7,
+      "scenarios": 14
+    },
+    {
+      "feature": "android-onboarding",
+      "requirements": 6,
+      "scenarios": 14
+    },
+    {
+      "feature": "android-privacy-controls",
+      "requirements": 7,
+      "scenarios": 17
+    },
+    {
+      "feature": "android-profile",
+      "requirements": 7,
+      "scenarios": 16
+    },
+    {
+      "feature": "android-reaction-task",
+      "requirements": 8,
+      "scenarios": 22
+    },
+    {
+      "feature": "android-results",
+      "requirements": 7,
+      "scenarios": 14
+    },
+    {
+      "feature": "android-saliva-measurement",
+      "requirements": 7,
+      "scenarios": 16
+    },
+    {
+      "feature": "android-settings-accessibility",
+      "requirements": 7,
+      "scenarios": 17
+    },
+    {
+      "feature": "android-sign-in",
+      "requirements": 7,
+      "scenarios": 17
+    },
+    {
+      "feature": "android-study-enrollment",
+      "requirements": 6,
+      "scenarios": 12
+    }
+  ],
+  "requirement_count": 140,
+  "scenario_count": 321,
+  "status": "passed",
+  "scope": "specification structure only"
+}

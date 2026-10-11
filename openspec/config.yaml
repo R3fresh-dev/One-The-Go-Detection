@@ -1,0 +1,32 @@
+schema: spec-driven
+context: |
+  Product: One-The-Go Detection, Android and iOS app with a pocket reader.
+  Upstream: specs/PRD.md, specs/HLD.md, specs/LLD.md, specs/FULL_SPECIFICATION.md.
+  One feature maps to one Android capability spec; specify equivalent iOS behavior.
+  User requested specifications, then adversarial review, then implementation.
+  Deployment targets: local Docker Compose with LocalStack, separate AWS QA and prod.
+  Production software quality does not establish assay or clinical validation.
+  P0/P1 results are measurement-only with null probability. External scientific gates
+  remain closed until independently supported. No driving-clearance output is permitted.
+  No real participant data or secrets in this public repository.
+rules:
+  specs:
+    - Include exact customer steps, copy/actions, data semantics, failure recovery, and Given/When/Then scenarios.
+    - Use unique AND-prefixed requirement IDs and map every capability to upstream requirements.
+    - Define Android and iOS differences without substituting JavaScript timing for native task timestamps.
+    - Distinguish engineering defaults from unresolved scientific acceptance limits.
+  design:
+    - Specify local/QA/prod isolation, identity, persistence, queues, concurrency, cryptographic boundaries, and recovery.
+    - Resolve conflicting contracts explicitly and document external account/hardware prerequisites.
+  tasks:
+    - Link implementation work to feature IDs and verification evidence.
+    - Leave validation steps unchecked when they were not executed; code presence is not validation.
+operations:
+  apply:
+    guidance:
+      - Finish and record adversarial specification review before implementing application code.
+      - Existing user instruction authorizes implementation following the review; no additional approval is required for local implementation or committing it.
+      - Report hardware, signing, cloud-access, or runtime limitations precisely without presenting them as passing checks.
+  archive:
+    guidance:
+      - Do not archive an incomplete change or mark unexecuted release verification complete.
