@@ -94,7 +94,13 @@ jobs:
         run: node node_modules/expo/bin/cli prebuild --platform android --no-install
         working-directory: apps/mobile
       - name: Require Android SDK 36
-        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+        run: |
+          otgd_android_sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          otgd_sdkmanager="$otgd_android_sdk/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$otgd_sdkmanager"
+          "$otgd_sdkmanager" --sdk_root="$otgd_android_sdk" 'platforms;android-36' 'build-tools;36.0.0'
+          test -f "$otgd_android_sdk/platforms/android-36/android.jar"
+          test -x "$otgd_android_sdk/build-tools/36.0.0/aapt2"
       - name: Compile native modules, run Kotlin golden suites, build debug APK
         run: ./gradlew --no-daemon --max-workers=2 -PreactNativeDevServerPort=8082 -PreactNativeArchitectures=arm64-v8a,x86_64 :otgd-reaction-task:testDebugUnitTest :app:assembleDebug
         working-directory: apps/mobile/android
