@@ -1,0 +1,42 @@
+# Commit-bound continuous integration evidence
+
+This file records observed job conclusions and artifacts, not merely workflow source. A later source change needs its own relevant verification. None of these jobs establishes physical timing, sensing qualification, clinical validity, a LocalStack deployment or AWS QA/production operation.
+
+## Initial implementation checkpoint — 8aa56ce
+
+Commit: [`8aa56ce9883aaafeba11b809c94bc406e7ee0a0a`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/8aa56ce9883aaafeba11b809c94bc406e7ee0a0a). Observed on 2026-10-11.
+
+| Job | Observed conclusion | Evidence |
+|---|---|---|
+| Actual PostgreSQL integration | **Passed**: 84 tests; no PostgreSQL-only skip. Migration replay ran twice; runtime DDL, qualification/recovery writes and audit update/delete were denied as expected. | [Platform run](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022860), [job](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022860/job/114386425656), [JUnit artifact](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022860/artifacts/11691359963). |
+| Infrastructure/source | **Passed**: locked CDK verification, Python operational tests and script compilation. | [Job](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022860/job/114386425797). This is synthesis/source evidence, not an AWS deployment. |
+| Actual LocalStack | **Skipped** on this push; the separate workflow-dispatch gate requires its real activation token. | The skipped job is visible in the platform run. No token was fabricated and no mock was counted as LocalStack. |
+| Shared mobile and actual board compile | **Passed**: TypeScript, host suite, native asset verification, C++ protocol tests and actual Nano ESP32 target compilation. | [Native run](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022849), [job](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022849/job/114386425655), [firmware artifact](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022849/artifacts/11691373490). No board was flashed. |
+| iOS | **Passed**: actual Swift core tests, CocoaPods installation and complete iOS simulator application compilation. | [Job](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022849/job/114386425766), [iOS simulator app artifact](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022849/artifacts/11692156017). This is an unsigned simulator build, not an iPhone/TestFlight/store package. |
+| Android | **Failed before Gradle**: prebuild succeeded, then `sdkmanager` was not on the runner PATH. No APK was produced by this job. | [Job](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022849/job/114386425801). The runner-path correction was committed separately as [`4264c89`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/4264c89d1ff349b4782de26b87a3348ac736850f). Read its subsequent run before claiming Android success. |
+
+The native workflow's overall initial conclusion is failure because Android failed; that does not erase the separately successful iOS and firmware jobs. It is also not reported as an overall native pass.
+
+### Artifact identities and retention
+
+| Artifact | GitHub artifact ID | ZIP size | GitHub SHA-256 | Expiry recorded by GitHub |
+|---|---:|---:|---|---|
+| iOS simulator app | 11692156017 | 18,193,806 bytes | `441ec426dd6c1c81eb0fcb453f00d1340722c4a81116ccedcb3e43452cef277a` | 2026-10-25 04:25:55 UTC |
+| Nano ESP32 synthetic firmware | 11691373490 | 9,182,420 bytes | `56c6e34f8a0d5f41a9ed3d84ed8e40dd3804d6c6c803468495af579ed948bb2f` | 2026-10-25 04:17:06 UTC |
+| PostgreSQL JUnit results | 11691359963 | 2,079 bytes | `8cc00e70360edbe8f72726e0c5b69ae52f5f10d7b9d6d2071946412237872f09` | Seven-day workflow retention |
+
+Download retained artifacts before expiry or reproduce them with the pinned workflow. Artifact hashes identify development build output; they do not establish medical, regulatory or store-release approval.
+
+## Report/replacement service checkpoint — cf5df00
+
+Commit: [`cf5df00e01e567c5326880a4b8bedfa197d71bbe`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/cf5df00e01e567c5326880a4b8bedfa197d71bbe). [Platform run 38112423086](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38112423086) was observed on 2026-10-11.
+
+- **Actual PostgreSQL passed all 168 tests, with no skips**, in 37.17 seconds. This includes the report-revision race that refuses competing branches, the earlier idempotent creation race, replacement pagination/isolation, full original-evidence validation and export bounds. The one test-run warning concerns Starlette's deprecated HTTPX test-client integration.
+- Migration replay ran twice and the separate application role was denied runtime DDL, operator/system authority writes, and audit update/delete. [PostgreSQL job](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38112423086/job/114390571126).
+- The JUnit artifact is [11691832955](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38112423086/artifacts/11691832955), 3,923 ZIP bytes, SHA-256 `bf58800389423a62e1488288ed62cabeea412ede5d1ea2848f981373fb2c7dd8`, expiring 2026-10-18 04:43:21 UTC.
+- **The overall platform run failed:** its CDK checks passed, then the newly added document-link gate found that this evidence file was linked by the report review but absent from that selective commit. The file is committed in the following documentation correction; the failed conclusion is retained here. Generated-schema and later operational steps were skipped in that failed job.
+- Actual LocalStack remained **skipped**. PostgreSQL integration uses explicit storage doubles and does not establish real LocalStack or S3 behavior.
+
+## Android build corrections
+
+The SDK path fix at `4264c89` exposed missing native-module `versionName` values during Expo Gradle configuration. Commit `9b4a401` supplied module version metadata and standalone preview artifact verification. Its [Android job](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38112203366/job/114389912035) then refused a React Native included plugin build because the preview guard expected every Gradle build to contain the application project. Commit [`a246345`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/a24634574944f8da2248a7e78feb67b599be5654) scopes that guard to the top-level application build while retaining the local identity, environment, embedded-bundle and development-signing checks. These earlier failures produced no Android APK. A subsequent successful job and artifact are required before claiming one.
