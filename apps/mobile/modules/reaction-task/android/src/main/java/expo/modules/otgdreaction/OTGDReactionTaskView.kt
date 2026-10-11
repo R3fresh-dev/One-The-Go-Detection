@@ -41,7 +41,7 @@ internal object ReactionViewRegistry {
 
 class OTGDReactionTaskView(context: Context, appContext: AppContext) : ExpoView(context, appContext), Choreographer.FrameCallback {
   val onProgress by EventDispatcher()
-  val onComplete by EventDispatcher()
+  val onComplete by EventDispatcher<Map<String, Any?>>()
   var requestedRunId = ""
   var requestedSeed = 0.0
   var requestedRunning = false
