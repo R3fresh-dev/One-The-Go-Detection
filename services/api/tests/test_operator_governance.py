@@ -354,7 +354,7 @@ def test_bound_reader_start_token_comes_from_real_owned_proof_and_exact_frozen_b
     from otgd.canonical import canonical
     from otgd.config import ROOT
     from otgd import operator_governance as governance
-    from .governance_fixture import adc_material
+    from .governance_fixture import adc_material, acknowledge_cardiac
 
     # A hypothetical shipped-driver inventory exercises authority software only;
     # this scoped test override neither provisions hardware nor changes release inventory.
@@ -394,7 +394,9 @@ def test_bound_reader_start_token_comes_from_real_owned_proof_and_exact_frozen_b
         "configuration_id": config["configuration_id"], "configuration_hash": config["sha256"], "quality_flags": [],
         "component_metadata": {"modality": "ppg"}, "artifact_refs": [], "attestation_refs": []}
     assert client.put(f"/v1/sessions/{sid}/attempts/{aid}", headers=headers(revision=0), json=attempt).status_code == 200
+    instruction = acknowledge_cardiac(client, sid, attempt, config)
     granted = client.post(f"/v1/sessions/{sid}/capture-authorizations", headers=headers(), json={
+        "instruction_receipt_id": instruction["instruction_receipt_id"],
         "attempt_id": aid, "channel": "cardiac", "binding_id": bound.json()["binding_id"], "device_id": DEVICE,
         "configuration_id": config["configuration_id"], "configuration_hash": config["sha256"]})
     assert granted.status_code == 201, granted.text
@@ -451,7 +453,7 @@ def test_typed_adc_material_retains_counts_and_rejects_unreviewed_pins_units_or_
 def test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec(monkeypatch):
     from pydantic import ValidationError
     from otgd import operator_governance as governance
-    from .governance_fixture import adc_material
+    from .governance_fixture import adc_material, acknowledge_cardiac
 
     generic = configuration("cardiac", software_adapter_id="otgd_signed_reader_v1")
     monkeypatch.setitem(governance.SOFTWARE_ADAPTERS, "cardiac", {"otgd_signed_reader_v1"})

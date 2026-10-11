@@ -24,6 +24,10 @@ sys.path.insert(0, str(ROOT / 'services' / 'api'))
 from pydantic import Field, FiniteFloat, field_validator, model_validator
 from otgd.canonical import canonical, digest, strict_loads
 from otgd.model_engine import Artifact, EvaluationReport, FEATURE_CHANNELS, Strict, score, utc_timestamp
+from otgd import cardiac_authority
+from otgd.errors import Problem
+from spec_validation import validate_session
+from jsonschema.exceptions import ValidationError as SchemaError
 
 MAX_BYTES = 16 * 1024 * 1024
 MAX_ROWS = 2000
@@ -100,6 +104,30 @@ class Endpoint(Strict):
         return self
 
 
+class CardiacProvenance(Strict):
+    """References to an independently reviewed retained bundle, not authentication."""
+    reviewed_source_bundle_ref: Name
+    reviewed_source_bundle_sha256: Hash
+    independent_review_ref: Name
+    independent_review_sha256: Hash
+    calibration_registry_sha256: Hash
+    calibration_scope_sha256: Hash
+    qualification_registry_sha256: Hash
+    device_registry_sha256: Hash
+    configuration_submitted_sha256: Hash
+
+
+class CardiacRowEvidence(Strict):
+    snapshot: dict
+    snapshot_sha256: Hash
+    authority: cardiac_authority.CardiacAuthority
+    authority_sha256: Hash
+    source_bundle_ref: Name
+    source_bundle_sha256: Hash
+    baseline_snapshot: dict | None
+    baseline_snapshot_sha256: Hash | None
+
+
 class Session(Strict):
     session_id: Name
     participant_ref: Name
@@ -111,6 +139,7 @@ class Session(Strict):
     features: Annotated[dict[str, Predictor], Field(max_length=16)]
     endpoint: Endpoint
     strata: dict[Stratum, StratumName]
+    cardiac_evidence: CardiacRowEvidence | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @model_validator(mode='after')
     def current_predictors(self):
@@ -214,7 +243,7 @@ class AnalysisPlan(Strict):
     versions: Versions
     seed: Name
     training_participant_count: Annotated[int, Field(ge=1, le=MAX_PARTICIPANTS-2)]
-    feature_names: Annotated[list[Name], Field(min_length=3, max_length=16)]
+    feature_names: Annotated[list[Name], Field(min_length=1, max_length=16)]
     feature_limits: dict[str, list[FiniteFloat]]
     iterations: Annotated[int, Field(ge=1, le=2000)]
     learning_rate: Annotated[FiniteFloat, Field(gt=0, le=0.25)]
@@ -230,6 +259,9 @@ class AnalysisPlan(Strict):
     denominator_policy: Literal['all_sessions_invalid_and_abstention_are_failures']
     invalid_score_loss: Literal[1]
     strata: dict[Stratum, Annotated[list[StratumName], Field(min_length=1,max_length=12)]]
+    cardiac_timing_policy: cardiac_authority.CardiacTimingPolicy | None = Field(default=None, exclude_if=lambda value: value is None)
+    cardiac_provenance: CardiacProvenance | None = Field(default=None, exclude_if=lambda value: value is None)
+    max_baseline_age_ms: Annotated[int, Field(ge=1, le=604800000)] | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @field_validator('invalid_score_loss', mode='before')
     @classmethod
@@ -245,7 +277,13 @@ class AnalysisPlan(Strict):
             raise ValueError('Later-session boundary must follow the frozen training cutoff')
         if (len(set(self.feature_names)) != len(self.feature_names) or any(name not in FEATURE_CHANNELS for name in self.feature_names)
             or set(self.feature_limits) != set(self.feature_names)
-            or any(len(pair) != 2 or pair[0] >= pair[1] or max(abs(v) for v in pair) > 1e6 for pair in self.feature_limits.values())
+            or any(len(pair) != 2 or pair[0] >= pair[1] or max(abs(v) for v in pair) > 1e6 for pair in self.feature_limits.values())):
+            raise ValueError('Frozen unique features and finite ordered limits are required')
+        if self.cardiac_timing_policy is not None:
+            if (self.feature_names != ['cardiac.heart_rate_bpm'] or self.cardiac_provenance is None
+                or self.cardiac_timing_policy.allow_baseline_delta != (self.max_baseline_age_ms is not None)):
+                raise ValueError('HR-only plans require sole HR feature, reviewed provenance and explicit personalized age policy')
+        elif (self.cardiac_provenance is not None or self.max_baseline_age_ms is not None or len(self.feature_names) < 3
             or 'cardiac.ecg_rmssd_ms' not in self.feature_names
             or not any(name.startswith('saliva.') for name in self.feature_names)
             or not any(not name.startswith('saliva.') and name != 'cardiac.ecg_rmssd_ms' for name in self.feature_names)):
@@ -286,8 +324,12 @@ def freeze(index: CohortIndex, plan: AnalysisPlan):
     for row in index.sessions:
         target, label_available = utc_timestamp(row.target_at), utc_timestamp(row.endpoint_available_at)
         capture, cutoff_at = utc_timestamp(row.capture_completed_at), utc_timestamp(row.information_cutoff_at)
-        if (not target <= capture <= cutoff_at or (capture-target)*1000 > plan.max_acquisition_span_ms
-            or (cutoff_at-capture)*1000 > plan.max_delivery_delay_ms):
+        # HR-only authority uses the independently qualified server interval at
+        # row admission. Preserve original client times for custody/splitting;
+        # an outcome-blind index cannot substitute them for that interval.
+        if (not target <= capture <= cutoff_at or plan.cardiac_timing_policy is None and (
+            (capture-target)*1000 > plan.max_acquisition_span_ms
+            or (cutoff_at-capture)*1000 > plan.max_delivery_delay_ms)):
             raise InvalidEvidence('Same-check acquisition/delivery cutoff exceeds its frozen plan')
         if max(cutoff_at, label_available) > utc_timestamp(index.locked_at):
             raise InvalidEvidence('Index contains observations after the claimed dataset lock')
@@ -311,15 +353,103 @@ def freeze(index: CohortIndex, plan: AnalysisPlan):
 
 
 def variants(plan):
+    if plan.cardiac_timing_policy is not None:
+        return {'cardiac_hr_only': ['cardiac.heart_rate_bpm']}
     return {'chemical_only': [name for name in plan.feature_names if name.startswith('saliva.')],
         'app_only': [name for name in plan.feature_names if not name.startswith('saliva.')],
         'combined': list(plan.feature_names), 'ecg_removed': [name for name in plan.feature_names if name != 'cardiac.ecg_rmssd_ms']}
 
 
+def cardiac_body(plan):
+    return {'cardiac_timing_policy': plan.cardiac_timing_policy.data(), 'manifest': {
+        'required_channels': ['cardiac_hr'], 'baseline_mode': 'personalized' if plan.cardiac_timing_policy.allow_baseline_delta else 'population',
+        'max_clock_uncertainty_ms': plan.cardiac_timing_policy.max_interval_ms,
+        'max_acquisition_span_ms': plan.max_acquisition_span_ms, 'max_delivery_delay_ms': plan.max_delivery_delay_ms},
+        'quality_policy': {'max_baseline_age_ms': plan.max_baseline_age_ms}}
+
+
+def cardiac_row_value(row, plan):
+    """Verify offline consistency using runtime arithmetic at the historical cutoff.
+
+    Editable JSON cannot verify retained signatures, custody principals, registry
+    release or independent review. Those are mandatory external admission work.
+    """
+    try:
+        item, provenance = row.cardiac_evidence, plan.cardiac_provenance
+        if item is None or provenance is None:
+            raise ValueError()
+        snapshot, authority = item.snapshot, item.authority.data()
+        validate_session(snapshot)
+        body = cardiac_body(plan)
+        if (item.snapshot_sha256 != digest(snapshot) or item.authority_sha256 != digest(authority)
+            or snapshot['session_id'] != row.session_id or snapshot['subject_ref'] != row.participant_ref
+            or snapshot['target_at'] != row.target_at or snapshot['capture_completed_at'] != row.capture_completed_at
+            or snapshot['created_at'] != snapshot['target_at'] or snapshot['mode'] != 'controlled_research'
+            or row.quality_flags != snapshot['cardiac']['quality_flags']
+            or authority['policy'] != plan.cardiac_timing_policy.data()
+            or item.source_bundle_ref != provenance.reviewed_source_bundle_ref
+            or item.source_bundle_sha256 != provenance.reviewed_source_bundle_sha256):
+            raise ValueError()
+        current = cardiac_authority.validate_interval(snapshot, body, authority['current'],
+            evaluated_epoch=utc_timestamp(row.information_cutoff_at))
+        for name in ('calibration_registry_sha256', 'calibration_scope_sha256', 'qualification_registry_sha256',
+            'device_registry_sha256', 'configuration_submitted_sha256'):
+            if current[name] != getattr(provenance, name):
+                raise ValueError()
+        if (current['device_id'] != snapshot['device']['device_id']
+            or current['boot_id'] != snapshot['device']['boot_id']
+            or current['hardware_revision'] != snapshot['device']['hardware_revision']
+            or current['firmware_version'] != snapshot['device']['firmware_version']
+            or current['configuration_id'] != snapshot['cardiac']['acquisition_config_id']):
+            raise ValueError()
+        predictor = row.features.get('cardiac.heart_rate_bpm')
+        if (predictor is None
+            or predictor.observed_at is not None and utc_timestamp(predictor.observed_at) != utc_timestamp(snapshot['cardiac']['ended_at'])
+            or predictor.available_at is not None and utc_timestamp(predictor.available_at) < current['received_epoch']):
+            raise ValueError()
+        baseline = None
+        if plan.cardiac_timing_policy.allow_baseline_delta:
+            baseline = item.baseline_snapshot
+            if baseline is None or item.baseline_snapshot_sha256 != digest(baseline):
+                raise ValueError()
+            validate_session(baseline)
+            old = cardiac_authority.validate_interval(baseline, body, authority['baseline'], baseline=True,
+                evaluated_epoch=utc_timestamp(row.information_cutoff_at))
+            if (snapshot['baseline_ref'] != baseline['session_id'] or baseline['created_at'] != baseline['target_at']
+                or baseline['mode'] != 'controlled_research'
+                or any(old[key] == current[key] for key in ('session_id', 'attempt_id', 'authorization_id', 'attestation_id'))
+                or any(old[key] != baseline['device'][key] for key in ('device_id', 'boot_id', 'hardware_revision', 'firmware_version'))
+                or old['configuration_id'] != baseline['cardiac']['acquisition_config_id']):
+                raise ValueError()
+            cardiac_authority.validate_baseline(snapshot, body, current, old)
+        elif (item.baseline_snapshot is not None or item.baseline_snapshot_sha256 is not None
+            or authority['baseline'] is not None or snapshot['baseline_ref'] is not None):
+            raise ValueError()
+        if cardiac_authority.build_authority(body, current, old if baseline is not None else None) != authority:
+            raise ValueError()
+        # The same runtime feature projection derives raw HR or its explicit
+        # personal-baseline delta, including subject/protocol/study compatibility.
+        from otgd.model_engine import feature_values
+        prototype = Artifact.model_validate({'schema_version': '1.0.0', 'algorithm': 'logistic_linear_v1',
+            'input_contract_version': '0.1.0', 'feature_version': plan.versions.feature_version,
+            'feature_names': ['cardiac.heart_rate_bpm'], 'means': [0.0], 'scales': [1.0], 'coefficients': [0.0],
+            'intercept': 0.0, 'calibration': {'calibration_id': plan.calibration_id, 'slope': 1.0, 'intercept': 0.0},
+            'feature_limits': plan.feature_limits, 'trained_at': plan.prespecified_at})
+        return feature_values(snapshot, prototype, baseline)[0]
+    except (ValueError, KeyError, TypeError, OverflowError, Problem, SchemaError):
+        raise InvalidEvidence('CARDIAC_EVIDENCE_INVALID') from None
+
+
 def row_values(row, names, plan):
     reasons = []
-    if row.acquisition_status != 'valid' or row.quality_flags:
+    if row.acquisition_status != 'valid' or plan.cardiac_timing_policy is None and row.quality_flags:
         reasons.append('INVALID_ACQUISITION')
+    derived = None
+    if plan.cardiac_timing_policy is not None:
+        try:
+            derived = cardiac_row_value(row, plan)
+        except InvalidEvidence:
+            reasons.append('CARDIAC_EVIDENCE_INVALID')
     values = []
     for name in names:
         predictor = row.features.get(name)
@@ -327,6 +457,8 @@ def row_values(row, names, plan):
             reasons.append('MISSING_OR_CENSORED:' + name)
         elif not plan.feature_limits[name][0] <= predictor.value <= plan.feature_limits[name][1]:
             reasons.append('OUTSIDE_PRESPECIFIED_LIMIT:' + name)
+        elif plan.cardiac_timing_policy is not None and predictor.value != derived:
+            reasons.append('CARDIAC_VALUE_NOT_DERIVED')
         else:
             values.append(float(predictor.value))
     return (None, sorted(reasons)) if reasons else (values, [])
@@ -337,6 +469,10 @@ def validate_binding(dataset, plan, split):
     if canonical(expected) != canonical(split):
         raise InvalidEvidence('Frozen split does not reproduce from this exact dataset and analysis')
     for row in dataset.sessions:
+        if plan.cardiac_timing_policy is not None and set(row.features) != {'cardiac.heart_rate_bpm'}:
+            raise InvalidEvidence('HR-only evaluation cannot include mixed-channel predictor rows')
+        if plan.cardiac_timing_policy is None and row.cardiac_evidence is not None:
+            raise InvalidEvidence('Cardiac evidence requires a separately prespecified HR-only analysis')
         if abs(utc_timestamp(row.endpoint.assessed_at)-utc_timestamp(row.target_at)) > plan.maximum_endpoint_offset_seconds:
             raise InvalidEvidence('Independent endpoint lies outside the prespecified target window')
         if any(row.strata[name] not in plan.strata[name] for name in STRATA):
@@ -373,6 +509,24 @@ def fit_linear(rows, names, plan, trained_at):
         'feature_limits': {name: plan.feature_limits[name] for name in names}, 'trained_at': trained_at})
 
 
+def cardiac_evidence_manifest(dataset, plan):
+    """Cohort custody inventory; distinct from each signed capture's manifest."""
+    return {'schema_version': '1.0.0', 'purpose': 'offline_cardiac_cohort_custody_inventory',
+        'dataset_sha256': digest(dataset.model_dump()), 'analysis_plan_sha256': digest(plan.model_dump()),
+        'provenance': plan.cardiac_provenance.model_dump(), 'cardiac_timing_policy': plan.cardiac_timing_policy.data(),
+        'rows': [{'session_id': row.session_id, 'session_record_sha256': digest(row.model_dump()),
+            'source_bundle_ref': row.cardiac_evidence.source_bundle_ref if row.cardiac_evidence else None,
+            'source_bundle_sha256': row.cardiac_evidence.source_bundle_sha256 if row.cardiac_evidence else None,
+            'snapshot_sha256': row.cardiac_evidence.snapshot_sha256 if row.cardiac_evidence else None,
+            'authority_sha256': row.cardiac_evidence.authority_sha256 if row.cardiac_evidence else None,
+            'baseline_snapshot_sha256': row.cardiac_evidence.baseline_snapshot_sha256 if row.cardiac_evidence else None,
+            'captured_session_evidence_manifest_sha256': row.cardiac_evidence.authority.current.evidence_manifest_sha256 if row.cardiac_evidence else None,
+            'baseline_captured_session_evidence_manifest_sha256': row.cardiac_evidence.authority.baseline.evidence_manifest_sha256 if row.cardiac_evidence and row.cardiac_evidence.authority.baseline else None,
+            'preserved_quality_flags': row.quality_flags}
+            for row in sorted(dataset.sessions, key=lambda value: value.session_id)],
+        'signatures_registry_release_and_independent_review_authenticated': False}
+
+
 def train(dataset, plan, split, trained_at, pipeline_locked_at=None):
     rows = validate_binding(dataset, plan, split)
     if not utc_timestamp(dataset.locked_at) <= utc_timestamp(trained_at) <= datetime.now(timezone.utc).timestamp():
@@ -398,6 +552,8 @@ def train(dataset, plan, split, trained_at, pipeline_locked_at=None):
         'eligible_session_ids': [row.session_id for row in eligible], 'rejected_training_rows': rejected,
         'preprocessing': 'training_only_population_mean_sd_constant_scale_one_v1', 'calibration': 'prespecified_identity',
         'selection': 'all_prespecified_features_no_confirmatory_tuning', 'authority_granted': False}
+    if plan.cardiac_timing_policy is not None:
+        receipt.update(analysis_scope='cardiac_hr_only', cardiac_evidence_manifest_sha256=digest(cardiac_evidence_manifest(dataset, plan)))
     return artifacts, receipt
 
 
@@ -413,6 +569,11 @@ def predictions(rows, artifact, plan):
             'endpoint': row.endpoint.value, 'state': 'invalid' if probability is None else 'abstained' if abstained else 'classified',
             'probability': probability, 'predicted_positive': None if probability is None or abstained else probability >= plan.operating_threshold,
             'reason_codes': reasons if probability is None else ['PRESPECIFIED_UNCERTAINTY_ABSTENTION'] if abstained else []})
+        if plan.cardiac_timing_policy is not None:
+            item = row.cardiac_evidence
+            result[-1].update(preserved_quality_flags=row.quality_flags,
+                snapshot_sha256=item.snapshot_sha256 if item else None,
+                authority_sha256=item.authority_sha256 if item else None)
     return result
 
 
@@ -529,6 +690,8 @@ def subgroup_report(prediction_sets, plan, cohort):
 
 def paired_comparisons(prediction_sets, plan, cohort):
     """Paired all-session score differences using identical cluster draws."""
+    if plan.cardiac_timing_policy is not None:
+        return {}
     combined = prediction_sets['combined']
     tail = (1-plan.confidence_level)/2
     results = {}
@@ -564,18 +727,26 @@ def evaluate(dataset, plan, split, artifacts, training, evaluated_at):
     all_metrics, details, output_rows = {}, {}, {}
     for cohort in ('confirmatory', 'later_sessions'):
         selected = [rows[identity] for identity in split['session_ids'][cohort]]
-        for variant in VARIANTS:
+        for variant in variants(plan):
             values = predictions(selected, models[variant], plan)
             metric, detail = metrics(values, plan, cohort)
             all_metrics.setdefault(cohort, {})[variant] = metric
             details.setdefault(cohort, {})[variant] = detail
             output_rows.setdefault(cohort, {})[variant] = values
-    report = EvaluationReport.model_validate({'schema_version': '1.0.0', 'artifact_sha256': digest(artifacts['combined']),
+    primary = 'cardiac_hr_only' if plan.cardiac_timing_policy is not None else 'combined'
+    report_value = {'schema_version': '1.0.0', 'artifact_sha256': digest(artifacts[primary]),
         'dataset_sha256': digest(dataset.model_dump()), 'split_plan_sha256': digest(split), 'analysis_plan_sha256': digest(plan.model_dump()),
         'prespecified_at': plan.prespecified_at, 'locked_at': training['pipeline_locked_at'], 'evaluated_at': evaluated_at, 'endpoint_id': plan.endpoint_id,
-        'operating_threshold': plan.operating_threshold, 'confirmatory': all_metrics['confirmatory']['combined'],
-        'later_sessions': all_metrics['later_sessions']['combined'], 'ablations': all_metrics['confirmatory'],
-        'participant_overlap': False, 'future_predictors': False}).model_dump()
+        'operating_threshold': plan.operating_threshold, 'confirmatory': all_metrics['confirmatory'][primary],
+        'later_sessions': all_metrics['later_sessions'][primary], 'ablations': all_metrics['confirmatory'],
+        'participant_overlap': False, 'future_predictors': False}
+    if plan.cardiac_timing_policy is not None:
+        inventory = cardiac_evidence_manifest(dataset, plan)
+        report_value.update(analysis_scope='cardiac_hr_only', cardiac_evidence={
+            **{key: getattr(plan.cardiac_provenance, key) for key in ('calibration_registry_sha256',
+                'calibration_scope_sha256', 'qualification_registry_sha256', 'device_registry_sha256', 'configuration_submitted_sha256')},
+            'cardiac_timing_policy_sha256': digest(plan.cardiac_timing_policy.data()), 'evidence_manifest_sha256': digest(inventory)})
+    report = EvaluationReport.model_validate(report_value).model_dump()
     evidence = {'schema_version': '1.0.0', 'purpose': 'offline_locked_evaluation_evidence', 'status': 'unvalidated',
         'data_kind': dataset.data_kind, 'dataset_sha256': report['dataset_sha256'], 'analysis_plan_sha256': report['analysis_plan_sha256'],
         'split_plan_sha256': report['split_plan_sha256'], 'training_sha256': digest(training), 'evaluation_report_sha256': digest(report),
@@ -590,6 +761,10 @@ def evaluate(dataset, plan, split, artifacts, training, evaluated_at):
             'independent_endpoint_evidence_ref': plan.independent_endpoint_evidence_ref,
             'verified_by_tool': False, 'historical_lock_or_blinding_proven': False},
         'authority_granted': False, 'clinical_success_claimed': False}
+    if plan.cardiac_timing_policy is not None:
+        evidence.update(analysis_scope='cardiac_hr_only', cardiac_evidence_manifest=inventory,
+            cardiac_evidence_manifest_sha256=digest(inventory),
+            paired_ablations_qualification='not_applicable_to_prespecified_hr_only_analysis')
     return report, evidence
 
 
@@ -675,7 +850,7 @@ def main(argv=None):
         return {'training_sha256': digest(training), 'artifacts': training['artifact_sha256'], 'status': 'unvalidated', 'authority_granted': False}
     if not args.training_directory:
         raise InvalidEvidence('Supply --training-directory containing the exact frozen artifacts and receipt')
-    artifacts = {name: load(args.training_directory/(name+'.artifact.json'), Artifact).model_dump() for name in VARIANTS}
+    artifacts = {name: load(args.training_directory/(name+'.artifact.json'), Artifact).model_dump() for name in variants(plan)}
     training = load(args.training_directory/'training.json')
     if args.operation == 'evaluate':
         if not args.output:

@@ -25,6 +25,7 @@ from . import storage
 from .auth import authenticate, family_hash, recent
 from .canonical import canonical, digest, strict_loads
 from .capture_signing import require_signing_key, sign_start
+from .participant_acquisition import (InstructionAcknowledgment, CollectionRequest, acknowledge_instructions, instruction_receipt, accept_collection, collection_status, require_completed_collections, CollectionAbandonment, abandon_collection)
 from .config import settings, web_origins
 from .db import (
     Artifact,
@@ -59,7 +60,6 @@ from .domain import (
     safe_result,
     save_record,
     validate_component,
-    validate_measurement,
     verify_evidence,
     verify_signature,
 )
@@ -90,6 +90,7 @@ from .dto import (
     StartAuthorization,
     Withdrawal,
 )
+from .lab_handoff import (LabSourceRequest, delegated_target, create_source, source_target, source_ticket, source_fingerprint, verify_source, accept_source, import_measurements, import_scope)
 from .errors import response_problem
 from .replacement_links import replacement_links_view
 from .raw_capture import codec_limit, read_raw_version, validate_raw_artifact, verification_receipt
@@ -351,10 +352,12 @@ def answer(entry, body=None, status=200, headers=None, operation_id=None):
     return JSONResponse(entry.body, status_code=entry.status, headers=entry.headers)
 
 
-def mutate(request, handler, escape=False, ack=False):
+def mutate(request, handler, escape=False, ack=False, replay_guard=None):
     with access(request, allow_inactive=True) as (db, a, c, r):
         entry, replay = operation(request, db, a, c, r, escape, ack)
         if replay:
+            if replay_guard is not None:
+                replay_guard(db, a, entry)
             if entry.operation_id:
                 job = db.get(Job, entry.operation_id)
                 if job and job.kind == "export":
@@ -390,7 +393,7 @@ def evidence(db, a, check):
                 Record.account_id == a.id,
                 Record.generation == a.generation,
                 Record.parent_id == check.id,
-                Record.kind.in_(["context", "manifest", "attempt", "alcohol"]),
+                Record.kind.in_(["context", "manifest", "attempt", "alcohol", "instruction_receipt", "collection", "collection_abandon"]),
             )
         )
     )
@@ -398,11 +401,16 @@ def evidence(db, a, check):
         "context": None,
         "manifest": None,
         "attempts": [],
+        "instruction_receipts": [],
+        "collections": [],
+        "collection_abandons": [],
         "alcohol": None,
         "raw_artifacts_omitted_reason": "NO_RAW_EXPORT_SCOPE",
     }
     for row in rows:
-        if row.kind == "attempt":
+        if row.kind in ("instruction_receipt", "collection", "collection_abandon"):
+            result[{"instruction_receipt": "instruction_receipts", "collection": "collections", "collection_abandon": "collection_abandons"}[row.kind]].append(row.body)
+        elif row.kind == "attempt":
             result["attempts"].append(row.body)
         else:
             result[row.kind] = row.body
@@ -792,9 +800,14 @@ def evidence_write(request, session_id, kind, key, data):
             if data["attempt_id"] != key:
                 raise Problem(422, "ATTEMPT_MISMATCH")
             validate_component(data)
+            if check.mode != "synthetic" and data["source"] == "reference_lab" and data["status"] != "started":
+                raise Problem(403, "LAB_CUSTODY_ROUTE_REQUIRED")
             if check.mode != "synthetic" and data["source"] != "simulated" and data["status"] == "valid":
                 channel = "ecg" if data["component"] == "cardiac" and data["component_metadata"].get("projection", {}).get("modality") == "ecg" else data["component"]
                 config = qualification(db, a, check, channel, data["configuration_id"], data["configuration_hash"])
+                if config["material"].get("adapter_id") == "otgd_sparkfun_max32664_v1":
+                    from .vendor_evidence import validate_ppg
+                    validate_ppg(data["component_metadata"]["projection"], data["component_metadata"].get("ppg_evidence"), config["material"])
                 if config["software_adapter_id"] == "otgd_signed_reader_v1":
                     validate_reader_projection(db, config, data["component_metadata"]["projection"])
                 if data["source"] != "reference_lab":
@@ -914,6 +927,7 @@ def finalize(request: Request, session_id: UUID, body: Finalize):
         row = owned_check(db, a, session_id)
         require_draft(row)
         if_match(request, row.revision)
+        require_completed_collections(db, a, row)
         context, manifest = verify_evidence(db, a, row)
         if (
             row.snapshot_sha256 != body.snapshot_sha256
@@ -1193,6 +1207,41 @@ def unbind(request: Request, binding_id: UUID):
     return mutate(request, action, escape=True)
 
 
+@app.post("/v1/sessions/{session_id}/instruction-acknowledgments")
+def instructions_post(request: Request, session_id: UUID, body: InstructionAcknowledgment):
+    def action(db, a, c):
+        check = owned_check(db, a, session_id)
+        require_draft(check)
+        return acknowledge_instructions(db, a, check, body), 201, {}, None
+    return mutate(request, action)
+
+
+@app.post("/v1/sessions/{session_id}/collections")
+def collection_post(request: Request, session_id: UUID, body: CollectionRequest):
+    def action(db, a, c):
+        check = owned_check(db, a, session_id)
+        require_draft(check)
+        return accept_collection(db, a, check, body), 201, {}, None
+    return mutate(request, action)
+
+
+@app.post("/v1/sessions/{session_id}/collections/{sample_id}/abandon")
+def collection_abandon_post(request: Request, session_id: UUID, sample_id: UUID, body: CollectionAbandonment):
+    def action(db, a, c):
+        check = owned_check(db, a, session_id)
+        require_draft(check)
+        return abandon_collection(db, a, check, sample_id, body), 201, {}, None
+    return mutate(request, action, escape=True)
+
+
+@app.get("/v1/sessions/{session_id}/collections/{sample_id}")
+def collection_get(request: Request, session_id: UUID, sample_id: UUID):
+    with access(request) as (db, a, c, r):
+        check = owned_check(db, a, session_id)
+        qualification(db, a, check, "saliva")
+        return collection_status(db, a, check, sample_id)
+
+
 @app.post("/v1/sessions/{session_id}/capture-authorizations")
 def authorize_capture(request: Request, session_id: UUID, body: CaptureAuthorization):
     def action(db, a, c):
@@ -1212,6 +1261,7 @@ def authorize_capture(request: Request, session_id: UUID, body: CaptureAuthoriza
         ):
             raise Problem(409, "STARTED_ATTEMPT_REQUIRED")
         context = acquisition_context(db, a, check, config)
+        instructions = instruction_receipt(db, a, check, attempt.body, config, body.instruction_receipt_id)
         raw_permission = None
         if body.raw_recording_kind:
             if not raw_recording_supported(config, body.raw_recording_kind):
@@ -1220,6 +1270,8 @@ def authorize_capture(request: Request, session_id: UUID, body: CaptureAuthoriza
             raw_receipt = record(db, a, "raw_consent_receipt", raw_permission["receipt_id"])
             if raw_receipt.created > attempt.created:
                 raise Problem(403, "RAW_CONSENT_BEFORE_CAPTURE_REQUIRED")
+        if config["software_adapter_id"] == "reference_lab_import_v1" and (body.binding_id or body.device_id or body.raw_recording_kind):
+            raise Problem(422, "LAB_COLLECTION_HAS_NO_PERIPHERAL")
         if body.binding_id:
             binding = record(db, a, "binding", body.binding_id)
             if (
@@ -1233,7 +1285,7 @@ def authorize_capture(request: Request, session_id: UUID, body: CaptureAuthoriza
             )
             qualified_binding(db, a, config, binding)
             capture_binding_context(context, binding)
-        elif body.channel not in ("task", "eyes"):
+        elif body.channel not in ("task", "eyes") and config["software_adapter_id"] != "reference_lab_import_v1":
             raise Problem(403, "DEVICE_BINDING_REQUIRED")
         data = {
             **body.data(),
@@ -1252,6 +1304,9 @@ def authorize_capture(request: Request, session_id: UUID, body: CaptureAuthoriza
             "capture_context_sha256": context.sha256,
             "configuration_material": config["material"],
             "raw_recording_permission": raw_permission,
+            "participant_protocol": config.get("participant_protocol"),
+            "participant_protocol_sha256": digest(config["participant_protocol"]) if config.get("participant_protocol") else None,
+            "instruction_receipt": instructions.body if instructions else None,
         }
         save_record(db, a, "authorization", data["authorization_id"], data, session_id)
         return data, 201, {}, None
@@ -1285,6 +1340,12 @@ def start_capture(
             or v["attempt_id"] != body.attempt_id
         ):
             raise Problem(409, "AUTHORIZATION_EXPIRED_OR_USED")
+        attempt = record(db, a, "attempt", body.attempt_id)
+        if not attempt or attempt.parent_id != check.id or attempt.body["status"] != "started":
+            raise Problem(409, "STARTED_ATTEMPT_REQUIRED")
+        instructions = instruction_receipt(db, a, check, attempt.body, config, v.get("instruction_receipt_id"))
+        if config["software_adapter_id"] == "reference_lab_import_v1" and (body.device_boot_id or body.device_nonce):
+            raise Problem(422, "LAB_COLLECTION_HAS_NO_PERIPHERAL")
         device_key_id = None
         if v["binding_id"]:
             binding = record(db, a, "binding", v["binding_id"])
@@ -1313,6 +1374,8 @@ def start_capture(
             "issued_at": started_at, "expires_at": iso(started_epoch + 60),
             "device_nonce": body.device_nonce, "nonce": uid(),
             "raw_recording_permission": v.get("raw_recording_permission"),
+            "participant_protocol_sha256": v.get("participant_protocol_sha256"),
+            "instruction_receipt_id": v.get("instruction_receipt_id"),
         })
         row.body = {
             **v,
@@ -1332,6 +1395,8 @@ def start_capture(
                 "server_started_at": row.body["server_started_at"],
                 "raw_recording_permission": row.body.get("raw_recording_permission"),
                 "server_start": signed,
+                "participant_protocol_sha256": v.get("participant_protocol_sha256"),
+                "instruction_receipt": instructions.body if instructions else None,
             },
             200,
             {},
@@ -1382,14 +1447,19 @@ def attest(request: Request, session_id: UUID, body: Attestation):
         if v.get("configuration_submitted_sha256") != digest(config) or v.get("configuration_version") != config["version"]:
             raise Problem(403, "CONFIGURATION_APPROVAL_CHANGED")
         qualified_binding(db, a, config, binding)
+        from .participant_acquisition import validate_instruction_evidence
+        validate_instruction_evidence(db, a, check, attempt.body, config, authorization)
         if (
             e["configuration_hash"] != v["configuration_hash"]
             or attempt.body["configuration_hash"] != e["configuration_hash"]
         ):
             raise Problem(403, "CONFIGURATION_MISMATCH")
-        if e["payload_sha256"] != digest(body.normalized_payload) or digest(
-            body.normalized_payload
-        ) != digest(attempt.body["component_metadata"]["projection"]):
+        expected_payload = attempt.body["component_metadata"]["projection"]
+        if config["material"].get("adapter_id") == "otgd_sparkfun_max32664_v1":
+            from .vendor_evidence import validate_ppg
+            validate_ppg(expected_payload, attempt.body["component_metadata"].get("ppg_evidence"), config["material"])
+            expected_payload = {"projection": expected_payload, "ppg_evidence": attempt.body["component_metadata"]["ppg_evidence"]}
+        if e["payload_sha256"] != digest(body.normalized_payload) or digest(body.normalized_payload) != digest(expected_payload):
             raise Problem(422, "SIGNED_PAYLOAD_MISMATCH")
         key = registry(db, "device", e["device_id"] + ":" + e["key_id"])
         verify_signature(key["public_key_spki"], body.signature, "OTGD-CAPTURE-v1\n", e)
@@ -1613,47 +1683,38 @@ def artifact_complete(request: Request, artifact_id: UUID, body: CompleteArtifac
     return mutate(request, action)
 
 
+@app.post("/v1/research/lab-source-artifact-uploads")
+def lab_source_upload(request: Request, body: LabSourceRequest):
+    with access(request) as (db, a, c, r):
+        delegated_target(db, a, body.session_id, body.study_id, body.account_ref, body.data_generation)
+        entry, replay = operation(request, db, a, c, r)
+        if replay:
+            target, check, artifact, config = source_target(db, a, entry.body["artifact_id"])
+        else:
+            artifact, value = create_source(db, a, body)
+            answer(entry, value, 201)
+        ticket = source_ticket(artifact)
+        return JSONResponse({**entry.body, **ticket}, status_code=entry.status)
+
+
+@app.post("/v1/research/lab-source-artifact-uploads/{artifact_id}/complete")
+def lab_source_complete(request: Request, artifact_id: UUID, body: CompleteArtifact):
+    with access(request) as (db, a, c, r):
+        target, check, row, config = source_target(db, a, artifact_id)
+        if (body.sha256, body.size_bytes, body.media_type) != (row.sha256, row.size, row.media_type):
+            raise Problem(422, "ARTIFACT_MISMATCH")
+        detached, fingerprint = row, source_fingerprint(row)
+    version = verify_source(detached)
+    def action(db, a, c):
+        return accept_source(db, a, artifact_id, version, fingerprint=fingerprint), 200, {}, None
+    return mutate(request, action, replay_guard=lambda db, a, entry: source_target(db, a, artifact_id))
+
+
 @app.post("/v1/research/lab-imports")
 def lab_import(request: Request, body: LabImport):
     def action(db, a, c):
-        check = owned_check(db, a, body.session_id)
-        require_draft(check)
-        qualification(db, a, check, "saliva")
-        role = registry(db, "role", a.id)
-        if (
-            "lab_import" not in role.get("roles", [])
-            or check.study_id not in role.get("study_ids", [])
-            or role.get("expires_at", 0) <= now()
-        ):
-            raise Problem(403, "LAB_IMPORT_ROLE_REQUIRED")
-        artifact = db.get(Artifact, body.source_report_artifact_id)
-        if (
-            not artifact
-            or artifact.account_id != a.id
-            or artifact.generation != a.generation
-            or artifact.session_id != check.id
-            or artifact.kind != "source_lab_report"
-            or artifact.state != "verified"
-        ):
-            raise Problem(403, "VERIFIED_REPORT_REQUIRED")
-        for reading in body.measurements:
-            validate_measurement(reading)
-            if reading["source"] != "reference_lab":
-                raise Problem(422, "LAB_PROVENANCE_REQUIRED")
-        id = uid()
-        save_record(db, a, "lab_import", id, body.data(), check.id)
-        return (
-            {
-                "import_id": id,
-                "state": "verified_import",
-                "measurements": body.measurements,
-            },
-            201,
-            {},
-            None,
-        )
-
-    return mutate(request, action)
+        return import_measurements(db, a, body), 201, {}, None
+    return mutate(request, action, replay_guard=lambda db, a, entry: import_scope(db, a, body))
 
 
 @app.post("/v1/sessions/{session_id}/alcohol")

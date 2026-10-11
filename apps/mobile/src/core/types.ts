@@ -1,5 +1,6 @@
 import type { RawArtifact } from "./rawArtifacts";
 import type { AcquisitionLedger } from "./acquisition";
+import type { LabCollectionLedger } from "./participantAcquisition";
 import type { RawRecordingStatus, RawKind } from "./rawRecordings";
 import type { ReplacementLinksCache } from "./replacements";
 import type { ReportCache } from "./reportRevisions";
@@ -203,6 +204,7 @@ export interface ResearchExecution {
     study_approval_sha256: string;
     consent_sha256: string;
     registry_events_sha256: string;
+    cardiac_authority?: JsonObject;
   };
 }
 export interface ResearchResult extends Omit<
@@ -259,6 +261,10 @@ export interface CheckRecord {
   /** Local draft choice; null with two valid cardiac alternatives requires Review selection. */
   selected_cardiac_attempt_id?: string | null;
   acquisition?: AcquisitionLedger;
+  labCollection?: LabCollectionLedger;
+  instruction_receipts?: JsonObject[];
+  collections?: JsonObject[];
+  collection_abandons?: JsonObject[];
   attestations?: Record<string, JsonObject>;
   manifest: EvidenceManifest | null;
   snapshot_sha256: string | null;
@@ -341,6 +347,8 @@ export interface Capabilities {
         supported_os_versions?: string[];
         supported_native_builds?: string[];
         software_adapter_id: string;
+        participant_protocol?: JsonObject | null;
+        participant_protocol_sha256?: string | null;
       }[];
       configuration_id?: string;
       configuration_sha256?: string;

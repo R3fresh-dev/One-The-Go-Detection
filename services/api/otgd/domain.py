@@ -90,7 +90,7 @@ def registry(db, kind, id):
     authority_lock(db)
     value = db.scalar(
         select(Registry).where(Registry.id == kind + ":" + id)
-        .with_for_update(read=True).execution_options(populate_existing=True)
+        .execution_options(populate_existing=True)
     )
     if not value or not value.active or value.kind != kind:
         raise Problem(403, "CAPABILITY_DENIED")
@@ -190,7 +190,7 @@ def check_scientific_snapshot(snapshot, account, check):
 def validate_component(attempt):
     metadata = attempt["component_metadata"]
     component = attempt["component"]
-    common = {"projection", "armed_at", "fixture_id", "transport_evidence"}
+    common = {"projection", "armed_at", "fixture_id", "transport_evidence", "instruction_receipt"}
     fields = {
         "saliva": {
             "collector_id",
@@ -216,6 +216,8 @@ def validate_component(attempt):
             "collection_attempt_id",
             "analysis_attempt_id",
             "storage_handling_events",
+            "collection_receipt_id",
+            "collection_request_sha256",
         },
         "eyes": {
             "native_result",
@@ -237,6 +239,7 @@ def validate_component(attempt):
             "dropped_samples",
             "context",
             "acquisition_config_id",
+            "ppg_evidence",
         },
         "task": {
             "native_result",
@@ -260,6 +263,9 @@ def validate_component(attempt):
         from .dto import valid_utc
 
         valid_utc(metadata["armed_at"])
+    if "instruction_receipt" in metadata:
+        from .participant_acquisition import InstructionReceipt
+        InstructionReceipt.model_validate(metadata["instruction_receipt"])
     if set(metadata) - common - fields[component]:
         raise Problem(422, "UNKNOWN_COMPONENT_METADATA")
     if component == "cardiac" and (
@@ -348,10 +354,13 @@ def validate_component(attempt):
     for key, value in metadata.items():
         if key in (
             "projection",
+            "instruction_receipt",
             "native_result",
             "original_report",
             "frame_timing",
             "storage_handling_events",
+            "collection_receipt_id",
+            "ppg_evidence",
             "transport_evidence",
         ):
             continue
@@ -485,12 +494,21 @@ def verify_evidence(db, account, check):
         if ref["sha256"] != item.sha256 or item.body["status"] == "started":
             raise Problem(422, "ATTEMPT_DIGEST_MISMATCH")
         pred = item.body["supersedes_attempt_id"]
-        if pred and (
-            pred not in ids
-            or ids[pred].body["component"] != item.body["component"]
-            or ids[pred].body["status"] not in ("invalid", "canceled")
-        ):
+        if pred and (pred not in ids or ids[pred].body["component"] != item.body["component"]):
             raise Problem(422, "INVALID_ATTEMPT_LINEAGE")
+        if pred and ids[pred].body["status"] not in ("invalid", "canceled"):
+            metadata = item.body["component_metadata"]
+            imported = record(db, account, "lab_import", metadata.get("lab_import_id", ""))
+            collection = record(db, account, "collection", item.body["record_id"])
+            if (item.body["component"] != "saliva" or item.body["source"] != "reference_lab"
+                or not imported or imported.sha256 != digest(imported.body) or imported.parent_id != check.id
+                or not collection or collection.sha256 != digest(collection.body) or collection.parent_id != check.id
+                or imported.body.get("analysis_attempt_id") != item.body["attempt_id"]
+                or imported.body.get("collection_attempt_id") != pred
+                or imported.body.get("collection_receipt_id") != collection.body["collection_receipt_id"]
+                or collection.body["attempt"] != ids[pred].body
+                or imported.body["measurements"] != metadata.get("projection", {}).get("saliva")):
+                raise Problem(422, "INVALID_ATTEMPT_LINEAGE")
         if pred and item.body["component"] == "cardiac":
 
             def modality(body):
@@ -542,6 +560,9 @@ def verify_evidence(db, account, check):
                         native_optical = (body["source"] == "prototype_sensor"
                             and approved["software_adapter_id"] == "optical_roi_v1"
                             and approved.get("device_id") is None)
+                    if approved["material"].get("adapter_id") == "otgd_sparkfun_max32664_v1":
+                        from .vendor_evidence import validate_ppg
+                        validate_ppg(expected, body["component_metadata"].get("ppg_evidence"), approved["material"])
                     if approved["software_adapter_id"] == "otgd_signed_reader_v1":
                         validate_reader_projection(db, approved, body["component_metadata"]["projection"])
                 if component == "task" and body["component_metadata"].get("native_result", {}).get("timing", {}).get("deviceModel") not in approved["supported_phone_models"]:
@@ -576,8 +597,12 @@ def verify_evidence(db, account, check):
                         "lab_import",
                         body["component_metadata"].get("lab_import_id", ""),
                     )
-                    if (
+                    if expected["saliva"] == []:
+                        from .participant_acquisition import validate_abandoned_collection
+                        validate_abandoned_collection(db, account, check, body, approved)
+                    elif (
                         not imported
+                        or imported.sha256 != digest(imported.body)
                         or imported.parent_id != check.id
                         or digest(imported.body["measurements"])
                         != digest(expected["saliva"])

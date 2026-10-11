@@ -84,6 +84,7 @@ def main():
         call(sys.executable,'scripts/local-platform.py','check')
         call(sys.executable,'scripts/local-platform.py','check-app','--confirm-fictional-workspace')
         call('docker','compose','--project-name','otgd-local','--env-file','infra/local/.env','-f','infra/local/compose.yml','run','--rm','--no-deps','api','uv','run','--no-sync','python','/app/infra/local/raw_version_probe.py')
+        call('docker','compose','--project-name','otgd-local','--env-file','infra/local/.env','-f','infra/local/compose.yml','run','--rm','--no-deps','migrate','uv','run','--no-sync','python','/app/infra/local/participant_probe.py','--confirm-fictional-workspace')
     elif args.gate=='performance':
         report=REPORTS/'performance.json';report.unlink(missing_ok=True)
         result=subprocess.run(['docker','compose','--project-name','otgd-local','--env-file','infra/local/.env','-f','infra/local/compose.yml','run','--rm','--no-deps','api','uv','run','--no-sync','python','/app/infra/local/performance.py'],cwd=ROOT,text=True,stdout=subprocess.PIPE,check=True)

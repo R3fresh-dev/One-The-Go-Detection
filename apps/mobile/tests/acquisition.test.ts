@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, generateKeyPairSync, sign } from "node:crypto";
 import rawFixture from "../testfixtures/backend-raw-recordings.json";
+import participantFixture from "../testfixtures/backend-participant-acquisition.json";
+import type { InstructionInput } from "../src/core/participantAcquisition";
 import readerFixture from "../testfixtures/signed-reader-raw-ecg.json";
 import { readerRawRecording } from "../src/device/physicalRaw";
 import type {
@@ -25,7 +27,7 @@ import { customerService, deferred } from "./support/customer";
 import { DeviceError } from "../src/device/protocol";
 
 async function approvedAccount(
-  channel: "ppg" | "ecg" = "ppg",
+  channel: "ppg" | "ecg" | "saliva" = "ppg",
   recordRaw = false,
 ) {
   const service = customerService(),
@@ -71,6 +73,44 @@ async function approvedAccount(
     raw_sample_limit: recordRaw ? 1024 : 0,
     raw_encoding: recordRaw ? "otgd_ecg_samples_v1" : null,
   };
+  const protocol: any =
+    channel === "saliva"
+      ? clone(participantFixture.import_flow.configuration.participant_protocol)
+      : {
+          schema_version: "1.0.0",
+          kind: "cardiac",
+          instruction_id: "FICTIONAL-PREPARATION",
+          version: "v1",
+          text: "Fictional engineering bench preparation; no human safety approval.",
+          sha256: digestText(
+            "Fictional engineering bench preparation; no human safety approval.",
+          ),
+          maximum_acknowledgment_age_seconds: 120,
+          required_confirmations: [
+            "rest_completed",
+            "posture_confirmed",
+            "activity_confirmed",
+            "contact_confirmed",
+            "isolation_confirmed",
+          ].map((id) => ({ id, text: id })),
+          operating_scope: "engineering_bench",
+          operating_state_verifier: "participant_declaration_only",
+          rest_duration_seconds: 0,
+          posture_instruction: "Fictional seated setup",
+          activity_instruction: "Remain still",
+          contact_instruction: "Fictional bench only",
+          isolation_instruction: "No human leads",
+          permitted_setups: [
+            {
+              id: "fictional-bench",
+              description: "Fictional bench",
+              power_state: "battery",
+              charging_state: "off",
+              cable_state: "none",
+              contact_or_lead_configuration: "bench-only",
+            },
+          ],
+        };
   const config = {
     study_id: studyId,
     protocol_id: protocolId,
@@ -81,9 +121,14 @@ async function approvedAccount(
     submitted_sha256: "a".repeat(64),
     expires_at: new Date(Date.now() + 60_000).toISOString(),
     supported_phone_models: ["Fictional-phone"],
-    software_adapter_id: "otgd_signed_reader_v1",
+    software_adapter_id:
+      channel === "saliva"
+        ? "reference_lab_import_v1"
+        : "otgd_signed_reader_v1",
+    participant_protocol: protocol,
+    participant_protocol_sha256: digest(protocol),
   };
-  service.caps.channels[channel === "ppg" ? "cardiac" : "ecg"] = {
+  service.caps.channels[channel === "ppg" ? "cardiac" : channel] = {
     available: true,
     authorization_available: true,
     software_available: true,
@@ -232,6 +277,8 @@ async function approvedAccount(
     );
   });
   let authorizationId = randomUUID();
+  let acceptedInstruction: any = null;
+  const instructionReceipts = new Map<string, any>();
   // The fake service implements only transport boundaries; all customer domain,
   // storage, idempotency, ownership and actual HTTP sequencing run unchanged.
   const original = service.fetcher;
@@ -259,6 +306,23 @@ async function approvedAccount(
           sha256: digest(call.body),
         });
       });
+    if (
+      path.endsWith("/instruction-acknowledgments") &&
+      !service.overrides.has("POST " + path)
+    )
+      service.overrides.set("POST " + path, (call) => {
+        events.push("instruction-acknowledgment");
+        const key = call.headers.get("Idempotency-Key")!;
+        acceptedInstruction = instructionReceipts.get(key) ?? {
+          ...clone(call.body),
+          instruction_receipt_id: randomUUID(),
+          session_id: app.check!.id,
+          consent_record_id: study.consent.consent_record_id,
+          accepted_at: new Date().toISOString(),
+        };
+        instructionReceipts.set(key, acceptedInstruction);
+        return service.result(acceptedInstruction, 201);
+      });
     if (path.endsWith("/capture-authorizations"))
       service.overrides.set("POST " + path, (call) => {
         events.push("grant");
@@ -276,6 +340,9 @@ async function approvedAccount(
           configuration_version: config.configuration_version,
           capture_context_sha256: digest(app.check!.context),
           configuration_material: material,
+          participant_protocol_sha256: config.participant_protocol_sha256,
+          instruction_receipt_id: acceptedInstruction?.instruction_receipt_id,
+          instruction_receipt: acceptedInstruction,
           raw_recording_permission: recordRaw
             ? {
                 record: true,
@@ -293,13 +360,19 @@ async function approvedAccount(
     if (path.endsWith("/start"))
       service.overrides.set("POST " + path, (call) => {
         events.push("online-start");
-        assert.equal(call.body.device_nonce, "N".repeat(43));
+        assert.equal(
+          call.body.device_nonce,
+          channel === "saliva" ? null : "N".repeat(43),
+        );
         return service.result({
           authorization_id: authorizationId,
           attempt_id: call.body.attempt_id,
           device_boot_id: call.body.device_boot_id,
           state: "started",
           server_started_at: new Date().toISOString(),
+          participant_protocol_sha256: config.participant_protocol_sha256,
+          instruction_receipt_id: acceptedInstruction?.instruction_receipt_id,
+          instruction_receipt: acceptedInstruction,
           raw_recording_permission: recordRaw
             ? {
                 record: true,
@@ -322,6 +395,9 @@ async function approvedAccount(
               configuration_submitted_sha256: config.submitted_sha256,
               capture_context_sha256: digest(app.check!.context),
               boot_id: call.body.device_boot_id,
+              participant_protocol_sha256: config.participant_protocol_sha256,
+              instruction_receipt_id:
+                acceptedInstruction?.instruction_receipt_id,
               raw_recording_permission: recordRaw
                 ? {
                     record: true,
@@ -356,6 +432,30 @@ async function approvedAccount(
       globalThis.fetch = previous;
     },
   };
+}
+
+function instruction(config: any): InstructionInput {
+  const p = config.participant_protocol;
+  return {
+    participant_protocol_sha256: config.participant_protocol_sha256,
+    acknowledged_at: new Date().toISOString(),
+    confirmed: true,
+    confirmations: p.required_confirmations.map((c: any) => c.id),
+    setup_id: p.kind === "cardiac" ? p.permitted_setups[0].id : null,
+    rest_started_at: p.kind === "cardiac" ? new Date().toISOString() : null,
+    collection_method_id: p.kind === "reference_lab" ? p.methods[0].id : null,
+    collection_method_version:
+      p.kind === "reference_lab" ? p.methods[0].version : null,
+  };
+}
+function currentInstruction(
+  app: InstanceType<typeof AppController>,
+  channel: string,
+): InstructionInput {
+  return instruction(
+    app.getSnapshot().state!.capabilities!.channels[channel]!
+      .configurations![0]!,
+  );
 }
 
 async function bindingAccount() {
@@ -462,6 +562,450 @@ async function bindingAccount() {
     },
   };
 }
+
+test("lost accepted instruction reply is reconciled with its original body and key without restarting hardware", async () => {
+  const h = await approvedAccount();
+  try {
+    await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+    const original = globalThis.fetch;
+    let lost = false;
+    globalThis.fetch = async (url, options) => {
+      const reply = await original(url, options);
+      if (String(url).endsWith("/instruction-acknowledgments") && !lost) {
+        lost = true;
+        throw new Error("accepted acknowledgment response lost");
+      }
+      return reply;
+    };
+    await assert.rejects(
+      h.app.captureReader("ppg", false, currentInstruction(h.app, "cardiac")),
+      (e: any) => e.retryable === true,
+    );
+    assert.equal(h.app.check!.attempts[0]!.status, "started");
+    const saved = clone(
+      h.app.check!.acquisition!.attempts[h.app.check!.attempts[0]!.attempt_id]!,
+    );
+    await h.app.reconcileInstructionReceipt();
+    const calls = h.service.calls.filter((c) =>
+      c.path.endsWith("/instruction-acknowledgments"),
+    );
+    assert.equal(calls.length, 2);
+    assert.equal(
+      calls[1]!.headers.get("Idempotency-Key"),
+      saved.instruction_key,
+    );
+    assert.deepEqual(calls[1]!.body, calls[0]!.body);
+    assert.equal(h.events.includes("hardware-acquire"), false);
+    await h.app.stopActive("USER_CANCELED");
+    assert.equal(h.app.check!.attempts[0]!.status, "invalid");
+    assert.equal(h.app.check!.instruction_receipts!.length, 1);
+    await assert.rejects(h.app.reconcileInstructionReceipt(), /No recoverable/);
+  } finally {
+    await h.close();
+  }
+});
+
+test("online preparation persists before rest and current instructions cannot change the prepared acknowledgement", async () => {
+  const h = await approvedAccount();
+  try {
+    await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+    const at = await h.app.prepareParticipantCapture("cardiac");
+    assert.ok(Date.parse(at) <= Date.now());
+    assert.deepEqual(h.events, ["register", "context", "started-attempt"]);
+    assert.equal(h.app.check!.attempts[0]!.status, "started");
+    assert.equal(h.events.includes("grant"), false);
+    await h.app.captureReader("ppg", false, {
+      ...currentInstruction(h.app, "cardiac"),
+      rest_started_at: at,
+    });
+    assert.equal(h.events.filter((e) => e === "hardware-acquire").length, 1);
+    assert.equal(h.app.check!.attempts.length, 1);
+    assert.equal(
+      h.app.check!.attempts[0]!.component_metadata.instruction_receipt != null,
+      true,
+    );
+  } finally {
+    await h.close();
+  }
+});
+
+async function labAccount() {
+  const h = await approvedAccount("saliva");
+  let accepted: any = null,
+    imported: any = null;
+  let lost = false;
+  let abandonLost = false,
+    remoteAbandonment: any = null;
+  const abandonResponses = new Map<string, any>();
+  const responses = new Map<string, any>(),
+    original = globalThis.fetch;
+  globalThis.fetch = async (url, options) => {
+    const path = new URL(String(url)).pathname;
+    if (path.endsWith("/collections"))
+      h.service.overrides.set("POST " + path, (call) => {
+        const key = call.headers.get("Idempotency-Key")!,
+          b = call.body,
+          old = clone(
+            h.app.check!.attempts.find((a) => a.attempt_id === b.attempt_id)!,
+          );
+        const sample = {
+            sample_id: b.sample_id,
+            collection_method_id: b.collection_method_id,
+            collected_at: b.collected_at,
+            volume_ml: b.saliva_volume_ml,
+            dilution_factor: b.dilution_factor,
+            status: b.status,
+            quality_flags: b.quality_flags,
+          },
+          projection = { sample, saliva: [] };
+        const grant =
+          h.app.check!.acquisition!.attempts[b.attempt_id]!.authorization!;
+        const receiptId = randomUUID();
+        const terminal = {
+          ...old,
+          status: b.status,
+          source: "reference_lab",
+          started_at: b.collected_at,
+          ended_at: b.collected_at,
+          component_metadata: {
+            armed_at: old.started_at,
+            instruction_receipt: old.component_metadata.instruction_receipt,
+            collection_receipt_id: receiptId,
+            collection_request_sha256: digest(b),
+            projection,
+          },
+        };
+        accepted = responses.get(key) ?? {
+          collection_receipt_id: receiptId,
+          session_id: h.app.check!.id,
+          request: clone(b),
+          state: b.status === "valid" ? "pending_lab" : "invalid_collection",
+          accepted_at: new Date().toISOString(),
+          authorization_id: grant.authorization_id,
+          configuration_submitted_sha256: grant.configuration_submitted_sha256,
+          configuration_version: grant.configuration_version,
+          participant_protocol_sha256: grant.participant_protocol_sha256,
+          instruction_receipt: old.component_metadata.instruction_receipt,
+          projection,
+          attempt: terminal,
+          attempt_revision: 2,
+          attempt_sha256: digest(terminal),
+        };
+        responses.set(key, accepted);
+        if (lost) {
+          lost = false;
+          throw new Error("specimen accepted response lost");
+        }
+        return h.service.result(accepted, 201);
+      });
+    if (path.includes("/collections/") && !path.endsWith("/abandon"))
+      h.service.overrides.set("GET " + path, () =>
+        h.service.result({
+          ...(accepted ?? {}),
+          collection_attempt: accepted?.attempt,
+          collection_attempt_revision: 2,
+          collection_attempt_sha256: accepted?.attempt_sha256,
+          attempt: imported?.attempt ?? accepted?.attempt,
+          attempt_revision: imported ? 1 : 2,
+          attempt_sha256: imported
+            ? digest(imported.attempt)
+            : accepted?.attempt_sha256,
+          state: remoteAbandonment
+            ? "analysis_canceled"
+            : imported
+              ? "analysis_available"
+              : "pending_lab",
+          abandonment: remoteAbandonment,
+          imports: imported ? [imported] : [],
+        }),
+      );
+    if (path.endsWith("/abandon"))
+      h.service.overrides.set("POST " + path, (call) => {
+        const key = call.headers.get("Idempotency-Key")!;
+        const receipt = abandonResponses.get(key) ?? {
+          abandonment_id: randomUUID(),
+          session_id: accepted.session_id,
+          sample_id: accepted.request.sample_id,
+          collection_receipt_id: accepted.collection_receipt_id,
+          collection_sha256: digest(accepted),
+          configuration_submitted_sha256: h.config.submitted_sha256,
+          accepted_at: new Date().toISOString(),
+          ...call.body,
+          state: "analysis_canceled",
+          collection: accepted,
+        };
+        abandonResponses.set(key, receipt);
+        if (abandonLost) {
+          abandonLost = false;
+          throw new Error("accepted analysis cancellation response lost");
+        }
+        return h.service.result(receipt);
+      });
+    return original(url, options);
+  };
+  return {
+    ...h,
+    loseReply: () => {
+      lost = true;
+    },
+    loseAbandonReply: () => {
+      abandonLost = true;
+    },
+    abandonElsewhere: () => {
+      remoteAbandonment = {
+        abandonment_id: randomUUID(),
+        session_id: accepted.session_id,
+        sample_id: accepted.request.sample_id,
+        collection_receipt_id: accepted.collection_receipt_id,
+        collection_sha256: digest(accepted),
+        configuration_submitted_sha256: h.config.submitted_sha256,
+        accepted_at: new Date().toISOString(),
+        confirmation: true,
+        reason: "USER_CANCELED",
+        state: "analysis_canceled",
+      };
+    },
+    importReport: () => {
+      const attempt = clone(accepted.attempt),
+        measurements = clone(
+          participantFixture.import_flow.import_status.imports[0]!.measurements,
+        );
+      for (const measurement of measurements) {
+        measurement.sample_id = accepted.request.sample_id;
+        measurement.collected_at = accepted.request.collected_at;
+        measurement.measured_at = new Date().toISOString();
+      }
+      const report = randomUUID(),
+        importId = randomUUID();
+      attempt.attempt_id = randomUUID();
+      attempt.supersedes_attempt_id = accepted.request.attempt_id;
+      attempt.component_metadata.collection_attempt_id =
+        accepted.request.attempt_id;
+      attempt.component_metadata.lab_import_id = importId;
+      attempt.component_metadata.projection.saliva = measurements;
+      attempt.artifact_refs = [report];
+      imported = {
+        import_id: importId,
+        measurements,
+        attempt,
+        source_report_artifact_id: report,
+        attempt_revision: 1,
+        attempt_sha256: digest(attempt),
+      };
+    },
+    specimen: () => ({
+      ...clone(participantFixture.import_flow.collection_request),
+      collected_at: new Date().toISOString(),
+      cartridge_expiry: new Date(Date.now() + 86400000).toISOString(),
+      storage_handling_events: [
+        {
+          event: "sealed",
+          occurred_at: new Date().toISOString(),
+          temperature_c: null,
+          duration_min: null,
+        },
+      ],
+    }),
+  };
+}
+
+test("reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization", async () => {
+  const h = await labAccount();
+  try {
+    await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+    await h.app.startLabCollection(currentInstruction(h.app, "saliva"));
+    assert.equal(h.events.includes("prepare-device-nonce"), false);
+    assert.equal(h.events.includes("hardware-acquire"), false);
+    await h.app.saveLabCollectionDraft(
+      h.app.check!.id,
+      h.app.check!.labCollection!.attempt_id,
+      { saliva_volume_ml: "1.0" },
+    );
+    assert.equal(h.app.check!.labCollection!.draft!.saliva_volume_ml, "1.0");
+    await h.app.recordLabCollection(h.specimen());
+    const checkId = h.app.check!.id,
+      sampleId = h.app.check!.snapshot.sample.sample_id;
+    assert.equal(h.app.check!.labCollection!.state, "pending_lab");
+    assert.deepEqual(h.app.check!.snapshot.saliva, []);
+    await h.app.saveCheck();
+    assert.equal(h.app.check!.frozen, false);
+    assert.equal(h.app.getSnapshot().route, "history");
+    await assert.rejects(h.app.uploadCheck(), /draft/);
+    assert.equal(h.app.getSnapshot().state!.queue.length, 0);
+    // A failed serialized mutation is recovered by the next guarded local read/commit.
+    await (h.app as any).commit((s: any) => s);
+    await h.app.selectCheck(checkId);
+    await h.app.refreshLabCollection();
+    assert.equal(h.app.check!.labCollection!.state, "pending_lab");
+    h.importReport();
+    await h.app.refreshLabCollection();
+    assert.equal(h.app.check!.labCollection!.state, "imported");
+    assert.equal(h.app.check!.attempts.length, 2);
+    assert.equal(h.app.check!.snapshot.sample.sample_id, sampleId);
+    assert.equal(
+      (h.app.check!.snapshot.saliva[0] as unknown as JsonObject).source,
+      "reference_lab",
+    );
+    await h.app.saveCheck();
+    assert.equal(h.app.check!.frozen, true);
+    assert.equal(h.app.getSnapshot().state!.queue.length, 0);
+    assert.equal(
+      queueCheck(
+        h.app.getSnapshot().state!,
+        checkId,
+        randomUUID,
+        new Date().toISOString(),
+      ).queue.length,
+      1,
+    );
+  } finally {
+    await h.close();
+  }
+});
+test("unknown analysis cancellation preserves its exact body and key and never relabels the collected specimen", async () => {
+  const h = await labAccount();
+  try {
+    await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+    await h.app.startLabCollection(currentInstruction(h.app, "saliva"));
+    await h.app.recordLabCollection(h.specimen());
+    const sample = clone(h.app.check!.snapshot.sample),
+      attempt = clone(h.app.check!.attempts[0]);
+    h.loseAbandonReply();
+    await assert.rejects(h.app.abandonLabAnalysis(), (e: any) => e.retryable);
+    const saved = clone(h.app.check!.labCollection!);
+    await assert.rejects(
+      h.app.abandonLabAnalysis("SPECIMEN_UNAVAILABLE"),
+      (e: any) => e.code === "LAB_ABANDONMENT_INTENT_CHANGED",
+    );
+    await h.app.abandonLabAnalysis();
+    const calls = h.service.calls.filter((call) =>
+      call.path.endsWith("/abandon"),
+    );
+    assert.equal(calls.length, 2);
+    assert.equal(calls[1]!.headers.get("Idempotency-Key"), saved.abandon_key);
+    assert.deepEqual(calls[1]!.body, calls[0]!.body);
+    assert.deepEqual(h.app.check!.snapshot.sample, sample);
+    assert.deepEqual(h.app.check!.attempts[0], attempt);
+    assert.equal(h.app.check!.labCollection!.state, "canceled");
+  } finally {
+    await h.close();
+  }
+});
+test("refreshing analysis canceled on another device retains the original specimen and scoped abandonment proof", async () => {
+  const h = await labAccount();
+  try {
+    await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+    await h.app.startLabCollection(currentInstruction(h.app, "saliva"));
+    await h.app.recordLabCollection(h.specimen());
+    const sample = clone(h.app.check!.snapshot.sample),
+      attempt = clone(h.app.check!.attempts[0]);
+    h.abandonElsewhere();
+    await h.app.refreshLabCollection();
+    assert.equal(h.app.check!.labCollection!.state, "canceled");
+    assert.deepEqual(h.app.check!.snapshot.sample, sample);
+    assert.deepEqual(h.app.check!.attempts[0], attempt);
+    assert.equal(h.app.check!.collection_abandons!.length, 1);
+    assert.deepEqual(h.app.check!.snapshot.saliva, []);
+    await assert.rejects(h.app.refreshLabCollection(), /No active/);
+    await h.app.saveCheck();
+    assert.equal(h.app.check!.frozen, true);
+  } finally {
+    await h.close();
+  }
+});
+test("reopening the owned workspace preserves the actual collecting form without restoring rest or invoking hardware", async () => {
+  const h = await labAccount(),
+    reopened = new AppController();
+  try {
+    await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+    await h.app.startLabCollection(currentInstruction(h.app, "saliva"));
+    const checkId = h.app.check!.id,
+      attemptId = h.app.check!.labCollection!.attempt_id;
+    await h.app.saveLabCollectionDraft(checkId, attemptId, {
+      saliva_volume_ml: "1.0",
+      collector_lot: "UNSUBMITTED",
+    });
+    await reopened.initialize();
+    await reopened.signIn();
+    await reopened.selectCheck(checkId);
+    assert.equal(reopened.check!.attempts[0]!.status, "started");
+    assert.deepEqual(reopened.check!.labCollection!.draft, {
+      saliva_volume_ml: "1.0",
+      collector_lot: "UNSUBMITTED",
+    });
+    assert.equal(reopened.check!.labCollection!.state, "collecting");
+    assert.equal(reopened.getSnapshot().activeTask, null);
+    assert.equal(reopened.getSnapshot().activeEye, null);
+    assert.equal(h.events.includes("hardware-acquire"), false);
+  } finally {
+    await reopened.dispose();
+    await h.close();
+  }
+});
+test("a changed submitted instruction envelope cannot reuse the original preparation or stop a newer scope", async () => {
+  const h = await approvedAccount();
+  try {
+    await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+    await h.app.prepareParticipantCapture("cardiac");
+    const epoch = h.app.epoch,
+      intent = h.app.preparationGeneration,
+      attempt = h.app.check!.attempts[0]!;
+    const changed = { ...h.config, submitted_sha256: "f".repeat(64) };
+    h.service.caps.channels.cardiac.configurations = [changed];
+    await assert.rejects(
+      h.app.captureReader("ppg", false, currentInstruction(h.app, "cardiac")),
+      (e: any) => e.code === "PARTICIPANT_PROTOCOL_CHANGED",
+    );
+    assert.equal(h.events.includes("hardware-acquire"), false);
+    await h.app.stopPreparedCapture(
+      epoch,
+      h.app.check!.id,
+      intent,
+      attempt.attempt_id,
+    );
+    assert.equal(h.app.check!.attempts[0]!.status, "started");
+    await h.app.stopActive("USER_CANCELED");
+    assert.equal(h.app.check!.attempts[0]!.status, "invalid");
+  } finally {
+    await h.close();
+  }
+});
+
+test("unknown specimen receipt retries the immutable declaration and key; explicit analysis cancellation never erases collection", async () => {
+  const h = await labAccount();
+  try {
+    await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+    await h.app.startLabCollection(currentInstruction(h.app, "saliva"));
+    const body = h.specimen();
+    h.loseReply();
+    await assert.rejects(
+      h.app.recordLabCollection(body),
+      (e: any) => e.retryable,
+    );
+    const immutable = clone(h.app.check!.labCollection!);
+    await h.app.recordLabCollection(body);
+    const calls = h.service.calls.filter((call) =>
+      call.path.endsWith("/collections"),
+    );
+    assert.equal(calls.length, 2);
+    assert.equal(calls[0]!.headers.get("Idempotency-Key"), immutable.key);
+    assert.deepEqual(calls[0]!.body, calls[1]!.body);
+    const sample = clone(h.app.check!.snapshot.sample),
+      attempt = clone(h.app.check!.attempts[0]!);
+    await h.app.abandonLabAnalysis();
+    assert.equal(h.app.check!.labCollection!.state, "canceled");
+    assert.deepEqual(h.app.check!.snapshot.sample, sample);
+    assert.deepEqual(h.app.check!.attempts[0], attempt);
+    assert.deepEqual(h.app.check!.snapshot.saliva, []);
+    assert.equal(h.app.check!.collection_abandons!.length, 1);
+    h.importReport();
+    await assert.rejects(h.app.refreshLabCollection(), /No active/);
+    await h.app.saveCheck();
+    assert.equal(h.app.check!.frozen, true);
+  } finally {
+    await h.close();
+  }
+});
 
 test("binding lost accepted response replays its durable completion identity after challenge expiry", async (context) => {
   context.mock.timers.enable({
@@ -765,11 +1309,12 @@ test("actual customer sequence persists keys and metadata before fresh online st
   const { app, study, config, events, close } = await approvedAccount();
   try {
     await app.beginStudyCheck(study.study_id, config.protocol_id, true);
-    await app.captureReader("ppg");
+    await app.captureReader("ppg", false, currentInstruction(app, "cardiac"));
     assert.deepEqual(events, [
       "register",
       "context",
       "started-attempt",
+      "instruction-acknowledgment",
       "grant",
       "prepare-device-nonce",
       "online-start",
@@ -823,7 +1368,7 @@ test("explicit ECG raw choice uses a fresh signed recording receipt and the real
     );
     await app.refreshRawRecordings(study.study_id);
     await assert.rejects(
-      app.captureReader("ecg", true),
+      app.captureReader("ecg", true, currentInstruction(app, "ecg")),
       /encrypted native storage/,
     );
     assert.equal(events.includes("hardware-acquire"), false);
@@ -840,7 +1385,7 @@ test("explicit ECG raw choice uses a fresh signed recording receipt and the real
       saved.push(bytes);
       await store.save(state);
     };
-    await app.captureReader("ecg", true);
+    await app.captureReader("ecg", true, currentInstruction(app, "ecg"));
     const raw = app.getSnapshot().state!.rawArtifacts![0]!;
     assert.equal(raw.artifact_kind, "ecg_waveform");
     assert.equal(raw.permission.record, true);
@@ -885,7 +1430,7 @@ test("revoked consent, stale approval and reader substitution cannot invoke hard
     await app.beginStudyCheck(study.study_id, config.protocol_id, true);
     association.bootId = randomUUID();
     await assert.rejects(
-      app.captureReader("ppg"),
+      app.captureReader("ppg", false, currentInstruction(app, "cardiac")),
       /different reader or reboot/,
     );
     assert.equal(events.includes("hardware-acquire"), false);
@@ -895,11 +1440,15 @@ test("revoked consent, stale approval and reader substitution cannot invoke hard
   }
 });
 
-test("interruption while server start is pending stops before hardware and rejects a late matching response", async () => {
+test("scope-qualified preparation End stops the advanced capture token before a deferred server start reaches hardware", async () => {
   const { app, service, study, config, events, close } =
     await approvedAccount();
   try {
     await app.beginStudyCheck(study.study_id, config.protocol_id, true);
+    await app.prepareParticipantCapture("cardiac");
+    const epoch = app.epoch,
+      previousIntent = app.preparationGeneration,
+      attemptId = app.check!.attempts[0]!.attempt_id;
     const entered = deferred<void>(),
       reply = deferred<Response>();
     const original = globalThis.fetch;
@@ -910,9 +1459,20 @@ test("interruption while server start is pending stops before hardware and rejec
       }
       return original(input, init);
     };
-    const pending = app.captureReader("ppg");
+    const pending = app.captureReader(
+      "ppg",
+      false,
+      currentInstruction(app, "cardiac"),
+    );
+    const captureIntent = app.preparationGeneration;
+    assert.notEqual(captureIntent, previousIntent);
     await entered.promise;
-    const stopped = app.stopActive("USER_CANCELED");
+    const stopped = app.stopPreparedCapture(
+      epoch,
+      app.check!.id,
+      captureIntent,
+      attemptId,
+    );
     // Shutdown requests are dispatched before the outstanding start reply.
     await new Promise<void>((resolve) => setImmediate(resolve));
     assert.equal(events.includes("stop-device"), true);

@@ -27,6 +27,18 @@ def key_file(path, key):
     return path
 
 
+def test_selected_sdk_pin_and_changed_bytes_are_checked(tmp_path):
+    import shutil
+
+    folder = tmp_path / "sdk"
+    shutil.copytree(helper.SENSOR_VENDOR, folder)
+    helper.validate_sensor_source(folder)
+    header = folder / "SparkFun_Bio_Sensor_Hub_Library.h"
+    header.write_text(header.read_text() + "\n// changed bytes\n")
+    with pytest.raises(ValueError, match="Changed selected"):
+        helper.validate_sensor_source(folder)
+
+
 def test_only_private_rsa3072_build_key_is_admitted(tmp_path):
     path = key_file(
         tmp_path / "build.pem",

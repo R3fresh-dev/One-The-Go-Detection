@@ -27,6 +27,7 @@ from .governance_fixture import (
     PROTOCOL,
     STUDY,
     adc_material,
+    acknowledge_cardiac,
     approve,
     calibration,
     configuration,
@@ -531,6 +532,10 @@ def setup_owned_ecg(client, account, monkeypatch):
         ).status_code
         == 200
     )
+    from otgd.operator_governance import active_body
+    with factory()() as db:
+        approved_config = active_body(db, "configuration", config["registry_id"])
+    instruction = acknowledge_cardiac(client, sid, attempt, approved_config)
     grant = client.post(
         f"/v1/sessions/{sid}/capture-authorizations",
         headers=headers(),
@@ -542,6 +547,7 @@ def setup_owned_ecg(client, account, monkeypatch):
             "configuration_id": config["registry_id"],
             "configuration_hash": config["sha256"],
             "raw_recording_kind": "ecg_waveform",
+            "instruction_receipt_id": instruction["instruction_receipt_id"],
         },
     ).json()
     start = client.post(
@@ -580,6 +586,7 @@ def setup_owned_ecg(client, account, monkeypatch):
         "component_metadata": {
             "modality": "ecg",
             "armed_at": attempt["started_at"],
+            "instruction_receipt": instruction,
             "projection": projection,
         },
         "attestation_refs": [attid],

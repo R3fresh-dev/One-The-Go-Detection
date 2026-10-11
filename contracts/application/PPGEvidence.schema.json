@@ -1,0 +1,249 @@
+{
+  "$defs": {
+    "HubFirmware": {
+      "additionalProperties": false,
+      "properties": {
+        "major": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Major",
+          "type": "integer"
+        },
+        "minor": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Minor",
+          "type": "integer"
+        },
+        "revision": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "major",
+        "minor",
+        "revision"
+      ],
+      "title": "HubFirmware",
+      "type": "object"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "maximum": 120000,
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "host_received_monotonic_us": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Host Received Monotonic Us",
+          "type": "integer"
+        },
+        "heart_rate_bpm": {
+          "maximum": 65535,
+          "minimum": 0,
+          "title": "Heart Rate Bpm",
+          "type": "integer"
+        },
+        "confidence_percent": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Confidence Percent",
+          "type": "integer"
+        },
+        "finger_status": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Finger Status",
+          "type": "integer"
+        },
+        "extended_status": {
+          "anyOf": [
+            {
+              "maximum": 127,
+              "minimum": -128,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Extended Status"
+        }
+      },
+      "required": [
+        "sequence",
+        "host_received_monotonic_us",
+        "heart_rate_bpm",
+        "confidence_percent",
+        "finger_status",
+        "extended_status"
+      ],
+      "title": "Observation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "adapter_id": {
+      "const": "otgd_sparkfun_max32664_v1",
+      "title": "Adapter Id",
+      "type": "string"
+    },
+    "sdk_commit": {
+      "const": "91575258e5e2c47f0f4b8ec97b651381671f4637",
+      "title": "Sdk Commit",
+      "type": "string"
+    },
+    "sdk_version": {
+      "const": "1.1",
+      "title": "Sdk Version",
+      "type": "string"
+    },
+    "algorithm_mode": {
+      "enum": [
+        1,
+        2
+      ],
+      "title": "Algorithm Mode",
+      "type": "integer"
+    },
+    "hub_firmware": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HubFirmware"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "configured_sensor_rate_hz": {
+      "anyOf": [
+        {
+          "maximum": 3200,
+          "minimum": 50,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Configured Sensor Rate Hz"
+    },
+    "actual_sensor_cadence_hz": {
+      "const": null,
+      "title": "Actual Sensor Cadence Hz",
+      "type": "null"
+    },
+    "host_poll_interval_ms": {
+      "maximum": 1000,
+      "minimum": 50,
+      "title": "Host Poll Interval Ms",
+      "type": "integer"
+    },
+    "sample_timestamp_source": {
+      "const": "host_i2c_receive_unqualified_sensor_time",
+      "title": "Sample Timestamp Source",
+      "type": "string"
+    },
+    "acquisition_started_monotonic_us": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Acquisition Started Monotonic Us",
+      "type": "integer"
+    },
+    "acquisition_ended_monotonic_us": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Acquisition Ended Monotonic Us",
+      "type": "integer"
+    },
+    "observed_samples": {
+      "maximum": 120000,
+      "minimum": 0,
+      "title": "Observed Samples",
+      "type": "integer"
+    },
+    "valid_samples": {
+      "maximum": 120000,
+      "minimum": 0,
+      "title": "Valid Samples",
+      "type": "integer"
+    },
+    "invalid_samples": {
+      "maximum": 120000,
+      "minimum": 0,
+      "title": "Invalid Samples",
+      "type": "integer"
+    },
+    "missed_poll_intervals": {
+      "maximum": 120000,
+      "minimum": 0,
+      "title": "Missed Poll Intervals",
+      "type": "integer"
+    },
+    "fifo_empty_polls": {
+      "maximum": 120000,
+      "minimum": 0,
+      "title": "Fifo Empty Polls",
+      "type": "integer"
+    },
+    "fifo_backlog_peak": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Fifo Backlog Peak",
+      "type": "integer"
+    },
+    "sensor_dropped_samples": {
+      "const": null,
+      "title": "Sensor Dropped Samples",
+      "type": "null"
+    },
+    "last_observation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Observation"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "adapter_id",
+    "sdk_commit",
+    "sdk_version",
+    "algorithm_mode",
+    "hub_firmware",
+    "configured_sensor_rate_hz",
+    "actual_sensor_cadence_hz",
+    "host_poll_interval_ms",
+    "sample_timestamp_source",
+    "acquisition_started_monotonic_us",
+    "acquisition_ended_monotonic_us",
+    "observed_samples",
+    "valid_samples",
+    "invalid_samples",
+    "missed_poll_intervals",
+    "fifo_empty_polls",
+    "fifo_backlog_peak",
+    "sensor_dropped_samples",
+    "last_observation"
+  ],
+  "title": "PPGEvidence",
+  "type": "object"
+}

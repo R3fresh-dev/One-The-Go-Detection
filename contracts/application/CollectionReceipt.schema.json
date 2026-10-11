@@ -1,0 +1,678 @@
+{
+  "$defs": {
+    "CaptureAttempt": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "component": {
+          "enum": [
+            "saliva",
+            "eyes",
+            "cardiac",
+            "task",
+            "alcohol"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "record_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Record Id",
+          "type": "string"
+        },
+        "supersedes_attempt_id": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Supersedes Attempt Id"
+        },
+        "status": {
+          "enum": [
+            "started",
+            "valid",
+            "invalid",
+            "canceled",
+            "not_collected"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "simulated",
+            "prototype_sensor",
+            "reference_lab",
+            "validated_sensor"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Started At"
+        },
+        "ended_at": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ended At"
+        },
+        "configuration_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Configuration Id"
+        },
+        "configuration_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Configuration Hash"
+        },
+        "quality_flags": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "title": "Quality Flags",
+          "type": "array"
+        },
+        "component_metadata": {
+          "additionalProperties": true,
+          "title": "Component Metadata",
+          "type": "object"
+        },
+        "artifact_refs": {
+          "default": [],
+          "items": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Artifact Refs",
+          "type": "array"
+        },
+        "attestation_refs": {
+          "default": [],
+          "items": {
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Attestation Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "session_id",
+        "attempt_id",
+        "component",
+        "record_id",
+        "supersedes_attempt_id",
+        "status",
+        "source",
+        "started_at",
+        "ended_at",
+        "configuration_id",
+        "configuration_hash",
+        "quality_flags",
+        "component_metadata"
+      ],
+      "title": "CaptureAttempt",
+      "type": "object"
+    },
+    "CollectionRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "sample_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Sample Id",
+          "type": "string"
+        },
+        "instruction_receipt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Instruction Receipt Id",
+          "type": "string"
+        },
+        "collection_method_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Collection Method Id",
+          "type": "string"
+        },
+        "collection_method_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Collection Method Version",
+          "type": "string"
+        },
+        "collected_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Collected At",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "valid",
+            "invalid"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "quality_flags": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "title": "Quality Flags",
+          "type": "array"
+        },
+        "saliva_volume_ml": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Saliva Volume Ml"
+        },
+        "buffer_volume_ml": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Buffer Volume Ml"
+        },
+        "dilution_factor": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 100000,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Dilution Factor"
+        },
+        "collector_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Collector Id"
+        },
+        "collector_lot": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Collector Lot"
+        },
+        "container_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Container Id"
+        },
+        "cartridge_lot": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cartridge Lot"
+        },
+        "cartridge_expiry": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cartridge Expiry"
+        },
+        "missing_reasons": {
+          "additionalProperties": {
+            "enum": [
+              "unknown",
+              "declined",
+              "not_applicable"
+            ],
+            "type": "string"
+          },
+          "maxProperties": 8,
+          "propertyNames": {
+            "enum": [
+              "saliva_volume_ml",
+              "buffer_volume_ml",
+              "dilution_factor",
+              "collector_id",
+              "collector_lot",
+              "container_id",
+              "cartridge_lot",
+              "cartridge_expiry"
+            ]
+          },
+          "title": "Missing Reasons",
+          "type": "object"
+        },
+        "storage_handling_events": {
+          "items": {
+            "$ref": "#/$defs/HandlingEvent"
+          },
+          "maxItems": 64,
+          "title": "Storage Handling Events",
+          "type": "array"
+        }
+      },
+      "required": [
+        "attempt_id",
+        "sample_id",
+        "instruction_receipt_id",
+        "collection_method_id",
+        "collection_method_version",
+        "collected_at",
+        "status",
+        "quality_flags",
+        "saliva_volume_ml",
+        "buffer_volume_ml",
+        "dilution_factor",
+        "collector_id",
+        "collector_lot",
+        "container_id",
+        "cartridge_lot",
+        "cartridge_expiry",
+        "missing_reasons",
+        "storage_handling_events"
+      ],
+      "title": "CollectionRequest",
+      "type": "object"
+    },
+    "HandlingEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Event",
+          "type": "string"
+        },
+        "occurred_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "temperature_c": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": -273.15,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Temperature C"
+        },
+        "duration_min": {
+          "anyOf": [
+            {
+              "maximum": 525600,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Duration Min"
+        }
+      },
+      "required": [
+        "event",
+        "occurred_at",
+        "temperature_c",
+        "duration_min"
+      ],
+      "title": "HandlingEvent",
+      "type": "object"
+    },
+    "InstructionReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "configuration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Configuration Id",
+          "type": "string"
+        },
+        "configuration_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Configuration Version",
+          "type": "string"
+        },
+        "configuration_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Hash",
+          "type": "string"
+        },
+        "configuration_submitted_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Submitted Sha256",
+          "type": "string"
+        },
+        "participant_protocol_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Participant Protocol Sha256",
+          "type": "string"
+        },
+        "acknowledged_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Acknowledged At",
+          "type": "string"
+        },
+        "confirmed": {
+          "const": true,
+          "title": "Confirmed",
+          "type": "boolean"
+        },
+        "confirmations": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Confirmations",
+          "type": "array"
+        },
+        "setup_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Setup Id"
+        },
+        "rest_started_at": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rest Started At"
+        },
+        "collection_method_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Collection Method Id"
+        },
+        "collection_method_version": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Collection Method Version"
+        },
+        "instruction_receipt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Instruction Receipt Id",
+          "type": "string"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "consent_record_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Consent Record Id",
+          "type": "string"
+        },
+        "accepted_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Accepted At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "attempt_id",
+        "configuration_id",
+        "configuration_version",
+        "configuration_hash",
+        "configuration_submitted_sha256",
+        "participant_protocol_sha256",
+        "acknowledged_at",
+        "confirmed",
+        "confirmations",
+        "setup_id",
+        "rest_started_at",
+        "collection_method_id",
+        "collection_method_version",
+        "instruction_receipt_id",
+        "session_id",
+        "consent_record_id",
+        "accepted_at"
+      ],
+      "title": "InstructionReceipt",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "collection_receipt_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Collection Receipt Id",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "request": {
+      "$ref": "#/$defs/CollectionRequest"
+    },
+    "state": {
+      "enum": [
+        "pending_lab",
+        "invalid_collection"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "accepted_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Accepted At",
+      "type": "string"
+    },
+    "authorization_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Authorization Id",
+      "type": "string"
+    },
+    "configuration_submitted_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Configuration Submitted Sha256",
+      "type": "string"
+    },
+    "configuration_version": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Configuration Version",
+      "type": "string"
+    },
+    "participant_protocol_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Participant Protocol Sha256",
+      "type": "string"
+    },
+    "instruction_receipt": {
+      "$ref": "#/$defs/InstructionReceipt"
+    },
+    "projection": {
+      "additionalProperties": true,
+      "title": "Projection",
+      "type": "object"
+    },
+    "attempt": {
+      "$ref": "#/$defs/CaptureAttempt"
+    },
+    "attempt_revision": {
+      "maximum": 128,
+      "minimum": 1,
+      "title": "Attempt Revision",
+      "type": "integer"
+    },
+    "attempt_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Attempt Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_receipt_id",
+    "session_id",
+    "request",
+    "state",
+    "accepted_at",
+    "authorization_id",
+    "configuration_submitted_sha256",
+    "configuration_version",
+    "participant_protocol_sha256",
+    "instruction_receipt",
+    "projection",
+    "attempt",
+    "attempt_revision",
+    "attempt_sha256"
+  ],
+  "title": "CollectionReceipt",
+  "type": "object"
+}

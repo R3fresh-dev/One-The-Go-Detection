@@ -10,6 +10,8 @@ from .schema_migrations import (
 )
 from .raw_retention import migration_004_raw_retention
 from .journal_continuity import bind_migration
+from .participant_migration import (migration_005_participant_acquisition,
+    migration_006_cardiac_interval_anchors, migration_007_capture_guard_unicode)
 
 
 def migrate():
@@ -79,6 +81,9 @@ def migrate():
         migration_002_replacement_navigation(connection)
         migration_003_operator_governance(connection)
         migration_004_raw_retention(connection)
+        migration_005_participant_acquisition(connection)
+        migration_006_cardiac_interval_anchors(connection)
+        migration_007_capture_guard_unicode(connection)
         bind_migration(connection, s)
         from .capture_signing import bind_signing_key
 

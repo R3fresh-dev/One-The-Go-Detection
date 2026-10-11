@@ -4,7 +4,7 @@ Use the canonical application in `apps/mobile`. No account purchases are needed 
 
 ## Open the web UI without cloning or terminal commands
 
-After this configuration is on the selected branch, open [Create a Codespace](https://codespaces.new/R3fresh-dev/One-The-Go-Detection). Select the branch containing `.devcontainer/devcontainer.json`, choose the two-core machine and create the Codespace. GitHub checks out the repository inside its cloud workspace; you do not clone it onto your computer.
+Open [Create a Codespace](https://codespaces.new/R3fresh-dev/One-The-Go-Detection). Select the reviewed feature branch containing `.devcontainer/devcontainer.json`; until that change merges, the older default `main` does not supply this preview setup. Choose the two-core machine and create the Codespace. GitHub checks out the repository inside its cloud workspace; you do not clone it onto your computer.
 
 The container installs locked dependencies, checks TypeScript, builds the fictional guest web export and starts port 8082 automatically. The forwarded preview opens in the browser. If it does not open automatically, choose **Ports → Fictional application preview → Open in Browser**. Keep the default private port visibility. Stop the Codespace when finished; delete it when you no longer need its stored workspace.
 
@@ -14,7 +14,7 @@ The Node 24.19.0 container is pinned by its official multi-platform image digest
 
 ## Native iOS and Android in a browser
 
-Use [Appetize](https://appetize.io/) for an interactive hosted iOS simulator or Android emulator. The canonical manual hosted-preview workflow builds the actual application with a fictional guest guard, executes native fixture tests and prepares source-bound artifact evidence. See [hosted native preview instructions](../apps/mobile/HOSTED_PREVIEW.md).
+Use [Appetize](https://appetize.io/) for an interactive hosted iOS simulator or Android emulator. The canonical hosted-preview workflow builds the actual application with a fictional guest guard, executes native fixture tests and prepares source-bound artifact evidence. Pull requests targeting `main` now include mandatory Android/iOS guest builds in the required aggregate with read-only repository access, no service secrets and no Appetize upload. Verify the successful aggregate run and tested source before downloading its artifacts. Manual **Run workflow** becomes available after the workflow exists on default `main`. Upload the verified build through your account and check the guest-only launch. See [hosted native preview instructions](../apps/mobile/HOSTED_PREVIEW.md). No Appetize upload or session launch has occurred here.
 
 An Appetize account is still required for a hosted session. Native browser simulation does not replace physical-phone camera, Bluetooth, display/touch timing or electrical/optical qualification. For installation on real iPhones, use a signed TestFlight build after Apple enrollment; use an internal Google Play track for Android after enrollment. Store review and release approval precede public downloads.
 
@@ -36,4 +36,4 @@ OpenSpec, Python/uv, Node, PostgreSQL and the application source do not require 
 
 ## Release evidence
 
-All seven required local/integration categories and the complete native/platform aggregate must pass on the exact release revision with unit coverage strictly above 80%. GitHub protection must also require that aggregate, including for administrators. A preview launch, historical green run or saved workflow does not replace those criteria. See [CI gates](CI_GATES.md) and [the alignment audit](REQUIREMENTS_ALIGNMENT_AUDIT.md) for current implementation and external acceptance boundaries.
+All seven required local/integration categories and the complete native/platform/guest-preview aggregate must pass on the exact release revision with unit coverage strictly above 80%. The [`155c60d` checkpoint](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/155c60d78273980dfde4d52bffbaa29ec36e6fb1) passed all seven local categories and [all eleven aggregate GitHub jobs](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38123602878). Changes after that checkpoint require fresh local and GitHub evidence. GitHub protection must also require the aggregate, including for administrators; its administration request returned HTTP 403 and enforced protection remains unverified. A preview launch, historical green run or saved workflow does not replace those criteria. See [CI gates](CI_GATES.md), [implementation status](../IMPLEMENTATION_STATUS.md) and [the alignment audit](REQUIREMENTS_ALIGNMENT_AUDIT.md) for software and external acceptance boundaries.

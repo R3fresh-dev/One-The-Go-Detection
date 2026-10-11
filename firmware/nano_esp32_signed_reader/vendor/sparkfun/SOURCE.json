@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/sparkfun/SparkFun_Bio_Sensor_Hub_Library",
+  "revision": "91575258e5e2c47f0f4b8ec97b651381671f4637",
+  "version": "1.1",
+  "license": "SparkFun Beerware; upstream attribution and derivative terms retained",
+  "upstream_sha256": {
+    "src/SparkFun_Bio_Sensor_Hub_Library.h": "1c6b0d228dee07ce133636abea343cb9b1bce563c91b8a6cd22dff08ccfff17e",
+    "src/SparkFun_Bio_Sensor_Hub_Library.cpp": "3d53f33a82af8e021279e443bbe468fd3b1e70cd55e446aaa75702fc1ca321b9",
+    "README.md": "40ddc45a6566a1a25c8b65a3536371fcc84f363a1057c47dc41976a7ec7446c3",
+    "library.properties": "9c829e10ae9c6f1ad46a7b3755f239e8c75300acb8711e1678f961fdd913e4a2"
+  },
+  "compiled_sha256": {
+    "SparkFun_Bio_Sensor_Hub_Library.cpp": "d9c51c846617d1a6d1f0c0e29a9d2728200f54d1487a315bb39ea191f3162832",
+    "SparkFun_Bio_Sensor_Hub_Library.h": "fc0a2641fe2af5c062cc2d714f2547ad7fefa3ec279202ae6793984d9408a9aa",
+    "UPSTREAM_README.md": "40ddc45a6566a1a25c8b65a3536371fcc84f363a1057c47dc41976a7ec7446c3",
+    "library.properties": "9c829e10ae9c6f1ad46a7b3755f239e8c75300acb8711e1678f961fdd913e4a2"
+  }
+}

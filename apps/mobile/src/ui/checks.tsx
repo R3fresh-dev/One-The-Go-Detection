@@ -14,6 +14,9 @@ import {
   EyeCaptureView,
   getEyeCaptureAvailability,
 } from "../../modules/eye-capture";
+import { ApprovedParticipantCapture } from "./participant-capture";
+import { ApprovedLabCollection } from "./lab-collection";
+import { participantProtocol } from "../core/participantAcquisition";
 import { RawUploadSelectionCard } from "./raw-upload-selection";
 import {
   getCameraPermissionStatus,
@@ -27,6 +30,7 @@ import {
 } from "../../modules/reaction-task";
 import type {
   CaptureAttempt,
+  Capabilities,
   CheckRecord,
   JsonObject,
   Stage,
@@ -79,6 +83,76 @@ const numberText = (value: unknown, digits = 0) =>
   typeof value === "number" && Number.isFinite(value)
     ? value.toFixed(digits)
     : "—";
+export function EyeAcquisitionExplanation({
+  check,
+  capabilities,
+}: {
+  check: CheckRecord;
+  capabilities: Capabilities | null;
+}) {
+  let approved = false;
+  if (!BUILD.hostedPreview) {
+    try {
+      approved =
+        configurationFor(check, capabilities, "eyes").software_adapter_id ===
+        "optical_roi_v1";
+    } catch {}
+  }
+  const calibrated =
+    !BUILD.hostedPreview &&
+    check.kind === "measurement" &&
+    check.snapshot.eyes.status === "valid" &&
+    check.snapshot.eyes.source !== "simulated" &&
+    check.snapshot.eyes.scale_basis === "calibrated_mm" &&
+    typeof check.snapshot.eyes.baseline_diameter_mm === "number";
+  return (
+    <>
+      <Paragraph>
+        {BUILD.hostedPreview || check.kind !== "measurement"
+          ? "Fictional eye values are examples. This preview does not establish a pupil scale or physical illumination timing."
+          : calibrated
+            ? "This capture retains a diameter scale from the approved geometry calibration. Physical illumination onset remains unmeasured; anatomical light-response magnitude and latency are withheld."
+            : approved
+              ? "Approved optical ROI acquisition is available. A millimeter diameter requires the configuration's current reviewed geometry calibration; otherwise the observation uses normalized scale. Physical illumination onset remains unmeasured, so anatomical response and latency are withheld."
+              : "No current approved optical acquisition is selected for this check. A passive positioning preview does not supply pupil measurements or physical illumination timing."}
+      </Paragraph>
+      <Notice tone={approved || calibrated ? "neutral" : "warning"}>
+        {approved || calibrated
+          ? "Physical illumination onset unmeasured · response magnitude and latency withheld"
+          : "Approved optical acquisition unavailable for this check"}
+      </Notice>
+    </>
+  );
+}
+export function CardiacSummary({ component }: { component: JsonObject }) {
+  return (
+    <Card>
+      <Row>
+        <Metric
+          label="Saved heart rate"
+          value={numberText(component.heart_rate_bpm)}
+          unit="bpm"
+        />
+        <Metric
+          label="ECG RMSSD"
+          value={numberText(component.ecg_rmssd_ms)}
+          unit="ms"
+          detail={
+            component.modality === "ppg"
+              ? "Not measured by PPG"
+              : component.source === "simulated"
+                ? "Fictional ECG example"
+                : typeof component.ecg_rmssd_ms === "number"
+                  ? "Device-reported ECG interval feature; no diagnostic interpretation"
+                  : "Not measured by this ECG acquisition"
+          }
+        />
+      </Row>
+      <Fact label="Modality" value={friendly(component.modality)} />
+      <Fact label="Source" value={friendly(component.source)} />
+    </Card>
+  );
+}
 export function Provenance({ check }: { check: CheckRecord }) {
   return (
     <Notice tone={check.kind === "measurement" ? "neutral" : "warning"}>
@@ -123,6 +197,31 @@ function ApprovedCaptureAction({
       </Notice>
     );
   }
+  const prepared =
+    ["cardiac", "ecg"].includes(channel) ||
+    configuration.software_adapter_id === "reference_lab_import_v1";
+  if (prepared) {
+    try {
+      participantProtocol(configuration);
+    } catch (error) {
+      return (
+        <Notice>
+          {error instanceof Error
+            ? error.message
+            : "Approved participant instructions unavailable."}
+        </Notice>
+      );
+    }
+  }
+  const scopeKey = JSON.stringify([
+    controller.epoch,
+    model.identity?.accountRef,
+    model.state?.generation,
+    check.id,
+    configuration.configuration_id,
+    configuration.submitted_sha256,
+    configuration.participant_protocol_sha256,
+  ]);
   const implemented = channel !== "eyes";
   return (
     <Card>
@@ -152,27 +251,28 @@ function ApprovedCaptureAction({
         requires separate current permission and encrypted native storage.
         Upload remains a later explicit file selection.
       </Notice>
-      {channel === "ecg" ? (
-        <ApprovedECGCapture
-          key={JSON.stringify([
-            controller.epoch,
-            check.id,
-            model.state?.rawRecordingStatuses[check.snapshot.study_id ?? ""]
-              ?.receipt_id,
-            model.state?.rawRecordingStatuses[check.snapshot.study_id ?? ""]
-              ?.policy?.sha256,
-          ])}
+      {channel === "cardiac" || channel === "ecg" ? (
+        <ApprovedParticipantCapture
+          key={scopeKey}
           controller={controller}
           model={model}
+          configuration={configuration}
+          channel={channel}
+        />
+      ) : channel === "saliva" &&
+        configuration.software_adapter_id === "reference_lab_import_v1" ? (
+        <ApprovedLabCollection
+          key={scopeKey}
+          controller={controller}
+          model={model}
+          configuration={configuration}
         />
       ) : implemented && channel !== "task" ? (
         <Button
-          title={`Start authorized ${channel === "cardiac" ? "pulse" : channel} capture`}
+          title={`Start authorized ${channel} capture`}
           busy={model.busy}
           onPress={action(controller, () =>
-            controller.captureReader(
-              channel === "cardiac" ? "ppg" : (channel as "saliva" | "alcohol"),
-            ),
+            controller.captureReader(channel as "saliva" | "alcohol"),
           )}
         />
       ) : channel === "eyes" ? (
@@ -199,47 +299,6 @@ function ApprovedCaptureAction({
         }
       />
     </Card>
-  );
-}
-function ApprovedECGCapture({ controller, model }: ScreenProps) {
-  const [record, setRecord] = useState(false),
-    check = controller.check!,
-    studyId = check.snapshot.study_id!;
-  const status = model.state?.rawRecordingStatuses[studyId],
-    allowed =
-      Platform.OS !== "web" &&
-      !BUILD.hostedPreview &&
-      !!status?.receipt_id &&
-      status.choices.ecg_waveform.record &&
-      status.availability.ecg_waveform.record_allowed &&
-      !model.state?.rawRecordingFences[studyId]?.includes("ecg_waveform") &&
-      !!status.policy &&
-      Date.parse(status.policy.expires_at) > Date.now();
-  return (
-    <>
-      <SwitchRow
-        title="Record optional ECG samples for this capture"
-        value={record && allowed}
-        disabled={!allowed}
-        onChange={setRecord}
-        detail="Off by default. The approved reader must support the bounded signed sample codec; no phone-generated signal or signature is substituted."
-      />
-      <Button
-        title="Start authorized ecg capture"
-        busy={model.busy}
-        onPress={action(controller, () => {
-          const requested = record && allowed;
-          setRecord(false);
-          return controller.captureReader("ecg", requested);
-        })}
-      />
-      {!allowed && (
-        <Paragraph>
-          Separate recording consent and encrypted native storage are required.
-          Permitted feature-only ECG capture remains separate.
-        </Paragraph>
-      )}
-    </>
   );
 }
 function ApprovedEyeCapture({ controller, model }: ScreenProps) {
@@ -829,14 +888,10 @@ export function CheckScreen({ controller, model }: ScreenProps) {
         <>
           <Card>
             <Title small>Eye measurement</Title>
-            <Paragraph>
-              Physical pupil diameter needs a known scale. A light-response
-              measurement also needs an approved optical configuration and
-              timing evidence. This release has neither.
-            </Paragraph>
-            <Notice tone="warning">
-              Unqualified optics · measurement unavailable
-            </Notice>
+            <EyeAcquisitionExplanation
+              check={check}
+              capabilities={model.state?.capabilities ?? null}
+            />
             {synthetic && (
               <Button
                 title={
@@ -970,29 +1025,7 @@ export function CheckScreen({ controller, model }: ScreenProps) {
             </Notice>
           )}
           {check.snapshot.cardiac.status === "valid" && (
-            <Card>
-              <Row>
-                <Metric
-                  label="Saved heart rate"
-                  value={numberText(check.snapshot.cardiac.heart_rate_bpm)}
-                  unit="bpm"
-                />
-                <Metric
-                  label="ECG RMSSD"
-                  value={numberText(check.snapshot.cardiac.ecg_rmssd_ms)}
-                  unit="ms"
-                  detail={
-                    check.snapshot.cardiac.modality === "ppg"
-                      ? "Not measured by PPG"
-                      : "Fictional ECG example"
-                  }
-                />
-              </Row>
-              <Fact
-                label="Modality"
-                value={friendly(check.snapshot.cardiac.modality)}
-              />
-            </Card>
+            <CardiacSummary component={check.snapshot.cardiac} />
           )}
           <Button
             title={`Continue to ${stage === "ecg" ? "reaction task" : "ECG"}`}

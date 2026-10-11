@@ -767,6 +767,53 @@
                 "null"
               ],
               "pattern": "^[0-9a-f]{64}$"
+            },
+            "cardiac_authority": {
+              "additionalProperties": false,
+              "properties": {
+                "schema_version": {
+                  "const": "1.0.0",
+                  "title": "Schema Version",
+                  "type": "string"
+                },
+                "policy": {
+                  "$ref": "#/$defs/CardiacTimingPolicy"
+                },
+                "policy_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Policy Sha256",
+                  "type": "string"
+                },
+                "calibration_registry_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Calibration Registry Sha256",
+                  "type": "string"
+                },
+                "current": {
+                  "$ref": "#/$defs/IntervalEvidence"
+                },
+                "baseline": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/IntervalEvidence"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "schema_version",
+                "policy",
+                "policy_sha256",
+                "calibration_registry_sha256",
+                "current",
+                "baseline"
+              ],
+              "title": "CardiacAuthority",
+              "type": "object",
+              "description": "Optional HR-only conservative server interval authority. Original signed sensor projection and quality flags remain unchanged; this does not qualify ECG, sensor cadence, physical onset, or other channels."
             }
           },
           "required": [
@@ -896,5 +943,323 @@
         }
       }
     }
-  ]
+  ],
+  "$defs": {
+    "CardiacTimingPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "server_issue_to_attestation_receipt_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "calibration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Calibration Id",
+          "type": "string"
+        },
+        "max_interval_ms": {
+          "maximum": 120000,
+          "minimum": 100,
+          "title": "Max Interval Ms",
+          "type": "integer"
+        },
+        "allow_baseline_delta": {
+          "title": "Allow Baseline Delta",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "method",
+        "calibration_id",
+        "max_interval_ms",
+        "allow_baseline_delta"
+      ],
+      "title": "CardiacTimingPolicy",
+      "type": "object"
+    },
+    "IntervalEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "method": {
+          "const": "server_issue_to_attestation_receipt_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "account_ref": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Account Ref",
+          "type": "string"
+        },
+        "data_generation": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Data Generation",
+          "type": "integer"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "authorization_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Authorization Id",
+          "type": "string"
+        },
+        "attestation_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attestation Id",
+          "type": "string"
+        },
+        "binding_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Binding Id",
+          "type": "string"
+        },
+        "boot_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "device_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Device Id",
+          "type": "string"
+        },
+        "key_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Key Id",
+          "type": "string"
+        },
+        "hardware_revision": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Hardware Revision",
+          "type": "string"
+        },
+        "firmware_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Firmware Version",
+          "type": "string"
+        },
+        "adapter_id": {
+          "enum": [
+            "otgd_esp32_adc_v1",
+            "otgd_sparkfun_max32664_v1"
+          ],
+          "title": "Adapter Id",
+          "type": "string"
+        },
+        "extractor_version": {
+          "enum": [
+            "adc_peak_intervals_v1",
+            "sparkfun_sensor_bpm_v1"
+          ],
+          "title": "Extractor Version",
+          "type": "string"
+        },
+        "configuration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Configuration Id",
+          "type": "string"
+        },
+        "configuration_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Configuration Version",
+          "type": "string"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        },
+        "configuration_submitted_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Submitted Sha256",
+          "type": "string"
+        },
+        "calibration_registry_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Calibration Registry Sha256",
+          "type": "string"
+        },
+        "calibration_scope_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Calibration Scope Sha256",
+          "type": "string"
+        },
+        "qualification_registry_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Qualification Registry Sha256",
+          "type": "string"
+        },
+        "device_registry_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Device Registry Sha256",
+          "type": "string"
+        },
+        "policy_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        },
+        "snapshot_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Snapshot Sha256",
+          "type": "string"
+        },
+        "capture_context_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Capture Context Sha256",
+          "type": "string"
+        },
+        "evidence_manifest_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Evidence Manifest Sha256",
+          "type": "string"
+        },
+        "authorization_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Authorization Sha256",
+          "type": "string"
+        },
+        "attestation_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Attestation Sha256",
+          "type": "string"
+        },
+        "issued_epoch": {
+          "exclusiveMinimum": 0,
+          "title": "Issued Epoch",
+          "type": "number"
+        },
+        "received_epoch": {
+          "exclusiveMinimum": 0,
+          "title": "Received Epoch",
+          "type": "number"
+        },
+        "target_epoch": {
+          "exclusiveMinimum": 0,
+          "title": "Target Epoch",
+          "type": "number"
+        },
+        "server_utc_error_ms": {
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Server Utc Error Ms",
+          "type": "number"
+        },
+        "signed_acquisition_duration_us": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 60000000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Signed Acquisition Duration Us"
+        },
+        "maximum_monotonic_rate_error_ppm": {
+          "anyOf": [
+            {
+              "maximum": 10000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Maximum Monotonic Rate Error Ppm"
+        },
+        "interval_ms": {
+          "exclusiveMinimum": 0,
+          "maximum": 120000,
+          "title": "Interval Ms",
+          "type": "integer"
+        },
+        "acquisition_bound_ms": {
+          "exclusiveMinimum": 0,
+          "maximum": 3600000,
+          "title": "Acquisition Bound Ms",
+          "type": "integer"
+        },
+        "preserved_quality_flags": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 2,
+          "title": "Preserved Quality Flags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "method",
+        "account_ref",
+        "data_generation",
+        "session_id",
+        "attempt_id",
+        "authorization_id",
+        "attestation_id",
+        "binding_id",
+        "boot_id",
+        "device_id",
+        "key_id",
+        "hardware_revision",
+        "firmware_version",
+        "adapter_id",
+        "extractor_version",
+        "configuration_id",
+        "configuration_version",
+        "configuration_sha256",
+        "configuration_submitted_sha256",
+        "calibration_registry_sha256",
+        "calibration_scope_sha256",
+        "qualification_registry_sha256",
+        "device_registry_sha256",
+        "policy_sha256",
+        "snapshot_sha256",
+        "capture_context_sha256",
+        "evidence_manifest_sha256",
+        "authorization_sha256",
+        "attestation_sha256",
+        "issued_epoch",
+        "received_epoch",
+        "target_epoch",
+        "server_utc_error_ms",
+        "signed_acquisition_duration_us",
+        "maximum_monotonic_rate_error_ppm",
+        "interval_ms",
+        "acquisition_bound_ms",
+        "preserved_quality_flags"
+      ],
+      "title": "IntervalEvidence",
+      "type": "object"
+    }
+  }
 }

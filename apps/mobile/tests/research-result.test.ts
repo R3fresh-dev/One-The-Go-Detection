@@ -1,8 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { unzipSync, strFromU8 } from "fflate";
 import fixture from "../testfixtures/backend-research-result.json";
+import cardiacFixture from "../testfixtures/backend-cardiac-authority.json";
 import { clone, digest } from "../src/core/integrity";
 import { verifyResult } from "../src/core/domain";
+import { parseRemoteCheck } from "../src/core/remote";
+import {
+  createLocalExport,
+  inspectExportArchive,
+} from "../src/services/export";
+import { verifyResearchResult } from "../src/core/researchResult";
 import type { CheckRecord } from "../src/core/types";
 
 const check = () => clone(fixture.check) as unknown as CheckRecord;
@@ -15,6 +23,123 @@ function rebind(value: any) {
     value.model_execution.authority_manifest,
   );
 }
+function cardiacCheck(): any {
+  return {
+    id: cardiacFixture.snapshot.session_id,
+    generation:
+      cardiacFixture.result.model_execution.authority_manifest.cardiac_authority
+        .current.data_generation,
+    kind: "measurement",
+    frozen: true,
+    snapshot_sha256: digest(cardiacFixture.snapshot),
+    snapshot: clone(cardiacFixture.snapshot),
+    context: clone(cardiacFixture.context),
+    manifest: clone(cardiacFixture.evidence_manifest),
+    attempts: clone(cardiacFixture.owned_evidence.attempts),
+  };
+}
+test("actual signed API-to-worker HR-only fixture verifies conservative server interval authority without rewriting its sensor flags", () => {
+  assert.equal(cardiacFixture.fixture_kind, "FICTIONAL_ENGINEERING_ONLY");
+  const result = verifyResearchResult(cardiacFixture.result, cardiacCheck());
+  assert.equal(result.state, "research_estimate");
+  assert.equal(
+    result.model_execution.authority_manifest.cardiac_authority!
+      .current instanceof Object,
+    true,
+  );
+  assert.deepEqual(cardiacFixture.snapshot.cardiac.quality_flags, [
+    "ADC_PEAK_INTERVALS_V1",
+    "SERVER_WALL_ANCHOR_UNQUALIFIED",
+  ]);
+  const workspace: any = {
+    workspace: "fictional-cardiac-export",
+    generation: cardiacFixture.generation,
+    capabilities: { account_ref: cardiacFixture.snapshot.subject_ref },
+    checks: [],
+    profile: null,
+    queue: [],
+    rawArtifacts: [],
+    rawRecordingFences: {},
+  };
+  const owned = parseRemoteCheck(cardiacFixture.owned_session, workspace);
+  workspace.checks = [owned];
+  assert.equal(owned.result!.schema_version, "1.1.0");
+  const archive = createLocalExport(
+    workspace,
+    { kind: "single", session_ids: [owned.id] },
+    cardiacFixture.result.evaluated_at,
+  );
+  assert.ok(inspectExportArchive(archive).fileCount > 0);
+  const profile = JSON.parse(strFromU8(unzipSync(archive)["profile.json"]!));
+  assert.equal(profile.versions[0].context, null);
+  assert.equal(Object.hasOwn(owned.context, "self_report_context"), false);
+});
+test("HR-only proof refuses rebased intervals, broader models, altered calibration/policy/scope, fictional predictors and unpreserved uncertainty", () => {
+  for (const mutate of [
+    (v: any) =>
+      v.model_execution.authority_manifest.cardiac_authority.current
+        .interval_ms++,
+    (v: any) =>
+      v.model_execution.authority_manifest.cardiac_authority.current
+        .acquisition_bound_ms++,
+    (v: any) =>
+      v.model_execution.authority_manifest.cardiac_authority.current
+        .target_epoch++,
+    (v: any) =>
+      (v.model_execution.authority_manifest.cardiac_authority.current.received_epoch =
+        v.model_execution.authority_manifest.cardiac_authority.current
+          .issued_epoch - 1),
+    (v: any) =>
+      (v.model_execution.authority_manifest.cardiac_authority.current.configuration_version =
+        "v2"),
+    (v: any) =>
+      v.model_execution.authority_manifest.cardiac_authority.current
+        .data_generation++,
+    (v: any) =>
+      (v.model_execution.authority_manifest.cardiac_authority.current.policy_sha256 =
+        "0".repeat(64)),
+    (v: any) =>
+      (v.model_execution.authority_manifest.cardiac_authority.calibration_registry_sha256 =
+        "0".repeat(64)),
+    (v: any) =>
+      (v.model_execution.authority_manifest.cardiac_authority.current.preserved_quality_flags =
+        ["SERVER_WALL_ANCHOR_UNQUALIFIED", "UNRELATED_FLAG"]),
+    (v: any) =>
+      (v.model_execution.authority_manifest.cardiac_authority.current.signed_acquisition_duration_us = 100),
+    (v: any) =>
+      (v.model_execution.authority_manifest.cardiac_authority.policy.allow_baseline_delta = true),
+    (v: any) =>
+      (v.model_execution.authority_manifest.model_manifest.required_channels = [
+        "cardiac_hr",
+        "cardiac_ecg",
+      ]),
+    (v: any) => (v.model_execution.feature_values_sha256 = "0".repeat(64)),
+    (v: any) =>
+      (v.model_execution.authority_manifest.cardiac_authority.current.adapter_id =
+        "otgd_sparkfun_max32664_v1"),
+  ]) {
+    const value: any = clone(cardiacFixture.result);
+    mutate(value);
+    rebind(value);
+    assert.throws(() => verifyResearchResult(value, cardiacCheck()));
+  }
+  for (const change of [
+    { modality: "ecg" },
+    { ecg_rmssd_ms: 25 },
+    { source: "simulated" },
+    { quality_flags: ["ADC_PEAK_INTERVALS_V1"] },
+  ]) {
+    const owned = cardiacCheck(),
+      value: any = clone(cardiacFixture.result);
+    Object.assign(owned.snapshot.cardiac, change);
+    owned.snapshot_sha256 = digest(owned.snapshot);
+    value.input_sha256 = owned.snapshot_sha256;
+    value.model_execution.authority_manifest.cardiac_authority.current.snapshot_sha256 =
+      owned.snapshot_sha256;
+    rebind(value);
+    assert.throws(() => verifyResearchResult(value, owned));
+  }
+});
 
 test("actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint", () => {
   assert.match(fixture.evidence_boundary, /not a server-admitted study/);

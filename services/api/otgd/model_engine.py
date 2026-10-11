@@ -45,7 +45,7 @@ FEATURE_CHANNELS = {
 
 
 def utc_timestamp(value):
-    from .recovery_authority import timestamp, RecoveryBlocked
+    from .recovery_authority import RecoveryBlocked, timestamp
 
     try:
         return timestamp(value)
@@ -193,6 +193,16 @@ class Metrics(Strict):
         return self
 
 
+class CardiacEvaluationEvidence(Strict):
+    cardiac_timing_policy_sha256: Hash
+    calibration_registry_sha256: Hash
+    calibration_scope_sha256: Hash
+    qualification_registry_sha256: Hash
+    device_registry_sha256: Hash
+    configuration_submitted_sha256: Hash
+    evidence_manifest_sha256: Hash
+
+
 class EvaluationReport(Strict):
     schema_version: Literal["1.0.0"]
     artifact_sha256: Hash
@@ -209,6 +219,8 @@ class EvaluationReport(Strict):
     ablations: dict[str, Metrics]
     participant_overlap: Literal[False]
     future_predictors: Literal[False]
+    analysis_scope: Literal["combined_channels", "cardiac_hr_only"] = "combined_channels"
+    cardiac_evidence: CardiacEvaluationEvidence | None = None
 
     @model_validator(mode="after")
     def locked(self):
@@ -220,12 +232,11 @@ class EvaluationReport(Strict):
             raise ValueError(
                 "Analysis/threshold must be frozen before confirmatory evaluation"
             )
-        if set(self.ablations) != {
-            "chemical_only",
-            "app_only",
-            "combined",
-            "ecg_removed",
-        }:
+        expected = {"chemical_only", "app_only", "combined", "ecg_removed"}
+        if self.analysis_scope == "cardiac_hr_only":
+            expected = {"cardiac_hr_only"}
+        if (set(self.ablations) != expected
+            or (self.analysis_scope == "cardiac_hr_only") != (self.cardiac_evidence is not None)):
             raise ValueError("All matched-split ablations are required")
         if any(
             row.total != self.confirmatory.total
@@ -272,6 +283,20 @@ def validate_registry_model(body):
         raise ValueError(
             "Personalized inference requires an explicit bounded baseline age"
         )
+    if body.get("cardiac_timing_policy") is not None:
+        from .cardiac_authority import CardiacTimingPolicy
+
+        policy = CardiacTimingPolicy.model_validate(body["cardiac_timing_policy"])
+        if (manifest["required_channels"] != ["cardiac_hr"]
+            or policy.allow_baseline_delta != (manifest["baseline_mode"] == "personalized")
+            or policy.max_interval_ms > manifest["max_clock_uncertainty_ms"]):
+            raise ValueError("Server interval authority is restricted to prespecified HR-only models")
+        if (report.analysis_scope != "cardiac_hr_only"
+            or report.cardiac_evidence is None
+            or report.cardiac_evidence.cardiac_timing_policy_sha256 != digest(policy.data())):
+            raise ValueError("HR-only inference requires its own frozen matched-row evaluation evidence")
+    elif report.analysis_scope != "combined_channels":
+        raise ValueError("HR-only evaluation requires the explicit reviewed cardiac timing policy")
     return body
 
 
@@ -376,7 +401,8 @@ def score(artifact, values):
 
 
 def scope_check(
-    snapshot, body, timing_qualified=False, *, baseline=False, optical_qualified=False
+    snapshot, body, timing_qualified=False, *, baseline=False, optical_qualified=False,
+    cardiac_timing=None,
 ):
     from .domain import validate_session
     from .recovery_authority import timestamp
@@ -410,7 +436,11 @@ def scope_check(
         not in body["co_use_policy"]["allowed_alcohol_co_use"]
     ):
         raise Problem(403, "OUTSIDE_SCOPE")
-    if (
+    if cardiac_timing is not None:
+        from .cardiac_authority import validate_interval
+
+        validate_interval(snapshot, body, cardiac_timing, baseline=baseline)
+    elif (
         snapshot["clock_uncertainty_ms"] is None
         or snapshot["clock_uncertainty_ms"] > manifest["max_clock_uncertainty_ms"]
         or snapshot["acquisition_span_ms"] is None
@@ -447,6 +477,10 @@ def scope_check(
                     "UNCALIBRATED_CAMERA_RESPONSE",
                     "NO_APPROVED_STIMULUS",
                 }
+            if channel == "cardiac_hr" and cardiac_timing is not None:
+                # Retained descriptive metadata is admitted only under the
+                # separate original server interval and exact reviewed method.
+                allowed_flags = set(cardiac_timing["preserved_quality_flags"])
             if (
                 component["status"] != "valid"
                 or component["source"] not in manifest["allowed_provenance"]
@@ -514,15 +548,29 @@ def execute(
     timing_qualified=False,
     timing_bias_ms=0.0,
     optical_qualified=False,
+    cardiac_timing=None,
+    baseline_cardiac_timing=None,
 ):
     """Internal arithmetic only. Server admission supplies frozen authority/proof."""
     validate_registry_model(body)
+    if body.get("cardiac_timing_policy") is not None:
+        from .cardiac_authority import build_authority, validate_features
+
+        validate_features(body, artifact)
+        if cardiac_timing is None:
+            raise Problem(403, "CARDIAC_CAPTURE_PROOF_REQUIRED")
+        companion = build_authority(body, cardiac_timing, baseline_cardiac_timing)
+        if proof["authority_manifest"].get("cardiac_authority") != companion:
+            raise Problem(422, "MODEL_EXECUTION_PROOF_MISMATCH")
+    elif cardiac_timing is not None or baseline_cardiac_timing is not None:
+        raise Problem(403, "CARDIAC_TIMING_QUALIFICATION_REQUIRED")
     pupil_features = {
         name for name in artifact.feature_names if name.startswith("eyes.")
     }
     if optical_qualified and pupil_features - {"eyes.baseline_diameter_mm"}:
         raise Problem(403, "OPTICAL_PHYSICAL_TIMING_QUALIFICATION_REQUIRED")
-    scope_check(snapshot, body, timing_qualified, optical_qualified=optical_qualified)
+    scope_check(snapshot, body, timing_qualified, optical_qualified=optical_qualified,
+        cardiac_timing=cardiac_timing)
     if (body["manifest"]["baseline_mode"] == "personalized") != (baseline is not None):
         raise Problem(422, "BASELINE_NOT_COMPATIBLE")
     if baseline is not None:
@@ -532,7 +580,12 @@ def execute(
             timing_qualified,
             baseline=True,
             optical_qualified=optical_qualified,
+            cardiac_timing=baseline_cardiac_timing,
         )
+        if cardiac_timing is not None:
+            from .cardiac_authority import validate_baseline
+
+            validate_baseline(snapshot, body, cardiac_timing, baseline_cardiac_timing)
         if (
             utc_timestamp(snapshot["target_at"])
             - utc_timestamp(baseline["capture_completed_at"])
@@ -598,6 +651,9 @@ def validate_result(value):
     from .domain import validate_schema
 
     validate_schema(value, "research/ResearchResult.schema.json")
+    from .cardiac_authority import validate_result_companion
+
+    validate_result_companion(value)
     if "simulated" in value["provenance_summary"]:
         raise Problem(422, "SIMULATED_INPUT")
     proof = value["model_execution"]
@@ -798,6 +854,7 @@ def optical_authority(db, account, check, body, evidence):
 def execution_authority(db, account, check):
     """Resolve actual released records and owner evidence; no request approval flags."""
     from sqlalchemy import select
+
     from .config import settings
     from .db import Check, RegistryEvent, SystemState
     from .domain import NOTICE_SHA, record, verify_evidence
@@ -848,6 +905,16 @@ def execution_authority(db, account, check):
     optical_qualified, optical_sha256 = optical_authority(
         db, account, check, body, manifest
     )
+    from .cardiac_authority import build_authority
+    from .cardiac_authority import resolve as resolve_cardiac
+
+    cardiac_timing = resolve_cardiac(db, account, check, body, manifest)
+    if cardiac_timing is not None:
+        # Publication, historical reads and exports re-admit at the current
+        # service time; an old evaluation timestamp cannot renew custody age.
+        scope_check(check.snapshot, body, timing_qualified,
+            optical_qualified=optical_qualified, cardiac_timing=cardiac_timing)
+    baseline_cardiac_timing = None
     baseline = None
     if body["manifest"]["baseline_mode"] == "personalized":
         original = (
@@ -870,6 +937,7 @@ def execution_authority(db, account, check):
         baseline_optical, baseline_optical_sha = optical_authority(
             db, account, original, body, baseline_manifest
         )
+        baseline_cardiac_timing = resolve_cardiac(db, account, original, body, baseline_manifest)
         if (
             baseline_timing_sha != timing_sha256
             or baseline_optical_sha != optical_sha256
@@ -881,8 +949,13 @@ def execution_authority(db, account, check):
             baseline_timing,
             baseline=True,
             optical_qualified=baseline_optical,
+            cardiac_timing=baseline_cardiac_timing,
         )
         baseline = original.snapshot
+        if cardiac_timing is not None:
+            from .cardiac_authority import validate_baseline
+
+            validate_baseline(check.snapshot, body, cardiac_timing, baseline_cardiac_timing)
     ref = ArtifactRef.model_validate(body["artifact_ref"]).model_dump()
     if ref["bucket"] != settings().artifact_bucket:
         raise Problem(403, "MODEL_ARTIFACT_SCOPE_MISMATCH")
@@ -919,6 +992,9 @@ def execution_authority(db, account, check):
             ]
         ),
     }
+    cardiac_companion = build_authority(body, cardiac_timing, baseline_cardiac_timing)
+    if cardiac_companion is not None:
+        authority["cardiac_authority"] = cardiac_companion
     proof = {
         "schema_version": "1.0.0",
         "registry_id": body["model_id"],
@@ -946,6 +1022,8 @@ def execution_authority(db, account, check):
         "timing_qualified": timing_qualified,
         "timing_bias_ms": timing_bias_ms,
         "optical_qualified": optical_qualified,
+        "cardiac_timing": cardiac_timing,
+        "baseline_cardiac_timing": baseline_cardiac_timing,
         "calibration": calibration.body,
     }
 
@@ -986,6 +1064,8 @@ def result_for_check(db, account, check):
             timing_qualified=resolved["timing_qualified"],
             timing_bias_ms=resolved["timing_bias_ms"],
             optical_qualified=resolved["optical_qualified"],
+            cardiac_timing=resolved.get("cardiac_timing"),
+            baseline_cardiac_timing=resolved.get("baseline_cardiac_timing"),
         )
     except Problem as error:
         result = measurement_result(check)
@@ -1022,14 +1102,15 @@ def verify_current_execution(db, account, check, output):
 
 
 def model_capabilities(db, account):
+    from sqlalchemy import select
+
+    from .db import RegistryVersion
     from .domain import NOTICE_SHA, record
     from .operator_governance import (
+        channel_capabilities,
         released_version,
         validate_dependencies,
-        channel_capabilities,
     )
-    from sqlalchemy import select
-    from .db import RegistryVersion
 
     result = {
         "model_execution_supported": True,

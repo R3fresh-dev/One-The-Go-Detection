@@ -1,3 +1,7 @@
+import {
+  laboratorySupersession,
+  verifyParticipantCompanions,
+} from "./labEvidence";
 import type {
   NativeInputEvent,
   NativeTaskResult,
@@ -114,6 +118,7 @@ function same(a: unknown, b: unknown): void {
  * and exports their bounded records independently, never inside this base chain.
  */
 export function verifyExportEvidence(check: CheckRecord): void {
+  verifyParticipantCompanions(check);
   const raw = requireObject(check);
   const required =
     "id generation workspace kind stage frozen snapshot context attempts manifest snapshot_sha256 evidence_sha256 result alcohol delivery error remote_revision remote_etag updated_at".split(
@@ -126,6 +131,10 @@ export function verifyExportEvidence(check: CheckRecord): void {
     "report_revision_cache",
     "acquisition",
     "attestations",
+    "labCollection",
+    "instruction_receipts",
+    "collections",
+    "collection_abandons",
   ];
   demand(
     required.every((key) => Object.hasOwn(raw, key)) &&
@@ -139,6 +148,7 @@ export function verifyExportEvidence(check: CheckRecord): void {
           "report_revision_cache",
           "acquisition",
           "attestations",
+          "labCollection",
         ].includes(key),
     ),
   );
@@ -263,7 +273,12 @@ export function verifyExportEvidence(check: CheckRecord): void {
       demand(predecessor);
       previous = predecessor.supersedes_attempt_id;
     }
-    if (attempt.status === "valid") {
+    if (
+      attempt.status === "valid" &&
+      !check.attempts.some((successor) =>
+        laboratorySupersession(check, successor, attempt),
+      )
+    ) {
       const key =
         attempt.component === "cardiac"
           ? `cardiac:${projection.modality}`

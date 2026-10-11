@@ -1,0 +1,25 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "confirmation": {
+      "const": true,
+      "title": "Confirmation",
+      "type": "boolean"
+    },
+    "reason": {
+      "enum": [
+        "USER_CANCELED",
+        "PARTICIPANT_DECLINED",
+        "SPECIMEN_UNAVAILABLE"
+      ],
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "confirmation",
+    "reason"
+  ],
+  "title": "CollectionAbandonment",
+  "type": "object"
+}

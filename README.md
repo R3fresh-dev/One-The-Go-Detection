@@ -2,11 +2,11 @@
 
 A mobile and device development platform for one saliva sample, physiological measurements, and one continuous reaction task, with a separate future breath-alcohol channel.
 
-**The repository now contains the reviewed OpenSpec feature set, Android/iOS application source, native modules, API/worker, Arduino BLE simulator and LocalStack/QA/production infrastructure.** The software records measurements and uncalibrated practice. It does not predict intoxication, metabolic clearance or fitness to drive. There is no trained/qualified clinical model, validated saliva assay or approved human sensor configuration in this release.
+**The repository contains the reviewed OpenSpec feature set, Android/iOS application source, native modules, API/worker, reader firmware and LocalStack/QA/production infrastructure.** Measurement mode is the default. The separate `ResearchResult 1.1.0` software path can execute a bounded research model only with current, independently released study, consent, device, calibration and model/evaluation authority. No genuine human approvals, qualified clinical model, validated saliva assay or approved human sensor configuration are seeded. Fictional examples and uncalibrated practice do not establish intoxication, metabolic clearance or fitness to drive.
 
 Read the [implementation and verification status](IMPLEMENTATION_STATUS.md) for the exact distinction between supplied source, passing checks, native builds and external release prerequisites. No AWS deployment or clinical qualification is implied by source or infrastructure synthesis.
 
-The [required merge checks](docs/CI_GATES.md) describe the strict coverage, browser, performance, real-dependency, Docker, LocalStack and native gates. Workflow configuration and verified GitHub branch protection are separate requirements.
+The [required merge checks](docs/CI_GATES.md) describe the strict coverage, browser, performance, real-dependency, Docker, LocalStack and native gates. At the [`155c60d` checkpoint](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/155c60d78273980dfde4d52bffbaa29ec36e6fb1), all seven local gate categories and [all eleven aggregate GitHub jobs](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38123602878) passed. Further changes require fresh checks on their exact revision. Branch-protection administration returned HTTP 403, so enforced merge protection remains unverified.
 
 ## Start here
 
@@ -34,7 +34,7 @@ The mobile application uses Expo/React Native with shared Android/iOS journeys a
 
 Native account data uses SQLCipher with protected per-workspace keys and an encrypted outbox. The browser preview is deliberately memory-only. The reaction module retains full trial/input/timing evidence, checks the frozen task configuration and marks practice uncalibrated. Sensor simulators retain fictional provenance. Phone preview and a generic board are not treated as selective cannabinoid sensors.
 
-The FastAPI/PostgreSQL service supplies owner/generation isolation, immutable evidence, RFC 8785 hashes, conditional versioned S3 uploads, SQS workers, authenticated exports and deletion recovery. QA/prod CDK stacks provide private Fargate/RDS, TLS ingress, Cognito, private encrypted buckets/queues, secrets, backups, budget inputs and alarms. Exact image digests and dependency lockfiles are committed.
+The FastAPI/PostgreSQL service supplies owner/generation isolation, immutable evidence, RFC 8785 hashes, conditional versioned S3 uploads, SQS workers, independently governed raw-inclusive exports and deletion recovery. QA/prod CDK stacks provide private Fargate/RDS, TLS ingress, Cognito, private encrypted buckets/queues, secrets, backups, budget inputs and alarms. Dependency and base-image locks are committed; deployment receipts must bind the actual reviewed service image digest and web artifact. Separate [QA and production Python commands](deploy/README.md) deploy infrastructure, security and code, and [register_cname.py](deploy/register_cname.py) verifies the deployed UI distribution before registering an owned subdomain. These cloud operations have not been executed here.
 
 ## Run the mobile preview
 
@@ -47,7 +47,7 @@ npm test --prefix apps/mobile
 npm run web --prefix apps/mobile
 ```
 
-The preview runs on port **8082**, leaving **8081** for the local identity issuer. Guest demo works without the backend. Web preview does not implement native reaction acquisition, Bluetooth, OS-protected account storage or native sharing behavior. Use a development client for those paths.
+The preview runs on port **8082**, leaving **8081** for the local identity issuer. Guest demo works without the backend. Web preview does not implement native reaction acquisition, Bluetooth, OS-protected account storage or native sharing behavior. Use a development client for those paths. For browser-only setup, select the feature branch containing the devcontainer in [Codespaces](docs/BROWSER_ACCESS_AND_SERVICES.md). Pull requests targeting `main` now include required guarded hosted-native artifact builds; their successful execution must be observed before using artifacts. Manual dispatch becomes available after the workflow reaches default `main`. An Appetize account and an actual guest-only launch are still required. No hosted native session or store release has been launched here.
 
 For Android, install the documented SDK/JDK and run `npm run android` from `apps/mobile`. For iOS, use the documented macOS/Xcode toolchain and `npm run ios`. The mobile guide gives exact emulator/phone environment settings and explains the difference between a debug APK, simulator app and signed store build. Expo Go cannot supply these custom native modules or SQLCipher configuration.
 
@@ -85,7 +85,7 @@ Read the verification report for actual counts and externally unexecuted gates. 
 
 Start with the **Arduino Nano ESP32 with headers (ABX00083)** and the exact [shopping basket](specs/SHOPPING_LIST.md). The new `firmware/nano_esp32_ble_simulator` firmware exercises the app's bounded synthetic BLE transport. The original [USB serial sketch](examples/arduino/synthetic_serial/synthetic_serial.ino) remains useful for the first board/USB check.
 
-First establish repeatable board power, USB upload and explicitly fictional BLE exchange. Then develop the PPG driver and finger fixture using the documented 3.3 V wiring. Develop selective saliva chemistry, collection and reference-method comparison with a suitable laboratory in parallel. ECG begins with simulator/circuit review; qualified optics, human-contact electronics and chemical measurement are separate engineering milestones. A custom PCB follows demonstrated sensing and power requirements.
+First establish repeatable board power, USB upload and explicitly fictional BLE exchange. Then wire and validate the selected SparkFun PPG driver and finger fixture using the documented 3.3 V wiring. Develop selective saliva chemistry, collection and reference-method comparison with a suitable laboratory in parallel. ECG begins with simulator/circuit review; qualified optics, human-contact electronics and chemical measurement are separate engineering milestones. A custom PCB follows demonstrated sensing and power requirements.
 
 ## Research reports
 
@@ -100,7 +100,7 @@ First establish repeatable board power, USB upload and explicitly fictional BLE 
 | Demonstration | Fictional sensor values and separately labeled native practice; guest records stay local. |
 | Account data | Explicit profile saves and check uploads, current notice, account ownership and data-generation enforcement. |
 | Human channel | Requires actual qualified hardware/configuration, current study/consent where applicable, and exact provenance; no approved real configuration is seeded. |
-| Intoxication prediction | Compiled unavailable. A new reviewed release, independent endpoint labels and prospective validation are required to make an impairment claim. |
+| Research model execution | Conditional `ResearchResult 1.1.0` admission, scoring, abstention and evidence readers are implemented. Legacy `0.1.0` results and fictional hosted previews remain measurement-only. Genuine independent approvals, endpoint labels, locked evaluation and prospective validation are required before participant research use or any impairment claim. |
 | AWS production | Infrastructure and promotion controls supplied; actual QA evidence, deployment inputs, credentials, operator ownership and release gates are required. |
 
 Keep real participant recordings, identifiable measurements and credentials out of this repository. Examples and test fixtures are fictional. Qualification cannot be manufactured with a `validated_sensor` string, a device name, a CRC or an approval flag. Changes to units, assay basis, collection matrix, task configuration, feature extraction, hardware scope or model eligibility require coordinated changes to contracts and evidence.

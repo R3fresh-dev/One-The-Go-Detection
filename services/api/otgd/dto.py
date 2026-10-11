@@ -310,6 +310,7 @@ class CaptureAuthorization(DTO):
     configuration_id: Name
     configuration_hash: SHA
     raw_recording_kind: Literal["eye_video", "ecg_waveform"] | None = None
+    instruction_receipt_id: UUID | None = None
 
 
 class StartAuthorization(DTO):
@@ -432,6 +433,10 @@ class Alcohol(DTO):
 
 
 class LabImport(DTO):
+    account_ref: UUID | None = None
+    data_generation: Annotated[int, Field(ge=1, le=9007199254740991)] | None = None
+    sample_id: UUID | None = None
+    collection_attempt_id: UUID | None = None
     study_id: Name
     session_id: UUID
     source_report_artifact_id: UUID

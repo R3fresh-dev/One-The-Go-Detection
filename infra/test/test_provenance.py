@@ -85,7 +85,7 @@ class ProvenanceTest(unittest.TestCase):
 
     def test_local_claims_cannot_replace_missing_failed_skipped_or_old_attempt_jobs(self):
         evidence, run, jobs = gate_fixture()
-        failures = [jobs[:-1], [x for x in jobs if x["name"] != "merge-gate"]]
+        failures = [[x for x in jobs if x["name"] != name] for name in sorted(p.REQUIRED_JOBS)]
         for field, value in (("conclusion", "skipped"), ("conclusion", "failure"), ("conclusion", "cancelled"), ("status", "in_progress"), ("run_attempt", 1), ("head_sha", "a" * 40), ("run_id", 22)):
             changed = copy.deepcopy(jobs)
             changed[0][field] = value

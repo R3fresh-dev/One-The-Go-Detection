@@ -34,6 +34,14 @@ export function queueCheck(
   rawLocalIds: string[] = [],
 ): WorkspaceState {
   const check = state.checks.find((c) => c.id === checkId);
+  if (
+    check?.labCollection &&
+    ["collecting", "pending_lab"].includes(check.labCollection.state)
+  )
+    throw new IntegrityError(
+      "LAB_ANALYSIS_PENDING",
+      "Laboratory analysis must remain a draft until independently imported or explicitly ended.",
+    );
   if (!check?.frozen)
     throw new IntegrityError(
       "SAVE_FIRST",

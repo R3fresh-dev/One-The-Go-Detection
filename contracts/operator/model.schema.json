@@ -103,6 +103,91 @@
       "title": "AssayTuple",
       "type": "object"
     },
+    "CardiacEvaluationEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "cardiac_timing_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cardiac Timing Policy Sha256",
+          "type": "string"
+        },
+        "calibration_registry_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Calibration Registry Sha256",
+          "type": "string"
+        },
+        "calibration_scope_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Calibration Scope Sha256",
+          "type": "string"
+        },
+        "qualification_registry_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Qualification Registry Sha256",
+          "type": "string"
+        },
+        "device_registry_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Device Registry Sha256",
+          "type": "string"
+        },
+        "configuration_submitted_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Configuration Submitted Sha256",
+          "type": "string"
+        },
+        "evidence_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Manifest Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cardiac_timing_policy_sha256",
+        "calibration_registry_sha256",
+        "calibration_scope_sha256",
+        "qualification_registry_sha256",
+        "device_registry_sha256",
+        "configuration_submitted_sha256",
+        "evidence_manifest_sha256"
+      ],
+      "title": "CardiacEvaluationEvidence",
+      "type": "object"
+    },
+    "CardiacTimingPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "server_issue_to_attestation_receipt_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "calibration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Calibration Id",
+          "type": "string"
+        },
+        "max_interval_ms": {
+          "maximum": 120000,
+          "minimum": 100,
+          "title": "Max Interval Ms",
+          "type": "integer"
+        },
+        "allow_baseline_delta": {
+          "title": "Allow Baseline Delta",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "method",
+        "calibration_id",
+        "max_interval_ms",
+        "allow_baseline_delta"
+      ],
+      "title": "CardiacTimingPolicy",
+      "type": "object"
+    },
     "CoUsePolicy": {
       "additionalProperties": false,
       "properties": {
@@ -238,6 +323,26 @@
           "const": false,
           "title": "Future Predictors",
           "type": "boolean"
+        },
+        "analysis_scope": {
+          "default": "combined_channels",
+          "enum": [
+            "combined_channels",
+            "cardiac_hr_only"
+          ],
+          "title": "Analysis Scope",
+          "type": "string"
+        },
+        "cardiac_evidence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardiacEvaluationEvidence"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -476,6 +581,17 @@
       ],
       "default": null,
       "title": "Native Timing Calibration Id"
+    },
+    "cardiac_timing_policy": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CardiacTimingPolicy"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

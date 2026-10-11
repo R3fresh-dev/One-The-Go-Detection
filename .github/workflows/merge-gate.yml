@@ -66,10 +66,12 @@ jobs:
     uses: ./.github/workflows/platform.yml
   native:
     uses: ./.github/workflows/native-build.yml
+  preview:
+    uses: ./.github/workflows/hosted-native-preview.yml
   merge-gate:
     name: merge-gate
     if: always()
-    needs: [application, platform, native]
+    needs: [application, platform, native, preview]
     runs-on: ubuntu-24.04
     steps:
       - name: Reject every failed, skipped or cancelled mandatory gate
@@ -77,7 +79,8 @@ jobs:
           APPLICATION: ${{ needs.application.result }}
           PLATFORM: ${{ needs.platform.result }}
           NATIVE: ${{ needs.native.result }}
-        run: test "$APPLICATION" = success && test "$PLATFORM" = success && test "$NATIVE" = success
+          PREVIEW: ${{ needs.preview.result }}
+        run: test "$APPLICATION" = success && test "$PLATFORM" = success && test "$NATIVE" = success && test "$PREVIEW" = success
       - name: Preserve exact revision evidence
         env:
           REVISION: ${{ github.sha }}
@@ -86,7 +89,7 @@ jobs:
           mkdir -p reports
           python3 - <<'PYCODE'
           import json,os
-          json.dump({'revision':os.environ['REVISION'],'run_url':os.environ['RUN_URL'],'passed':['unit-coverage','atdd','components','performance','live-dependencies','docker-health','localstack-api','specifications','native-android','native-ios','firmware']},open('reports/gates.json','w'),indent=2)
+          json.dump({'revision':os.environ['REVISION'],'run_url':os.environ['RUN_URL'],'passed':['unit-coverage','atdd','components','performance','live-dependencies','docker-health','localstack-api','specifications','native-android','native-ios','firmware','hosted-android','hosted-ios']},open('reports/gates.json','w'),indent=2)
           PYCODE
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

@@ -56,6 +56,23 @@ def proof(channel="task", config_body=None):
         configuration_submitted_sha256=digest(config))
 
 
+def cardiac_protocol(**changes):
+    text = "Fictional bench preparation only; no human safety or clinical approval."
+    value = {"schema_version": "1.0.0", "kind": "cardiac", "instruction_id": "fictional-preparation",
+        "version": "v1", "text": text, "sha256": hashlib.sha256(text.encode()).hexdigest(),
+        "required_confirmations": [{"id": x, "text": "Fictional declaration: " + x} for x in (
+            "rest_completed", "posture_confirmed", "activity_confirmed", "contact_confirmed", "isolation_confirmed")],
+        "maximum_acknowledgment_age_seconds": 300, "operating_scope": "engineering_bench",
+        "operating_state_verifier": "participant_declaration_only", "rest_duration_seconds": 0,
+        "posture_instruction": "Fictional bench posture", "activity_instruction": "Fictional bench activity",
+        "contact_instruction": "Fictional bench contact", "isolation_instruction": "No human connection approved",
+        "permitted_setups": [{"id": "fictional-bench", "description": "Bench fixture only",
+            "power_state": "fixture", "charging_state": "fixture", "cable_state": "fixture",
+            "contact_or_lead_configuration": "synthetic-electrical-load"}]}
+    value.update(changes)
+    return value
+
+
 def configuration(channel="task", **changes):
     id = CONFIGURATION if channel == "task" else "fictional-" + channel + "-configuration"
     material = CONFIG if channel == "task" else {
@@ -73,6 +90,8 @@ def configuration(channel="task", **changes):
         retention_policy_id=POLICY, max_duration_ms=150000,
         software_adapter_id="task_native_v1" if channel == "task" else "unimplemented-" + channel,
         supported_phone_models=["FICTIONAL-PHONE"] if channel in ("task", "eyes") else [])
+    if channel in ("cardiac", "ecg"):
+        value["participant_protocol"] = cardiac_protocol()
     value.update(changes)
     return value
 
@@ -119,3 +138,18 @@ def approve_task(db, account):
     for kind, body in (("study", study(account)), ("retention", retention()),
         ("qualification", proof(config_body=config)), ("configuration", config)):
         approve(db, kind, body)
+
+
+def acknowledge_cardiac(client, sid, attempt, config):
+    from .conftest import headers
+    protocol = config["participant_protocol"]
+    body = {"attempt_id": attempt["attempt_id"], "configuration_id": config["configuration_id"],
+        "configuration_version": config["version"], "configuration_hash": config["sha256"],
+        "configuration_submitted_sha256": digest(config), "participant_protocol_sha256": digest(protocol),
+        "acknowledged_at": __import__("otgd.db", fromlist=["iso"]).iso(), "confirmed": True,
+        "confirmations": [x["id"] for x in protocol["required_confirmations"]],
+        "setup_id": protocol["permitted_setups"][0]["id"], "rest_started_at": attempt["started_at"],
+        "collection_method_id": None, "collection_method_version": None}
+    result = client.post(f"/v1/sessions/{sid}/instruction-acknowledgments", headers=headers(), json=body)
+    assert result.status_code == 201, result.text
+    return result.json()

@@ -1,3 +1,4 @@
+import { laboratorySupersession } from "./labEvidence";
 import { verifyResearchResult } from "./researchResult";
 import Ajv2020 from "ajv/dist/2020";
 import addFormats from "ajv-formats";
@@ -954,9 +955,12 @@ export function taskProjection(native: JsonObject, taskId: string): Component {
 export function interruptStartedAttempts(
   check: CheckRecord,
   now: string,
+  preserveAttemptId?: string,
 ): CheckRecord {
   let next = clone(check);
-  for (const attempt of next.attempts.filter((a) => a.status === "started")) {
+  for (const attempt of next.attempts.filter(
+    (a) => a.status === "started" && a.attempt_id !== preserveAttemptId,
+  )) {
     const component = attempt.component;
     let projection: JsonObject;
     if (component === "saliva")
@@ -1006,9 +1010,21 @@ export function interruptStartedAttempts(
           ? { features: { ...NULL_TASK_FEATURES }, task_id: attempt.record_id }
           : {}),
       };
-    next = settleAttempt(next, attempt.attempt_id, projection, "invalid", now, [
-      "INTERRUPTED",
-    ]);
+    next = settleAttempt(
+      next,
+      attempt.attempt_id,
+      projection,
+      "invalid",
+      now,
+      ["INTERRUPTED"],
+      attempt.component_metadata.instruction_receipt
+        ? {
+            instruction_receipt: clone(
+              attempt.component_metadata.instruction_receipt,
+            ),
+          }
+        : {},
+    );
   }
   return next;
 }
@@ -1017,6 +1033,14 @@ export function freezeCheck(
   now: string,
   id: IdFactory,
 ): CheckRecord {
+  if (
+    check.labCollection &&
+    ["collecting", "pending_lab"].includes(check.labCollection.state)
+  )
+    throw new IntegrityError(
+      "LAB_ANALYSIS_PENDING",
+      "Save this specimen as a draft. Refresh its independently admitted laboratory report or explicitly end analysis before finalizing.",
+    );
   if (check.frozen) {
     verifyCheck(check);
     return clone(check);
@@ -1196,7 +1220,8 @@ export function verifyCheck(check: CheckRecord): void {
       if (
         !previous ||
         previous.component !== attempt.component ||
-        !["invalid", "canceled"].includes(previous.status) ||
+        (!["invalid", "canceled"].includes(previous.status) &&
+          !laboratorySupersession(check, attempt, previous)) ||
         (attempt.component === "cardiac" &&
           cardiacAttemptModality(previous) !== cardiacAttemptModality(attempt))
       )

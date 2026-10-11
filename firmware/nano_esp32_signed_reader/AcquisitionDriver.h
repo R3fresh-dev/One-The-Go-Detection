@@ -3,9 +3,10 @@
 #include <string>
 
 #include "AdcAcquisitionDriver.h"
+#include "SparkFunPpgDriver.h"
 
-/** The shipped default is a protected, opt-in actual ADC driver for cardiac
- * PPG/ECG. No material or no contact means no valid measurement. Organizations
+/** Protected ADC and the selected SparkFun digital PPG are distinct drivers.
+ * No approved material/contact means no valid measurement. Organizations
  * may link a separately approved strong driver for a documented instrument;
  * unknown saliva/alcohol vendor protocols have no fabricated implementation.
  */
@@ -19,9 +20,16 @@ uint64_t otgdAcquisitionEndedMonotonicMs() __attribute__((weak));
 int otgdAcquisitionPoll(JsonDocument& normalized) __attribute__((weak));
 void otgdAcquisitionStop() __attribute__((weak));
 static otgd_reader::ProtectedAdcDriver otgdAdcDriver;
-bool otgdAcquisitionAvailable(const char* channel){return otgdAdcDriver.available(channel);}
-bool otgdAcquisitionStart(const char* channel,JsonVariantConst grant,const char* session,const char* attempt,const char* record,uint64_t started){return otgdAdcDriver.start(channel,grant,session,attempt,record,started);}
-void otgdAcquisitionTick(){otgdAdcDriver.tick();}
-uint64_t otgdAcquisitionEndedMonotonicMs(){return otgdAdcDriver.endedMs();}
-int otgdAcquisitionPoll(JsonDocument& normalized){return otgdAdcDriver.poll(normalized);}
-void otgdAcquisitionStop(){otgdAdcDriver.stop();}
+static otgd_reader::ProtectedSparkFunDriver otgdSparkFunDriver;
+static uint8_t otgdAcquisitionKind=0;
+bool otgdAcquisitionAvailable(const char* channel){const bool digital=otgdSparkFunDriver.available(channel);return digital||otgdAdcDriver.available(channel);}
+bool otgdAcquisitionStart(const char* channel,JsonVariantConst grant,const char* session,const char* attempt,const char* record,uint64_t started){
+  if(otgdSparkFunDriver.available(channel)&&otgdSparkFunDriver.matchesConfiguration(grant)){
+    otgdAcquisitionKind=2;return otgdSparkFunDriver.start(channel,grant,session,attempt,record,started);
+  }
+  otgdAcquisitionKind=1;return otgdAdcDriver.start(channel,grant,session,attempt,record,started);
+}
+void otgdAcquisitionTick(){if(otgdAcquisitionKind==2)otgdSparkFunDriver.tick();else if(otgdAcquisitionKind==1)otgdAdcDriver.tick();}
+uint64_t otgdAcquisitionEndedMonotonicMs(){return otgdAcquisitionKind==2?otgdSparkFunDriver.endedMs():otgdAdcDriver.endedMs();}
+int otgdAcquisitionPoll(JsonDocument& normalized){return otgdAcquisitionKind==2?otgdSparkFunDriver.poll(normalized):otgdAdcDriver.poll(normalized);}
+void otgdAcquisitionStop(){if(otgdAcquisitionKind==2)otgdSparkFunDriver.stop();else if(otgdAcquisitionKind==1)otgdAdcDriver.stop();}

@@ -8,6 +8,8 @@ import type {
 } from "../core/types";
 import { fromBase64 } from "../device/protocol";
 import { parseRawExportManifest } from "../core/rawExport";
+import { participantProtocol } from "../core/participantAcquisition";
+import type { ApprovedConfiguration } from "../core/acquisition";
 import {
   digestText,
   digestBytes,
@@ -788,6 +790,8 @@ export function parseCapabilities(value: unknown): Capabilities {
           "supported_os_versions",
           "supported_native_builds",
           "software_adapter_id",
+          "participant_protocol",
+          "participant_protocol_sha256",
         ]);
         for (const key of [
           "study_id",
@@ -803,6 +807,19 @@ export function parseCapabilities(value: unknown): Capabilities {
               "CAPABILITY_UNSUPPORTED",
               "An approved capture digest is invalid.",
             );
+        if (
+          config.participant_protocol !== undefined &&
+          config.participant_protocol !== null
+        )
+          participantProtocol(config as unknown as ApprovedConfiguration);
+        else if (
+          config.participant_protocol_sha256 !== undefined &&
+          config.participant_protocol_sha256 !== null
+        )
+          throw new IntegrityError(
+            "CAPABILITY_UNSUPPORTED",
+            "An instruction digest requires its exact approved protocol.",
+          );
         for (const list of [
           "supported_phone_models",
           "supported_os_versions",

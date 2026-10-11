@@ -1,0 +1,126 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attempt_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "configuration_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Configuration Id",
+      "type": "string"
+    },
+    "configuration_version": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Configuration Version",
+      "type": "string"
+    },
+    "configuration_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Configuration Hash",
+      "type": "string"
+    },
+    "configuration_submitted_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Configuration Submitted Sha256",
+      "type": "string"
+    },
+    "participant_protocol_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Participant Protocol Sha256",
+      "type": "string"
+    },
+    "acknowledged_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Acknowledged At",
+      "type": "string"
+    },
+    "confirmed": {
+      "const": true,
+      "title": "Confirmed",
+      "type": "boolean"
+    },
+    "confirmations": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 8,
+      "minItems": 1,
+      "title": "Confirmations",
+      "type": "array"
+    },
+    "setup_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Setup Id"
+    },
+    "rest_started_at": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Rest Started At"
+    },
+    "collection_method_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Collection Method Id"
+    },
+    "collection_method_version": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Collection Method Version"
+    }
+  },
+  "required": [
+    "attempt_id",
+    "configuration_id",
+    "configuration_version",
+    "configuration_hash",
+    "configuration_submitted_sha256",
+    "participant_protocol_sha256",
+    "acknowledged_at",
+    "confirmed",
+    "confirmations",
+    "setup_id",
+    "rest_started_at",
+    "collection_method_id",
+    "collection_method_version"
+  ],
+  "title": "InstructionAcknowledgment",
+  "type": "object"
+}

@@ -8,6 +8,7 @@ import {
   requireObject,
 } from "./integrity";
 import type { CheckRecord, ResearchResult } from "./types";
+import { verifyCardiacAuthority } from "./cardiacAuthority";
 
 const ajv = new Ajv2020({
   strict: false,
@@ -26,7 +27,10 @@ export function verifyResearchResult(
   value: unknown,
   check: Pick<CheckRecord, "id" | "snapshot_sha256" | "snapshot"> &
     Partial<
-      Pick<CheckRecord, "context" | "manifest" | "frozen" | "kind" | "attempts">
+      Pick<
+        CheckRecord,
+        "context" | "manifest" | "frozen" | "kind" | "attempts" | "generation"
+      >
     >,
 ): ResearchResult {
   assertBytes(value, 524_288);
@@ -199,5 +203,12 @@ export function verifyResearchResult(
       "RESEARCH_ABSTENTION_INVALID",
       "An abstained research result cannot display a probability or classification.",
     );
+  verifyCardiacAuthority(result, {
+    snapshot: check.snapshot,
+    context: check.context!,
+    manifest: check.manifest!,
+    attempts: check.attempts,
+    generation: check.generation,
+  });
   return result;
 }

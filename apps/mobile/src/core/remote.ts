@@ -100,6 +100,9 @@ export function parseRemoteCheck(
     "attempts",
     "alcohol",
     "raw_artifacts_omitted_reason",
+    "instruction_receipts",
+    "collections",
+    "collection_abandons",
   ]);
   if (!["processing", "completed", "invalid"].includes(String(v.state)))
     throw new IntegrityError(
@@ -130,6 +133,9 @@ export function parseRemoteCheck(
     snapshot,
     context,
     attempts: v.attempts as CaptureAttempt[],
+    instruction_receipts: (v.instruction_receipts ?? []) as JsonObject[],
+    collections: (v.collections ?? []) as JsonObject[],
+    collection_abandons: (v.collection_abandons ?? []) as JsonObject[],
     manifest,
     snapshot_sha256: requiredString(v.snapshot_sha256),
     evidence_sha256: requiredString(v.evidence_sha256),

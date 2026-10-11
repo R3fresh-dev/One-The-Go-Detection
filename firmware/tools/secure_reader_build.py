@@ -16,6 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT / "secure_reader"
 PINS = json.loads((PROJECT / "sources.json").read_text())
+SENSOR_VENDOR = ROOT / "nano_esp32_signed_reader/vendor/sparkfun"
 REQUIRED = (
     "CONFIG_NVS_ENCRYPTION=y",
     "CONFIG_SECURE_BOOT_V2_ENABLED=y",
@@ -119,7 +120,43 @@ def validate_config(path: Path) -> None:
         raise ValueError("Security-enabled ESP32-S3 configuration was not retained")
 
 
+def validate_sensor_source(folder: Path = SENSOR_VENDOR) -> None:
+    """Verify the reviewed vendored SDK bytes and preserved attribution."""
+    source = json.loads((folder / "SOURCE.json").read_text())
+    if (
+        source.get("repository")
+        != "https://github.com/sparkfun/SparkFun_Bio_Sensor_Hub_Library"
+        or source.get("revision") != "91575258e5e2c47f0f4b8ec97b651381671f4637"
+        or source.get("version") != "1.1"
+        or set(source.get("compiled_sha256", {}))
+        != {
+            "SparkFun_Bio_Sensor_Hub_Library.h",
+            "SparkFun_Bio_Sensor_Hub_Library.cpp",
+            "UPSTREAM_README.md",
+            "library.properties",
+        }
+    ):
+        raise ValueError("Invalid selected SparkFun SDK source pin")
+    for name, digest in source["compiled_sha256"].items():
+        path = folder / name
+        if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+            raise ValueError("Changed selected SparkFun SDK or attribution bytes")
+
+
+def reader_source_hashes() -> dict[str, str]:
+    return {
+        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for folder in (ROOT / "nano_esp32_signed_reader", PROJECT)
+        for path in sorted(folder.rglob("*"))
+        if path.is_file()
+        and path.suffix
+        in (".h", ".cpp", ".ino", ".txt", ".csv", ".json", ".defaults", ".lock", ".md", ".properties")
+    }
+
+
 def build(cache: Path, output: Path, signing: Path) -> dict:
+    validate_sensor_source()
+    source_files = reader_source_hashes()
     if (
         output.is_symlink()
         or cache.is_symlink()
@@ -194,14 +231,8 @@ def build(cache: Path, output: Path, signing: Path) -> dict:
                 "bytes": artifact.stat().st_size,
                 "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
             }
-        source_files = {
-            str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-            for folder in (ROOT / "nano_esp32_signed_reader", PROJECT)
-            for path in sorted(folder.rglob("*"))
-            if path.is_file()
-            and path.suffix
-            in (".h", ".cpp", ".ino", ".txt", ".csv", ".json", ".defaults", ".lock")
-        }
+        if reader_source_hashes() != source_files:
+            raise ValueError("Reader source changed during actual build")
         manifest = {
             "source_sha256": source_files,
             "schema_version": "1.0.0",
@@ -227,6 +258,7 @@ def main() -> None:
     parser.add_argument("--boot-signing-key", type=Path)
     args = parser.parse_args()
     if args.action == "prepare":
+        validate_sensor_source()
         args.cache.mkdir(parents=True, exist_ok=True)
         print(
             json.dumps(

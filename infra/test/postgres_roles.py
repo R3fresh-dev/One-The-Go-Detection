@@ -22,6 +22,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from psycopg import sql
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import Session
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import DBAPIError
 
@@ -116,6 +117,11 @@ def assert_runtime_permissions(cfg, url):
         with app.connect() as connection:
             assert connection.execute(text("SELECT count(*) FROM system_state")).scalar() >= 3
             verify_binding(connection)
+        from otgd.domain import registry
+        from otgd.operator_governance import active_body
+        with Session(app) as db:
+            assert registry(db, "study", "fictional-role-check-study")["name"] == "Fictional permission check"
+            assert active_body(db, "study", "fictional-role-check-study")["version"] == "v1"
         statements = [
             "CREATE TABLE forbidden_runtime_ddl (id integer)",
             "INSERT INTO operator_registry (id,kind,body,active) VALUES ('forbidden','qualification','{}',true)",
@@ -204,6 +210,24 @@ def run_role_check(original, url, endpoint):
                 Base.metadata.drop_all(admin)
                 migrate()
                 migrate()
+                from otgd.db import now
+                from otgd.operator_governance import submit, transition
+                document = "Fictional SQL permission check only, no enrolled participant or research approval."
+                body = {"schema_version": "1.0.0", "registry_id": "fictional-role-check-study",
+                    "version": "v1", "expires_at": now() + 3600,
+                    "evidence_ref": "fictional-permission-test", "evidence_sha256": "1" * 64,
+                    "study_id": "fictional-role-check-study", "protocol_id": "fictional-role-check-protocol",
+                    "name": "Fictional permission check", "account_refs": [], "invitation_id": "fictional-invitation",
+                    "document_version": "v1", "document_text": document,
+                    "document_sha256": hashlib.sha256(document.encode()).hexdigest(),
+                    "retention_summary": "Fictional disposable role check", "channels": {}}
+                with Session(admin) as db, db.begin():
+                    submit(db, "study", body, "local:permission-submitter")
+                    transition(db, "study", body["registry_id"], "v1", "approve",
+                        "local:permission-reviewer", "Fictional SQL read authorization", 1)
+                    db.flush()
+                    transition(db, "study", body["registry_id"], "v1", "release",
+                        "local:permission-releaser", "Fictional independent SQL permission check", 2)
                 cfg = settings()
                 with admin.connect() as connection:
                     width = connection.execute(text(
@@ -220,6 +244,7 @@ def run_role_check(original, url, endpoint):
                     "journal": "actual_versioned_localstack", "migration_runs": 2,
                     "runtime_ddl": "denied", "authority_write": "denied",
                     "audit_update_delete": "denied", "ticket_update_delete": "denied",
+                    "released_registry_read": "admitted_without_update_permission",
                 }))
     finally:
         # Do not retain SQL anchors pointing at a removed disposable journal.

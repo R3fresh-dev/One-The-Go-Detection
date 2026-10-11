@@ -1,0 +1,66 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "account_ref": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Account Ref",
+      "type": "string"
+    },
+    "data_generation": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Data Generation",
+      "type": "integer"
+    },
+    "study_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Study Id",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "sample_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Sample Id",
+      "type": "string"
+    },
+    "collection_attempt_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Collection Attempt Id",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "size_bytes": {
+      "exclusiveMinimum": 0,
+      "maximum": 5242880,
+      "title": "Size Bytes",
+      "type": "integer"
+    },
+    "media_type": {
+      "const": "application/pdf",
+      "title": "Media Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "account_ref",
+    "data_generation",
+    "study_id",
+    "session_id",
+    "sample_id",
+    "collection_attempt_id",
+    "sha256",
+    "size_bytes",
+    "media_type"
+  ],
+  "title": "LabSourceRequest",
+  "type": "object"
+}

@@ -60,7 +60,7 @@ function frozenProfile(check: CheckRecord) {
     profile_version_id: check.context.profile_version_id,
     profile: check.snapshot.profile,
     history: check.snapshot.history,
-    context: check.context.self_report_context,
+    context: check.context.self_report_context ?? null,
   };
 }
 export function createLocalExport(
@@ -100,6 +100,9 @@ export function createLocalExport(
       source: check.kind,
       delivery: check.delivery,
       report_revision_index: revisions.index,
+      instruction_receipts: check.instruction_receipts ?? [],
+      collections: check.collections ?? [],
+      collection_abandons: check.collection_abandons ?? [],
     });
     add(`contexts/${check.id}.json`, check.context);
     add(`manifests/${check.id}.json`, check.manifest);
@@ -434,6 +437,9 @@ export function inspectExportArchive(
         "source",
         "delivery",
         "report_revision_index",
+        "instruction_receipts",
+        "collections",
+        "collection_abandons",
       ]);
       const deliveries = [
         "local_finalized",
@@ -479,6 +485,11 @@ export function inspectExportArchive(
         context,
         manifest: manifestValue,
         attempts,
+        instruction_receipts: (wrapper.instruction_receipts ??
+          []) as JsonObject[],
+        collections: (wrapper.collections ?? []) as JsonObject[],
+        collection_abandons: (wrapper.collection_abandons ??
+          []) as JsonObject[],
         snapshot_sha256: wrapper.snapshot_sha256 as string,
         evidence_sha256: wrapper.evidence_sha256 as string,
         result: wrapper.result as CheckRecord["result"],

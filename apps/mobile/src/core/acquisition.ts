@@ -25,6 +25,8 @@ export interface ApprovedConfiguration {
   supported_os_versions?: string[];
   supported_native_builds?: string[];
   software_adapter_id: string;
+  participant_protocol?: JsonObject | null;
+  participant_protocol_sha256?: string | null;
 }
 export interface AcquisitionLedger {
   register_key: string;
@@ -42,6 +44,11 @@ export interface AcquisitionLedger {
       started_body: JsonObject;
       remote_revision: number;
       authorization: JsonObject | null;
+      prepared?: boolean;
+      preparation_submitted_sha256?: string;
+      instruction_key?: string;
+      instruction_body?: JsonObject;
+      instruction_receipt?: JsonObject;
     }
   >;
 }
@@ -123,6 +130,7 @@ export function verifyCaptureGrant(
     status: RawRecordingStatus;
     fences: RawKind[];
   },
+  instructionReceipt?: JsonObject,
 ): JsonObject {
   const grant = requireObject(value);
   knownKeys(grant, [
@@ -148,7 +156,25 @@ export function verifyCaptureGrant(
     "raw_recording_permission",
     "configuration_material",
     "raw_recording_kind",
+    "instruction_receipt_id",
+    "participant_protocol_sha256",
+    "instruction_receipt",
   ]);
+  if (
+    instructionReceipt
+      ? grant.instruction_receipt_id !==
+          instructionReceipt.instruction_receipt_id ||
+        grant.participant_protocol_sha256 !==
+          config.participant_protocol_sha256 ||
+        digest(grant.instruction_receipt) !== digest(instructionReceipt)
+      : (grant.instruction_receipt_id ?? null) !== null ||
+        (grant.instruction_receipt ?? null) !== null ||
+        (grant.participant_protocol_sha256 ?? null) !== null
+  )
+    throw new IntegrityError(
+      "INSTRUCTION_RECEIPT_MISMATCH",
+      "The fresh grant differs from the exact confirmed participant instructions.",
+    );
   if (
     !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
       String(grant.authorization_id),
@@ -227,6 +253,16 @@ export function verifyCaptureStart(
   bootId: string | null,
 ): void {
   const started = requireObject(value);
+  for (const key of [
+    "instruction_receipt_id",
+    "participant_protocol_sha256",
+    "instruction_receipt",
+  ])
+    if (digest(started[key] ?? null) !== digest(authorization[key] ?? null))
+      throw new IntegrityError(
+        "INSTRUCTION_RECEIPT_MISMATCH",
+        "The confirmed participant protocol changed before capture start.",
+      );
   if (
     digest(started.raw_recording_permission ?? null) !==
     digest(authorization.raw_recording_permission ?? null)
@@ -249,7 +285,11 @@ export function verifyCaptureStart(
       grant.configuration_submitted_sha256 !==
         authorization.configuration_submitted_sha256 ||
       grant.capture_context_sha256 !== authorization.capture_context_sha256 ||
-      grant.boot_id !== bootId
+      grant.boot_id !== bootId ||
+      (grant.instruction_receipt_id ?? null) !==
+        (authorization.instruction_receipt_id ?? null) ||
+      (grant.participant_protocol_sha256 ?? null) !==
+        (authorization.participant_protocol_sha256 ?? null)
     )
       throw new IntegrityError(
         "CAPTURE_START_MISMATCH",
@@ -271,6 +311,9 @@ export function verifyCaptureStart(
     "server_started_at",
     "raw_recording_permission",
     "server_start",
+    "instruction_receipt_id",
+    "participant_protocol_sha256",
+    "instruction_receipt",
   ]);
   if (
     started.authorization_id !== authorization.authorization_id ||

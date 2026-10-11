@@ -66,7 +66,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       infoPlist: {
         ...(hostedPreview ? { OTGDHostedPreview: true } : {}),
         NSCameraUsageDescription:
-          "Show an optional eye-positioning preview. Preview does not record images or measure pupils.",
+          "Use the camera for eye positioning and approved research eye capture. Optional raw ROI recording requires separate permission.",
         NSFaceIDUsageDescription:
           "Unlock this account’s encrypted records on this device.",
         NSBluetoothAlwaysUsageDescription:

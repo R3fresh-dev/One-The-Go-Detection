@@ -106,6 +106,8 @@ function serverStart(): SignedStartToken {
     channel: "ecg" as const,
     configuration_max_duration_ms: 1000,
     raw_recording_permission: null,
+    participant_protocol_sha256: "d".repeat(64),
+    instruction_receipt_id: randomUUID(),
     issued_at: new Date().toISOString(),
     expires_at: new Date(Date.now() + 60_000).toISOString(),
     device_nonce: deviceNonce,
@@ -354,6 +356,10 @@ test("fresh server grant binds the prepared nonce, boot, context and exact 60-se
     { expires_at: new Date(Date.now() + 61_000).toISOString() },
     { owner_ref: randomUUID() },
     { nonce: "bad" },
+    { participant_protocol_sha256: null },
+    { instruction_receipt_id: null },
+    { participant_protocol_sha256: "bad" },
+    { instruction_receipt_id: "bad" },
   ])
     assert.throws(() =>
       startToken(
@@ -809,4 +815,116 @@ test("feature-only reader rejects unsolicited raw samples before retaining a led
   );
   assert.equal(controller.snapshot().association, null);
   await controller.dispose();
+});
+
+test("actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence", () => {
+  const normalized = JSON.parse(
+    readFileSync(
+      fileURLToPath(
+        new URL(
+          "../../../../../firmware/tests/fixtures/sparkfun-ppg-result-v1.json",
+          import.meta.url,
+        ).href,
+      ),
+      "utf8",
+    ),
+  );
+  const sdkExpected: ExpectedReaderCapture = {
+    ...expected,
+    channel: "ppg",
+    configuration_id: normalized.projection.acquisition_config_id,
+    max_duration_ms: 5000,
+  };
+  function sdkCompletion(n: typeof normalized) {
+    const e = signedEnvelope(n);
+    return {
+      ...completion(),
+      channel: "ppg",
+      started_monotonic_ms: 0,
+      ended_monotonic_ms: 2160,
+      envelope: e,
+      signature: signature("OTGD-CAPTURE-v1\n", e),
+      normalized_payload: n,
+    };
+  }
+  const result = signedReaderCapture(
+    sdkCompletion(normalized),
+    sdkExpected,
+    cap,
+  );
+  assert.deepEqual(result.normalized_payload, normalized);
+  assert.equal(result.modelEligible, false);
+  assert.equal(result.rawRecording, null);
+  assert.equal(result.sampleChunks.length, 0);
+  assert.equal(normalized.projection.heart_rate_bpm, 75);
+  assert.equal(normalized.ppg_evidence.configured_sensor_rate_hz, 50);
+  assert.equal(normalized.ppg_evidence.actual_sensor_cadence_hz, null);
+  assert.equal(
+    Object.hasOwn(normalized.ppg_evidence.last_observation, "ir_count"),
+    false,
+  );
+  for (const modify of [
+    (n: typeof normalized) => {
+      n.ppg_evidence.last_observation.ir_count = 123;
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.last_observation.red_count = 123;
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.actual_sensor_cadence_hz = 50;
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.sensor_dropped_samples = 0;
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.sdk_commit = "f".repeat(40);
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.last_observation.sequence = 2;
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.last_observation.finger_status = 2;
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.last_observation.confidence_percent = 101;
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.valid_samples = 3;
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.last_observation.host_received_monotonic_us =
+        n.ppg_evidence.acquisition_ended_monotonic_us;
+    },
+    (n: typeof normalized) => {
+      n.projection.heart_rate_bpm = 74;
+    },
+    (n: typeof normalized) => {
+      n.projection.modality = "ecg";
+    },
+    (n: typeof normalized) => {
+      n.ppg_evidence.algorithm_mode = true;
+    },
+    (n: typeof normalized) => {
+      n.projection.quality_flags = [];
+    },
+  ]) {
+    const changed = clone(normalized);
+    modify(changed);
+    assert.throws(() =>
+      signedReaderCapture(sdkCompletion(changed), sdkExpected, cap),
+    );
+  }
+  const invalid = clone(normalized);
+  invalid.projection.status = "invalid";
+  invalid.projection.heart_rate_bpm = null;
+  invalid.ppg_evidence.hub_firmware = null;
+  invalid.ppg_evidence.configured_sensor_rate_hz = null;
+  invalid.ppg_evidence.observed_samples = 0;
+  invalid.ppg_evidence.valid_samples = 0;
+  invalid.ppg_evidence.last_observation = null;
+  assert.deepEqual(
+    signedReaderCapture(sdkCompletion(invalid), sdkExpected, cap)
+      .normalized_payload,
+    invalid,
+  );
 });

@@ -579,7 +579,13 @@ export function CheckRow({
               ? "Fictional fixture"
               : "Measurement record"}
         </Badge>
-        <Badge>{friendly(check.delivery)}</Badge>
+        <Badge>
+          {check.labCollection?.state === "pending_lab"
+            ? "Laboratory analysis pending"
+            : check.labCollection?.state === "collecting"
+              ? "Specimen draft"
+              : friendly(check.delivery)}
+        </Badge>
       </Row>
       <ActionRow
         title={dateLabel(check.snapshot.created_at)}

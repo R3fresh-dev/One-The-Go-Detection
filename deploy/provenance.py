@@ -24,12 +24,13 @@ REQUIRED_JOBS = frozenset({
     "unit-coverage", "atdd", "components", "merge-gate",
     "platform / contracts-and-synthesis", "platform / postgres-integration",
     "platform / localstack-integration", "native / shared-and-firmware", "native / protected-reader",
+    "preview / android", "preview / ios",
     "native / android", "native / ios",
 })
 REQUIRED_GATE_LABELS = frozenset({
     "unit-coverage", "atdd", "components", "performance", "live-dependencies",
     "docker-health", "localstack-api", "specifications", "native-android",
-    "native-ios", "firmware",
+    "native-ios", "firmware", "hosted-android", "hosted-ios",
 })
 QA_PROBES = frozenset({
     "private_network", "conditional_upload", "worker_kill_matrix",

@@ -61,9 +61,14 @@ class StartGrant(DTO):
     device_nonce: Name | None
     nonce: UUID
     raw_recording_permission: RawRecordingPermission | None
+    participant_protocol_sha256: SHA | None
+    instruction_receipt_id: UUID | None
 
     @model_validator(mode="after")
     def raw_channel(self):
+        if ((self.participant_protocol_sha256 is None) != (self.instruction_receipt_id is None)
+            or self.channel in ("cardiac", "ecg") and self.instruction_receipt_id is None):
+            raise ValueError("Preparation hash and receipt must be present together for cardiac acquisition")
         if self.raw_recording_permission is not None and self.channel not in ("eyes", "ecg"):
             raise ValueError("Raw recording is allowed only for the approved optical or ECG channel")
         return self

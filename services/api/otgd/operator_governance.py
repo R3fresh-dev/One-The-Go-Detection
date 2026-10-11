@@ -22,6 +22,9 @@ from .errors import Problem
 from .native_evidence import CONFIG as TASK_MATERIAL
 from .model_engine import ArtifactRef, CoUsePolicy, CompatibilityPolicy, EvaluationReport, QualityPolicy
 from .raw_export import RawExportAuthorization
+from .participant_acquisition import ParticipantProtocol
+from .vendor_evidence import SparkFunMaterial
+from .cardiac_authority import CardiacTimingPolicy
 
 Channel = Literal["saliva", "eyes", "cardiac", "ecg", "task", "alcohol"]
 Version = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")]
@@ -34,7 +37,7 @@ SOFTWARE_ADAPTERS = {"task": {"task_native_v1"},
     "saliva": {"reference_lab_import_v1"},
     "eyes": {"optical_roi_v1"},
     "cardiac": {"otgd_signed_reader_v1"}, "ecg": {"otgd_signed_reader_v1"}}
-PHYSICAL_DRIVERS = {"cardiac": {"otgd_esp32_adc_v1"}, "ecg": {"otgd_esp32_adc_v1"}}
+PHYSICAL_DRIVERS = {"cardiac": {"otgd_esp32_adc_v1", "otgd_sparkfun_max32664_v1"}, "ecg": {"otgd_esp32_adc_v1"}}
 REGISTRY_LOCK = 798114232
 
 
@@ -146,11 +149,41 @@ class NativeTimingScope(DTO):
     qualifying_trial_count: Annotated[int, Field(ge=30, le=1000000)]
 
 
+class CardiacServerIntervalScope(DTO):
+    """Reviewed HR-only interval; no claim of a measured device UTC clock."""
+    device_id: Name
+    key_id: Name
+    hardware_revision: Name
+    firmware_versions: Annotated[list[Name], Field(min_length=1, max_length=64)]
+    adapter_id: Literal["otgd_esp32_adc_v1", "otgd_sparkfun_max32664_v1"]
+    extractor_version: Literal["adc_peak_intervals_v1", "sparkfun_sensor_bpm_v1"]
+    channel: Literal["cardiac"]
+    modality: Literal["ppg"]
+    configuration_id: Name
+    configuration_version: Version
+    configuration_submitted_sha256: SHA
+    behavior: Literal["follows_current_signed_grant"]
+    timing_method: Literal["server_issue_to_attestation_receipt_v1"]
+    maximum_interval_ms: Annotated[int, Field(ge=100, le=120000)]
+    server_utc_error_ms: Annotated[float, Field(ge=0, le=1000)]
+    maximum_monotonic_rate_error_ppm: Annotated[int, Field(ge=0, le=10000)] | None
+
+    @model_validator(mode="after")
+    def driver(self):
+        extractors = {"otgd_esp32_adc_v1": "adc_peak_intervals_v1",
+            "otgd_sparkfun_max32664_v1": "sparkfun_sensor_bpm_v1"}
+        if (self.extractor_version != extractors[self.adapter_id] or len(set(self.firmware_versions)) != len(self.firmware_versions)
+            or (self.adapter_id == "otgd_sparkfun_max32664_v1") != (self.maximum_monotonic_rate_error_ppm is not None)):
+            raise ValueError("Cardiac interval requires its exact supported driver/extractor and unique firmware scope")
+        return self
+
+
 class Calibration(Submission):
     calibration_id: Name
-    purpose: Literal["device", "model", "native_timing", "optical_geometry"]
+    purpose: Literal["device", "model", "native_timing", "optical_geometry", "cardiac_server_interval"]
     native_timing: NativeTimingScope | None = None
     optical_geometry: OpticalGeometryScope | None = None
+    cardiac_server_interval: CardiacServerIntervalScope | None = None
     model_id: Name | None = None
     device_id: Name | None = None
     key_id: Name | None = None
@@ -161,6 +194,8 @@ class Calibration(Submission):
 
     @model_validator(mode="after")
     def scope(self):
+        if self.cardiac_server_interval and self.purpose != "cardiac_server_interval":
+            raise ValueError("Cardiac interval evidence cannot substitute another calibration purpose")
         if self.purpose == "device" and (not all((self.device_id, self.key_id, self.hardware_revision, self.firmware_versions, self.channels)) or self.model_id or self.native_timing or self.optical_geometry):
             raise ValueError("Device calibration requires its exact hardware/firmware/channel scope")
         if self.purpose == "model" and (not self.model_id or any((self.device_id, self.key_id, self.hardware_revision, self.firmware_versions, self.channels, self.native_timing, self.optical_geometry))):
@@ -171,6 +206,12 @@ class Calibration(Submission):
             raise ValueError("Optical geometry requires only its exact reviewed camera scale scope")
         if self.optical_geometry and digest(self.optical_geometry.data()) != self.calibration_sha256:
             raise ValueError("Optical scale calibration hash must cover its exact reviewed scope")
+        if self.purpose == "cardiac_server_interval":
+            if not self.cardiac_server_interval or any((self.model_id, self.device_id, self.key_id,
+                self.hardware_revision, self.firmware_versions, self.channels, self.native_timing, self.optical_geometry)):
+                raise ValueError("Cardiac interval requires only its exact reviewed HR acquisition scope")
+            if digest(self.cardiac_server_interval.data()) != self.calibration_sha256:
+                raise ValueError("Cardiac calibration hash must cover its exact reviewed scope")
         return self
 
 
@@ -427,6 +468,8 @@ def inline_material_schema(schema):
     return expand(value)
 
 
+
+
 class Configuration(Submission):
     configuration_id: Name
     study_id: Name
@@ -435,7 +478,7 @@ class Configuration(Submission):
     sha256: SHA
     material: dict = Field(json_schema_extra={"oneOf": [
         {"const": TASK_MATERIAL},
-        inline_material_schema(SensorMaterial), inline_material_schema(ADCMaterial), inline_material_schema(OpticalMaterial), inline_material_schema(ExecutableOpticalMaterial), inline_material_schema(LaboratoryMaterial), inline_material_schema(SalivaReaderMaterial),
+        inline_material_schema(SensorMaterial), inline_material_schema(ADCMaterial), inline_material_schema(SparkFunMaterial), inline_material_schema(OpticalMaterial), inline_material_schema(ExecutableOpticalMaterial), inline_material_schema(LaboratoryMaterial), inline_material_schema(SalivaReaderMaterial),
     ]})
     qualification_evidence_ref: Name
     retention_policy_id: Name
@@ -452,6 +495,7 @@ class Configuration(Submission):
     supported_native_builds: Names = Field(default_factory=list)
     optical_safety_ref: Name | None = None
     lab_methods: Annotated[dict[Name, LabMethod], Field(max_length=16)] = Field(default_factory=dict)
+    participant_protocol: ParticipantProtocol | None = None
 
     @model_validator(mode="after")
     def identity(self):
@@ -462,7 +506,7 @@ class Configuration(Submission):
             if self.material != CONFIG:
                 raise ValueError("This task release only implements the exact frozen native configuration")
         else:
-            schema = (ExecutableOpticalMaterial if self.software_adapter_id == "optical_roi_v1" else OpticalMaterial) if self.channel == "eyes" else LaboratoryMaterial if self.channel == "saliva" and self.lab_methods else SalivaReaderMaterial if self.channel == "saliva" else ADCMaterial if self.material.get("adapter_id") == "otgd_esp32_adc_v1" else SensorMaterial
+            schema = (ExecutableOpticalMaterial if self.software_adapter_id == "optical_roi_v1" else OpticalMaterial) if self.channel == "eyes" else LaboratoryMaterial if self.channel == "saliva" and self.lab_methods else SalivaReaderMaterial if self.channel == "saliva" else ADCMaterial if self.material.get("adapter_id") == "otgd_esp32_adc_v1" else SparkFunMaterial if self.material.get("adapter_id") == "otgd_sparkfun_max32664_v1" else SensorMaterial
             parsed = schema.model_validate(self.material)
             if parsed.channel != self.channel:
                 raise ValueError("Configuration material channel mismatch")
@@ -482,6 +526,15 @@ class Configuration(Submission):
                 raise ValueError("Sensor configuration requires device, calibration and compatibility limits")
         if self.raw_retention_approved and not self.retention_policy_id:
             raise ValueError("Raw collection requires a retention policy")
+        if self.channel in ("cardiac", "ecg") and (self.participant_protocol is None or self.participant_protocol.kind != "cardiac"):
+            raise ValueError("Physical cardiac configuration requires reviewed participant instructions")
+        if self.software_adapter_id == "reference_lab_import_v1":
+            if self.participant_protocol is None or self.participant_protocol.kind != "reference_lab":
+                raise ValueError("Reference laboratory collection requires reviewed participant instructions")
+            if set(item.id for item in self.participant_protocol.methods) != set(self.material["collection_method_ids"]):
+                raise ValueError("Participant collection methods must match approved laboratory material")
+        if self.participant_protocol and len(canonical(self.participant_protocol.data())) > 32768:
+            raise ValueError("Participant instruction protocol exceeds its bound")
         return self
 
 
@@ -495,6 +548,7 @@ class Model(Submission):
     co_use_policy: CoUsePolicy
     compatibility_policy: CompatibilityPolicy
     native_timing_calibration_id: Name | None = None
+    cardiac_timing_policy: CardiacTimingPolicy | None = None
 
     @model_validator(mode="after")
     def validated_manifest(self):
@@ -514,6 +568,12 @@ class Model(Submission):
         validate_registry_model(self.data())
         if "task" in self.manifest["required_channels"] and not self.native_timing_calibration_id:
             raise ValueError("Task models require independently reviewed native timing calibration")
+        if self.cardiac_timing_policy:
+            if self.manifest["required_channels"] != ["cardiac_hr"]:
+                raise ValueError("Server cardiac interval policy supports heart-rate-only models")
+            if ((self.manifest["baseline_mode"] == "personalized") != self.cardiac_timing_policy.allow_baseline_delta
+                or self.cardiac_timing_policy.max_interval_ms > self.manifest["max_clock_uncertainty_ms"]):
+                raise ValueError("Cardiac interval and personalized baseline must stay within reviewed model scope")
         return self
 
 
@@ -527,6 +587,15 @@ def validate_submission(kind, body):
     if len(canonical(body)) > 262144:
         raise ValueError("Registry submission exceeds 256 KiB")
     value = schema.model_validate(body).data()
+    # Additive optional scopes do not rewrite the submitted identity of existing
+    # versions. Explicit new fields remain part of their full submitted hash.
+    optional_addition = {"calibration": "cardiac_server_interval", "model": "cardiac_timing_policy"}.get(kind)
+    if optional_addition and optional_addition not in body:
+        value.pop(optional_addition, None)
+    if kind == "model":
+        for field in ("analysis_scope", "cardiac_evidence"):
+            if field not in body["evaluation_report"]:
+                value["evaluation_report"].pop(field, None)
     if value["expires_at"] <= now():
         raise ValueError("Expired registry material cannot be submitted or released")
     id_field = {"calibration": "calibration_id", "retention": "policy_id", "method": "method_id", "role": "account_ref", "raw_export": "authorization_id"}.get(kind)
@@ -547,7 +616,7 @@ def released_version(db, kind, registry_id, *, required=True):
     row = db.scalar(select(RegistryVersion).where(
         RegistryVersion.registry_key == kind + ":" + registry_id,
         RegistryVersion.state == "active",
-    ).with_for_update(read=True).execution_options(populate_existing=True))
+    ).execution_options(populate_existing=True))
     if row is None or row.body.get("expires_at", 0) <= now() or row.sha256 != digest(row.body):
         if required:
             raise Problem(403, "APPROVED_REGISTRY_VERSION_REQUIRED")
@@ -575,6 +644,29 @@ def active_body(db, kind, registry_id):
     return released_version(db, kind, registry_id).body
 
 
+def cardiac_interval_configuration(db, scope):
+    """Resolve every independent authority behind a reviewed HR interval."""
+    config = active_body(db, "configuration", scope["configuration_id"])
+    material = config["material"]
+    if (config["version"] != scope["configuration_version"] or digest(config) != scope["configuration_submitted_sha256"]
+        or config["channel"] != "cardiac" or config["device_id"] != scope["device_id"]
+        or config["key_id"] != scope["key_id"] or material.get("modality") != "ppg"
+        or material.get("adapter_id") != scope["adapter_id"] or material.get("extractor_version") != scope["extractor_version"]
+        or not software_supported(config) or scope["hardware_revision"] not in config["approved_hardware"]
+        or not set(scope["firmware_versions"]).issubset(config["approved_firmware"])):
+        raise Problem(403, "CARDIAC_INTERVAL_SCOPE_MISMATCH")
+    validate_dependencies(db, "configuration", config)
+    study = active_body(db, "study", config["study_id"])
+    device = active_body(db, "device", scope["device_id"] + ":" + scope["key_id"])
+    proof = active_body(db, "qualification", config["qualification_evidence_ref"])
+    if (study["channels"].get("cardiac") != config["configuration_id"]
+        or device["hardware_revision"] != scope["hardware_revision"]
+        or device["firmware_version"] not in scope["firmware_versions"]
+        or proof["purpose"] != "qualified_measurement"):
+        raise Problem(403, "CARDIAC_INTERVAL_SCOPE_MISMATCH")
+    return config
+
+
 def validate_dependencies(db, kind, body):
     """No implicit creation/review of a referenced approval, device or policy."""
     if kind == "configuration":
@@ -591,7 +683,7 @@ def validate_dependencies(db, kind, body):
         if body.get("device_id"):
             device = active_body(db, "device", body["device_id"] + ":" + body["key_id"])
             calibration = active_body(db, "calibration", body["calibration_id"])
-            if (body["protocol_id"] not in device["approved_protocol_ids"]
+            if (calibration["purpose"] != "device" or body["protocol_id"] not in device["approved_protocol_ids"]
                 or device["hardware_revision"] not in body["approved_hardware"]
                 or device["firmware_version"] not in body["approved_firmware"]
                 or calibration["device_id"] != device["device_id"]
@@ -638,6 +730,8 @@ def validate_dependencies(db, kind, body):
             device = active_body(db, "device", body["device_id"] + ":" + body["key_id"])
             if device["hardware_revision"] != body["hardware_revision"] or device["firmware_version"] not in body["firmware_versions"]:
                 raise Problem(403, "DEVICE_CALIBRATION_MISMATCH")
+        elif body["purpose"] == "cardiac_server_interval":
+            cardiac_interval_configuration(db, body["cardiac_server_interval"])
     elif kind == "model":
         calibration = active_body(db, "calibration", body["manifest"]["calibration_id"])
         if calibration["purpose"] != "model" or calibration["model_id"] != body["model_id"]:
@@ -646,10 +740,33 @@ def validate_dependencies(db, kind, body):
             timing = active_body(db, "calibration", body["native_timing_calibration_id"])
             if timing["purpose"] != "native_timing":
                 raise Problem(403, "NATIVE_TIMING_CALIBRATION_REQUIRED")
+        cardiac_config = None
+        if body.get("cardiac_timing_policy"):
+            policy = body["cardiac_timing_policy"]
+            timing = active_body(db, "calibration", policy["calibration_id"])
+            if (timing["purpose"] != "cardiac_server_interval" or not timing.get("cardiac_server_interval")
+                or policy["max_interval_ms"] > timing["cardiac_server_interval"]["maximum_interval_ms"]):
+                raise Problem(403, "CARDIAC_INTERVAL_CALIBRATION_REQUIRED")
+            cardiac_config = cardiac_interval_configuration(db, timing["cardiac_server_interval"])
+            report = body["evaluation_report"].get("cardiac_evidence")
+            cardiac_scope = timing["cardiac_server_interval"]
+            qualification = active_body(db, "qualification", cardiac_config["qualification_evidence_ref"])
+            device = active_body(db, "device", cardiac_scope["device_id"] + ":" + cardiac_scope["key_id"])
+            if not report or any(report[key] != expected for key, expected in (
+                ("cardiac_timing_policy_sha256", digest(policy)),
+                ("calibration_registry_sha256", digest(timing)),
+                ("calibration_scope_sha256", digest(cardiac_scope)),
+                ("qualification_registry_sha256", digest(qualification)),
+                ("device_registry_sha256", digest(device)),
+                ("configuration_submitted_sha256", digest(cardiac_config)))):
+                raise Problem(403, "CARDIAC_EVALUATION_SCOPE_MISMATCH")
         for study_id in body["study_ids"]:
             study = active_body(db, "study", study_id)
             if study["protocol_id"] not in body["manifest"]["allowed_protocol_ids"]:
                 raise Problem(403, "MODEL_PROTOCOL_MISMATCH")
+            if cardiac_config is not None and (study["study_id"] != cardiac_config["study_id"]
+                or study["channels"].get("cardiac") != cardiac_config["configuration_id"]):
+                raise Problem(403, "CARDIAC_INTERVAL_SCOPE_MISMATCH")
     elif kind == "role":
         from .db import Account
         if db.get(Account, body["account_ref"]) is None:
@@ -786,6 +903,8 @@ def capture_configuration(db, account, check, channel, configuration_id=None, co
     released_version(db, "configuration", config["registry_id"])
     validate_dependencies(db, "configuration", config)
     qualified_binding(db, account, config)
+    if channel == "ecg" and (config.get("participant_protocol") or {}).get("operating_scope") == "human_participant":
+        raise Problem(403, "OPERATING_STATE_VERIFIER_UNIMPLEMENTED")
     if not software_supported(config):
         raise Problem(403, "HUMAN_ADAPTER_UNIMPLEMENTED")
     return config
@@ -794,6 +913,13 @@ def capture_configuration(db, account, check, channel, configuration_id=None, co
 def software_supported(config):
     channel, adapter = config["channel"], config["software_adapter_id"]
     if adapter not in SOFTWARE_ADAPTERS.get(channel, set()):
+        return False
+    if (channel in ("cardiac", "ecg") or adapter == "reference_lab_import_v1") and not config.get("participant_protocol"):
+        return False
+    if channel == "ecg" and (config.get("participant_protocol") or {}).get("operating_scope") == "human_participant":
+        # Current acquisition hardware has no independently observed USB,
+        # charging or cable-state verifier. Participant declarations cannot
+        # manufacture the whole-system electrical gate.
         return False
     if adapter == "otgd_signed_reader_v1":
         # A wire decoder cannot manufacture an instrument acquisition driver.
@@ -910,6 +1036,8 @@ def started_capture(db, account, check, attempt, config):
                     raise ValueError()
             except (ValueError, TypeError, KeyError):
                 raise Problem(422, "CAPTURE_TIME_OUTSIDE_AUTHORIZATION") from None
+            from .participant_acquisition import validate_instruction_evidence
+            validate_instruction_evidence(db, account, check, attempt, config, row)
             return row
     raise Problem(403, "FRESH_CAPTURE_START_REQUIRED")
 
@@ -966,6 +1094,8 @@ def channel_capabilities(db, account):
                 qualified_binding(db, account, config)
                 value["authorization_available"] = True
                 adapter = config["software_adapter_id"]
+                if channel == "ecg" and (config.get("participant_protocol") or {}).get("operating_scope") == "human_participant":
+                    raise Problem(403, "OPERATING_STATE_VERIFIER_UNIMPLEMENTED")
                 if not software_supported(config):
                     raise Problem(403, "HUMAN_ADAPTER_UNIMPLEMENTED")
                 value["available"] = True
@@ -976,7 +1106,9 @@ def channel_capabilities(db, account):
                     "supported_phone_models": config["supported_phone_models"],
                     "supported_os_versions": config["supported_os_versions"],
                     "supported_native_builds": config["supported_native_builds"],
-                    "software_adapter_id": adapter})
+                    "software_adapter_id": adapter,
+                    "participant_protocol": config.get("participant_protocol"),
+                    "participant_protocol_sha256": digest(config["participant_protocol"]) if config.get("participant_protocol") else None})
             except Problem as error:
                 value["reason_codes"].append(error.code)
     for value in results.values():

@@ -3434,278 +3434,10 @@
   "completion_claim": false,
   "merge_approval": false,
   "followup_review": {
-    "recorded_at": "2026-10-11T07:52:40.798009+00:00",
-    "scope": "Concurrent source snapshots, separate from original inventory and final exact-revision merge evidence. No full-application completion.",
-    "findings": "ALIGN-01 through ALIGN-39 in docs/REQUIREMENTS_ALIGNMENT_AUDIT.md; source fixes, focused execution, final gates and external qualification remain separate.",
+    "recorded_at": "2026-10-11T09:36:01.512985+00:00",
+    "scope": "Independent working-source review and focused execution, preserving original historical requirements and later frozen-source digests. Final committed-revision aggregate/live/native gates and genuine release qualification remain separate.",
+    "findings": "ALIGN-01 through ALIGN-45 in docs/REQUIREMENTS_ALIGNMENT_AUDIT.md; source fixes, focused execution, concurrent participant/HR/evaluation positive-flow work, final gates and external qualification remain separate.",
     "capability_delta_inventory": [
-      {
-        "file": "openspec/changes/canonical-operator-governance/specs/operator-authority/spec.md",
-        "sha256": "a7bb7170b6fc7c119e8e93eae9783767876a8f861a71588027577172c30a80e2",
-        "disposition": "Typed operator/current capability/signing/raw custody source reviewed; owner-produced PostgreSQL serialization/immutable reports inspected. Final aggregate and genuine three-principal approvals remain separate.",
-        "requirements": [
-          {
-            "heading": "OPERATOR-AUTHORITY-001 \u2014 Typed immutable submissions",
-            "line": 3,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "OPERATOR-AUTHORITY-002 \u2014 Independent authenticated decisions",
-            "line": 23,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "OPERATOR-AUTHORITY-003 \u2014 Reviewable atomic lifecycle",
-            "line": 43,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "OPERATOR-AUTHORITY-004 \u2014 Exact scientific and scope identities",
-            "line": 64,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "OPERATOR-AUTHORITY-005 \u2014 Current customer capabilities",
-            "line": 84,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "OPERATOR-AUTHORITY-006 \u2014 Capture approval fencing",
-            "line": 104,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "OPERATOR-AUTHORITY-007 \u2014 Signed scoped start",
-            "line": 122,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "OPERATOR-AUTHORITY-008 \u2014 Optical accepted-run identity",
-            "line": 143,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "OPERATOR-AUTHORITY-009 \u2014 Authenticated raw publication",
-            "line": 166,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          }
-        ],
-        "execution_claim": false
-      },
-      {
-        "file": "openspec/changes/optional-raw-recording-lifecycle/specs/fictional-hosted-preview/spec.md",
-        "sha256": "ee9d68e204d40b0500732c19096ce4fc4a362892d09106034678baacde4e961d",
-        "disposition": "Current raw-choice, privacy barrier, renewal, encrypted custody and isolated hosted readers reviewed with focused fixtures/doubles; actual native/OS custody and hosted service launch remain separate.",
-        "requirements": [
-          {
-            "heading": "AND-PREV-001 Accept fictional hosted mode only in local builds",
-            "line": 3,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-PREV-002 Disable every account and real acquisition path",
-            "line": 16,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-PREV-003 Isolate guest records and explain persistence",
-            "line": 29,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          }
-        ],
-        "execution_claim": false
-      },
-      {
-        "file": "openspec/changes/optional-raw-recording-lifecycle/specs/raw-recording-customer-flow/spec.md",
-        "sha256": "a688ab279a337ce745968e41c3d834c1afa8486a45901544cd7f779df2d54218",
-        "disposition": "Current raw-choice, privacy barrier, renewal, encrypted custody and isolated hosted readers reviewed with focused fixtures/doubles; actual native/OS custody and hosted service launch remain separate.",
-        "requirements": [
-          {
-            "heading": "AND-RAW-001 Present exact optional-purpose terms before recording",
-            "line": 3,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-RAW-002 Separate recording and upload from study acceptance",
-            "line": 16,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-RAW-003 Preserve exact intent and acknowledgment receipt",
-            "line": 29,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-RAW-004 Stop locally and retain privacy barriers",
-            "line": 42,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-RAW-005 Distinguish upload and physical retention cleanup",
-            "line": 55,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-RAW-006 Bind recording to fresh acquisition and encrypted local commit",
-            "line": 68,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-RAW-007 Enforce local retention and bounded ticket recovery",
-            "line": 81,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "AND-RAW-008 Require a distinct raw export purpose and exact binary scope",
-            "line": 94,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          }
-        ],
-        "execution_claim": false
-      },
-      {
-        "file": "openspec/changes/cloud-deployment-customer-access/specs/cloud-browser-delivery/spec.md",
-        "sha256": "735f76493e8188925c157347dc22b0a2acad4cb76721f2ea8a7f324629631855",
-        "disposition": "Canonical one-shot infrastructure/code/web/DNS and failure custody source reviewed; direct CLI and focused tests passed. Actual AWS/QA customer acceptance remains external.",
-        "requirements": [
-          {
-            "heading": "WEB-DEP-001 Deliver public application bytes through a private origin",
-            "line": 3,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "WEB-DEP-002 Preserve browser routing and asset failures",
-            "line": 16,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "WEB-DEP-003 Pin secure public browser identity",
-            "line": 29,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "WEB-DEP-004 Bind all web bytes to reviewed source and authority",
-            "line": 42,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "WEB-DEP-005 Bound public artifact content",
-            "line": 55,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "WEB-DEP-006 Publish immutably with an entry-point barrier",
-            "line": 68,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "WEB-DEP-007 Enforce browser security headers",
-            "line": 81,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "WEB-DEP-008 Keep customer access claims accurate",
-            "line": 94,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          }
-        ],
-        "execution_claim": false
-      },
-      {
-        "file": "openspec/changes/cloud-deployment-customer-access/specs/cloud-release-orchestration/spec.md",
-        "sha256": "32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6",
-        "disposition": "Canonical one-shot infrastructure/code/web/DNS and failure custody source reviewed; direct CLI and focused tests passed. Actual AWS/QA customer acceptance remains external.",
-        "requirements": [
-          {
-            "heading": "CLOUD-DEP-001 Provide separate environment entry points",
-            "line": 3,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "CLOUD-DEP-002 Admit exact source and live release gates",
-            "line": 16,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "CLOUD-DEP-003 Orchestrate infrastructure and code with actual inputs",
-            "line": 29,
-            "operation": "ADDED",
-            "specified_scenarios": 3
-          },
-          {
-            "heading": "CLOUD-DEP-004 Complete maintenance before enablement",
-            "line": 47,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "CLOUD-DEP-005 Require actual healthy activation",
-            "line": 60,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "CLOUD-DEP-006 Bind production to tested QA service and web evidence",
-            "line": 73,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "CLOUD-DEP-007 Register only the exact deployed UI CNAME",
-            "line": 86,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "CLOUD-DEP-008 Preserve immutable attempts and report actual checks",
-            "line": 99,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "CLOUD-DEP-009 Provision distinct registry operator authority without assigning approvals",
-            "line": 112,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "CLOUD-DEP-010 Require fresh independent admission evidence",
-            "line": 125,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          }
-        ],
-        "execution_claim": false
-      },
       {
         "file": "openspec/changes/authorized-model-execution/specs/android-dashboard/spec.md",
         "sha256": "c8e2d63aad6f7f973a181d917ef645e8d32b012ca41df1f2abd7d7a0b7525fe4",
@@ -3891,21 +3623,163 @@
         "execution_claim": false
       },
       {
-        "file": "openspec/changes/independent-recovery-admission/specs/recovery-authority/spec.md",
-        "sha256": "430fe7dfbfdb117add502c5632150690905d94b3dcb42ddc892bf1e8943f273c",
-        "disposition": "Independent retained admission and per-study resumed-scope source/focused tests reviewed; actual AWS restoration and external approval remain unexecuted.",
+        "file": "openspec/changes/authorized-raw-export/specs/raw-export-authorization/spec.md",
+        "sha256": "6e7ff5b60880e7234eec431ccb702b3e452b6a1d6e76a01720cb60b478782993",
+        "disposition": "Separate raw-copy authority, pinned integrity, continuing delivery checks and bounded archive source/focused HTTP/worker/ZIP tests reviewed; final native/live/whole-revision gates and genuine approval remain separate.",
         "requirements": [
           {
-            "heading": "RECOVERY-001 Independent retained admission",
+            "heading": "RAW-EXP-001 Independently approve the exact participant-copy purpose",
             "line": 3,
             "operation": "ADDED",
             "specified_scenarios": 3
           },
           {
-            "heading": "RECOVERY-002 Scoped independent reapproval",
-            "line": 20,
+            "heading": "RAW-EXP-002 Bound and paginate current export choices",
+            "line": 26,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "RAW-EXP-003 Confirm a separate immutable raw-copy selection",
+            "line": 43,
             "operation": "ADDED",
             "specified_scenarios": 3
+          },
+          {
+            "heading": "RAW-EXP-004 Pin selected retained sources",
+            "line": 65,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "RAW-EXP-005 Verify archive lineage and selected raw members",
+            "line": 82,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "RAW-EXP-006 Re-admit protected delivery and cut off revoked streams",
+            "line": 99,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          },
+          {
+            "heading": "RAW-EXP-007 Preserve terminal privacy receipts and recurring erasure",
+            "line": 122,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "RAW-EXP-008 Bound the entire archive without partial omission",
+            "line": 138,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          }
+        ],
+        "execution_claim": false
+      },
+      {
+        "file": "openspec/changes/canonical-operator-governance/specs/operator-authority/spec.md",
+        "sha256": "a7bb7170b6fc7c119e8e93eae9783767876a8f861a71588027577172c30a80e2",
+        "disposition": "Typed operator/current capability/signing/raw custody source reviewed; owner-produced PostgreSQL serialization/immutable reports inspected. Final aggregate and genuine three-principal approvals remain separate.",
+        "requirements": [
+          {
+            "heading": "OPERATOR-AUTHORITY-001 \u2014 Typed immutable submissions",
+            "line": 3,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "OPERATOR-AUTHORITY-002 \u2014 Independent authenticated decisions",
+            "line": 23,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "OPERATOR-AUTHORITY-003 \u2014 Reviewable atomic lifecycle",
+            "line": 43,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "OPERATOR-AUTHORITY-004 \u2014 Exact scientific and scope identities",
+            "line": 64,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "OPERATOR-AUTHORITY-005 \u2014 Current customer capabilities",
+            "line": 84,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "OPERATOR-AUTHORITY-006 \u2014 Capture approval fencing",
+            "line": 104,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "OPERATOR-AUTHORITY-007 \u2014 Signed scoped start",
+            "line": 122,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "OPERATOR-AUTHORITY-008 \u2014 Optical accepted-run identity",
+            "line": 143,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "OPERATOR-AUTHORITY-009 \u2014 Authenticated raw publication",
+            "line": 166,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          }
+        ],
+        "execution_claim": false
+      },
+      {
+        "file": "openspec/changes/canonical-optical-native-acquisition/specs/optical-native/spec.md",
+        "sha256": "1e25c5f543b73c2df18741240a266b39716ae17c31bc8b57e2bd91dc699a29c4",
+        "disposition": "Native factory/frame metadata/ROI integrity and originating resource source reviewed, focused server tests passed; actual camera/timer/OS execution and optical qualification remain separate.",
+        "requirements": [
+          {
+            "heading": "AND-EYE-101 Governed executable optical start",
+            "line": 5,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-EYE-102 Bounded native frame evidence",
+            "line": 21,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          },
+          {
+            "heading": "AND-EYE-103 Deterministic bounded ROI extraction",
+            "line": 46,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-EYE-104 Reviewed stimulus and scale boundaries",
+            "line": 63,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-EYE-105 Originating lifecycle and privacy settlement",
+            "line": 81,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-EYE-106 Explicit ephemeral ROI recording",
+            "line": 96,
+            "operation": "ADDED",
+            "specified_scenarios": 2
           }
         ],
         "execution_claim": false
@@ -3985,43 +3859,55 @@
         "execution_claim": false
       },
       {
-        "file": "openspec/changes/canonical-optical-native-acquisition/specs/optical-native/spec.md",
-        "sha256": "1e25c5f543b73c2df18741240a266b39716ae17c31bc8b57e2bd91dc699a29c4",
-        "disposition": "Native factory/frame metadata/ROI integrity and originating resource source reviewed, focused server tests passed; actual camera/timer/OS execution and optical qualification remain separate.",
+        "file": "openspec/changes/cloud-deployment-customer-access/specs/cloud-browser-delivery/spec.md",
+        "sha256": "735f76493e8188925c157347dc22b0a2acad4cb76721f2ea8a7f324629631855",
+        "disposition": "Canonical one-shot infrastructure/code/web/DNS and failure custody source reviewed; direct CLI and focused tests passed. Actual AWS/QA customer acceptance remains external.",
         "requirements": [
           {
-            "heading": "AND-EYE-101 Governed executable optical start",
-            "line": 5,
+            "heading": "WEB-DEP-001 Deliver public application bytes through a private origin",
+            "line": 3,
             "operation": "ADDED",
             "specified_scenarios": 2
           },
           {
-            "heading": "AND-EYE-102 Bounded native frame evidence",
-            "line": 21,
-            "operation": "ADDED",
-            "specified_scenarios": 3
-          },
-          {
-            "heading": "AND-EYE-103 Deterministic bounded ROI extraction",
-            "line": 46,
+            "heading": "WEB-DEP-002 Preserve browser routing and asset failures",
+            "line": 16,
             "operation": "ADDED",
             "specified_scenarios": 2
           },
           {
-            "heading": "AND-EYE-104 Reviewed stimulus and scale boundaries",
-            "line": 63,
+            "heading": "WEB-DEP-003 Pin secure public browser identity",
+            "line": 29,
             "operation": "ADDED",
             "specified_scenarios": 2
           },
           {
-            "heading": "AND-EYE-105 Originating lifecycle and privacy settlement",
+            "heading": "WEB-DEP-004 Bind all web bytes to reviewed source and authority",
+            "line": 42,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "WEB-DEP-005 Bound public artifact content",
+            "line": 55,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "WEB-DEP-006 Publish immutably with an entry-point barrier",
+            "line": 68,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "WEB-DEP-007 Enforce browser security headers",
             "line": 81,
             "operation": "ADDED",
             "specified_scenarios": 2
           },
           {
-            "heading": "AND-EYE-106 Explicit ephemeral ROI recording",
-            "line": 96,
+            "heading": "WEB-DEP-008 Keep customer access claims accurate",
+            "line": 94,
             "operation": "ADDED",
             "specified_scenarios": 2
           }
@@ -4029,55 +3915,401 @@
         "execution_claim": false
       },
       {
-        "file": "openspec/changes/authorized-raw-export/specs/raw-export-authorization/spec.md",
-        "sha256": "6e7ff5b60880e7234eec431ccb702b3e452b6a1d6e76a01720cb60b478782993",
-        "disposition": "Separate raw-copy authority, pinned integrity, continuing delivery checks and bounded archive source/focused HTTP/worker/ZIP tests reviewed; final native/live/whole-revision gates and genuine approval remain separate.",
+        "file": "openspec/changes/cloud-deployment-customer-access/specs/cloud-release-orchestration/spec.md",
+        "sha256": "32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6",
+        "disposition": "Canonical one-shot infrastructure/code/web/DNS and failure custody source reviewed; direct CLI and focused tests passed. Actual AWS/QA customer acceptance remains external.",
         "requirements": [
           {
-            "heading": "RAW-EXP-001 Independently approve the exact participant-copy purpose",
+            "heading": "CLOUD-DEP-001 Provide separate environment entry points",
+            "line": 3,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "CLOUD-DEP-002 Admit exact source and live release gates",
+            "line": 16,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "CLOUD-DEP-003 Orchestrate infrastructure and code with actual inputs",
+            "line": 29,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          },
+          {
+            "heading": "CLOUD-DEP-004 Complete maintenance before enablement",
+            "line": 47,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "CLOUD-DEP-005 Require actual healthy activation",
+            "line": 60,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "CLOUD-DEP-006 Bind production to tested QA service and web evidence",
+            "line": 73,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "CLOUD-DEP-007 Register only the exact deployed UI CNAME",
+            "line": 86,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "CLOUD-DEP-008 Preserve immutable attempts and report actual checks",
+            "line": 99,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "CLOUD-DEP-009 Provision distinct registry operator authority without assigning approvals",
+            "line": 112,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "CLOUD-DEP-010 Require fresh independent admission evidence",
+            "line": 125,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          }
+        ],
+        "execution_claim": false
+      },
+      {
+        "file": "openspec/changes/independent-recovery-admission/specs/recovery-authority/spec.md",
+        "sha256": "430fe7dfbfdb117add502c5632150690905d94b3dcb42ddc892bf1e8943f273c",
+        "disposition": "Independent retained admission and per-study resumed-scope source/focused tests reviewed; actual AWS restoration and external approval remain unexecuted.",
+        "requirements": [
+          {
+            "heading": "RECOVERY-001 Independent retained admission",
             "line": 3,
             "operation": "ADDED",
             "specified_scenarios": 3
           },
           {
-            "heading": "RAW-EXP-002 Bound and paginate current export choices",
-            "line": 26,
+            "heading": "RECOVERY-002 Scoped independent reapproval",
+            "line": 20,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          }
+        ],
+        "execution_claim": false
+      },
+      {
+        "file": "openspec/changes/optional-raw-recording-lifecycle/specs/fictional-hosted-preview/spec.md",
+        "sha256": "ee9d68e204d40b0500732c19096ce4fc4a362892d09106034678baacde4e961d",
+        "disposition": "Current raw-choice, privacy barrier, renewal, encrypted custody and isolated hosted readers reviewed with focused fixtures/doubles; actual native/OS custody and hosted service launch remain separate.",
+        "requirements": [
+          {
+            "heading": "AND-PREV-001 Accept fictional hosted mode only in local builds",
+            "line": 3,
             "operation": "ADDED",
             "specified_scenarios": 2
           },
           {
-            "heading": "RAW-EXP-003 Confirm a separate immutable raw-copy selection",
+            "heading": "AND-PREV-002 Disable every account and real acquisition path",
+            "line": 16,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-PREV-003 Isolate guest records and explain persistence",
+            "line": 29,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          }
+        ],
+        "execution_claim": false
+      },
+      {
+        "file": "openspec/changes/optional-raw-recording-lifecycle/specs/raw-recording-customer-flow/spec.md",
+        "sha256": "a688ab279a337ce745968e41c3d834c1afa8486a45901544cd7f779df2d54218",
+        "disposition": "Current raw-choice, privacy barrier, renewal, encrypted custody and isolated hosted readers reviewed with focused fixtures/doubles; actual native/OS custody and hosted service launch remain separate.",
+        "requirements": [
+          {
+            "heading": "AND-RAW-001 Present exact optional-purpose terms before recording",
+            "line": 3,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-RAW-002 Separate recording and upload from study acceptance",
+            "line": 16,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-RAW-003 Preserve exact intent and acknowledgment receipt",
+            "line": 29,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-RAW-004 Stop locally and retain privacy barriers",
+            "line": 42,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-RAW-005 Distinguish upload and physical retention cleanup",
+            "line": 55,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-RAW-006 Bind recording to fresh acquisition and encrypted local commit",
+            "line": 68,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-RAW-007 Enforce local retention and bounded ticket recovery",
+            "line": 81,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "AND-RAW-008 Require a distinct raw export purpose and exact binary scope",
+            "line": 94,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          }
+        ],
+        "execution_claim": false
+      },
+      {
+        "file": "openspec/changes/qualified-participant-acquisition/specs/participant-instruction-authority/spec.md",
+        "sha256": "238b3c329cd79edb4bd57807926311a3bed0c935cf77ef77577fcf79afda02ef",
+        "disposition": "Normative positive/refusal/retry/privacy/time/version scope independently reviewed; current implementation and exact-revision aggregate remain open. Genuine scientific/device/study approvals are separate.",
+        "requirements": [
+          {
+            "heading": "PAI-001 Release exact bounded participant instructions",
+            "line": 7,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "PAI-002 Bind an immutable acknowledgment to current scope",
+            "line": 20,
+            "operation": "ADDED",
+            "specified_scenarios": 4
+          },
+          {
+            "heading": "PAI-003 Re-admit instructions at every fresh start",
             "line": 43,
             "operation": "ADDED",
-            "specified_scenarios": 3
+            "specified_scenarios": 4
           },
           {
-            "heading": "RAW-EXP-004 Pin selected retained sources",
-            "line": 65,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "RAW-EXP-005 Verify archive lineage and selected raw members",
-            "line": 82,
-            "operation": "ADDED",
-            "specified_scenarios": 2
-          },
-          {
-            "heading": "RAW-EXP-006 Re-admit protected delivery and cut off revoked streams",
-            "line": 99,
+            "heading": "PAI-004 Distinguish declarations from measured safety proof",
+            "line": 66,
             "operation": "ADDED",
             "specified_scenarios": 3
           },
           {
-            "heading": "RAW-EXP-007 Preserve terminal privacy receipts and recurring erasure",
-            "line": 122,
+            "heading": "PAI-005 Preserve acknowledgment retry and replacement identity",
+            "line": 84,
             "operation": "ADDED",
             "specified_scenarios": 2
           },
           {
-            "heading": "RAW-EXP-008 Bound the entire archive without partial omission",
-            "line": 138,
+            "heading": "PAI-006 Stop before privacy and lifecycle transitions",
+            "line": 97,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "PAI-007 Show capability and provenance truthfully",
+            "line": 110,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "PAI-008 Guide declared cardiac rest without clock shortcuts",
+            "line": 123,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          }
+        ],
+        "execution_claim": false
+      },
+      {
+        "file": "openspec/changes/qualified-participant-acquisition/specs/reference-lab-collection/spec.md",
+        "sha256": "09cbf8dccec136a1ec7895fc553c62160b63fa1e2133f5b5864d7d3aed13547a",
+        "disposition": "Normative positive/refusal/retry/privacy/time/version scope independently reviewed; current implementation and exact-revision aggregate remain open. Genuine scientific/device/study approvals are separate.",
+        "requirements": [
+          {
+            "heading": "SALCOL-001 Dispatch the actual reference-lab adapter",
+            "line": 7,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "SALCOL-002 Render only approved collection-form rules",
+            "line": 20,
+            "operation": "ADDED",
+            "specified_scenarios": 4
+          },
+          {
+            "heading": "SALCOL-003 Allocate specimen and collection lineage before start",
+            "line": 43,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "SALCOL-004 Admit an immutable participant collection receipt",
+            "line": 56,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          },
+          {
+            "heading": "SALCOL-005 Preserve pending analysis and independent staff import",
+            "line": 74,
+            "operation": "ADDED",
+            "specified_scenarios": 4
+          },
+          {
+            "heading": "SALCOL-006 Retain failed attempts and immutable finalized boundaries",
+            "line": 97,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          },
+          {
+            "heading": "SALCOL-007 Apply privacy and preserve complete collection evidence",
+            "line": 115,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "SALCOL-008 Preserve pending chronology and versioned projections",
+            "line": 128,
+            "operation": "ADDED",
+            "specified_scenarios": 6
+          }
+        ],
+        "execution_claim": false
+      },
+      {
+        "file": "openspec/changes/qualified-participant-acquisition/specs/research-evaluation/spec.md",
+        "disposition": "Normative versioned HR-only evaluation exception preserving legacy four matched ablations; independent reread and implementation/gates remain open. No external source authentication is inferred.",
+        "execution_claim": false,
+        "sha256": "f4bef2eee7577e8f57b7cd27b7463d3879dcb1d452c73540d8916f9d6bf41726",
+        "requirements": [
+          {
+            "heading": "EVAL-002 Complete matched evaluation and ablations",
+            "line": 3,
+            "operation": "MODIFIED",
+            "specified_scenarios": 5
+          }
+        ]
+      },
+      {
+        "file": "openspec/changes/qualified-participant-acquisition/specs/scoped-cardiac-authority/spec.md",
+        "disposition": "Explicit restricted HR-only server interval authority normative scope independently reread; current implementation/gates remain open. No physical or clinical qualification is implied.",
+        "execution_claim": false,
+        "sha256": "277f1727d50ffc6c0ee8717d1c77541bca64139ea78ffe032795ebf8a0c2b0a7",
+        "requirements": [
+          {
+            "heading": "HR-AUTH-001 Explicit restricted model policy",
+            "line": 3,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "HR-AUTH-002 Exact independent calibration scope",
+            "line": 18,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "HR-AUTH-003 Conservative original server interval",
+            "line": 35,
+            "operation": "ADDED",
+            "specified_scenarios": 4
+          },
+          {
+            "heading": "HR-AUTH-004 Direct model timing gates",
+            "line": 62,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          },
+          {
+            "heading": "HR-AUTH-005 Retained quality and restricted meaning",
+            "line": 85,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "HR-AUTH-006 Independent historical baseline admission",
+            "line": 100,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "HR-AUTH-007 Immutable proof and current publication authority",
+            "line": 115,
+            "operation": "ADDED",
+            "specified_scenarios": 4
+          },
+          {
+            "heading": "HR-AUTH-008 Prespecified interval-aware research evaluation",
+            "line": 142,
+            "operation": "ADDED",
+            "specified_scenarios": 4
+          }
+        ]
+      },
+      {
+        "file": "openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md",
+        "sha256": "c6f863bc71ebf167438fbe5cffe07b892da12cc066d0487d21403ff8dd49fa0d",
+        "disposition": "Normative positive/refusal/retry/privacy/time/version scope independently reviewed; current implementation and exact-revision aggregate remain open. Genuine scientific/device/study approvals are separate.",
+        "requirements": [
+          {
+            "heading": "VPPG-001 Pin and initialize the actual selected sensor SDK",
+            "line": 7,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "VPPG-002 Count only fresh bounded vendor records",
+            "line": 20,
+            "operation": "ADDED",
+            "specified_scenarios": 3
+          },
+          {
+            "heading": "VPPG-003 Preserve vendor quality and finite extraction semantics",
+            "line": 38,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "VPPG-004 Bind measured output to signed current origin",
+            "line": 51,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "VPPG-005 Stop independently of transport and connection replacement",
+            "line": 64,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "VPPG-006 Advertise only the installed matching vendor adapter",
+            "line": 77,
+            "operation": "ADDED",
+            "specified_scenarios": 2
+          },
+          {
+            "heading": "VPPG-007 Verify executable software separately from physical qualification",
+            "line": 90,
             "operation": "ADDED",
             "specified_scenarios": 2
           }
@@ -4308,193 +4540,604 @@
         "archive_precondition": "Baseline production-mobile-platform capabilities must be archived before the six model MODIFIED capabilities; OpenSpec reports this INFO and no archive is claimed",
         "scenario_execution_claim": false,
         "merge_approval": false
+      },
+      {
+        "scope": "Current ten canonical OpenSpec changes including new qualified participant acquisition; structural validation only",
+        "command": "node /workspace/otg-tools/node_modules/@fission-ai/openspec/bin/openspec.js validate <change> --strict; .venv/bin/python tools/verify_specs.py",
+        "openspec_version": "1.14.1",
+        "passed_changes": [
+          "authorized-model-execution",
+          "authorized-raw-export",
+          "canonical-operator-governance",
+          "canonical-optical-native-acquisition",
+          "canonical-signed-reader-acquisition",
+          "cloud-deployment-customer-access",
+          "independent-recovery-admission",
+          "optional-raw-recording-lifecycle",
+          "production-mobile-platform",
+          "qualified-participant-acquisition"
+        ],
+        "semantic_link_checks_passed": 41,
+        "new_delta_requirements": 32,
+        "new_delta_specified_scenarios": 91,
+        "scenario_execution_claim": false,
+        "merge_approval": false
+      },
+      {
+        "scope": "Actual pinned SparkFun SDK and production capture core fake-I2C portable fixtures",
+        "command": "g++ -std=c++17 -Wall -Wextra -Werror -Wno-unused-parameter -I firmware/tests/sparkfun_fake -I firmware/nano_esp32_signed_reader/vendor/sparkfun firmware/tests/sparkfun_ppg_test.cpp firmware/nano_esp32_signed_reader/vendor/sparkfun/SparkFun_Bio_Sensor_Hub_Library.cpp -o /tmp/otgd-independent-sparkfun-test; /tmp/otgd-independent-sparkfun-test",
+        "passed_executables": 1,
+        "io_fixture_double": true,
+        "physical_device_claim": false,
+        "exact_final_revision_claim": false,
+        "snapshot_sha256": {
+          "firmware/tests/sparkfun_ppg_test.cpp": "80ada2098a56adcdd1dce808f669fe807d606767f195aff2cb6316a8fd8f47e6",
+          "firmware/nano_esp32_signed_reader/SparkFunPpgCore.h": "0d6a94f68999a03392c9a33e5c4c1da829e8cc735a35634709ebff0422458d85",
+          "firmware/nano_esp32_signed_reader/vendor/sparkfun/SparkFun_Bio_Sensor_Hub_Library.cpp": "d9c51c846617d1a6d1f0c0e29a9d2728200f54d1487a315bb39ea191f3162832"
+        },
+        "hash_binding_note": "Hashes below are recorded source observations after the execution, not a claim of atomic compilation-input custody; final exact-revision compiler gates remain required."
+      },
+      {
+        "scope": "Current actual pinned SDK/production core/payload factory compiled and executed with fake I2C; literal emitted fixture byte-match",
+        "evidence": "/tmp/otgd-independent-sparkfun-review.json",
+        "passed_executables": 1,
+        "fixture_byte_match": true,
+        "inputs_before_after_match": true,
+        "input_sha256": {
+          "firmware/tests/sparkfun_ppg_test.cpp": "00121684618f2ea6a40bba22118a910c0cedef814d8e9f308c50f31a6cb9d78a",
+          "firmware/tests/sparkfun_fake/Arduino.h": "74f0b9926a005dc69d08e63f92c9f4d05e28e0c0379d9efdce7339910a43b895",
+          "firmware/tests/sparkfun_fake/Wire.h": "a86b8b51112e8b566ab44c1feeeda62e04c42d465edafbe528831f6f7b340dbe",
+          "firmware/nano_esp32_signed_reader/SparkFunBioSensor.cpp": "03f1eee8b58e2aa08c99e36fb3a7a54b136d93bc83c88a50e99233fe99d9afb9",
+          "firmware/nano_esp32_signed_reader/SparkFunPpgCore.h": "0d6a94f68999a03392c9a33e5c4c1da829e8cc735a35634709ebff0422458d85",
+          "firmware/nano_esp32_signed_reader/SparkFunPpgDriver.h": "78c4bef5785667d40ee9c3bb52451fb5ab8fe5f33bff3f17b45f7fb70382da4e",
+          "firmware/nano_esp32_signed_reader/SparkFunPpgEvidence.h": "bec7e46ee3df0365e45e4707ed70b65c561ae808c98cda7637ec71e30d4ed396",
+          "firmware/nano_esp32_signed_reader/RyuDouble.cpp": "9a924c52774e5e16ac3bc53b4cd7f6dc4522280706e4e88e372a1a9d65d82aa4",
+          "firmware/nano_esp32_signed_reader/vendor/sparkfun/PATCHES.md": "51e205e7639a89521a2951c0dcca66a48a79423ec7e42ff5aa5896adb3ea1591",
+          "firmware/nano_esp32_signed_reader/vendor/sparkfun/SOURCE.json": "bc9a6e7d26a095aad4fbe44f70ee567baecc69512208839a60fecf793a7427ff",
+          "firmware/nano_esp32_signed_reader/vendor/sparkfun/SparkFun_Bio_Sensor_Hub_Library.cpp": "d9c51c846617d1a6d1f0c0e29a9d2728200f54d1487a315bb39ea191f3162832",
+          "firmware/nano_esp32_signed_reader/vendor/sparkfun/SparkFun_Bio_Sensor_Hub_Library.h": "fc0a2641fe2af5c062cc2d714f2547ad7fefa3ec279202ae6793984d9408a9aa",
+          "firmware/nano_esp32_signed_reader/vendor/sparkfun/UPSTREAM_README.md": "40ddc45a6566a1a25c8b65a3536371fcc84f363a1057c47dc41976a7ec7446c3",
+          "firmware/nano_esp32_signed_reader/vendor/sparkfun/library.properties": "9c829e10ae9c6f1ad46a7b3755f239e8c75300acb8711e1678f961fdd913e4a2",
+          "firmware/tests/fixtures/sparkfun-ppg-result-v1.json": "f889d5fab14484ab02812c98f9e44d32d71a597ad5faa888d3df4268fc63ba2a"
+        },
+        "fixture_sha256": "f889d5fab14484ab02812c98f9e44d32d71a597ad5faa888d3df4268fc63ba2a",
+        "physical_device_claim": false,
+        "exact_final_revision_claim": false
+      },
+      {
+        "scope": "Stable delegated laboratory handoff and selected vendor evidence focused rereview",
+        "command": "OTGD_DATABASE_URL='sqlite://' UV_CACHE_DIR=/tmp/otgd-review-uv-cache uv run --no-sync pytest -q tests/test_lab_handoff.py tests/test_vendor_evidence.py -m 'not postgres and not localstack' --junitxml=/tmp/otgd-independent-lab-vendor-rereview.xml",
+        "passed": 76,
+        "failed": 0,
+        "skipped": 0,
+        "database": "SQLite",
+        "object_storage": "Explicit doubles",
+        "live_dependency_claim": false,
+        "exact_final_revision_claim": false
+      },
+      {
+        "scope": "Final stable participant instructions, delegated handoff, selected vendor and privacy inventory focused independent rerun",
+        "command": "OTGD_DATABASE_URL='sqlite://' UV_CACHE_DIR=/tmp/otgd-review-uv-cache uv run --no-sync pytest -q tests/test_participant_acquisition.py tests/test_lab_handoff.py tests/test_vendor_evidence.py tests/test_participant_privacy_inventory.py -m 'not postgres and not localstack' --junitxml=/tmp/otgd-independent-final-participant-review.xml",
+        "passed": 124,
+        "failed": 0,
+        "skipped": 0,
+        "database": "SQLite",
+        "object_storage": "Explicit doubles",
+        "live_dependency_claim": false,
+        "exact_final_revision_claim": false
+      },
+      {
+        "scope": "Independent restricted cardiac runtime/provenance and legacy/scoped HR offline evaluation",
+        "command": "OTGD_DATABASE_URL='sqlite://' UV_CACHE_DIR=/tmp/otgd-review-uv-cache uv run --no-sync pytest -q tests/test_cardiac_authority.py tests/test_cardiac_authority_provenance.py tests/test_model_evaluation.py tests/test_model_evaluation_cardiac.py -m 'not postgres and not localstack' --junitxml=/tmp/otgd-independent-cardiac-evaluation-review.xml",
+        "cwd": "services/api",
+        "report": "/tmp/otgd-independent-cardiac-evaluation-review.xml",
+        "passed": 231,
+        "skipped": 0,
+        "sqlite_and_authority_storage_doubles": true,
+        "live_dependency_claim": false,
+        "physical_scientific_qualification_claim": false,
+        "exact_final_revision_claim": false
+      },
+      {
+        "scope": "Final independently observed participant/acquisition/HR result reader and local ZIP export",
+        "command": "node --import tsx --test tests/acquisition.test.ts tests/participant-acquisition.test.ts tests/research-result.test.ts",
+        "cwd": "apps/mobile",
+        "passed": 34,
+        "skipped": 0,
+        "todo": 0,
+        "cancelled": 0,
+        "authority_http_storage_ble_doubles": true,
+        "native_device_execution_claim": false,
+        "exact_final_revision_claim": false,
+        "resolved_export_failure": "Absent optional self_report_context represented as exported null without altering immutable frozen capture context or digest",
+        "transient_in_progress_test_failure": "Lab fetch callback referenced newly introduced abandonment fixture before its declaration landed; stable source rerun passed"
+      },
+      {
+        "scope": "Repeat final frozen cardiac runtime/provenance and original/scoped HR evaluation source",
+        "command": "OTGD_DATABASE_URL='sqlite://' UV_CACHE_DIR=/tmp/otgd-review-uv-cache uv run --no-sync pytest -q tests/test_cardiac_authority.py tests/test_cardiac_authority_provenance.py tests/test_model_evaluation.py tests/test_model_evaluation_cardiac.py -m 'not postgres and not localstack' --junitxml=/tmp/otgd-independent-final-cardiac-evaluation.xml",
+        "cwd": "services/api",
+        "passed": 231,
+        "skipped": 0,
+        "sqlite_and_authority_storage_doubles": true,
+        "live_dependency_claim": false,
+        "exact_final_revision_claim": false
       }
     ],
     "source_snapshots": [
       {
+        "file": ".github/workflows/hosted-native-preview.yml",
+        "sha256": "d1679be3e0b33d087c324a79c62d793c0efeec13f2ab55bb4a72cf6674bbadcc",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": ".github/workflows/merge-gate.yml",
+        "sha256": "9759a137309d85311e482b4c4672ffb01c14bca7678fd12194fe378d295ab20c",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": ".github/workflows/native-build.yml",
+        "sha256": "174eff9eefce12f322cb00a0883ea653c1eaa422cf47e2e56488b685f0d26fcd",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": ".github/workflows/platform.yml",
+        "sha256": "3f58db7b16f9f5052a9bc91ffa79758c92c33e823c8f8b726708e87b0386c168",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "IMPLEMENTATION_STATUS.md",
+        "sha256": "1507328557821b44b4775abb09deb25c6e7a2eaf0ed8bb46e98fb4259830c360",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "README.md",
+        "sha256": "dee9f4eb26cb7a671ddc99a6534d1f5ee779a23edebf512cb38b9fed01ec9c5e",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/e2e/fixtures/participant-component.tsx",
+        "sha256": "cbe579c47ab3165466c443829e6d9749df015671db3733079532c65cacdaf80f",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
         "file": "apps/mobile/modules/eye-capture/android/src/main/java/expo/modules/otgdeye/EyeCore.kt",
         "sha256": "0bf7d25a480555d523e532c5220619005a9d468ac65fa654843e80374cbe67df",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/modules/eye-capture/android/src/main/java/expo/modules/otgdeye/OTGDEyeCaptureView.kt",
         "sha256": "bee80de40376b83fa10e9951e83a0258d5e52296a701f063ea404c202d14b3e5",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/modules/eye-capture/fixtures/native-optical-result-v1.json",
         "sha256": "db2d027ae00a72fcff5510a42150afeedbf748ac8f652a4677185c7e6bbdfd3d",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/modules/eye-capture/ios/EyeCore.swift",
         "sha256": "9e496ba028f497796e204c0fa3ba961eef2d8a5d941c5966e3a8bacbf3aaf1e8",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/modules/eye-capture/ios/OTGDEyeCaptureView.swift",
         "sha256": "97acdecfe021c09726c35a68fc05fec1ec99339653149b06cb204ec507f86a88",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/modules/scripts/hosted_preview.py",
         "sha256": "48829795736de41f6ac6ed44671a6b2536d14c8e8a333d27d3b74ac1a7577c85",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/controller.ts",
+        "sha256": "3d83ec94e857eba629e24a2e065906021871c9995e92222f1f0e4cad4e481370",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/core/cardiacAuthority.ts",
+        "sha256": "ea181c2ce8942cceab20d18efdc60d9cf34c9631464227ef0a1e4f442017de4b",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/core/participantAcquisition.ts",
+        "sha256": "4cc54a51ec6df3df1d6246dda797cfa4b8be5ec45c25772186aace44e440ab27",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/core/preparationClock.ts",
+        "sha256": "c752cf85dcf66e140c35b91373f69145065bed1d02ab23535b974293bbf4dd90",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/core/rawArtifacts.ts",
         "sha256": "8ea014f75a028f567df6dd8d286c184c1ac68c6bb3ec23c94e06350b28d551fa",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/core/rawExport.ts",
         "sha256": "2adce333253cc8f168bd8288fd44a91e4749f2ef713c50a39c5c2bc48df5109a",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/core/rawRecordings.ts",
         "sha256": "11d93e04b2612434902744de9b3e443ad4092579e894280c4c7f03f0179f1bec",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/core/remote.ts",
+        "sha256": "ebe190876a2735173ebd9a893a50f09072ff9c2bf78224a0ae768f7a3d9f5964",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/core/researchResult.ts",
-        "sha256": "64b65b89357bffea99b3cb36763140202992d644cd85b15b9ce9f4bc6d370fbc",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "e3bb12bd554e858635aa03915b4815789b738cc0ca63f971b8dd886dd3fc5b46",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/core/types.ts",
+        "sha256": "70638692e475d02057a7284af0705ac2527b073c4b5c5da427d02add5d9e4b84",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/device/physicalProtocol.ts",
-        "sha256": "fb9712de0355b6a2928974cec5e71cb7658320fd3fd1f43dfec0afb9d1834d6a",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "e65243f6aedac10c99102d74ea1eea13ef68a2c5eacdc0bf22eb00c7fa807d77",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/device/physicalRaw.ts",
         "sha256": "943794a41eca69340e3e3d895e0bd1c92cd8910fb01b870a6c684434312c0fcc",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/platform/storage.native.ts",
         "sha256": "a9a13a16e80675b74ffebe1de78e44d7cdb16e0a87d5e62f24d4685443038055",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/services/export.ts",
+        "sha256": "46a884eb35fb3e81d73aa514a1326f90ca73ce299e8abb3a3729952bf2943c76",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/services/sync.ts",
-        "sha256": "9eb7eae5a78d182d6e8d346290b5ff10a103b93eccbf51d95949ab025addcb44",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "710d1d1cbd0d07ddae0421f1670f19cae4cf3fa4327b11bddff2b272f5676113",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/ui/lab-collection.tsx",
+        "sha256": "92a470bebade396df986993e8428c4ded45471b7104bfe1e6243c18ee1983157",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "apps/mobile/src/ui/manage.tsx",
         "sha256": "2000cf714568d29caf96df6acb93bddd303f723789ba02cc37d03f98351309ec",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/src/ui/participant-capture.tsx",
+        "sha256": "bc579eed2d400cd40926f5cea5ce1629da38ad5d7e503cf99416a85873c06c23",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/testfixtures/backend-cardiac-authority.json",
+        "sha256": "afa3530abd842f7221351434594d901ee3451b59398544671d8ffdd5a2a0f4fa",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/testfixtures/backend-participant-acquisition.json",
+        "sha256": "e54bdc05e1b4539db757d561a38789ce40110d241f9d1dfb750583bad9820021",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/tests/acquisition.test.ts",
+        "sha256": "a02cccbab342b94414961e9a2c602014910fd31e713512c59cada2f7c7e21553",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/tests/hosted-preview.test.ts",
+        "sha256": "7fff06703afe20aa97dba60c4dc5c3d0ac72ba962cc1f2b6b63a56c6ade374cb",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/tests/participant-acquisition.test.ts",
+        "sha256": "1867260acffffc4ac828866c0022ce3d1e2bb34b001e1b6558786a794939cf2f",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/tests/research-result.test.ts",
+        "sha256": "5e39d0bf4fb9376df15ae349da774b343dc0428d80fae35e6ee7f2b618ba33ea",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/tests/support/constants.cjs",
+        "sha256": "172bf7a13e8d91823fac2f589a1fee9243bebf83da6d110a3be1c2ec61a4bc00",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "apps/mobile/tests/support/runtime.cjs",
+        "sha256": "35717b1145b5faed0e13f8a67c98b10a62c9fac6ccb50f031dbdbd9ee1b53eca",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "deploy/README.md",
+        "sha256": "9028ac40a1be4bafbbe1a2d1fcd0fbdf7b685154b56ec29f7350fff5c2e9ba3f",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "deploy/orchestrate.py",
         "sha256": "71109ae779d7d025086411e7d436c5e6e117d6026de142fd3a61ae5e71ba1831",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "deploy/platform.py",
         "sha256": "6ed461435b3fde74bbc825c01da22c80d3418a4fbf72b9b9e920d3b38eefb2ac",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "deploy/provenance.py",
+        "sha256": "7ce88f2a64bcd554a3c4d12d6d0fee1adf11517b1a2e9b692d675957a93f4856",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "deploy/register_cname.py",
         "sha256": "20a1fca01cbaf473bacf983199550b7b54dac5f455f9f60aca7ad5ae5e72c764",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "deploy/web_artifact.py",
         "sha256": "52684780d2e55366ca37a03b87fb08422b26a65e682dd55ecaaaf5ec6c8c1db3",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "docs/CI_GATES.md",
+        "sha256": "8390ec4c1eb5bb7daf266c72fd638ca2e4414db8d72a9838876af841b5527d5c",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "docs/MODEL_TRAINING_AND_EVALUATION.md",
+        "sha256": "fe9bafa2d30091aed6c62be712f0541625babc947c5c4d80ccb273998527912f",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "firmware/nano_esp32_signed_reader/AdcAcquisitionCore.h",
         "sha256": "4d2cb2d842cfe0e6872719b8cbcb4163988c145e5b32aa32dc575fe2b5d87901",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "firmware/nano_esp32_signed_reader/ReaderLifecycle.h",
         "sha256": "d12a4e60177eccee75c9dc0d6bbe00ce0c88ab889ac060a6e3ee36645b27214e",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "firmware/nano_esp32_signed_reader/ReaderTime.h",
         "sha256": "fca40c349ec193c713d28b5c778a19951a4f34cd47537d1cba7a9b5592a611e0",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/SELECTED_PPG.md",
+        "sha256": "a52503bfe9e238e05cce0bceb8d88cb60b2262db2113563bfe013f350d994d28",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/SparkFunBioSensor.cpp",
+        "sha256": "03f1eee8b58e2aa08c99e36fb3a7a54b136d93bc83c88a50e99233fe99d9afb9",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/SparkFunPpgCore.h",
+        "sha256": "0d6a94f68999a03392c9a33e5c4c1da829e8cc735a35634709ebff0422458d85",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/SparkFunPpgDriver.h",
+        "sha256": "78c4bef5785667d40ee9c3bb52451fb5ab8fe5f33bff3f17b45f7fb70382da4e",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/SparkFunPpgEvidence.h",
+        "sha256": "bec7e46ee3df0365e45e4707ed70b65c561ae808c98cda7637ec71e30d4ed396",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "firmware/nano_esp32_signed_reader/nano_esp32_signed_reader.ino",
-        "sha256": "d47bbba6fa4279fe141b42bf250cb887c61c163828dc2a41d09aa83a5cb55199",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "e8d71cc23f5b6b8e93b5470daf838c4458652159bd429e70898e6bcbed6e79c6",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/vendor/sparkfun/PATCHES.md",
+        "sha256": "51e205e7639a89521a2951c0dcca66a48a79423ec7e42ff5aa5896adb3ea1591",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/vendor/sparkfun/SOURCE.json",
+        "sha256": "bc9a6e7d26a095aad4fbe44f70ee567baecc69512208839a60fecf793a7427ff",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/vendor/sparkfun/SparkFun_Bio_Sensor_Hub_Library.cpp",
+        "sha256": "d9c51c846617d1a6d1f0c0e29a9d2728200f54d1487a315bb39ea191f3162832",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/nano_esp32_signed_reader/vendor/sparkfun/SparkFun_Bio_Sensor_Hub_Library.h",
+        "sha256": "fc0a2641fe2af5c062cc2d714f2547ad7fefa3ec279202ae6793984d9408a9aa",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/tests/fixtures/sparkfun-ppg-result-v1.json",
+        "sha256": "f889d5fab14484ab02812c98f9e44d32d71a597ad5faa888d3df4268fc63ba2a",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/tests/signed_reader_grant_test.cpp",
+        "sha256": "f398cef88638601878d2182ed671be8624c14b3dcd9e5c4e1c23041e05d93b48",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "firmware/tests/sparkfun_ppg_test.cpp",
+        "sha256": "00121684618f2ea6a40bba22118a910c0cedef814d8e9f308c50f31a6cb9d78a",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "infra/local/participant_probe.py",
+        "sha256": "9a7a33dde21defe732984e6a5f95a4e916390892d875c30e27ed9d077f3c8c9a",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "openspec/changes/production-mobile-platform/shared-contracts.md",
         "sha256": "ed03b4787520b5b54c2f8f8415c27f9b48b290905a28c80966465b2049b5c8dd",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/capture_signing.py",
-        "sha256": "9feb2632efcac052e8f283be85e3907d88ac4d12a9a55cf1053e17d53793fce0",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "2dfa48b6f166eddf1142fc2e7a2e2272b934e18a04fcd499d24a1ba869c5e82a",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/cardiac_authority.py",
+        "sha256": "3cd89f16cc15742323f753b85bfe4e7ec7563dea42e7b96dfef7dd8f56c33f2d",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/domain.py",
+        "sha256": "0ca539870e392ce401144879aab95d3c5d07fc560d904c6e8e76658fd3d2bc8f",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/dto.py",
+        "sha256": "8702de1a389b622b30a34b123087026e72159f1930cdeb231d00456a2d534103",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/journal_continuity.py",
         "sha256": "09eb707c29150acd3e6b520f23e600df1b320ac24d8e3ec1b172b309c60332d2",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/lab_handoff.py",
+        "sha256": "ab6a3136b75934a95327aee9e20f8f454b5b6d8b4ad8540d5e6c2a755a1e70e1",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/main.py",
-        "sha256": "e5d0c739c4f2accb55628ae42d9b3f53f61dec60490784df5f32bf941842c9e9",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "172463ca953ae1bf555a4258010f1511ed8af3b61359a9d8ab08bf9a2e6f7fdc",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/migrate.py",
+        "sha256": "2d11514252952b5f4c808e9bbf37ca643b7411d46be7d177d8f248af3882f3e8",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/model_engine.py",
-        "sha256": "264aeb55bda487e6234064df2eb0e0c2f05fa54f7247f827a17a2bac9729a5f3",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/operator_cli.py",
         "sha256": "944d9a6a429f10e6159bcf4761748d0b6c380b6d1b2d787bb7eb2edab273f396",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/operator_governance.py",
-        "sha256": "089ed11fc0c5aa6111c65a54c9518fe9a7ece9c9aaaf5295522dd06f608236e8",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "1e16fc9b3679b1d6abd4cc6bdad1a53d18e8e02c4b759e2c3a950b04286ce971",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/optical_evidence.py",
         "sha256": "3a25c6dbceba62c35f609fee33de126dc20c69064254009a3108301f78cd5a73",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/participant_acquisition.py",
+        "sha256": "dc0dabb2c0b319a81363876a07db5b2a9e6be749899408d14747a1af9e381597",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/participant_migration.py",
+        "sha256": "4e819b8b4aa6619b20345de83991ccef1dce3197c0716559c8b053e69e13b7a0",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/raw_capture.py",
         "sha256": "dd0e60fe5d177809e106ed5fb36676d90db5efacc4f73268bd347a7050f69d31",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/raw_export.py",
-        "sha256": "bc543569a9e9b0e4ef1600af0aeb02bbeb33937169187a421c987fd475ffff8c",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "b31fcd7291d464bab394fb06771476e430345209442c74cbf7512ccc58c01971",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/raw_retention.py",
         "sha256": "07c66b51081a97ac787e6cbf3373c9051dfc1e96d46f8924a79e4faf6f5a3b0f",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/recovery_authority.py",
         "sha256": "7a1fd1c2d2b0429a5e5fa72ea89125326cce13962b6a06e84ad099af5e3e8a18",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "services/api/otgd/recovery_scopes.py",
         "sha256": "43f68c53f2bc0eca790654e1a8cc9dfe9ba9185348e2989e40269f8d094db31b",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/vendor_evidence.py",
+        "sha256": "4d8869f13b01292a2fe052e651858aea8904e391550a62d4f2d6a6fe8c3eb959",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/otgd/worker.py",
+        "sha256": "b7ca416bb9b1d749b57b405f712e9b22e74d1836c51fb2e13e01df6f409c539b",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/tests/test_cardiac_authority.py",
+        "sha256": "96d34c6540fcdbaedcd35a347c30661bbe94e9bb5582a7b6c5ecd42ec247695a",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/tests/test_cardiac_authority_provenance.py",
+        "sha256": "6247b1ba439b9d6f87a7467ec66a8fa83272aeb811ade6231196d23776294985",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/tests/test_cardiac_interval_governance.py",
+        "sha256": "542124d8874ec1307305a677039b9d5b36355778cc06c9ccb8799af5cc8e14ff",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/tests/test_lab_handoff.py",
+        "sha256": "3396acf6ae29a8d994bc37f937417b446acb1c40499b6c6a6ce81fff7e0cbeb0",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/tests/test_model_evaluation_cardiac.py",
+        "sha256": "23efe98238052ce2b19fbbc6aa50647a384196023d912c0f05fb436b491eca65",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/tests/test_participant_acquisition.py",
+        "sha256": "50084560684b9e2fbf005e48565f133d92f03a65e4c3e1c51dd0545214cc79f6",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/tests/test_participant_postgres.py",
+        "sha256": "ca85c9d47be13ef424a67378116482b36d8be72225c66619edac625d1b0159c0",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
+      },
+      {
+        "file": "services/api/tests/test_vendor_evidence.py",
+        "sha256": "ffb2ca5111d52df5d295f0e594a6eb00b17465c452c0abb21a4d2fb79a8930fe",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       },
       {
         "file": "tools/model_evaluation.py",
-        "sha256": "0982e2fc1d65d3bd318125d6552647146a7ad1bcaeea219f102511396815123d",
-        "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
+        "sha256": "80488d36507c7adb49bbf02448eec9f8ab173008f53e82f59c2d5d782194396c",
+        "snapshot_kind": "Latest owner-frozen working-source snapshot for independent scope review; focused reports exercise their declared subset. No whole exact-commit gate or release qualification is inferred."
       }
     ],
     "actual_storage_probe": {
@@ -4503,36 +5146,52 @@
       "whole_api_scheduler_elapsed_window_claim": false
     },
     "remaining_software": [
-      "Final native/client/browser/privacy/model acceptance and explicit requirement/scenario traceability",
-      "Actual typed-registry optical/ADC capability acceptance in the final full live journeys",
-      "Selected proprietary saliva/alcohol drivers remain unavailable until their genuine documented hardware/SDK can be implemented and accepted",
-      "All mandatory exact final-revision merge gates and verified GitHub required-check enforcement"
+      "Final customer/browser/native/privacy/model/live acceptance and scenario traceability on the exact committed revision",
+      "Actual least-privilege participant plus typed-registry optical/cardiac final LocalStack journeys",
+      "Selective saliva/breath reader drivers require a genuine documented interface and its qualified protocol; reference-lab collection/import is implemented",
+      "Human ECG remains unavailable without an actual independently observed power/charging/cable/isolation state interface; declarations do not implement that observer",
+      "Complete optical stimulus/response adapters require an actual approved supported protocol; passive ROI and qualified diameter software do not implement those response measurements",
+      "All mandatory final-revision merge gates and verified GitHub required-check enforcement"
     ],
     "external_qualification_claim": false,
     "completion_claim": false,
     "merge_approval": false,
     "capability_delta_counts": {
-      "specification_files": 17,
-      "requirement_operations": 85,
-      "added_requirements": 79,
-      "modified_baseline_requirements": 6,
-      "specified_scenarios": 185,
+      "specification_files": 22,
+      "requirement_operations": 117,
+      "added_requirements": 110,
+      "modified_baseline_requirements": 7,
+      "specified_scenarios": 276,
       "scenario_execution_claim": false
     },
     "compiled_firmware_inspection": {
-      "observer": "Independent reviewer inspected owner-produced local artifacts and source binding; compiler was not rerun by reviewer.",
+      "observer": "Independent reviewer inspected owner-produced local target artifacts and source binding; target board compiler was not rerun by reviewer. Separate current portable actual-SDK/factory compile and execution was rerun independently.",
       "protected_manifest": "/tmp/otgd-secure-reader-build/build-manifest.json",
-      "matched_current_source_hashes": 26,
+      "matched_current_source_hashes": 39,
       "matched_artifact_hashes_and_sizes": 3,
-      "stock_copied_C_Cxx_headers_sources_matched_after_only_CLI_line_directive": 18,
+      "stock_copied_C_Cxx_headers_sources_matched_after_only_CLI_line_directive": 23,
       "stock_current_sketch_lines_in_order": true,
       "physical_flash_claim": false,
       "physical_qualification_claim": false,
       "exact_committed_revision_CI_claim": false,
-      "manifest_sha256": "941fb25ede28165fb3adb813df45d2457be960be2fa75e1750c2456ec853e4d8",
-      "protected_application_sha256": "52d7ece3f9c67893871ac4959279cf118018fa8b429935ed05363cc9d972e0cb",
+      "manifest_sha256": "e547f587324c3e9deef9b610dee976c866005a8aa412e4980da073a4d2b04ec0",
+      "protected_application_sha256": "14890b8459dea1b1e28282a60a1f6a912e96e329abd2d24b81ef6b7d7dc03c0d",
       "strict_authentication_and_16_byte_minimum_key_in_current_source": true,
-      "protected_generated_sdk_requires_error_only_Arduino_logging": true
+      "protected_generated_sdk_requires_error_only_Arduino_logging": true,
+      "provenance_status": "Current owner-produced stock/protected selected SparkFun builds independently inspected against all39 source hashes and all3 artifact sizes/digests per build. No flash/physical or exact committed-revision CI claim.",
+      "current_participant_acquisition_source_match_claim": true,
+      "prior_observed_snapshot": {
+        "matched_current_source_hashes": 26,
+        "matched_artifact_hashes_and_sizes": 3,
+        "stock_copied_C_Cxx_headers_sources_matched_after_only_CLI_line_directive": 18,
+        "manifest_sha256": "941fb25ede28165fb3adb813df45d2457be960be2fa75e1750c2456ec853e4d8",
+        "protected_application_sha256": "52d7ece3f9c67893871ac4959279cf118018fa8b429935ed05363cc9d972e0cb"
+      },
+      "stock_manifest": "/tmp/otgd-stock-reader-build/build-manifest.json",
+      "stock_manifest_sha256": "8036af4497d8b3ccc58251363bc87ecdeedd0f5f263a7e8663da2c452fa77584",
+      "stock_source_hashes_matched": 39,
+      "stock_artifact_hashes_sizes_matched": 3,
+      "stock_application_sha256": "8889de79139f462b4e1396c1d923e709b07fb29a89170dd268bc62a4ff77b0d5"
     },
     "binding_recovery_review": {
       "finding": "ALIGN-39",
@@ -4573,7 +5232,71 @@
         "skipped": 0,
         "observer": "Reviewer inspected owner-produced report; did not rerun live dependencies",
         "exact_final_revision_claim": false
+      },
+      {
+        "path": "/tmp/otgd-participant-cardiac-pg.xml",
+        "passed": 147,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "observer": "Independent reviewer inspected owner-produced XML; no reviewer live rerun. Five explicit PostgreSQL-only cases assert actual dialect and immutable-trigger/locking SQLSTATE behavior; other tests are run on PostgreSQL with explicit storage/transport doubles. This report does not establish least-privilege runtime-role or real LocalStack probe acceptance.",
+        "scientific_physical_qualification_claim": false,
+        "exact_final_revision_claim": false
+      },
+      {
+        "report": "/tmp/otgd-final-authority-pg.xml",
+        "sha256": "116bc421272bf74270a93b341660e3c23b4dd6ee0556136e61bc217c75d717db",
+        "scope": "Owner current PostgreSQL SDK/readonly-registry/immutable anchor and exact escaped-domain cases",
+        "tests": 60,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "observer": "Reviewer inspected owner report and guarded source; did not rerun shared live dependencies",
+        "whole_least_privilege_participant_probe_claim": false,
+        "exact_final_revision_claim": false
+      },
+      {
+        "report": "/tmp/otgd-007-upgrade-pg.xml",
+        "sha256": "82d80086095deec465b89718e0bbf76f92ebe56e566682060e06ebcad8702ada",
+        "scope": "Owner actual PostgreSQL preserving applied-v6 guard upgrade and unchanged signed anchors/ACL/migration history",
+        "tests": 41,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "observer": "Reviewer inspected owner report and guarded source; did not rerun shared live dependencies",
+        "whole_least_privilege_participant_probe_claim": false,
+        "exact_final_revision_claim": false
       }
-    ]
+    ],
+    "participant_acquisition_review": {
+      "specification_change": "qualified-participant-acquisition",
+      "requirements": 32,
+      "specified_scenarios": 91,
+      "independent_specification_rereview": "Independent customer-flow and final restricted cardiac/evaluation rereads found no unresolved normative blocker. Final implementation/aggregate/live/native acceptance remains separate.",
+      "implementation_completion_claim": false,
+      "external_qualification_claim": false,
+      "restricted_hr_review": "Independent normative reread found no blocking defect in restricted HR-only current/baseline original-interval scope. Current implementation/gates remain open.",
+      "added_requirements": 31,
+      "modified_requirements": 1,
+      "dataset_evaluation_review": "Independent final normative reread of signed duration/rate, full typed HR dataset and EVAL-002 mode found coherent current source alignment. Clarified conditional numeric admission versus safe measurement-only enqueue without model authority; every numeric execution/publication/read remains gated.",
+      "runtime_role_migration_evidence": [
+        {
+          "log": "/tmp/otgd-role-live-final.log",
+          "sha256": "f8ee5a6f0714eeee3a44b00c954598e9021ad8cc5cc3077e08cb2a0c66c717c4",
+          "observer": "Reviewer inspected owner actual PostgreSQL plus versioned LocalStack role harness; two actual migration runs, runtime registry read admitted with UPDATE denied",
+          "whole_participant_probe_claim": false
+        },
+        {
+          "log": "/tmp/otgd-007-role-live.log",
+          "sha256": "f8ee5a6f0714eeee3a44b00c954598e9021ad8cc5cc3077e08cb2a0c66c717c4",
+          "observer": "Reviewer inspected owner actual PostgreSQL plus versioned LocalStack role harness; two actual migration runs, runtime registry read admitted with UPDATE denied",
+          "whole_participant_probe_claim": false
+        }
+      ],
+      "source_disposition": "Identified no-BLE collection/staff handoff, instruction/rest/lifecycle, selected vendor SDK, restricted HR current/baseline and reproducible HR evaluation positive software is supplied and independently source-reviewed/focused-tested. Final customer/live/native/aggregate acceptance remains open; no scientific approval is seeded.",
+      "source_snapshot_count": 95,
+      "final_aggregate_claim": false,
+      "hosted_test_isolation_review": "Test-only OTGD_UNIT_PREVIEW selects fictional binary mode in runtime/constants mocks; absent from production config/runtime. Compiled guest guard and actual browser/native preview checks remain mandatory separately."
+    }
   }
 }

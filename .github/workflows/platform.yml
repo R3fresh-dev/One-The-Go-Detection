@@ -43,7 +43,7 @@ jobs:
           uv run --project services/api python tools/verify_openspec.py
       - name: Strict OpenSpec validation
         run: |
-          for change in production-mobile-platform canonical-operator-governance cloud-deployment-customer-access optional-raw-recording-lifecycle authorized-model-execution independent-recovery-admission canonical-optical-native-acquisition canonical-signed-reader-acquisition authorized-raw-export; do
+          for change in production-mobile-platform canonical-operator-governance cloud-deployment-customer-access optional-raw-recording-lifecycle authorized-model-execution independent-recovery-admission canonical-optical-native-acquisition canonical-signed-reader-acquisition authorized-raw-export qualified-participant-acquisition; do
             npx --yes @fission-ai/openspec@1.14.1 validate "$change" --strict
           done
         env:
@@ -146,6 +146,8 @@ jobs:
         run: python scripts/local-platform.py check-app --confirm-fictional-workspace
       - name: Real retained version erasure and late arrival reconciliation
         run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps api uv run --no-sync python /app/infra/local/raw_version_probe.py
+      - name: Real participant collection, delegated report custody and queued result
+        run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps migrate uv run --no-sync python /app/infra/local/participant_probe.py --confirm-fictional-workspace
       - name: Actual signed concurrent API and SQS performance
         run: python scripts/ci_gate.py performance
       - name: Record limits of this evidence

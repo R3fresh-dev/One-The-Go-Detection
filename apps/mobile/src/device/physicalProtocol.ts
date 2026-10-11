@@ -102,6 +102,8 @@ export interface SignedStartToken {
     channel: "cardiac" | "ecg" | "saliva" | "alcohol";
     configuration_max_duration_ms: number;
     raw_recording_permission: ReaderRawPermission | null;
+    participant_protocol_sha256: string | null;
+    instruction_receipt_id: string | null;
     expires_at: string;
     issued_at: string;
     device_nonce: string;
@@ -406,6 +408,8 @@ export function startToken(
     "channel",
     "configuration_max_duration_ms",
     "raw_recording_permission",
+    "participant_protocol_sha256",
+    "instruction_receipt_id",
     "expires_at",
     "issued_at",
     "device_nonce",
@@ -442,6 +446,8 @@ export function startToken(
   ] as const)
     if (g[field] !== expected[field])
       throw new DeviceError("PHYSICAL_GRANT_SCOPE");
+  sha(g.participant_protocol_sha256);
+  uuid(g.instruction_receipt_id);
   if (g.raw_recording_permission !== null) {
     const permission = requireObject(g.raw_recording_permission);
     exact(permission, [
@@ -626,6 +632,130 @@ export function signedSampleChunk(
     normalized_payload: n,
   }) as unknown as SignedSampleChunk;
 }
+/** A bounded derived/quality summary, not optical raw recording or a cadence claim. */
+export function signedPpgEvidence(
+  value: unknown,
+  projection: Record<string, unknown>,
+  expected: ExpectedReaderCapture,
+): JsonObject {
+  const e = requireObject(value);
+  exact(e, [
+    "schema_version",
+    "adapter_id",
+    "sdk_commit",
+    "sdk_version",
+    "algorithm_mode",
+    "hub_firmware",
+    "configured_sensor_rate_hz",
+    "actual_sensor_cadence_hz",
+    "host_poll_interval_ms",
+    "sample_timestamp_source",
+    "acquisition_started_monotonic_us",
+    "acquisition_ended_monotonic_us",
+    "observed_samples",
+    "valid_samples",
+    "invalid_samples",
+    "missed_poll_intervals",
+    "fifo_empty_polls",
+    "fifo_backlog_peak",
+    "sensor_dropped_samples",
+    "last_observation",
+  ]);
+  if (
+    e.schema_version !== "1.0.0" ||
+    e.adapter_id !== "otgd_sparkfun_max32664_v1" ||
+    e.sdk_commit !== "91575258e5e2c47f0f4b8ec97b651381671f4637" ||
+    e.sdk_version !== "1.1" ||
+    (e.algorithm_mode !== 1 && e.algorithm_mode !== 2) ||
+    e.sample_timestamp_source !== "host_i2c_receive_unqualified_sensor_time" ||
+    e.actual_sensor_cadence_hz !== null ||
+    e.sensor_dropped_samples !== null ||
+    expected.channel !== "ppg"
+  )
+    throw new DeviceError("PHYSICAL_PPG_PROVENANCE");
+  if (
+    !["valid", "invalid"].includes(String(projection.status)) ||
+    !Array.isArray(projection.quality_flags) ||
+    ![
+      "SERVER_WALL_ANCHOR_UNQUALIFIED",
+      "SPARKFUN_SENSOR_BPM_V1",
+      "HOST_I2C_RECEIVE_TIMESTAMPS_UNQUALIFIED",
+    ].every(
+      (flag) =>
+        projection.quality_flags instanceof Array &&
+        projection.quality_flags.includes(flag),
+    )
+  )
+    throw new DeviceError("PHYSICAL_PPG_PROVENANCE");
+  const bounded = (v: unknown, min: number, max: number): number => {
+    const n = safeInteger(v, min);
+    if (n > max) throw new DeviceError("PHYSICAL_PPG_BOUNDS");
+    return n;
+  };
+  if (e.hub_firmware !== null) {
+    const f = requireObject(e.hub_firmware);
+    exact(f, ["major", "minor", "revision"]);
+    for (const k of ["major", "minor", "revision"]) bounded(f[k], 0, 255);
+  }
+  if (e.configured_sensor_rate_hz !== null)
+    bounded(e.configured_sensor_rate_hz, 50, 3200);
+  bounded(e.host_poll_interval_ms, 50, 1000);
+  const begin = safeInteger(e.acquisition_started_monotonic_us),
+    end = safeInteger(e.acquisition_ended_monotonic_us),
+    observed = bounded(e.observed_samples, 0, 120000),
+    valid = bounded(e.valid_samples, 0, 120000),
+    invalid = bounded(e.invalid_samples, 0, 120000);
+  bounded(e.missed_poll_intervals, 0, 120000);
+  bounded(e.fifo_empty_polls, 0, 120000);
+  bounded(e.fifo_backlog_peak, 0, 255);
+  if (
+    end < begin ||
+    end - begin > expected.max_duration_ms * 1000 ||
+    observed !== valid + invalid ||
+    (e.last_observation === null) !== (observed === 0)
+  )
+    throw new DeviceError("PHYSICAL_PPG_COUNTS");
+  let last: Record<string, unknown> | null = null;
+  if (e.last_observation !== null) {
+    last = requireObject(e.last_observation);
+    exact(last, [
+      "sequence",
+      "host_received_monotonic_us",
+      "heart_rate_bpm",
+      "confidence_percent",
+      "finger_status",
+      "extended_status",
+    ]);
+    const at = safeInteger(last.host_received_monotonic_us);
+    if (safeInteger(last.sequence) !== observed - 1 || at < begin || at >= end)
+      throw new DeviceError("PHYSICAL_PPG_SEQUENCE");
+    bounded(last.heart_rate_bpm, 0, 65535);
+    bounded(last.confidence_percent, 0, 255);
+    bounded(last.finger_status, 0, 255);
+    if (e.algorithm_mode === 1 && last.extended_status !== null)
+      throw new DeviceError("PHYSICAL_PPG_MODE");
+    if (e.algorithm_mode === 2) bounded(last.extended_status, -128, 127);
+  }
+  if (
+    projection.status === "valid" &&
+    (!last ||
+      !valid ||
+      invalid !== 0 ||
+      e.missed_poll_intervals !== 0 ||
+      e.hub_firmware === null ||
+      e.configured_sensor_rate_hz === null ||
+      last.finger_status !== 3 ||
+      Number(last.confidence_percent) > 100 ||
+      last.heart_rate_bpm !== projection.heart_rate_bpm ||
+      projection.ecg_status !== "not_collected" ||
+      projection.ecg_rmssd_ms !== null ||
+      projection.sample_rate_hz !== null)
+  )
+    throw new DeviceError("PHYSICAL_PPG_QUALITY");
+  if (projection.status === "invalid" && projection.heart_rate_bpm !== null)
+    throw new DeviceError("PHYSICAL_PPG_QUALITY");
+  return clone(e) as JsonObject;
+}
 export function signedReaderCapture(
   payload: unknown,
   expected: ExpectedReaderCapture,
@@ -668,15 +798,29 @@ export function signedReaderCapture(
     throw new DeviceError("PHYSICAL_CAPTURE_CLOCK");
   let startedAt: string, endedAt: string;
   if (expected.channel === "ppg" || expected.channel === "ecg") {
+    let projection = normalized;
+    if (Object.hasOwn(normalized, "ppg_evidence")) {
+      exact(normalized, ["projection", "ppg_evidence"]);
+      projection = requireObject(normalized.projection);
+      signedPpgEvidence(normalized.ppg_evidence, projection, expected);
+      const evidence = requireObject(normalized.ppg_evidence);
+      if (
+        Math.floor(Number(evidence.acquisition_started_monotonic_us) / 1000) <
+          start ||
+        Math.floor(Number(evidence.acquisition_ended_monotonic_us) / 1000) !==
+          end
+      )
+        throw new DeviceError("PHYSICAL_PPG_CAPTURE_CLOCK");
+    }
     if (
-      !cardiac(normalized) ||
-      normalized.source !== "prototype_sensor" ||
-      normalized.modality !== expected.channel ||
-      normalized.acquisition_config_id !== expected.configuration_id
+      !cardiac(projection) ||
+      projection.source !== "prototype_sensor" ||
+      projection.modality !== expected.channel ||
+      projection.acquisition_config_id !== expected.configuration_id
     )
       throw new DeviceError("PHYSICAL_PROJECTION");
-    startedAt = utc(normalized.started_at);
-    endedAt = utc(normalized.ended_at);
+    startedAt = utc(projection.started_at);
+    endedAt = utc(projection.ended_at);
   } else if (expected.channel === "saliva") {
     exact(normalized, ["sample", "saliva"]);
     const s = requireObject(normalized.sample);

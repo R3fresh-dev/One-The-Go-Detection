@@ -319,7 +319,8 @@ def cleanup_once(session_factory, s3, *, tick=None):
         jobs = list(db.scalars(select(Job).where(Job.kind == "export", Job.body["include_raw"].as_boolean().is_(True),
             Job.cleanup_next_at <= tick).order_by(Job.cleanup_next_at, Job.id).limit(100)))
         ids = [job.id for job in jobs]
-    purges = []; failures = 0
+    purges = []
+    failures = 0
     for id in ids:
         with session_factory.begin() as db:
             hint = db.get(Job, id)

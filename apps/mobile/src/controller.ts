@@ -33,6 +33,7 @@ import {
 } from "./core/rawRecordings";
 import { Platform } from "react-native";
 import { RunStopGate, TerminalEvidenceGate } from "./core/operationGuards";
+import { verifyCollectionAbandonment } from "./core/labEvidence";
 import {
   parseRawExportPage,
   confirmRawExport,
@@ -116,6 +117,14 @@ import type {
   WorkspaceState,
 } from "./core/types";
 import { BUILD, validateBuild } from "./platform/config";
+import {
+  participantProtocol,
+  collectionReceipt,
+  validateCollectionBody,
+  validateInstructionInput,
+  verifyInstructionReceipt,
+  type InstructionInput,
+} from "./core/participantAcquisition";
 import { cleanupExports, shareArchive } from "./platform/sharing";
 import {
   newId,
@@ -406,7 +415,21 @@ export class AppController {
           state.historyIndex ??= [];
           state.historyCursor ??= null;
           state.checks = state.checks.map((c) =>
-            c.frozen ? c : interruptStartedAttempts(c, now()),
+            c.frozen
+              ? c
+              : interruptStartedAttempts(
+                  c,
+                  now(),
+                  c.labCollection?.state === "collecting"
+                    ? c.labCollection.attempt_id
+                    : c.attempts.find(
+                        (a) =>
+                          a.status === "started" &&
+                          c.acquisition?.attempts[a.attempt_id]
+                            ?.instruction_body &&
+                          !c.acquisition?.attempts[a.attempt_id]?.authorization,
+                      )?.attempt_id,
+                ),
           );
           if (opened.reconcileRaw)
             state = await opened.reconcileRaw(state, now());
@@ -1529,11 +1552,59 @@ export class AppController {
           : "Local reader disconnected and the service binding was revoked.",
     });
   }
+  async stopPreparedCapture(
+    epoch: string,
+    checkId: string,
+    intent: number,
+    attemptId: string | null,
+  ): Promise<void> {
+    const check = this.check;
+    if (
+      this.epoch !== epoch ||
+      check?.id !== checkId ||
+      this.captureIntent !== intent ||
+      (attemptId !== null &&
+        !check.attempts.some(
+          (a) => a.attempt_id === attemptId && a.status === "started",
+        ))
+    )
+      return;
+    await this.stopActive("USER_CANCELED");
+  }
+  get preparationGeneration(): number {
+    return this.captureIntent;
+  }
+  async prepareParticipantCapture(channel: "cardiac" | "ecg"): Promise<string> {
+    this.requireWritable();
+    const check = this.check;
+    if (!check || check.frozen)
+      throw new IntegrityError(
+        "CHECK_REQUIRED",
+        "Start an owned draft before preparation.",
+      );
+    let attemptId = "";
+    await this.withCaptureIntent(check, async (current) => {
+      attemptId = (
+        await this.armApprovedCapture(
+          check,
+          channel,
+          current,
+          undefined,
+          undefined,
+          true,
+        )
+      ).attemptId;
+    });
+    return this.check!.attempts.find((a) => a.attempt_id === attemptId)!
+      .started_at!;
+  }
   private async armApprovedCapture(
     check: CheckRecord,
     channel: AcquisitionChannel,
     current: () => boolean,
     rawKind?: RawKind,
+    instruction?: InstructionInput,
+    prepareOnly = false,
   ): Promise<{
     attemptId: string;
     config: ApprovedConfiguration;
@@ -1568,6 +1639,17 @@ export class AppController {
       this.model.state!.capabilities,
       channel,
     );
+    const requiresInstruction =
+      ["cardiac", "ecg"].includes(channel) ||
+      config.software_adapter_id === "reference_lab_import_v1";
+    if (requiresInstruction && !prepareOnly) {
+      if (!instruction)
+        throw new IntegrityError(
+          "INSTRUCTION_CONFIRMATION_REQUIRED",
+          "Read and confirm the exact approved preparation or collection method before starting.",
+        );
+      validateInstructionInput(config, instruction, channel);
+    }
     let rawAuthority;
     if (rawKind) {
       const previous =
@@ -1598,7 +1680,9 @@ export class AppController {
       };
     }
     const association = this.device.snapshot().association;
-    const usesReader = !["task", "eyes"].includes(channel);
+    const usesReader =
+      !["task", "eyes"].includes(channel) &&
+      config.software_adapter_id !== "reference_lab_import_v1";
     if (
       usesReader &&
       (!association ||
@@ -1615,16 +1699,39 @@ export class AppController {
         "FROZEN_DEVICE_BINDING_REQUIRED",
         "Bind the approved reader before Start check. A different reader or reboot requires a new check.",
       );
-    const armed = startAttempt(
-      this.check!,
-      channel === "ecg" ? "cardiac" : channel,
-      now(),
-      newId,
-      "prototype_sensor",
-      config.configuration_id,
-      config.configuration_hash,
-      channel === "cardiac" ? "ppg" : channel === "ecg" ? "ecg" : undefined,
+    if (prepareOnly) participantProtocol(config);
+    const existing = this.check!.attempts.find(
+      (a) =>
+        a.status === "started" &&
+        a.configuration_id === config.configuration_id &&
+        a.configuration_hash === config.configuration_hash &&
+        this.check!.acquisition?.attempts[a.attempt_id]?.prepared &&
+        a.component === (channel === "ecg" ? "cardiac" : channel) &&
+        ((channel !== "cardiac" && channel !== "ecg") ||
+          a.component_metadata.modality ===
+            (channel === "cardiac" ? "ppg" : "ecg")),
     );
+    const armed = existing
+      ? { check: clone(this.check!), attempt: clone(existing) }
+      : startAttempt(
+          this.check!,
+          channel === "ecg" ? "cardiac" : channel,
+          now(),
+          newId,
+          "prototype_sensor",
+          config.configuration_id,
+          config.configuration_hash,
+          channel === "cardiac" ? "ppg" : channel === "ecg" ? "ecg" : undefined,
+        );
+    if (
+      existing &&
+      this.check!.acquisition!.attempts[existing.attempt_id]!
+        .preparation_submitted_sha256 !== config.submitted_sha256
+    )
+      throw new IntegrityError(
+        "PARTICIPANT_PROTOCOL_CHANGED",
+        "The released preparation envelope changed. End preparation and read the new instructions before starting again.",
+      );
     armed.check.acquisition ??= {
       register_key: newId(),
       context_key: newId(),
@@ -1632,17 +1739,68 @@ export class AppController {
       context_registered: false,
       attempts: {},
     };
-    armed.check.acquisition.attempts[armed.attempt.attempt_id] = {
-      start_key: newId(),
-      grant_key: newId(),
-      invoke_key: newId(),
-      terminal_key: newId(),
-      attestation_key: newId(),
-      started_body: clone(armed.attempt) as unknown as JsonObject,
-      remote_revision: 0,
-      authorization: null,
-    };
-    await scope.wait(this.commit((state) => replaceCheck(state, armed.check)));
+    if (!existing)
+      armed.check.acquisition.attempts[armed.attempt.attempt_id] = {
+        start_key: newId(),
+        grant_key: newId(),
+        invoke_key: newId(),
+        terminal_key: newId(),
+        attestation_key: newId(),
+        started_body: clone(armed.attempt) as unknown as JsonObject,
+        remote_revision: 0,
+        authorization: null,
+        ...(instruction
+          ? {
+              instruction_key: newId(),
+              instruction_body: {
+                ...clone(instruction),
+                attempt_id: armed.attempt.attempt_id,
+                configuration_id: config.configuration_id,
+                configuration_version: config.configuration_version,
+                configuration_hash: config.configuration_hash,
+                configuration_submitted_sha256: config.submitted_sha256,
+              },
+            }
+          : {}),
+      };
+    const intentLedger =
+      armed.check.acquisition.attempts[armed.attempt.attempt_id]!;
+    intentLedger.preparation_submitted_sha256 = config.submitted_sha256;
+    if (instruction && !intentLedger.instruction_body) {
+      intentLedger.instruction_key = newId();
+      intentLedger.instruction_body = {
+        ...clone(instruction),
+        attempt_id: armed.attempt.attempt_id,
+        configuration_id: config.configuration_id,
+        configuration_version: config.configuration_version,
+        configuration_hash: config.configuration_hash,
+        configuration_submitted_sha256: config.submitted_sha256,
+      };
+    } else if (
+      instruction &&
+      digest({
+        ...clone(instruction),
+        attempt_id: armed.attempt.attempt_id,
+        configuration_id: config.configuration_id,
+        configuration_version: config.configuration_version,
+        configuration_hash: config.configuration_hash,
+        configuration_submitted_sha256: config.submitted_sha256,
+      }) !== digest(intentLedger.instruction_body)
+    )
+      throw new IntegrityError(
+        "INSTRUCTION_INTENT_CHANGED",
+        "This immutable acknowledgment already has a different body. End preparation and explicitly confirm a fresh attempt.",
+      );
+    await scope.wait(
+      this.commit((state) => {
+        if (!current())
+          throw new IntegrityError(
+            "CAPTURE_STOPPED",
+            "Preparation stopped before persistence.",
+          );
+        return replaceCheck(state, armed.check);
+      }),
+    );
     const path = `/v1/sessions/${check.id}`,
       ledger = armed.check.acquisition;
     const save = async (change: (check: CheckRecord) => void) =>
@@ -1723,6 +1881,54 @@ export class AppController {
           armed.attempt.attempt_id
         ]!.remote_revision = Number(persisted.value.revision);
       });
+      if (requiresInstruction)
+        await save((record) => {
+          record.acquisition!.attempts[armed.attempt.attempt_id]!.prepared =
+            true;
+        });
+      if (prepareOnly) {
+        await save((record) => {
+          record.acquisition!.attempts[armed.attempt.attempt_id]!.prepared =
+            true;
+        });
+        return { attemptId: armed.attempt.attempt_id, config, grant: {} };
+      }
+      let instructionReceipt: JsonObject | undefined;
+      if (instruction) {
+        const acknowledged = await scope.wait(
+          this.api.request<unknown>(`${path}/instruction-acknowledgments`, {
+            method: "POST",
+            body: attemptLedger.instruction_body,
+            generation: check.generation,
+            key: attemptLedger.instruction_key,
+          }),
+        );
+        instructionReceipt = verifyInstructionReceipt(
+          acknowledged.value,
+          attemptLedger.instruction_body!,
+          check.id,
+          String(requireObject(study.consent).consent_record_id),
+        );
+        await save((record) => {
+          record.acquisition!.attempts[
+            armed.attempt.attempt_id
+          ]!.instruction_receipt = instructionReceipt;
+          record.instruction_receipts ??= [];
+          if (
+            !record.instruction_receipts.some(
+              (r) =>
+                r.instruction_receipt_id ===
+                instructionReceipt!.instruction_receipt_id,
+            )
+          )
+            record.instruction_receipts.push(clone(instructionReceipt!));
+          record.attempts.find(
+            (a) => a.attempt_id === armed.attempt.attempt_id,
+          )!.component_metadata.instruction_receipt = clone(
+            instructionReceipt!,
+          );
+        });
+      }
       const bindingId = usesReader ? association!.verifiedBindingId : null,
         deviceId = usesReader ? association!.deviceId : null;
       const response = await scope.wait(
@@ -1736,6 +1942,8 @@ export class AppController {
             configuration_id: config.configuration_id,
             configuration_hash: config.configuration_hash,
             raw_recording_kind: rawKind ?? null,
+            instruction_receipt_id:
+              instructionReceipt?.instruction_receipt_id ?? null,
           },
           generation: check.generation,
           key: attemptLedger.grant_key,
@@ -1750,6 +1958,7 @@ export class AppController {
         bindingId,
         deviceId,
         rawAuthority,
+        instructionReceipt,
       );
       await save((record) => {
         record.acquisition!.attempts[armed.attempt.attempt_id]!.authorization =
@@ -1808,13 +2017,520 @@ export class AppController {
         );
       return { attemptId: armed.attempt.attempt_id, config, grant };
     } catch (error) {
-      await this.abandonArmedCapture(check.id, armed.attempt.attempt_id);
+      if (!(
+        error instanceof ApiError &&
+        error.retryable &&
+        current() &&
+        requiresInstruction &&
+        this.check?.acquisition?.attempts[armed.attempt.attempt_id]
+          ?.instruction_body
+      ))
+        await this.abandonArmedCapture(check.id, armed.attempt.attempt_id);
       throw error;
     }
+  }
+  async reconcileInstructionReceipt(): Promise<void> {
+    this.requireWritable();
+    const check = this.check,
+      scope = this.scope();
+    const attempt = check?.attempts.find(
+      (a) =>
+        a.status === "started" &&
+        check.acquisition?.attempts[a.attempt_id]?.instruction_body,
+    );
+    if (!check || !attempt)
+      throw new IntegrityError(
+        "INSTRUCTION_INTENT_REQUIRED",
+        "No recoverable exact acknowledgment is pending.",
+      );
+    const ledger = check.acquisition!.attempts[attempt.attempt_id]!,
+      study = this.model.state!.studies.find(
+        (s) => s.study_id === check.snapshot.study_id,
+      )!;
+    const response = await scope.wait(
+      this.api.request<unknown>(
+        `/v1/sessions/${check.id}/instruction-acknowledgments`,
+        {
+          method: "POST",
+          body: ledger.instruction_body,
+          generation: check.generation,
+          key: ledger.instruction_key,
+        },
+      ),
+    );
+    const receipt = verifyInstructionReceipt(
+      response.value,
+      ledger.instruction_body!,
+      check.id,
+      String(requireObject(study.consent).consent_record_id),
+    );
+    await scope.wait(
+      this.commit((state) => {
+        const record = clone(state.checks.find((c) => c.id === check.id)!);
+        const active = record.attempts.find(
+          (a) => a.attempt_id === attempt.attempt_id,
+        );
+        if (
+          record.frozen ||
+          active?.status !== "started" ||
+          digest(
+            record.acquisition!.attempts[attempt.attempt_id]!.instruction_body,
+          ) !== digest(ledger.instruction_body)
+        )
+          throw new IntegrityError(
+            "INSTRUCTION_INTENT_RETIRED",
+            "A late acknowledgment cannot resume an ended attempt.",
+          );
+        active.component_metadata.instruction_receipt = clone(receipt);
+        record.acquisition!.attempts[attempt.attempt_id]!.instruction_receipt =
+          clone(receipt);
+        record.instruction_receipts ??= [];
+        if (
+          !record.instruction_receipts.some(
+            (r) => r.instruction_receipt_id === receipt.instruction_receipt_id,
+          )
+        )
+          record.instruction_receipts.push(clone(receipt));
+        return replaceCheck(state, record);
+      }),
+    );
+    this.patch({
+      message:
+        "The original acknowledgment receipt was reconciled without acquiring data. Its original timestamp and expiry remain unchanged. End preparation and confirm a fresh attempt before another hardware start.",
+    });
+  }
+  async startLabCollection(instruction: InstructionInput): Promise<void> {
+    this.requireWritable();
+    const check = this.check;
+    if (!check || check.frozen)
+      throw new IntegrityError(
+        "CHECK_REQUIRED",
+        "Start an owned draft check first.",
+      );
+    const config = configurationFor(
+      check,
+      this.model.state!.capabilities,
+      "saliva",
+    );
+    if (config.software_adapter_id !== "reference_lab_import_v1")
+      throw new IntegrityError(
+        "REFERENCE_LAB_COLLECTION_REQUIRED",
+        "This configuration does not authorize the laboratory collection workflow.",
+      );
+    if (
+      check.labCollection &&
+      ["collecting", "pending_lab"].includes(check.labCollection.state)
+    )
+      throw new IntegrityError(
+        "LAB_COLLECTION_ACTIVE",
+        "Resume or explicitly end the current specimen workflow.",
+      );
+    if (check.labCollection?.state === "canceled")
+      throw new IntegrityError(
+        "NEW_CHECK_REQUIRED",
+        "The collected specimen and canceled analysis remain immutable. Start a new check with a fresh specimen for another laboratory attempt.",
+      );
+    if (check.labCollection?.state === "invalid")
+      await this.commit((state) => {
+        const record = clone(state.checks.find((c) => c.id === check.id)!);
+        record.snapshot.sample = {
+          ...record.snapshot.sample,
+          sample_id: newId(),
+          collection_method_id: "not_collected",
+          collected_at: null,
+          volume_ml: null,
+          dilution_factor: null,
+          status: "not_collected",
+          quality_flags: [],
+        };
+        record.snapshot.saliva = [];
+        return replaceCheck(state, record);
+      });
+    await this.withCaptureIntent(this.check!, async (current) => {
+      const approved = await this.armApprovedCapture(
+        this.check!,
+        "saliva",
+        current,
+        undefined,
+        instruction,
+      );
+      await this.commit((state) => {
+        if (!current())
+          throw new IntegrityError(
+            "CAPTURE_STOPPED",
+            "Collection was stopped before recording its method.",
+          );
+        const record = clone(state.checks.find((c) => c.id === check.id)!);
+        const attempt = record.attempts.find(
+          (a) => a.attempt_id === approved.attemptId,
+        )!;
+        record.labCollection = {
+          attempt_id: attempt.attempt_id,
+          sample_id: attempt.record_id,
+          collection_method_id: instruction.collection_method_id!,
+          collection_method_version: instruction.collection_method_version!,
+          state: "collecting",
+          body: null,
+          key: newId(),
+          receipt: null,
+        };
+        return replaceCheck(state, record);
+      });
+    });
+    this.patch({
+      message:
+        "Approved collection method acknowledged. Record the actual specimen and handling; no analyte result is entered here.",
+    });
+  }
+  private applyLabReceipt(
+    state: WorkspaceState,
+    checkId: string,
+    body: JsonObject,
+    value: unknown,
+  ): WorkspaceState {
+    const record = clone(state.checks.find((c) => c.id === checkId)!);
+    const parsed = collectionReceipt(value, record, body);
+    const ledger = record.labCollection!;
+    if (
+      ledger.state === "canceled" ||
+      record.frozen ||
+      ledger.attempt_id !== body.attempt_id
+    )
+      throw new IntegrityError(
+        "LAB_COLLECTION_RETIRED",
+        "A late laboratory response cannot change an ended specimen workflow.",
+      );
+    const index = record.attempts.findIndex(
+      (a) => a.attempt_id === parsed.attempt.attempt_id,
+    );
+    const collectionIndex = record.attempts.findIndex(
+      (a) => a.attempt_id === parsed.collectionAttempt.attempt_id,
+    );
+    record.attempts[collectionIndex] = parsed.collectionAttempt;
+    if (index < 0) record.attempts.push(parsed.attempt);
+    else record.attempts[index] = parsed.attempt;
+    record.collections ??= [];
+    if (
+      !record.collections.some(
+        (r) => r.collection_receipt_id === parsed.receipt.collection_receipt_id,
+      )
+    ) {
+      const immutable = {
+        ...parsed.receipt,
+        attempt: parsed.collectionAttempt,
+        attempt_revision:
+          parsed.receipt.collection_attempt_revision ??
+          parsed.receipt.attempt_revision,
+        attempt_sha256: digest(parsed.collectionAttempt),
+        state: body.status === "valid" ? "pending_lab" : "invalid_collection",
+      };
+      for (const key of [
+        "imports",
+        "abandonment",
+        "collection_attempt",
+        "collection_attempt_revision",
+        "collection_attempt_sha256",
+      ])
+        delete (immutable as any)[key];
+      record.collections.push(immutable as unknown as JsonObject);
+    }
+    const projection = requireObject(
+      parsed.attempt.component_metadata.projection,
+    );
+    record.snapshot.sample = clone(
+      projection.sample,
+    ) as typeof record.snapshot.sample;
+    record.snapshot.saliva = clone(projection.saliva) as JsonObject[];
+    record.labCollection = {
+      ...ledger,
+      receipt: parsed.receipt,
+      state: parsed.state,
+    };
+    if (parsed.state === "canceled") {
+      const abandonment = verifyCollectionAbandonment(
+        parsed.receipt.abandonment,
+        record.collections.find(
+          (c) =>
+            c.collection_receipt_id === parsed.receipt.collection_receipt_id,
+        )!,
+        record.id,
+      );
+      record.collection_abandons ??= [];
+      if (
+        !record.collection_abandons.some(
+          (row) => row.abandonment_id === abandonment.abandonment_id,
+        )
+      )
+        record.collection_abandons.push(clone(abandonment));
+    }
+    const remote = record.acquisition!.attempts[ledger.attempt_id]!;
+    remote.remote_revision = Number(
+      parsed.receipt.collection_attempt_revision ??
+        (parsed.state === "imported"
+          ? remote.remote_revision
+          : parsed.receipt.attempt_revision) ??
+        remote.remote_revision + 1,
+    );
+    if (parsed.attempt.attempt_id !== ledger.attempt_id) {
+      record.acquisition!.attempts[parsed.attempt.attempt_id] ??= {
+        start_key: newId(),
+        grant_key: newId(),
+        invoke_key: newId(),
+        terminal_key: newId(),
+        attestation_key: newId(),
+        started_body: clone(parsed.attempt) as unknown as JsonObject,
+        remote_revision: Number(parsed.receipt.attempt_revision),
+        authorization: null,
+      };
+    }
+    record.updated_at = now();
+    return replaceCheck(state, record);
+  }
+  async saveLabCollectionDraft(
+    checkId: string,
+    attemptId: string,
+    draft: JsonObject,
+  ): Promise<void> {
+    assertBytes(draft, 65536);
+    const scope = this.scope();
+    await scope.wait(
+      this.commit((state) => {
+        const record = clone(state.checks.find((c) => c.id === checkId)!);
+        if (
+          !record ||
+          record.frozen ||
+          record.delivery === "quarantined" ||
+          record.generation !== state.generation ||
+          record.labCollection?.attempt_id !== attemptId ||
+          record.labCollection.state !== "collecting"
+        )
+          throw new IntegrityError(
+            "LAB_COLLECTION_RETIRED",
+            "This form belongs to an ended workspace or specimen.",
+          );
+        record.labCollection.draft = clone(draft);
+        return replaceCheck(state, record);
+      }),
+    );
+  }
+  async recordLabCollection(values: JsonObject): Promise<void> {
+    this.requireWritable();
+    const check = this.check,
+      scope = this.scope(),
+      ledger = check?.labCollection;
+    if (!check || !ledger || ledger.state !== "collecting" || check.frozen)
+      throw new IntegrityError(
+        "LAB_COLLECTION_REQUIRED",
+        "Resume the acknowledged collection draft first.",
+      );
+    const config = configurationFor(
+        check,
+        this.model.state!.capabilities,
+        "saliva",
+      ),
+      protocol = participantProtocol(config),
+      method = protocol.methods!.find(
+        (m) =>
+          m.id === ledger.collection_method_id &&
+          m.version === ledger.collection_method_version,
+      )!;
+    if (!method)
+      throw new IntegrityError(
+        "COLLECTION_METHOD_CHANGED",
+        "This method is no longer current.",
+      );
+    const instruction =
+      check.acquisition!.attempts[ledger.attempt_id]!.instruction_receipt!;
+    const candidate = {
+      ...values,
+      attempt_id: ledger.attempt_id,
+      sample_id: ledger.sample_id,
+      instruction_receipt_id: instruction.instruction_receipt_id,
+      collection_method_id: ledger.collection_method_id,
+      collection_method_version: ledger.collection_method_version,
+    } as JsonObject;
+    const body = ledger.body
+      ? clone(ledger.body)
+      : validateCollectionBody(candidate, method, protocol);
+    if (ledger.body && digest(ledger.body) !== digest(candidate))
+      throw new IntegrityError(
+        "IMMUTABLE_COLLECTION_INTENT",
+        "Retry the exact saved collection declaration; another specimen requires a fresh attempt.",
+      );
+    await scope.wait(
+      this.commit((state) => {
+        const record = clone(state.checks.find((c) => c.id === check.id)!);
+        if (
+          record.labCollection?.attempt_id !== ledger.attempt_id ||
+          record.labCollection.state !== "collecting" ||
+          record.attempts.find((a) => a.attempt_id === ledger.attempt_id)
+            ?.status !== "started"
+        )
+          throw new IntegrityError(
+            "LAB_COLLECTION_RETIRED",
+            "Collection stopped before persistence.",
+          );
+        record.labCollection.body = clone(body);
+        return replaceCheck(state, record);
+      }),
+    );
+    const response = await scope.wait(
+      this.api.request<unknown>(`/v1/sessions/${check.id}/collections`, {
+        method: "POST",
+        body,
+        generation: check.generation,
+        key: ledger.key,
+      }),
+    );
+    await scope.wait(
+      this.commit((state) =>
+        this.applyLabReceipt(state, check.id, body, response.value),
+      ),
+    );
+    this.patch({
+      message:
+        body.status === "valid"
+          ? "Specimen receipt saved. Laboratory analysis is pending; this check remains a draft and cannot finalize yet."
+          : "Collection inadequacy preserved. A retry needs a fresh specimen identity and preparation.",
+    });
+  }
+  async refreshLabCollection(): Promise<void> {
+    this.requireWritable();
+    const check = this.check,
+      scope = this.scope(),
+      ledger = check?.labCollection;
+    if (
+      !check ||
+      !ledger?.body ||
+      !["pending_lab", "imported"].includes(ledger.state) ||
+      check.frozen
+    )
+      throw new IntegrityError(
+        "LAB_STATUS_UNAVAILABLE",
+        "No active owned specimen is awaiting laboratory status.",
+      );
+    const response = await scope.wait(
+      this.api.request<unknown>(
+        `/v1/sessions/${check.id}/collections/${ledger.sample_id}`,
+      ),
+    );
+    await scope.wait(
+      this.commit((state) =>
+        this.applyLabReceipt(state, check.id, ledger.body!, response.value),
+      ),
+    );
+    this.patch({
+      message:
+        this.check!.labCollection!.state === "imported"
+          ? "The independently admitted laboratory report is now retained. Review its evidence before explicitly saving and uploading."
+          : this.check!.labCollection!.state === "canceled"
+            ? "The service confirms that analysis ended. The actual specimen receipt remains in history; no chemical measurement was selected."
+            : "Laboratory analysis remains pending. No concentration has been invented; the draft can be resumed later.",
+    });
+  }
+  async abandonLabAnalysis(
+    reason:
+      | "USER_CANCELED"
+      | "PARTICIPANT_DECLINED"
+      | "SPECIMEN_UNAVAILABLE" = "USER_CANCELED",
+  ): Promise<void> {
+    this.requireWritable();
+    const check = this.check,
+      scope = this.scope(),
+      ledger = check?.labCollection;
+    if (
+      !check ||
+      !ledger?.body ||
+      ledger.state !== "pending_lab" ||
+      check.frozen
+    )
+      throw new IntegrityError(
+        "LAB_ANALYSIS_NOT_PENDING",
+        "Only the active pending laboratory analysis can be ended.",
+      );
+    const key = String(ledger.abandon_key ?? newId()),
+      body = { confirmation: true, reason };
+    if (ledger.abandon_body && digest(ledger.abandon_body) !== digest(body))
+      throw new IntegrityError(
+        "LAB_ABANDONMENT_INTENT_CHANGED",
+        "Retry the exact saved analysis cancellation or reconcile its status before changing the reason.",
+      );
+    await scope.wait(
+      this.commit((state) => {
+        const record = clone(state.checks.find((c) => c.id === check.id)!);
+        if (
+          record.labCollection?.state !== "pending_lab" ||
+          (record.labCollection.abandon_key &&
+            record.labCollection.abandon_key !== key) ||
+          (record.labCollection.abandon_body &&
+            digest(record.labCollection.abandon_body) !== digest(body))
+        )
+          throw new IntegrityError(
+            "LAB_COLLECTION_RETIRED",
+            "The specimen status changed.",
+          );
+        record.labCollection.abandon_key = key;
+        record.labCollection.abandon_body = body;
+        return replaceCheck(state, record);
+      }),
+    );
+    const response = await scope.wait(
+      this.api.request<unknown>(
+        `/v1/sessions/${check.id}/collections/${ledger.sample_id}/abandon`,
+        { method: "POST", body, generation: check.generation, key },
+      ),
+    );
+    await scope.wait(
+      this.commit((state) => {
+        const record = clone(state.checks.find((c) => c.id === check.id)!);
+        const receipt = requireObject(response.value);
+        if (
+          record.labCollection?.state !== "pending_lab" ||
+          record.labCollection.abandon_key !== key ||
+          digest(record.labCollection.abandon_body) !== digest(body) ||
+          receipt.state !== "analysis_canceled" ||
+          receipt.session_id !== check.id ||
+          receipt.sample_id !== ledger.sample_id ||
+          receipt.confirmation !== true ||
+          receipt.reason !== reason ||
+          receipt.configuration_submitted_sha256 !==
+            record.collections?.find(
+              (c) => c.collection_receipt_id === receipt.collection_receipt_id,
+            )?.configuration_submitted_sha256 ||
+          digest(receipt.collection) !==
+            digest(
+              record.collections?.find(
+                (c) =>
+                  c.collection_receipt_id === receipt.collection_receipt_id,
+              ),
+            ) ||
+          receipt.collection_sha256 !== digest(receipt.collection)
+        )
+          throw new IntegrityError(
+            "LAB_ABANDONMENT_MISMATCH",
+            "Cancellation does not preserve this exact owned specimen.",
+          );
+        const { collection, ...immutable } = receipt;
+        verifyCollectionAbandonment(
+          immutable,
+          collection as JsonObject,
+          record.id,
+        );
+        record.collection_abandons ??= [];
+        record.collection_abandons.push(clone(immutable) as JsonObject);
+        record.labCollection.state = "canceled";
+        return replaceCheck(state, record);
+      }),
+    );
+    this.patch({
+      message:
+        "Laboratory analysis ended explicitly. The original specimen receipt is preserved; no chemical measurement was selected. The protocol still determines whether the remaining check can finalize.",
+    });
   }
   async captureReader(
     channel: PhysicalChannel,
     recordRaw = false,
+    instruction?: InstructionInput,
   ): Promise<void> {
     if (recordRaw && channel !== "ecg")
       throw new IntegrityError(
@@ -1833,12 +2549,22 @@ export class AppController {
         "CHECK_REQUIRED",
         "Start an authorized draft check first.",
       );
+    if (
+      channel === "saliva" &&
+      configurationFor(check, this.model.state!.capabilities, "saliva")
+        .software_adapter_id === "reference_lab_import_v1"
+    )
+      throw new IntegrityError(
+        "LAB_COLLECTION_FLOW_REQUIRED",
+        "This approved method uses specimen collection and independent laboratory import, not a Bluetooth reader.",
+      );
     await this.withCaptureIntent(check, async (current) => {
       const authorization = await this.armApprovedCapture(
         check,
         channel === "ppg" ? "cardiac" : channel,
         current,
         recordRaw ? "ecg_waveform" : undefined,
+        instruction,
       );
       const association = this.device.snapshot().association!,
         cap = association.capabilities as PhysicalCapabilities;
@@ -1876,7 +2602,14 @@ export class AppController {
           await this.abandonArmedCapture(check.id, attempt.attempt_id);
           return;
         }
-        const projection = captured.normalized_payload;
+        const signedPayload = captured.normalized_payload;
+        const ppgWrapper =
+          channel === "ppg" &&
+          requireObject(authorization.grant.configuration_material)
+            .adapter_id === "otgd_sparkfun_max32664_v1";
+        const projection = ppgWrapper
+          ? (requireObject(signedPayload.projection) as JsonObject)
+          : signedPayload;
         const component =
           channel === "saliva" ? requireObject(projection.sample) : projection;
         const valid =
@@ -1904,7 +2637,22 @@ export class AppController {
             Array.isArray(component.quality_flags)
               ? (component.quality_flags as string[])
               : [],
-            {},
+            {
+              ...(attempt.component_metadata.instruction_receipt
+                ? {
+                    instruction_receipt: clone(
+                      attempt.component_metadata.instruction_receipt,
+                    ),
+                  }
+                : {}),
+              ...(ppgWrapper
+                ? {
+                    ppg_evidence: clone(
+                      requireObject(signedPayload.ppg_evidence),
+                    ) as JsonObject,
+                  }
+                : {}),
+            },
           );
           next.attempts.find(
             (a) => a.attempt_id === attempt.attempt_id,
@@ -2386,8 +3134,21 @@ export class AppController {
     );
   }
   async saveCheck(): Promise<void> {
-    await this.stopActive("USER_CANCELED");
+    await this.stopActive("ROUTE_HIDDEN");
     if (!this.check) return;
+    if (
+      this.check.labCollection &&
+      ["collecting", "pending_lab"].includes(this.check.labCollection.state)
+    ) {
+      this.patch({
+        route: "history",
+        message:
+          this.check.labCollection.state === "collecting"
+            ? "Specimen form saved locally. Collection has not been submitted; no upload or finalization was queued."
+            : "Collection draft saved locally. Laboratory analysis remains pending; no upload or finalization was queued.",
+      });
+      return;
+    }
     const record = freezeCheck(this.check, now(), newId);
     await this.commit((s) => replaceCheck(s, record));
     this.patch({
@@ -2396,6 +3157,16 @@ export class AppController {
     });
   }
   async discardDraft(): Promise<void> {
+    if (
+      this.check?.labCollection &&
+      (this.check.labCollection.state === "pending_lab" ||
+        (this.check.labCollection.state === "collecting" &&
+          this.check.labCollection.body))
+    )
+      throw new IntegrityError(
+        "LAB_ANALYSIS_PENDING",
+        "Preserve and reconcile the specimen receipt, then explicitly end pending analysis before discarding this local draft.",
+      );
     await this.stopActive("USER_CANCELED");
     const check = this.check;
     if (!check || check.frozen) return;
@@ -2868,7 +3639,19 @@ export class AppController {
               checks: state.checks.map((check) =>
                 check.generation === state.generation &&
                 check.delivery !== "quarantined"
-                  ? interruptStartedAttempts(check, now())
+                  ? interruptStartedAttempts(
+                      check,
+                      now(),
+                      (check.labCollection?.body ||
+                        [
+                          "ROUTE_HIDDEN",
+                          "BACKGROUND",
+                          "VIEW_DETACHED",
+                        ].includes(reason)) &&
+                        check.labCollection?.state === "collecting"
+                        ? check.labCollection.attempt_id
+                        : undefined,
+                    )
                   : check,
               ),
             }));

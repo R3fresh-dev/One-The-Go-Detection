@@ -29,7 +29,8 @@ def grant(**changes):
         "configuration_version": "v1", "capture_context_sha256": "c" * 64,
         "issued_at": iso(), "expires_at": iso(now() + 60),
         "device_nonce": "FICTIONAL-DEVICE-NONCE", "nonce": str(uuid4()),
-        "raw_recording_permission": None, **changes,
+        "raw_recording_permission": None, "participant_protocol_sha256": "d" * 64,
+        "instruction_receipt_id": str(uuid4()), **changes,
     }
 
 

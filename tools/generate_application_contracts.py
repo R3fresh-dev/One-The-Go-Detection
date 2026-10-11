@@ -15,10 +15,13 @@ ROOT = Path(__file__).resolve().parents[1]
 os.environ.setdefault("OTGD_ENVIRONMENT", "test")
 os.environ.setdefault("OTGD_DATABASE_URL", "sqlite://")
 sys.path.insert(0, str(ROOT / "services/api"))
-from otgd.main import app
-from otgd import dto
-from otgd import report_revisions
-from otgd.synthetic_evidence import SyntheticDeviceCapture
+from otgd.main import app  # noqa: E402 - schema loader sets the repository import path first.
+from otgd import dto  # noqa: E402 - schema loader sets the repository import path first.
+from otgd import report_revisions  # noqa: E402 - schema loader sets the repository import path first.
+from otgd import participant_acquisition  # noqa: E402 - schema loader sets the repository import path first.
+from otgd import lab_handoff  # noqa: E402 - schema loader sets the repository import path first.
+from otgd import vendor_evidence  # noqa: E402 - schema loader sets the repository import path first.
+from otgd.synthetic_evidence import SyntheticDeviceCapture  # noqa: E402 - schema loader sets the repository import path first.
 
 OUTPUT = ROOT / "contracts/application"
 MODELS = [
@@ -180,6 +183,8 @@ def main():
             )
             + "\n"
         )
+    for model in (participant_acquisition.InstructionAcknowledgment, participant_acquisition.CollectionRequest, participant_acquisition.CollectionReceipt, participant_acquisition.CollectionAbandonment, lab_handoff.LabSourceRequest, vendor_evidence.PPGEvidence):
+        (OUTPUT / f"{model.__name__}.schema.json").write_text(json.dumps(model.model_json_schema(), indent=2, ensure_ascii=False) + "\n")
     for name in REPORT_MODELS:
         schema = getattr(report_revisions, name).model_json_schema()
         if annotate_measurements(schema, "#/$defs/ScientificMeasurement"):

@@ -1,5 +1,339 @@
 {
   "$defs": {
+    "CardiacProtocol": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "instruction_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Instruction Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "required_confirmations": {
+          "items": {
+            "$ref": "#/$defs/Confirmation"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Required Confirmations",
+          "type": "array"
+        },
+        "maximum_acknowledgment_age_seconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Maximum Acknowledgment Age Seconds",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "cardiac",
+          "title": "Kind",
+          "type": "string"
+        },
+        "operating_scope": {
+          "enum": [
+            "engineering_bench",
+            "human_participant"
+          ],
+          "title": "Operating Scope",
+          "type": "string"
+        },
+        "operating_state_verifier": {
+          "enum": [
+            "participant_declaration_only",
+            "device_attested_v1"
+          ],
+          "title": "Operating State Verifier",
+          "type": "string"
+        },
+        "rest_duration_seconds": {
+          "maximum": 3600,
+          "minimum": 0,
+          "title": "Rest Duration Seconds",
+          "type": "integer"
+        },
+        "posture_instruction": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Posture Instruction",
+          "type": "string"
+        },
+        "activity_instruction": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Activity Instruction",
+          "type": "string"
+        },
+        "contact_instruction": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Contact Instruction",
+          "type": "string"
+        },
+        "isolation_instruction": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Isolation Instruction",
+          "type": "string"
+        },
+        "permitted_setups": {
+          "items": {
+            "$ref": "#/$defs/Setup"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Permitted Setups",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "instruction_id",
+        "version",
+        "text",
+        "sha256",
+        "required_confirmations",
+        "maximum_acknowledgment_age_seconds",
+        "kind",
+        "operating_scope",
+        "operating_state_verifier",
+        "rest_duration_seconds",
+        "posture_instruction",
+        "activity_instruction",
+        "contact_instruction",
+        "isolation_instruction",
+        "permitted_setups"
+      ],
+      "title": "CardiacProtocol",
+      "type": "object"
+    },
+    "CollectionMethod": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "instructions": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Instructions",
+          "type": "string"
+        },
+        "saliva_volume_required": {
+          "title": "Saliva Volume Required",
+          "type": "boolean"
+        },
+        "buffer_volume_required": {
+          "title": "Buffer Volume Required",
+          "type": "boolean"
+        },
+        "dilution_factor_required": {
+          "title": "Dilution Factor Required",
+          "type": "boolean"
+        },
+        "dilution_definition": {
+          "anyOf": [
+            {
+              "enum": [
+                "total_mixture_over_saliva",
+                "undiluted",
+                "fixed_factor"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Dilution Definition"
+        },
+        "fixed_dilution_factor": {
+          "anyOf": [
+            {
+              "maximum": 100000,
+              "minimum": 1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Fixed Dilution Factor"
+        },
+        "saliva_volume_min_ml": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Saliva Volume Min Ml"
+        },
+        "saliva_volume_max_ml": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Saliva Volume Max Ml"
+        },
+        "buffer_volume_min_ml": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Buffer Volume Min Ml"
+        },
+        "buffer_volume_max_ml": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Buffer Volume Max Ml"
+        },
+        "collector_lot_required": {
+          "title": "Collector Lot Required",
+          "type": "boolean"
+        },
+        "container_required": {
+          "title": "Container Required",
+          "type": "boolean"
+        },
+        "expiry_required": {
+          "title": "Expiry Required",
+          "type": "boolean"
+        },
+        "permitted_containers": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Permitted Containers",
+          "type": "array"
+        },
+        "required_handling_events": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Required Handling Events",
+          "type": "array"
+        },
+        "permitted_null_reasons": {
+          "items": {
+            "enum": [
+              "unknown",
+              "declined",
+              "not_applicable"
+            ],
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Permitted Null Reasons",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "instructions",
+        "saliva_volume_required",
+        "buffer_volume_required",
+        "dilution_factor_required",
+        "dilution_definition",
+        "fixed_dilution_factor",
+        "saliva_volume_min_ml",
+        "saliva_volume_max_ml",
+        "buffer_volume_min_ml",
+        "buffer_volume_max_ml",
+        "collector_lot_required",
+        "container_required",
+        "expiry_required",
+        "permitted_containers",
+        "required_handling_events",
+        "permitted_null_reasons"
+      ],
+      "title": "CollectionMethod",
+      "type": "object"
+    },
+    "Confirmation": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "title": "Confirmation",
+      "type": "object"
+    },
     "LabMethod": {
       "additionalProperties": false,
       "properties": {
@@ -31,6 +365,146 @@
         "instrument_ids"
       ],
       "title": "LabMethod",
+      "type": "object"
+    },
+    "LaboratoryProtocol": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "instruction_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Instruction Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "required_confirmations": {
+          "items": {
+            "$ref": "#/$defs/Confirmation"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Required Confirmations",
+          "type": "array"
+        },
+        "maximum_acknowledgment_age_seconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Maximum Acknowledgment Age Seconds",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "reference_lab",
+          "title": "Kind",
+          "type": "string"
+        },
+        "methods": {
+          "items": {
+            "$ref": "#/$defs/CollectionMethod"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Methods",
+          "type": "array"
+        },
+        "maximum_collection_submission_delay_seconds": {
+          "maximum": 3600,
+          "minimum": 1,
+          "title": "Maximum Collection Submission Delay Seconds",
+          "type": "integer"
+        },
+        "maximum_analysis_delay_seconds": {
+          "maximum": 604800,
+          "minimum": 1,
+          "title": "Maximum Analysis Delay Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "instruction_id",
+        "version",
+        "text",
+        "sha256",
+        "required_confirmations",
+        "maximum_acknowledgment_age_seconds",
+        "kind",
+        "methods",
+        "maximum_collection_submission_delay_seconds",
+        "maximum_analysis_delay_seconds"
+      ],
+      "title": "LaboratoryProtocol",
+      "type": "object"
+    },
+    "Setup": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "power_state": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Power State",
+          "type": "string"
+        },
+        "charging_state": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Charging State",
+          "type": "string"
+        },
+        "cable_state": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Cable State",
+          "type": "string"
+        },
+        "contact_or_lead_configuration": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Contact Or Lead Configuration",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "power_state",
+        "charging_state",
+        "cable_state",
+        "contact_or_lead_configuration"
+      ],
+      "title": "Setup",
       "type": "object"
     }
   },
@@ -577,6 +1051,199 @@
             "minimum_amplitude_adc"
           ],
           "title": "ADCMaterial",
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0",
+              "title": "Schema Version",
+              "type": "string"
+            },
+            "channel": {
+              "const": "cardiac",
+              "title": "Channel",
+              "type": "string"
+            },
+            "modality": {
+              "const": "ppg",
+              "title": "Modality",
+              "type": "string"
+            },
+            "adapter_id": {
+              "const": "otgd_sparkfun_max32664_v1",
+              "title": "Adapter Id",
+              "type": "string"
+            },
+            "protocol_version": {
+              "const": 1,
+              "title": "Protocol Version",
+              "type": "integer"
+            },
+            "duration_ms": {
+              "maximum": 60000,
+              "minimum": 3000,
+              "title": "Duration Ms",
+              "type": "integer"
+            },
+            "end_guard_ms": {
+              "maximum": 500,
+              "minimum": 100,
+              "title": "End Guard Ms",
+              "type": "integer"
+            },
+            "poll_interval_ms": {
+              "maximum": 1000,
+              "minimum": 50,
+              "title": "Poll Interval Ms",
+              "type": "integer"
+            },
+            "i2c_timeout_ms": {
+              "maximum": 20,
+              "minimum": 1,
+              "title": "I2C Timeout Ms",
+              "type": "integer"
+            },
+            "i2c_address": {
+              "const": 85,
+              "title": "I2C Address",
+              "type": "integer"
+            },
+            "bus_frequency_hz": {
+              "const": 100000,
+              "title": "Bus Frequency Hz",
+              "type": "integer"
+            },
+            "sda_gpio": {
+              "const": 11,
+              "title": "Sda Gpio",
+              "type": "integer"
+            },
+            "scl_gpio": {
+              "const": 12,
+              "title": "Scl Gpio",
+              "type": "integer"
+            },
+            "reset_gpio": {
+              "const": 5,
+              "title": "Reset Gpio",
+              "type": "integer"
+            },
+            "mfio_gpio": {
+              "const": 6,
+              "title": "Mfio Gpio",
+              "type": "integer"
+            },
+            "algorithm_mode": {
+              "enum": [
+                1,
+                2
+              ],
+              "title": "Algorithm Mode",
+              "type": "integer"
+            },
+            "sdk_commit": {
+              "const": "91575258e5e2c47f0f4b8ec97b651381671f4637",
+              "title": "Sdk Commit",
+              "type": "string"
+            },
+            "sdk_version": {
+              "const": "1.1",
+              "title": "Sdk Version",
+              "type": "string"
+            },
+            "extractor_version": {
+              "const": "sparkfun_sensor_bpm_v1",
+              "title": "Extractor Version",
+              "type": "string"
+            },
+            "warmup_ms": {
+              "maximum": 10000,
+              "minimum": 1000,
+              "title": "Warmup Ms",
+              "type": "integer"
+            },
+            "max_no_data_ms": {
+              "maximum": 5000,
+              "minimum": 50,
+              "title": "Max No Data Ms",
+              "type": "integer"
+            },
+            "minimum_valid_samples": {
+              "maximum": 256,
+              "minimum": 1,
+              "title": "Minimum Valid Samples",
+              "type": "integer"
+            },
+            "minimum_confidence": {
+              "maximum": 100,
+              "minimum": 0,
+              "title": "Minimum Confidence",
+              "type": "integer"
+            },
+            "minimum_heart_rate_bpm": {
+              "maximum": 300,
+              "minimum": 1,
+              "title": "Minimum Heart Rate Bpm",
+              "type": "integer"
+            },
+            "maximum_heart_rate_bpm": {
+              "maximum": 300,
+              "minimum": 1,
+              "title": "Maximum Heart Rate Bpm",
+              "type": "integer"
+            },
+            "hub_firmware_major": {
+              "maximum": 255,
+              "minimum": 0,
+              "title": "Hub Firmware Major",
+              "type": "integer"
+            },
+            "hub_firmware_minor": {
+              "maximum": 255,
+              "minimum": 0,
+              "title": "Hub Firmware Minor",
+              "type": "integer"
+            },
+            "hub_firmware_revision": {
+              "maximum": 255,
+              "minimum": 0,
+              "title": "Hub Firmware Revision",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "schema_version",
+            "channel",
+            "modality",
+            "adapter_id",
+            "protocol_version",
+            "duration_ms",
+            "end_guard_ms",
+            "poll_interval_ms",
+            "i2c_timeout_ms",
+            "i2c_address",
+            "bus_frequency_hz",
+            "sda_gpio",
+            "scl_gpio",
+            "reset_gpio",
+            "mfio_gpio",
+            "algorithm_mode",
+            "sdk_commit",
+            "sdk_version",
+            "extractor_version",
+            "warmup_ms",
+            "max_no_data_ms",
+            "minimum_valid_samples",
+            "minimum_confidence",
+            "minimum_heart_rate_bpm",
+            "maximum_heart_rate_bpm",
+            "hub_firmware_major",
+            "hub_firmware_minor",
+            "hub_firmware_revision"
+          ],
+          "title": "SparkFunMaterial",
           "type": "object"
         },
         {
@@ -1487,6 +2154,32 @@
       },
       "title": "Lab Methods",
       "type": "object"
+    },
+    "participant_protocol": {
+      "anyOf": [
+        {
+          "discriminator": {
+            "mapping": {
+              "cardiac": "#/$defs/CardiacProtocol",
+              "reference_lab": "#/$defs/LaboratoryProtocol"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/CardiacProtocol"
+            },
+            {
+              "$ref": "#/$defs/LaboratoryProtocol"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Participant Protocol"
     }
   },
   "required": [
