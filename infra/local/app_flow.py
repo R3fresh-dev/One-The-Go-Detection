@@ -62,6 +62,23 @@ def signin(http,cfg,account):
     return token.json()['access_token']
 
 
+def checked_request(http, method, path, headers, body=None, status=(200,201,202), *, retry_throttled=False, clock=time.monotonic, wait=time.sleep):
+    """Honor bounded privacy Retry-After without changing server rate limits."""
+    deadline=clock()+15
+    while True:
+        if clock()>=deadline:raise AssertionError('Privacy throttle exceeded its bounded retry window')
+        response=http.request(method,'http://api:8000'+path,headers=headers,json=body)
+        if clock()>=deadline:raise AssertionError('Privacy throttle exceeded its bounded retry window')
+        if response.status_code in status:return response
+        if response.status_code==429 and retry_throttled:
+            delay=response.headers.get('retry-after','')
+            if not delay.isdigit() or not 1<=int(delay)<=60 or clock()+int(delay)>=deadline:
+                raise AssertionError('Privacy throttle exceeded its bounded retry window')
+            wait(int(delay))
+            continue
+        raise AssertionError(f'{method} {path}: HTTP {response.status_code}')
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--confirm-fictional-workspace',action='store_true');args=parser.parse_args()
     if not args.confirm_fictional_workspace:raise RuntimeError('Confirm this is a disposable fictional local workspace')
@@ -72,9 +89,8 @@ def main():
         def request(method,path,body=None,revision=None,status=(200,201,202),key=None):
             headers={'Authorization':'Bearer '+token,'X-Data-Generation':str(generation),'Idempotency-Key':key or str(uuid4())}
             if revision is not None:headers['If-Match']='"'+str(revision)+'"'
-            response=http.request(method,'http://api:8000'+path,headers=headers,json=body)
-            if response.status_code not in status:raise AssertionError(f'{method} {path}: HTTP {response.status_code}')
-            return response
+            privacy=path.startswith('/v1/privacy/') or path=='/v1/auth/logout'
+            return checked_request(http,method,path,headers,body,status,retry_throttled=privacy)
         caps=request('GET','/v1/me/capabilities').json();account=caps['account_ref'];generation=caps['data_generation']
         if caps['account_state']=='awaiting_generation_ack':request('POST','/v1/me/data-generation/acknowledgments',{'confirmation':True})
         config=http.get('http://api:8000/v1/app-config').json()

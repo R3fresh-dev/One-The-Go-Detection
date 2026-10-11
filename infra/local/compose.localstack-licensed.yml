@@ -3,4 +3,5 @@ services:
   localstack:
     image: localstack/localstack:2026.09.1@sha256:0c644ede65c2d0c95737e09a39007828bd381bdb07ca8200c6bf17d66a4ed191
     environment:
+      PERSISTENCE: "1"
       LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:?Supply an authorized LocalStack developer or CI token}

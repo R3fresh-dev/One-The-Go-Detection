@@ -26,6 +26,10 @@ Changing emulator versions can change persisted-state compatibility. Use a separ
 
 The community preset adds **zero LocalStack license fees** to the development budget; Docker compute and CI runner usage still cost according to their providers. The licensed alternative is optional for this S3/SQS test scope and requires its own current vendor quote/entitlement. Neither emulator substitutes for AWS IAM/KMS/network or recovery qualification.
 
+Use the community preset for **disposable fictional CI and UI workspaces**. Durable S3/SQS state across emulator shutdown is unqualified: the inspected community runtime has no persistence module, and merely setting `PERSISTENCE=1` does not supply that feature. Official snapshot persistence is included in the vendor's Base/Ultimate plans; the licensed override explicitly enables it. Even that preset needs an actual restart/recovery test before using durable local research data. [Official persistence requirements](https://docs.localstack.cloud/aws/capabilities/state-management/persistence/)
+
+The local initializer currently permits a missing journal establishment marker to be created again. Binding that marker to the retained PostgreSQL deployment and rejecting lost/mismatched journal state is an **open continuity gap**. Do not resume real research or treat an emulator restart as a verified restore. Preserve the old volumes for review and use a separate disposable project when testing a fresh workspace; resetting volumes does not resolve this gap.
+
 Choose the correct origin **before** signing in: `localhost` for the iOS simulator, `10.0.2.2` for an Android emulator, or the computer's LAN IP plus `--lan` for a physical phone. See the full [routing table](ENVIRONMENT.md#local-phone-routing). Configure the matching mobile local build with that API origin. Do not edit a signed S3 URL to make it reachable.
 
 Local endpoints are the API on port 8000, fictional sign-in on 8081, and LocalStack on 4566. PostgreSQL is internal. The API configuration endpoint is `/v1/app-config`; readiness is `/health/ready`. The fictional issuer exposes named Account A and Account B so ownership, switching and synchronization can be tested with synthetic data.
@@ -36,7 +40,7 @@ To run the full fictional application flow in a disposable workspace:
 python scripts/local-platform.py check-app --confirm-fictional-workspace
 ```
 
-That flow performs actual PKCE sign-in, session/evidence HTTP writes, stable finalize retries, SQS-backed asynchronous processing, authenticated ZIP export with independently checked member hashes, unauthenticated/cross-account/range denial and all-data deletion. It verifies retired-generation writes remain denied. It erases **Fictional Account A's local workspace**. It does not invoke the worker directly. The lighter `check` transport probe creates and removes only its own synthetic object and isolated SQS queue.
+That flow performs actual PKCE sign-in, session/evidence HTTP writes, stable finalize retries, SQS-backed asynchronous processing, authenticated ZIP export with independently checked member hashes, unauthenticated/cross-account/range denial and all-data deletion. It verifies retired-generation writes remain denied and logout revokes only the current token family while preserving its retry receipt. Privacy probes honor the actual server `Retry-After` within a bounded 15-second window, preserving the same intent and payload; performance writes do not retry throttling. It erases **Fictional Account A's local workspace**. It does not invoke the worker directly. The lighter `check` transport probe creates and removes only its own synthetic object and isolated SQS queue.
 
 Useful operations:
 
@@ -46,7 +50,7 @@ python scripts/local-platform.py logs
 python scripts/local-platform.py down
 ```
 
-`down` preserves data. `reset --confirm-local-data-loss` explicitly deletes only the named local project's volumes. Do not use it to resolve a failed migration or to hide missing data.
+`down` preserves PostgreSQL and disk volumes, while the community emulator's in-memory S3/SQS state can be lost. Retained disk volumes alone do not prove journal or artifact continuity. `reset --confirm-local-data-loss` explicitly deletes only the named local project's volumes. Do not use it to resolve a failed migration or to hide missing data.
 
 ## What startup does
 
