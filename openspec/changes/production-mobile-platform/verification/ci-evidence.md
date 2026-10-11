@@ -69,3 +69,34 @@ The next narrow correction adds the React Android dependency only to the test co
 ### Successful platform correction — 3a92511
 
 The documentation-only corrective commit [`3a92511d89434ccaf2c003234fd274b22a61e993`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/3a92511d89434ccaf2c003234fd274b22a61e993) passed [platform workflow 38113684169](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38113684169) overall. [PostgreSQL](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38113684169/job/114394234324) and [contracts/infrastructure/operations](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38113684169/job/114394234410) passed; LocalStack remained explicitly skipped. This verifies the same integrated application/service source plus the normalized document link.
+
+## Verified development builds — 9376dba
+
+Commit [`9376dbaac603252bb49ad2bb5ec5ba8cc5be5017`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/9376dbaac603252bb49ad2bb5ec5ba8cc5be5017) supplies the reviewed Android test-classpath and portable JSON assertion corrections. Both [native workflow 38114016108](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108) and [platform workflow 38114016095](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016095) were observed **completed/success** at this exact commit.
+
+| Check | Actual result |
+|---|---|
+| [Android](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/job/114395188365) | **Passed** native compilation, actual Gradle/JUnit execution, Debug and standalone local Release APK builds, and independent bundle/application-ID/development-signer inspection. The downloaded report contains **7 tests, 0 failures, 0 skipped**: 6 `ReactionCoreTest` cases and `NativeEventSerializationTest.explicitNullsSurviveEventConversionAtEveryDepth`. |
+| [iOS](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/job/114395188325) | **Passed** the actual Swift test step, native dependency generation, full simulator Release build and artifact upload; completed 05:18:20 UTC. Full-log retrieval failed, so no exact unobserved Swift case count is asserted. |
+| [Shared mobile/firmware](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/job/114395188235) | **Passed** TypeScript, **146/146 host tests** with zero failed/skipped in 9.15 seconds, native assets, portable C++ tests and actual Nano ESP32 compilation. Compiler output: 956,469 program bytes and 75,068 global-data bytes. |
+| [Actual PostgreSQL](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016095/job/114395188350) | **171 passed, no skips**, one known test-client deprecation warning, 79.60 seconds. Two migration replays passed. Runtime DDL, authority writes and audit update/delete were denied as expected. |
+| [Contracts/platform source](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016095/job/114395188166) | **Passed** strict OpenSpec, all 41 semantic/document checks, the 20-feature/140-requirement/321-scenario inventory, generated OpenAPI/JSON Schema validation and drift checks, 5 CDK assertions/synthesis, 10 operational tests and script compilation. |
+| Actual LocalStack | **Skipped**, as shown in the platform run. Successful PostgreSQL and synthesis jobs do not establish S3/SQS emulation or deployed AWS operation. |
+| Browser journey checkpoint | The final application UI is unchanged from `21ee30a`: **6/6 phone/desktop journeys** passed in 14.2 seconds against `AppEntry-f317b822b70c22c98e10fd54c00de3ab.js`. The later Android changes affect only test dependencies/assertions. Browser evidence remains distinct from native interaction. |
+
+### Retained artifacts for 9376dba
+
+All hashes below identify the **GitHub artifact ZIP**, rather than an extracted APK.
+
+| Artifact and download | ZIP bytes | SHA-256 | GitHub expiry (UTC) |
+|---|---:|---|---|
+| [Android standalone local preview — 11693316195](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/artifacts/11693316195) | 35,886,992 | `50e390b5efbb61d28ed21c6a7193ea908a62129b4aff188653f8e073133264f7` | 2026-10-25 05:23:03 |
+| [Android Metro/debug — 11693031559](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/artifacts/11693031559) | 55,533,681 | `f6cd046e4d7720c9b7a139f974b54a02d209358243b22ee6a1c8c8e842dd6653` | 2026-10-25 05:23:06 |
+| [Android native test report — 11693336175](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/artifacts/11693336175) | 6,984 | `72094d673ad1086f2effb0708a727909eab176e1a80a59fa5346d8dd2f1d728e` | 2026-10-25 05:23:10 |
+| [iOS simulator app — 11693001318](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/artifacts/11693001318) | 18,260,845 | `4d39d844a786c52294ae552032b687e832720f5f8d0d2da3aea90aa2732cf145` | 2026-10-25 05:18:10 |
+| [Nano ESP32 synthetic firmware — 11693465040](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/artifacts/11693465040) | 9,182,420 | `facde6cd7bdb135f1dc3419524e8f787331b225d972c3245718361a8f6bf47bd` | 2026-10-25 05:13:15 |
+| [PostgreSQL JUnit — 11693010889](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016095/artifacts/11693010889) | 4,011 | `282db39dc4db9634c9a09860843c2bf233bdf24718baa7843a9b8eed6e372510` | 2026-10-18 05:13:47 |
+
+Root downloaded both APK ZIPs, the iOS ZIP and firmware ZIP and verified their exact digests. The native reviewer downloaded, digest-verified and inspected the Android test report. The extracted standalone APK is **73,175,800 bytes**, SHA-256 `38b639136a07621898851970f767644302190673d2d1b66dc3a48aa9198b1663`; it contains `assets/index.android.bundle` and arm64-v8a/x86_64 libraries. The extracted debug APK is **123,543,303 bytes**, SHA-256 `ffc45156b847e0f030f8dcc82a33eeebeb83e347377ec2d7f7509991d4cd6ae2`; it has both architectures and obtains JavaScript from Metro 8082. The standalone APK uses the generated development signing key and local application identity, not a production signing identity.
+
+These are real development build artifacts. Android/iOS simulator or physical interaction, permission and secure-storage behavior, radio/electrical/optical/assay qualification, LocalStack, AWS QA/production operation, store signing/submission and clinical inference remain separate unexecuted gates. No simulator or artifact closes a missing conditional acquisition implementation.

@@ -82,7 +82,7 @@ All three scripts select port **8082**, because the local OAuth issuer occupies 
 
 ### Choose the build artifact
 
-The [native build workflow](../../.github/workflows/native-build.yml) generates projects from committed configuration, verifies local-module assets and runs Android Kotlin and Swift tests. It defines the following artifact targets. **A target is available only after its CI build, inspection and upload succeed**; consult the [observed native CI evidence](modules/VERIFICATION.md#observed-native-ci-execution) for the exact commit, outcome and artifact. The table does not claim that a pending Android job has produced an APK.
+The [native build workflow](../../.github/workflows/native-build.yml) generates projects from committed configuration, verifies local-module assets and runs Android Kotlin and Swift tests. [Run 38114016108](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108) at commit `9376dbaac603252bb49ad2bb5ec5ba8cc5be5017` successfully built, inspected and uploaded both Android APKs and the iOS simulator app. The Android report contains seven passed tests, with no failures or skips. Consult the [observed native CI evidence](modules/VERIFICATION.md#observed-native-ci-execution) for exact artifact IDs, hashes and retention dates; installation and device interaction remain separate acceptance checks.
 
 | Artifact | Contents and intended use | Runtime and signing |
 | --- | --- | --- |

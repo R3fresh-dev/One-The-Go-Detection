@@ -35,7 +35,7 @@ Native timing and physical channels stay uncalibrated/unqualified. There is no n
 | Full synthetic captures | PPG, ECG, saliva completed with 10 retained messages each | Actual software simulator/controller transcript and canonical evidence generation |
 | Backend independent contract checks | Root agent verified native and all three synthetic fixture projections/hashes; malformed native timing/count/input/geometry rejected | Cross-language DTO/evidence agreement for explicitly fictional fixtures |
 
-The Kotlin test process used the production `ReactionCore.kt`, JUnit 4.13.2 and the literal fixture resources. It did **not** compile the Android View, Expo bridge, Bluetooth module or storage helper. No Android SDK or Xcode toolchain is installed in the local workspace.
+The local Kotlin test process used the production `ReactionCore.kt`, JUnit 4.13.2 and the literal fixture resources. That local command did **not** compile the Android View, Expo bridge, Bluetooth module or storage helper. No Android SDK or Xcode toolchain is installed in the local workspace; the complete native builds and Android converter test were subsequently executed in the CI run recorded below.
 
 ### Reproduce checks
 
@@ -87,6 +87,33 @@ The portable firmware test and pinned board compilation commands are in [firmwar
 
 ### Observed native CI execution
 
+At commit **`9376dbaac603252bb49ad2bb5ec5ba8cc5be5017`**, [run 38114016108](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108) completed **successfully** on 2026-10-11. This commit includes the integrated mobile source and both narrow Android test-compilation corrections described below.
+
+| Job | Actual observation |
+|---|---|
+| [Android 114395188365](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/job/114395188365) | **Success**: complete native Gradle compilation, Kotlin tests, debug APK and bundled local preview APK; the independent APK bundle, application ID, architecture and development-signer inspection passed; all three Android artifacts uploaded |
+| [iOS 114395188325](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/job/114395188325) | **Success**: Swift tests, CocoaPods/Xcode simulator application build, embedded bundle check and simulator artifact upload |
+| [Shared/firmware 114395188235](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38114016108/job/114395188235) | **Success**: TypeScript/146 host tests/asset checks, C++ test, actual Nano ESP32 target compile and firmware artifact upload |
+
+The Android HTML test-report ZIP was downloaded and its **6,984 bytes** and SHA-256 verified against GitHub artifact metadata. Its actual Gradle report records **7 tests, 0 failures, 0 skipped**, with a total reported duration of 0.697 seconds. The report was generated at 05:16:46 UTC; the combined build step later completed at 05:23:01 UTC and the APK inspection passed at 05:23:03 UTC.
+
+| Actual Android test suite | Tests | Failures | Skipped | Reported suite duration |
+|---|---:|---:|---:|---:|
+| `expo.modules.otgdreaction.ReactionCoreTest` | 6 | 0 | 0 | 0.144 s |
+| `expo.modules.otgdreaction.NativeEventSerializationTest` | 1 | 0 | 0 | 0.014 s |
+
+The converter case **`explicitNullsSurviveEventConversionAtEveryDepth` passed** (0.011 seconds). It executed Expo's actual conversion code with React Native's Java-only test containers and preserved explicit nulls at the root, nested-map and list-element levels. This is an executed Android Gradle/JUnit conversion test; it does not establish end-to-end native event delivery on a device. The six production-core cases cover the literal schedules/hashes, all trial-boundary vectors, nullable aggregate features, quantiles and development budgets, terminal drain/overflow/cancellation, and the bounded worst-case companion payload.
+
+| Android artifact | Artifact ID | ZIP bytes | Artifact ZIP SHA-256 | Expires (UTC) |
+|---|---:|---:|---|---|
+| `android-local-preview-apk` | 11693316195 | 35,886,992 | `50e390b5efbb61d28ed21c6a7193ea908a62129b4aff188653f8e073133264f7` | 2026-10-25 05:23:03 |
+| `android-debug-apk` | 11693031559 | 55,533,681 | `f6cd046e4d7720c9b7a139f974b54a02d209358243b22ee6a1c8c8e842dd6653` | 2026-10-25 05:23:06 |
+| `android-native-test-reports` | 11693336175 | 6,984 | `72094d673ad1086f2effb0708a727909eab176e1a80a59fa5346d8dd2f1d728e` | 2026-10-25 05:23:10 |
+
+These digests identify the GitHub artifact ZIPs, not the extracted APK bytes. Downloadable artifacts and their retention are tied to the linked run. Neither build success nor the inspected unit report establishes installation, native UI behavior, optical timing, Bluetooth radio behavior or human sensing qualification.
+
+#### Earlier failures and corrections
+
 At commit `8aa56ce9883aaafeba11b809c94bc406e7ee0a0a`, [run 38111022849](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38111022849) produced the following inspected job outcomes:
 
 | Job | Actual observation |
@@ -97,9 +124,11 @@ At commit `8aa56ce9883aaafeba11b809c94bc406e7ee0a0a`, [run 38111022849](https://
 
 The Android fix at `4264c89d1ff349b4782de26b87a3348ac736850f` uses the exact runner image's documented `$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager` and verifies SDK 36 files. Subsequent actual jobs exposed missing Expo module `versionName` values, then an artifact guard incorrectly running inside a React Native included plugin build. Those source corrections are recorded in the maintained [CI evidence](../../../openspec/changes/production-mobile-platform/verification/ci-evidence.md).
 
-At `a24634574944f8da2248a7e78feb67b599be5654`, the Android job in [run 38112450362](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38112450362) reached Kotlin compilation and failed because the default Expo view event overload accepts `Map<String, Any>` while the result intentionally retains nullable fields. The source now selects the public `EventDispatcher<Map<String, Any?>>()` overload. The inspected installed `expo-modules-core@57.0.21` path is `ViewEvent.convertEventBody` → `JSTypeConverterProvider.convertToJSValue` → recursive map/list conversion → `putGeneric(null)` → `WritableMap.putNull`. No field is filtered or cast to nonnull. `NativeEventSerializationTest.kt` uses Expo's actual conversion code and React Native's Java-only test containers to check root, nested-map and list-element nulls; execution of that Android Gradle test remains pending the next job. No APK is claimed from the failed jobs.
+At `a24634574944f8da2248a7e78feb67b599be5654`, the Android job in [run 38112450362](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38112450362) reached Kotlin compilation and failed because the default Expo view event overload accepts `Map<String, Any>` while the result intentionally retains nullable fields. The source now selects the public `EventDispatcher<Map<String, Any?>>()` overload. The inspected installed `expo-modules-core@57.0.21` path is `ViewEvent.convertEventBody` → `JSTypeConverterProvider.convertToJSValue` → recursive map/list conversion → `putGeneric(null)` → `WritableMap.putNull`. No field is filtered or cast to nonnull. The subsequently executed converter test passed in run 38114016108, as recorded above. No APK is claimed from the failed jobs.
 
-Initial iOS success predates the SW-012 live preview source; the working-tree host checks above do not retroactively change the contents of that built artifact. Read the maintained CI evidence for later exact commit/artifact identities. Build success does not establish real device interaction or physical calibration.
+At integrated commit `21ee30a23ba9ac51a581361d4f3da10c72bea03f`, [run 38113532881](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38113532881) successfully compiled the production Android reaction module but failed while compiling its unit tests: the React bridge classes were missing from the test compile classpath, and Android's `JSONArray` API does not expose `toList()`. Commit `9376dba` added the explicit test dependency `com.facebook.react:react-android`, resolved to the installed version by the React Gradle plugin, and changed the literal-fixture reads to indexed `getString`/`getInt`. Those two test-only corrections left production behavior unchanged and passed the subsequent complete native run.
+
+Initial iOS success predates the SW-012 live preview source; later checks do not retroactively change the contents of that older artifact. The successful `9376dba` run above includes the integrated follow-up source. Read the maintained [CI evidence](../../../openspec/changes/production-mobile-platform/verification/ci-evidence.md) for complete commit/artifact history. Build success does not establish real device interaction or physical calibration.
 
 ### Connect the local artifacts to the development stack
 
@@ -107,7 +136,7 @@ CI builds the `local` environment, using `otgd-local://oauth/callback` and publi
 
 | Runtime | API | OAuth issuer | JavaScript |
 |---|---|---|---|
-| Standard Android emulator | `http://10.0.2.2:8000` | `http://10.0.2.2:8081` | Metro on host port 8082 |
+| Standard Android emulator | `http://10.0.2.2:8000` | `http://10.0.2.2:8081` | Embedded bundle in local preview; Metro on host port 8082 for debug |
 | iOS simulator on the host Mac | `http://localhost:8000` | `http://localhost:8081` | Embedded Release bundle |
 
 ### Standalone Android local preview contract
@@ -152,13 +181,13 @@ An emulator's loopback address is different from the host. `10.0.2.2` is the sta
 | Requirements | Source coverage | Executed evidence | Still required |
 |---|---|---|---|
 | AND-TASK-001, 007 | Typed view API, native start/cancel/terminal receipt, full result, workspace/run IDs | TS compile; pure terminal latch tests; independent DTO checks | Full app/native lifecycle and durable event/receipt dedup on devices |
-| AND-TASK-002 | Identical Kotlin/Swift LCG, shuffle, gap indexing, frozen configuration | Kotlin literal schedules and asset hashes; actual Swift suite and iOS full simulator build | Android full app build and device runtime traces |
+| AND-TASK-002 | Identical Kotlin/Swift LCG, shuffle, gap indexing, frozen configuration | Kotlin literal schedules and asset hashes; actual Swift suite; successful Android APK and iOS full simulator builds at `9376dba` | Device runtime traces |
 | AND-TASK-003 | Choreographer/CADisplayLink, native input/dispatch clocks and provenance | Core budget cases and DTO validation | Physical timing bench and per-device latency characterization; no calibration claimed |
 | AND-TASK-004, 005 | Bounded touch ledger, deterministic first response, quantiles/missingness | Kotlin literal scoring/boundary tests, payload bound | Native multitouch injection and runtime trace comparisons |
 | AND-TASK-006 | Native background/focus/call/detach/layout invalidation and immutable terminal latch | Core terminal race/admission tests | Android/iOS interruption instrumentation including pre-layout cancel and delayed JS |
-| AND-TASK-008 | Shared config/goldens, fixed presentation profile, explicit unsupported input mode | Config hash, Kotlin and actual Swift suites; iOS full simulator build | Screenshots, screen-reader and device-layout verification |
+| AND-TASK-008 | Shared config/goldens, fixed presentation profile, explicit unsupported input mode | Config hash, actual Kotlin/Swift suites, full Android APK and iOS simulator builds at `9376dba` | Screenshots, screen-reader and device-layout verification |
 | AND-DEV-001, 002 | Devices UI and native contextual permission/radio transitions | TS tests and autolinking | Physical permission-denial, revocation, radio-off and Settings recovery tests |
-| AND-SET-003, 007 | No-prompt OS permission queries; static iOS Bluetooth/camera authorization, explicit restricted/unknown state, Android check-only permission access | TypeScript check; actual iOS full app compile including these modules | Android full compile and actual OS authorization/restriction/device-policy behavior |
+| AND-SET-003, 007 | No-prompt OS permission queries; static iOS Bluetooth/camera authorization, explicit restricted/unknown state, Android check-only permission access | TypeScript check; actual Android and iOS full app compile including these modules at `9376dba` | Actual OS authorization/restriction/device-policy behavior |
 | AND-DEV-003, 004 | Simulator-only association, exact fixture gate, boot binding, three clock exchanges | Synthetic controller capture and spoofed-source/replay tests | Real board handshake, reconnect/reboot and clock traces |
 | AND-DEV-005, 006 | Bounded framing/CRC, duplicate/conflict checks, deadlines, command identity, replay journal | TS and C++ adversarial protocol suites; actual Nano ESP32 target compile | Board flashing/run and over-the-air loss/retry/overflow tests |
 | AND-DEV-007, 008 | Generation-scoped disconnect, local cancellation, forget and native lifecycle shutdown | Software cancellation test | Android/iOS BLE background and stale-callback instrumentation |
