@@ -134,7 +134,6 @@ def authenticate(db, authorization, receipt=False):
         admitted, issuer_revoked = family_status(db, claims['origin_jti'], claims['sub'])
         if not admitted or (issuer_revoked and not receipt):
             raise Problem(401, 'AUTH_REQUIRED')
-    restored = db.get(SystemState, "subject:" + subject)
     account = db.scalar(
         select(Account)
         .where(Account.subject_hash == subject)
@@ -151,6 +150,7 @@ def authenticate(db, authorization, receipt=False):
         if (identity.consumed and (not receipt or account is None)) or not admitted or (issuer_revoked and not receipt):
             raise Problem(401, 'AUTH_REQUIRED')
     if account is None:
+        restored = db.get(SystemState, "subject:" + subject)
         if restored:
             data = restored.body
             values = dict(

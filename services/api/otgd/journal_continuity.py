@@ -31,20 +31,22 @@ def _version(value):
 
 
 def read_establishment(config=None, storage_client=None):
-    """Read current and exact pinned version without buffering an unbounded body."""
+    """Read current bytes and version atomically, without caching admission."""
     s = config or settings()
     if storage_client is None:
         from .storage import client
 
         storage_client = client("s3")
     try:
-        head = storage_client.head_object(Bucket=s.journal_bucket, Key=CONTROL_KEY)
-        version = _version(head.get("VersionId"))
         response = storage_client.get_object(
-            Bucket=s.journal_bucket, Key=CONTROL_KEY, VersionId=version
+            Bucket=s.journal_bucket, Key=CONTROL_KEY
         )
         stream = response["Body"]
         try:
+            # A current GET returns one atomic object/version pair. A prior HEAD
+            # followed by a pinned GET could accept an old version if the current
+            # marker changed between calls. Every admission still reads S3 anew.
+            version = _version(response.get("VersionId"))
             if response.get("ContentLength", LIMIT + 1) > LIMIT:
                 raise JournalContinuityBlocked(
                     "Journal establishment exceeds its bound"
@@ -52,8 +54,8 @@ def read_establishment(config=None, storage_client=None):
             raw = stream.read(LIMIT + 1)
         finally:
             stream.close()
-        if len(raw) > LIMIT or response.get("VersionId") != version:
-            raise JournalContinuityBlocked("Journal establishment version mismatch")
+        if len(raw) > LIMIT:
+            raise JournalContinuityBlocked("Journal establishment exceeds its bound")
         body = strict_loads(raw)
         if (
             not isinstance(body, dict)

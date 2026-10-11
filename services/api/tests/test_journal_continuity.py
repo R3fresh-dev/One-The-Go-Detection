@@ -39,13 +39,12 @@ class Journal:
         self.closed = False
 
     def head_object(self, **args):
-        assert args == {"Bucket": CONFIG.journal_bucket, "Key": CONTROL_KEY}
-        if self.version == "missing":
-            raise RuntimeError("Missing retained marker")
-        return {"VersionId": self.version}
+        raise AssertionError("Admission must read the current bytes/version atomically")
 
     def get_object(self, **args):
-        assert args["VersionId"] == self.version
+        assert args == {"Bucket": CONFIG.journal_bucket, "Key": CONTROL_KEY}
+        if self.version in ("missing", "delete-marker"):
+            raise RuntimeError("Current retained marker is missing")
         self.reads.append(args)
         stream = BytesIO(self.raw)
         self.stream = stream
@@ -78,6 +77,65 @@ def test_empty_database_binds_once_then_requires_exact_version(connection):
         bind_migration(connection, CONFIG, journal)
     with pytest.raises(JournalContinuityBlocked, match="do not match"):
         verify_binding(connection, CONFIG, journal)
+
+
+def test_each_admission_reads_current_marker_and_refuses_removed_versions(connection):
+    journal = Journal()
+    bind_migration(connection, CONFIG, journal)
+    for _ in range(2):
+        verify_binding(connection, CONFIG, journal)
+    assert len(journal.reads) == 3
+    for version in ("delete-marker", "missing"):
+        journal.version = version
+        with pytest.raises(JournalContinuityBlocked, match="unavailable"):
+            verify_binding(connection, CONFIG, journal)
+
+
+def test_returned_unversioned_marker_closes_body():
+    journal = Journal(version="null")
+    with pytest.raises(JournalContinuityBlocked, match="version"):
+        read_establishment(CONFIG, journal)
+    assert journal.stream.closed
+
+
+def test_http_write_rechecks_replaced_marker_after_rate_commit(client, account, monkeypatch):
+    import hashlib
+    from uuid import uuid4
+    from otgd.config import settings
+    from otgd.db import Check, RateBucket, factory
+    from .conftest import headers
+
+    cfg = settings().model_copy(update={
+        "environment": "test", "independent_recovery_admission": True,
+        "journal_bucket": CONFIG.journal_bucket, "aws_region": CONFIG.aws_region,
+    })
+    journal = Journal({**BODY, "environment": "test"})
+    with factory().begin() as db:
+        bind_migration(db, cfg, journal, expected_version=journal.version,
+                       expected_sha256=hashlib.sha256(journal.raw).hexdigest())
+    monkeypatch.setattr("otgd.config.settings", lambda: cfg)
+    monkeypatch.setattr("otgd.storage.client", lambda _: journal)
+    monkeypatch.setattr("otgd.recovery_authority.load_authority", lambda *_: {
+        "activation": None, "plan": {"accepted": {}, "barriers": {}},
+    })
+    original = journal.get_object
+
+    def replaced_at_second_admission(**kwargs):
+        if len(journal.reads) == 2:
+            journal.version = "same-bytes-replaced-after-rate-commit"
+        return original(**kwargs)
+
+    monkeypatch.setattr(journal, "get_object", replaced_at_second_admission)
+    sid = str(uuid4())
+    response = client.post("/v1/sessions", headers={
+        **headers(), "X-Data-Generation": "1", "Idempotency-Key": str(uuid4()),
+    }, json={"session_id": sid, "mode": "synthetic", "protocol_id": None})
+    assert response.status_code == 503
+    assert response.json()["code"] == "INDEPENDENT_RECOVERY_NOT_VERIFIED"
+    assert len(journal.reads) == 3
+    with factory()() as db:
+        assert db.get(Check, sid) is None
+        assert db.get(RateBucket, account + ":write") is not None
 
 
 def test_retained_database_never_automatically_adopts_journal(connection, monkeypatch):

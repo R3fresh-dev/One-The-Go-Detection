@@ -4333,7 +4333,7 @@
       },
       {
         "file": "apps/mobile/modules/eye-capture/ios/OTGDEyeCaptureView.swift",
-        "sha256": "c62cd1344fafe4fefb32774b0cb39bba9bac658773d4be6ae99ab9529d8b9ecd",
+        "sha256": "97acdecfe021c09726c35a68fc05fec1ec99339653149b06cb204ec507f86a88",
         "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
       },
       {
@@ -4438,7 +4438,7 @@
       },
       {
         "file": "services/api/otgd/journal_continuity.py",
-        "sha256": "1c6ff2136f34e1a0bbed2ceaff52884bb2dd13f335bb1b92210ff077e9b03ce0",
+        "sha256": "09eb707c29150acd3e6b520f23e600df1b320ac24d8e3ec1b172b309c60332d2",
         "snapshot_kind": "Concurrent observed source snapshot; not exact-revision aggregate evidence."
       },
       {

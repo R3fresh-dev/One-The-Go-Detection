@@ -50,6 +50,15 @@ def lock_identity(db, subject):
     if subject not in {"local-" + account for account in FICTIONAL_ACCOUNTS}:
         raise ValueError("Only named fictional local identities are supported")
     ident = "identity-" + sha(subject)
+    locked = (
+        select(OAuthRecord)
+        .where(OAuthRecord.id == ident)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    existing = db.scalar(locked)
+    if existing is not None:
+        return existing
     insert = pg_insert if db.bind.dialect.name == "postgresql" else sqlite_insert
     db.execute(
         insert(OAuthRecord)
@@ -62,12 +71,7 @@ def lock_identity(db, subject):
         )
         .on_conflict_do_nothing(index_elements=["id"])
     )
-    return db.scalar(
-        select(OAuthRecord)
-        .where(OAuthRecord.id == ident)
-        .with_for_update()
-        .execution_options(populate_existing=True)
-    )
+    return db.scalar(locked)
 
 
 def lock_family(db, family):

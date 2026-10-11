@@ -392,6 +392,40 @@ def test_postgres_simultaneous_refresh_reuse_revokes_the_winning_rotation(issuer
 
 
 @pytest.mark.postgres
+def test_postgres_missing_identity_race_preserves_committed_disablement(issuer):
+    assert engine().dialect.name == "postgresql"
+    assert os.environ.get("OTGD_DISPOSABLE_DATABASE") == "true"
+    subject = "local-fixture_b"
+    locked, release, retry_started = Event(), Event(), Event()
+
+    def disable_first_creation():
+        with factory().begin() as db:
+            identity = local_oauth_state.lock_identity(db, subject)
+            identity.consumed = True
+            locked.set()
+            assert release.wait(5)
+
+    def simultaneous_creation():
+        retry_started.set()
+        with factory().begin() as db:
+            return local_oauth_state.lock_identity(db, subject).consumed
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(disable_first_creation)
+        assert locked.wait(5)
+        second = pool.submit(simultaneous_creation)
+        try:
+            assert retry_started.wait(5)
+            assert not second.done()
+        finally:
+            release.set()
+        first.result(timeout=10)
+        assert second.result(timeout=10) is True
+    with factory().begin() as db:
+        assert local_oauth_state.lock_identity(db, subject).consumed is True
+
+
+@pytest.mark.postgres
 def test_postgres_family_admission_is_rechecked_after_delayed_preprovision_read(
     issuer, client, monkeypatch
 ):
