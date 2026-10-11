@@ -19,6 +19,8 @@ Mobile TSX views are covered by the separate browser component/journey checks; t
 
 `scripts/ci_gate.py` is the shared local/CI entry point. Test reports are removed before execution. Mandatory JUnit tests must exist and have no failure, error or skipped cases. The infrastructure runner also rejects zero tests, skips, expected failures and unexpected successes. Mobile coverage rejects skipped/cancelled/TODO tests and records its source inventory. GitHub uploads current coverage, JUnit, browser and performance evidence as artifacts.
 
+SwiftPM's XCTest XML is generated through its parallel runner with one worker. The native gate preserves the test process exit status and checks every XML case against the actual verbose XCTest start/pass log, rejecting skips and expected failures. Both files are uploaded; a missing report cannot count as a passing native test run.
+
 ## Run locally
 
 Use the canonical application directories: `services/api`, `apps/mobile`, `infra` and `deploy`.

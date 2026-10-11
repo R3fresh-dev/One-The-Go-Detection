@@ -152,9 +152,15 @@ jobs:
       - run: node modules/scripts/verify-native-assets.mjs
         working-directory: apps/mobile
       - name: Run actual Swift core golden suites on macOS
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p reports
-          swift test --package-path apps/mobile/modules/reaction-task --xunit-output "$PWD/reports/ios-native.xml"
+          swift test --package-path apps/mobile/modules/reaction-task \
+            --parallel --num-workers 1 --verbose --disable-swift-testing \
+            --xunit-output "$PWD/reports/ios-native.xml" \
+            2>&1 | tee reports/ios-native.log
+          python3 scripts/verify-swift-xctest.py reports/ios-native.xml reports/ios-native.log
           python3 scripts/ci_gate.py verify-junit reports/ios-native.xml
       - name: Generate and install iOS native project dependencies
         run: |
@@ -174,7 +180,9 @@ jobs:
         if: always()
         with:
           name: ios-native-test-results
-          path: reports/ios-native.xml
+          path: |
+            reports/ios-native.xml
+            reports/ios-native.log
           if-no-files-found: error
           retention-days: 14
       - name: Evidence boundary
