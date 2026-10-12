@@ -20,7 +20,10 @@ health from a successful infrastructure update.
 The repository contains the two secret names the owner confirmed:
 
 - `ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
+- `SECRET_ACCESS_KEY`
+
+GitHub stores secret names in uppercase; this is the owner-provided
+`Secret_access_key` name.
 
 The workflow reads those exact names. It does not rename them or require their
 values in chat, a configuration file, source control, or a deployment bundle.

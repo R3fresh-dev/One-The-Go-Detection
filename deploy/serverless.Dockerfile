@@ -25,7 +25,7 @@ USER 10001
 FROM common AS api
 COPY --from=adapter /lambda-adapter /opt/extensions/lambda-adapter
 ENV AWS_LWA_INVOKE_MODE=response_stream AWS_LWA_PORT=8000 AWS_LWA_READINESS_CHECK_PATH=/health/live AWS_LWA_ASYNC_INIT=true
-CMD ["uv","run","--no-sync","uvicorn","otgd.main:app","--host","0.0.0.0","--port","8000","--no-access-log","--limit-concurrency","100","--timeout-graceful-shutdown","100"]
+CMD ["/usr/local/bin/uv","run","--no-sync","uvicorn","otgd.main:app","--host","0.0.0.0","--port","8000","--no-access-log","--limit-concurrency","100","--timeout-graceful-shutdown","100"]
 FROM common AS worker
-ENTRYPOINT ["uv","run","--no-sync","python","/app/scripts/serverless_runtime.py"]
+ENTRYPOINT ["/usr/local/bin/uv","run","--no-sync","python","/app/scripts/serverless_runtime.py"]
 CMD ["otgd.serverless_worker.sqs_handler"]

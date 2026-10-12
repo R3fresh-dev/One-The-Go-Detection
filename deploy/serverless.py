@@ -482,7 +482,7 @@ def main(argv=None):
                 'account': c['account'], 'region': c['region'], 'budget_plan': price,
                 'architecture': 'Lambda API/workers, Aurora Serverless PostgreSQL, Cognito, SQS, S3/CloudFront, DynamoDB runtime control and CloudWatch',
                 'database_idle_capacity': 0, 'database_maximum_capacity_acus': 1,
-                'credential_route': 'GitHub repository secrets ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY',
+                'credential_route': 'GitHub repository secrets ACCESS_KEY_ID and SECRET_ACCESS_KEY',
                 'remaining_live_checks': ['Exact main CI', 'AWS IPv6 routing and streaming', 'Actual health and alarm delivery', 'Backup restore']}
         else:
             with identity_selection(args.identity) as selected:
