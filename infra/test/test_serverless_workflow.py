@@ -4,12 +4,17 @@ These checks validate the credential boundary without contacting AWS or GitHub.
 Live release evidence remains the responsibility of deploy.provenance.
 """
 import ast
+from contextlib import contextmanager
+import hashlib
+import io
 import json
 import os
 from pathlib import Path
+import stat
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
+import zipfile
 
 import yaml
 
@@ -18,6 +23,7 @@ from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / '.github/workflows/deploy-serverless.yml'
 REVISION = 'a' * 40
+PREVIOUS_REVISION = 'b' * 40
 
 
 def workflow_admission():
@@ -34,6 +40,55 @@ def gate_run(run_id, *, conclusion='success', status='completed', **changes):
     return {'id': run_id, 'head_sha': REVISION, 'path': WORKFLOW_PATH,
             'event': 'push', 'head_branch': 'main', 'status': status,
             'conclusion': conclusion, **changes}
+
+
+def deployment_run(**changes):
+    return {'id': 30, 'workflow_id': 3, 'run_attempt': 1, 'head_sha': PREVIOUS_REVISION,
+            'name': 'Deploy serverless development to AWS',
+            'path': '.github/workflows/deploy-serverless.yml', 'event': 'workflow_dispatch',
+            'head_branch': 'main', 'status': 'completed', 'conclusion': 'failure',
+            'repository': {'id': 42, 'full_name': REPOSITORY},
+            'head_repository': {'id': 42, 'full_name': REPOSITORY},
+            'run_started_at': '2026-10-12T12:00:00Z', 'updated_at': '2026-10-12T12:30:00Z',
+            **changes}
+
+
+def recovery_artifact(**changes):
+    return {'id': 40, 'name': f'serverless-deployment-{PREVIOUS_REVISION}-30',
+            'expired': False, 'size_in_bytes': 1000, 'created_at': '2026-10-12T12:29:00Z',
+            'workflow_run': {'id': 30, 'head_sha': PREVIOUS_REVISION, 'head_branch': 'main',
+                             'repository_id': 42, 'head_repository_id': 42}, **changes}
+
+
+def blocked_manifest(**changes):
+    return {'schema_version': '1.0.0', 'operation': 'serverless-initial-recovery',
+            'account': '738470137867', 'region': 'us-east-2',
+            'stack_name': 'otgd-serverless-development', 'release_id': PREVIOUS_REVISION,
+            'original_release_id': 'c' * 40,
+            'status': 'blocked-recovery-inspect-protected-journal-before-retry',
+            'failed_phase': 'failed-stack-metadata-detached', 'actual_resources_deleted': False,
+            'application_deployment_completed': False, **changes}
+
+
+def archive_bytes(entries):
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, 'w') as archive:
+        for name, raw, mode in entries:
+            entry = zipfile.ZipInfo(name)
+            entry.external_attr = mode << 16
+            archive.writestr(entry, raw)
+    return stream.getvalue()
+
+
+@contextmanager
+def temporary_working_directory():
+    previous = Path.cwd()
+    with tempfile.TemporaryDirectory() as directory:
+        try:
+            os.chdir(directory)
+            yield Path(directory)
+        finally:
+            os.chdir(previous)
 
 
 class ServerlessWorkflowTest(unittest.TestCase):
@@ -148,6 +203,18 @@ class ServerlessWorkflowTest(unittest.TestCase):
         self.assertEqual(set(trigger), {'workflow_dispatch'})
         self.assertFalse(trigger['workflow_dispatch']['inputs']['establish_new']['default'])
         self.assertFalse(trigger['workflow_dispatch']['inputs']['recover_initial']['default'])
+        resume_input = trigger['workflow_dispatch']['inputs']['resume_initial_run_id']
+        self.assertEqual(resume_input['type'], 'string')
+        self.assertEqual(resume_input['default'], '')
+        self.assertFalse(resume_input['required'])
+        entrypoint = ast.parse(steps[gate_index]['run'].split("<<'PYCODE'\n", 1)[1].rsplit('\nPYCODE', 1)[0])
+        main = next(node for node in entrypoint.body if isinstance(node, ast.If))
+        calls = [statement.value.func.id for statement in main.body[0].body
+                 if isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Call)]
+        self.assertEqual(calls, ['admit', 'admit_resume'])
+        deployment = next(step for step in steps if 'serverless.py deploy' in step.get('run', ''))
+        self.assertIn('--resume-initial "$RESUME_INITIAL_PATH" --resume-initial-sha256 "$RESUME_INITIAL_SHA256"',
+                      deployment['run'])
         credentials = steps[credential_index]['with']
         self.assertEqual(credentials['aws-access-key-id'], '${{ secrets.ACCESS_KEY_ID }}')
         self.assertEqual(credentials['aws-secret-access-key'], '${{ secrets.SECRET_ACCESS_KEY }}')
@@ -165,6 +232,8 @@ class ServerlessWorkflowTest(unittest.TestCase):
         paths = set(upload['with']['path'].splitlines())
         self.assertEqual(paths, {
             '.local/serverlessconfig/gate-admission.json',
+            '.local/serverlessconfig/resume-admission.json',
+            '.local/serverlessconfig/resume-source/original-initial-recovery.json',
             'reports/serverless-plan.json', 'reports/serverless-deploy.json',
             '.local/deploy/serverless-development/**/deployment.json',
             '.local/deploy/serverless-development/**/deployment-state.json',
@@ -174,6 +243,192 @@ class ServerlessWorkflowTest(unittest.TestCase):
         credentials = next(i for i, step in enumerate(steps) if step.get('id') == 'credentials')
         tooling = next(i for i, step in enumerate(steps) if 'docker buildx version' in step.get('run', ''))
         self.assertLess(tooling, credentials)
+
+    def test_resume_requires_explicit_both_flags_and_bounded_numeric_run_id(self):
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertIsNone(self.program['resume_run_id']())
+            self.program['github_json'] = Mock()
+            self.program['admit_resume']()
+            self.program['github_json'].assert_not_called()
+        for value in ('0', '-30', '+30', '030', '30.0', '30\n', ' 30', 'true',
+                      '9007199254740992', '1' * 1000):
+            with self.subTest(value=value), patch.dict(os.environ, {
+                    'RESUME_INITIAL_RUN_ID': value, 'ESTABLISH_NEW': 'true', 'RECOVER_INITIAL': 'true'}, clear=True):
+                with self.assertRaisesRegex(Gate, 'numeric'):
+                    self.program['resume_run_id']()
+        for establish, recover in (('false', 'true'), ('true', 'false'), ('false', 'false'), ('True', 'true')):
+            with self.subTest(establish=establish, recover=recover), patch.dict(os.environ, {
+                    'RESUME_INITIAL_RUN_ID': '30', 'ESTABLISH_NEW': establish, 'RECOVER_INITIAL': recover}, clear=True):
+                with self.assertRaisesRegex(Gate, 'requires recover_initial and establish_new'):
+                    self.program['resume_run_id']()
+        with patch.dict(os.environ, {'RESUME_INITIAL_RUN_ID': '30', 'ESTABLISH_NEW': 'true',
+                                   'RECOVER_INITIAL': 'true'}, clear=True):
+            self.assertEqual(self.program['resume_run_id'](), 30)
+
+    def test_resume_source_run_requires_failed_main_dispatch_and_same_repository_workflow(self):
+        self.program['validate_resume_run'](deployment_run(), 30)
+        for changes in ({'id': 31}, {'id': True}, {'workflow_id': True}, {'run_attempt': 0},
+                        {'head_sha': REVISION.upper()}, {'path': '.github/workflows/merge-gate.yml'},
+                        {'name': 'Different deployment'}, {'event': 'pull_request'}, {'head_branch': 'feature'},
+                        {'status': 'in_progress'}, {'conclusion': 'success'}, {'conclusion': 'cancelled'},
+                        {'repository': None}, {'head_repository': {'id': 43, 'full_name': REPOSITORY}},
+                        {'repository': {'id': 42, 'full_name': 'attacker/fork'}},
+                        {'head_repository': {'id': 42, 'full_name': 'attacker/fork'}}):
+            with self.subTest(changes=changes), self.assertRaisesRegex(Gate, 'trusted deployment'):
+                self.program['validate_resume_run'](deployment_run(**changes), 30)
+
+    def test_resume_artifact_metadata_binds_source_attempt_and_rejects_ambiguous_inventory(self):
+        artifact = recovery_artifact()
+        self.program['github_json'] = Mock(return_value={'total_count': 1, 'artifacts': [artifact]})
+        self.assertEqual(self.program['select_resume_artifact'](deployment_run()), artifact)
+        self.assertIn(f'actions/runs/30/artifacts?name={artifact["name"]}',
+                      self.program['github_json'].call_args.args[0])
+        invalid_inventory = (
+            {'total_count': 0, 'artifacts': []}, {'total_count': 2, 'artifacts': [artifact, artifact]},
+            {'total_count': True, 'artifacts': [artifact]}, {'total_count': 1, 'artifacts': [None]},
+            {'total_count': 101, 'artifacts': [artifact] * 101}, {'total_count': 2, 'artifacts': [artifact]},
+            {'total_count': 1, 'artifacts': [recovery_artifact(name='different')]})
+        for inventory in invalid_inventory:
+            self.program['github_json'] = Mock(return_value=inventory)
+            with self.subTest(inventory=inventory), self.assertRaises(Gate):
+                self.program['select_resume_artifact'](deployment_run())
+        for changes in ({'id': True}, {'expired': True}, {'size_in_bytes': 0}, {'size_in_bytes': 8_388_609},
+                        {'created_at': '2026-10-12T11:59:00Z'}, {'created_at': '2026-10-12T12:31:00Z'},
+                        {'created_at': 'invalid'}, {'created_at': '2026-10-12T12:29:00'},
+                        {'workflow_run': None}, {'workflow_run': {}}):
+            self.program['github_json'] = Mock(return_value={
+                'total_count': 1, 'artifacts': [recovery_artifact(**changes)]})
+            with self.subTest(changes=changes), self.assertRaises(Gate):
+                self.program['select_resume_artifact'](deployment_run())
+        for field, value in (('id', 31), ('head_sha', REVISION), ('head_branch', 'feature'),
+                             ('repository_id', 43), ('head_repository_id', 43)):
+            binding = {**artifact['workflow_run'], field: value}
+            self.program['github_json'] = Mock(return_value={
+                'total_count': 1, 'artifacts': [recovery_artifact(workflow_run=binding)]})
+            with self.subTest(field=field), self.assertRaises(Gate):
+                self.program['select_resume_artifact'](deployment_run())
+
+    def test_archive_accepts_only_one_bounded_regular_manifest_without_extracting_paths(self):
+        raw = json.dumps(blocked_manifest()).encode()
+        regular = stat.S_IFREG | 0o600
+        valid = [('receipts/initial-recovery.json', raw, regular),
+                 ('receipts/deployment-state.json', b'{}', regular),
+                 ('resume-source/original-initial-recovery.json', b'old source', regular)]
+        with temporary_working_directory():
+            path = Path('artifact.zip')
+            path.write_bytes(archive_bytes(valid))
+            path.chmod(0o600)
+            self.assertEqual(self.program['manifest_from_archive'](path), raw)
+            self.assertFalse(Path('receipts').exists())
+            invalid_entries = (
+                [], valid + [('other/initial-recovery.json', raw, regular)],
+                [('initial-recovery.json', raw, stat.S_IFLNK | 0o777)],
+                [('initial-recovery.json', raw, stat.S_IFIFO | 0o600)],
+                [('initial-recovery.json/', b'', stat.S_IFDIR | 0o700)],
+                [('initial-recovery.json', b'', regular)],
+                [('initial-recovery.json', b'x' * 262_145, regular)],
+                [('../initial-recovery.json', raw, regular)],
+                [('/initial-recovery.json', raw, regular)],
+                [('unsafe\\initial-recovery.json', raw, regular)],
+                valid + [(f'other/{number}', b'', regular) for number in range(101)],
+                valid + [('large-file', b'x' * 8_388_609, regular)])
+            for entries in invalid_entries:
+                path.write_bytes(archive_bytes(entries))
+                with self.subTest(entries=[item[0] for item in entries]), self.assertRaises(Gate):
+                    self.program['manifest_from_archive'](path)
+            path.write_bytes(b'not a zip archive')
+            with self.assertRaisesRegex(Gate, 'malformed'):
+                self.program['manifest_from_archive'](path)
+            path.write_bytes(archive_bytes(valid))
+            Path('linked.zip').symlink_to(path)
+            with self.assertRaises(Gate):
+                self.program['manifest_from_archive'](Path('linked.zip'))
+
+    def test_resume_manifest_rejects_mismatched_target_source_and_unsupported_failure(self):
+        manifest = blocked_manifest()
+        self.assertEqual(self.program['validate_resume_manifest'](json.dumps(manifest).encode(), deployment_run()), manifest)
+        for changes in ({'schema_version': '2.0.0'}, {'operation': 'other'}, {'account': '123456789012'},
+                        {'region': 'us-east-1'}, {'stack_name': 'otgd-qa'}, {'environment': 'qa'},
+                        {'release_id': REVISION}, {'status': 'failed-stack-metadata-detached'},
+                        {'status': 'uninitialized-retained-resources-imported'},
+                        {'failed_phase': 'import-change-set-created'}, {'failed_phase': 'import-executing'},
+                        {'actual_resources_deleted': True}, {'application_deployment_completed': True}):
+            with self.subTest(changes=changes), self.assertRaisesRegex(Gate, 'differs'):
+                self.program['validate_resume_manifest'](json.dumps(blocked_manifest(**changes)).encode(), deployment_run())
+        for raw in (b'not json', b'[]', b'{"status":"blocked","status":"failed"}'):
+            with self.subTest(raw=raw), self.assertRaises(Gate):
+                self.program['validate_resume_manifest'](raw, deployment_run())
+
+    @contextmanager
+    def resume_fixture(self, *, source=None, artifact_download=0, historical_download=0,
+                       proof=None, current=None, workflow_changes=None):
+        run = deployment_run()
+        workflow = {'id': 3, 'path': run['path'], 'name': run['name'], 'state': 'active',
+                    **(workflow_changes or {})}
+        artifact = recovery_artifact()
+        self.program['github_json'] = Mock(side_effect=[
+            run, workflow, {'total_count': 1, 'artifacts': [artifact]}, current or run])
+        self.program['select_latest_gate'] = Mock(return_value=50)
+        raw = source if source is not None else json.dumps(blocked_manifest(), indent=2).encode() + b'\n'
+        archive = archive_bytes([('journal/initial-recovery.json', raw, stat.S_IFREG | 0o600)])
+        def download(command, **options):
+            if command[:2] == ['gh', 'api']:
+                options['stdout'].write(archive)
+                return Mock(returncode=artifact_download)
+            if command[:3] == ['gh', 'run', 'download']:
+                return Mock(returncode=historical_download)
+            raise AssertionError(command)
+        with temporary_working_directory() as directory, patch.dict(os.environ, {
+                'RESUME_INITIAL_RUN_ID': '30', 'ESTABLISH_NEW': 'true', 'RECOVER_INITIAL': 'true',
+                'GITHUB_ENV': str(directory / 'github-environment')}, clear=True), \
+                patch.object(self.program['subprocess'], 'run', side_effect=download) as downloaded, \
+                patch.object(self.program['platform'], 'verify_gate_file',
+                             return_value=proof or {'run_id': 50, 'head_sha': PREVIOUS_REVISION}) as verify:
+            yield directory, raw, downloaded, verify
+
+    def test_resume_admission_preserves_exact_source_hash_and_verifies_separate_historical_gates(self):
+        with self.resume_fixture() as (directory, raw, downloaded, verify):
+            self.program['admit_resume']()
+            source = Path('.local/serverlessconfig/resume-source/original-initial-recovery.json')
+            self.assertEqual(source.read_bytes(), raw)
+            self.assertEqual(source.stat().st_mode & 0o777, 0o600)
+            receipt = json.loads(Path('.local/serverlessconfig/resume-admission.json').read_text())
+            self.assertEqual(receipt['source_manifest_sha256'], hashlib.sha256(raw).hexdigest())
+            self.assertEqual(receipt['source_run_id'], 30)
+            self.assertEqual(receipt['source_artifact_id'], 40)
+            self.assertEqual(receipt['source_release_id'], PREVIOUS_REVISION)
+            self.program['select_latest_gate'].assert_called_once_with(PREVIOUS_REVISION)
+            verify.assert_called_once_with(Path('.local/serverlessconfig/resume-gates/gates.json'), PREVIOUS_REVISION)
+            self.assertEqual(downloaded.call_args_list[0].args[0],
+                             ['gh', 'api', f'repos/{REPOSITORY}/actions/artifacts/40/zip'])
+            self.assertIn('50', downloaded.call_args_list[1].args[0])
+            self.assertEqual((directory / 'github-environment').read_text(),
+                             f'RESUME_INITIAL_PATH={source}\nRESUME_INITIAL_SHA256={hashlib.sha256(raw).hexdigest()}\n')
+            self.assertFalse(Path('.local/serverlessconfig/gates').exists())
+
+    def test_resume_never_exports_cli_authority_after_failed_history_download_or_source_rerun(self):
+        cases = ({'artifact_download': 1}, {'historical_download': 1}, {'proof': {'run_id': 51}},
+                 {'current': deployment_run(run_attempt=2)}, {'current': deployment_run(conclusion='success')},
+                 {'source': json.dumps(blocked_manifest(release_id=REVISION)).encode()},
+                 {'workflow_changes': {'path': 'other.yml'}}, {'workflow_changes': {'state': 'disabled_manually'}})
+        for case in cases:
+            with self.subTest(case=case), self.resume_fixture(**case) as (directory, raw, downloaded, verify):
+                with self.assertRaises(Gate):
+                    self.program['admit_resume']()
+                self.assertFalse(Path('.local/serverlessconfig/resume-admission.json').exists())
+                self.assertFalse((directory / 'github-environment').exists())
+        with self.resume_fixture() as (directory, raw, downloaded, verify):
+            verify.side_effect = Gate('Historical required job failed')
+            with self.assertRaisesRegex(Gate, 'Historical required job failed'):
+                self.program['admit_resume']()
+            self.assertFalse((directory / 'github-environment').exists())
+        with self.resume_fixture() as (directory, raw, downloaded, verify):
+            self.program['select_latest_gate'].side_effect = Gate('The latest trusted gate failed')
+            with self.assertRaisesRegex(Gate, 'latest trusted'):
+                self.program['admit_resume']()
+            verify.assert_not_called()
+            self.assertEqual(downloaded.call_count, 1)
+            self.assertFalse((directory / 'github-environment').exists())
 
 
 if __name__ == '__main__':

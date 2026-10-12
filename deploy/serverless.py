@@ -425,6 +425,12 @@ def deploy(args, c, aws, price):
     recovering = getattr(args, 'recover_initial', False)
     if recovering and not args.establish_new:
         raise Gate('Initial infrastructure recovery requires explicit first-empty-journal initialization')
+    resume = getattr(args, 'resume_initial', None)
+    resume_hash = getattr(args, 'resume_initial_sha256', None)
+    if bool(resume) != bool(resume_hash):
+        raise Gate('Initial recovery resume requires the original manifest and its independently verified SHA-256')
+    if resume and (not recovering or not re.fullmatch(r'[0-9a-f]{64}', resume_hash)):
+        raise Gate('Initial recovery resume requires explicit recovery and a valid original manifest SHA-256')
     prior = None if recovering else stable_stack(aws, STACK, absent_ok=True)
     c = preflight(aws, c, prior)
     if prior is not None and args.establish_new:
@@ -433,8 +439,12 @@ def deploy(args, c, aws, price):
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
         if recovering:
-            from deploy.serverless_recovery import recover_initial
-            journal.call('recover-initial-retained-resources', recover_initial, aws, c, work / 'initial-recovery.json')
+            from deploy.serverless_recovery import recover_initial, resume_initial
+            if resume:
+                journal.call('resume-initial-retained-resources', resume_initial, aws, c,
+                    work / 'initial-recovery.json', resume, resume_hash)
+            else:
+                journal.call('recover-initial-retained-resources', recover_initial, aws, c, work / 'initial-recovery.json')
         registry = journal.call('serverless-registry', deploy_stack, aws, STACK + '-registry', build_template(c, phase='registry'), c)
         source = work / 'source.tar'
         journal.call('exact-source-archive', platform.run, ['git', 'archive', '--format=tar', '--output', str(source), c['releaseId']])
@@ -482,10 +492,17 @@ def main(argv=None):
     parser.add_argument('--gate-evidence', type=Path)
     parser.add_argument('--establish-new', action='store_true')
     parser.add_argument('--recover-initial', action='store_true', help='Import retained resources from a verified empty first-attempt infrastructure rollback; never use for an initialized deployment')
+    parser.add_argument('--resume-initial', type=Path, help='Resume detached initial recovery from the original protected manifest; requires --recover-initial and --establish-new')
+    parser.add_argument('--resume-initial-sha256', help='Independently verified SHA-256 of the original recovery manifest')
     args = parser.parse_args(argv)
     try:
         if args.profile and args.identity:
             raise Gate('Choose one AWS identity selector')
+        if args.resume_initial or args.resume_initial_sha256:
+            if (args.operation != 'deploy' or not args.recover_initial or not args.establish_new
+                    or not args.resume_initial or not args.resume_initial_sha256
+                    or not re.fullmatch(r'[0-9a-f]{64}', args.resume_initial_sha256)):
+                raise Gate('Initial recovery resume requires deploy, both recovery flags, the original manifest and its verified SHA-256')
         c = read_config(args.config)
         price = budget(c)
         if args.operation == 'plan':

@@ -1,5 +1,6 @@
 """First-stack recovery contracts; these fixtures are not AWS acceptance proof."""
 from copy import deepcopy
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -66,18 +67,19 @@ class FakeCloud:
         self.tags = [{'Key': 'deployment', 'Value': recovery.STACK},
                      {'Key': 'environment', 'Value': 'serverless-development'}]
         self.status = 'ROLLBACK_COMPLETE'
+        self.original_deleted = False
+        self.import_tags = []
         self.protection = True
         self.clients = {name: Mock(name=name) for name in
             ('sts', 'cloudformation', 'rds', 'lambda', 's3', 'dynamodb', 'cognito-idp', 'secretsmanager', 'kms', 'logs')}
         self.aws = SimpleNamespace(client=lambda name: self.clients[name])
         self.clients['sts'].get_caller_identity.return_value = {'Account': ACCOUNT}
         cf = self.clients['cloudformation']
-        cf.describe_stacks.side_effect = lambda **kwargs: {'Stacks': [{'StackId':
-            NEW_STACK if self.status == 'IMPORT_COMPLETE' else OLD_STACK,
-            'StackStatus': self.status, 'EnableTerminationProtection': self.protection,
-            'Tags': [{'Key': 'deployment', 'Value': recovery.STACK},
-                     {'Key': 'purpose', 'Value': 'serverless-development'}]}]}
-        cf.get_template.side_effect = lambda **kwargs: {'TemplateBody': deepcopy(self.template)}
+        cf.describe_stacks.side_effect = self.describe_stacks
+        cf.get_template.side_effect = lambda **kwargs: {'TemplateBody': deepcopy(
+            {'AWSTemplateFormatVersion': '2010-09-09',
+             'Description': 'Retained resources from the uninitialized first serverless deployment',
+             'Resources': self.retained} if kwargs['StackName'] == NEW_STACK else self.template)}
         cf.get_template_summary.side_effect = self.summary
         cf.get_paginator.side_effect = self.paginator
         cf.get_waiter.side_effect = self.waiter
@@ -111,6 +113,18 @@ class FakeCloud:
             'logGroupName': kwargs['logGroupNamePrefix'], 'arn': 'arn:fixture:logs:' + kwargs['logGroupNamePrefix'] + ':*'}]}
         logs.list_tags_for_resource.return_value = {'tags': {tag['Key']: tag['Value'] for tag in self.tags}}
 
+    def describe_stacks(self, **kwargs):
+        archived = kwargs['StackName'] == OLD_STACK
+        if not archived and self.status == 'ABSENT':
+            raise ClientError({'Error': {'Code': 'ValidationError',
+                'Message': f'Stack with id {recovery.STACK} does not exist'}}, 'DescribeStacks')
+        return {'Stacks': [{'StackId': OLD_STACK if archived or not self.original_deleted else NEW_STACK,
+            'StackStatus': 'DELETE_COMPLETE' if archived and self.original_deleted else self.status,
+            'EnableTerminationProtection': self.protection,
+            'Tags': [{'Key': 'deployment', 'Value': recovery.STACK},
+                     {'Key': 'purpose', 'Value': 'serverless-development'}]
+                    if archived or not self.original_deleted else self.import_tags}]}
+
     def summary(self, **kwargs):
         resources = json.loads(kwargs['TemplateBody'])['Resources']
         keys = {'AWS::KMS::Key': 'KeyId', 'AWS::SecretsManager::Secret': 'Id',
@@ -124,9 +138,14 @@ class FakeCloud:
         if operation == 'describe_stack_events':
             return SimpleNamespace(paginate=lambda **kwargs: [{'StackEvents': self.events}])
         if operation == 'list_stack_resources':
-            return SimpleNamespace(paginate=lambda **kwargs: [{'StackResourceSummaries':
-                [row for row in self.rows if row['LogicalResourceId'] in self.retained]
-                if self.status == 'IMPORT_COMPLETE' else self.rows}])
+            def paginate(**kwargs):
+                if kwargs['StackName'] == NEW_STACK:
+                    rows = [{**row, 'ResourceStatus': 'IMPORT_COMPLETE'} for row in self.rows
+                            if row['LogicalResourceId'] in self.retained]
+                else:
+                    rows = self.rows
+                return [{'StackResourceSummaries': rows}]
+            return SimpleNamespace(paginate=paginate)
         if operation == 'describe_change_set':
             return SimpleNamespace(paginate=lambda **kwargs: [{'Changes': [{'ResourceChange': {
                 'Action': 'Import', 'LogicalResourceId': name, 'ResourceType': value['Type']}}
@@ -135,7 +154,10 @@ class FakeCloud:
 
     def waiter(self, name):
         def wait(**kwargs):
-            if name == 'stack_import_complete':
+            if name == 'stack_delete_complete':
+                self.original_deleted = True
+                self.status = 'ABSENT'
+            elif name == 'stack_import_complete':
                 self.status = 'IMPORT_COMPLETE'
         return SimpleNamespace(wait=wait)
 
@@ -145,8 +167,23 @@ class FakeCloud:
             getattr(cf, operation).assert_not_called()
         for client in self.clients.values():
             for forbidden in ('get_secret_value', 'delete_bucket', 'delete_user_pool', 'delete_table',
-                              'delete_secret', 'schedule_key_deletion', 'delete_log_group', 'get_object'):
+                              'delete_secret', 'schedule_key_deletion', 'delete_log_group', 'get_object',
+                              'create_key', 'create_secret', 'create_bucket', 'create_table', 'create_user_pool'):
                 getattr(client, forbidden).assert_not_called()
+
+    def detached_manifest(self, directory):
+        source = recovery.initial_recovery_plan(self.aws, self.config)
+        source.update(status='blocked-recovery-inspect-protected-journal-before-retry',
+                      failed_phase='failed-stack-metadata-detached', failure_type='ClientError')
+        self.original_deleted = True
+        self.status = 'ABSENT'
+        self.events.insert(0, {'LogicalResourceId': recovery.STACK,
+            'ResourceType': 'AWS::CloudFormation::Stack', 'PhysicalResourceId': OLD_STACK,
+            'ResourceStatus': 'DELETE_COMPLETE'})
+        path = Path(directory) / 'source.json'
+        recovery._write(path, source)
+        self.config['releaseId'] = 'c' * 40
+        return path, source
 
 
 class InitialRecoveryTest(unittest.TestCase):
@@ -179,12 +216,13 @@ class InitialRecoveryTest(unittest.TestCase):
         cf = cloud.clients['cloudformation']
         call = cf.create_change_set.call_args.kwargs
         self.assertEqual(call['ChangeSetType'], 'IMPORT')
+        self.assertNotIn('Tags', call)
         self.assertEqual(json.loads(call['TemplateBody'])['Resources'], cloud.retained)
         self.assertEqual(call['ResourcesToImport'], result['resources_to_import'])
         self.assertEqual(cf.execute_change_set.call_count, 1)
         self.assertTrue(cloud.protection)
         self.assertEqual(cloud.clients['s3'].list_object_versions.call_count,
-                         2 * sum(value['Type'] == 'AWS::S3::Bucket' for value in cloud.retained.values()))
+                         3 * sum(value['Type'] == 'AWS::S3::Bucket' for value in cloud.retained.values()))
         for client in cloud.clients.values():
             for forbidden in ('delete_bucket', 'delete_secret', 'delete_user_pool', 'delete_table',
                               'schedule_key_deletion', 'get_secret_value', 'get_object'):
@@ -436,6 +474,242 @@ class InitialRecoveryTest(unittest.TestCase):
                 recovery.recover_initial(cloud.aws, cloud.config, path)
             self.assertEqual(path.read_text(), 'existing recovery evidence')
         cloud.no_mutations(self)
+
+    def test_detached_resume_preserves_source_and_every_identity_without_deleting_metadata(self):
+        cloud = FakeCloud()
+        with tempfile.TemporaryDirectory() as directory:
+            source_path, source = cloud.detached_manifest(directory)
+            original_bytes = source_path.read_bytes()
+            digest = hashlib.sha256(original_bytes).hexdigest()
+            destination = Path(directory) / 'resumed.json'
+            result = recovery.resume_initial(cloud.aws, cloud.config, destination, source_path, digest)
+            self.assertEqual(result['status'], 'uninitialized-retained-resources-imported')
+            self.assertEqual(result['retained_physical_ids'], cloud.physical)
+            self.assertEqual(result['original_stack_id'], OLD_STACK)
+            self.assertEqual(result['original_release_id'], 'b' * 40)
+            self.assertEqual(result['prior_recovery_release_id'], 'a' * 40)
+            self.assertEqual(result['release_id'], 'c' * 40)
+            self.assertEqual(result['import_template_sha256'], source['import_template_sha256'])
+            self.assertEqual(result['source_manifest_sha256'], digest)
+            self.assertEqual(result['canonical_import_template_sha256'], hashlib.sha256(json.dumps(
+                source['import_template'], sort_keys=True, separators=(',', ':')).encode()).hexdigest())
+            self.assertEqual(source_path.read_bytes(), original_bytes)
+            self.assertEqual(json.loads(destination.read_text()), result)
+            self.assertEqual(destination.stat().st_mode & 0o777, 0o600)
+        cf = cloud.clients['cloudformation']
+        cf.delete_stack.assert_not_called()
+        self.assertNotIn('Tags', cf.create_change_set.call_args.kwargs)
+        self.assertEqual(cf.create_change_set.call_args.kwargs['ResourcesToImport'], source['resources_to_import'])
+        self.assertEqual(cf.update_termination_protection.call_count, 1)
+        for client in cloud.clients.values():
+            for forbidden in ('create_key', 'create_secret', 'create_bucket', 'create_table', 'create_user_pool',
+                              'delete_bucket', 'delete_secret', 'delete_table', 'delete_user_pool',
+                              'schedule_key_deletion', 'get_secret_value', 'get_object'):
+                getattr(client, forbidden).assert_not_called()
+
+    def test_resume_canonical_comparison_accepts_changed_aws_and_descriptor_order(self):
+        cloud = FakeCloud()
+        with tempfile.TemporaryDirectory() as directory:
+            source_path, source = cloud.detached_manifest(directory)
+            cloud.rows.reverse()
+            source['resources_to_import'].reverse()
+            recovery._write(source_path, source)
+            # The legacy digest differs from reconstruction because AWS order
+            # changed. Canonical content and independently verified IDs match.
+            reconstructed = recovery._initial_recovery_plan(cloud.aws, cloud.config, OLD_STACK)
+            self.assertNotEqual(reconstructed['import_template_sha256'], source['import_template_sha256'])
+            result = recovery.resume_initial(cloud.aws, cloud.config, Path(directory) / 'resumed.json',
+                source_path, hashlib.sha256(source_path.read_bytes()).hexdigest())
+            self.assertEqual(result['retained_physical_ids'], cloud.physical)
+
+    def test_resume_hash_file_protection_and_json_ambiguity_block_all_mutations(self):
+        for kind in ('hash', 'hash-format', 'writable', 'duplicate', 'too-large', 'symlink'):
+            cloud = FakeCloud()
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                source_path, source = cloud.detached_manifest(directory)
+                if kind == 'writable':
+                    source_path.chmod(0o666)
+                elif kind == 'duplicate':
+                    source_path.write_text('{"status":"one","status":"two"}')
+                elif kind == 'too-large':
+                    source_path.write_text(' ' * 262145)
+                elif kind == 'symlink':
+                    target = Path(directory) / 'link.json'
+                    target.symlink_to(source_path)
+                    source_path = target
+                digest = hashlib.sha256(source_path.read_bytes()).hexdigest()
+                if kind == 'hash':
+                    digest = '0' * 64
+                elif kind == 'hash-format':
+                    digest = 'invalid'
+                destination = Path(directory) / 'resumed.json'
+                with self.assertRaises((Gate, OSError)):
+                    recovery.resume_initial(cloud.aws, cloud.config, destination, source_path, digest)
+                self.assertFalse(destination.exists())
+                cloud.no_mutations(self)
+
+    def test_resume_manifest_binding_or_authoritative_history_changes_block(self):
+        kinds = ('account', 'region', 'environment', 'stack', 'source-release', 'original-release',
+                 'phase', 'import-change', 'deleted-resources', 'legacy-hash', 'canonical-hash',
+                 'physical', 'type', 'properties', 'identifier', 'descriptor-duplicate',
+                 'history-app-created', 'history-missing', 'original-not-deleted')
+        for kind in kinds:
+            cloud = FakeCloud()
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                source_path, source = cloud.detached_manifest(directory)
+                if kind == 'account':
+                    source['account'] = '111111111111'
+                elif kind == 'region':
+                    source['region'] = 'us-west-2'
+                elif kind == 'environment':
+                    source['environment'] = 'production'
+                elif kind == 'stack':
+                    source['stack_name'] = 'other'
+                elif kind == 'source-release':
+                    source['release_id'] = 'not-a-reviewed-revision'
+                elif kind == 'original-release':
+                    source['original_release_id'] = 'd' * 40
+                elif kind == 'phase':
+                    source['failed_phase'] = 'detaching-failed-stack-metadata'
+                elif kind == 'import-change':
+                    source['import_change_set_id'] = 'unreviewed-change'
+                elif kind == 'deleted-resources':
+                    source['actual_resources_deleted'] = True
+                elif kind == 'legacy-hash':
+                    source['import_template_sha256'] = 'invalid'
+                elif kind == 'canonical-hash':
+                    source['canonical_import_template_sha256'] = '0' * 64
+                elif kind == 'physical':
+                    source['retained_physical_ids']['JournalKey'] = 'other-authority'
+                elif kind == 'type':
+                    source['import_template']['Resources']['JournalKey']['Type'] = 'AWS::KMS::Alias'
+                elif kind == 'properties':
+                    source['import_template']['Resources']['JournalKey']['Properties']['Description'] = 'changed'
+                elif kind == 'identifier':
+                    source['resources_to_import'][0]['ResourceIdentifier'] = {'WrongIdentifier': 'other'}
+                elif kind == 'descriptor-duplicate':
+                    source['resources_to_import'][0] = deepcopy(source['resources_to_import'][1])
+                elif kind == 'history-app-created':
+                    cloud.events.insert(0, {'LogicalResourceId': 'ApiFunction', 'ResourceStatus': 'CREATE_COMPLETE'})
+                elif kind == 'history-missing':
+                    cloud.events.pop()
+                else:
+                    cloud.original_deleted = False
+                recovery._write(source_path, source)
+                destination = Path(directory) / 'resumed.json'
+                with self.assertRaises(Gate):
+                    recovery.resume_initial(cloud.aws, cloud.config, destination, source_path,
+                        hashlib.sha256(source_path.read_bytes()).hexdigest())
+                self.assertFalse(destination.exists())
+                cloud.no_mutations(self)
+
+    def test_resume_requires_unchanged_live_initial_state_and_successful_original_reads(self):
+        for kind in ('journal', 'users', 'control', 'database', 'function', 'key', 'history-denied', 'absence-denied'):
+            cloud = FakeCloud()
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                source_path, _ = cloud.detached_manifest(directory)
+                if kind == 'journal':
+                    cloud.clients['s3'].list_object_versions.return_value = {'DeleteMarkers': [{'Key': 'initialized'}]}
+                elif kind == 'users':
+                    cloud.clients['cognito-idp'].list_users.return_value = {'Users': [{'Username': 'initialized'}]}
+                elif kind == 'control':
+                    cloud.clients['dynamodb'].scan.return_value = {'Count': 1}
+                elif kind in ('database', 'function'):
+                    target = cloud.clients['rds'].describe_db_clusters if kind == 'database' else cloud.clients['lambda'].get_function
+                    target.side_effect = None
+                    target.return_value = {}
+                elif kind == 'key':
+                    cloud.clients['kms'].describe_key.side_effect = absent('AccessDenied')
+                elif kind == 'history-denied':
+                    cloud.clients['cloudformation'].get_template.side_effect = absent('AccessDenied')
+                else:
+                    original = cloud.describe_stacks
+                    def denied(**kwargs):
+                        if kwargs['StackName'] == recovery.STACK:
+                            raise absent('AccessDenied')
+                        return original(**kwargs)
+                    cloud.clients['cloudformation'].describe_stacks.side_effect = denied
+                destination = Path(directory) / 'resumed.json'
+                with self.assertRaises((Gate, ClientError)):
+                    recovery.resume_initial(cloud.aws, cloud.config, destination, source_path,
+                        hashlib.sha256(source_path.read_bytes()).hexdigest())
+                self.assertFalse(destination.exists())
+                cloud.no_mutations(self)
+
+    def test_resume_admits_exact_untagged_import_complete_and_restores_protection(self):
+        cloud = FakeCloud()
+        with tempfile.TemporaryDirectory() as directory:
+            source_path, _ = cloud.detached_manifest(directory)
+            cloud.status = 'IMPORT_COMPLETE'
+            cloud.protection = False
+            result = recovery.resume_initial(cloud.aws, cloud.config, Path(directory) / 'resumed.json',
+                source_path, hashlib.sha256(source_path.read_bytes()).hexdigest())
+            self.assertEqual(result['recovered_stack_id'], NEW_STACK)
+            self.assertTrue(cloud.protection)
+        cf = cloud.clients['cloudformation']
+        cf.create_change_set.assert_not_called()
+        cf.execute_change_set.assert_not_called()
+        cf.delete_stack.assert_not_called()
+        cf.update_termination_protection.assert_called_once_with(StackName=NEW_STACK, EnableTerminationProtection=True)
+
+    def test_resume_blocks_other_stack_states_and_changed_imported_inventory(self):
+        for kind in ('REVIEW_IN_PROGRESS', 'IMPORT_IN_PROGRESS', 'UPDATE_COMPLETE', 'ROLLBACK_COMPLETE',
+                     'tags', 'physical', 'type', 'template'):
+            cloud = FakeCloud()
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                source_path, _ = cloud.detached_manifest(directory)
+                cloud.status = kind if kind.isupper() else 'IMPORT_COMPLETE'
+                if kind == 'tags':
+                    cloud.import_tags = [{'Key': 'deployment', 'Value': 'other'}]
+                elif kind in ('physical', 'type'):
+                    original_paginator = cloud.paginator
+                    def paginator(operation):
+                        original = original_paginator(operation)
+                        def paginate(**kwargs):
+                            pages = deepcopy(list(original.paginate(**kwargs)))
+                            if operation == 'list_stack_resources' and kwargs['StackName'] == NEW_STACK:
+                                pages[0]['StackResourceSummaries'][0][
+                                    'PhysicalResourceId' if kind == 'physical' else 'ResourceType'] = 'changed'
+                            return pages
+                        return SimpleNamespace(paginate=paginate)
+                    cloud.clients['cloudformation'].get_paginator.side_effect = paginator
+                elif kind == 'template':
+                    original_template = cloud.clients['cloudformation'].get_template.side_effect
+                    def template(**kwargs):
+                        result = original_template(**kwargs)
+                        if kwargs['StackName'] == NEW_STACK:
+                            result['TemplateBody']['Description'] = 'unreviewed'
+                        return result
+                    cloud.clients['cloudformation'].get_template.side_effect = template
+                destination = Path(directory) / 'resumed.json'
+                with self.assertRaises(Gate):
+                    recovery.resume_initial(cloud.aws, cloud.config, destination, source_path,
+                        hashlib.sha256(source_path.read_bytes()).hexdigest())
+                self.assertFalse(destination.exists())
+                cloud.no_mutations(self)
+
+    def test_resume_import_error_preserves_source_and_records_bounded_aws_diagnostic(self):
+        cloud = FakeCloud()
+        with tempfile.TemporaryDirectory() as directory:
+            source_path, _ = cloud.detached_manifest(directory)
+            original_bytes = source_path.read_bytes()
+            cloud.clients['cloudformation'].create_change_set.side_effect = ClientError({
+                'Error': {'Code': 'ValidationException', 'Message': 'fictional AWS import rejection'},
+                'ResponseMetadata': {'RequestId': 'fixture-request'}}, 'CreateChangeSet')
+            destination = Path(directory) / 'resumed.json'
+            with self.assertRaises(ClientError):
+                recovery.resume_initial(cloud.aws, cloud.config, destination, source_path,
+                    hashlib.sha256(original_bytes).hexdigest())
+            evidence = json.loads(destination.read_text())
+            self.assertEqual(evidence['failed_phase'], 'failed-stack-metadata-detached')
+            self.assertEqual(evidence['failure_operation'], 'CreateChangeSet')
+            self.assertEqual(evidence['failure_code'], 'ValidationException')
+            self.assertEqual(evidence['failure_request_id'], 'fixture-request')
+            self.assertNotIn('failure_message', evidence)
+            self.assertEqual(source_path.read_bytes(), original_bytes)
+            self.assertEqual(evidence['retained_physical_ids'], cloud.physical)
+        cloud.clients['cloudformation'].delete_stack.assert_not_called()
+        cloud.clients['cloudformation'].execute_change_set.assert_not_called()
 
     def test_dependency_parser_handles_substitution_variables_and_escaped_pseudo_parameters(self):
         self.assertEqual(recovery._references({'Fn::Sub': ['${Arn}/* ${DataKey.Arn} ${AWS::AccountId} ${!literal}',

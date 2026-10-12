@@ -13,6 +13,11 @@ on:
         required: true
         type: boolean
         default: false
+      resume_initial_run_id:
+        description: Resume detached initial recovery from one failed main deployment run; requires recover_initial and establish_new
+        required: false
+        type: string
+        default: ''
 
 # AWS access uses the two existing repository secrets. No OIDC token is issued.
 permissions:
@@ -59,16 +64,31 @@ jobs:
       - name: Admit only reviewed main sources with current successful mandatory gates
         id: admission
         shell: bash
+        env:
+          ESTABLISH_NEW: ${{ inputs.establish_new }}
+          RECOVER_INITIAL: ${{ inputs.recover_initial }}
+          RESUME_INITIAL_RUN_ID: ${{ inputs.resume_initial_run_id }}
         run: |
           set -euo pipefail
           uv run --project services/api python - <<'PYCODE'
+          from datetime import datetime
+          import hashlib
+          import io
           import json
           import os
-          from pathlib import Path
+          from pathlib import Path, PurePosixPath
           import re
+          import stat
           import subprocess
+          import zipfile
           from deploy import platform
-          from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH, trusted_branch
+          from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH, bounded_file, positive_int, trusted_branch
+          from otgd.canonical import strict_loads
+
+          DEPLOY_WORKFLOW_PATH = '.github/workflows/deploy-serverless.yml'
+          DEPLOY_WORKFLOW_NAME = 'Deploy serverless development to AWS'
+          MANIFEST_LIMIT = 262_144
+          ARCHIVE_LIMIT = 8_388_608
 
           def github_json(path):
               result = subprocess.run(['gh', 'api', path], capture_output=True, text=True, timeout=30)
@@ -139,9 +159,176 @@ jobs:
                   raise Gate('Downloaded gate evidence belongs to a different workflow run')
               (directory / 'gate-admission.json').write_text(json.dumps(proof, indent=2) + '\n')
 
+          def resume_run_id():
+              value = os.environ.get('RESUME_INITIAL_RUN_ID', '')
+              if value == '':
+                  return None
+              if not re.fullmatch(r'[1-9][0-9]{0,15}', value) or not positive_int(int(value)):
+                  raise Gate('Initial recovery source must be a positive numeric workflow run ID')
+              if (os.environ.get('ESTABLISH_NEW') != 'true'
+                      or os.environ.get('RECOVER_INITIAL') != 'true'):
+                  raise Gate('Initial recovery resume requires recover_initial and establish_new')
+              return int(value)
+
+          def validate_resume_run(run, run_id):
+              repository = run.get('repository')
+              head_repository = run.get('head_repository')
+              if (run.get('id') != run_id or not positive_int(run.get('id'))
+                      or not positive_int(run.get('workflow_id')) or not positive_int(run.get('run_attempt'))
+                      or run.get('path') != DEPLOY_WORKFLOW_PATH or run.get('name') != DEPLOY_WORKFLOW_NAME
+                      or run.get('event') != 'workflow_dispatch' or run.get('head_branch') != 'main'
+                      or run.get('status') != 'completed' or run.get('conclusion') != 'failure'
+                      or not isinstance(run.get('head_sha'), str)
+                      or not re.fullmatch(r'[0-9a-f]{40}', run['head_sha'])
+                      or not isinstance(repository, dict) or not isinstance(head_repository, dict)
+                      or repository.get('full_name') != REPOSITORY or head_repository.get('full_name') != REPOSITORY
+                      or not positive_int(repository.get('id')) or head_repository.get('id') != repository['id']):
+                  raise Gate('Resume source must be a completed failed main dispatch of the trusted deployment workflow')
+
+          def select_resume_artifact(run):
+              name = f"serverless-deployment-{run['head_sha']}-{run['id']}"
+              inventory = github_json(
+                  f"repos/{REPOSITORY}/actions/runs/{run['id']}/artifacts?name={name}&per_page=100")
+              artifacts = inventory.get('artifacts')
+              total = inventory.get('total_count')
+              if (type(total) is not int or not 0 <= total <= 100 or not isinstance(artifacts, list)
+                      or len(artifacts) != total or any(not isinstance(item, dict) for item in artifacts)):
+                  raise Gate('Recovery artifact inventory is malformed or exceeds its bounds')
+              candidates = [item for item in artifacts if item.get('name') == name]
+              if len(candidates) != 1:
+                  raise Gate('Exactly one unambiguous original recovery artifact is required')
+              artifact = candidates[0]
+              binding = artifact.get('workflow_run')
+              if (not positive_int(artifact.get('id')) or artifact.get('expired') is not False
+                      or type(artifact.get('size_in_bytes')) is not int
+                      or not 0 < artifact['size_in_bytes'] <= ARCHIVE_LIMIT
+                      or not isinstance(binding, dict) or binding.get('id') != run['id']
+                      or binding.get('head_sha') != run['head_sha'] or binding.get('head_branch') != 'main'
+                      or binding.get('repository_id') != run['repository']['id']
+                      or binding.get('head_repository_id') != run['repository']['id']):
+                  raise Gate('Recovery artifact does not bind the selected trusted deployment run')
+              try:
+                  started = datetime.fromisoformat(run['run_started_at'].replace('Z', '+00:00'))
+                  created = datetime.fromisoformat(artifact['created_at'].replace('Z', '+00:00'))
+                  completed = datetime.fromisoformat(run['updated_at'].replace('Z', '+00:00'))
+                  if not all(value.utcoffset() is not None for value in (started, created, completed)):
+                      raise ValueError
+                  if not started <= created <= completed:
+                      raise ValueError
+              except (KeyError, AttributeError, TypeError, ValueError):
+                  raise Gate('Recovery artifact must belong to the selected completed run attempt') from None
+              return artifact
+
+          def manifest_from_archive(path):
+              raw = bounded_file(path, ARCHIVE_LIMIT, private=True)
+              try:
+                  with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+                      entries = archive.infolist()
+                      if len(entries) > 100 or sum(item.file_size for item in entries) > ARCHIVE_LIMIT:
+                          raise Gate('Recovery archive exceeds its supported bounds')
+                      candidates = []
+                      for item in entries:
+                          name = PurePosixPath(item.filename)
+                          mode = item.external_attr >> 16
+                          if (name.is_absolute() or '..' in name.parts or '\\' in item.filename
+                                  or item.flag_bits & 1 or (stat.S_IFMT(mode) not in (0, stat.S_IFREG, stat.S_IFDIR))
+                                  or (item.is_dir() and stat.S_IFMT(mode) == stat.S_IFREG)
+                                  or (not item.is_dir() and stat.S_IFMT(mode) == stat.S_IFDIR)):
+                              raise Gate('Recovery archive requires only regular files and safe directories')
+                          if name.name == 'initial-recovery.json':
+                              if item.is_dir() or not 0 < item.file_size <= MANIFEST_LIMIT:
+                                  raise Gate('Recovery manifest must be one bounded regular file')
+                              candidates.append(item)
+                      if len(candidates) != 1:
+                          raise Gate('Recovery artifact must contain exactly one initial-recovery.json')
+                      raw_manifest = archive.read(candidates[0])
+                      if len(raw_manifest) != candidates[0].file_size:
+                          raise Gate('Recovery manifest size differs from its archive metadata')
+                      return raw_manifest
+              except (zipfile.BadZipFile, RuntimeError, OSError, ValueError):
+                  raise Gate('Recovery archive is unavailable or malformed') from None
+
+          def validate_resume_manifest(raw, run):
+              try:
+                  manifest = strict_loads(raw)
+              except (TypeError, ValueError):
+                  raise Gate('Recovery manifest is not strict bounded JSON') from None
+              if (not isinstance(manifest, dict) or manifest.get('schema_version') != '1.0.0'
+                      or manifest.get('operation') != 'serverless-initial-recovery'
+                      or manifest.get('account') != '738470137867' or manifest.get('region') != 'us-east-2'
+                      or manifest.get('stack_name') != 'otgd-serverless-development'
+                      or manifest.get('environment', 'serverless-development') != 'serverless-development'
+                      or manifest.get('release_id') != run['head_sha']
+                      or manifest.get('status') != 'blocked-recovery-inspect-protected-journal-before-retry'
+                      or manifest.get('failed_phase') != 'failed-stack-metadata-detached'
+                      or manifest.get('actual_resources_deleted') is not False
+                      or manifest.get('application_deployment_completed') is not False):
+                  raise Gate('Recovery manifest target, exact source, or detached failure phase differs')
+              return manifest
+
+          def admit_resume():
+              run_id = resume_run_id()
+              if run_id is None:
+                  return
+              run = github_json(f'repos/{REPOSITORY}/actions/runs/{run_id}')
+              validate_resume_run(run, run_id)
+              workflow = github_json(f"repos/{REPOSITORY}/actions/workflows/{run['workflow_id']}")
+              if (workflow.get('id') != run['workflow_id'] or workflow.get('path') != DEPLOY_WORKFLOW_PATH
+                      or workflow.get('name') != DEPLOY_WORKFLOW_NAME or workflow.get('state') != 'active'):
+                  raise Gate('Recovery source does not belong to the active reviewed deployment workflow')
+              artifact = select_resume_artifact(run)
+              directory = Path('.local/serverlessconfig')
+              source_directory = directory / 'resume-source'
+              source_directory.mkdir(parents=True, exist_ok=False)
+              archive_path = source_directory / 'download.zip'
+              descriptor = os.open(archive_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+              with os.fdopen(descriptor, 'wb') as stream:
+                  os.fchmod(stream.fileno(), 0o600)
+                  downloaded = subprocess.run(
+                      ['gh', 'api', f"repos/{REPOSITORY}/actions/artifacts/{artifact['id']}/zip"],
+                      stdout=stream, stderr=subprocess.PIPE, timeout=60)
+              if downloaded.returncode != 0:
+                  raise Gate('Original recovery artifact is unavailable')
+              raw = manifest_from_archive(archive_path)
+              manifest = validate_resume_manifest(raw, run)
+              source_hash = hashlib.sha256(raw).hexdigest()
+              source_path = source_directory / 'original-initial-recovery.json'
+              descriptor = os.open(source_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+              with os.fdopen(descriptor, 'wb') as stream:
+                  os.fchmod(stream.fileno(), 0o600)
+                  stream.write(raw)
+              if bounded_file(source_path, MANIFEST_LIMIT, private=True) != raw:
+                  raise Gate('Preserved original recovery manifest changed')
+              gate_run_id = select_latest_gate(manifest['release_id'])
+              historical_directory = directory / 'resume-gates'
+              historical_directory.mkdir(exist_ok=False)
+              downloaded = subprocess.run(
+                  ['gh', 'run', 'download', str(gate_run_id), '--repo', REPOSITORY,
+                   '--name', 'exact-revision-merge-evidence', '--dir', str(historical_directory)],
+                  capture_output=True, text=True, timeout=60)
+              if downloaded.returncode != 0:
+                  raise Gate('Historical exact-source aggregate gate artifact is unavailable')
+              proof = platform.verify_gate_file(historical_directory / 'gates.json', manifest['release_id'])
+              if proof['run_id'] != gate_run_id:
+                  raise Gate('Historical gate evidence belongs to a different workflow run')
+              current = github_json(f'repos/{REPOSITORY}/actions/runs/{run_id}')
+              validate_resume_run(current, run_id)
+              if any(current.get(key) != run.get(key) for key in
+                     ('id', 'workflow_id', 'run_attempt', 'head_sha', 'path', 'event', 'head_branch',
+                      'status', 'conclusion', 'run_started_at', 'updated_at')):
+                  raise Gate('Selected recovery workflow run changed during admission')
+              receipt = {'source_manifest_sha256': source_hash, 'source_manifest_path': str(source_path),
+                         'source_run_id': run_id, 'source_run_attempt': run['run_attempt'],
+                         'source_release_id': manifest['release_id'], 'source_artifact_id': artifact['id'],
+                         'historical_gate_provenance': proof}
+              (directory / 'resume-admission.json').write_text(json.dumps(receipt, indent=2) + '\n')
+              with open(os.environ['GITHUB_ENV'], 'a') as environment:
+                  environment.write(f'RESUME_INITIAL_PATH={source_path}\nRESUME_INITIAL_SHA256={source_hash}\n')
+
           if __name__ == '__main__':
               try:
                   admit()
+                  admit_resume()
               except Exception as error:
                   message = str(error) if isinstance(error, Gate) else type(error).__name__
                   raise SystemExit('Deployment admission blocked: ' + message)
@@ -206,6 +393,9 @@ jobs:
           if [ "$RECOVER_INITIAL" = true ]; then
             otgd_deploy_options+=(--recover-initial)
           fi
+          if [ -n "${RESUME_INITIAL_PATH:-}" ]; then
+            otgd_deploy_options+=(--resume-initial "$RESUME_INITIAL_PATH" --resume-initial-sha256 "$RESUME_INITIAL_SHA256")
+          fi
           uv run --project services/api python deploy/serverless.py deploy \
             --config .local/serverlessconfig/serverless.json \
             --gate-evidence .local/serverlessconfig/gates/gates.json \
@@ -218,6 +408,8 @@ jobs:
           name: serverless-deployment-${{ github.sha }}-${{ github.run_id }}
           path: |
             .local/serverlessconfig/gate-admission.json
+            .local/serverlessconfig/resume-admission.json
+            .local/serverlessconfig/resume-source/original-initial-recovery.json
             reports/serverless-plan.json
             reports/serverless-deploy.json
             .local/deploy/serverless-development/**/deployment.json
