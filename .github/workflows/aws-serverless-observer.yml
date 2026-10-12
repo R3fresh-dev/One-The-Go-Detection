@@ -1,0 +1,212 @@
+name: Read-only AWS serverless recovery snapshot
+
+on:
+  push:
+    branches: [work-aws-serverless-observer]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  snapshot:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/work-aws-serverless-observer' && github.event.repository.default_branch == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: R3fresh-dev/One-The-Go-Detection
+      AWS_REGION: us-east-2
+      AWS_DEFAULT_REGION: us-east-2
+      AWS_EC2_METADATA_DISABLED: 'true'
+      AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
+      AWS_MAX_ATTEMPTS: '3'
+      AWS_PAGER: ''
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 34cf9b728c14455e14268c398e372ba905be5cfd
+          persist-credentials: false
+
+      - name: Admit clean current main and exact successful all-13 gate evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          revision = '34cf9b728c14455e14268c398e372ba905be5cfd'
+          repository = 'R3fresh-dev/One-The-Go-Detection'
+          run_id = 38275856416
+          workflow_path = '.github/workflows/merge-gate.yml'
+          required_jobs = {'unit-coverage', 'components', 'atdd', 'preview / ios',
+              'platform / postgres-integration', 'native / android', 'native / protected-reader',
+              'native / ios', 'platform / localstack-integration', 'native / shared-and-firmware',
+              'platform / contracts-and-synthesis', 'preview / android', 'merge-gate'}
+          required_labels = {'unit-coverage', 'atdd', 'components', 'performance', 'live-dependencies',
+              'docker-health', 'localstack-api', 'specifications', 'native-android', 'native-ios',
+              'firmware', 'hosted-android', 'hosted-ios'}
+
+          def command(args, timeout=30):
+              result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+              if result.returncode or len(result.stdout.encode()) > 2097152:
+                  raise SystemExit('Read-only snapshot admission blocked: command unavailable')
+              return result.stdout
+
+          def api(path):
+              return json.loads(command(['gh', 'api', 'repos/' + repository + '/' + path]))
+
+          if (os.environ['GH_REPO'] != repository or os.environ['GITHUB_EVENT_NAME'] != 'push'
+                  or os.environ['GITHUB_REF'] != 'refs/heads/work-aws-serverless-observer'
+                  or command(['git', 'rev-parse', 'HEAD']).strip() != revision
+                  or command(['git', 'status', '--porcelain']).strip()):
+              raise SystemExit('Read-only snapshot admission blocked: source or trigger differs')
+          if (api('')['default_branch'] != 'main'
+                  or api('git/ref/heads/main')['object']['sha'] != revision):
+              raise SystemExit('Read-only snapshot admission blocked: current main differs')
+          run = api('actions/runs/' + str(run_id))
+          if (run.get('head_sha') != revision or run.get('status') != 'completed'
+                  or run.get('conclusion') != 'success' or run.get('path') != workflow_path
+                  or run.get('head_branch') != 'main' or run.get('event') not in {'push', 'workflow_dispatch'}
+                  or run.get('repository', {}).get('full_name') != repository
+                  or run.get('head_repository', {}).get('full_name') != repository):
+              raise SystemExit('Read-only snapshot admission blocked: gate run differs')
+          workflow = api('actions/workflows/' + str(run['workflow_id']))
+          if workflow.get('path') != workflow_path or workflow.get('state') != 'active':
+              raise SystemExit('Read-only snapshot admission blocked: gate workflow differs')
+          latest = api('actions/workflows/merge-gate.yml/runs?head_sha=' + revision + '&per_page=100')
+          trusted = [r for r in latest['workflow_runs'] if r.get('head_sha') == revision
+              and r.get('path') == workflow_path and r.get('head_branch') == 'main'
+              and r.get('event') in {'push', 'workflow_dispatch'}]
+          if not trusted or max(r['id'] for r in trusted) != run_id:
+              raise SystemExit('Read-only snapshot admission blocked: latest gate differs')
+          inventory = api(f"actions/runs/{run_id}/attempts/{run['run_attempt']}/jobs?per_page=100")
+          jobs = inventory['jobs']
+          if (inventory['total_count'] != 13 or len(jobs) != 13
+                  or {job['name'] for job in jobs} != required_jobs
+                  or len({job['id'] for job in jobs}) != 13
+                  or any(job.get('status') != 'completed' or job.get('conclusion') != 'success'
+                      or job.get('head_sha') != revision or job.get('run_id') != run_id
+                      or job.get('run_attempt') != run['run_attempt'] for job in jobs)):
+              raise SystemExit('Read-only snapshot admission blocked: all-13 jobs differ')
+          with tempfile.TemporaryDirectory(prefix='observer-gates-') as destination:
+              command(['gh', 'run', 'download', str(run_id), '--repo', repository,
+                  '--name', 'exact-revision-merge-evidence', '--dir', destination], timeout=60)
+              path = Path(destination) / 'gates.json'
+              if not path.is_file() or path.stat().st_size > 262144:
+                  raise SystemExit('Read-only snapshot admission blocked: aggregate evidence unavailable')
+              evidence = json.loads(path.read_text())
+              labels = evidence.get('passed')
+              if (evidence.get('revision') != revision
+                      or evidence.get('run_url') != f'https://github.com/{repository}/actions/runs/{run_id}'
+                      or not isinstance(labels, list) or len(labels) != 13 or set(labels) != required_labels):
+                  raise SystemExit('Read-only snapshot admission blocked: aggregate evidence differs')
+          current = api('actions/runs/' + str(run_id))
+          if any(current.get(k) != run.get(k) for k in ('id', 'head_sha', 'run_attempt', 'status', 'conclusion', 'workflow_id')):
+              raise SystemExit('Read-only snapshot admission blocked: gate changed')
+          if (api('git/ref/heads/main')['object']['sha'] != revision
+                  or command(['git', 'status', '--porcelain']).strip()):
+              raise SystemExit('Read-only snapshot admission blocked: source changed')
+          print(json.dumps({'admitted_revision': revision, 'gate_run': run_id, 'successful_jobs': 13}))
+          PYCODE
+
+      - name: Configure existing repository AWS secrets after source admission
+        uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-2
+          allowed-account-ids: '738470137867'
+          unset-current-credentials: true
+          force-skip-oidc: true
+          output-credentials: false
+          retry-max-attempts: 3
+          action-timeout-s: 90
+
+      - name: Read bounded CloudFormation and application status metadata only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          from collections import Counter
+          from datetime import datetime, timezone
+          import json
+          import re
+          import subprocess
+
+          stack = 'otgd-serverless-development'
+          allowed = {('sts', 'get-caller-identity'), ('cloudformation', 'describe-stacks'),
+              ('cloudformation', 'describe-stack-events'), ('cloudformation', 'list-stack-resources'),
+              ('cloudformation', 'list-change-sets'), ('cloudformation', 'describe-change-set'),
+              ('rds', 'describe-db-clusters'), ('lambda', 'get-function-configuration')}
+
+          def aws(service, operation, options=(), query=None):
+              if (service, operation) not in allowed:
+                  raise SystemExit('Observer operation is outside its read-only allowlist')
+              args = ['aws', service, operation, '--region', 'us-east-2', '--output', 'json',
+                  '--cli-connect-timeout', '10', '--cli-read-timeout', '20', *options]
+              if query:
+                  args.extend(['--query', query])
+              try:
+                  result = subprocess.run(args, capture_output=True, text=True, timeout=40)
+              except subprocess.TimeoutExpired:
+                  return {'observation_error_code': 'BoundedTimeout'}
+              if result.returncode:
+                  match = re.search(r'An error occurred \(([A-Za-z0-9_.-]+)\)', result.stderr)
+                  return {'observation_error_code': match.group(1) if match else 'CommandUnavailable'}
+              if len(result.stdout.encode()) > 1048576:
+                  return {'observation_error_code': 'ResponseBoundExceeded'}
+              return json.loads(result.stdout)
+
+          identity = aws('sts', 'get-caller-identity', query='Account')
+          if identity != '738470137867':
+              raise SystemExit('Read-only snapshot blocked: actual account differs')
+          print(json.dumps({'snapshot_utc': datetime.now(timezone.utc).isoformat(),
+              'account': identity, 'region': 'us-east-2'}))
+          retained_types = {'AWS::KMS::Key', 'AWS::SecretsManager::Secret', 'AWS::S3::Bucket',
+              'AWS::DynamoDB::Table', 'AWS::Cognito::UserPool', 'AWS::Logs::LogGroup'}
+          snapshot = aws('cloudformation', 'describe-stacks', ['--stack-name', stack],
+              'Stacks[0].{StackId:StackId,StackStatus:StackStatus,CreationTime:CreationTime,LastUpdatedTime:LastUpdatedTime,EnableTerminationProtection:EnableTerminationProtection,Tags:Tags}')
+          if isinstance(snapshot, dict) and isinstance(snapshot.get('Tags'), list):
+              snapshot['Tags'] = [tag for tag in snapshot['Tags'] if tag.get('Key') in {'deployment', 'environment', 'source_revision'}]
+          print(json.dumps({'application_stack': snapshot}, sort_keys=True))
+          events = aws('cloudformation', 'describe-stack-events', ['--stack-name', stack, '--max-items', '10'],
+              'StackEvents[].{LogicalResourceId:LogicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus,ResourceStatusReason:ResourceStatusReason}')
+          if isinstance(events, list):
+              for event in events:
+                  if isinstance(event.get('ResourceStatusReason'), str):
+                      event['ResourceStatusReason'] = event['ResourceStatusReason'][:1000]
+          print(json.dumps({'recent_application_events': events}, sort_keys=True))
+          resources = aws('cloudformation', 'list-stack-resources', ['--stack-name', stack, '--max-items', '200'])
+          if isinstance(resources, dict) and isinstance(resources.get('StackResourceSummaries'), list):
+              rows = resources['StackResourceSummaries']
+              print(json.dumps({'resource_status_counts': dict(Counter(row['ResourceStatus'] for row in rows)),
+                  'resource_count': len(rows), 'inventory_complete': not bool(resources.get('NextToken'))}, sort_keys=True))
+              print(json.dumps({'retained_resources': [{key: row.get(key) for key in
+                  ('LogicalResourceId', 'ResourceType', 'PhysicalResourceId', 'ResourceStatus')}
+                  for row in rows if row.get('ResourceType') in retained_types]}, sort_keys=True))
+          else:
+              print(json.dumps({'resource_inventory': resources}, sort_keys=True))
+          registry = aws('cloudformation', 'describe-stacks', ['--stack-name', stack + '-registry'],
+              'Stacks[0].{StackId:StackId,StackStatus:StackStatus,LastUpdatedTime:LastUpdatedTime}')
+          print(json.dumps({'registry_stack': registry}, sort_keys=True))
+          database = aws('rds', 'describe-db-clusters', ['--db-cluster-identifier', stack],
+              'DBClusters[].Status')
+          print(json.dumps({'database_cluster_status': database}, sort_keys=True))
+          for role in ('api', 'worker', 'dispatcher', 'maintenance', 'control'):
+              function = aws('lambda', 'get-function-configuration', ['--function-name', stack + '-' + role],
+                  '{State:State,LastUpdateStatus:LastUpdateStatus,StateReasonCode:StateReasonCode,LastUpdateStatusReasonCode:LastUpdateStatusReasonCode,source_revision:Environment.Variables.OTGD_SOURCE_REVISION}')
+              print(json.dumps({'function_role': role, 'configuration_status': function}, sort_keys=True))
+          changes = aws('cloudformation', 'list-change-sets', ['--stack-name', stack, '--max-items', '5'],
+              'Summaries[].{ChangeSetId:ChangeSetId,ChangeSetName:ChangeSetName,Status:Status,ExecutionStatus:ExecutionStatus,StatusReason:StatusReason}')
+          if isinstance(changes, list):
+              for change in changes:
+                  if isinstance(change.get('StatusReason'), str):
+                      change['StatusReason'] = change['StatusReason'][:1000]
+          print(json.dumps({'latest_change_sets': changes}, sort_keys=True))
+          PYCODE
