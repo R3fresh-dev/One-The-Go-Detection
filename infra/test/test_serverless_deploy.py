@@ -398,6 +398,103 @@ class ServerlessLifecycleTest(unittest.TestCase):
             self.assertFalse(state['rollback_executed'])
 
 
+class ServerlessBrowserUploadTest(unittest.TestCase):
+    def fixture(self):
+        c = config()
+        bucket = f"{serverless.STACK}-{c['account']}-{c['region']}-artifacts"
+        out = {'ArtifactBucket': bucket,
+               'ArtifactUploadOrigin': f"https://s3.dualstack.{c['region']}.amazonaws.com/{bucket}/",
+               'WebOrigin': 'https://reviewed-web.fixture.test'}
+        rule = {'AllowedOrigins': [out['WebOrigin']], 'AllowedMethods': ['PUT'],
+                'AllowedHeaders': sorted(serverless.UPLOAD_HEADERS)}
+        s3 = Mock()
+        s3.get_bucket_cors.return_value = {'CORSRules': [rule]}
+        aws = Mock()
+        aws.client.return_value = s3
+        allowed = SimpleNamespace(status_code=200, headers={
+            'access-control-allow-origin': out['WebOrigin'],
+            'access-control-allow-methods': 'PUT',
+            'access-control-allow-headers': ', '.join(sorted(serverless.UPLOAD_HEADERS))})
+        denied = SimpleNamespace(status_code=403, headers={})
+        return c, out, aws, s3, rule, allowed, denied
+
+    def test_foreign_or_missing_upload_authority_stops_before_sdk_or_source_build(self):
+        c, out, aws, _, _, _, _ = self.fixture()
+        changes = ({'ArtifactBucket': 'foreign-account-artifacts'}, {'ArtifactBucket': None},
+                   {'ArtifactUploadOrigin': None},
+                   {'ArtifactUploadOrigin': out['ArtifactUploadOrigin'].replace('us-east-2', 'us-west-2')},
+                   {'ArtifactUploadOrigin': out['ArtifactUploadOrigin'].replace('s3.dualstack.', 's3.')},
+                   {'ArtifactUploadOrigin': 'https://unapproved.invalid/' + out['ArtifactBucket'] + '/'})
+        for change in changes:
+            with self.subTest(change=change), patch.object(serverless.tarfile, 'open') as archive, \
+                    patch.object(serverless.subprocess, 'run') as build:
+                with self.assertRaisesRegex(Gate, 'upload authority'):
+                    serverless.build_and_publish_web(aws, c, {**out, **change}, Path('missing-source.tar'), Path('missing-work'))
+            archive.assert_not_called()
+            build.assert_not_called()
+        aws.client.assert_not_called()
+
+    def test_wildcard_or_extra_sdk_cors_authorities_are_rejected_before_http(self):
+        for field, value in (('AllowedOrigins', ['*']), ('AllowedOrigins', ['https://foreign.fixture.test']),
+                             ('AllowedMethods', ['PUT', 'GET']), ('AllowedHeaders', ['*']),
+                             ('AllowedHeaders', sorted(serverless.UPLOAD_HEADERS - {'if-none-match'}))):
+            c, out, aws, _, rule, _, _ = self.fixture()
+            rule[field] = value
+            with self.subTest(field=field, value=value), patch.object(serverless.httpx, 'Client') as http:
+                with self.assertRaisesRegex(Gate, 'Actual S3 upload CORS'):
+                    serverless.verify_upload_access(aws, c, out)
+            http.assert_not_called()
+
+    def test_preflight_preserves_every_conditional_checksum_and_encryption_header(self):
+        c, out, aws, s3, _, allowed, denied = self.fixture()
+        with patch.object(serverless.httpx, 'Client') as constructor:
+            http = constructor.return_value.__enter__.return_value
+            http.options.side_effect = [allowed, denied]
+            result = serverless.verify_upload_access(aws, c, out)
+        s3.get_bucket_cors.assert_called_once_with(Bucket=out['ArtifactBucket'])
+        constructor.assert_called_once_with(timeout=30, follow_redirects=False)
+        self.assertEqual(http.options.call_count, 2)
+        approved, rejected = http.options.call_args_list
+        self.assertEqual(approved.args[0], out['ArtifactUploadOrigin'] + 'quarantine/browser-preflight-check')
+        headers = approved.kwargs['headers']
+        self.assertEqual(headers['Origin'], out['WebOrigin'])
+        self.assertEqual(headers['Access-Control-Request-Method'], 'PUT')
+        self.assertEqual(set(headers['Access-Control-Request-Headers'].split(',')), {
+            'content-type', 'if-none-match', 'x-amz-checksum-sha256',
+            'x-amz-server-side-encryption', 'x-amz-server-side-encryption-aws-kms-key-id'})
+        self.assertEqual(rejected.kwargs['headers']['Origin'], 'https://otgd-unapproved-origin.invalid')
+        self.assertEqual(result, {'signed_upload_preflight': 'passed', 'unapproved_origin': 'denied',
+                                  'object_upload': 'not_executed'})
+
+    def test_approved_origin_http_must_advertise_put_and_all_signed_headers(self):
+        cases = [('status', 302), ('access-control-allow-origin', '*'),
+                 ('access-control-allow-origin', 'https://foreign.fixture.test'),
+                 ('access-control-allow-methods', 'GET'),
+                 ('access-control-allow-headers', 'content-type,x-amz-checksum-sha256')]
+        for field, value in cases:
+            c, out, aws, _, _, allowed, _ = self.fixture()
+            if field == 'status':
+                allowed.status_code = value
+            else:
+                allowed.headers[field] = value
+            with self.subTest(field=field), patch.object(serverless.httpx, 'Client') as constructor:
+                http = constructor.return_value.__enter__.return_value
+                http.options.return_value = allowed
+                with self.assertRaisesRegex(Gate, 'browser upload preflight failed'):
+                    serverless.verify_upload_access(aws, c, out)
+                self.assertEqual(http.options.call_count, 1)
+
+    def test_foreign_origin_success_or_allow_origin_header_is_rejected(self):
+        for status, headers in ((200, {}), (403, {'access-control-allow-origin': '*'}),
+                                (403, {'access-control-allow-origin': 'https://otgd-unapproved-origin.invalid'})):
+            c, out, aws, _, _, allowed, _ = self.fixture()
+            with self.subTest(status=status, headers=headers), patch.object(serverless.httpx, 'Client') as constructor:
+                http = constructor.return_value.__enter__.return_value
+                http.options.side_effect = [allowed, SimpleNamespace(status_code=status, headers=headers)]
+                with self.assertRaisesRegex(Gate, 'unapproved browser origin'):
+                    serverless.verify_upload_access(aws, c, out)
+
+
 class ServerlessHealthTest(unittest.TestCase):
     def fixture(self):
         c = config()

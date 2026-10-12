@@ -228,6 +228,34 @@ class ServerlessTemplateTest(unittest.TestCase):
         budget = self.properties("MonthlyBudget")["Budget"]
         self.assertNotIn("CostFilters", budget)
 
+    def test_browser_upload_cors_and_csp_allow_only_deployed_web_and_artifact_bucket(self):
+        artifact = self.properties("Artifacts")
+        rules = artifact["CorsConfiguration"]["CorsRules"]
+        self.assertEqual(len(rules), 1)
+        rule = rules[0]
+        self.assertEqual(rule["AllowedOrigins"], [{"Fn::Sub": "https://${WebDelivery.DomainName}"}])
+        self.assertEqual(rule["AllowedMethods"], ["PUT"])
+        self.assertEqual(set(rule["AllowedHeaders"]), {"Content-Type", "If-None-Match", "x-amz-checksum-sha256",
+                          "x-amz-server-side-encryption", "x-amz-server-side-encryption-aws-kms-key-id"})
+        self.assertEqual(set(rule["ExposedHeaders"]), {"ETag", "x-amz-version-id", "x-amz-checksum-sha256"})
+        self.assertEqual(rule["MaxAge"], 300)
+        self.assertNotIn("Content-Length", rule["AllowedHeaders"])
+        expected = "https://s3.dualstack.us-east-2.amazonaws.com/" + artifact["BucketName"] + "/"
+        self.assertEqual(self.template["Outputs"]["ArtifactUploadOrigin"]["Value"], expected)
+        csp = self.properties("WebHeaders")["ResponseHeadersPolicyConfig"]["SecurityHeadersConfig"]["ContentSecurityPolicy"]["ContentSecurityPolicy"]["Fn::Sub"]
+        connect = next(directive for directive in csp.split(";") if directive.strip().startswith("connect-src "))
+        self.assertIn(expected, connect.split())
+        self.assertNotIn("https://s3.dualstack.us-east-2.amazonaws.com", connect.split())
+        self.assertNotIn("${Artifacts}", csp)
+        self.assertNotIn("${Artifacts.", csp)
+        for name in ["Exports", "DeletionJournal", "WebAssets"]:
+            self.assertNotIn("CorsConfiguration", self.properties(name))
+        # These private buckets remain protected; browser CORS grants no public
+        # object access and the API signer still requires conditional creation.
+        self.assertTrue(all(artifact["PublicAccessBlockConfiguration"].values()))
+        self.assertTrue(any(row.get("Condition") == {"Null": {"s3:if-none-match": "true"}}
+                            for row in self.properties("ArtifactsPolicy")["PolicyDocument"]["Statement"]))
+
     def test_all_implicit_and_explicit_resource_dependencies_are_acyclic(self):
         names = set(self.resources)
 

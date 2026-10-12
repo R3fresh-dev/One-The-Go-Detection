@@ -232,6 +232,65 @@ class WebArtifactTest(unittest.TestCase):
             with self.subTest(case=index),self.assertRaises(Gate):
                 web.verify_security_headers(httpx.Headers(value),out)
 
+    def serverless_policy(self):
+        bucket='otgd-serverless-development-123456789012-us-east-2-artifacts'
+        upload='https://s3.dualstack.us-east-2.amazonaws.com/'+bucket+'/'
+        out={'ApiOrigin':'https://api.otgd.test','IdentityOrigin':'https://fixture.auth.us-east-2.amazoncognito.com',
+            'Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool',
+            'ArtifactBucket':bucket,'ArtifactUploadOrigin':upload}
+        headers=public_headers()
+        headers['content-security-policy']=headers['content-security-policy'].replace(
+            "connect-src 'self'","connect-src 'self' "+upload)
+        return out,headers
+
+    def test_serverless_policy_accepts_only_the_exact_bucket_upload_source(self):
+        out,headers=self.serverless_policy()
+        web.verify_security_headers(httpx.Headers(headers),out)
+        with self.assertRaises(Gate):
+            web.verify_security_headers(httpx.Headers(public_headers()),out)
+        # Existing managed policy remains strict when the output is absent,
+        # even if another artifact-bucket output is supplied.
+        managed={key:value for key,value in out.items() if key!='ArtifactUploadOrigin'}
+        web.verify_security_headers(httpx.Headers(public_headers()),managed)
+        with self.assertRaises(Gate):
+            web.verify_security_headers(httpx.Headers(headers),managed)
+
+    def test_serverless_upload_output_rejects_foreign_or_broadened_destinations(self):
+        out,headers=self.serverless_policy()
+        upload=out['ArtifactUploadOrigin']
+        invalid=[None,upload.rstrip('/'),upload.replace('https:','http:'),
+            upload.replace('us-east-2','us-east-1'),
+            upload.replace('123456789012','987654321098'),
+            upload.replace('s3.dualstack.','s3.'),
+            upload.replace('https://','https://user@'),
+            upload.replace('.amazonaws.com/','.amazonaws.com:443/'),
+            'https://s3.dualstack.us-east-2.amazonaws.com/',
+            upload+'quarantine/',upload+'?signed=fixture',upload+'#fragment',
+            upload.replace('-artifacts/','-artifacts-extra/'),
+            upload.replace('-artifacts/','-artifacts/../exports/')]
+        for value in invalid:
+            with self.subTest(value=value),self.assertRaises(Gate):
+                web.verify_security_headers(httpx.Headers(headers),{**out,'ArtifactUploadOrigin':value})
+        for bucket in (None,123,'unreviewed-bucket',out['ArtifactBucket'].replace('us-east-2','us-east-1'),
+                       out['ArtifactBucket'].replace('otgd-serverless-development','other-deployment')):
+            with self.subTest(bucket=bucket),self.assertRaises(Gate):
+                web.verify_security_headers(httpx.Headers(headers),{**out,'ArtifactBucket':bucket})
+        with self.assertRaises(Gate):
+            web.verify_security_headers(httpx.Headers(headers),{key:value for key,value in out.items() if key!='ArtifactBucket'})
+
+    def test_serverless_csp_rejects_bucket_neighbors_wildcards_and_extra_authority(self):
+        out,headers=self.serverless_policy()
+        upload=out['ArtifactUploadOrigin']
+        sources=[upload.rstrip('/'),upload.replace('-artifacts/','-artifacts-extra/'),
+            upload.replace('123456789012','987654321098'),
+            upload.replace('us-east-2','us-east-1'),
+            'https://s3.dualstack.us-east-2.amazonaws.com',
+            'https://*.amazonaws.com',upload+' https://foreign.otgd.test',upload+' '+upload]
+        for source in sources:
+            changed={**headers,'content-security-policy':headers['content-security-policy'].replace(upload,source)}
+            with self.subTest(source=source),self.assertRaises(Gate):
+                web.verify_security_headers(httpx.Headers(changed),out)
+
     def test_navigation_cannot_omit_required_policy_when_index_is_secure(self):
         out={'WebOrigin':'https://web.otgd.test','ApiOrigin':'https://api.otgd.test',
             'IdentityOrigin':'https://fixture.auth.us-east-2.amazoncognito.com','Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool'}

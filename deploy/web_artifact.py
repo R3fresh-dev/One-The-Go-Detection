@@ -218,6 +218,18 @@ def verify_security_headers(headers,out):
         if value.scheme!='https' or not value.hostname or value.username or value.password or value.query or value.fragment:
             raise Gate('Browser network policy requires actual HTTPS deployment origins')
         origins.append('https://'+value.netloc)
+    if 'ArtifactUploadOrigin' in out:
+        # Serverless presigned PUTs use a regional path-style dualstack URL.
+        # Keep the trailing slash: without it CSP could admit a neighboring
+        # bucket prefix. Never treat an arbitrary output URL as authority.
+        bucket=out.get('ArtifactBucket')
+        if (not isinstance(bucket,str) or
+            not re.fullmatch(r'otgd-serverless-development-[0-9]{12}-us-east-2-artifacts',bucket)):
+            raise Gate('Browser upload policy requires the exact serverless artifact bucket')
+        upload='https://s3.dualstack.us-east-2.amazonaws.com/'+bucket+'/'
+        if out['ArtifactUploadOrigin']!=upload:
+            raise Gate('Browser upload policy must bind the exact Ohio artifact bucket path')
+        origins.append(upload)
     expected={
         'default-src':{"'self'"}, 'script-src':{"'self'"},
         'style-src':{"'self'","'unsafe-inline'"}, 'img-src':{"'self'",'data:'},
