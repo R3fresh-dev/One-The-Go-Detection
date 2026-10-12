@@ -22,6 +22,8 @@ def client(service, public=False):
         config=Config(
             signature_version="s3v4" if service == "s3" else "v4",
             ignore_configured_endpoint_urls=True,
+            use_dualstack_endpoint=bool(getattr(s, "serverless_mode", False) and service in (
+                "s3", "sqs", "kms", "cloudwatch", "sts", "lambda", "dynamodb")),
             connect_timeout=5,
             read_timeout=30,
             retries={"max_attempts": 3, "mode": "standard"},

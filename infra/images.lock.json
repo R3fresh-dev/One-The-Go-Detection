@@ -29,6 +29,14 @@
       "tag": "2026.09.1",
       "digest": "sha256:0c644ede65c2d0c95737e09a39007828bd381bdb07ca8200c6bf17d66a4ed191",
       "source": "https://hub.docker.com/v2/repositories/localstack/localstack/tags/2026.09.1"
+    },
+    "lambda_adapter": {
+      "repository": "public.ecr.aws/awsguru/aws-lambda-adapter",
+      "tag": "0.9.1",
+      "digest": "sha256:8d2a4f69f16819d6e3e8cf7e885c8e8ab6b9e21a8603ca7f4d8ae1eb325c4fb1",
+      "platform": "linux/amd64",
+      "source": "https://github.com/awslabs/aws-lambda-web-adapter/releases/tag/v0.9.1",
+      "verification": "Linux/amd64 manifest digest verified with Docker Buildx; AWS streaming execution remains a separate live check."
     }
   },
   "uv": {

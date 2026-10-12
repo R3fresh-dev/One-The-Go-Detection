@@ -1,4 +1,5 @@
 from functools import lru_cache
+import os
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlparse
@@ -20,6 +21,12 @@ class Settings(BaseSettings):
     database_user: str = "otgd_app"
     database_password: str = ""
     database_pool_size: int = 5
+    serverless_mode: bool = False
+    serverless_control_table: str | None = None
+    serverless_queue_visibility: int = 120
+    serverless_database_connect_timeout: int = 45
+    serverless_metrics_namespace: str = "OTGD/serverless-development"
+    serverless_dispatch_function_arn: str | None = None
     database_sslmode: str = "prefer"
     database_sslrootcert: str | None = None
     app_database_user: str = "otgd_app"
@@ -75,6 +82,24 @@ class Settings(BaseSettings):
             )
         if not 1 <= self.database_pool_size <= 5:
             raise ValueError("Database pool outside reviewed capacity")
+        if self.serverless_mode:
+            if self.environment not in ("qa", "prod") or self.aws_region != "us-east-2":
+                raise ValueError("Serverless cloud runtime requires its reviewed Ohio environment")
+            if not re.fullmatch(r"[A-Za-z0-9_.-]{3,255}", self.serverless_control_table or ""):
+                raise ValueError("Serverless runtime requires its actual control table")
+            if not 120 <= self.serverless_queue_visibility <= 43200:
+                raise ValueError("Serverless queue visibility is outside AWS bounds")
+            if not 30 <= self.serverless_database_connect_timeout <= 120:
+                raise ValueError("Serverless database resume requires a bounded connection timeout")
+            if self.serverless_metrics_namespace != "OTGD/serverless-development":
+                raise ValueError("Use the reviewed serverless operational metrics namespace")
+            if self.serverless_dispatch_function_arn and not re.fullmatch(
+                r"arn:aws:lambda:us-east-2:" + re.escape(self.deployment_account or "") +
+                r":function:[A-Za-z0-9_-]{1,64}", self.serverless_dispatch_function_arn
+            ):
+                raise ValueError("Serverless dispatch must target its actual account and region")
+        elif self.serverless_queue_visibility != 120:
+            raise ValueError("The existing managed runtime requires 120-second queue visibility")
         if self.environment in ("qa", "prod"):
             if not re.fullmatch(r"[0-9]{12}", self.deployment_account or "") or not re.fullmatch(r"[0-9a-f]{40}", self.source_revision or ""):
                 raise ValueError("Cloud admission requires its actual AWS account and immutable source revision")
@@ -127,6 +152,15 @@ class Settings(BaseSettings):
 
 @lru_cache
 def settings():
+    # Lambda secret references must be resolved before any module constructs
+    # Settings. Never expose Pydantic's input dictionary containing passwords.
+    if os.environ.get("OTGD_SERVERLESS_MODE", "").strip().lower() in ("1", "true", "yes", "on"):
+        from .serverless_lifecycle import load_runtime_secrets
+        load_runtime_secrets()
+        try:
+            return Settings()
+        except Exception:
+            raise RuntimeError("Serverless runtime configuration is unavailable") from None
     return Settings()
 
 

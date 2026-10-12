@@ -15,6 +15,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   if (!["true", "false"].includes(previewValue))
     throw new Error("EXPO_PUBLIC_HOSTED_PREVIEW must be true or false");
   const hostedPreview = previewValue === "true";
+  const serverlessValue = process.env.EXPO_PUBLIC_SERVERLESS ?? "false";
+  if (!["true", "false"].includes(serverlessValue))
+    throw new Error("EXPO_PUBLIC_SERVERLESS must be true or false");
+  const serverless = serverlessValue === "true";
+  if (serverless && local)
+    throw new Error("Serverless service deadlines require APP_ENV=qa or prod");
   if (hostedPreview && environment !== "local")
     throw new Error(
       "The fictional hosted preview is permitted only in APP_ENV=local",
@@ -147,6 +153,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       environment,
       hostedPreview,
+      serverless,
       buildNumber: String(buildNumber),
       apiUrl,
       issuer,

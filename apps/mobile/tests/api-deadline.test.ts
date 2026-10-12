@@ -213,3 +213,143 @@ test("the export download deadline covers credentials and the full binary body; 
     globalThis.fetch = previous;
   }
 });
+
+test("a serverless request tolerates a cold response beyond the managed deadline", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const previous = globalThis.fetch;
+  const entered = deferred<void>(),
+    response = deferred<Response>();
+  let settled = false;
+  globalThis.fetch = async () => {
+    entered.resolve();
+    return response.promise;
+  };
+  try {
+    const api = new ApiClient(
+      origin,
+      { accessToken: async () => "access" },
+      undefined,
+      undefined,
+      undefined,
+      { serverless: true },
+    );
+    const request = api.request("/v1/me/profile");
+    request.then(
+      () => {
+        settled = true;
+      },
+      () => {
+        settled = true;
+      },
+    );
+    await entered.promise;
+    t.mock.timers.tick(45_000);
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    assert.equal(settled, false);
+    response.resolve(new Response('{"ready":true}'));
+    assert.deepEqual((await request).value, { ready: true });
+  } finally {
+    globalThis.fetch = previous;
+  }
+});
+
+test("the serverless request deadline remains bounded and discards late credentials", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const previous = globalThis.fetch;
+  const entered = deferred<void>(),
+    token = deferred<string>();
+  let requests = 0,
+    settled = false;
+  globalThis.fetch = async () => {
+    requests++;
+    return new Response("{}");
+  };
+  try {
+    const api = new ApiClient(
+      origin,
+      {
+        accessToken: () => {
+          entered.resolve();
+          return token.promise;
+        },
+      },
+      undefined,
+      undefined,
+      undefined,
+      { serverless: true },
+    );
+    const request = api.request("/v1/me/profile");
+    request.then(
+      () => {
+        settled = true;
+      },
+      () => {
+        settled = true;
+      },
+    );
+    const rejected = assert.rejects(request, timeoutError);
+    await entered.promise;
+    t.mock.timers.tick(119_999);
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    assert.equal(settled, false);
+    t.mock.timers.tick(1);
+    await rejected;
+    token.resolve("late-access");
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    assert.equal(requests, 0);
+  } finally {
+    globalThis.fetch = previous;
+  }
+});
+
+test("a serverless export has a three-minute full-body deadline and still rejects late bytes", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const previous = globalThis.fetch;
+  const entered = deferred<void>(),
+    body = deferred<ArrayBuffer>();
+  let settled = false;
+  globalThis.fetch = async () =>
+    ({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "Content-Length": "4" }),
+      arrayBuffer: () => {
+        entered.resolve();
+        return body.promise;
+      },
+    }) as Response;
+  try {
+    const api = new ApiClient(
+      origin,
+      { accessToken: async () => "access" },
+      undefined,
+      undefined,
+      undefined,
+      { serverless: true },
+    );
+    const download = api.download(
+      "/v1/privacy/jobs/88888888-8888-4888-8888-888888888888/download",
+      1,
+      4,
+    );
+    download.then(
+      () => {
+        settled = true;
+      },
+      () => {
+        settled = true;
+      },
+    );
+    const rejected = assert.rejects(download, timeoutError);
+    await entered.promise;
+    t.mock.timers.tick(179_999);
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    assert.equal(settled, false);
+    t.mock.timers.tick(1);
+    await rejected;
+    body.resolve(new TextEncoder().encode("data").buffer);
+    await new Promise<void>((resolve) => setImmediate(resolve));
+  } finally {
+    globalThis.fetch = previous;
+  }
+});

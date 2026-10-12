@@ -9,6 +9,8 @@ export const BUILD = Object.freeze({
   hostedPreview:
     extra.hostedPreview === true ||
     process.env.EXPO_PUBLIC_HOSTED_PREVIEW === "true",
+  serverless:
+    extra.serverless === true || process.env.EXPO_PUBLIC_SERVERLESS === "true",
   apiUrl: String(
     extra.apiUrl ?? process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8000",
   ).replace(/\/$/, ""),
@@ -29,6 +31,11 @@ export const BUILD = Object.freeze({
   contract: "1.0.0 / scientific 0.1.0",
 });
 export function validateBuild(): void {
+  if (BUILD.serverless && !["qa", "prod"].includes(BUILD.environment))
+    throw new IntegrityError(
+      "SERVERLESS_ENVIRONMENT_INVALID",
+      "This service setting requires a configured cloud build.",
+    );
   if (BUILD.hostedPreview && BUILD.environment !== "local")
     throw new IntegrityError(
       "PREVIEW_ENVIRONMENT_INVALID",

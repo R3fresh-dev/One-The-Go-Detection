@@ -45,6 +45,9 @@ export interface ApiResponse<T> {
   status: number;
   evidenceSha256: string | null;
 }
+export interface ApiClientOptions {
+  serverless?: boolean;
+}
 // A deadline must settle the caller even if token recovery or a platform fetch
 // implementation does not honor AbortSignal. Late work never commits a reply.
 export function withAbort<T>(
@@ -82,6 +85,8 @@ export function withAbort<T>(
 }
 export class ApiClient {
   private pending = new Set<AbortController>();
+  private readonly requestTimeoutMs: number;
+  private readonly downloadTimeoutMs: number;
   constructor(
     readonly origin: string,
     private tokenProvider: TokenProvider,
@@ -92,7 +97,11 @@ export class ApiClient {
       message: "Synchronization is available.",
     }),
     private readonly networkAllowed: () => boolean = () => true,
-  ) {}
+    options: ApiClientOptions = {},
+  ) {
+    this.requestTimeoutMs = options.serverless === true ? 120_000 : 15_000;
+    this.downloadTimeoutMs = options.serverless === true ? 180_000 : 60_000;
+  }
   cancelAll(): void {
     for (const controller of this.pending)
       controller.abort(
@@ -139,11 +148,11 @@ export class ApiClient {
           new ApiError(
             0,
             "REQUEST_TIMEOUT",
-            "The service did not respond within 15 seconds. Your local records remain on this device.",
+            `The service did not respond within ${this.requestTimeoutMs / 1000} seconds. Your local records remain on this device.`,
             true,
           ),
         ),
-      15_000,
+      this.requestTimeoutMs,
     );
     const abort = () =>
       controller.abort(
@@ -425,11 +434,11 @@ export class ApiClient {
           new ApiError(
             0,
             "REQUEST_TIMEOUT",
-            "The export download did not complete within 60 seconds. Try again when connected.",
+            `The export download did not complete within ${this.downloadTimeoutMs / 1000} seconds. Try again when connected.`,
             true,
           ),
         ),
-      60_000,
+      this.downloadTimeoutMs,
     );
     try {
       const token = await withAbort(controller.signal, () =>
