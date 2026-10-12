@@ -123,7 +123,7 @@ class ServerlessTemplateTest(unittest.TestCase):
         self.assertEqual(self.template["Outputs"]["WorkerFunctionArn"]["Value"], {"Fn::GetAtt": ["WorkerFunction", "Arn"]})
 
     def test_staged_activation_cannot_receive_api_jobs_or_scheduled_sql_before_admission(self):
-        for role in ["Api", "Worker", "Dispatcher"]:
+        for role in ["Api", "Worker", "Dispatcher", "Control"]:
             self.assertEqual(self.properties(role + "Function")["ReservedConcurrentExecutions"], 0)
         self.assertEqual(self.properties("MaintenanceFunction")["ReservedConcurrentExecutions"], 1)
         self.assertFalse(self.properties("WorkerMapping")["Enabled"])
@@ -138,6 +138,21 @@ class ServerlessTemplateTest(unittest.TestCase):
         self.assertEqual(active["WorkerMapping"]["Properties"]["ScalingConfig"]["MaximumConcurrency"], 2)
         self.assertGreaterEqual(self.properties("JobsQueue")["VisibilityTimeout"], 6 * self.properties("WorkerFunction")["Timeout"])
         self.assertEqual(self.properties("JobsQueue")["RedrivePolicy"]["maxReceiveCount"], 5)
+
+    def test_redeployment_explicitly_restores_controller_concurrency_after_sdk_drain(self):
+        # The CLI drains actual controller concurrency to zero. CloudFormation
+        # must then see a property transition when reopening, rather than an
+        # unchanged 1 -> 1 template that can preserve the manually drained zero.
+        before = MODULE.build_template({**self.config, "activateServices": True})["Resources"]
+        stopped = MODULE.build_template({**self.config, "activateServices": False})["Resources"]
+        reopened = MODULE.build_template({**self.config, "activateServices": True})["Resources"]
+        counts = [stage["ControlFunction"]["Properties"]["ReservedConcurrentExecutions"]
+                  for stage in [before, stopped, reopened]]
+        self.assertEqual(counts, [1, 0, 1])
+        self.assertEqual(stopped["ControlSchedule"]["Properties"]["State"], "DISABLED")
+        self.assertEqual(reopened["ControlSchedule"]["Properties"]["State"], "ENABLED")
+        self.assertTrue(all(stage["MaintenanceFunction"]["Properties"]["ReservedConcurrentExecutions"] == 1
+                            for stage in [before, stopped, reopened]))
 
     def test_control_and_api_can_invoke_only_app_privileged_dispatcher(self):
         dispatcher = self.template["Outputs"]["DispatcherFunctionArn"]["Value"]
