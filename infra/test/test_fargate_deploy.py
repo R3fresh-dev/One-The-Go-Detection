@@ -2,6 +2,7 @@
 from contextlib import ExitStack
 import ast
 from copy import deepcopy
+from datetime import datetime, timezone
 import importlib.util
 import io
 import hashlib
@@ -115,6 +116,277 @@ class FargateDeployTest(unittest.TestCase):
         with self.assertRaises(MODULE.Gate):
             MODULE.deploy(SimpleNamespace(gate_evidence=None), self.config, aws, {})
         aws.client.assert_not_called()
+
+    def _continuation_args(self, **changes):
+        return SimpleNamespace(**{"gate_evidence": Path("reviewed.json"), "establish_new": True,
+            "continue_uninitialized": Path("continuation.json"), "continue_uninitialized_sha256": "d" * 64,
+            "recovery_manifest": None, "recovery_archive": None, "recovery_run_id": None,
+            "recovery_artifact_id": None, **changes})
+
+    def test_continuation_cli_rejects_incomplete_conflicting_and_nondeploy_flags_before_config_or_aws(self):
+        bundle = ["--continue-uninitialized", "continuation.json", "--continue-uninitialized-sha256", "d" * 64]
+        legacy = ["--recovery-manifest", "original.json", "--recovery-archive", "artifact.zip",
+                  "--recovery-run-id", "123", "--recovery-artifact-id", "456"]
+        invalid = [("deploy", ["--continue-uninitialized", "continuation.json", "--establish-new"]),
+                   ("deploy", ["--continue-uninitialized-sha256", "d" * 64, "--establish-new"]),
+                   ("deploy", bundle),
+                   ("deploy", ["--continue-uninitialized", "continuation.json",
+                               "--continue-uninitialized-sha256", "invalid", "--establish-new"]),
+                   ("deploy", [*legacy, "--establish-new", *bundle])]
+        invalid += [("deploy", [*bundle, "--establish-new", *legacy[index:index + 2]])
+                    for index in range(0, len(legacy), 2)]
+        invalid += [(operation, [*options, "--establish-new"])
+                    for operation in ("plan", "health") for options in (bundle, legacy)]
+        for operation, options in invalid:
+            with self.subTest(operation=operation, options=options), \
+                    patch.object(MODULE, "read_config") as read, \
+                    patch.object(MODULE.platform, "CloudSession") as session, patch("sys.stderr", io.StringIO()):
+                self.assertEqual(MODULE.main([operation, "--config", "not-read.json", *options]), 2)
+            read.assert_not_called()
+            session.assert_not_called()
+
+    def test_direct_continuation_admits_source_then_rejects_invalid_options_before_aws(self):
+        invalid = [{"continue_uninitialized": None}, {"continue_uninitialized_sha256": None},
+                   {"continue_uninitialized_sha256": "invalid"}, {"establish_new": False}]
+        invalid += [{field: value} for field, value in (("recovery_manifest", Path("original.json")),
+                    ("recovery_archive", Path("artifact.zip")), ("recovery_run_id", 123),
+                    ("recovery_artifact_id", 456))]
+        for changes in invalid:
+            aws, args = Mock(), self._continuation_args(**changes)
+            with self.subTest(changes=changes), \
+                    patch.object(MODULE.platform, "require_clean_source") as clean, \
+                    patch.object(MODULE.platform, "verify_gate_file") as gates, \
+                    patch("deploy.serverless_recovery.uninitialized_continuation_plan") as plan, \
+                    patch.object(MODULE, "preflight") as preflight, self.assertRaises(MODULE.Gate):
+                MODULE.deploy(args, self.config, aws, {})
+            clean.assert_called_once_with(SOURCE)
+            gates.assert_called_once_with(args.gate_evidence, SOURCE)
+            plan.assert_not_called()
+            preflight.assert_not_called()
+            aws.client.assert_not_called()
+
+    def test_failed_source_gates_prevent_continuation_inventory_and_preflight(self):
+        for failing in ("require_clean_source", "verify_gate_file"):
+            aws = Mock()
+            with self.subTest(failing=failing), \
+                    patch.object(MODULE.platform, "require_clean_source") as clean, \
+                    patch.object(MODULE.platform, "verify_gate_file") as gates, \
+                    patch("deploy.serverless_recovery.uninitialized_continuation_plan") as plan, \
+                    patch.object(MODULE, "preflight") as preflight:
+                (clean if failing == "require_clean_source" else gates).side_effect = MODULE.Gate("Source not admitted")
+                with self.assertRaisesRegex(MODULE.Gate, "Source not admitted"):
+                    MODULE.deploy(self._continuation_args(), self.config, aws, {})
+            plan.assert_not_called()
+            preflight.assert_not_called()
+            aws.client.assert_not_called()
+
+    def test_authority_normalization_preserves_fargate_configuration_and_budget(self):
+        original = deepcopy(self.config)
+        authority = MODULE.authority_config(self.config)
+        self.assertEqual(authority, {**original, "environment": "serverless-development", "monthlyBudgetUsd": 50})
+        self.assertEqual(self.config, original)
+        self.assertEqual(self.config["monthlyBudgetUsd"], 100)
+
+    def _retained_engine_cloud(self, versions, options=None):
+        sts, plans, rds, ec2 = Mock(), Mock(), Mock(), Mock()
+        sts.get_caller_identity.return_value = {"Account": ACCOUNT}
+        plans.get_account_plan_state.return_value = {
+            "accountId": ACCOUNT, "accountPlanType": "PAID", "accountPlanStatus": "ACTIVE"}
+        engines, capacity = Mock(), Mock()
+        engines.paginate.return_value = [{"DBEngineVersions": versions}]
+        capacity.paginate.return_value = [{"OrderableDBInstanceOptions":
+            [{"SupportedNetworkTypes": ["IPV4", "DUAL"]}] if options is None else options}]
+        rds.get_paginator.side_effect = lambda operation: {
+            "describe_db_engine_versions": engines, "describe_orderable_db_instance_options": capacity}[operation]
+        ec2.describe_managed_prefix_lists.return_value = {"PrefixLists": [{"PrefixListId": "pl-12345678"}]}
+        aws = Mock()
+        aws.client.side_effect = lambda name: {"sts": sts, "freetier": plans, "rds": rds, "ec2": ec2}[name]
+        return aws, rds, capacity
+
+    def test_continuation_pins_retained_engine_and_keeps_fargate_budget_when_newer_version_is_available(self):
+        versions = [{"Status": "available", "EngineVersion": version,
+                     "ServerlessV2FeaturesSupport": {"MinCapacity": 0}} for version in ("16.15", "16.16")]
+        aws, rds, capacity = self._retained_engine_cloud(versions)
+        with patch.object(MODULE, "stable_stack", return_value=None):
+            result = MODULE.preflight(aws, self.config, None, "16.15")
+        self.assertEqual(result["databaseEngineVersion"], "16.15")
+        self.assertEqual(result["monthlyBudgetUsd"], 100)
+        self.assertEqual(result["environment"], "fargate-development")
+        rds.describe_db_clusters.assert_not_called()
+        capacity.paginate.assert_called_once_with(Engine="aurora-postgresql", EngineVersion="16.15",
+                                                  DBInstanceClass="db.serverless")
+
+    def test_retained_engine_cannot_fall_forward_when_unavailable_ambiguous_or_without_dual_stack_capacity(self):
+        retained = {"Status": "available", "EngineVersion": "16.15",
+                    "ServerlessV2FeaturesSupport": {"MinCapacity": 0}}
+        newer = {**retained, "EngineVersion": "16.16"}
+        invalid = [([newer], None), ([{**retained, "Status": "deprecated"}, newer], None),
+                   ([{**retained, "ServerlessV2FeaturesSupport": {"MinCapacity": 0.5}}, newer], None),
+                   ([retained, retained, newer], None), ([retained, newer], []),
+                   ([retained, newer], [{"SupportedNetworkTypes": ["IPV4"]}])]
+        for versions, options in invalid:
+            aws, rds, capacity = self._retained_engine_cloud(versions, options)
+            with self.subTest(versions=versions, options=options), \
+                    patch.object(MODULE, "stable_stack", return_value=None), self.assertRaises(MODULE.Gate):
+                MODULE.preflight(aws, self.config, None, "16.15")
+            self.assertNotIn("ec2", [call.args[0] for call in aws.client.call_args_list])
+            if capacity.paginate.called:
+                self.assertEqual(capacity.paginate.call_args.kwargs["EngineVersion"], "16.15")
+
+    def _run_continuation_lifecycle(self, root, *, fail_verification=None):
+        events, template_configs, maintenance_options = [], [], {}
+        aws, cloudfront = Mock(), Mock()
+        aws.client.return_value = cloudfront
+        cloudfront.create_invalidation.return_value = {"Invalidation": {"Id": "owned-invalidation"}}
+        args = self._continuation_args()
+        plan = {"database_engine_version": "16.15", "already_adopted": False}
+        adopted = {**plan, "already_adopted": True}
+        out = {**self.out, "WebDistributionId": "owned-web", "ApiDistributionId": "owned-api"}
+
+        def planned(*arguments):
+            events.append("plan")
+            return plan
+
+        def preflighted(aws, current, prior, version):
+            events.append("preflight")
+            return {**current, "databaseEngineVersion": version, "cloudFrontPrefixListId": "pl-12345678"}
+
+        def continued(*arguments):
+            events.append("continue")
+            return adopted
+
+        def template(current, phase="platform"):
+            template_configs.append(deepcopy(current))
+            return {"phase": phase, "active": current.get("activateServices", False)}
+
+        def deployed(aws, name, current, *arguments):
+            if current["phase"] == "registry":
+                events.append("registry")
+                return {"DeploymentBucket": self.out["DeploymentBucket"]}
+            phase = "activate" if current["active"] else "stopped"
+            events.append(phase)
+            return {**out, "ActivateServices": str(current["active"]).lower()}
+
+        def images(aws, current, *arguments):
+            events.append("images")
+            return {**current, **self.images}
+
+        def ui(aws, current, *arguments):
+            events.append("ui")
+            return {**current, "uiArtifactBinding": "e" * 64}, {"index.html": b"reviewed-ui"}
+
+        def verified(*arguments):
+            number = sum(event.startswith("verify-database-") for event in events) + 1
+            events.append("verify-database-" + str(number))
+            if number == fail_verification:
+                raise MODULE.Gate("Retained database changed")
+
+        def maintained(aws, current, outputs, operation, work, **extra):
+            events.append(operation)
+            maintenance_options[operation] = extra
+            self.assertEqual(current["monthlyBudgetUsd"], 100)
+            return {"completed_at": datetime.now(timezone.utc).isoformat()}
+
+        with ExitStack() as stack:
+            stack.enter_context(patch.object(MODULE, "ROOT", root))
+            stack.enter_context(patch.object(MODULE.platform, "require_clean_source",
+                side_effect=lambda *args: events.append("admit-source")))
+            stack.enter_context(patch.object(MODULE.platform, "verify_gate_file",
+                side_effect=lambda *args: events.append("admit-gates")))
+            planning = stack.enter_context(patch("deploy.serverless_recovery.uninitialized_continuation_plan", side_effect=planned))
+            preflight = stack.enter_context(patch.object(MODULE, "preflight", side_effect=preflighted))
+            continuation = stack.enter_context(patch("deploy.serverless_recovery.continue_uninitialized", side_effect=continued))
+            database = stack.enter_context(patch("deploy.serverless_recovery.verify_continued_database", side_effect=verified))
+            stable = stack.enter_context(patch.object(MODULE, "stable_stack"))
+            drain = stack.enter_context(patch.object(MODULE, "drain"))
+            stack.enter_context(patch("deploy.fargate_template.build_template", side_effect=template))
+            stack.enter_context(patch.object(MODULE, "deploy_stack", side_effect=deployed))
+            stack.enter_context(patch.object(MODULE, "archive_source"))
+            stack.enter_context(patch.object(MODULE, "build_images", side_effect=images))
+            stack.enter_context(patch.object(MODULE, "build_ui", side_effect=ui))
+            network = stack.enter_context(patch.object(MODULE, "database_network", return_value={}))
+            stack.enter_context(patch.object(MODULE, "run_maintenance", side_effect=maintained))
+            stack.enter_context(patch.object(MODULE, "verify_origin"))
+            stack.enter_context(patch.object(MODULE.web_artifact, "verify_access", return_value={"passed": True}))
+            stack.enter_context(patch.object(MODULE, "verify_upload_access", return_value={"upload_verified": True}))
+            stack.enter_context(patch.object(MODULE, "observe", return_value={"status": "healthy"}))
+            stack.enter_context(patch.object(MODULE, "container_logs", return_value={"api_log_delivery_verified": True}))
+            if fail_verification:
+                with self.assertRaisesRegex(MODULE.Gate, "Retained database changed"), patch("sys.stderr", io.StringIO()):
+                    MODULE.deploy(args, self.config, aws, {"budget_usd": 100})
+                receipt = None
+            else:
+                receipt = MODULE.deploy(args, self.config, aws, {"budget_usd": 100})
+        states = list(root.glob(".local/deploy/fargate-development/**/deployment-state.json"))
+        self.assertEqual(len(states), 1)
+        state = json.loads(states[0].read_text())
+        return receipt, events, maintenance_options, state, template_configs, {
+            "planning": planning, "preflight": preflight, "continuation": continuation,
+            "database": database, "stable": stable, "drain": drain, "network": network,
+            "aws": aws, "args": args, "adopted": adopted}
+
+    def test_continuation_verifies_both_stopped_updates_before_bootstrap_without_changing_fargate_budget(self):
+        with tempfile.TemporaryDirectory() as directory:
+            receipt, events, options, state, configs, calls = self._run_continuation_lifecycle(Path(directory))
+        self.assertEqual(events[:6], ["admit-source", "admit-gates", "plan", "preflight", "continue", "registry"])
+        self.assertLess(events.index("stopped"), events.index("verify-database-1"))
+        self.assertLess(events.index("verify-database-1"), events.index("ui"))
+        self.assertLess(events.index("ui"), events.index("verify-database-2"))
+        self.assertLess(events.index("verify-database-2"), events.index("bootstrap"))
+        self.assertLess(events.index("admission"), events.index("activate"))
+        calls["planning"].assert_called_once_with(calls["aws"], MODULE.authority_config(self.config),
+            calls["args"].continue_uninitialized, calls["args"].continue_uninitialized_sha256)
+        calls["preflight"].assert_called_once_with(calls["aws"], self.config, None, "16.15")
+        continued = calls["continuation"].call_args.args
+        self.assertEqual(continued[1]["databaseEngineVersion"], "16.15")
+        self.assertEqual(continued[1]["environment"], "serverless-development")
+        self.assertEqual(continued[1]["monthlyBudgetUsd"], 50)
+        self.assertEqual(continued[2].name, "uninitialized-continuation.json")
+        self.assertEqual(continued[3:], (calls["args"].continue_uninitialized,
+                                       calls["args"].continue_uninitialized_sha256))
+        self.assertEqual(calls["database"].call_count, 2)
+        for call in calls["database"].call_args_list:
+            self.assertEqual(call.args[1]["environment"], "serverless-development")
+            self.assertEqual(call.args[1]["monthlyBudgetUsd"], 50)
+            self.assertEqual(call.args[1]["databaseEngineVersion"], "16.15")
+            self.assertEqual(call.args[2]["ActivateServices"], "false")
+            self.assertIs(call.args[3], calls["adopted"])
+        self.assertTrue(all(current["environment"] == "fargate-development"
+                            and current["monthlyBudgetUsd"] == 100 for current in configs))
+        self.assertEqual(self.config["monthlyBudgetUsd"], 100)
+        calls["stable"].assert_not_called()
+        calls["drain"].assert_not_called()
+        self.assertEqual(options, {"bootstrap": {"establish_new": True}, "migrate": {}, "admission": {}})
+        stages = state["completed_stages"]
+        self.assertEqual(stages[0], "continue-uninitialized-retained-resources")
+        self.assertLess(stages.index("deploy-stopped"), stages.index("verify-continued-database-stopped"))
+        self.assertLess(stages.index("bind-stopped-ui-image"), stages.index("verify-continued-database-ui"))
+        self.assertLess(stages.index("verify-continued-database-ui"), stages.index("bootstrap"))
+        self.assertEqual(receipt["status"], "fargate_transport_and_health_verified")
+        self.assertEqual(receipt["budget_plan"]["budget_usd"], 100)
+
+    def test_either_stopped_database_verification_failure_blocks_bootstrap_migration_and_activation(self):
+        for number, failed_stage in ((1, "verify-continued-database-stopped"), (2, "verify-continued-database-ui")):
+            with self.subTest(number=number), tempfile.TemporaryDirectory() as directory:
+                receipt, events, options, state, configs, calls = self._run_continuation_lifecycle(
+                    Path(directory), fail_verification=number)
+            self.assertIsNone(receipt)
+            self.assertEqual(options, {})
+            self.assertNotIn("bootstrap", events)
+            self.assertNotIn("migrate", events)
+            self.assertNotIn("activate", events)
+            calls["network"].assert_not_called()
+            calls["aws"].client.assert_not_called()
+            self.assertEqual(calls["database"].call_count, number)
+            self.assertEqual(state["status"], "failed")
+            self.assertEqual(state["failed_stage"], failed_stage)
+            self.assertNotIn(failed_stage, state["completed_stages"])
+            self.assertFalse(state["rollback_executed"])
+            if number == 1:
+                self.assertNotIn("ui", events)
+            else:
+                self.assertIn("verify-continued-database-stopped", state["completed_stages"])
+                self.assertIn("bind-stopped-ui-image", state["completed_stages"])
 
     def test_actual_sdk_has_all_paginators_used_for_budget_and_runtime_inspection(self):
         loader = botocore.session.get_session().get_component("data_loader")

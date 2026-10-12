@@ -103,7 +103,7 @@ def budget(c):
             'budget_is_a_spending_cap': False}
 
 
-def preflight(aws, c, prior):
+def preflight(aws, c, prior, retained_engine_version=None):
     if aws.client('sts').get_caller_identity()['Account'] != c['account']:
         raise Gate('AWS credentials do not match the selected account')
     plan = aws.client('freetier').get_account_plan_state()
@@ -125,7 +125,15 @@ def preflight(aws, c, prior):
                     and r.get('ServerlessV2FeaturesSupport', {}).get('MinCapacity') == 0]
         if not versions:
             raise Gate('Aurora PostgreSQL 16 with zero-capacity auto-pause is unavailable')
-        version = max(versions, key=lambda r: int(r['EngineVersion'].split('.')[1]))['EngineVersion']
+        if retained_engine_version is not None:
+            matches = [row for row in versions if row['EngineVersion'] == retained_engine_version]
+            if len(matches) != 1:
+                raise Gate('The retained Aurora engine version no longer matches reviewed available capacity')
+            version = retained_engine_version
+        else:
+            version = max(versions, key=lambda r: int(r['EngineVersion'].split('.')[1]))['EngineVersion']
+    if retained_engine_version is not None and version != retained_engine_version:
+        raise Gate('The retained Aurora engine version differs from the continuation proof')
     options = [r for page in pages(rds, 'describe_orderable_db_instance_options', Engine='aurora-postgresql',
                EngineVersion=version, DBInstanceClass='db.serverless') for r in page['OrderableDBInstanceOptions']]
     if not options or not any('DUAL' in r.get('SupportedNetworkTypes', []) for r in options):
@@ -490,26 +498,53 @@ def observe(aws, c, out):
             **health, 'dashboard_url': out['CloudWatchDashboardUrl'], 'backup_restore': 'not_executed'}
 
 
+def authority_config(c):
+    """Use the unchanged legacy authority names without changing Fargate budget."""
+    return {**c, 'environment': 'serverless-development', 'monthlyBudgetUsd': 50}
+
+
+def _recovery_options(args, operation=None):
+    continuing = getattr(args, 'continue_uninitialized', None)
+    digest = getattr(args, 'continue_uninitialized_sha256', None)
+    recovery = [getattr(args, name, None) for name in (
+        'recovery_manifest', 'recovery_archive', 'recovery_run_id', 'recovery_artifact_id')]
+    if (bool(continuing) != bool(digest)
+            or (continuing and (not args.establish_new or any(recovery)
+                or (operation is not None and operation != 'deploy')
+                or not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest)))):
+        raise Gate('Uninitialized continuation requires deploy, explicit establishment and the protected bundle/hash only')
+    if any(recovery) and (not all(recovery) or not args.establish_new
+            or (operation is not None and operation != 'deploy')):
+        raise Gate('Trusted initial recovery requires all inputs and explicit first-empty initialization')
+    return continuing, digest, recovery
+
+
 def deploy(args, c, aws, price):
     if not args.gate_evidence:
         raise Gate('Passing exact-source GitHub gate evidence is required')
     platform.require_clean_source(c['releaseId'])
     platform.verify_gate_file(args.gate_evidence, c['releaseId'])
     from deploy.fargate_template import build_template
-    prior = stable_stack(aws, STACK, absent_ok=True)
-    c = preflight(aws, c, prior)
-    recovery = [args.recovery_manifest, args.recovery_archive, args.recovery_run_id, args.recovery_artifact_id]
+    continuing, continuation_hash, recovery = _recovery_options(args)
+    continuation = None
+    if continuing:
+        from deploy.serverless_recovery import uninitialized_continuation_plan
+        continuation = uninitialized_continuation_plan(aws, authority_config(c), continuing, continuation_hash)
+    prior = None if continuing else stable_stack(aws, STACK, absent_ok=True)
+    c = preflight(aws, c, prior, continuation['database_engine_version']) if continuation else preflight(aws, c, prior)
     if prior is not None and args.establish_new and not all(recovery):
         raise Gate('An existing deployment cannot establish a new empty deletion journal')
-    if any(recovery) and (not all(recovery) or not args.establish_new):
-        raise Gate('Trusted initial recovery requires all inputs and explicit first-empty initialization')
     work = ROOT / '.local/deploy/fargate-development' / c['releaseId'] / uuid.uuid4().hex
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
+        if continuing:
+            from deploy.serverless_recovery import continue_uninitialized
+            continuation = journal.call('continue-uninitialized-retained-resources', continue_uninitialized,
+                aws, authority_config(c), work / 'uninitialized-continuation.json', continuing, continuation_hash)
         if all(recovery):
             from deploy.serverless_recovery import resume_initial_from_artifact
             journal.call('resume-preserved-initial-import', resume_initial_from_artifact, aws,
-                {**c, 'environment': 'serverless-development', 'monthlyBudgetUsd': 50},
+                authority_config(c),
                 args.recovery_manifest, work / 'initial-resume.json', artifact_proof={
                     'run_id': args.recovery_run_id, 'artifact_id': args.recovery_artifact_id, 'archive_path': args.recovery_archive})
             # Only the helper can admit an already completed, still empty
@@ -522,8 +557,15 @@ def deploy(args, c, aws, price):
         if prior:
             journal.call('drain-existing-runtime', drain, aws, prior)
         out = journal.call('deploy-stopped', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}), c, registry['DeploymentBucket'])
+        if continuation:
+            from deploy.serverless_recovery import verify_continued_database
+            journal.call('verify-continued-database-stopped', verify_continued_database,
+                aws, authority_config(c), out, continuation)
         c, files = journal.call('build-reviewed-ui-image', build_ui, aws, c, registry, out, source, work)
         out = journal.call('bind-stopped-ui-image', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}), c, registry['DeploymentBucket'])
+        if continuation:
+            journal.call('verify-continued-database-ui', verify_continued_database,
+                aws, authority_config(c), out, continuation)
         journal.call('verify-private-database-network', database_network, aws, out)
         journal.call('bootstrap', run_maintenance, aws, c, out, 'bootstrap', work, establish_new=args.establish_new)
         journal.call('migrate', run_maintenance, aws, c, out, 'migrate', work)
@@ -577,10 +619,15 @@ def main(argv=None):
     parser.add_argument('--recovery-archive', type=Path)
     parser.add_argument('--recovery-run-id', type=int)
     parser.add_argument('--recovery-artifact-id', type=int)
+    parser.add_argument('--continue-uninitialized', type=Path,
+                        help='Continue the authenticated stopped deployment before first initialization')
+    parser.add_argument('--continue-uninitialized-sha256',
+                        help='Independently authenticated SHA-256 of the protected continuation bundle')
     args = parser.parse_args(argv)
     try:
         if args.profile and args.identity:
             raise Gate('Choose one existing AWS profile or configured identity')
+        _recovery_options(args, args.operation)
         c = read_config(args.config)
         price = budget(c)
         if args.operation == 'plan':
