@@ -19,7 +19,7 @@ The [required merge checks](docs/CI_GATES.md) describe the strict coverage, brow
 | Run Android/iOS | [Mobile application](apps/mobile/README.md), native modules under `apps/mobile/modules`. |
 | Try the UIs in a browser | [Codespaces web preview, Appetize native preview and service costs](docs/BROWSER_ACCESS_AND_SERVICES.md). |
 | Run actual local service dependencies | [LocalStack and PostgreSQL quick start](infra/README.md), [routing/environment settings](infra/ENVIRONMENT.md). |
-| Deploy an approved release to AWS | [Deployment tooling](deploy/README.md), [operator runbooks](infra/runbooks/OPERATIONS.md), [dated cost estimate](infra/costs/README.md). |
+| Deploy an approved release to AWS | [Fargate development deployment](deploy/FARGATE_AWS.md), [QA/production tooling](deploy/README.md), [operator runbooks](infra/runbooks/OPERATIONS.md), [development cost estimate](infra/costs/FARGATE.md). |
 | Work on the backend/API | [Service engineering guide](services/api/README.md), [generated application contract](contracts/application/README.md). |
 
 ## Specifications before implementation

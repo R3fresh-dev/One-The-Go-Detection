@@ -1,0 +1,3462 @@
+{
+  "schema_version": "1.0.0",
+  "deployment_profile": "fargate-development",
+  "region": "us-east-2",
+  "currency": "USD",
+  "checked_at": "2026-10-11T00:00:00Z",
+  "pricing_basis": "On-demand gross before shared free tiers/credits, taxes and discounts; average 0.5 active ACU with configured maximum 1 ACU; 180 charged seconds per bounded worker task",
+  "unverified_rates": [],
+  "rates": {
+    "fargate_vcpu_hour": {
+      "usd": 0.04048,
+      "unit": "hours",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECS/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:25Z",
+      "sku": "UGSJ89BUWB7SMJ6A",
+      "rate_code": "UGSJ89BUWB7SMJ6A.JRTCKXETXF.6YS6EN2CT7",
+      "description": "AWS Fargate - vCPU  - US East 2 (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T16:21:23.297297Z",
+      "offer_sha256": "affdf951a33a6c721ab915d2d88420ca1fc6589e7a529d8dfd238823606ee85a"
+    },
+    "fargate_memory_gb_hour": {
+      "usd": 0.004445,
+      "unit": "hours",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECS/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:25Z",
+      "sku": "HH5EE3ZFWSFKGKWM",
+      "rate_code": "HH5EE3ZFWSFKGKWM.JRTCKXETXF.6YS6EN2CT7",
+      "description": "AWS Fargate - Memory  - US East 2 (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T16:21:23.297297Z",
+      "offer_sha256": "affdf951a33a6c721ab915d2d88420ca1fc6589e7a529d8dfd238823606ee85a"
+    },
+    "alb_hour": {
+      "usd": 0.0225,
+      "unit": "Hrs",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSELB/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:45:44Z",
+      "sku": "HCVPZW9WEWSJKJWJ",
+      "rate_code": "HCVPZW9WEWSJKJWJ.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.0225 per Application LoadBalancer-hour (or partial hour)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T16:21:25.236690Z",
+      "offer_sha256": "e23add7e42c15a5e3c47c4d267bc8889a0c704c63ffbf734f580a825a52e4b57"
+    },
+    "alb_lcu_hour": {
+      "usd": 0.008,
+      "unit": "LCU-Hrs",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSELB/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:45:44Z",
+      "sku": "S3YDM2U7G69S4W5C",
+      "rate_code": "S3YDM2U7G69S4W5C.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.008 per used Application load balancer capacity unit-hour (or partial hour)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T16:21:25.236690Z",
+      "offer_sha256": "e23add7e42c15a5e3c47c4d267bc8889a0c704c63ffbf734f580a825a52e4b57"
+    },
+    "aurora_acu_hour": {
+      "usd": 0.12,
+      "unit": "ACU-Hr",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.csv",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "F68JYQJBHCXKZMJX",
+      "rate_code": "F68JYQJBHCXKZMJX.JRTCKXETXF.6YS6EN2CT7",
+      "description": "USD 0.12 per Aurora Capacity Unit hour running Aurora PostgreSQL Serverless v2",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:09:18.506902+00:00",
+      "offer_sha256": "609cc01c4987965dd1feafb00209d5d75451079809536c6cc6239dda1fec4d43"
+    },
+    "aurora_storage_gb_month": {
+      "usd": 0.1,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.csv",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "6URTSSU2UNPPNGCY",
+      "rate_code": "6URTSSU2UNPPNGCY.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.10 per RDS GB-month of consumed storage (Aurora PostgreSQL)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:09:18.506902+00:00",
+      "offer_sha256": "609cc01c4987965dd1feafb00209d5d75451079809536c6cc6239dda1fec4d43"
+    },
+    "aurora_io_request": {
+      "usd": 2e-07,
+      "unit": "IOs",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.csv",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "BY4H8DC28FBCKJSH",
+      "rate_code": "BY4H8DC28FBCKJSH.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.20 per RDS million I/O requests (Aurora PostgreSQL)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:09:18.506902+00:00",
+      "offer_sha256": "609cc01c4987965dd1feafb00209d5d75451079809536c6cc6239dda1fec4d43"
+    },
+    "aurora_excess_backup_gb_month": {
+      "usd": 0.021,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.csv",
+      "published_at": "2026-10-06T22:40:50Z",
+      "sku": "PYNU7WJBSCTWR8XF",
+      "rate_code": "PYNU7WJBSCTWR8XF.JRTCKXETXF.6YS6EN2CT7",
+      "description": "USD 0.021 per GB-month of backup storage exceeding free allocation for Aurora PostgreSQL",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:09:18.506902+00:00",
+      "offer_sha256": "609cc01c4987965dd1feafb00209d5d75451079809536c6cc6239dda1fec4d43"
+    },
+    "ddb_read_unit": {
+      "usd": 1.25e-07,
+      "unit": "ReadRequestUnits",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonDynamoDB/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:22Z",
+      "sku": "SGMZJPDKSWXTY4VE",
+      "rate_code": "SGMZJPDKSWXTY4VE.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.125 per million read request units (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:25.504341Z",
+      "offer_sha256": "6fb852c04a82fb5b92affa62d4b25d2c2e22f4ef6c961b49b98d42309ce73cf3"
+    },
+    "ddb_write_unit": {
+      "usd": 6.25e-07,
+      "unit": "WriteRequestUnits",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonDynamoDB/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:22Z",
+      "sku": "GGQSXTNTRBHRVS56",
+      "rate_code": "GGQSXTNTRBHRVS56.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.625 per million write request units (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:25.504341Z",
+      "offer_sha256": "6fb852c04a82fb5b92affa62d4b25d2c2e22f4ef6c961b49b98d42309ce73cf3"
+    },
+    "ddb_storage_gb_month": {
+      "usd": 0.25,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonDynamoDB/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:22Z",
+      "sku": "GAHPNMT39TQ47AGG",
+      "rate_code": "GAHPNMT39TQ47AGG.JRTCKXETXF.VYAP54KATQ",
+      "description": "$0.25 per GB-Month of storage used beyond first 25 free GB-Months",
+      "begin_range": "25",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:25.504341Z",
+      "offer_sha256": "6fb852c04a82fb5b92affa62d4b25d2c2e22f4ef6c961b49b98d42309ce73cf3"
+    },
+    "ddb_pitr_gb_month": {
+      "usd": 0.2,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonDynamoDB/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:22Z",
+      "sku": "SU36MES57K2M6EHQ",
+      "rate_code": "SU36MES57K2M6EHQ.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.20 per GB-Month of storage used for DynamoDB PITR backup",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:25.504341Z",
+      "offer_sha256": "6fb852c04a82fb5b92affa62d4b25d2c2e22f4ef6c961b49b98d42309ce73cf3"
+    },
+    "cloudfront_us_https_request": {
+      "usd": 1e-06,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "NPFD6SEH9MXS8M4J",
+      "rate_code": "NPFD6SEH9MXS8M4J.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.0100 per 10,000 HTTPS Requests",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:21.160040Z",
+      "offer_sha256": "1884ba6955f9df19b7049951a6b3843323b32a2c31e3147b647ce2367f81d5b2"
+    },
+    "cloudfront_us_egress_gb": {
+      "usd": 0.085,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "GV2WFGX37Q9PDSHF",
+      "rate_code": "GV2WFGX37Q9PDSHF.JRTCKXETXF.Q3Z75P77EN",
+      "description": "$0.085 per GB - first 10 TB / month data transfer out",
+      "begin_range": "0",
+      "end_range": "10240",
+      "retrieved_at": "2026-10-12T05:25:21.160040Z",
+      "offer_sha256": "1884ba6955f9df19b7049951a6b3843323b32a2c31e3147b647ce2367f81d5b2"
+    },
+    "cloudfront_us_origin_transfer_gb": {
+      "usd": 0.02,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "AGSZEF5XC2MG4FUH",
+      "rate_code": "AGSZEF5XC2MG4FUH.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.020 per GB - All data transfer out to Origin (US)",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:21.160040Z",
+      "offer_sha256": "1884ba6955f9df19b7049951a6b3843323b32a2c31e3147b647ce2367f81d5b2"
+    },
+    "cloudfront_function": {
+      "usd": 1e-07,
+      "unit": "FunctionExecutions",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "QAZUUEJG8GARJCET",
+      "rate_code": "QAZUUEJG8GARJCET.JRTCKXETXF.VQ39PKQRBK",
+      "description": "$0.10 per 1,000,000 CloudFront Function Executions",
+      "begin_range": "2000000",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:21.160040Z",
+      "offer_sha256": "1884ba6955f9df19b7049951a6b3843323b32a2c31e3147b647ce2367f81d5b2"
+    },
+    "cloudfront_invalidation_path": {
+      "usd": 0.005,
+      "unit": "URL",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "U3HVZF9WJEM7TE55",
+      "rate_code": "U3HVZF9WJEM7TE55.JRTCKXETXF.MUBTP6UPGZ",
+      "description": "$0.005 per URL - over 1,000 URLs / month.",
+      "begin_range": "1000",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:21.160040Z",
+      "offer_sha256": "1884ba6955f9df19b7049951a6b3843323b32a2c31e3147b647ce2367f81d5b2"
+    },
+    "s3_storage_gb_month": {
+      "usd": 0.023,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-2/index.json",
+      "published_at": "2026-09-28T23:04:16Z",
+      "sku": "YPGKVRB2EKTVDJDT",
+      "rate_code": "YPGKVRB2EKTVDJDT.JRTCKXETXF.PGHJ3S3EYE",
+      "description": "$0.023 per GB - first 50 TB / month of storage used",
+      "begin_range": "0",
+      "end_range": "51200"
+    },
+    "s3_put_request": {
+      "usd": 5e-06,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-2/index.json",
+      "published_at": "2026-09-28T23:04:16Z",
+      "sku": "GJKK9PMSTKPNGZS9",
+      "rate_code": "GJKK9PMSTKPNGZS9.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.005 per 1,000 PUT, COPY, POST, or LIST requests",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "s3_get_request": {
+      "usd": 4e-07,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-2/index.json",
+      "published_at": "2026-09-28T23:04:16Z",
+      "sku": "DJEKB32FV4HNZJZY",
+      "rate_code": "DJEKB32FV4HNZJZY.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.004 per 10,000 GET and all other requests",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "sqs_request": {
+      "usd": 4e-07,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSQueueService/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:07Z",
+      "sku": "9C8YFGPNBKF9HP9A",
+      "rate_code": "9C8YFGPNBKF9HP9A.JRTCKXETXF.VXGXCWQKTY",
+      "description": "$0.40 per million Amazon SQS standard requests in Tier1 in US East (Ohio)",
+      "begin_range": "0",
+      "end_range": "100000000000"
+    },
+    "cognito_lite_mau": {
+      "usd": 0.0055,
+      "unit": "CognitoUserPoolsMAU",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCognito/current/us-east-2/index.json",
+      "published_at": "2026-09-25T19:31:08Z",
+      "sku": "D7UFP5TDYG2PN8M7",
+      "rate_code": "D7UFP5TDYG2PN8M7.JRTCKXETXF.VV2AUKAVFP",
+      "description": "Cognito Lite us-east-2 tier 1 pricing",
+      "begin_range": "0",
+      "end_range": "90000"
+    },
+    "secret_month": {
+      "usd": 0.4,
+      "unit": "Secrets",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSSecretsManager/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:10Z",
+      "sku": "HHK3AZN6HN5CFDJM",
+      "rate_code": "HHK3AZN6HN5CFDJM.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.40 per Secret",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "secret_request": {
+      "usd": 5e-06,
+      "unit": "API Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSSecretsManager/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:10Z",
+      "sku": "DYZUZWKV5HMGF5A9",
+      "rate_code": "DYZUZWKV5HMGF5A9.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.05 per 10000 API Requests",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "kms_initial_key_version_month": {
+      "usd": 1.0,
+      "unit": "Keys",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/awskms/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:01Z",
+      "sku": "FEMX7ZQ4DJ6QE2KP",
+      "rate_code": "FEMX7ZQ4DJ6QE2KP.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$1 per customer managed KMS key version in US East (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "kms_symmetric_request": {
+      "usd": 3e-06,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/awskms/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:01Z",
+      "sku": "9XXHSZC4PS7S6AY2",
+      "rate_code": "9XXHSZC4PS7S6AY2.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.03 per 10000 KMS requests in US East (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "kms_ecc_sign_request": {
+      "usd": 1.5e-05,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/awskms/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:46:01Z",
+      "sku": "5PJJDDVH775CRBC6",
+      "rate_code": "5PJJDDVH775CRBC6.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.15  per 10000 KMS Asymmetric Requests excluding RSA 2048 in US East (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "log_ingest_gb": {
+      "usd": 0.5,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "5T6Z6V26DSR7SZ49",
+      "rate_code": "5T6Z6V26DSR7SZ49.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.50 per GB custom log data ingested in Standard log class - US East (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "log_storage_gb_month": {
+      "usd": 0.03,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "X7X4WD4A95NDR9U5",
+      "rate_code": "X7X4WD4A95NDR9U5.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.03 per GB-mo of log storage - US East (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "cw_custom_metric_month": {
+      "usd": 0.3,
+      "unit": "Metrics",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "XK7C3D2X45XTHURD",
+      "rate_code": "XK7C3D2X45XTHURD.JRTCKXETXF.A6VD9GXV7W",
+      "description": "$0.30 per metric-month for the first 10,000 metrics - US East (Ohio)",
+      "begin_range": "0",
+      "end_range": "10000"
+    },
+    "cw_alarm_metric_month": {
+      "usd": 0.1,
+      "unit": "Alarms",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-2/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "28VSMYRVQXUWCTMA",
+      "rate_code": "28VSMYRVQXUWCTMA.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.10 per alarm metric month (standard resolution) - US East (Ohio)",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "cw_dashboard_month": {
+      "usd": 3.0,
+      "unit": "Dashboards",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/aws-other/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "5P8PBB6MXV325TDC",
+      "rate_code": "5P8PBB6MXV325TDC.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$3.00 per Dashboard per Month",
+      "begin_range": "0",
+      "end_range": "Inf",
+      "retrieved_at": "2026-10-12T05:25:22.714305Z",
+      "offer_sha256": "f0b4783415334d4a8ae1d94fb90b749c7f427a5ba81f52e23c7cbaa1d6525f4a"
+    },
+    "ecr_storage_gb_month": {
+      "usd": 0.1,
+      "unit": "GB-Mo",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECR/current/us-east-2/index.json",
+      "published_at": "2026-09-11T12:44:25Z",
+      "sku": "NA4VZMZUEQGMXP2Y",
+      "rate_code": "NA4VZMZUEQGMXP2Y.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.10 per GB-month of data storage",
+      "begin_range": "0",
+      "end_range": "Inf"
+    },
+    "sns_request": {
+      "usd": 5e-07,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSNS/current/us-east-2/index.json",
+      "published_at": "2026-09-15T15:19:44Z",
+      "sku": "X7V4MHE7G6GM98JT",
+      "rate_code": "X7V4MHE7G6GM98JT.JRTCKXETXF.VNJQCFJPS4",
+      "description": "$0.50 per 1,000,000 Amazon SNS API Requests per month thereafter",
+      "begin_range": "1000000",
+      "end_range": "Inf"
+    },
+    "sns_email_notification": {
+      "usd": 2e-05,
+      "unit": "Notifications",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSNS/current/us-east-2/index.json",
+      "published_at": "2026-09-15T15:19:44Z",
+      "sku": "GZME75EE8UXWS6VZ",
+      "rate_code": "GZME75EE8UXWS6VZ.JRTCKXETXF.MUBTP6UPGZ",
+      "description": "$2.00 per 100,000 Amazon SNS Email/Email-JSON Notifications thereafter",
+      "begin_range": "1000",
+      "end_range": "Inf"
+    },
+    "cross_az_directional_gb": {
+      "usd": 0.01,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSDataTransfer/current/us-east-2/index.json",
+      "published_at": "2026-09-16T13:22:08Z",
+      "sku": "KF338J7FCKZPUBD9",
+      "rate_code": "KF338J7FCKZPUBD9.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.010 per GB - regional data transfer - in/out/between EC2 AZs or using elastic IPs or ELB",
+      "begin_range": "0",
+      "end_range": "Inf"
+    }
+  },
+  "scenarios": [
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 0,
+      "checks_per_month": 0,
+      "exports_per_month": 0,
+      "api_requests_per_month": 100,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 2920,
+      "worker_charged_seconds": 180,
+      "worker_billed_hours": 146.0,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 279.8333333333333,
+      "database_awake_hours_including_allowance": 321.80833333333334,
+      "active_database_acu_pricing_basis": 0.5,
+      "aurora_acu_hours": 160.90416666666667,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 73,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 2.96
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 292,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.3
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 160.90416666666667,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 19.31
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 10,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 100000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 137448,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 61944,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 1100,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 0.2,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.1,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 1000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 1000,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 1000,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 262800,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 0,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 7052,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 30000,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 0,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.5
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.23333333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 2,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 62.75,
+      "owner_budget_usd": 100,
+      "within_owner_budget": true,
+      "budget_headroom_usd": 37.25
+    },
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 10,
+      "checks_per_month": 300,
+      "exports_per_month": 20,
+      "api_requests_per_month": 1130,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 3240,
+      "worker_charged_seconds": 180,
+      "worker_billed_hours": 162.0,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 308.5833333333333,
+      "database_awake_hours_including_allowance": 354.87083333333334,
+      "active_database_acu_pricing_basis": 0.5,
+      "aurora_acu_hours": 177.43541666666667,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 81,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.28
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 324,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.44
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 177.43541666666667,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 21.29
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 10.1,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.01
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 400000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.08
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 140788,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 71964,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 8130,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 3.05,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.26
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.15,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 7000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 1.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 1640,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 1800,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 264090,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 10,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.06
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 10392,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 31400,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 300,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1.03,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.52
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.24033333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 2.2,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 65.61,
+      "owner_budget_usd": 100,
+      "within_owner_budget": true,
+      "budget_headroom_usd": 34.39
+    },
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 100,
+      "checks_per_month": 3000,
+      "exports_per_month": 200,
+      "api_requests_per_month": 10400,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 6120,
+      "worker_charged_seconds": 180,
+      "worker_billed_hours": 306.0,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 567.3333333333334,
+      "database_awake_hours_including_allowance": 652.4333333333333,
+      "active_database_acu_pricing_basis": 0.5,
+      "aurora_acu_hours": 326.21666666666664,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 153,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 6.19
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 612,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 2.72
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 326.21666666666664,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 39.15
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 11,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.1
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 3100000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.62
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 170848,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 162144,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.1
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 71400,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.07
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 28.7,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 2.44
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.6,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 61000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 2,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 7400,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 9000,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 275700,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 100,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.55
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 40452,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 44000,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.13
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 3000,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1.3,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.65
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.30333333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 4,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 91.54,
+      "owner_budget_usd": 100,
+      "within_owner_budget": true,
+      "budget_headroom_usd": 8.46
+    }
+  ],
+  "configured_maximum_1_acu_stress_scenarios": [
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 0,
+      "checks_per_month": 0,
+      "exports_per_month": 0,
+      "api_requests_per_month": 100,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 2920,
+      "worker_charged_seconds": 180,
+      "worker_billed_hours": 146.0,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 279.8333333333333,
+      "database_awake_hours_including_allowance": 321.80833333333334,
+      "active_database_acu_pricing_basis": 1,
+      "aurora_acu_hours": 321.80833333333334,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 73,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 2.96
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 292,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.3
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 321.80833333333334,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 38.62
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 10,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 100000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 137448,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 61944,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 1100,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 0.2,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.1,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 1000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 1000,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 1000,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 262800,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 0,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 7052,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 30000,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 0,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.5
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.23333333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 2,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 82.06,
+      "owner_budget_usd": 100,
+      "within_owner_budget": true,
+      "budget_headroom_usd": 17.94
+    },
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 10,
+      "checks_per_month": 300,
+      "exports_per_month": 20,
+      "api_requests_per_month": 1130,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 3240,
+      "worker_charged_seconds": 180,
+      "worker_billed_hours": 162.0,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 308.5833333333333,
+      "database_awake_hours_including_allowance": 354.87083333333334,
+      "active_database_acu_pricing_basis": 1,
+      "aurora_acu_hours": 354.87083333333334,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 81,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.28
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 324,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.44
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 354.87083333333334,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 42.58
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 10.1,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.01
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 400000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.08
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 140788,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 71964,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 8130,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 3.05,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.26
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.15,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 7000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 1.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 1640,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 1800,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 264090,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 10,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.06
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 10392,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 31400,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 300,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1.03,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.52
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.24033333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 2.2,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 86.9,
+      "owner_budget_usd": 100,
+      "within_owner_budget": true,
+      "budget_headroom_usd": 13.1
+    },
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 100,
+      "checks_per_month": 3000,
+      "exports_per_month": 200,
+      "api_requests_per_month": 10400,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 6120,
+      "worker_charged_seconds": 180,
+      "worker_billed_hours": 306.0,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 567.3333333333334,
+      "database_awake_hours_including_allowance": 652.4333333333333,
+      "active_database_acu_pricing_basis": 1,
+      "aurora_acu_hours": 652.4333333333333,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 153,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 6.19
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 612,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 2.72
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 652.4333333333333,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 78.29
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 11,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.1
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 3100000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.62
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 170848,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 162144,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.1
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 71400,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.07
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 28.7,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 2.44
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.6,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 61000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 2,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 7400,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 9000,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 275700,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 100,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.55
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 40452,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 44000,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.13
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 3000,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1.3,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.65
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.30333333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 4,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 130.68,
+      "owner_budget_usd": 100,
+      "within_owner_budget": false,
+      "budget_headroom_usd": -30.68
+    }
+  ],
+  "favorable_60_second_worker_scenarios": [
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 0,
+      "checks_per_month": 0,
+      "exports_per_month": 0,
+      "api_requests_per_month": 100,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 2920,
+      "worker_charged_seconds": 60,
+      "worker_billed_hours": 48.666666666666664,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 279.8333333333333,
+      "database_awake_hours_including_allowance": 321.80833333333334,
+      "active_database_acu_pricing_basis": 0.5,
+      "aurora_acu_hours": 160.90416666666667,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 24.333333333333332,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.99
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 97.33333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.43
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 160.90416666666667,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 19.31
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 10,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 100000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 137448,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 61944,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 1100,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 0.2,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.1,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 1000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 1000,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 1000,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 262800,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 0,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 7052,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 30000,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 0,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.5
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.23333333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 2,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 59.91,
+      "owner_budget_usd": 100,
+      "within_owner_budget": true,
+      "budget_headroom_usd": 40.09
+    },
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 10,
+      "checks_per_month": 300,
+      "exports_per_month": 20,
+      "api_requests_per_month": 1130,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 3240,
+      "worker_charged_seconds": 60,
+      "worker_billed_hours": 54.0,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 308.5833333333333,
+      "database_awake_hours_including_allowance": 354.87083333333334,
+      "active_database_acu_pricing_basis": 0.5,
+      "aurora_acu_hours": 177.43541666666667,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 27,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.09
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 108,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.48
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 177.43541666666667,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 21.29
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 10.1,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.01
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 400000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.08
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 140788,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 71964,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 8130,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 3.05,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.26
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.15,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 7000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 1.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 1640,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 1800,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 264090,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 10,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.06
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 10392,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 31400,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 300,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1.03,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.52
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.24033333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 2.2,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 62.46,
+      "owner_budget_usd": 100,
+      "within_owner_budget": true,
+      "budget_headroom_usd": 37.54
+    },
+    {
+      "environment": "fargate-development",
+      "monthly_active_users": 100,
+      "checks_per_month": 3000,
+      "exports_per_month": 200,
+      "api_requests_per_month": 10400,
+      "control_ticks_per_month": 43800,
+      "maintenance_invocations_per_month": 2920,
+      "worker_tasks_per_month": 6120,
+      "worker_charged_seconds": 60,
+      "worker_billed_hours": 102.0,
+      "retained_privacy_cleanup_present": true,
+      "scheduled_sql_interval_seconds": 900,
+      "database_awake_hours_before_allowance": 567.3333333333334,
+      "database_awake_hours_including_allowance": 652.4333333333333,
+      "active_database_acu_pricing_basis": 0.5,
+      "aurora_acu_hours": 326.21666666666664,
+      "raw_human_capture_enabled": false,
+      "items": [
+        {
+          "item": "Fargate always-available UI/API/controller vCPU-hours",
+          "quantity": 182.5,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 7.39
+        },
+        {
+          "item": "Fargate always-available UI/API/controller memory GB-hours",
+          "quantity": 730,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.24
+        },
+        {
+          "item": "Fargate bounded work/sweep task vCPU-hours including billed image-pull time",
+          "quantity": 51,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 2.06
+        },
+        {
+          "item": "Fargate bounded work/sweep task memory GB-hours including billed image-pull time",
+          "quantity": 204,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.91
+        },
+        {
+          "item": "Fargate release maintenance/migration vCPU-hours",
+          "quantity": 0.16666666666666666,
+          "rate": "fargate_vcpu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "Fargate release maintenance/migration memory GB-hours",
+          "quantity": 0.3333333333333333,
+          "rate": "fargate_memory_gb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Internal Application Load Balancer hours",
+          "quantity": 730,
+          "rate": "alb_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 16.43
+        },
+        {
+          "item": "Application Load Balancer LCU-hours planning allowance",
+          "quantity": 73,
+          "rate": "alb_lcu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.58
+        },
+        {
+          "item": "Aurora serverless PostgreSQL active ACU-hours incl. 15% wake/activity allowance",
+          "quantity": 326.21666666666664,
+          "rate": "aurora_acu_hour",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 39.15
+        },
+        {
+          "item": "Aurora consumed storage GB-months incl. minimum 10 GB",
+          "quantity": 11,
+          "rate": "aurora_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.1
+        },
+        {
+          "item": "Aurora billable storage I/O requests",
+          "quantity": 3100000,
+          "rate": "aurora_io_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.62
+        },
+        {
+          "item": "Aurora retained backup GB-months above included storage allocation",
+          "quantity": 10,
+          "rate": "aurora_excess_backup_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.21
+        },
+        {
+          "item": "DynamoDB metadata strongly consistent <=4 KiB read units",
+          "quantity": 170848,
+          "rate": "ddb_read_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "DynamoDB metadata <=1 KiB control/transactional lease/epoch write units",
+          "quantity": 162144,
+          "rate": "ddb_write_unit",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.1
+        },
+        {
+          "item": "DynamoDB metadata control state GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "DynamoDB metadata point-in-time recovery GB-months",
+          "quantity": 0.01,
+          "rate": "ddb_pitr_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US UI and API HTTPS viewer requests",
+          "quantity": 71400,
+          "rate": "cloudfront_us_https_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.07
+        },
+        {
+          "item": "CloudFront US UI and API viewer transfer GB",
+          "quantity": 28.7,
+          "rate": "cloudfront_us_egress_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 2.44
+        },
+        {
+          "item": "CloudFront US origin-bound request/body transfer GB",
+          "quantity": 0.6,
+          "rate": "cloudfront_us_origin_transfer_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront UI SPA viewer-request function execution allowance",
+          "quantity": 61000,
+          "rate": "cloudfront_function",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront UI wildcard invalidation paths",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 data/journal/export current and noncurrent GB-months",
+          "quantity": 2,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "S3 registry deployment artifact current/noncurrent GB-months",
+          "quantity": 0.1,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 retained unused web authority bucket GB-months",
+          "quantity": 0,
+          "rate": "s3_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "S3 data/journal/export PUT/LIST requests",
+          "quantity": 7400,
+          "rate": "s3_put_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        },
+        {
+          "item": "S3 data/journal/export GET/HEAD requests",
+          "quantity": 9000,
+          "rate": "s3_get_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SQS 64 KiB request units including conservative idle-poll allowance",
+          "quantity": 275700,
+          "rate": "sqs_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.11
+        },
+        {
+          "item": "Cognito Lite MAU before shared free tier",
+          "quantity": 100,
+          "rate": "cognito_lite_mau",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.55
+        },
+        {
+          "item": "Secrets Manager RDS master/application/tombstone secrets",
+          "quantity": 3,
+          "rate": "secret_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.2
+        },
+        {
+          "item": "Secrets Manager SQL task requests; idle metadata controller reads no secret",
+          "quantity": 40452,
+          "rate": "secret_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.2
+        },
+        {
+          "item": "KMS data/journal/capture-signing initial key versions",
+          "quantity": 3,
+          "rate": "kms_initial_key_version_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "KMS symmetric requests",
+          "quantity": 44000,
+          "rate": "kms_symmetric_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.13
+        },
+        {
+          "item": "KMS ECC signing request allowance",
+          "quantity": 3000,
+          "rate": "kms_ecc_sign_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.05
+        },
+        {
+          "item": "CloudWatch application/database/container logs GB ingested",
+          "quantity": 1.3,
+          "rate": "log_ingest_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.65
+        },
+        {
+          "item": "CloudWatch seven-day retained log GB-months",
+          "quantity": 0.30333333333333334,
+          "rate": "log_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudWatch custom actual-work aggregate metrics",
+          "quantity": 3,
+          "rate": "cw_custom_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.9
+        },
+        {
+          "item": "CloudWatch evaluated standard alarm metric-month allowance",
+          "quantity": 10,
+          "rate": "cw_alarm_metric_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 3.0
+        },
+        {
+          "item": "ECR retained Fargate software image GB-months",
+          "quantity": 3,
+          "rate": "ecr_storage_gb_month",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.3
+        },
+        {
+          "item": "SNS alarm API requests",
+          "quantity": 100,
+          "rate": "sns_request",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "SNS email notifications",
+          "quantity": 100,
+          "rate": "sns_email_notification",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "Cross-AZ directional database traffic planning allowance GB",
+          "quantity": 4,
+          "rate": "cross_az_directional_gb",
+          "cost_method": "quantity_x_rate_round_half_up_to_cents",
+          "monthly_usd": 0.04
+        }
+      ],
+      "total_cost_method": "sum_individually_rounded_line_items",
+      "total_monthly_usd": 85.6,
+      "owner_budget_usd": 100,
+      "within_owner_budget": true,
+      "budget_headroom_usd": 14.4
+    }
+  ],
+  "selected_scenario_assumptions": {
+    "service_vcpu": 0.25,
+    "service_memory_gb": 1,
+    "service_desired_count": 1,
+    "worker_vcpu": 0.5,
+    "worker_memory_gb": 2,
+    "worker_charged_seconds": 180,
+    "average_active_acu": 0.5,
+    "configured_min_acu": 0,
+    "configured_max_acu": 1,
+    "recurring_privacy_cleanup_interval_seconds": 900,
+    "retained_privacy_cleanup_included": true,
+    "extra_awake_fraction": 0.15,
+    "alb_average_lcu_allowance": 0.1,
+    "capacity_or_spending_guarantee": false,
+    "actual_cloud_measurement_required": true
+  },
+  "workload_assumptions": {
+    "hours_per_month": 730,
+    "service_vcpu": 0.25,
+    "service_memory_gb": 1,
+    "service_desired_count": 1,
+    "worker_vcpu": 0.5,
+    "worker_memory_gb": 2,
+    "worker_charged_seconds": 180,
+    "favorable_worker_charged_seconds": 60,
+    "maintenance_vcpu": 0.5,
+    "maintenance_memory_gb": 1,
+    "release_maintenance_invocations_per_month": 4,
+    "release_maintenance_duration_seconds": 300,
+    "fargate_linux_minimum_billed_seconds": 60,
+    "alb_count": 1,
+    "alb_average_lcu_allowance": 0.1,
+    "aurora_min_capacity": 0,
+    "aurora_max_capacity": 1,
+    "seconds_until_auto_pause": 300,
+    "idle_safety_sweep_interval_seconds": 3600,
+    "retained_privacy_cleanup_interval_seconds": 900,
+    "maintenance_resume_and_work_seconds": 45,
+    "isolated_database_sessions_per_user_per_month": 30,
+    "extra_database_awake_fraction": 0.15,
+    "control_interval_seconds": 60,
+    "control_db_queries_while_idle": 0,
+    "checks_per_user_per_month": 30,
+    "exports_per_user_per_month": 2,
+    "api_requests_per_check": 3,
+    "api_requests_per_export": 5,
+    "other_api_requests_per_user_per_month": 3,
+    "deployment_api_probes_per_month": 100,
+    "deployment_probe_database_windows": "batched inside already-active maintenance/deployment sessions",
+    "web_sessions_per_user_per_month": 30,
+    "web_requests_per_session": 20,
+    "web_transferred_gb_per_session": 0.005,
+    "baseline_web_requests_per_month": 1000,
+    "baseline_web_transfer_gb": 0.1,
+    "baseline_api_transfer_gib": 0.1,
+    "ordinary_api_transfer_gib_per_user": 0.01,
+    "export_response_bytes": 67108864,
+    "aurora_storage_gb_baseline": 10,
+    "extra_retained_backup_gb": 10,
+    "custom_metrics": 3,
+    "alarm_metric_months": 10,
+    "custom_dashboards": 1,
+    "kms_initial_key_versions": 3,
+    "secrets": 3,
+    "retained_ecr_image_gb": 3,
+    "retained_deployment_artifact_gb": 0.1,
+    "retained_unused_web_bucket_gb": 0,
+    "web_publishes_per_month": 4,
+    "web_invalidation_paths_per_publish": 1,
+    "ddb_control_storage_gb": 0.01,
+    "ddb_control_read_units_per_tick": 3,
+    "ddb_control_write_units_per_tick": 1,
+    "ddb_lease_write_units_per_sql_invocation": 6,
+    "sqs_idle_poll_allowance_per_month": 262800,
+    "viewer_edge_location": "United States",
+    "cloudfront_pricing_plan": "pay-as-you-go",
+    "task_network_mode": "ipv6-only",
+    "public_ipv4_addresses": 0,
+    "nat_gateways": 0,
+    "paid_interface_endpoints": 0,
+    "container_insights_enabled": false
+  },
+  "notes": [
+    "UI, API and metadata-only controller share one always-available Fargate service task. Worker/sweep and release-maintenance tasks run on Fargate only when needed. This estimate has no application Lambda compute or API Gateway.",
+    "The selected service is 0.25 vCPU/1 GB and bounded worker is 0.5 vCPU/2 GB. Memory, throughput, startup and task durations are planning assumptions requiring real deployment validation. A 512 MiB combined service has not been validated and is not selected.",
+    "Linux Fargate charges per second with a 60-second minimum, from image-download start until task termination. Selected worker tasks budget 180 charged seconds; favorable cases budget 60 seconds. Neither duration is a billing cap or proof of actual startup time.",
+    "The selected cases preserve retained completed deletion cleanup every 900 seconds indefinitely: 2,920 SQL sweeps/month, plus separate user checks and exports. Minute metadata checks run in the existing service and do not create minutely Fargate tasks or idle SQL queries.",
+    "Each SQL wake window remains 45 seconds of resume/work plus the 300-second auto-pause countdown. Thirty isolated sessions per user and all scheduled sweeps receive a 15% awake-time allowance, with no overlap savings; modeled awake time is capped at 730 hours.",
+    "Aurora PostgreSQL Serverless v2 is configured MinCapacity=0, MaxCapacity=1. Average active capacity of 0.5 ACU is a low-volume assumption, not a supported maximum or spending cap. Stress cases price the same awake windows at 1 ACU.",
+    "Physical PostgreSQL connections must close at work boundaries. Persistent service pools, readiness polling, metrics queries, replication or other background SQL can prevent auto-pause and invalidate the estimate. One ACU continuously active costs $87.60/month in database compute alone.",
+    "Tasks use IPv6-only networking; the internal ALB has no billed public IPv4 addresses. There are no NAT gateways, paid interface endpoints, EC2 compute instances or RDS Proxy. ECR/service dual-stack reachability and dual-stack Aurora access must pass real deployment admission.",
+    "The 0.1 average ALB LCU allowance is an engineering planning quantity, not verified capacity. AWS charges the maximum LCU dimension across new connections, active connections, processed bytes and rule evaluations; actual traffic and rules can change this cost.",
+    "CloudFront viewer pricing assumes United States edges. AWS-origin-to-CloudFront transfer is exempt; viewer responses are charged once, including full 64 MiB exports. UI assets are served by the ECS task rather than a static S3 website.",
+    "Three customer-managed KMS keys, three managed secrets, one custom dashboard, three aggregate SQL-work custom metrics and ten standard alarm metric-months are included. EMF ingestion shares the log allowance. Container Insights and paid CloudFront additional metrics are disabled.",
+    "Aurora includes minimum 10 GB consumed storage, 10 GB of additional billable retained backups, modeled I/O and cross-AZ traffic. Five S3 buckets include the retained unused web authority bucket, currently budgeted at 0 GB; UI files are in the container image. Deployment archives budget 0.1 GB and API/worker/UI images together budget 3 GB in one ECR repository. Retained data, releases, keys and backups may grow.",
+    "DynamoDB metadata reads/writes, storage and PITR retain the prior conservative quantities. SQS includes a conservative 262,800-request idle-poll allowance even though bounded jobs do not require continuously running worker consumers.",
+    "The $100 AWS Budget is authorized for On-The-Go Detection only. It supplies alerts rather than a spending cap. Shared account workloads, free tiers, credits, discounts, taxes, domains, support plans and external services are excluded.",
+    "Supplemental Fargate/ALB evidence retains actual retrieval timestamps and full-offer hashes. The oldest regional review date is preserved; recomputation does not refresh evidence. Pricing does not prove AWS deployment, functional acceptance, restore testing or production eligibility."
+  ],
+  "price_evidence_files": [
+    "aws-price-list-evidence.json",
+    "aws-additional-price-evidence.json",
+    "aws-serverless-price-evidence.json",
+    "aws-fargate-price-evidence.json"
+  ],
+  "resource_inventory": {
+    "lambda_functions": 0,
+    "ecs_clusters": 1,
+    "ecs_services": 1,
+    "always_available_fargate_tasks": 1,
+    "internal_application_load_balancers": 1,
+    "aurora_clusters": 1,
+    "aurora_serverless_writers": 1,
+    "s3_buckets_including_registry": 5,
+    "ecr_repositories": 1,
+    "cloudfront_distributions": 2,
+    "cloudfront_vpc_origins": 1,
+    "dynamodb_metadata_tables": 1,
+    "dynamodb_pitr_enabled": true,
+    "cloudwatch_dashboards": 1,
+    "cloudwatch_single_metric_alarms": 10,
+    "kms_keys": 3,
+    "explicit_secrets": 2,
+    "rds_managed_master_secrets": 1,
+    "public_ipv4_addresses": 0,
+    "nat_gateways": 0,
+    "paid_interface_endpoints": 0
+  },
+  "owner_budget_usd": 100,
+  "planned_monthly_active_users": 10,
+  "budget_is_a_spending_cap": false,
+  "continuous_max_capacity_database_compute_monthly_usd": 87.6
+}

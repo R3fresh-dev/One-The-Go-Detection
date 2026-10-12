@@ -14,7 +14,7 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
-from sqlalchemy.pool import StaticPool
+from sqlalchemy.pool import NullPool, StaticPool
 
 from .config import settings
 
@@ -258,12 +258,18 @@ def engine():
                 "sslmode": s.database_sslmode}
         if s.database_sslrootcert:
             args["sslrootcert"] = s.database_sslrootcert
-        kw.update(
-            pool_size=s.database_pool_size,
-            max_overflow=0,
-            pool_timeout=5,
-            connect_args=args,
-        )
+        if s.serverless_mode and s.serverless_executor == "ecs":
+            # A shared Fargate API handles concurrent requests. Closing every
+            # transaction connection allows Aurora to pause without disposing
+            # a process-wide pool underneath another streaming response.
+            kw.update(poolclass=NullPool, connect_args=args)
+        else:
+            kw.update(
+                pool_size=s.database_pool_size,
+                max_overflow=0,
+                pool_timeout=5,
+                connect_args=args,
+            )
     return create_engine(url, **kw)
 
 

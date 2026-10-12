@@ -101,6 +101,11 @@ def kick_dispatcher():
     from .canonical import canonical
     from .storage import client
     cfg = settings()
+    if getattr(cfg, "serverless_executor", "lambda") == "ecs":
+        from .fargate_runtime import request_worker_launch
+        if request_worker_launch() is not True:
+            raise RuntimeError("ECS worker launch was not accepted")
+        return
     arn = cfg.serverless_dispatch_function_arn
     if not arn:
         raise RuntimeError("Serverless dispatch target is unavailable")
@@ -194,7 +199,10 @@ class ServerlessLifecycleMiddleware:
         finally:
             # Leave the metadata lease visible if pool cleanup fails. A
             # reconciler must never infer completion before SQL is closed.
-            await asyncio.to_thread(self.dispose)
+            # NullPool closes ECS connections at transaction/session exit.
+            # Global disposal here would race concurrent requests and streams.
+            if getattr(cfg, "serverless_executor", "lambda") != "ecs":
+                await asyncio.to_thread(self.dispose)
             await asyncio.to_thread(self.release, lease_id)
         if dispatch_failed:
             await unavailable(scope, receive, send, lease_id)

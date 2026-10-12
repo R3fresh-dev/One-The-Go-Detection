@@ -1,0 +1,133 @@
+[
+  {
+    "service": "AmazonECS",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECS/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:44:25Z",
+    "retrieved_at": "2026-10-12T16:21:23.297297Z",
+    "offer_sha256": "affdf951a33a6c721ab915d2d88420ca1fc6589e7a529d8dfd238823606ee85a",
+    "rates": [
+      {
+        "sku": "HH5EE3ZFWSFKGKWM",
+        "attributes": {
+          "servicecode": "AmazonECS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "tenancy": "Shared",
+          "usagetype": "USE2-Fargate-GB-Hours",
+          "operation": "",
+          "memorytype": "perGB",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Elastic Container Service"
+        },
+        "price": {
+          "rateCode": "HH5EE3ZFWSFKGKWM.JRTCKXETXF.6YS6EN2CT7",
+          "description": "AWS Fargate - Memory  - US East 2 (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "hours",
+          "pricePerUnit": {
+            "USD": "0.0044450000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "UGSJ89BUWB7SMJ6A",
+        "attributes": {
+          "servicecode": "AmazonECS",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "tenancy": "Shared",
+          "usagetype": "USE2-Fargate-vCPU-Hours:perCPU",
+          "operation": "",
+          "cputype": "perCPU",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon Elastic Container Service"
+        },
+        "price": {
+          "rateCode": "UGSJ89BUWB7SMJ6A.JRTCKXETXF.6YS6EN2CT7",
+          "description": "AWS Fargate - vCPU  - US East 2 (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "hours",
+          "pricePerUnit": {
+            "USD": "0.0404800000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AWSELB",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSELB/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:45:44Z",
+    "retrieved_at": "2026-10-12T16:21:25.236690Z",
+    "offer_sha256": "e23add7e42c15a5e3c47c4d267bc8889a0c704c63ffbf734f580a825a52e4b57",
+    "rates": [
+      {
+        "sku": "S3YDM2U7G69S4W5C",
+        "attributes": {
+          "servicecode": "AWSELB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "ELB:Balancing",
+          "groupDescription": "Used Application Load Balancer capacity units-hr",
+          "usagetype": "USE2-LCUUsage",
+          "operation": "LoadBalancing:Application",
+          "regionCode": "us-east-2",
+          "servicename": "Elastic Load Balancing"
+        },
+        "price": {
+          "rateCode": "S3YDM2U7G69S4W5C.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.008 per used Application load balancer capacity unit-hour (or partial hour)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "LCU-Hrs",
+          "pricePerUnit": {
+            "USD": "0.0080000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "HCVPZW9WEWSJKJWJ",
+        "attributes": {
+          "servicecode": "AWSELB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "ELB:Balancing",
+          "groupDescription": "LoadBalancer hourly usage by Application Load Balancer",
+          "usagetype": "USE2-LoadBalancerUsage",
+          "operation": "LoadBalancing:Application",
+          "regionCode": "us-east-2",
+          "servicename": "Elastic Load Balancing"
+        },
+        "price": {
+          "rateCode": "HCVPZW9WEWSJKJWJ.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.0225 per Application LoadBalancer-hour (or partial hour)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Hrs",
+          "pricePerUnit": {
+            "USD": "0.0225000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AWSFargatePricingDocumentation",
+    "source": "https://aws.amazon.com/fargate/pricing/",
+    "retrieved_at": "2026-10-12T16:21:27.562308Z",
+    "document_sha256": "e574079630c3dac2c85771777621b0740ca5138f4201d849713158b8637ad0fe",
+    "rates": [],
+    "statements": [
+      {
+        "topic": "Linux task duration billing",
+        "quoted_statement": "Pricing is calculated per second with a 1-minute minimum. Duration is calculated from the time you start to download your container image (Docker pull) until the task terminates, rounded up to the nearest second."
+      }
+    ]
+  }
+]

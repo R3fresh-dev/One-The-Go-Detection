@@ -22,11 +22,16 @@ class Settings(BaseSettings):
     database_password: str = ""
     database_pool_size: int = 5
     serverless_mode: bool = False
+    serverless_executor: Literal["lambda", "ecs"] = "lambda"
     serverless_control_table: str | None = None
     serverless_queue_visibility: int = 120
     serverless_database_connect_timeout: int = 45
     serverless_metrics_namespace: str = "OTGD/serverless-development"
     serverless_dispatch_function_arn: str | None = None
+    ecs_cluster_arn: str | None = None
+    ecs_worker_task_definition_arn: str | None = None
+    ecs_subnet_ids: list[str] = []
+    ecs_security_group_ids: list[str] = []
     database_sslmode: str = "prefer"
     database_sslrootcert: str | None = None
     app_database_user: str = "otgd_app"
@@ -93,13 +98,36 @@ class Settings(BaseSettings):
                 raise ValueError("Serverless database resume requires a bounded connection timeout")
             if self.serverless_metrics_namespace != "OTGD/serverless-development":
                 raise ValueError("Use the reviewed serverless operational metrics namespace")
-            if self.serverless_dispatch_function_arn and not re.fullmatch(
+            if self.serverless_executor == "ecs":
+                # Launch targets are absent from worker/migration roles; a
+                # task definition cannot reference itself in its environment.
+                # The metadata-only launcher requires the complete tuple.
+                target = r"arn:aws:ecs:us-east-2:" + re.escape(self.deployment_account or "")
+                if self.ecs_cluster_arn is not None and not re.fullmatch(
+                    target + r":cluster/otgd-serverless-development", self.ecs_cluster_arn
+                ):
+                    raise ValueError("ECS cluster must target the owned Ohio account")
+                if self.ecs_worker_task_definition_arn is not None and not re.fullmatch(
+                    target + r":task-definition/otgd-serverless-development-worker:[1-9][0-9]{0,9}",
+                    self.ecs_worker_task_definition_arn
+                ):
+                    raise ValueError("ECS worker must target its owned revisioned task definition")
+                for values, prefix, maximum in ((self.ecs_subnet_ids, "subnet", 16),
+                                                (self.ecs_security_group_ids, "sg", 5)):
+                    if (len(values) > maximum or len(set(values)) != len(values) or
+                        any(not re.fullmatch(prefix + r"-(?:[0-9a-f]{8}|[0-9a-f]{17})", value)
+                            for value in values)):
+                        raise ValueError("ECS networking requires bounded distinct actual AWS identifiers")
+            elif self.serverless_dispatch_function_arn and not re.fullmatch(
                 r"arn:aws:lambda:us-east-2:" + re.escape(self.deployment_account or "") +
                 r":function:[A-Za-z0-9_-]{1,64}", self.serverless_dispatch_function_arn
             ):
                 raise ValueError("Serverless dispatch must target its actual account and region")
-        elif self.serverless_queue_visibility != 120:
-            raise ValueError("The existing managed runtime requires 120-second queue visibility")
+        else:
+            if self.serverless_executor != "lambda":
+                raise ValueError("The ECS executor requires its serverless cloud configuration")
+            if self.serverless_queue_visibility != 120:
+                raise ValueError("The existing managed runtime requires 120-second queue visibility")
         if self.environment in ("qa", "prod"):
             if not re.fullmatch(r"[0-9]{12}", self.deployment_account or "") or not re.fullmatch(r"[0-9a-f]{40}", self.source_revision or ""):
                 raise ValueError("Cloud admission requires its actual AWS account and immutable source revision")
@@ -152,7 +180,7 @@ class Settings(BaseSettings):
 
 @lru_cache
 def settings():
-    # Lambda secret references must be resolved before any module constructs
+    # Cloud secret references must be resolved before any module constructs
     # Settings. Never expose Pydantic's input dictionary containing passwords.
     if os.environ.get("OTGD_SERVERLESS_MODE", "").strip().lower() in ("1", "true", "yes", "on"):
         from .serverless_lifecycle import load_runtime_secrets

@@ -12,6 +12,7 @@ import ast
 from datetime import datetime, timezone
 import hashlib
 import ipaddress
+import io
 import json
 import os
 from pathlib import Path
@@ -19,10 +20,15 @@ import re
 import stat
 import subprocess
 import uuid
+from zipfile import BadZipFile, ZipFile
+import httpx
 
 from botocore.exceptions import ClientError
 
-from deploy.provenance import Gate, bounded_file, strict_loads, REQUIRED_JOBS, REPOSITORY, WORKFLOW_PATH
+from deploy.provenance import (
+    Gate, REPOSITORY, REQUIRED_JOBS, WORKFLOW_PATH, _github_json,
+    bounded_file, bounded_json, strict_loads,
+)
 from deploy.serverless_template import build_template
 
 
@@ -1134,3 +1140,92 @@ def verify_continued_database(aws, config, outputs, evidence):
             or writer.get('DBSubnetGroup', {}).get('VpcId') != physical['Network']):
         raise Gate('Stopped continuation changed the retained database authority')
     return {'retained_database_identity_verified': True, 'first_anchor_still_requires_empty_sql': True}
+
+
+def verify_recovery_artifact(manifest_path, artifact_proof, *, client=None):
+    """Bind exact manifest bytes to a real failed trusted GitHub deployment ZIP.
+
+    ``artifact_proof`` contains the run ID, artifact ID and downloaded ZIP path.
+    Its assertions alone confer no trust: live repository metadata and the ZIP
+    digest must match, and the ZIP must contain these exact manifest bytes.
+    """
+    if (not isinstance(artifact_proof, dict) or set(artifact_proof) != {'run_id', 'artifact_id', 'archive_path'}
+            or any(type(artifact_proof.get(key)) is not int or artifact_proof[key] <= 0
+                   for key in ('run_id', 'artifact_id'))):
+        raise Gate('A downloaded trusted GitHub recovery artifact is required')
+    if client is None:
+        headers = {'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'}
+        token = os.getenv('GH_TOKEN') or os.getenv('GITHUB_TOKEN')
+        if token:
+            headers['Authorization'] = 'Bearer ' + token
+        with httpx.Client(headers=headers, timeout=15, follow_redirects=False) as owned:
+            return verify_recovery_artifact(manifest_path, artifact_proof, client=owned)
+    manifest_raw = bounded_file(manifest_path, 262144)
+    try:
+        manifest = strict_loads(manifest_raw)
+    except (ValueError, TypeError):
+        raise Gate('Recovery artifact manifest is not strict JSON') from None
+    if not isinstance(manifest, dict):
+        raise Gate('Recovery artifact manifest must be an object')
+    run_id, artifact_id = artifact_proof['run_id'], artifact_proof['artifact_id']
+    run = _github_json(client, f'actions/runs/{run_id}')
+    workflow_id = run.get('workflow_id')
+    workflow_path = '.github/workflows/deploy-serverless.yml'
+    if (run.get('id') != run_id or run.get('head_sha') != manifest.get('release_id')
+            or run.get('status') != 'completed' or run.get('conclusion') != 'failure'
+            or run.get('path') != workflow_path or run.get('event') != 'workflow_dispatch'
+            or run.get('head_branch') != 'main' or type(workflow_id) is not int or workflow_id <= 0
+            or run.get('repository', {}).get('full_name') != REPOSITORY
+            or run.get('head_repository', {}).get('full_name') != REPOSITORY):
+        raise Gate('Recovery artifact must belong to a failed trusted-main serverless deployment')
+    workflow = _github_json(client, f'actions/workflows/{workflow_id}')
+    if workflow.get('id') != workflow_id or workflow.get('path') != workflow_path or workflow.get('state') != 'active':
+        raise Gate('Recovery artifact does not belong to the trusted deployment workflow')
+    artifact = _github_json(client, f'actions/artifacts/{artifact_id}')
+    revision = manifest['release_id']
+    binding = artifact.get('workflow_run', {})
+    if (artifact.get('id') != artifact_id or artifact.get('expired') is not False
+            or artifact.get('name') != f'serverless-deployment-{revision}-{run_id}'
+            or binding.get('id') != run_id or binding.get('head_sha') != revision
+            or binding.get('head_branch') != 'main' or binding.get('repository_id') != run['repository'].get('id')
+            or binding.get('head_repository_id') != run['head_repository'].get('id')):
+        raise Gate('Recovery archive metadata is not bound to the trusted failed run')
+    archive_path = artifact_proof['archive_path']
+    archive = bounded_file(archive_path, 32 * 1024 * 1024)
+    digest = hashlib.sha256(archive).hexdigest()
+    if artifact.get('digest') != 'sha256:' + digest:
+        raise Gate('Downloaded recovery archive differs from the trusted GitHub digest')
+    try:
+        with ZipFile(io.BytesIO(archive)) as zipped:
+            candidates = [entry for entry in zipped.infolist() if entry.filename.endswith('/initial-recovery.json')]
+            if (len(candidates) != 1 or candidates[0].file_size > 262144
+                    or candidates[0].filename.count('..')
+                    or not candidates[0].filename.startswith('.local/deploy/serverless-development/' + revision + '/')):
+                raise Gate('Recovery archive must contain one bounded deployment recovery manifest')
+            if zipped.read(candidates[0]) != manifest_raw:
+                raise Gate('Recovery manifest bytes differ from the trusted archived manifest')
+    except (BadZipFile, OSError, RuntimeError):
+        raise Gate('Trusted recovery archive cannot be read') from None
+    current = _github_json(client, f'actions/runs/{run_id}')
+    if any(current.get(key) != run.get(key) for key in ('id', 'run_attempt', 'head_sha', 'workflow_id', 'status', 'conclusion')):
+        raise Gate('Trusted recovery run changed during evidence verification')
+    return {'provider': 'github_actions', 'repository': REPOSITORY, 'workflow_path': workflow_path,
+            'run_id': run_id, 'head_sha': revision, 'artifact_id': artifact_id,
+            'archive_sha256': digest, 'manifest_sha256': hashlib.sha256(manifest_raw).hexdigest()}
+
+def resume_initial_from_artifact(aws, config, manifest_path, evidence_path, *, artifact_proof):
+    """Independently bind the legacy resume operation to its trusted run ZIP."""
+    evidence_path = Path(evidence_path)
+    if evidence_path.exists() or evidence_path.is_symlink() or not evidence_path.parent.is_dir():
+        raise Gate('Use a new protected recovery journal for trusted artifact resume')
+    proof = verify_recovery_artifact(manifest_path, artifact_proof)
+    try:
+        result = resume_initial(aws, config, evidence_path, manifest_path, proof['manifest_sha256'])
+    finally:
+        # Retain trusted artifact provenance with either success or failure.
+        if Path(evidence_path).is_file():
+            evidence = bounded_json(evidence_path, 262144)
+            evidence['resumed_from'] = proof
+            _write(evidence_path, evidence)
+    result['resumed_from'] = proof
+    return result

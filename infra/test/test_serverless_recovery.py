@@ -9,6 +9,7 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock, patch
+from zipfile import ZipFile
 
 from botocore.exceptions import ClientError
 from botocore.handlers import json_decode_template_body
@@ -511,6 +512,31 @@ class InitialRecoveryTest(unittest.TestCase):
                               'delete_bucket', 'delete_secret', 'delete_table', 'delete_user_pool',
                               'schedule_key_deletion', 'get_secret_value', 'get_object'):
                 getattr(client, forbidden).assert_not_called()
+
+    def test_completed_import_accepts_aws_normalized_resource_status_without_relaxing_inventory(self):
+        cloud = FakeCloud()
+        with tempfile.TemporaryDirectory() as directory:
+            source_path, source = cloud.detached_manifest(directory)
+            cloud.status = 'IMPORT_COMPLETE'
+            cloud.import_tags = []
+            cloud.protection = True
+            original_paginator = cloud.paginator
+            def paginator(operation):
+                original = original_paginator(operation)
+                def paginate(**kwargs):
+                    pages = deepcopy(list(original.paginate(**kwargs)))
+                    if operation == 'list_stack_resources' and kwargs['StackName'] == NEW_STACK:
+                        for row in pages[0]['StackResourceSummaries']:
+                            row['ResourceStatus'] = 'UPDATE_COMPLETE'
+                    return pages
+                return SimpleNamespace(paginate=paginate)
+            cloud.clients['cloudformation'].get_paginator.side_effect = paginator
+            destination = Path(directory) / 'normalized-import.json'
+            result = recovery.resume_initial(cloud.aws, cloud.config, destination, source_path,
+                hashlib.sha256(source_path.read_bytes()).hexdigest())
+            self.assertEqual(result['retained_physical_ids'], cloud.physical)
+            cloud.clients['cloudformation'].create_change_set.assert_not_called()
+            cloud.clients['cloudformation'].execute_change_set.assert_not_called()
 
     def test_resume_canonical_comparison_accepts_changed_aws_and_descriptor_order(self):
         cloud = FakeCloud()
@@ -1289,3 +1315,135 @@ class UninitializedContinuationTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ResumeFixture:
+    """Bind unit-test archive bytes to independently supplied provider metadata."""
+    def __init__(self, directory, *, legacy=False):
+        self.cloud = FakeCloud()
+        self.manifest = recovery.initial_recovery_plan(self.cloud.aws, self.cloud.config)
+        if legacy:
+            self.manifest.pop('canonical_import_template_sha256', None)
+        self.manifest.update(status='blocked-recovery-inspect-protected-journal-before-retry',
+                             failed_phase='failed-stack-metadata-detached', failure_type='ClientError')
+        self.directory = Path(directory)
+        self.path = self.directory / 'original-recovery.json'
+        self.archive = self.directory / 'trusted-fixture.zip'
+        self.output = self.directory / 'resumed-recovery.json'
+        self.proof = {'run_id': 12, 'artifact_id': 9, 'archive_path': str(self.archive)}
+        repository = {'id': 42, 'full_name': recovery.REPOSITORY}
+        self.run = {'id': 12, 'head_sha': self.manifest['release_id'], 'status': 'completed',
+            'conclusion': 'failure', 'path': '.github/workflows/deploy-serverless.yml',
+            'workflow_id': 77, 'run_attempt': 1, 'event': 'workflow_dispatch',
+            'head_branch': 'main', 'repository': repository, 'head_repository': repository}
+        self.workflow = {'id': 77, 'path': '.github/workflows/deploy-serverless.yml', 'state': 'active'}
+        self.artifact = {'id': 9, 'expired': False,
+            'name': f'serverless-deployment-{self.manifest["release_id"]}-12',
+            'workflow_run': {'id': 12, 'head_sha': self.manifest['release_id'], 'head_branch': 'main',
+                             'repository_id': 42, 'head_repository_id': 42}}
+        self.write_archive()
+        self.cloud.status = 'DELETE_COMPLETE'
+        original = self.cloud.clients['cloudformation'].describe_stacks.side_effect
+        def detached(**kwargs):
+            if kwargs['StackName'] == recovery.STACK and self.cloud.status != 'IMPORT_COMPLETE':
+                raise ClientError({'Error': {'Code': 'ValidationError',
+                    'Message': 'Stack with id otgd-serverless-development does not exist'}}, 'DescribeStacks')
+            return original(**kwargs)
+        self.cloud.clients['cloudformation'].describe_stacks.side_effect = detached
+
+    def write_archive(self, *, extra_entries=None, manifest_bytes=None):
+        raw = (json.dumps(self.manifest, sort_keys=True, indent=2) + '\n').encode()
+        self.path.write_bytes(raw)
+        name = f'.local/deploy/serverless-development/{self.manifest["release_id"]}/fixture/initial-recovery.json'
+        with ZipFile(self.archive, 'w') as zipped:
+            zipped.writestr(name, raw if manifest_bytes is None else manifest_bytes)
+            for entry, value in (extra_entries or {}).items():
+                zipped.writestr(entry, value)
+        self.artifact['digest'] = 'sha256:' + hashlib.sha256(self.archive.read_bytes()).hexdigest()
+
+    def github_json(self, client, path, **params):
+        return deepcopy({'actions/runs/12': self.run, 'actions/workflows/77': self.workflow,
+                         'actions/artifacts/9': self.artifact}[path])
+
+class TrustedRecoveryArtifactTest(unittest.TestCase):
+    def test_artifact_wrapper_preserves_reviewed_resume_and_provenance_without_overwriting(self):
+        cloud = FakeCloud()
+        with tempfile.TemporaryDirectory() as directory:
+            path, source = cloud.detached_manifest(directory)
+            destination = Path(directory) / 'artifact-resumed.json'
+            proof = {'manifest_sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'artifact_id': 9}
+            with patch.object(recovery, 'verify_recovery_artifact', return_value=proof) as verify:
+                result = recovery.resume_initial_from_artifact(cloud.aws, cloud.config, path,
+                    destination, artifact_proof={'run_id': 12, 'artifact_id': 9, 'archive_path': 'fixture.zip'})
+                self.assertEqual(result['resumed_from'], proof)
+                self.assertEqual(result['retained_physical_ids'], cloud.physical)
+                self.assertEqual(result['release_id'], 'c' * 40)
+                self.assertEqual(json.loads(destination.read_text()), result)
+                verify.assert_called_once()
+            cf = cloud.clients['cloudformation']
+            cf.delete_stack.assert_not_called()
+            self.assertNotIn('Tags', cf.create_change_set.call_args.kwargs)
+            original = destination.read_bytes()
+            with patch.object(recovery, 'verify_recovery_artifact') as verify, self.assertRaises(Gate):
+                recovery.resume_initial_from_artifact(cloud.aws, cloud.config, path, destination,
+                    artifact_proof={'run_id': 12, 'artifact_id': 9, 'archive_path': 'fixture.zip'})
+            verify.assert_not_called()
+            self.assertEqual(destination.read_bytes(), original)
+
+    def test_artifact_verifier_binds_real_metadata_archive_and_exact_manifest_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = ResumeFixture(directory)
+            with patch.object(recovery, '_github_json', side_effect=fixture.github_json) as github:
+                result = recovery.verify_recovery_artifact(fixture.path, fixture.proof, client=object())
+            self.assertEqual(result['manifest_sha256'], hashlib.sha256(fixture.path.read_bytes()).hexdigest())
+            self.assertEqual(result['archive_sha256'], fixture.artifact['digest'][7:])
+            self.assertEqual([call.args[1] for call in github.call_args_list], [
+                'actions/runs/12', 'actions/workflows/77', 'actions/artifacts/9', 'actions/runs/12'])
+            fixture.cloud.no_mutations(self)
+
+    def test_artifact_run_must_be_failed_main_manual_workflow_in_this_repository(self):
+        for field, value in (('conclusion', 'success'), ('event', 'pull_request'), ('head_branch', 'feature'),
+                             ('head_sha', 'c' * 40), ('path', '.github/workflows/other.yml'),
+                             ('repository', {'id': 42, 'full_name': 'untrusted/repository'})):
+            with tempfile.TemporaryDirectory() as directory:
+                fixture = ResumeFixture(directory)
+                fixture.run[field] = value
+                with self.subTest(field=field), patch.object(recovery, '_github_json', side_effect=fixture.github_json), \
+                        self.assertRaises(Gate):
+                    recovery.verify_recovery_artifact(fixture.path, fixture.proof, client=object())
+                fixture.cloud.no_mutations(self)
+
+    def test_archive_digest_manifest_bytes_metadata_and_manifest_count_are_required(self):
+        for kind in ('digest', 'manifest', 'metadata', 'duplicate'):
+            with tempfile.TemporaryDirectory() as directory:
+                fixture = ResumeFixture(directory)
+                if kind == 'digest':
+                    fixture.artifact['digest'] = 'sha256:' + '0' * 64
+                elif kind == 'manifest':
+                    fixture.write_archive(manifest_bytes=b'fictional altered manifest')
+                elif kind == 'metadata':
+                    fixture.artifact['workflow_run']['id'] = 99
+                else:
+                    fixture.write_archive(extra_entries={
+                        f'.local/deploy/serverless-development/{fixture.manifest["release_id"]}/duplicate/initial-recovery.json': b'{}'})
+                with self.subTest(kind=kind), patch.object(recovery, '_github_json', side_effect=fixture.github_json), \
+                        self.assertRaises(Gate):
+                    recovery.verify_recovery_artifact(fixture.path, fixture.proof, client=object())
+                fixture.cloud.no_mutations(self)
+
+    def test_run_rerun_race_is_rejected_before_aws_mutation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = ResumeFixture(directory)
+            reads = 0
+            def changed(client, path, **params):
+                nonlocal reads
+                result = fixture.github_json(client, path, **params)
+                if path == 'actions/runs/12':
+                    reads += 1
+                    if reads > 1:
+                        result['run_attempt'] = 2
+                return result
+            with patch.object(recovery, '_github_json', side_effect=changed), self.assertRaisesRegex(Gate, 'changed'):
+                recovery.resume_initial_from_artifact(fixture.cloud.aws, fixture.cloud.config, fixture.path,
+                    fixture.output, artifact_proof=fixture.proof)
+            fixture.cloud.no_mutations(self)

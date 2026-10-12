@@ -31,7 +31,7 @@ permissions:
 
 # Serialize all attempts for this actual account/region, including manual retries.
 concurrency:
-  group: otgd-serverless-development-738470137867-us-east-2
+  group: otgd-fargate-development-738470137867-us-east-2
   cancel-in-progress: false
 
 jobs:
@@ -49,6 +49,10 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
     steps:
+      - name: Reject the retired Lambda deployment route
+        run: |
+          echo 'Application compute now uses ECS Fargate. Run Deploy Fargate development to AWS.' >&2
+          exit 1
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.sha }}
