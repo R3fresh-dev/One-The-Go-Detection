@@ -300,7 +300,7 @@ jobs:
                       for item in entries:
                           name = PurePosixPath(item.filename)
                           mode = item.external_attr >> 16
-                          if (name.is_absolute() or '..' in name.parts or '\\\\' in item.filename
+                          if (name.is_absolute() or '..' in name.parts or '\\' in item.filename
                                   or item.flag_bits & 1 or stat.S_IFMT(mode) not in (0, stat.S_IFREG, stat.S_IFDIR)
                                   or (item.is_dir() and stat.S_IFMT(mode) == stat.S_IFREG)
                                   or (not item.is_dir() and stat.S_IFMT(mode) == stat.S_IFDIR)):

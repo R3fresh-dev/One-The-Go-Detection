@@ -481,6 +481,7 @@ class ServerlessWorkflowTest(unittest.TestCase):
             self.assertFalse(Path('records').exists())
             for invalid in (entries[:-1], entries + [entries[0]],
                             [('../' + entries[0][0], entries[0][1], entries[0][2]), *entries[1:]],
+                            [('unsafe\\folder/' + entries[0][0], entries[0][1], entries[0][2]), *entries[1:]],
                             [(entries[0][0], entries[0][1], stat.S_IFLNK | 0o777), *entries[1:]],
                             [('deployment-state.json', b'x' * 65_537, stat.S_IFREG | 0o600),
                              *[entry for entry in entries if not entry[0].endswith('deployment-state.json')]]):
