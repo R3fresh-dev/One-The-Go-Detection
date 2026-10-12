@@ -362,12 +362,15 @@ class FargateWorkflowTest(unittest.TestCase):
         paths = set(upload['with']['path'].splitlines())
         self.assertEqual(paths, {
             '.local/fargateconfig/gate-admission.json',
+            '.local/fargateconfig/continuation-admission.json',
+            '.local/fargateconfig/continuation-source/uninitialized-continuation.json',
             '.local/fargateconfig/recovery/artifact-proof.json',
             'reports/fargate-plan.json', 'reports/fargate-deploy.json',
             '.local/deploy/fargate-development/**/deployment.json',
             '.local/deploy/fargate-development/**/deployment-state.json',
             '.local/deploy/fargate-development/**/initial-recovery.json',
             '.local/deploy/fargate-development/**/initial-resume.json',
+            '.local/deploy/fargate-development/**/uninitialized-continuation.json',
         })
         self.assertTrue(upload['with']['include-hidden-files'])
         credentials = next(i for i, step in enumerate(steps) if step.get('id') == 'credentials')
