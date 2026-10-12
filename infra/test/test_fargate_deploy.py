@@ -309,12 +309,22 @@ class FargateDeployTest(unittest.TestCase):
         with self.assertRaises(MODULE.Gate):
             MODULE.image(aws, self.config, registry, ROOT, "ui")
         aws.client.assert_not_called()
-        with patch.object(MODULE.platform, "run", return_value=json.dumps([actual])):
+        with patch.object(MODULE.platform, "run", return_value=json.dumps([actual])), patch.object(MODULE, "build_command"):
             uri = MODULE.image(aws, self.config, registry, ROOT, "ui", binding="d" * 64)
             self.assertEqual(uri, registry["RepositoryUri"] + "@" + digest)
             self.assertEqual(ecr.describe_images.call_args.kwargs["imageIds"], [{"imageTag": "ui-" + SOURCE + "-" + "d" * 64}])
             with self.assertRaises(MODULE.Gate):
                 MODULE.image(aws, self.config, registry, ROOT, "ui", binding="e" * 64)
+
+    def test_real_subprocess_progress_cannot_contaminate_the_json_receipt_stream(self):
+        stdout = io.StringIO()
+        with tempfile.TemporaryFile(mode='w+') as logs, patch('sys.stdout', stdout), patch('sys.stderr', logs):
+            MODULE.build_command([sys.executable, '-c', "import sys; print('build-progress'); print('diagnostic-progress',file=sys.stderr)"])
+            logs.seek(0)
+            actual = logs.read()
+        self.assertEqual(stdout.getvalue(), '')
+        self.assertIn('build-progress', actual)
+        self.assertIn('diagnostic-progress', actual)
 
     def test_logging_receipt_requires_owned_streams_and_actual_api_event_delivery(self):
         ecs, logs = Mock(), Mock()

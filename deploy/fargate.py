@@ -141,6 +141,13 @@ def archive_source(c, path):
     platform.run(['git', 'archive', '--format=tar', '--output', str(path), c['releaseId']])
 
 
+def build_command(args, *, cwd=ROOT, input=None, env=None):
+    """Keep subprocess progress out of the machine-readable deployment receipt."""
+    subprocess.run(args, cwd=cwd, text=True, check=True, input=input,
+                   stdout=sys.stderr, stderr=sys.stderr,
+                   env=platform.deployment_environment() if env is None else env)
+
+
 def image(aws, c, registry, context, target, *, binding=None):
     if target not in ('api', 'worker', 'ui') or (target == 'ui' and not re.fullmatch(r'[0-9a-f]{64}', binding or '')):
         raise Gate('A UI image requires the exact exported artifact binding')
@@ -163,7 +170,7 @@ def image(aws, c, registry, context, target, *, binding=None):
         certificate = os.environ.get('CODEX_PROXY_CERT')
         if certificate:
             command += ['--secret', 'id=proxy_ca,src=' + certificate]
-        platform.run(command + [str(context)])
+        build_command(command + [str(context)])
         details = ecr.describe_images(repositoryName=name, imageIds=[{'imageTag': tag}])['imageDetails']
     if len(details) != 1 or not re.fullmatch(r'sha256:[0-9a-f]{64}', details[0]['imageDigest']):
         raise Gate('ECR did not report one immutable image digest')
@@ -179,7 +186,7 @@ def image(aws, c, registry, context, target, *, binding=None):
             or 'manifests' in manifest):
         raise Gate('The immutable Fargate image must be a verified single Linux/amd64 manifest')
     immutable = uri + '@' + digest
-    platform.run(['docker', 'pull', '--platform', 'linux/amd64', immutable])
+    build_command(['docker', 'pull', '--platform', 'linux/amd64', immutable])
     actual = json.loads(platform.run(['docker', 'image', 'inspect', immutable], capture=True))[0]
     if (actual.get('Architecture') != 'amd64' or actual.get('Os') != 'linux'
             or actual.get('Config', {}).get('Labels', {}).get('org.opencontainers.image.revision') != c['releaseId']
@@ -191,7 +198,7 @@ def image(aws, c, registry, context, target, *, binding=None):
 def build_images(aws, c, registry, source):
     token = aws.client('ecr').get_authorization_token()['authorizationData'][0]['authorizationToken']
     username, password = base64.b64decode(token).decode().split(':', 1)
-    platform.run(['docker', 'login', '--username', username, '--password-stdin', registry['RepositoryUri'].split('/')[0]], input=password)
+    build_command(['docker', 'login', '--username', username, '--password-stdin', registry['RepositoryUri'].split('/')[0]], input=password)
     with tempfile.TemporaryDirectory(prefix='otgd-fargate-build-') as directory:
         context = Path(directory)
         with tarfile.open(source) as archive:
@@ -210,8 +217,8 @@ def build_ui(aws, c, registry, out, source, work):
                                                'issuer': out['Issuer'], 'client_id': out['ClientId']})
         env['EXPO_PUBLIC_SERVERLESS'] = 'true'
         mobile = context / 'apps/mobile'
-        subprocess.run(['npm', 'ci'], cwd=mobile, env=env, check=True)
-        subprocess.run(['npm', 'run', 'export:web', '--', '--clear'], cwd=mobile, env=env, check=True)
+        build_command(['npm', 'ci'], cwd=mobile, env=env)
+        build_command(['npm', 'run', 'export:web', '--', '--clear'], cwd=mobile, env=env)
         manifest = web_artifact.package(mobile / 'dist', work / 'web.zip')
         files = web_artifact.contents(work / 'web.zip', manifest)
         web = context / 'fargate-web'
