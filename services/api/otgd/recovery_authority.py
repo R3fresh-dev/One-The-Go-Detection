@@ -161,6 +161,7 @@ def authority_client():
             connect_timeout=1,
             read_timeout=1,
             ignore_configured_endpoint_urls=True,
+            use_dualstack_endpoint=bool(getattr(cfg, "serverless_mode", False)),
             retries={"max_attempts": 0},
             s3={"addressing_style": "path"},
         ),

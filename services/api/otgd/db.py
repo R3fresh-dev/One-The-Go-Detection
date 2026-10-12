@@ -254,7 +254,8 @@ def engine():
             raise ValueError("SQLite is unit-test only; local requires PostgreSQL")
         kw.update(connect_args={"check_same_thread": False}, poolclass=StaticPool)
     else:
-        args = {"connect_timeout": 5, "sslmode": s.database_sslmode}
+        args = {"connect_timeout": s.serverless_database_connect_timeout if s.serverless_mode else 5,
+                "sslmode": s.database_sslmode}
         if s.database_sslrootcert:
             args["sslrootcert"] = s.database_sslrootcert
         kw.update(

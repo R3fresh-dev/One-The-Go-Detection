@@ -74,6 +74,7 @@ To reproduce a hosted build on an existing supported machine, use a clean commit
 ```bash
 export APP_ENV=local
 export EXPO_PUBLIC_HOSTED_PREVIEW=true
+export EXPO_PUBLIC_SERVERLESS=false
 export EXPO_NO_DOTENV=1
 export EXPO_PUBLIC_API_URL=https://unavailable.invalid
 export EXPO_PUBLIC_OAUTH_ISSUER=https://unavailable.invalid

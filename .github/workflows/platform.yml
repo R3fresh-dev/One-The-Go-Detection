@@ -43,7 +43,7 @@ jobs:
           uv run --project services/api python tools/verify_openspec.py
       - name: Strict OpenSpec validation
         run: |
-          for change in production-mobile-platform canonical-operator-governance cloud-deployment-customer-access optional-raw-recording-lifecycle authorized-model-execution independent-recovery-admission canonical-optical-native-acquisition canonical-signed-reader-acquisition authorized-raw-export qualified-participant-acquisition verified-release-and-browser-access; do
+          for change in production-mobile-platform canonical-operator-governance cloud-deployment-customer-access optional-raw-recording-lifecycle authorized-model-execution independent-recovery-admission canonical-optical-native-acquisition canonical-signed-reader-acquisition authorized-raw-export qualified-participant-acquisition verified-release-and-browser-access serverless-development-runtime; do
             npx --yes @fission-ai/openspec@1.14.1 validate "$change" --strict
           done
         env:

@@ -2029,6 +2029,11 @@ def privacy_download(request: Request, job_id: UUID):
         raise
 
 
+# This wrapper completes only after StreamingResponse has sent every chunk or
+# unwound cancellation; ordinary HTTP middleware returns before that point.
+from .serverless_lifecycle import ServerlessLifecycleMiddleware
+app.add_middleware(ServerlessLifecycleMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=web_origins(settings()),
@@ -2051,7 +2056,6 @@ app.add_middleware(
     ],
     max_age=300,
 )
-
 
 # Report revisions have their own finalized-check authorization and immutable DTOs.
 app.include_router(report_revision_router)

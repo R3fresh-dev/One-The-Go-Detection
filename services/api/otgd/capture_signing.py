@@ -108,9 +108,11 @@ def cloud_key(cfg):
         raise Problem(503, "CAPTURE_SIGNING_KEY_UNAVAILABLE")
     suffix = "amazonaws.com.cn" if partition == "aws-cn" else "amazonaws.com"
     try:
+        serverless = bool(getattr(cfg, "serverless_mode", False))
         client = boto3.client("kms", region_name=cfg.aws_region,
-            endpoint_url="https://kms." + cfg.aws_region + "." + suffix,
-            config=Config(ignore_configured_endpoint_urls=True, connect_timeout=3, read_timeout=5,
+            endpoint_url="https://kms." + cfg.aws_region + (".api.aws" if serverless else "." + suffix),
+            config=Config(ignore_configured_endpoint_urls=True, use_dualstack_endpoint=serverless,
+                connect_timeout=3, read_timeout=5,
                 retries={"max_attempts": 1, "mode": "standard"}))
         material = client.get_public_key(KeyId=key_id)
     except (BotoCoreError, ClientError):

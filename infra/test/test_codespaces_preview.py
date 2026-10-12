@@ -4,17 +4,16 @@ These tests need Node and Git, but neither npm dependencies nor a Codespace.
 Real guest bundle behavior is checked separately by browser acceptance tests.
 """
 
-from contextlib import contextmanager
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 import threading
 import unittest
-
+from contextlib import contextmanager
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 SOURCE = Path(__file__).resolve().parents[2]
 
@@ -77,6 +76,7 @@ class CodespacesPreviewTests(unittest.TestCase):
                 "APP_ENV": "local",
                 "EXPO_PUBLIC_APP_ENV": "local",
                 "EXPO_PUBLIC_HOSTED_PREVIEW": "true",
+                "EXPO_PUBLIC_SERVERLESS": "false",
                 "EXPO_NO_DOTENV": "1",
                 "EXPO_PUBLIC_API_URL": "https://unavailable.invalid",
                 "EXPO_PUBLIC_OAUTH_ISSUER": "https://unavailable.invalid",
@@ -112,6 +112,7 @@ class CodespacesPreviewTests(unittest.TestCase):
     def run_command(self, args, expected, extra_env=None):
         result = subprocess.run(
             args,
+            check=False,
             cwd=self.root,
             capture_output=True,
             text=True,
@@ -177,6 +178,68 @@ class CodespacesPreviewTests(unittest.TestCase):
         (self.dist / "preview-manifest.json").write_text(json.dumps(self.manifest))
         self.assertIn("fictional guest", self.helper("prepare", expected=2).stderr)
         self.assertIn("fictional guest", self.helper("check", expected=2).stderr)
+
+    def test_guest_builder_overrides_inherited_serverless_and_cloud_identity(self):
+        scripts = self.root / "apps/mobile/scripts"
+        scripts.mkdir()
+        shutil.copyfile(
+            SOURCE / "apps/mobile/scripts/build-preview.mjs",
+            scripts / "build-preview.mjs",
+        )
+        cli = self.root / "apps/mobile/node_modules/expo/bin/cli"
+        cli.parent.mkdir(parents=True)
+        # The real wrapper executes this explicit bundler boundary double. It
+        # refuses a relabeled mode before creating the fictional output.
+        cli.write_text("""
+const assert = require('node:assert/strict');
+const { writeFileSync } = require('node:fs');
+assert.equal(process.env.APP_ENV, 'local');
+assert.equal(process.env.EXPO_PUBLIC_APP_ENV, 'local');
+assert.equal(process.env.EXPO_PUBLIC_HOSTED_PREVIEW, 'true');
+assert.equal(process.env.EXPO_PUBLIC_SERVERLESS, 'false');
+assert.equal(process.env.EXPO_PUBLIC_API_URL, 'https://unavailable.invalid');
+assert.equal(process.env.EXPO_PUBLIC_OAUTH_ISSUER, 'https://unavailable.invalid');
+assert.equal(process.env.EXPO_PUBLIC_OAUTH_CLIENT_ID, 'otgd-hosted-fictional');
+writeFileSync('dist-preview/index.html', '<p>Fictional guest bundler boundary</p>');
+""")
+        self.run_command(
+            ["node", "apps/mobile/scripts/build-preview.mjs"],
+            0,
+            {
+                "APP_ENV": "prod",
+                "EXPO_PUBLIC_APP_ENV": "prod",
+                "EXPO_PUBLIC_HOSTED_PREVIEW": "false",
+                "EXPO_PUBLIC_SERVERLESS": "true",
+                "EXPO_PUBLIC_API_URL": "https://cloud.invalid",
+                "EXPO_PUBLIC_OAUTH_ISSUER": "https://identity.invalid",
+                "EXPO_PUBLIC_OAUTH_CLIENT_ID": "cloud-client",
+            },
+        )
+        actual = json.loads((self.dist / "preview-manifest.json").read_text())
+        self.assertEqual(
+            actual["build_environment"], self.manifest["build_environment"]
+        )
+        self.helper("prepare", expected=0)
+        self.helper("check", expected=0)
+
+    def test_missing_or_serverless_mode_manifest_never_admits_guest_export(self):
+        for flag in (None, "true"):
+            with self.subTest(flag=flag):
+                if flag is None:
+                    self.manifest["build_environment"].pop(
+                        "EXPO_PUBLIC_SERVERLESS", None
+                    )
+                else:
+                    self.manifest["build_environment"]["EXPO_PUBLIC_SERVERLESS"] = flag
+                (self.dist / "preview-manifest.json").write_text(
+                    json.dumps(self.manifest)
+                )
+                self.assertIn(
+                    "fictional guest", self.helper("prepare", expected=2).stderr
+                )
+                self.assertIn(
+                    "fictional guest", self.helper("check", expected=2).stderr
+                )
 
     def test_generic_http_200_is_not_reused_or_stopped_by_startup(self):
         with server(lambda _: (200, {}, b"ordinary page")) as port:
