@@ -305,7 +305,11 @@ def _verify_imported_stack(cf, evidence, stack):
         if len(original.encode()) > 51200:
             raise Gate('Initial recovery imported template exceeded its bound')
         original = json.loads(original)
-    if original != evidence['import_template']:
+    # Botocore returns nested OrderedDict values; their equality treats object
+    # key order as meaningful even when the complete JSON content is identical.
+    actual_body = json.dumps(original, separators=(',', ':'), sort_keys=True)
+    expected_body = json.dumps(evidence['import_template'], separators=(',', ':'), sort_keys=True)
+    if actual_body != expected_body:
         raise Gate('Initial recovery imported stack template differs from the preserved resources')
 
 

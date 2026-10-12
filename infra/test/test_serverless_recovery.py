@@ -1,4 +1,5 @@
 """First-stack recovery contracts; these fixtures are not AWS acceptance proof."""
+from collections import OrderedDict
 from copy import deepcopy
 import hashlib
 import json
@@ -9,6 +10,7 @@ import unittest
 from unittest.mock import Mock
 
 from botocore.exceptions import ClientError
+from botocore.handlers import json_decode_template_body
 
 from deploy import serverless_recovery as recovery
 from deploy.serverless_template import build_template
@@ -672,6 +674,82 @@ class InitialRecoveryTest(unittest.TestCase):
             self.assertEqual(resumed['status'], 'uninitialized-retained-resources-imported')
             self.assertEqual(resumed['retained_physical_ids'], cloud.physical)
         cloud.no_mutations(self)
+
+    def test_sdk_ordered_templates_preserve_fresh_import_and_existing_stack_resume(self):
+        for mode in ('fresh', 'resume'):
+            cloud = FakeCloud()
+            cloud.import_resource_status = 'UPDATE_COMPLETE'
+            original_response = cloud.clients['cloudformation'].get_template.side_effect
+
+            def sdk_response(**kwargs):
+                response = original_response(**kwargs)
+                # GetTemplate's real botocore handler decodes both templates
+                # into nested OrderedDicts. The saved import has sorted keys,
+                # while the original stopped template follows builder order.
+                response['TemplateBody'] = json.dumps(response['TemplateBody'],
+                    sort_keys=kwargs['StackName'] == NEW_STACK)
+                json_decode_template_body(response)
+                return response
+
+            cloud.clients['cloudformation'].get_template.side_effect = sdk_response
+            plan = recovery.initial_recovery_plan(cloud.aws, cloud.config)
+            actual = sdk_response(StackName=NEW_STACK)['TemplateBody']
+            expected = plan['import_template']
+            self.assertIsInstance(actual['Resources']['DataKey'], OrderedDict)
+            self.assertIsInstance(expected['Resources']['DataKey'], OrderedDict)
+            self.assertNotEqual(actual['Resources']['DataKey'], expected['Resources']['DataKey'])
+            self.assertEqual(json.dumps(actual, sort_keys=True), json.dumps(expected, sort_keys=True))
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                if mode == 'fresh':
+                    result = recovery.recover_initial(cloud.aws, cloud.config, Path(directory) / 'initial.json')
+                else:
+                    source_path, _ = cloud.detached_manifest(directory)
+                    cloud.status = 'IMPORT_COMPLETE'
+                    result = recovery.resume_initial(cloud.aws, cloud.config, Path(directory) / 'resumed.json',
+                        source_path, hashlib.sha256(source_path.read_bytes()).hexdigest())
+                self.assertEqual(result['status'], 'uninitialized-retained-resources-imported')
+                self.assertEqual(result['retained_physical_ids'], cloud.physical)
+            if mode == 'resume':
+                cloud.no_mutations(self)
+
+    def test_canonical_import_template_still_rejects_changed_values_lists_types_and_policies(self):
+        for kind in ('property', 'list', 'boolean-value', 'boolean-type', 'retention', 'resource-type'):
+            cloud = FakeCloud()
+            original_response = cloud.clients['cloudformation'].get_template.side_effect
+
+            def sdk_response(**kwargs):
+                response = original_response(**kwargs)
+                if kwargs['StackName'] == NEW_STACK:
+                    key = response['TemplateBody']['Resources']['DataKey']
+                    if kind == 'property':
+                        key['Properties']['Description'] = 'changed authority'
+                    elif kind == 'list':
+                        key['Properties']['KeyPolicy']['Statement'].reverse()
+                    elif kind == 'boolean-value':
+                        key['Properties']['EnableKeyRotation'] = False
+                    elif kind == 'boolean-type':
+                        # Python equality accepts True == 1; canonical JSON
+                        # keeps scalar types distinct as well as exact values.
+                        key['Properties']['EnableKeyRotation'] = 1
+                    elif kind == 'retention':
+                        key['DeletionPolicy'] = 'Delete'
+                    else:
+                        key['Type'] = 'AWS::KMS::Alias'
+                response['TemplateBody'] = json.dumps(response['TemplateBody'],
+                    sort_keys=kwargs['StackName'] == NEW_STACK)
+                json_decode_template_body(response)
+                return response
+
+            cloud.clients['cloudformation'].get_template.side_effect = sdk_response
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                source_path, _ = cloud.detached_manifest(directory)
+                cloud.status = 'IMPORT_COMPLETE'
+                destination = Path(directory) / 'resumed.json'
+                with self.assertRaisesRegex(Gate, 'imported stack template differs'):
+                    recovery.resume_initial(cloud.aws, cloud.config, destination, source_path,
+                        hashlib.sha256(source_path.read_bytes()).hexdigest())
+                self.assertFalse(destination.exists())
+            cloud.no_mutations(self)
 
     def test_import_completion_blocks_nonfinal_or_unexpected_retained_resource_statuses(self):
         for status in ('CREATE_COMPLETE', 'IMPORT_IN_PROGRESS', 'IMPORT_FAILED', 'UPDATE_IN_PROGRESS',
