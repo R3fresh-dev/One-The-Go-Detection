@@ -22,7 +22,7 @@ from sqlalchemy import func, select, text
 from sqlalchemy.exc import SQLAlchemyError
 
 from . import storage
-from .auth import authenticate, family_hash, recent
+from .auth import _verify_authorization, authenticate, family_hash, recent
 from .canonical import canonical, digest, strict_loads
 from .capture_signing import require_signing_key, sign_start
 from .participant_acquisition import (InstructionAcknowledgment, CollectionRequest, acknowledge_instructions, instruction_receipt, accept_collection, collection_status, require_completed_collections, CollectionAbandonment, abandon_collection)
@@ -231,23 +231,30 @@ def enforce_rate(db, account, request):
 
 @contextmanager
 def access(request, receipt=False, allow_inactive=False):
-    with factory()() as db:
-        account, claims, revoked = authenticate(
-            db, request.headers.get("authorization"), receipt
-        )
-        enforce_rate(db, account, request)
-        db.commit()  # Rate cost persists even for rejected downstream writes.
-        try:
-            account, claims, revoked = authenticate(
-                db, request.headers.get("authorization"), receipt
-            )
-            if account.state != "active" and not allow_inactive:
-                raise Problem(403, "ACCOUNT_NOT_WRITABLE")
-            yield db, account, claims, revoked
-            db.commit()
-        except Exception:
-            db.rollback()
-            raise
+    authorization = request.headers.get("authorization")
+    verified = _verify_authorization(authorization)  # Invalid JWTs never acquire SQL.
+    sessions = factory()
+    with sessions() as source:
+        bind = source.get_bind()
+    # Retain one pool checkout across two independent root transactions. There
+    # must be no outer begin(): the rate commit is durable before phase two.
+    with bind.connect() as connection:
+        with sessions(bind=connection) as rate_db:
+            account, claims, revoked = authenticate(rate_db, verified, receipt)
+            enforce_rate(rate_db, account, request)
+            rate_db.commit()
+        # A new Session cannot reuse first-phase ORM authority state. Signature,
+        # journal, revocation, identity and owner locks are checked afresh.
+        with sessions(bind=connection) as db:
+            try:
+                account, claims, revoked = authenticate(db, authorization, receipt)
+                if account.state != "active" and not allow_inactive:
+                    raise Problem(403, "ACCOUNT_NOT_WRITABLE")
+                yield db, account, claims, revoked
+                db.commit()
+            except Exception:
+                db.rollback()
+                raise
 
 
 def generation(request):

@@ -2,6 +2,8 @@ import hashlib
 import hmac
 import threading
 import time
+from dataclasses import dataclass, field
+from types import MappingProxyType
 
 import httpx
 import jwt
@@ -96,6 +98,18 @@ class Verifier:
 verifier = Verifier()
 
 
+@dataclass(frozen=True)
+class _VerifiedAuthorization:
+    """Request-local signature proof, never constructed from HTTP JSON."""
+    claims: MappingProxyType = field(repr=False)
+
+
+def _verify_authorization(authorization):
+    if not isinstance(authorization, str) or not authorization.startswith("Bearer "):
+        raise Problem(401, "AUTH_REQUIRED")
+    return _VerifiedAuthorization(MappingProxyType(verifier.verify(authorization[7:])))
+
+
 def subject_hash(claims):
     s = settings()
     from .identity_keys import key_descriptor
@@ -111,9 +125,8 @@ def family_hash(account_id, family):
 
 
 def authenticate(db, authorization, receipt=False):
-    if not authorization or not authorization.startswith("Bearer "):
-        raise Problem(401, "AUTH_REQUIRED")
-    claims = verifier.verify(authorization[7:])
+    verified = authorization if isinstance(authorization, _VerifiedAuthorization) else _verify_authorization(authorization)
+    claims = dict(verified.claims)
     from .identity_keys import require_key
     require_key(db)
     subject = subject_hash(claims)

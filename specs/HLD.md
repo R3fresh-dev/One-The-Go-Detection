@@ -1,5 +1,11 @@
 # High-level design
 
+This document preserves the original proposed architecture. Statements about
+unsupplied services describe that baseline. For the current executable system,
+recorded design changes and remaining work, see
+[implementation status](../IMPLEMENTATION_STATUS.md) and the
+[requirements alignment audit](../docs/REQUIREMENTS_ALIGNMENT_AUDIT.md).
+
 Version 0.1.0 | 2026-10-10, America/Chicago | Development proposal
 
 ## 1. Purpose and architectural boundary
