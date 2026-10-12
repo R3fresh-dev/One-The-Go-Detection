@@ -310,7 +310,39 @@ def invoke_maintenance(aws, c, out, operation, work, **extra):
     return receipt
 
 
+UPLOAD_HEADERS = {'content-type', 'if-none-match', 'x-amz-checksum-sha256',
+                  'x-amz-server-side-encryption', 'x-amz-server-side-encryption-aws-kms-key-id'}
+
+
+def verify_upload_access(aws, c, out):
+    """Verify the private browser upload authority and actual S3 preflight."""
+    expected_bucket = f"{STACK}-{c['account']}-{c['region']}-artifacts"
+    expected_upload = f"https://s3.dualstack.{c['region']}.amazonaws.com/{expected_bucket}/"
+    if out.get('ArtifactBucket') != expected_bucket or out.get('ArtifactUploadOrigin') != expected_upload:
+        raise Gate('Browser upload authority differs from the selected serverless account and region')
+    rules = aws.client('s3').get_bucket_cors(Bucket=expected_bucket).get('CORSRules', [])
+    if (len(rules) != 1 or rules[0].get('AllowedOrigins') != [out['WebOrigin']]
+            or rules[0].get('AllowedMethods') != ['PUT']
+            or {h.lower() for h in rules[0].get('AllowedHeaders', [])} != UPLOAD_HEADERS):
+        raise Gate('Actual S3 upload CORS differs from the admitted web origin and signed headers')
+    headers = {'Origin': out['WebOrigin'], 'Access-Control-Request-Method': 'PUT',
+               'Access-Control-Request-Headers': ','.join(sorted(UPLOAD_HEADERS))}
+    with httpx.Client(timeout=30, follow_redirects=False) as http:
+        url = expected_upload + 'quarantine/browser-preflight-check'
+        allowed = http.options(url, headers=headers)
+        advertised = {h.strip().lower() for h in allowed.headers.get('access-control-allow-headers', '').split(',')}
+        if (allowed.status_code != 200 or allowed.headers.get('access-control-allow-origin') != out['WebOrigin']
+                or 'PUT' not in allowed.headers.get('access-control-allow-methods', '').split(',')
+                or not UPLOAD_HEADERS <= advertised):
+            raise Gate('Actual S3 browser upload preflight failed')
+        rejected = http.options(url, headers={**headers, 'Origin': 'https://otgd-unapproved-origin.invalid'})
+        if rejected.status_code != 403 or rejected.headers.get('access-control-allow-origin'):
+            raise Gate('S3 admitted an unapproved browser origin')
+    return {'signed_upload_preflight': 'passed', 'unapproved_origin': 'denied', 'object_upload': 'not_executed'}
+
+
 def build_and_publish_web(aws, c, out, source, work):
+    upload = verify_upload_access(aws, c, out)
     with tempfile.TemporaryDirectory(prefix='otgd-serverless-web-') as temporary:
         context = Path(temporary)
         with tarfile.open(source) as archive:
@@ -334,7 +366,7 @@ def build_and_publish_web(aws, c, out, source, work):
         InvalidationBatch={'Paths': {'Quantity': 1, 'Items': ['/*']}, 'CallerReference': 'serverless-' + sha256(manifest)})['Invalidation']['Id']
     cf.get_waiter('invalidation_completed').wait(DistributionId=out['WebDistributionId'], Id=invalidation,
         WaiterConfig={'Delay': 20, 'MaxAttempts': 45})
-    return web_artifact.verify_access(out, {}, files, timeout=120)
+    return {**web_artifact.verify_access(out, {}, files, timeout=120), **upload}
 
 
 def observe(aws, c, out):
