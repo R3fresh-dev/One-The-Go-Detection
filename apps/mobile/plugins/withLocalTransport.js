@@ -3,6 +3,15 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 
 module.exports = function withLocalTransport(config) {
+  const hosted = config.extra?.hostedPreview === true;
+  config = withAndroidManifest(config, config => {
+    const app = config.modResults.manifest.application?.[0];
+    if (app) {
+      app['meta-data'] = (app['meta-data'] || []).filter(item => item.$?.['android:name'] !== 'dev.r3fresh.otgd.HOSTED_PREVIEW');
+      if (hosted) app['meta-data'].push({$: {'android:name':'dev.r3fresh.otgd.HOSTED_PREVIEW','android:value':'true'}});
+    }
+    return config;
+  });
   const local = ['local', 'test'].includes(config.extra?.environment);
   if (!local) return config;
   const hosts = [...new Set([config.extra.apiUrl, config.extra.issuer].map(v => new URL(v).hostname))];

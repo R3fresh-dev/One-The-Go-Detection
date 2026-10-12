@@ -1,3 +1,7 @@
+import {
+  laboratorySupersession,
+  verifyParticipantCompanions,
+} from "./labEvidence";
 import type {
   NativeInputEvent,
   NativeTaskResult,
@@ -19,6 +23,7 @@ import {
   verifyCheck,
 } from "./domain";
 import { verifyAttemptProjection } from "./exportProjection";
+import { verifyRetainedNativeEye } from "./eyeProjection";
 import {
   assertBytes,
   assertPlainJson,
@@ -113,6 +118,7 @@ function same(a: unknown, b: unknown): void {
  * and exports their bounded records independently, never inside this base chain.
  */
 export function verifyExportEvidence(check: CheckRecord): void {
+  verifyParticipantCompanions(check);
   const raw = requireObject(check);
   const required =
     "id generation workspace kind stage frozen snapshot context attempts manifest snapshot_sha256 evidence_sha256 result alcohol delivery error remote_revision remote_etag updated_at".split(
@@ -123,6 +129,12 @@ export function verifyExportEvidence(check: CheckRecord): void {
     "selected_cardiac_attempt_id",
     "replacement_links",
     "report_revision_cache",
+    "acquisition",
+    "attestations",
+    "labCollection",
+    "instruction_receipts",
+    "collections",
+    "collection_abandons",
   ];
   demand(
     required.every((key) => Object.hasOwn(raw, key)) &&
@@ -130,7 +142,14 @@ export function verifyExportEvidence(check: CheckRecord): void {
   );
   const original = Object.fromEntries(
     Object.entries(raw).filter(
-      ([key]) => !["replacement_links", "report_revision_cache"].includes(key),
+      ([key]) =>
+        ![
+          "replacement_links",
+          "report_revision_cache",
+          "acquisition",
+          "attestations",
+          "labCollection",
+        ].includes(key),
     ),
   );
   assertPlainJson(original);
@@ -254,7 +273,12 @@ export function verifyExportEvidence(check: CheckRecord): void {
       demand(predecessor);
       previous = predecessor.supersedes_attempt_id;
     }
-    if (attempt.status === "valid") {
+    if (
+      attempt.status === "valid" &&
+      !check.attempts.some((successor) =>
+        laboratorySupersession(check, successor, attempt),
+      )
+    ) {
       const key =
         attempt.component === "cardiac"
           ? `cardiac:${projection.modality}`
@@ -262,7 +286,16 @@ export function verifyExportEvidence(check: CheckRecord): void {
       demand(!validComponents.has(key));
       validComponents.add(key);
     }
-    if (attempt.component_metadata.native_result != null)
+    if (
+      attempt.component_metadata.native_result != null &&
+      attempt.component === "eyes"
+    )
+      verifyRetainedNativeEye(
+        attempt.component_metadata.native_result,
+        projection,
+        attempt,
+      );
+    else if (attempt.component_metadata.native_result != null)
       verifyNative(
         attempt.component_metadata.native_result,
         projection,

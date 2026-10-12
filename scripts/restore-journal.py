@@ -25,156 +25,11 @@ from otgd.db import Account, Artifact, Check, Dedup, Job, Outbox, Record, Regist
 from otgd.storage import client, put_versioned, versioned_read
 from otgd.identity_keys import key_descriptor
 
-EVENT_LIMIT = 8192
-INVENTORY_LIMIT = 100000
-MANIFEST_LIMIT = 64 * 1024 * 1024
-HEX = re.compile(r'^[0-9a-f]{64}$')
-
-
-class RecoveryBlocked(RuntimeError):
-    pass
-
-
-def timestamp(value):
-    if not isinstance(value, str):
-        raise RecoveryBlocked('Missing UTC timestamp')
-    try:
-        parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
-        if parsed.tzinfo is None or parsed.utcoffset().total_seconds() != 0:
-            raise ValueError()
-        return parsed.timestamp()
-    except (ValueError, AttributeError):
-        raise RecoveryBlocked('Invalid UTC timestamp') from None
-
-
-def uuid_text(value):
-    try:
-        if str(UUID(value)) != value:
-            raise ValueError()
-    except (ValueError, AttributeError, TypeError):
-        raise RecoveryBlocked('Invalid journal identifier') from None
-    return value
-
-
-def positive_integer(value):
-    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
-        raise RecoveryBlocked('Invalid journal generation')
-    return value
-
-
-def validate_event(key, raw, available_key_ids, server_time):
-    if len(raw) > EVENT_LIMIT:
-        raise RecoveryBlocked('Oversized journal event')
-    event = strict_loads(raw)
-    if not isinstance(event, dict) or canonical(event) != raw or event.get('schema_version') != '1.0.0':
-        raise RecoveryBlocked('Unsupported or noncanonical journal event')
-    job = uuid_text(event.get('job_id'))
-    uuid_text(event.get('account_ref'))
-    positive_integer(event.get('retired_generation'))
-    if event.get('scope') not in ('all_data', 'account'):
-        raise RecoveryBlocked('Unsupported deletion scope')
-    if event.get('event_type') == 'deletion_accepted':
-        required = {'schema_version','event_type','event_id','job_id','account_ref','retired_generation','new_generation','scope','policy_version','accepted_at','subject_ref_hmac','hmac_key_id'}
-        if set(event) != required or event['event_id'] != job or key != f'events/{job}/accepted.json':
-            raise RecoveryBlocked('Acceptance key/schema mismatch')
-        if positive_integer(event['new_generation']) != event['retired_generation'] + 1:
-            raise RecoveryBlocked('Nonconsecutive deletion generation')
-        if not HEX.fullmatch(event['subject_ref_hmac']) or event['hmac_key_id'] not in available_key_ids:
-            raise RecoveryBlocked('Missing required identity tombstone key or invalid subject reference')
-        if event['policy_version'] != 'privacy-v1':
-            raise RecoveryBlocked('Unsupported receipt policy; reconcile before recovery')
-        instant = timestamp(event['accepted_at'])
-    elif event.get('event_type') == 'deletion_completed':
-        required = {'schema_version','event_type','job_id','account_ref','retired_generation','scope','completed_at'}
-        if not required.issubset(event) or set(event) - required - {'event_id','fencing_token','disposition','retained_categories'}:
-            raise RecoveryBlocked('Unsupported completion schema')
-        if key != f'events/{job}/completed.json':
-            raise RecoveryBlocked('Completion key mismatch')
-        if 'event_id' in event and event['event_id'] != job:
-            raise RecoveryBlocked('Completion event mismatch')
-        if 'fencing_token' in event:positive_integer(event['fencing_token'])
-        if event.get('retained_categories'):
-            raise RecoveryBlocked('Retention exceptions require an approved restore handler')
-        instant = timestamp(event['completed_at'])
-    else:
-        raise RecoveryBlocked('Unsupported event type')
-    if instant > server_time + 60:
-        raise RecoveryBlocked('Journal event is in the future')
-    return event
-
-
-def inventory(s3, bucket, prefix, max_items=INVENTORY_LIMIT):
-    """List all versions; deleted, replaced or unversioned evidence is invalid."""
-    entries = []
-    keys = set()
-    paginator = s3.get_paginator('list_object_versions')
-    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
-        if page.get('DeleteMarkers'):
-            raise RecoveryBlocked('A protected journal prefix contains deletion markers')
-        for row in page.get('Versions', []):
-            key, version = row['Key'], row.get('VersionId')
-            if not version or version == 'null' or key in keys or not row.get('IsLatest'):
-                raise RecoveryBlocked('Journal contains replaced or unversioned evidence')
-            keys.add(key)
-            entries.append({'key':key, 'version_id':version})
-            if len(entries) > max_items:
-                raise RecoveryBlocked('Journal inventory exceeds the reviewed recovery bound')
-    return sorted(entries, key=lambda x:(x['key'],x['version_id']))
-
-
-def read_inventory(bucket, entries, available_keys, server_time):
-    def read_one(row):
-        raw = versioned_read(bucket, row['key'], row['version_id'], EVENT_LIMIT)
-        event = validate_event(row['key'], raw, available_keys, server_time)
-        return {**row,'sha256':hashlib.sha256(raw).hexdigest(),'event':event}
-    result=[]
-    # Bound pending futures instead of enqueuing the entire 100k-event inventory.
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        for start in range(0,len(entries),1000):result.extend(executor.map(read_one,entries[start:start+1000]))
-    return result
-
-
-def build_plan(rows):
-    accepted, completed, subjects, account_subjects = {}, {}, {}, {}
-    for row in rows:
-        event = row['event']; target = accepted if event['event_type'] == 'deletion_accepted' else completed
-        if event['job_id'] in target:
-            raise RecoveryBlocked('Duplicate logical journal event')
-        target[event['job_id']] = row
-    if set(completed) - set(accepted):
-        raise RecoveryBlocked('Completion is missing its acceptance evidence')
-    for job_id, row in accepted.items():
-        event = row['event']; subject = event['subject_ref_hmac']; account = event['account_ref']
-        prior_subject = account_subjects.setdefault(account, subject)
-        if prior_subject != subject:
-            raise RecoveryBlocked('Account maps to conflicting subject references')
-        state = subjects.setdefault(subject, {'account_ref':account,'events':[]})
-        if state['account_ref'] != account:
-            raise RecoveryBlocked('Subject maps to multiple account references')
-        state['events'].append(row)
-        if job_id in completed:
-            terminal = completed[job_id]['event']
-            for field in ['account_ref','retired_generation','scope']:
-                if terminal[field] != event[field]:
-                    raise RecoveryBlocked('Completion conflicts with acceptance')
-            if timestamp(terminal['completed_at']) < timestamp(event['accepted_at']):
-                raise RecoveryBlocked('Completion predates acceptance')
-    barriers = {}
-    for subject, state in subjects.items():
-        events = sorted(state['events'],key=lambda row:row['event']['retired_generation'])
-        generations = set(); deleted = False
-        for row in events:
-            event = row['event']
-            if event['retired_generation'] in generations or deleted:
-                raise RecoveryBlocked('Conflicting generation history or post-account-deletion writes')
-            generations.add(event['retired_generation'])
-            deleted = event['scope'] == 'account'
-        latest = events[-1]['event']
-        done = latest['job_id'] in completed
-        barriers[subject] = {'account_ref':state['account_ref'], 'generation':latest['new_generation'],
-            'state':('deleted' if latest['scope']=='account' else 'awaiting_generation_ack') if done else 'deleting'}
-    return {'accepted':accepted,'completed':completed,'barriers':barriers}
-
+from otgd.recovery_authority import (
+    EVENT_LIMIT, INVENTORY_LIMIT, MANIFEST_LIMIT, HEX, RecoveryBlocked,
+    timestamp, uuid_text, positive_integer, validate_event, inventory,
+    read_inventory, build_plan, load_authority, retained_version, verify_database_authority,
+)
 
 def scrub_generation(db, account_id, generation, deletion_id):
     """Restoring a backup must not restore previously deleted health JSON."""
@@ -240,6 +95,7 @@ def verified_write(bucket,key,body,limit=MANIFEST_LIMIT):
     if len(raw)>limit: raise RecoveryBlocked('Recovery manifest exceeds bound')
     version=put_versioned(bucket,key,raw,conditional=True)
     if versioned_read(bucket,key,version,limit)!=raw: raise RecoveryBlocked('Recovery receipt verification failed')
+    retained_version(client('s3'),settings(),{'key':key,'version_id':version},now())
     return {'key':key,'version_id':version,'sha256':hashlib.sha256(raw).hexdigest()}
 
 
@@ -250,16 +106,17 @@ def recover(backup_created_at, confirm_quiesced):
         raise RecoveryBlocked('Fixed environment and OTGD_RECOVERY_REQUIRED=true are mandatory')
     if backup>time_now or time_now-backup>35*86400:
         raise RecoveryBlocked('Recovery point must be no older than 35 days and not in the future')
+    if not re.fullmatch(r'[0-9a-f]{40}', cfg.source_revision or ''):
+        raise RecoveryBlocked('Restore admission requires the actual immutable image source revision')
     # Commit the denial state first. Any subsequent validation error keeps readiness closed.
     recovery_id=str(uuid4())
     with factory().begin() as db:
         db.merge(SystemState(key='recovery',body={'verified':False,'recovery_id':recovery_id,'scopes_suspended':True}))
     s3=client('s3');bucket=cfg.journal_bucket
-    if s3.get_bucket_versioning(Bucket=bucket).get('Status')!='Enabled': raise RecoveryBlocked('Journal versioning is not enabled')
-    controls=inventory(s3,bucket,'control/',10)
-    if len(controls)!=1 or controls[0]['key']!='control/established.json': raise RecoveryBlocked('Missing/ambiguous journal continuity evidence')
-    control=strict_loads(versioned_read(bucket,controls[0]['key'],controls[0]['version_id'],EVENT_LIMIT))
-    if control.get('schema_version')!='1.0.0' or control.get('environment')!=cfg.environment or control.get('minimum_retention_days',0)<90 or control.get('maximum_recovery_age_days')!=35 or timestamp(control.get('established_at'))>backup:
+    independent=load_authority(cfg,time_now)
+    control_receipt=independent['control']
+    control=strict_loads(versioned_read(bucket,control_receipt['key'],control_receipt['version_id'],EVENT_LIMIT))
+    if timestamp(control.get('established_at'))>backup:
         raise RecoveryBlocked('Journal does not prove the required post-backup interval/90-day retention policy')
     first=inventory(s3,bucket,'events/')
     rows=read_inventory(bucket,first,{key_descriptor(cfg)['key_id']},time_now)
@@ -269,12 +126,7 @@ def recover(backup_created_at, confirm_quiesced):
     again=read_inventory(bucket,second,{key_descriptor(cfg)['key_id']},time_now)
     if rows!=again: raise RecoveryBlocked('Repeated versioned inventory differs')
     plan=build_plan(rows)
-    prior_cutoff=0
-    for row in inventory(s3,bucket,'recovery/',10000):
-        old_raw=versioned_read(bucket,row['key'],row['version_id'],EVENT_LIMIT);old=strict_loads(old_raw)
-        if canonical(old)!=old_raw or old.get('schema_version')!='1.0.0' or old.get('environment')!=cfg.environment or old.get('event_type')!='RecoveryActivation' or type(old.get('authentication_cutoff')) is not int or old['authentication_cutoff']<0 or row['key']!='recovery/'+uuid_text(old.get('recovery_id'))+'.json':
-            raise RecoveryBlocked('Invalid prior recovery activation')
-        prior_cutoff=max(prior_cutoff,old['authentication_cutoff'])
+    prior_cutoff=independent['activation']['body']['authentication_cutoff'] if independent['activation'] else 0
     manifest={'schema_version':'1.0.0','event_type':'DeletionWatermark','watermark_id':recovery_id,'environment':cfg.environment,'backup_created_at':backup_created_at,'inventory_at':iso(),'event_count':len(rows),'events':[{k:r[k] for k in ('key','version_id','sha256')} for r in rows]}
     manifest['inventory_sha256']=digest(manifest['events'])
     watermark=verified_write(bucket,f'watermarks/{recovery_id}.json',manifest)
@@ -285,10 +137,12 @@ def recover(backup_created_at, confirm_quiesced):
             db.execute(text("SET LOCAL statement_timeout = '15min'"))
             if not db.scalar(text('SELECT pg_try_advisory_xact_lock(798114232)')): raise RecoveryBlocked('Another recovery owns the database lock')
         unresolved=apply_plan(db,plan,recovery_id)
-        cutoff=max(prior_cutoff,math.ceil(now()))
-        activation={'schema_version':'1.0.0','event_type':'RecoveryActivation','recovery_id':recovery_id,'environment':cfg.environment,'watermark':watermark,'inventory_sha256':manifest['inventory_sha256'],'activated_at':iso(),'authentication_cutoff':cutoff,'scopes_suspended':True}
+        cutoff=max(prior_cutoff+1,math.ceil(now()))
+        activation={'schema_version':'1.0.0','event_type':'RecoveryActivation','recovery_id':recovery_id,'environment':cfg.environment,'account':cfg.deployment_account,'region':cfg.aws_region,'source_revision':cfg.source_revision,'backup_created_at':backup_created_at,'control':control_receipt,'watermark':watermark,'inventory_sha256':manifest['inventory_sha256'],'activated_at':iso(),'authentication_cutoff':cutoff,'scopes_suspended':True}
         receipt=verified_write(bucket,f'recovery/{recovery_id}.json',activation,EVENT_LIMIT)
         db.merge(SystemState(key='recovery',body={'verified':True,'recovery_id':recovery_id,'authentication_cutoff':cutoff,'scopes_suspended':True,'journal_watermark':watermark,'journal_activation':receipt,'inventory_sha256':manifest['inventory_sha256'],'account_barriers':len(plan['barriers']),'identity_reconciliation_jobs':unresolved}))
+        db.flush()
+        verify_database_authority(db,load_authority(cfg,now()),True)
     # No subject hashes or health records are printed to operator logs.
     return {'status':'reconciled_services_still_stopped','recovery_id':recovery_id,'watermark':watermark,'activation':receipt,'event_count':len(rows),'account_barriers':len(plan['barriers']),'pending_identity_reconciliations':len(unresolved),'authentication_cutoff':cutoff,'scopes_suspended':True}
 

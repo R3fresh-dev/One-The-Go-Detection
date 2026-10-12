@@ -28,8 +28,9 @@ from .db import (
     iso,
     now,
 )
-from .domain import measurement_result, safe_result, verify_evidence
+from .domain import safe_result, verify_evidence
 from .errors import Problem
+from .recovery_authority import require_authority
 from .worker_health import WorkerHealth
 
 stop = threading.Event()
@@ -71,6 +72,8 @@ def claim_job(job_id):
         hint = db.get(Job, job_id)
         if not hint:
             return None
+        if hint.kind != "deletion":
+            require_authority(db)
         account = db.scalar(
             select(Account)
             .where(Account.id == hint.account_id)
@@ -113,7 +116,7 @@ def claim_job(job_id):
         )
 
 
-def current(db, claim):
+def current(db, claim, *, enforce_export=True):
     account = db.scalar(
         select(Account)
         .where(Account.id == claim.account_id)
@@ -135,6 +138,12 @@ def current(db, claim):
         or not authorized(account, job)
     ):
         raise LeaseLost()
+    if job.kind != "deletion":
+        require_authority(db)
+    if job.kind == "export" and enforce_export:
+        from .raw_export import validate_job
+
+        validate_job(db, account, job)
     return account, job
 
 
@@ -159,10 +168,14 @@ def heartbeat(claim, receipt, done, lost, health=None, channel=None):
             return
 
 
-def export_manifest_bytes(files, manifest):
+def export_manifest_bytes(files, manifest, *, max_bytes=50 * 1024 * 1024):
     """Final allocation budget includes the manifest, which can exceed one record."""
     data = canonical(manifest)
-    if len(files) + 1 > 65_000 or sum(len(value) for value in files.values()) + len(data) > 50 * 1024 * 1024:
+    if (
+        not 0 < max_bytes <= 50 * 1024 * 1024
+        or len(files) + 1 > 65_000
+        or sum(len(value) for value in files.values()) + len(data) > max_bytes
+    ):
         raise Problem(413, "EXPORT_TOO_LARGE")
     return data
 
@@ -170,6 +183,7 @@ def export_manifest_bytes(files, manifest):
 def make_export(claim):
     from .main import detail, evidence
     from .report_revisions import export_records
+    from .raw_export import archive_bytes, read_sources
 
     files = {}
     total = 0
@@ -177,6 +191,12 @@ def make_export(claim):
         a, j = current(db, claim)
         if j.expires <= now():
             raise Problem(410, "EXPORT_EXPIRED")
+        archive_limit = archive_bytes(j)
+        total_limit = (
+            j.body["raw_export"]["authorization"]["max_uncompressed_bytes"]
+            if j.body.get("include_raw")
+            else 50 * 1024 * 1024
+        )
         # The transaction only takes a bounded consistent data snapshot; no S3 call here.
         for sid in claim.body["session_ids"]:
             row = db.get(Check, sid)
@@ -184,6 +204,10 @@ def make_export(claim):
                 raise Problem(410, "DATA_GENERATION_RETIRED")
             safe_result(row.result)
             bundle = {**detail(row), **evidence(db, a, row)}
+            if claim.body.get("include_raw"):
+                bundle["raw_artifacts_omitted_reason"] = (
+                    "UNSELECTED_RAW_ARTIFACTS_OMITTED"
+                )
             heads = claim.body.get("report_revision_heads", {})
             head = heads.get(sid, {"revision_id": None, "revision_sha256": None})
             revision_index, revision_files = export_records(db, a, row, head)
@@ -247,15 +271,35 @@ def make_export(claim):
             ],
         }
         db.commit()
+    raw_files, raw_scope = read_sources(claim, factory(), current)
+    if raw_scope is not None:
+        if set(raw_files) & set(files):
+            raise Problem(503, "RAW_EXPORT_INTEGRITY_FAILURE")
+        files.update(raw_files)
+        manifest["raw_export"] = raw_scope
+        manifest["omitted_categories"] = [
+            "unselected_raw_artifacts",
+            "source_lab_reports",
+        ]
+        manifest["files"] = [
+            {
+                "path": path,
+                "sha256": hashlib.sha256(value).hexdigest(),
+                "size_bytes": len(value),
+            }
+            for path, value in files.items()
+        ]
     # Archive metadata can span many small records; its bytes still consume the
     # same total limit. Each actual structured evidence/profile file is bounded above.
-    files["manifest.json"] = export_manifest_bytes(files, manifest)
+    files["manifest.json"] = export_manifest_bytes(
+        files, manifest, max_bytes=total_limit
+    )
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for path, data in files.items():
             archive.writestr(path, data)
     data = buffer.getvalue()
-    if len(data) > 64 * 1024 * 1024:
+    if len(data) > archive_limit:
         raise Problem(413, "EXPORT_TOO_LARGE")
     key = f"exports/{claim.account_id}/{claim.generation}/{claim.id}/{claim.fence}.zip"
     version = storage.put_versioned(
@@ -318,7 +362,9 @@ def execute_claim(claim):
             if not row or row.account_id != a.id or row.generation != a.generation:
                 raise LeaseLost()
             verify_evidence(db, a, row)
-            return measurement_result(row)
+            from .model_engine import result_for_check
+
+            return result_for_check(db, a, row)
     raise Problem(422, "UNSUPPORTED_JOB_KIND")
 
 
@@ -330,11 +376,18 @@ def commit_output(claim, output):
             verify_evidence(db, a, check)
             if check.state != "processing":
                 raise LeaseLost()
+            from .model_engine import verify_current_execution
+
+            verify_current_execution(db, a, check, output)
+            safe_result(output)
             check.result = output
             check.state = "invalid" if output["state"] == "invalid" else "completed"
         elif claim.kind == "export":
             if j.expires <= now():
                 raise Problem(410, "EXPORT_EXPIRED")
+            from .raw_export import validate_output
+
+            validate_output(db, a, j, output)
             for sid in claim.body["session_ids"]:
                 check = db.get(Check, sid)
                 if (
@@ -356,6 +409,10 @@ def commit_output(claim, output):
                     if not consent or consent.body["state"] != "active":
                         raise Problem(403, "CAPABILITY_DENIED")
         elif claim.kind == "deletion":
+            if claim.body["scope"] == "account" and settings().environment == "local":
+                from .local_oauth_state import disable_local_identity
+
+                disable_local_identity(db, claim.body["provider_sub"], settings())
             # Erase health rows and response bodies. Retain minimal tombstone, audit/receipt and cleanup keys.
             db.execute(
                 delete(Record).where(
@@ -413,7 +470,9 @@ def commit_output(claim, output):
 def fail_claim(claim, error):
     with factory().begin() as db:
         try:
-            a, j = current(db, claim)
+            # Recording failure is allowed for the original active lease even
+            # when current raw-export authority has been withdrawn.
+            a, j = current(db, claim, enforce_export=False)
         except LeaseLost:
             return
         if isinstance(error, Deferred):
@@ -455,7 +514,9 @@ def run_job(job_id, receipt=None, health=None, channel=None):
     done = threading.Event()
     lost = threading.Event()
     thread = threading.Thread(
-        target=heartbeat, args=(claim, receipt, done, lost, health, channel), daemon=True
+        target=heartbeat,
+        args=(claim, receipt, done, lost, health, channel),
+        daemon=True,
     )
     thread.start()
     try:
@@ -579,6 +640,8 @@ def dispatch_once():
 def cleanup_once():
     # Claim oldest due rows before external work. Failed rows cannot monopolize a page.
     # References remain durable to catch late completion of previously admitted uploads.
+    from .raw_retention import RawRetention, cleanup_raw_once
+
     tick = now()
     with factory().begin() as db:
         artifacts = list(
@@ -588,6 +651,7 @@ def cleanup_once():
                     Artifact.expires < tick - 60,
                     Artifact.state.in_(["quarantine", "cleanup_pending", "purged"]),
                     Artifact.cleanup_next_at <= tick,
+                    ~Artifact.id.in_(select(RawRetention.artifact_id)),
                 )
                 .order_by(Artifact.cleanup_next_at, Artifact.id)
                 .with_for_update(skip_locked=True)
@@ -629,7 +693,11 @@ def cleanup_once():
                 row.state = "cleanup_pending"
         for row in artifacts + expired + completed_deletions:
             row.cleanup_next_at = tick + 900
-    failures = 0
+    raw_cleanup = cleanup_raw_once(factory(), storage.client("s3"), tick=tick)
+    from .raw_export import cleanup_once as cleanup_raw_exports
+
+    export_cleanup = cleanup_raw_exports(factory(), storage.client("s3"), tick=tick)
+    failures = raw_cleanup["failures"] + export_cleanup["failures"]
     for item in artifacts:
         try:
             storage.delete_versions(item.bucket, item.key)
@@ -678,7 +746,11 @@ def cleanup_once():
             "cleanup_dependency_failures count=%d", failures
         )
     return {
-        "attempted": len(artifacts) + len(expired) + len(completed_deletions),
+        "attempted": len(artifacts)
+        + len(expired)
+        + len(completed_deletions)
+        + raw_cleanup["processed"]
+        + export_cleanup["processed"],
         "failed": failures,
     }
 
@@ -706,7 +778,9 @@ def consume(health=None, channel=None):
                         or body["schema_version"] != "1.0.0"
                     ):
                         raise ValueError()
-                    result = run_job(body["job_id"], msg["ReceiptHandle"], health, channel)
+                    result = run_job(
+                        body["job_id"], msg["ReceiptHandle"], health, channel
+                    )
                     if result in ("completed", "terminal", "deferred"):
                         storage.client("sqs").delete_message(
                             QueueUrl=settings().queue_url,
@@ -734,20 +808,22 @@ def main():
     next_cleanup = 0
     health = WorkerHealth()
     with ThreadPoolExecutor(max_workers=2) as executor:
-        futures = [executor.submit(consume, health, f'consumer-{index}') for index in range(2)]
+        futures = [
+            executor.submit(consume, health, f"consumer-{index}") for index in range(2)
+        ]
         while not stop.is_set():
             try:
                 dispatch_once()
-                health.success('dispatcher')
+                health.success("dispatcher")
                 if now() >= next_cleanup:
                     outcome = cleanup_once()
-                    if outcome['failed']:
-                        health.failure('cleanup')
+                    if outcome["failed"]:
+                        health.failure("cleanup")
                     else:
-                        health.success('cleanup')
+                        health.success("cleanup")
                     next_cleanup = now() + 15
             except Exception:
-                health.failure('dispatcher')
+                health.failure("dispatcher")
                 logging.getLogger("otgd.worker").warning("dispatcher_dependency_failed")
             stop.wait(1)
         for f in futures:

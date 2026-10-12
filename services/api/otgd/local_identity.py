@@ -3,20 +3,35 @@
 import base64
 import hashlib
 import html
+import os
+import re
 import secrets
+import stat
 from pathlib import Path
 from urllib.parse import urlencode
 
 import jwt
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from sqlalchemy import select
 
 from .config import settings, web_origins
-from .db import OAuthRecord, factory, now, uid
+from .db import OAuthRecord, Revocation, factory, now, uid
+from .canonical import canonical
+from .local_oauth_state import (
+    ACCESS_SECONDS,
+    FAMILY_SECONDS,
+    FICTIONAL_ACCOUNTS,
+    cleanup_expired,
+    family_id,
+    lock_account,
+    lock_family,
+    lock_identity,
+    revoke_family,
+)
 
 s = settings()
 if s.environment != "local":
@@ -25,13 +40,17 @@ if s.environment != "local":
     )
 
 app = FastAPI(title="OTGD fictional local identity", docs_url=None, redoc_url=None)
-FICTIONAL_ACCOUNTS = ("fixture_a", "fixture_b", *(f"perf_{i:02d}" for i in range(1,21)))
+COOKIE = "otgd_local_oauth"
+MAX_KEY_BYTES = 16 * 1024
 
 
 def key():
     path = Path(s.local_signing_key_path)
-    if not path.exists():
-        path.parent.mkdir(parents=True, exist_ok=True)
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC
+    try:
+        fd = os.open(path, flags)
+    except FileNotFoundError:
+        path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
         private = rsa.generate_private_key(public_exponent=65537, key_size=2048)
         data = private.private_bytes(
             serialization.Encoding.PEM,
@@ -39,14 +58,46 @@ def key():
             serialization.NoEncryption(),
         )
         try:
-            import os
-
-            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-            with os.fdopen(fd, "wb") as f:
+            created = os.open(
+                path,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+                0o600,
+            )
+            with os.fdopen(created, "wb") as f:
                 f.write(data)
+                f.flush()
+                os.fsync(f.fileno())
         except FileExistsError:
             pass
-    return serialization.load_pem_private_key(path.read_bytes(), password=None)
+        fd = os.open(path, flags)
+    with os.fdopen(fd, "rb") as source:
+        before = os.fstat(source.fileno())
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_uid != os.geteuid()
+            or before.st_mode & 0o077
+            or before.st_nlink != 1
+            or not 64 <= before.st_size <= MAX_KEY_BYTES
+        ):
+            raise RuntimeError(
+                "Local signing key must be a bounded private regular file owned by this issuer"
+            )
+        data = source.read(MAX_KEY_BYTES + 1)
+        after = os.fstat(source.fileno())
+        if len(data) != before.st_size or (
+            before.st_size,
+            before.st_mtime_ns,
+            before.st_ctime_ns,
+        ) != (after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+            raise RuntimeError("Local signing key changed during its bounded read")
+    private = serialization.load_pem_private_key(data, password=None)
+    if (
+        not isinstance(private, rsa.RSAPrivateKey)
+        or not 2048 <= private.key_size <= 4096
+        or private.public_key().public_numbers().e != 65537
+    ):
+        raise RuntimeError("Local signing key must be a supported RSA private key")
+    return private
 
 
 def sha(v):
@@ -61,6 +112,13 @@ def err(code="invalid_grant"):
     return JSONResponse(
         {"error": code}, status_code=400, headers={"Cache-Control": "no-store"}
     )
+
+
+def cleanup():
+    # Do not retain cleanup's arbitrary expired-row locks while acquiring the
+    # issuance Account→identity→family locks in the following transaction.
+    with factory().begin() as db:
+        cleanup_expired(db)
 
 
 @app.middleware("http")
@@ -113,6 +171,7 @@ def jwks():
 
 @app.get("/oauth2/authorize")
 def authorize(
+    request: Request,
     client_id: str,
     redirect_uri: str,
     response_type: str,
@@ -127,11 +186,15 @@ def authorize(
         or redirect_uri not in s.oauth_redirect_uris
         or response_type != "code"
         or code_challenge_method != "S256"
-        or len(code_challenge) != 43
+        or not re.fullmatch(r"[A-Za-z0-9_-]{43}", code_challenge)
         or not 16 <= len(state) <= 256
     ):
         return err("invalid_request")
     id = secrets.token_urlsafe(32)
+    browser = request.cookies.get(COOKIE, "")
+    if not re.fullmatch(r"[A-Za-z0-9_-]{43}", browser):
+        browser = secrets.token_urlsafe(32)
+    cleanup()
     with factory().begin() as db:
         db.add(
             OAuthRecord(
@@ -142,23 +205,49 @@ def authorize(
                     "redirect_uri": redirect_uri,
                     "state": state,
                     "challenge": code_challenge,
+                    "browser_session": sha(browser),
                 },
                 expires=now() + 300,
             )
         )
     token = html.escape(id, quote=True)
-    return HTMLResponse(
+    response = HTMLResponse(
         '<!doctype html><html lang="en"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fictional local sign-in</title><h1>Local engineering account</h1><p>These two named accounts contain fictional engineering data. This is not production authentication.</p><form method="post" action="/oauth2/authorize"><input type="hidden" name="authorization_id" value="'
         + token
         + '"><button name="account" value="fixture_a">Use Fictional Account A</button><button name="account" value="fixture_b">Use Fictional Account B</button></form></html>'
     )
+    response.set_cookie(
+        COOKIE,
+        browser,
+        max_age=300,
+        httponly=True,
+        secure=s.identity_origin.startswith("https://"),
+        samesite="lax",
+        path="/oauth2/authorize",
+    )
+    return response
 
 
 @app.post("/oauth2/authorize")
-def choose(authorization_id: str = Form(...), account: str = Form(...)):
-    if account not in FICTIONAL_ACCOUNTS:
+def choose(
+    request: Request, authorization_id: str = Form(...), account: str = Form(...)
+):
+    browser = request.cookies.get(COOKIE, "")
+    if (
+        account not in FICTIONAL_ACCOUNTS
+        or not re.fullmatch(r"[A-Za-z0-9_-]{43}", authorization_id)
+        or not re.fullmatch(r"[A-Za-z0-9_-]{43}", browser)
+        or request.headers.get("origin") != s.identity_origin.rstrip("/")
+    ):
         return err("invalid_request")
     with factory().begin() as db:
+        subject = "local-" + account
+        application_account = lock_account(db, subject, s)
+        identity = lock_identity(db, subject)
+        if identity.consumed or (
+            application_account and application_account.state == "deleted"
+        ):
+            return err()
         row = db.scalar(
             select(OAuthRecord)
             .where(OAuthRecord.id == sha(authorization_id))
@@ -170,19 +259,33 @@ def choose(authorization_id: str = Form(...), account: str = Form(...)):
             or row.kind != "authorization"
             or row.consumed
             or row.expires <= now()
+            or not secrets.compare_digest(
+                row.body.get("browser_session", ""), sha(browser)
+            )
         ):
             return err()
         row.consumed = True
         code = secrets.token_urlsafe(32)
+        family = uid()
+        family_expires = now() + FAMILY_SECONDS
+        db.add(
+            OAuthRecord(
+                id=family_id(family),
+                kind="family",
+                body={"sub": subject, "expires_at": family_expires},
+                expires=family_expires + ACCESS_SECONDS,
+            )
+        )
         db.add(
             OAuthRecord(
                 id=sha(code),
                 kind="code",
                 body={
                     **row.body,
-                    "sub": "local-" + account,
+                    "sub": subject,
                     "auth_time": int(now()),
-                    "family": uid(),
+                    "family": family,
+                    "family_expires_at": family_expires,
                 },
                 expires=now() + 120,
             )
@@ -209,26 +312,62 @@ def token(
     if grant_type not in ("authorization_code", "refresh_token"):
         return err("unsupported_grant_type")
     secret = code if grant_type == "authorization_code" else refresh_token
+    if not re.fullmatch(
+        r"[A-Za-z0-9_-]{43}"
+        if grant_type == "authorization_code"
+        else r"[A-Za-z0-9_-]{64}",
+        secret,
+    ):
+        return err()
+    cleanup()
     with factory().begin() as db:
+        hint = db.get(OAuthRecord, sha(secret))
+        expected = "code" if grant_type == "authorization_code" else "refresh"
+        if not hint or hint.kind != expected:
+            return err()
+        application_account = lock_account(db, hint.body["sub"], s)
+        identity = lock_identity(db, hint.body["sub"])
+        family = lock_family(db, hint.body["family"])
         row = db.scalar(
             select(OAuthRecord)
             .where(OAuthRecord.id == sha(secret))
             .with_for_update()
             .execution_options(populate_existing=True)
         )
-        expected = "code" if grant_type == "authorization_code" else "refresh"
-        if not row or row.kind != expected or row.consumed or row.expires <= now():
+        if (
+            not row
+            or row.kind != expected
+            or not family
+            or family.kind != "family"
+            or family.consumed
+            or identity.consumed
+            or (application_account and application_account.state == "deleted")
+        ):
+            return err()
+        if row.consumed:
+            if expected == "refresh":
+                revoke_family(db, row.body["family"], application_account)
+            return err()
+        if row.expires <= now() or row.body.get("family_expires_at", 0) <= now():
             return err()
         if grant_type == "authorization_code":
             if (
-                not 43 <= len(code_verifier) <= 128
+                not re.fullmatch(r"[A-Za-z0-9._~-]{43,128}", code_verifier)
                 or b64(hashlib.sha256(code_verifier.encode()).digest())
                 != row.body["challenge"]
                 or redirect_uri != row.body["redirect_uri"]
             ):
                 return err()
         revoked = db.get(OAuthRecord, "family-" + sha(row.body["family"]))
+        if application_account:
+            revoked = revoked or db.get(
+                Revocation,
+                hashlib.sha256(
+                    canonical([application_account.id, row.body["family"]])
+                ).hexdigest(),
+            )
         if revoked:
+            revoke_family(db, row.body["family"], application_account)
             return err()
         row.consumed = True
         refresh = secrets.token_urlsafe(48)
@@ -237,7 +376,7 @@ def token(
                 id=sha(refresh),
                 kind="refresh",
                 body=row.body,
-                expires=now() + 30 * 86400,
+                expires=row.body["family_expires_at"],
             )
         )
         current = int(now())
@@ -250,7 +389,7 @@ def token(
             "origin_jti": row.body["family"],
             "auth_time": row.body["auth_time"],
             "iat": current,
-            "exp": current + 900,
+            "exp": current + ACCESS_SECONDS,
             "scope": "openid profile",
         }
         access = jwt.encode(
@@ -261,7 +400,7 @@ def token(
                 "access_token": access,
                 "refresh_token": refresh,
                 "token_type": "Bearer",
-                "expires_in": 900,
+                "expires_in": ACCESS_SECONDS,
             },
             headers={"Cache-Control": "no-store"},
         )
@@ -271,20 +410,17 @@ def token(
 def revoke(token: str = Form(...), client_id: str = Form(...)):
     if client_id != s.client_id:
         return err("invalid_client")
+    cleanup()
     with factory().begin() as db:
-        row = db.get(OAuthRecord, sha(token))
-        if row:
-            id = "family-" + sha(row.body["family"])
-            if not db.get(OAuthRecord, id):
-                db.add(
-                    OAuthRecord(
-                        id=id,
-                        kind="revoked",
-                        body={},
-                        expires=now() + 31 * 86400,
-                        consumed=True,
-                    )
-                )
+        hint = (
+            db.get(OAuthRecord, sha(token))
+            if re.fullmatch(r"[A-Za-z0-9_-]{64}", token)
+            else None
+        )
+        if hint and hint.kind == "refresh":
+            account = lock_account(db, hint.body["sub"], s)
+            lock_identity(db, hint.body["sub"])
+            revoke_family(db, hint.body["family"], account)
     return Response(status_code=200)
 
 

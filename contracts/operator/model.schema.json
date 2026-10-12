@@ -1,0 +1,617 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "bucket": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Bucket",
+          "type": "string"
+        },
+        "key": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "version_id": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Version Id",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 65536,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "bucket",
+        "key",
+        "version_id",
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "AssayTuple": {
+      "additionalProperties": false,
+      "properties": {
+        "analyte": {
+          "enum": [
+            "THC",
+            "THC_COOH",
+            "OH11_THC"
+          ],
+          "title": "Analyte",
+          "type": "string"
+        },
+        "collection_method_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Collection Method Id",
+          "type": "string"
+        },
+        "method_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Method Id",
+          "type": "string"
+        },
+        "assay_basis": {
+          "enum": [
+            "free",
+            "total_after_hydrolysis"
+          ],
+          "title": "Assay Basis",
+          "type": "string"
+        },
+        "concentration_basis": {
+          "enum": [
+            "neat_oral_fluid",
+            "collected_mixture"
+          ],
+          "title": "Concentration Basis",
+          "type": "string"
+        },
+        "correction_status": {
+          "enum": [
+            "not_corrected",
+            "laboratory_corrected"
+          ],
+          "title": "Correction Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "analyte",
+        "collection_method_id",
+        "method_id",
+        "assay_basis",
+        "concentration_basis",
+        "correction_status"
+      ],
+      "title": "AssayTuple",
+      "type": "object"
+    },
+    "CardiacEvaluationEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "cardiac_timing_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cardiac Timing Policy Sha256",
+          "type": "string"
+        },
+        "calibration_registry_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Calibration Registry Sha256",
+          "type": "string"
+        },
+        "calibration_scope_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Calibration Scope Sha256",
+          "type": "string"
+        },
+        "qualification_registry_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Qualification Registry Sha256",
+          "type": "string"
+        },
+        "device_registry_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Device Registry Sha256",
+          "type": "string"
+        },
+        "configuration_submitted_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Configuration Submitted Sha256",
+          "type": "string"
+        },
+        "evidence_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Manifest Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cardiac_timing_policy_sha256",
+        "calibration_registry_sha256",
+        "calibration_scope_sha256",
+        "qualification_registry_sha256",
+        "device_registry_sha256",
+        "configuration_submitted_sha256",
+        "evidence_manifest_sha256"
+      ],
+      "title": "CardiacEvaluationEvidence",
+      "type": "object"
+    },
+    "CardiacTimingPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "server_issue_to_attestation_receipt_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "calibration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Calibration Id",
+          "type": "string"
+        },
+        "max_interval_ms": {
+          "maximum": 120000,
+          "minimum": 100,
+          "title": "Max Interval Ms",
+          "type": "integer"
+        },
+        "allow_baseline_delta": {
+          "title": "Allow Baseline Delta",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "method",
+        "calibration_id",
+        "max_interval_ms",
+        "allow_baseline_delta"
+      ],
+      "title": "CardiacTimingPolicy",
+      "type": "object"
+    },
+    "CoUsePolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "allowed_alcohol_co_use": {
+          "items": {
+            "enum": [
+              "reported",
+              "not_reported"
+            ],
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Allowed Alcohol Co Use",
+          "type": "array"
+        }
+      },
+      "required": [
+        "policy_id",
+        "allowed_alcohol_co_use"
+      ],
+      "title": "CoUsePolicy",
+      "type": "object"
+    },
+    "CompatibilityPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "assay_tuples": {
+          "items": {
+            "$ref": "#/$defs/AssayTuple"
+          },
+          "maxItems": 256,
+          "title": "Assay Tuples",
+          "type": "array"
+        }
+      },
+      "required": [
+        "policy_id",
+        "assay_tuples"
+      ],
+      "title": "CompatibilityPolicy",
+      "type": "object"
+    },
+    "EvaluationReport": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Sha256",
+          "type": "string"
+        },
+        "dataset_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Dataset Sha256",
+          "type": "string"
+        },
+        "split_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Split Plan Sha256",
+          "type": "string"
+        },
+        "analysis_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Analysis Plan Sha256",
+          "type": "string"
+        },
+        "prespecified_at": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Prespecified At",
+          "type": "string"
+        },
+        "locked_at": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Locked At",
+          "type": "string"
+        },
+        "evaluated_at": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Evaluated At",
+          "type": "string"
+        },
+        "endpoint_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Endpoint Id",
+          "type": "string"
+        },
+        "operating_threshold": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Operating Threshold",
+          "type": "number"
+        },
+        "confirmatory": {
+          "$ref": "#/$defs/Metrics"
+        },
+        "later_sessions": {
+          "$ref": "#/$defs/Metrics"
+        },
+        "ablations": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Metrics"
+          },
+          "title": "Ablations",
+          "type": "object"
+        },
+        "participant_overlap": {
+          "const": false,
+          "title": "Participant Overlap",
+          "type": "boolean"
+        },
+        "future_predictors": {
+          "const": false,
+          "title": "Future Predictors",
+          "type": "boolean"
+        },
+        "analysis_scope": {
+          "default": "combined_channels",
+          "enum": [
+            "combined_channels",
+            "cardiac_hr_only"
+          ],
+          "title": "Analysis Scope",
+          "type": "string"
+        },
+        "cardiac_evidence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardiacEvaluationEvidence"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_sha256",
+        "dataset_sha256",
+        "split_plan_sha256",
+        "analysis_plan_sha256",
+        "prespecified_at",
+        "locked_at",
+        "evaluated_at",
+        "endpoint_id",
+        "operating_threshold",
+        "confirmatory",
+        "later_sessions",
+        "ablations",
+        "participant_overlap",
+        "future_predictors"
+      ],
+      "title": "EvaluationReport",
+      "type": "object"
+    },
+    "Metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "minimum": 1,
+          "title": "Total",
+          "type": "integer"
+        },
+        "valid": {
+          "minimum": 0,
+          "title": "Valid",
+          "type": "integer"
+        },
+        "invalid": {
+          "minimum": 0,
+          "title": "Invalid",
+          "type": "integer"
+        },
+        "abstained": {
+          "minimum": 0,
+          "title": "Abstained",
+          "type": "integer"
+        },
+        "positives": {
+          "minimum": 1,
+          "title": "Positives",
+          "type": "integer"
+        },
+        "negatives": {
+          "minimum": 1,
+          "title": "Negatives",
+          "type": "integer"
+        },
+        "sensitivity": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Sensitivity",
+          "type": "number"
+        },
+        "specificity": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Specificity",
+          "type": "number"
+        },
+        "brier": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Brier",
+          "type": "number"
+        },
+        "calibration_error": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Calibration Error",
+          "type": "number"
+        },
+        "sensitivity_interval": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Sensitivity Interval",
+          "type": "array"
+        },
+        "specificity_interval": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Specificity Interval",
+          "type": "array"
+        }
+      },
+      "required": [
+        "total",
+        "valid",
+        "invalid",
+        "abstained",
+        "positives",
+        "negatives",
+        "sensitivity",
+        "specificity",
+        "brier",
+        "calibration_error",
+        "sensitivity_interval",
+        "specificity_interval"
+      ],
+      "title": "Metrics",
+      "type": "object"
+    },
+    "QualityPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "minimum_correct_go_trials": {
+          "maximum": 48,
+          "minimum": 30,
+          "title": "Minimum Correct Go Trials",
+          "type": "integer"
+        },
+        "require_native_timing": {
+          "const": true,
+          "title": "Require Native Timing",
+          "type": "boolean"
+        },
+        "max_baseline_age_ms": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 2592000000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Baseline Age Ms"
+        }
+      },
+      "required": [
+        "policy_id",
+        "minimum_correct_go_trials",
+        "require_native_timing"
+      ],
+      "title": "QualityPolicy",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "model_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Model Id",
+      "type": "string"
+    },
+    "study_ids": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Study Ids",
+      "type": "array"
+    },
+    "manifest": {
+      "$ref": "../model_manifest.schema.json"
+    },
+    "artifact_ref": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "evaluation_report": {
+      "$ref": "#/$defs/EvaluationReport"
+    },
+    "quality_policy": {
+      "$ref": "#/$defs/QualityPolicy"
+    },
+    "co_use_policy": {
+      "$ref": "#/$defs/CoUsePolicy"
+    },
+    "compatibility_policy": {
+      "$ref": "#/$defs/CompatibilityPolicy"
+    },
+    "native_timing_calibration_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Native Timing Calibration Id"
+    },
+    "cardiac_timing_policy": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CardiacTimingPolicy"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "registry_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "model_id",
+    "study_ids",
+    "manifest",
+    "artifact_ref",
+    "evaluation_report",
+    "quality_policy",
+    "co_use_policy",
+    "compatibility_policy"
+  ],
+  "title": "Model",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/model.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

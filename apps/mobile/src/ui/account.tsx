@@ -164,13 +164,15 @@ export function WelcomeScreen({ controller, model }: ScreenProps) {
         busy={model.busy}
         testID="explore-demo"
       />
-      <Button
-        title="Sign in"
-        secondary
-        busy={model.busy}
-        onPress={action(controller, () => controller.signIn())}
-        testID="sign-in"
-      />
+      {!BUILD.hostedPreview && (
+        <Button
+          title="Sign in"
+          secondary
+          busy={model.busy}
+          onPress={action(controller, () => controller.signIn())}
+          testID="sign-in"
+        />
+      )}
       {intro && (
         <Button secondary title="Back" onPress={() => setIntro(false)} />
       )}
@@ -191,9 +193,11 @@ export function WelcomeScreen({ controller, model }: ScreenProps) {
       {BUILD.environment !== "prod" && (
         <Paragraph muted>
           {BUILD.environment.toUpperCase()} environment.{" "}
-          {BUILD.environment === "local"
-            ? "Account sign-in uses the isolated local fixture issuer. No real participants belong in this environment."
-            : "Use the designated engineering or QA account."}
+          {BUILD.hostedPreview
+            ? "Fictional guest preview. No account services or sensor acquisition are available."
+            : BUILD.environment === "local"
+              ? "Account sign-in uses the isolated local fixture issuer. No real participants belong in this environment."
+              : "Use the designated engineering or QA account."}
         </Paragraph>
       )}
     </Page>
@@ -575,7 +579,13 @@ export function CheckRow({
               ? "Fictional fixture"
               : "Measurement record"}
         </Badge>
-        <Badge>{friendly(check.delivery)}</Badge>
+        <Badge>
+          {check.labCollection?.state === "pending_lab"
+            ? "Laboratory analysis pending"
+            : check.labCollection?.state === "collecting"
+              ? "Specimen draft"
+              : friendly(check.delivery)}
+        </Badge>
       </Row>
       <ActionRow
         title={dateLabel(check.snapshot.created_at)}

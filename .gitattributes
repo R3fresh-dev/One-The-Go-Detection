@@ -1,0 +1,3 @@
+# Preserve pinned upstream bytes, including its documented line endings.
+firmware/nano_esp32_signed_reader/vendor/sparkfun/UPSTREAM_README.md -text whitespace=-blank-at-eol,-blank-at-eof
+firmware/nano_esp32_signed_reader/vendor/sparkfun/library.properties -text whitespace=cr-at-eol

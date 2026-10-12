@@ -1,0 +1,11 @@
+## Implementation
+- [x] Bounded native Camera2/AVFoundation source and originating lifecycle.
+- [x] Versioned pure extractors, conditional display/geometry response arithmetic and raw ROI codec.
+- [x] Independent API scalar validator and literal pixel/response tests.
+- [x] Native acknowledgment/expiry/privacy handoff cache.
+- [x] Bounded either-order Camera2 metadata association, explicit ISO/AE and actual ROI byte digests.
+- [x] Exact-version raw codec verification against the accepted acquisition and independent pixel extraction.
+- [x] Actual final Android module compilation, nine JUnit tests and independent generated-factory interoperability.
+- [ ] Current macOS eight-case Swift tests and full Android/iOS application build evidence.
+- [ ] Final whole-application merge gates for the exact committed revision.
+- [ ] Physical timing/luminance/geometry/segmentation/safety and model qualification records for any real study release.

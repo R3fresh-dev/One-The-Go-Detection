@@ -97,19 +97,10 @@ def test_binding_challenge_is_single_use_and_owner_scoped(client, account):
         )
     ).decode()
     with factory().begin() as db:
-        db.add(
-            Registry(
-                id="device:fixture-device:key1",
-                kind="device",
-                active=True,
-                body={
-                    "account_refs": [account],
-                    "public_key_spki": public,
-                    "hardware_revision": "test",
-                    "firmware_version": "test",
-                },
-            )
-        )
+        from .governance_fixture import approve, common
+        approve(db, "device", common("fixture-device:key1", device_id="fixture-device", key_id="key1",
+            account_refs=[account], public_key_spki=public, hardware_revision="test", firmware_version="test",
+            approved_protocol_ids=["fictional-test-protocol"]))
     r = client.post(
         "/v1/device-bindings/challenges",
         headers=headers(),

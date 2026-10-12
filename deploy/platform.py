@@ -5,26 +5,32 @@ Use the API's locked uv environment. AWS credentials come from the normal SDK
 provider chain; secrets are injected into ECS, never read into shell arguments.
 """
 from __future__ import annotations
+from pathlib import Path
+import sys
+
+# Direct file execution puts deploy/ first, where platform.py would shadow the
+# standard library module imported by uuid and the AWS SDK.
+ROOT=Path(__file__).resolve().parents[1]
+sys.path[:]=[entry for entry in sys.path if Path(entry).resolve()!=ROOT/'deploy']
+sys.path.insert(0,str(ROOT/'services'/'api'))
+sys.path.insert(0,str(ROOT))
+
 import argparse
 import base64
 import hashlib
 import json
 import os
 import re
-from pathlib import Path
 import shutil
 import subprocess
-import sys
 import tempfile
 import tarfile
 import time
 from datetime import datetime, timezone
 
-ROOT=Path(__file__).resolve().parents[1]
 INFRA=ROOT/'infra'
-sys.path.insert(0,str(ROOT/'services'/'api'))
-sys.path.insert(0,str(ROOT))
 import boto3
+from botocore.config import Config
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey,Ed25519PublicKey
 from otgd.canonical import canonical,strict_loads
@@ -32,8 +38,15 @@ from deploy.provenance import (Gate, bounded_json, sha256, validate_gate_binding
     verify_gate_file, verify_signed_record, validate_qa_approval, verify_qa_approval)
 
 
+def deployment_environment():
+    # LocalStack endpoints must never redirect cloud account proofs or mutations.
+    env={key:value for key,value in os.environ.items() if key!='AWS_ENDPOINT_URL' and not key.startswith('AWS_ENDPOINT_URL_')}
+    env['AWS_IGNORE_CONFIGURED_ENDPOINT_URLS']='true'
+    return env
+
+
 def run(args,*,cwd=ROOT,capture=False,input=None):
-    return subprocess.run(args,cwd=cwd,text=True,check=True,capture_output=capture,input=input).stdout
+    return subprocess.run(args,cwd=cwd,text=True,check=True,capture_output=capture,input=input,env=deployment_environment()).stdout
 
 
 def read_config(path,registry=False):
@@ -41,7 +54,20 @@ def read_config(path,registry=False):
     return json.loads(run(['node','--import','tsx','bin/validate.ts',str(path.resolve()),*(['--registry'] if registry else [])],cwd=INFRA,capture=True))
 
 
-def session(c,profile=None):return boto3.Session(region_name=c['region'],profile_name=profile)
+class CloudSession:
+    """Use AWS credential providers while ignoring local/profile service endpoints."""
+    def __init__(self,region,profile):
+        self._session=boto3.Session(region_name=region,profile_name=profile)
+
+    def client(self,service,**options):
+        if 'endpoint_url' in options:raise Gate('Cloud deployment clients cannot override AWS service endpoints')
+        guarded=Config(ignore_configured_endpoint_urls=True)
+        supplied=options.pop('config',None)
+        options['config']=supplied.merge(guarded) if supplied else guarded
+        return self._session.client(service,**options)
+
+
+def session(c,profile=None):return CloudSession(c['region'],profile)
 
 
 def preflight(c,registry=False,profile=None):
@@ -51,6 +77,11 @@ def preflight(c,registry=False,profile=None):
     domains=certificate.get('SubjectAlternativeNames',[])
     def covers(name):return name==c['domain'] or (name.startswith('*.') and c['domain'].split('.',1)[1:]==[name[2:]])
     if certificate['Status']!='ISSUED' or not any(covers(x) for x in domains):raise Gate('ACM certificate is not issued for the configured API domain')
+    if c.get('webDomain'):
+        web_certificate=aws.client('acm',region_name='us-east-1').describe_certificate(CertificateArn=c['webCertificateArn'])['Certificate']
+        web_name=c['webDomain']
+        if web_certificate.get('Status')!='ISSUED' or not any(name==web_name or (name.startswith('*.') and web_name.split('.',1)[1:]==[name[2:]]) for name in web_certificate.get('SubjectAlternativeNames',[])):
+            raise Gate('CloudFront ACM certificate is not issued for the configured web domain')
     versions=aws.client('rds').describe_db_engine_versions(Engine='postgres',EngineVersion=c['databaseEngineVersion'],IncludeAll=False)['DBEngineVersions']
     if not any(v['EngineVersion']==c['databaseEngineVersion'] and v.get('Status')=='available' for v in versions):raise Gate('Chosen PostgreSQL minor is unavailable in this region')
     options=aws.client('rds').describe_orderable_db_instance_options(Engine='postgres',EngineVersion=c['databaseEngineVersion'],DBInstanceClass='db.t4g.medium' if c['environment']=='prod' else 'db.t4g.small')['OrderableDBInstanceOptions']
@@ -225,7 +256,7 @@ def write_receipt(path,body):
 def verify_maintenance(aws,out,path,c,operation):
     if not path or not path.exists():raise Gate('Supply the successful '+operation+' receipt')
     receipt=bounded_json(path)
-    if (operation not in ('migrate','restore') or receipt.get('operation')!=operation or receipt.get('status')!='passed'
+    if (operation not in ('migrate','restore','verify-admission') or receipt.get('operation')!=operation or receipt.get('status')!='passed'
         or receipt.get('image_digest')!=c['imageDigest'] or receipt.get('environment')!=c['environment']
         or receipt.get('release_id')!=c['releaseId'] or receipt.get('account')!=c['account'] or receipt.get('region')!=c['region']
         or not isinstance(receipt.get('task_arn'),str)):raise Gate('Maintenance receipt does not match this release/account/region')
@@ -248,6 +279,15 @@ def verify_maintenance(aws,out,path,c,operation):
     override=overrides['containerOverrides'][0]
     if not isinstance(override,dict) or not {'name','command'}.issubset(override) or set(override)-{'name','command','environment'} or override['name']!='migration':raise Gate('Unexpected maintenance container overrides')
     expected=['uv','run','--no-sync','python','-m','otgd.migrate'];environment=[]
+    if operation=='verify-admission':
+        expected=['uv','run','--no-sync','python','-m','otgd.recovery_authority']
+        stopped=completed.get('stoppedAt')
+        try:finished=datetime.fromisoformat(receipt.get('finished_at','').replace('Z','+00:00'))
+        except (ValueError,TypeError):raise Gate('Admission receipt needs its actual UTC completion time') from None
+        now=datetime.now(timezone.utc)
+        if (not isinstance(stopped,datetime) or stopped.tzinfo is None or finished.tzinfo is None or finished.utcoffset().total_seconds()!=0 or
+            not 0<=(now-stopped).total_seconds()<=900 or not 0<=(now-finished).total_seconds()<=900 or abs((finished-stopped).total_seconds())>60):
+            raise Gate('Independent journal admission task must be fresh and bound to actual ECS completion')
     if operation=='restore':
         timestamp=receipt.get('backup_created_at')
         if not c.get('recoveryRequired') or not isinstance(timestamp,str):raise Gate('Restore receipt requires the reviewed recovery point')
@@ -265,11 +305,12 @@ def verify_maintenance(aws,out,path,c,operation):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('operation',choices=['validate','preflight','synth','registry','build','approve-qa','promote','deploy-stopped','bootstrap','migrate','activate','quiesce','restore','replay','qa-destroy'])
+    p.add_argument('operation',choices=['validate','preflight','synth','registry','build','approve-qa','promote','deploy-stopped','bootstrap','migrate','verify-admission','activate','quiesce','restore','replay','qa-destroy'])
     p.add_argument('--config',type=Path,required=True)
     p.add_argument('--release',type=Path);p.add_argument('--trusted-public-key',type=Path);p.add_argument('--signing-key',type=Path)
     p.add_argument('--source-config',type=Path);p.add_argument('--source-release',type=Path);p.add_argument('--source-profile')
     p.add_argument('--qa-evidence',type=Path);p.add_argument('--recovery-receipt',type=Path)
+    p.add_argument('--admission-receipt',type=Path,help='Fresh exact-task independent journal admission verification')
     p.add_argument('--gate-evidence',type=Path,help='Exact-revision merge-gate artifact; its GitHub run and latest jobs are verified live')
     p.add_argument('--job-id');p.add_argument('--replay-id');p.add_argument('--reason-code');p.add_argument('--operator-ref')
     p.add_argument('--output',type=Path);p.add_argument('--backup-created-at');p.add_argument('--establish-new',action='store_true')
@@ -346,7 +387,7 @@ def main():
         cdk(a.config,c,'deploy');return
     out=stack_outputs(aws,c)
     if a.operation=='quiesce':quiesce(aws,out);print('API and worker services drained; autoscaling suspended.');return
-    if a.operation in ('bootstrap','migrate','restore','replay') and (out.get('ImageDigest')!=c['imageDigest'] or out.get('ReleaseId')!=c['releaseId']):raise Gate('Deploy the reviewed maintenance image stopped before executing its operations')
+    if a.operation in ('bootstrap','migrate','restore','verify-admission','replay') and (out.get('ImageDigest')!=c['imageDigest'] or out.get('ReleaseId')!=c['releaseId']):raise Gate('Deploy the reviewed maintenance image stopped before executing its operations')
     if a.operation=='replay':
         require_release(a,c,aws)
         values={'job-id':a.job_id,'replay-id':a.replay_id,'reason-code':a.reason_code,'operator-ref':a.operator_ref}
@@ -355,11 +396,12 @@ def main():
         for k,v in values.items():command+=['--'+k,v]
         arn=task(aws,out,command)
         write_receipt(a.output,{'schema_version':'1.0.0','operation':'replay','environment':c['environment'],'account':c['account'],'region':c['region'],'release_id':c['releaseId'],'image_digest':c['imageDigest'],'job_id':a.job_id,'replay_id':a.replay_id,'task_arn':arn,'status':'passed','finished_at':datetime.now(timezone.utc).isoformat()});return
-    if a.operation in ('bootstrap','migrate','restore'):
+    if a.operation in ('bootstrap','migrate','restore','verify-admission'):
         require_release(a,c,aws);services_stopped(aws,out)
         if not a.output or a.output.exists():raise Gate('Supply a new --output path before executing maintenance')
         if a.operation=='bootstrap':command=['uv','run','--no-sync','python','/app/infra/local/bootstrap_resources.py','--verify-cloud',*(['--establish-new'] if a.establish_new else [])]
         elif a.operation=='migrate':command=['uv','run','--no-sync','python','-m','otgd.migrate']
+        elif a.operation=='verify-admission':command=['uv','run','--no-sync','python','-m','otgd.recovery_authority']
         else:
             if not c['recoveryRequired'] or not a.backup_created_at:raise Gate('Restore needs recoveryRequired=true and actual backup timestamp')
             if out.get('RecoveryRequired')!='true' or out.get('DatabaseRecoveryOrigin')!=c.get('databaseSnapshotIdentifier','new'):raise Gate('Deployed database/recovery gate does not match the reviewed restore configuration')
@@ -376,6 +418,7 @@ def main():
         if not c['activateServices']:raise Gate('Activation requires an explicitly reviewed activateServices=true configuration')
         verify_maintenance(aws,out,a.output,c,'migrate')
         if c['recoveryRequired']:verify_maintenance(aws,out,a.recovery_receipt,c,'restore')
+        verify_maintenance(aws,out,a.admission_receipt,c,'verify-admission')
         require_release(a,c,aws)
         cdk(a.config,c,'deploy')
         aws.client('ecs').get_waiter('services_stable').wait(cluster=out['Cluster'],services=[out['ApiService'],out['WorkerService']],WaiterConfig={'Delay':15,'MaxAttempts':40})

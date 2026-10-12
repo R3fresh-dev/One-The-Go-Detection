@@ -26,7 +26,13 @@ const sampleValidator = ajv.compile(sessionSchema.properties.sample),
     cardiac: ajv.compile(sessionSchema.properties.cardiac),
     task: ajv.compile(sessionSchema.properties.task),
   };
-const common = ["projection", "armed_at", "fixture_id", "transport_evidence"];
+const common = [
+  "projection",
+  "armed_at",
+  "fixture_id",
+  "transport_evidence",
+  "instruction_receipt",
+];
 const fields = {
   saliva: [
     "collector_id",
@@ -43,6 +49,8 @@ const fields = {
     "laboratory_id",
     "lab_import_id",
     "collection_method_version",
+    "collection_receipt_id",
+    "collection_request_sha256",
     "saliva_volume_ml",
     "buffer_volume_ml",
     "dilution_definition",
@@ -54,6 +62,7 @@ const fields = {
     "storage_handling_events",
   ],
   eyes: [
+    "native_result",
     "camera_id",
     "geometry_id",
     "illumination_id",
@@ -72,6 +81,7 @@ const fields = {
     "dropped_samples",
     "context",
     "acquisition_config_id",
+    "ppg_evidence",
   ],
   task: [
     "native_result",
@@ -88,6 +98,8 @@ const nested = new Set([
   "frame_timing",
   "storage_handling_events",
   "transport_evidence",
+  "instruction_receipt",
+  "ppg_evidence",
 ]);
 const fail = (message: string): never => {
   throw new IntegrityError("EXPORT_PROJECTION_INVALID", message);

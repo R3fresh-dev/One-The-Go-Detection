@@ -1,0 +1,223 @@
+{
+  "fixture_scope": "FICTIONAL-SERVER-AND-READER-KEYS-FOR-PROTOCOL-TESTS-NOT-PHYSICAL-QUALIFICATION",
+  "authorization": {
+    "attempt_id": "c27edfef-8874-4728-b326-6b9aff374e24",
+    "channel": "cardiac",
+    "binding_id": "d98b8e2d-303b-4c5e-af6e-659cb39710d2",
+    "device_id": "fictional-device",
+    "configuration_id": "fictional-cardiac-configuration",
+    "configuration_hash": "a5273e16f0d84ba55788da11f03e35f23ae11a4d8fd75426c6a952a58ead62f3",
+    "raw_recording_kind": null,
+    "instruction_receipt_id": "3b5771e0-7a8e-4090-8c4d-230390e186e1",
+    "authorization_id": "1eb9e240-b220-4285-996b-69dbe638c637",
+    "session_id": "64c1aee5-aa96-4493-acb7-38c2341645b4",
+    "state": "issued",
+    "expires_at": "2026-10-11T09:12:50.786Z",
+    "expires_epoch": 1791709970.786279,
+    "configuration_max_duration_ms": 15000,
+    "supported_phone_models": [],
+    "supported_os_versions": [],
+    "supported_native_builds": [],
+    "software_adapter_id": "otgd_signed_reader_v1",
+    "configuration_submitted_sha256": "8fe7eddad024bd6c84668b477f4280825c3126a72682b1337c7817643d08a42e",
+    "configuration_version": "v1",
+    "capture_context_sha256": "42c80a37bef14ea635e23f42e86a19915e29b5e3fe6e1e82a09b024f61acab5c",
+    "configuration_material": {
+      "schema_version": "1.0.0",
+      "channel": "cardiac",
+      "modality": "ppg",
+      "adapter_id": "otgd_esp32_adc_v1",
+      "protocol_version": 1,
+      "duration_ms": 15000,
+      "end_guard_ms": 50,
+      "sample_rate_hz": 100,
+      "raw_unit": "counts",
+      "raw_sample_limit": 0,
+      "raw_encoding": null,
+      "extractor_version": "adc_peak_intervals_v1",
+      "input_gpio": 1,
+      "contact_gpio": 4,
+      "contact_active_high": true,
+      "adc_resolution_bits": 12,
+      "attenuation_db": 11,
+      "reference_mv": 3300.0,
+      "gain": 1.0,
+      "offset_mv": 0.0,
+      "threshold_adc": 2048,
+      "minimum_peak_interval_ms": 250,
+      "maximum_peak_interval_ms": 2000,
+      "minimum_amplitude_adc": 100
+    },
+    "raw_recording_permission": null,
+    "participant_protocol": {
+      "schema_version": "1.0.0",
+      "instruction_id": "fictional-preparation",
+      "version": "v1",
+      "text": "Fictional bench preparation only; no human safety or clinical approval.",
+      "sha256": "eba36cfbbc57d4c8b11f7d7284cf2fe89db928b6d60da6f416de798aee0b1f4e",
+      "required_confirmations": [
+        {
+          "id": "rest_completed",
+          "text": "Fictional declaration: rest_completed"
+        },
+        {
+          "id": "posture_confirmed",
+          "text": "Fictional declaration: posture_confirmed"
+        },
+        {
+          "id": "activity_confirmed",
+          "text": "Fictional declaration: activity_confirmed"
+        },
+        {
+          "id": "contact_confirmed",
+          "text": "Fictional declaration: contact_confirmed"
+        },
+        {
+          "id": "isolation_confirmed",
+          "text": "Fictional declaration: isolation_confirmed"
+        }
+      ],
+      "maximum_acknowledgment_age_seconds": 300,
+      "kind": "cardiac",
+      "operating_scope": "engineering_bench",
+      "operating_state_verifier": "participant_declaration_only",
+      "rest_duration_seconds": 0,
+      "posture_instruction": "Fictional bench posture",
+      "activity_instruction": "Fictional bench activity",
+      "contact_instruction": "Fictional bench contact",
+      "isolation_instruction": "No human connection approved",
+      "permitted_setups": [
+        {
+          "id": "fictional-bench",
+          "description": "Bench fixture only",
+          "power_state": "fixture",
+          "charging_state": "fixture",
+          "cable_state": "fixture",
+          "contact_or_lead_configuration": "synthetic-electrical-load"
+        }
+      ]
+    },
+    "participant_protocol_sha256": "cf736498b112ece8ded3bbb7ca93ad04c3368ec2f0bf6c19dae962c3d5f8e88b",
+    "instruction_receipt": {
+      "instruction_receipt_id": "3b5771e0-7a8e-4090-8c4d-230390e186e1",
+      "session_id": "64c1aee5-aa96-4493-acb7-38c2341645b4",
+      "attempt_id": "c27edfef-8874-4728-b326-6b9aff374e24",
+      "configuration_id": "fictional-cardiac-configuration",
+      "configuration_version": "v1",
+      "configuration_hash": "a5273e16f0d84ba55788da11f03e35f23ae11a4d8fd75426c6a952a58ead62f3",
+      "configuration_submitted_sha256": "8fe7eddad024bd6c84668b477f4280825c3126a72682b1337c7817643d08a42e",
+      "participant_protocol_sha256": "cf736498b112ece8ded3bbb7ca93ad04c3368ec2f0bf6c19dae962c3d5f8e88b",
+      "acknowledged_at": "2026-10-11T09:11:50.750Z",
+      "confirmed": true,
+      "confirmations": [
+        "rest_completed",
+        "posture_confirmed",
+        "activity_confirmed",
+        "contact_confirmed",
+        "isolation_confirmed"
+      ],
+      "setup_id": "fictional-bench",
+      "rest_started_at": "2026-10-11T09:11:50.745Z",
+      "collection_method_id": null,
+      "collection_method_version": null,
+      "consent_record_id": "d735fcfb-1742-4a9a-8ed5-964d0e538177",
+      "accepted_at": "2026-10-11T09:11:50.767Z"
+    }
+  },
+  "start": {
+    "authorization_id": "1eb9e240-b220-4285-996b-69dbe638c637",
+    "attempt_id": "c27edfef-8874-4728-b326-6b9aff374e24",
+    "device_boot_id": "77777777-7777-4777-8777-777777777777",
+    "state": "started",
+    "server_started_at": "2026-10-11T09:11:50.839Z",
+    "raw_recording_permission": null,
+    "server_start": {
+      "grant": {
+        "schema_version": "1.0.0",
+        "environment": "test",
+        "owner_ref": "6533404f-d56b-485e-8fda-898b988faf96",
+        "data_generation": 1,
+        "session_id": "64c1aee5-aa96-4493-acb7-38c2341645b4",
+        "attempt_id": "c27edfef-8874-4728-b326-6b9aff374e24",
+        "authorization_id": "1eb9e240-b220-4285-996b-69dbe638c637",
+        "binding_id": "d98b8e2d-303b-4c5e-af6e-659cb39710d2",
+        "device_id": "fictional-device",
+        "device_key_id": "fixture-key",
+        "boot_id": "77777777-7777-4777-8777-777777777777",
+        "channel": "cardiac",
+        "configuration_max_duration_ms": 15000,
+        "configuration_id": "fictional-cardiac-configuration",
+        "configuration_hash": "a5273e16f0d84ba55788da11f03e35f23ae11a4d8fd75426c6a952a58ead62f3",
+        "configuration_submitted_sha256": "8fe7eddad024bd6c84668b477f4280825c3126a72682b1337c7817643d08a42e",
+        "configuration_version": "v1",
+        "capture_context_sha256": "42c80a37bef14ea635e23f42e86a19915e29b5e3fe6e1e82a09b024f61acab5c",
+        "issued_at": "2026-10-11T09:11:50.839Z",
+        "expires_at": "2026-10-11T09:12:50.839Z",
+        "device_nonce": "QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI",
+        "nonce": "5fe940eb-a4bc-4b48-be37-c903971cbf73",
+        "raw_recording_permission": null,
+        "participant_protocol_sha256": "cf736498b112ece8ded3bbb7ca93ad04c3368ec2f0bf6c19dae962c3d5f8e88b",
+        "instruction_receipt_id": "3b5771e0-7a8e-4090-8c4d-230390e186e1"
+      },
+      "signature": "MEYCIQDjeESDH/Gej48TMehIX3Oc3KBzUfb613/7NcbTUmaHmwIhAKHWH2hd36mjejsDY9dOmqXCCO7hKWcQKPH6Df0Eviix",
+      "key_id": "local-capture-v1:e9fcbdb4a9df58dbde97539d373c897a1a5b2d6db0c6b02f678cc0bf033d17e3",
+      "domain": "OTGD capture grant v1\u0000"
+    },
+    "participant_protocol_sha256": "cf736498b112ece8ded3bbb7ca93ad04c3368ec2f0bf6c19dae962c3d5f8e88b",
+    "instruction_receipt": {
+      "instruction_receipt_id": "3b5771e0-7a8e-4090-8c4d-230390e186e1",
+      "session_id": "64c1aee5-aa96-4493-acb7-38c2341645b4",
+      "attempt_id": "c27edfef-8874-4728-b326-6b9aff374e24",
+      "configuration_id": "fictional-cardiac-configuration",
+      "configuration_version": "v1",
+      "configuration_hash": "a5273e16f0d84ba55788da11f03e35f23ae11a4d8fd75426c6a952a58ead62f3",
+      "configuration_submitted_sha256": "8fe7eddad024bd6c84668b477f4280825c3126a72682b1337c7817643d08a42e",
+      "participant_protocol_sha256": "cf736498b112ece8ded3bbb7ca93ad04c3368ec2f0bf6c19dae962c3d5f8e88b",
+      "acknowledged_at": "2026-10-11T09:11:50.750Z",
+      "confirmed": true,
+      "confirmations": [
+        "rest_completed",
+        "posture_confirmed",
+        "activity_confirmed",
+        "contact_confirmed",
+        "isolation_confirmed"
+      ],
+      "setup_id": "fictional-bench",
+      "rest_started_at": "2026-10-11T09:11:50.745Z",
+      "collection_method_id": null,
+      "collection_method_version": null,
+      "consent_record_id": "d735fcfb-1742-4a9a-8ed5-964d0e538177",
+      "accepted_at": "2026-10-11T09:11:50.767Z"
+    }
+  },
+  "context": {
+    "schema_version": "1.0.0",
+    "session_id": "64c1aee5-aa96-4493-acb7-38c2341645b4",
+    "context_confirmed_at": "2026-10-11T09:11:50.740Z",
+    "profile_version_id": null,
+    "profile_snapshot_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "history_snapshot_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "protocol_id": "fictional-governance-protocol",
+    "configuration_refs": [
+      {
+        "id": "fictional-cardiac-configuration",
+        "version": "v1",
+        "sha256": "a5273e16f0d84ba55788da11f03e35f23ae11a4d8fd75426c6a952a58ead62f3",
+        "scope": "measurement_collection"
+      }
+    ],
+    "baseline_refs": [],
+    "self_report_context": null,
+    "device_associations": [
+      {
+        "binding_id": "d98b8e2d-303b-4c5e-af6e-659cb39710d2",
+        "device_id": "fictional-device",
+        "hardware_revision": "fixture-hw",
+        "firmware_version": "1.0.0",
+        "boot_id": "77777777-7777-4777-8777-777777777777",
+        "clock_evidence_ref": null
+      }
+    ]
+  },
+  "server_public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELBwzHGkn8hfHH41lzlDvh5c239yPU1uIZHjGk/x4cEdV0jg0tgDNOI6PgX9+BM7g6YJTtyRiEmCMWirkvNf3JA=="
+}

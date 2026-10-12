@@ -44,6 +44,13 @@ def prepare(host='localhost',lan=False):
         if not shutil.which('uv'): raise RuntimeError('Install uv, then repeat prepare; existing settings are preserved')
         code="from cryptography.hazmat.primitives.asymmetric import rsa; from cryptography.hazmat.primitives import serialization; import os,sys; k=rsa.generate_private_key(public_exponent=65537,key_size=3072); p=k.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()); f=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600); os.write(f,p); os.close(f)"
         subprocess.run(['uv','run','--project',str(ROOT/'services/api'),'python','-c',code,str(key)],check=True)
+    capture_key=LOCAL/'secrets/capture-signing-key.pem'
+    if not capture_key.exists():
+        if not shutil.which('uv'):raise RuntimeError('Install uv, then repeat prepare; existing settings are preserved')
+        # Fresh capability provisioning is anchored by the additive migration.
+        # A replacement file cannot change an existing public-key database anchor.
+        code="from cryptography.hazmat.primitives.asymmetric import ec; from cryptography.hazmat.primitives import serialization; import os,sys; k=ec.generate_private_key(ec.SECP256R1()); p=k.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()); f=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600); os.write(f,p); os.close(f)"
+        subprocess.run(['uv','run','--project',str(ROOT/'services/api'),'python','-c',code,str(capture_key)],check=True)
     print('Local signing key is present; no credentials printed. Published ports are loopback unless explicitly prepared for LAN testing.')
 
 

@@ -1,0 +1,1265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/research/ResearchResult.schema.json",
+  "title": "Authorized research result",
+  "description": "Server-admitted research result and immutable execution evidence. No consumer or driving-clearance claim. Legacy result contract remains unchanged.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "result_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "session_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "enum": [
+        "research_estimate",
+        "inconclusive"
+      ]
+    },
+    "target_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "model_lifecycle": {
+      "const": "active_research"
+    },
+    "endpoint_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "probability": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "classification": {
+      "enum": [
+        "above_threshold",
+        "below_threshold",
+        null
+      ]
+    },
+    "operating_threshold": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1
+    },
+    "uncertainty_policy_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "SIMULATED_INPUT",
+          "MODEL_UNVALIDATED",
+          "MODEL_UNAVAILABLE",
+          "MODEL_RETIRED",
+          "STUDY_UNAUTHORIZED",
+          "INVALID_ACQUISITION",
+          "MISSING_REQUIRED_CHANNEL",
+          "INCOMPATIBLE_METHOD",
+          "UNKNOWN_ASSAY_BASIS",
+          "INCOMPATIBLE_TASK",
+          "OUTSIDE_SCOPE",
+          "TIMING_UNCERTAIN",
+          "STALE_COMPONENT",
+          "UNCERTAINTY_ABSTENTION",
+          "ANALYTICAL_ONLY",
+          "PENDING_VALIDATION",
+          "DEMO_ONLY"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "input_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "provenance_summary": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "simulated",
+          "reference_lab",
+          "prototype_sensor",
+          "validated_sensor"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "replaces_result_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "model_execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "registry_version": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+        },
+        "registry_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "feature_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "calibration_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "endpoint_definition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "population_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "model_artifact_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evaluation_report_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "feature_values_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "calibration_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capture_context_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evidence_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "authority_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "baseline_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authority_manifest": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "1.0.0"
+            },
+            "model_registry_version": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+            },
+            "model_manifest": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "title": "Model Manifest",
+              "description": "Proposed research registry contract. Actual approvals and eligibility must be checked by the server; strings and a schema-valid document are not authorization.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "schema_version": {
+                  "const": "0.1.0"
+                },
+                "model_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "lifecycle": {
+                  "enum": [
+                    "unvalidated",
+                    "active_research",
+                    "retired"
+                  ]
+                },
+                "artifact_sha256": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "endpoint_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "endpoint_definition": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "input_contract_version": {
+                  "const": "0.1.0"
+                },
+                "required_channels": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "saliva_thc",
+                      "saliva_thc_cooh",
+                      "saliva_oh11_thc",
+                      "pupil",
+                      "cardiac_hr",
+                      "ecg",
+                      "task"
+                    ]
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                },
+                "allowed_protocol_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_collection_method_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_assay_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_assay_bases": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "free",
+                      "total_after_hydrolysis"
+                    ]
+                  },
+                  "minItems": 0
+                },
+                "allowed_hardware_revisions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_task_versions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "allowed_provenance": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "reference_lab",
+                      "prototype_sensor",
+                      "validated_sensor"
+                    ]
+                  },
+                  "uniqueItems": true
+                },
+                "feature_version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "baseline_mode": {
+                  "enum": [
+                    "population",
+                    "personalized"
+                  ]
+                },
+                "operating_threshold": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "exclusiveMinimum": 0,
+                  "exclusiveMaximum": 1
+                },
+                "calibration_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "quality_policy_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "co_use_policy_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "population": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "min_age_years": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 18
+                    },
+                    "max_age_years": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 18
+                    }
+                  },
+                  "required": [
+                    "description",
+                    "min_age_years",
+                    "max_age_years"
+                  ]
+                },
+                "max_clock_uncertainty_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "max_acquisition_span_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "max_delivery_delay_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "uncertainty_policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "policy_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "method": {
+                      "enum": [
+                        "unresolved",
+                        "none",
+                        "probability_band"
+                      ]
+                    },
+                    "lower": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "upper": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "rationale": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 256
+                    }
+                  },
+                  "required": [
+                    "policy_id",
+                    "method",
+                    "lower",
+                    "upper",
+                    "rationale"
+                  ]
+                },
+                "validation_report_uri": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "approval_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "minItems": 0
+                },
+                "compatibility_policy_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Resolved policy must enforce exact per-analyte method, biochemical basis, concentration basis and correction-status combinations; independent allow lists are only prefilters."
+                }
+              },
+              "required": [
+                "schema_version",
+                "model_id",
+                "lifecycle",
+                "artifact_sha256",
+                "endpoint_id",
+                "endpoint_definition",
+                "input_contract_version",
+                "required_channels",
+                "allowed_protocol_ids",
+                "allowed_collection_method_ids",
+                "allowed_assay_ids",
+                "allowed_assay_bases",
+                "allowed_hardware_revisions",
+                "allowed_task_versions",
+                "allowed_provenance",
+                "feature_version",
+                "baseline_mode",
+                "operating_threshold",
+                "calibration_id",
+                "quality_policy_id",
+                "co_use_policy_id",
+                "population",
+                "max_clock_uncertainty_ms",
+                "max_acquisition_span_ms",
+                "max_delivery_delay_ms",
+                "uncertainty_policy",
+                "validation_report_uri",
+                "approval_refs",
+                "compatibility_policy_id"
+              ],
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "lifecycle": {
+                        "const": "active_research"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "artifact_sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "endpoint_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "endpoint_definition": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "calibration_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "quality_policy_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "co_use_policy_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "operating_threshold": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "exclusiveMaximum": 1
+                      },
+                      "population": {
+                        "properties": {
+                          "description": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          },
+                          "min_age_years": {
+                            "type": "integer",
+                            "minimum": 18
+                          },
+                          "max_age_years": {
+                            "type": "integer",
+                            "minimum": 18
+                          }
+                        }
+                      },
+                      "uncertainty_policy": {
+                        "properties": {
+                          "policy_id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          },
+                          "method": {
+                            "enum": [
+                              "none",
+                              "probability_band"
+                            ]
+                          },
+                          "rationale": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          }
+                        }
+                      },
+                      "validation_report_uri": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "approval_refs": {
+                        "minItems": 2
+                      },
+                      "allowed_protocol_ids": {
+                        "minItems": 1
+                      },
+                      "allowed_collection_method_ids": {
+                        "minItems": 1
+                      },
+                      "allowed_assay_ids": {
+                        "minItems": 1
+                      },
+                      "allowed_assay_bases": {
+                        "minItems": 1
+                      },
+                      "allowed_hardware_revisions": {
+                        "minItems": 1
+                      },
+                      "allowed_task_versions": {
+                        "minItems": 1
+                      },
+                      "allowed_provenance": {
+                        "minItems": 1
+                      },
+                      "max_clock_uncertainty_ms": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "max_acquisition_span_ms": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "max_delivery_delay_ms": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "compatibility_policy_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "uncertainty_policy": {
+                        "properties": {
+                          "method": {
+                            "const": "probability_band"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "uncertainty_policy": {
+                        "properties": {
+                          "lower": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "upper": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "model_registry_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "model_artifact_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "evaluation_report_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "calibration_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "quality_policy_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "co_use_policy_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "compatibility_policy_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "study_approval_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "consent_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "registry_events_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "native_timing_calibration_sha256": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "cardiac_authority": {
+              "additionalProperties": false,
+              "properties": {
+                "schema_version": {
+                  "const": "1.0.0",
+                  "title": "Schema Version",
+                  "type": "string"
+                },
+                "policy": {
+                  "$ref": "#/$defs/CardiacTimingPolicy"
+                },
+                "policy_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Policy Sha256",
+                  "type": "string"
+                },
+                "calibration_registry_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Calibration Registry Sha256",
+                  "type": "string"
+                },
+                "current": {
+                  "$ref": "#/$defs/IntervalEvidence"
+                },
+                "baseline": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/IntervalEvidence"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "schema_version",
+                "policy",
+                "policy_sha256",
+                "calibration_registry_sha256",
+                "current",
+                "baseline"
+              ],
+              "title": "CardiacAuthority",
+              "type": "object",
+              "description": "Optional HR-only conservative server interval authority. Original signed sensor projection and quality flags remain unchanged; this does not qualify ECG, sensor cadence, physical onset, or other channels."
+            }
+          },
+          "required": [
+            "schema_version",
+            "model_registry_version",
+            "model_manifest",
+            "model_registry_sha256",
+            "model_artifact_sha256",
+            "evaluation_report_sha256",
+            "calibration_sha256",
+            "quality_policy_sha256",
+            "co_use_policy_sha256",
+            "compatibility_policy_sha256",
+            "study_approval_sha256",
+            "consent_sha256",
+            "registry_events_sha256",
+            "native_timing_calibration_sha256"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "registry_version",
+        "registry_id",
+        "feature_version",
+        "calibration_id",
+        "endpoint_definition",
+        "population_description",
+        "manifest_sha256",
+        "model_artifact_sha256",
+        "evaluation_report_sha256",
+        "feature_values_sha256",
+        "calibration_sha256",
+        "capture_context_sha256",
+        "evidence_manifest_sha256",
+        "authority_sha256",
+        "baseline_sha256",
+        "authority_manifest"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "result_id",
+    "session_id",
+    "state",
+    "target_at",
+    "evaluated_at",
+    "model_id",
+    "model_lifecycle",
+    "endpoint_id",
+    "probability",
+    "classification",
+    "operating_threshold",
+    "uncertainty_policy_id",
+    "reason_codes",
+    "input_sha256",
+    "provenance_summary",
+    "replaces_result_id",
+    "model_execution"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "research_estimate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "model_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "model_lifecycle": {
+            "const": "active_research"
+          },
+          "endpoint_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "probability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "classification": {
+            "enum": [
+              "above_threshold",
+              "below_threshold"
+            ]
+          },
+          "operating_threshold": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "uncertainty_policy_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "provenance_summary": {
+            "not": {
+              "contains": {
+                "const": "simulated"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "probability": {
+            "type": "null"
+          },
+          "classification": {
+            "type": "null"
+          },
+          "operating_threshold": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "CardiacTimingPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "server_issue_to_attestation_receipt_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "calibration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Calibration Id",
+          "type": "string"
+        },
+        "max_interval_ms": {
+          "maximum": 120000,
+          "minimum": 100,
+          "title": "Max Interval Ms",
+          "type": "integer"
+        },
+        "allow_baseline_delta": {
+          "title": "Allow Baseline Delta",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "method",
+        "calibration_id",
+        "max_interval_ms",
+        "allow_baseline_delta"
+      ],
+      "title": "CardiacTimingPolicy",
+      "type": "object"
+    },
+    "IntervalEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "method": {
+          "const": "server_issue_to_attestation_receipt_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "account_ref": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Account Ref",
+          "type": "string"
+        },
+        "data_generation": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Data Generation",
+          "type": "integer"
+        },
+        "session_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "authorization_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Authorization Id",
+          "type": "string"
+        },
+        "attestation_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Attestation Id",
+          "type": "string"
+        },
+        "binding_id": {
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+          "title": "Binding Id",
+          "type": "string"
+        },
+        "boot_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "device_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Device Id",
+          "type": "string"
+        },
+        "key_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Key Id",
+          "type": "string"
+        },
+        "hardware_revision": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Hardware Revision",
+          "type": "string"
+        },
+        "firmware_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Firmware Version",
+          "type": "string"
+        },
+        "adapter_id": {
+          "enum": [
+            "otgd_esp32_adc_v1",
+            "otgd_sparkfun_max32664_v1"
+          ],
+          "title": "Adapter Id",
+          "type": "string"
+        },
+        "extractor_version": {
+          "enum": [
+            "adc_peak_intervals_v1",
+            "sparkfun_sensor_bpm_v1"
+          ],
+          "title": "Extractor Version",
+          "type": "string"
+        },
+        "configuration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Configuration Id",
+          "type": "string"
+        },
+        "configuration_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Configuration Version",
+          "type": "string"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        },
+        "configuration_submitted_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Submitted Sha256",
+          "type": "string"
+        },
+        "calibration_registry_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Calibration Registry Sha256",
+          "type": "string"
+        },
+        "calibration_scope_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Calibration Scope Sha256",
+          "type": "string"
+        },
+        "qualification_registry_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Qualification Registry Sha256",
+          "type": "string"
+        },
+        "device_registry_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Device Registry Sha256",
+          "type": "string"
+        },
+        "policy_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        },
+        "snapshot_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Snapshot Sha256",
+          "type": "string"
+        },
+        "capture_context_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Capture Context Sha256",
+          "type": "string"
+        },
+        "evidence_manifest_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Evidence Manifest Sha256",
+          "type": "string"
+        },
+        "authorization_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Authorization Sha256",
+          "type": "string"
+        },
+        "attestation_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Attestation Sha256",
+          "type": "string"
+        },
+        "issued_epoch": {
+          "exclusiveMinimum": 0,
+          "title": "Issued Epoch",
+          "type": "number"
+        },
+        "received_epoch": {
+          "exclusiveMinimum": 0,
+          "title": "Received Epoch",
+          "type": "number"
+        },
+        "target_epoch": {
+          "exclusiveMinimum": 0,
+          "title": "Target Epoch",
+          "type": "number"
+        },
+        "server_utc_error_ms": {
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Server Utc Error Ms",
+          "type": "number"
+        },
+        "signed_acquisition_duration_us": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 60000000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Signed Acquisition Duration Us"
+        },
+        "maximum_monotonic_rate_error_ppm": {
+          "anyOf": [
+            {
+              "maximum": 10000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Maximum Monotonic Rate Error Ppm"
+        },
+        "interval_ms": {
+          "exclusiveMinimum": 0,
+          "maximum": 120000,
+          "title": "Interval Ms",
+          "type": "integer"
+        },
+        "acquisition_bound_ms": {
+          "exclusiveMinimum": 0,
+          "maximum": 3600000,
+          "title": "Acquisition Bound Ms",
+          "type": "integer"
+        },
+        "preserved_quality_flags": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 2,
+          "title": "Preserved Quality Flags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "method",
+        "account_ref",
+        "data_generation",
+        "session_id",
+        "attempt_id",
+        "authorization_id",
+        "attestation_id",
+        "binding_id",
+        "boot_id",
+        "device_id",
+        "key_id",
+        "hardware_revision",
+        "firmware_version",
+        "adapter_id",
+        "extractor_version",
+        "configuration_id",
+        "configuration_version",
+        "configuration_sha256",
+        "configuration_submitted_sha256",
+        "calibration_registry_sha256",
+        "calibration_scope_sha256",
+        "qualification_registry_sha256",
+        "device_registry_sha256",
+        "policy_sha256",
+        "snapshot_sha256",
+        "capture_context_sha256",
+        "evidence_manifest_sha256",
+        "authorization_sha256",
+        "attestation_sha256",
+        "issued_epoch",
+        "received_epoch",
+        "target_epoch",
+        "server_utc_error_ms",
+        "signed_acquisition_duration_us",
+        "maximum_monotonic_rate_error_ppm",
+        "interval_ms",
+        "acquisition_bound_ms",
+        "preserved_quality_flags"
+      ],
+      "title": "IntervalEvidence",
+      "type": "object"
+    }
+  }
+}

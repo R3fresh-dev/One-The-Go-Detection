@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
-const root = resolve("dist"),
+const root = resolve(process.env.OTGD_WEB_DIST ?? "dist"),
   port = Number(process.env.OTGD_WEB_PORT ?? "8082");
 const contentTypes = {
   ".html": "text/html; charset=utf-8",

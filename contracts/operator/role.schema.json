@@ -1,0 +1,82 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "account_ref": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Account Ref",
+      "type": "string"
+    },
+    "roles": {
+      "items": {
+        "enum": [
+          "lab_import",
+          "lab_report_revision"
+        ],
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "title": "Roles",
+      "type": "array"
+    },
+    "study_ids": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Study Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "registry_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "account_ref",
+    "roles",
+    "study_ids"
+  ],
+  "title": "Role",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/role.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

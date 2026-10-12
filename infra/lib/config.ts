@@ -9,6 +9,8 @@ export interface PlatformConfig {
   certificateArn: string;
   hostedZoneId?: string;
   hostedZoneName?: string;
+  webDomain?: string;
+  webCertificateArn?: string;
   cognitoDomainPrefix: string;
   oauthRedirectUris: string[];
   oauthLogoutUris: string[];
@@ -28,7 +30,7 @@ export interface PlatformConfig {
 export function validateConfig(value: unknown, registryOnly = false): PlatformConfig {
   if (!value || typeof value !== 'object') throw new Error('A deployment configuration object is required');
   const c = value as PlatformConfig;
-  const known = new Set(['environment','account','region','vpcCidr','domain','certificateArn','hostedZoneId','hostedZoneName','cognitoDomainPrefix','oauthRedirectUris','oauthLogoutUris','imageDigest','releaseId','monthlyBudgetUsd','alarmEmail','ownerRole','costCenter','costEstimatePath','databaseEngineVersion','databaseSnapshotIdentifier','activateServices','recoveryRequired']);
+  const known = new Set(['environment','account','region','vpcCidr','domain','certificateArn','hostedZoneId','hostedZoneName','webDomain','webCertificateArn','cognitoDomainPrefix','oauthRedirectUris','oauthLogoutUris','imageDigest','releaseId','monthlyBudgetUsd','alarmEmail','ownerRole','costCenter','costEstimatePath','databaseEngineVersion','databaseSnapshotIdentifier','activateServices','recoveryRequired']);
   for (const key of Object.keys(c)) if (!known.has(key)) throw new Error(`Unknown deployment setting: ${key}`);
   if (!['qa','prod'].includes(c.environment)) throw new Error('Only qa/prod can be cloud deployments');
   const placeholder = /CHANGEME|REPLACE|example\.(com|org)|YOUR_|<|>|^0{12}$|^1{12}$/i;
@@ -44,6 +46,10 @@ export function validateConfig(value: unknown, registryOnly = false): PlatformCo
   if (!c.certificateArn.startsWith(`arn:aws:acm:${c.region}:${c.account}:certificate/`)) throw new Error('Certificate must belong to the selected account/region');
   if (Boolean(c.hostedZoneId) !== Boolean(c.hostedZoneName)) throw new Error('Optional Route 53 management requires both hostedZoneId and hostedZoneName');
   if (c.hostedZoneName && c.domain !== c.hostedZoneName && !c.domain.endsWith(`.${c.hostedZoneName}`)) throw new Error('API domain must belong to the supplied hosted zone');
+  if (Boolean(c.webDomain) !== Boolean(c.webCertificateArn)) throw new Error('A web custom domain requires its us-east-1 ACM certificate');
+  if (c.webDomain && (!/^[a-z0-9][a-z0-9.-]+\.[a-z]{2,}$/i.test(c.webDomain) || /localhost|localstack/i.test(c.webDomain) || placeholder.test(c.webDomain) || c.webDomain===c.domain)) throw new Error('Web domain must be a distinct public TLS hostname');
+  if (c.webCertificateArn && !c.webCertificateArn.startsWith(`arn:aws:acm:us-east-1:${c.account}:certificate/`)) throw new Error('CloudFront certificate must belong to the selected account in us-east-1');
+  if (c.webDomain && c.hostedZoneName && (!c.webDomain.endsWith(`.${c.hostedZoneName}`) || c.webDomain===c.hostedZoneName)) throw new Error('Managed web CNAME must be a subdomain of the supplied public zone');
   if (!/^[a-z0-9-]{3,63}$/.test(c.cognitoDomainPrefix)) throw new Error('Invalid Cognito hosted domain prefix');
   for (const key of ['oauthRedirectUris','oauthLogoutUris'] as const) {
     if (!Array.isArray(c[key]) || c[key].length === 0 || c[key].length > 8) throw new Error(`${key} needs 1–8 exact registered callbacks`);

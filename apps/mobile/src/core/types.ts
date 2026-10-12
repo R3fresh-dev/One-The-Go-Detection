@@ -1,3 +1,7 @@
+import type { RawArtifact } from "./rawArtifacts";
+import type { AcquisitionLedger } from "./acquisition";
+import type { LabCollectionLedger } from "./participantAcquisition";
+import type { RawRecordingStatus, RawKind } from "./rawRecordings";
 import type { ReplacementLinksCache } from "./replacements";
 import type { ReportCache } from "./reportRevisions";
 export type Environment = "local" | "qa" | "prod" | "test";
@@ -22,6 +26,7 @@ export type Route =
   | "privacy"
   | "export"
   | "studies"
+  | "raw-recordings"
   | "alcohol"
   | "about"
   | "status";
@@ -148,7 +153,7 @@ export interface EvidenceManifest {
   attempts: { attempt_id: string; sha256: string }[];
   selected: Record<Channel, string | null>;
 }
-export interface MeasurementResult {
+export interface LegacyMeasurementResult {
   schema_version: "0.1.0";
   result_id: string;
   session_id: string;
@@ -167,6 +172,65 @@ export interface MeasurementResult {
   provenance_summary: Source[];
   replaces_result_id: string | null;
 }
+export interface ResearchExecution {
+  schema_version: "1.0.0";
+  registry_id: string;
+  registry_version: string;
+  manifest_sha256: string;
+  model_artifact_sha256: string;
+  evaluation_report_sha256: string;
+  feature_version: string;
+  feature_values_sha256: string;
+  calibration_id: string;
+  calibration_sha256: string;
+  capture_context_sha256: string;
+  evidence_manifest_sha256: string;
+  baseline_sha256: string | null;
+  authority_sha256: string;
+  endpoint_definition: string;
+  population_description: string;
+  authority_manifest: {
+    schema_version: "1.0.0";
+    model_manifest: JsonObject;
+    model_registry_sha256: string;
+    model_registry_version: string;
+    model_artifact_sha256: string;
+    evaluation_report_sha256: string;
+    calibration_sha256: string;
+    quality_policy_sha256: string;
+    co_use_policy_sha256: string;
+    native_timing_calibration_sha256: string;
+    compatibility_policy_sha256: string;
+    study_approval_sha256: string;
+    consent_sha256: string;
+    registry_events_sha256: string;
+    cardiac_authority?: JsonObject;
+  };
+}
+export interface ResearchResult extends Omit<
+  LegacyMeasurementResult,
+  | "schema_version"
+  | "state"
+  | "model_id"
+  | "model_lifecycle"
+  | "endpoint_id"
+  | "probability"
+  | "classification"
+  | "operating_threshold"
+  | "uncertainty_policy_id"
+> {
+  schema_version: "1.1.0";
+  state: "research_estimate" | "inconclusive";
+  model_id: string;
+  model_lifecycle: "active_research";
+  endpoint_id: string;
+  probability: number | null;
+  classification: "above_threshold" | "below_threshold" | null;
+  operating_threshold: number | null;
+  uncertainty_policy_id: string;
+  model_execution: ResearchExecution;
+}
+export type MeasurementResult = LegacyMeasurementResult | ResearchResult;
 export type DeliveryState =
   | "local_draft"
   | "local_finalized"
@@ -196,6 +260,12 @@ export interface CheckRecord {
   attempts: CaptureAttempt[];
   /** Local draft choice; null with two valid cardiac alternatives requires Review selection. */
   selected_cardiac_attempt_id?: string | null;
+  acquisition?: AcquisitionLedger;
+  labCollection?: LabCollectionLedger;
+  instruction_receipts?: JsonObject[];
+  collections?: JsonObject[];
+  collection_abandons?: JsonObject[];
+  attestations?: Record<string, JsonObject>;
   manifest: EvidenceManifest | null;
   snapshot_sha256: string | null;
   evidence_sha256: string | null;
@@ -245,6 +315,7 @@ export interface AppConfig {
     scientific: string[];
     capture_evidence: string[];
     native_task: string[];
+    research_result?: string[];
   };
   limits: JsonObject;
 }
@@ -254,12 +325,31 @@ export interface Capabilities {
   account_state: "active" | "deleting" | "awaiting_generation_ack" | "deleted";
   server_time: string;
   notice: NoticeRef;
-  inference_available: false;
+  inference_available: boolean;
+  model_execution_supported?: boolean;
+  model_reason_codes?: string[];
   channels: Record<
     string,
     {
       available: boolean;
       reason_codes: string[];
+      authorization_available?: boolean;
+      software_available?: boolean;
+      configurations?: {
+        study_id: string;
+        protocol_id: string;
+        configuration_id: string;
+        configuration_hash: string;
+        configuration_version: string;
+        submitted_sha256: string;
+        expires_at: string;
+        supported_phone_models: string[];
+        supported_os_versions?: string[];
+        supported_native_builds?: string[];
+        software_adapter_id: string;
+        participant_protocol?: JsonObject | null;
+        participant_protocol_sha256?: string | null;
+      }[];
       configuration_id?: string;
       configuration_sha256?: string;
     }
@@ -299,6 +389,7 @@ export interface PrivacyJob {
     | "completed"
     | "failed"
     | "expired"
+    | "revoked"
     | "partially_retained";
   accepted_at: string;
   started_at?: string;
@@ -313,6 +404,7 @@ export interface PrivacyJob {
   manifest_sha256?: string;
   sha256?: string;
   size_bytes?: number;
+  raw_export?: JsonObject;
 }
 export interface QueueOperation {
   id: string;
@@ -323,6 +415,9 @@ export interface QueueOperation {
     | "deletion"
     | "export"
     | "consent"
+    | "raw_preference"
+    | "raw_revocation"
+    | "device_unbind"
     | "acknowledgment";
   generation: number;
   check_id: string | null;
@@ -349,6 +444,21 @@ export interface WorkspaceState {
   capabilities: Capabilities | null;
   exportEntry: ExportEntry | null;
   studies: JsonObject[];
+  deviceBindings?: JsonObject[];
+  deviceBindingIntent?: {
+    device_id: string;
+    key_id: string;
+    challenge_key: string;
+    completion_key: string;
+    challenge: JsonObject | null;
+    signature: string | null;
+  };
+  rawArtifacts?: RawArtifact[];
+  rawExportAuthorities?: import("./rawExport").RawExportAuthority[];
+  rawExportArtifactCursors?: Record<string, string | null>;
+  rawExportNextCursor?: string | null;
+  rawRecordingStatuses: Record<string, RawRecordingStatus>;
+  rawRecordingFences: Record<string, RawKind[]>;
   historyIndex: JsonObject[];
   historyCursor: string | null;
 }

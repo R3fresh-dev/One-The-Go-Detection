@@ -1,0 +1,26 @@
+{
+  "repository": "https://github.com/ulfjack/ryu",
+  "commit": "4c0618b0e44f7ef027ebae05d2cc7812048f7c8f",
+  "license": "Apache-2.0 OR BSL-1.0",
+  "files_sha256": {
+    "d2s.c": "d24323c7eb77d63f1e52c415212b50060b776f0883525d907d04954fcd48cf64",
+    "ryu.h": "b7feab0ba1df5e9ef3d602f386592ad152491405e49b408fb21c0e0e9e6bfb16",
+    "common.h": "0bbd71d26da6193e678d0776cf418f43f287c73d6fd6725353df0aadf70f2a19",
+    "digit_table.h": "8b782573abc0b8554d74163ae6c02f0beb5c30d1e63eaebdb0ddf2c98d817e01",
+    "d2s_intrinsics.h": "1d05702f2edacce428223d4b43dd3095c1bd1f3ad30128ce1761d84356dddc7d",
+    "d2s_full_table.h": "2618f6e5fae6c4443899b184efe3d08295dd267dc9f1a994c983c7caca59ebe6",
+    "d2s_small_table.h": "54fec51f1c5eed786a8ce6de881b81582dd71f0812dcd4324b37396617bb0fa9",
+    "LICENSE-Apache2": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "LICENSE-Boost": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+  },
+  "local_adaptation": "Include paths made relative within vendored ryu directory for Arduino sketch compilation; algorithms unchanged.",
+  "local_files_sha256": {
+    "common.h": "0bbd71d26da6193e678d0776cf418f43f287c73d6fd6725353df0aadf70f2a19",
+    "d2s_intrinsics.h": "01d9bdaada67b42f2d1bbdebb3765867e6c44e3a181b806c1d7e851b93f9cc21",
+    "d2s_small_table.h": "01f3d8a3ff739a26ecbddc2caae44c91574592b1de7c01fec67bc2d06672b606",
+    "d2s_full_table.h": "2618f6e5fae6c4443899b184efe3d08295dd267dc9f1a994c983c7caca59ebe6",
+    "digit_table.h": "8b782573abc0b8554d74163ae6c02f0beb5c30d1e63eaebdb0ddf2c98d817e01",
+    "ryu.h": "b7feab0ba1df5e9ef3d602f386592ad152491405e49b408fb21c0e0e9e6bfb16",
+    "d2s.c": "c6357b5d53ac1ba7f4984847d3a76f0803e0a931b7d0b02680656576829cf1d2"
+  }
+}

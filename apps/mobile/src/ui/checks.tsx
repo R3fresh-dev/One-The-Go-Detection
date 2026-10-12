@@ -10,19 +10,37 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { getCameraPermissionStatus, type BluetoothPermissionStatus } from "../../modules/device-transport";
+import {
+  EyeCaptureView,
+  getEyeCaptureAvailability,
+} from "../../modules/eye-capture";
+import { ApprovedParticipantCapture } from "./participant-capture";
+import { ApprovedLabCollection } from "./lab-collection";
+import { participantProtocol } from "../core/participantAcquisition";
+import { RawUploadSelectionCard } from "./raw-upload-selection";
+import {
+  getCameraPermissionStatus,
+  type BluetoothPermissionStatus,
+} from "../../modules/device-transport";
 import {
   getReactionTaskAvailability,
   ReactionTaskView,
   REACTION_CONFIGURATION_ID,
   REACTION_CONFIGURATION_SHA256,
 } from "../../modules/reaction-task";
-import type { CaptureAttempt, CheckRecord, JsonObject, Stage } from "../core/types";
+import type {
+  CaptureAttempt,
+  Capabilities,
+  CheckRecord,
+  JsonObject,
+  Stage,
+} from "../core/types";
 import { cardiacAttemptModality } from "../core/domain";
 import { formatSalivaMeasurement } from "./measurement-format";
 import { SignalPanel } from "../device/SignalPanel";
 import { canonicalJson } from "../core/integrity";
 import { BUILD } from "../platform/config";
+import { configurationFor, type AcquisitionChannel } from "../core/acquisition";
 import { ReplacementLinksCard, ReportRevisionsCard } from "./revisions";
 import {
   action,
@@ -65,13 +83,330 @@ const numberText = (value: unknown, digits = 0) =>
   typeof value === "number" && Number.isFinite(value)
     ? value.toFixed(digits)
     : "—";
+export function EyeAcquisitionExplanation({
+  check,
+  capabilities,
+}: {
+  check: CheckRecord;
+  capabilities: Capabilities | null;
+}) {
+  let approved = false;
+  if (!BUILD.hostedPreview) {
+    try {
+      approved =
+        configurationFor(check, capabilities, "eyes").software_adapter_id ===
+        "optical_roi_v1";
+    } catch {}
+  }
+  const calibrated =
+    !BUILD.hostedPreview &&
+    check.kind === "measurement" &&
+    check.snapshot.eyes.status === "valid" &&
+    check.snapshot.eyes.source !== "simulated" &&
+    check.snapshot.eyes.scale_basis === "calibrated_mm" &&
+    typeof check.snapshot.eyes.baseline_diameter_mm === "number";
+  return (
+    <>
+      <Paragraph>
+        {BUILD.hostedPreview || check.kind !== "measurement"
+          ? "Fictional eye values are examples. This preview does not establish a pupil scale or physical illumination timing."
+          : calibrated
+            ? "This capture retains a diameter scale from the approved geometry calibration. Physical illumination onset remains unmeasured; anatomical light-response magnitude and latency are withheld."
+            : approved
+              ? "Approved optical ROI acquisition is available. A millimeter diameter requires the configuration's current reviewed geometry calibration; otherwise the observation uses normalized scale. Physical illumination onset remains unmeasured, so anatomical response and latency are withheld."
+              : "No current approved optical acquisition is selected for this check. A passive positioning preview does not supply pupil measurements or physical illumination timing."}
+      </Paragraph>
+      <Notice tone={approved || calibrated ? "neutral" : "warning"}>
+        {approved || calibrated
+          ? "Physical illumination onset unmeasured · response magnitude and latency withheld"
+          : "Approved optical acquisition unavailable for this check"}
+      </Notice>
+    </>
+  );
+}
+export function CardiacSummary({ component }: { component: JsonObject }) {
+  return (
+    <Card>
+      <Row>
+        <Metric
+          label="Saved heart rate"
+          value={numberText(component.heart_rate_bpm)}
+          unit="bpm"
+        />
+        <Metric
+          label="ECG RMSSD"
+          value={numberText(component.ecg_rmssd_ms)}
+          unit="ms"
+          detail={
+            component.modality === "ppg"
+              ? "Not measured by PPG"
+              : component.source === "simulated"
+                ? "Fictional ECG example"
+                : typeof component.ecg_rmssd_ms === "number"
+                  ? "Device-reported ECG interval feature; no diagnostic interpretation"
+                  : "Not measured by this ECG acquisition"
+          }
+        />
+      </Row>
+      <Fact label="Modality" value={friendly(component.modality)} />
+      <Fact label="Source" value={friendly(component.source)} />
+    </Card>
+  );
+}
 export function Provenance({ check }: { check: CheckRecord }) {
   return (
     <Notice tone={check.kind === "measurement" ? "neutral" : "warning"}>
       {check.kind === "measurement"
-        ? "Measurement record. Native reaction measurements are uncalibrated. Qualified sample and sensor acquisition is unavailable."
-        : "Synthetic session: sample, eye, pulse, ECG and alcohol examples are fictional. Any actual native reaction taps are uncalibrated practice with separate provenance."}
+        ? check.snapshot.mode === "controlled_research"
+          ? "Owned research collection. Each capture uses a fresh online authorization. Device-signed evidence is retained locally and verified independently by the service upon explicit upload. Study and model approval remain separate."
+          : "Local measurement practice. Native reaction measurements are uncalibrated. Start a separate approved study check for authorized research capture."
+        : BUILD.hostedPreview
+          ? "Fictional guest preview. Synthetic sample, eye, pulse, ECG and alcohol values are examples only. No sensors or reaction taps are recorded."
+          : "Synthetic session: sample, eye, pulse, ECG and alcohol examples are fictional. Any actual native reaction taps are uncalibrated practice with separate provenance."}
     </Notice>
+  );
+}
+function ApprovedCaptureAction({
+  controller,
+  model,
+  channel,
+}: {
+  controller: ScreenProps["controller"];
+  model: ScreenProps["model"];
+  channel: AcquisitionChannel;
+}) {
+  const check = controller.check!;
+  if (
+    check.kind !== "measurement" ||
+    check.snapshot.mode !== "controlled_research"
+  )
+    return null;
+  let configuration;
+  try {
+    configuration = configurationFor(
+      check,
+      model.state?.capabilities ?? null,
+      channel,
+    );
+  } catch (error) {
+    return (
+      <Notice>
+        {error instanceof Error
+          ? error.message
+          : "This channel is unavailable."}
+      </Notice>
+    );
+  }
+  const prepared =
+    ["cardiac", "ecg"].includes(channel) ||
+    configuration.software_adapter_id === "reference_lab_import_v1";
+  if (prepared) {
+    try {
+      participantProtocol(configuration);
+    } catch (error) {
+      return (
+        <Notice>
+          {error instanceof Error
+            ? error.message
+            : "Approved participant instructions unavailable."}
+        </Notice>
+      );
+    }
+  }
+  const scopeKey = JSON.stringify([
+    controller.epoch,
+    model.identity?.accountRef,
+    model.state?.generation,
+    check.id,
+    configuration.configuration_id,
+    configuration.submitted_sha256,
+    configuration.participant_protocol_sha256,
+  ]);
+  const implemented = channel !== "eyes";
+  return (
+    <Card>
+      <Title small>
+        Approved {channel === "cardiac" ? "pulse" : channel} configuration
+      </Title>
+      <Fact
+        label="Configuration"
+        value={`${configuration.configuration_id} · ${configuration.configuration_version}`}
+      />
+      <Fact
+        label="Scientific configuration SHA-256"
+        value={configuration.configuration_hash}
+      />
+      <Fact
+        label="Supported phones"
+        value={configuration.supported_phone_models.join(", ")}
+      />
+      <Paragraph>
+        Starting sends only the frozen check context and acquisition intent. The
+        service rechecks consent, configuration and device authority before
+        acquisition. Completed evidence stays local until you explicitly upload
+        the saved check.
+      </Paragraph>
+      <Notice>
+        Collection defaults to feature-only. Optional ROI or ECG recording
+        requires separate current permission and encrypted native storage.
+        Upload remains a later explicit file selection.
+      </Notice>
+      {channel === "cardiac" || channel === "ecg" ? (
+        <ApprovedParticipantCapture
+          key={scopeKey}
+          controller={controller}
+          model={model}
+          configuration={configuration}
+          channel={channel}
+        />
+      ) : channel === "saliva" &&
+        configuration.software_adapter_id === "reference_lab_import_v1" ? (
+        <ApprovedLabCollection
+          key={scopeKey}
+          controller={controller}
+          model={model}
+          configuration={configuration}
+        />
+      ) : implemented && channel !== "task" ? (
+        <Button
+          title={`Start authorized ${channel} capture`}
+          busy={model.busy}
+          onPress={action(controller, () =>
+            controller.captureReader(channel as "saliva" | "alcohol"),
+          )}
+        />
+      ) : channel === "eyes" ? (
+        <ApprovedEyeCapture
+          key={JSON.stringify([
+            controller.epoch,
+            check.id,
+            model.state?.rawRecordingStatuses[check.snapshot.study_id ?? ""]
+              ?.receipt_id,
+            model.state?.rawRecordingStatuses[check.snapshot.study_id ?? ""]
+              ?.policy?.sha256,
+          ])}
+          controller={controller}
+          model={model}
+        />
+      ) : null}
+      <Button
+        title="Stop acquisition immediately"
+        secondary
+        onPress={() =>
+          void controller.runPrivacy(() =>
+            controller.stopActive("USER_CANCELED"),
+          )
+        }
+      />
+    </Card>
+  );
+}
+function ApprovedEyeCapture({ controller, model }: ScreenProps) {
+  const [record, setRecord] = useState(false),
+    check = controller.check!,
+    studyId = check.snapshot.study_id!;
+  const status = model.state?.rawRecordingStatuses[studyId],
+    fenced = model.state?.rawRecordingFences[studyId]?.includes("eye_video");
+  const available =
+    !BUILD.hostedPreview && getEyeCaptureAvailability().available;
+  const allowed =
+    !!status?.receipt_id &&
+    status.choices.eye_video.record &&
+    status.availability.eye_video.record_allowed &&
+    !fenced &&
+    !!status.policy &&
+    Date.parse(status.policy.expires_at) > Date.now();
+  return (
+    <>
+      <Notice>
+        Native camera ROI extraction records software frame evidence. Physical
+        illumination timing is unmeasured; it cannot establish an impairment
+        probability.
+      </Notice>
+      <SwitchRow
+        title="Record optional eye ROI frames for this capture"
+        value={record && allowed}
+        disabled={!available || !allowed}
+        onChange={setRecord}
+        detail="Off by default for each new check or receipt. Encrypted device storage only; upload requires a later explicit selection."
+      />
+      {!allowed && (
+        <Paragraph>
+          Review separate recording choices in the study to permit raw
+          recording. Feature-only camera collection remains available when
+          otherwise authorized.
+        </Paragraph>
+      )}
+      {available ? (
+        <Button
+          title="Start authorized eye capture"
+          busy={model.busy}
+          onPress={action(controller, () => {
+            const requested = record && allowed;
+            setRecord(false);
+            return controller.startEyeCapture(requested);
+          })}
+        />
+      ) : (
+        <Notice>
+          The approved native optical module is unavailable in this runtime.
+          Browsers and hosted fictional previews do not acquire eye
+          measurements.
+        </Notice>
+      )}
+    </>
+  );
+}
+export function ActiveEyeScreen({ controller, model }: ScreenProps) {
+  const active = model.activeEye!;
+  return (
+    <View style={{ flex: 1, minHeight: 480, backgroundColor: "#101820" }}>
+      <View style={{ padding: 20, gap: 10 }}>
+        <Text style={{ color: "#fff", fontSize: 18 }}>
+          Approved optical evidence collection
+        </Text>
+        <Text style={{ color: "#C2D8DB" }}>
+          {model.eyeProgress ?? "Preparing camera"} · physical illumination
+          timing remains unmeasured
+        </Text>
+        <Button
+          title="End eye capture immediately"
+          onPress={() =>
+            void controller.runPrivacy(() =>
+              controller.stopActive("USER_CANCELED"),
+            )
+          }
+        />
+        {model.error && (
+          <Text accessibilityRole="alert" style={{ color: "#FFC3C3" }}>
+            {model.error}. End eye capture again to retry preserving the same
+            terminal evidence.
+          </Text>
+        )}
+      </View>
+      <EyeCaptureView
+        ref={(view) => {
+          controller.eyeView = view;
+        }}
+        style={{ flex: 1, minHeight: 350 }}
+        optionsJson={canonicalJson(active.options)}
+        running={!active.stopping}
+        onProgress={(event) => {
+          const x = event.nativeEvent;
+          controller.updateEyeProgress(
+            x.run_id,
+            x.workspace_epoch,
+            x.frames,
+            x.maximum_frames,
+          );
+        }}
+        onComplete={(event) =>
+          void controller
+            .completeEyeCapture(event.nativeEvent, active)
+            .catch((error) => controller.report(error))
+        }
+      />
+    </View>
   );
 }
 function CurrentMeasurement({
@@ -106,7 +441,8 @@ function PassiveEyePreview() {
     [open, setOpen] = useState(false),
     [error, setError] = useState<string | null>(null),
     [front, setFront] = useState(true),
-    [osPermission, setOsPermission] = useState<BluetoothPermissionStatus>("unknown");
+    [osPermission, setOsPermission] =
+      useState<BluetoothPermissionStatus>("unknown");
   useEffect(() => {
     let live = true;
     const refresh = async () => {
@@ -116,12 +452,20 @@ function PassiveEyePreview() {
       setOsPermission(status);
       if (status === "restricted" || !response.granted) setOpen(false);
     };
-    void refresh().catch(() => { if (live) setOsPermission("unknown"); });
+    void refresh().catch(() => {
+      if (live) setOsPermission("unknown");
+    });
     const sub = AppState.addEventListener("change", (s) => {
       if (s !== "active") setOpen(false);
-      else void refresh().catch(() => { if (live) setOsPermission("unknown"); });
+      else
+        void refresh().catch(() => {
+          if (live) setOsPermission("unknown");
+        });
     });
-    return () => { live = false; sub.remove(); };
+    return () => {
+      live = false;
+      sub.remove();
+    };
   }, [refreshPermission]);
   return (
     <Card>
@@ -133,7 +477,11 @@ function PassiveEyePreview() {
       </Paragraph>
       {error && <Notice tone="danger">{error}</Notice>}
       {osPermission === "restricted" && (
-        <Notice tone="warning">Camera access is restricted by device policy. The passive preview is unavailable. You can continue without it; ordinary app permission settings may not change this restriction.</Notice>
+        <Notice tone="warning">
+          Camera access is restricted by device policy. The passive preview is
+          unavailable. You can continue without it; ordinary app permission
+          settings may not change this restriction.
+        </Notice>
       )}
       {open && permission?.granted ? (
         <>
@@ -185,8 +533,8 @@ function PassiveEyePreview() {
               osPermission === "restricted"
                 ? "Camera access restricted"
                 : permission?.granted
-                ? "Open passive preview"
-                : "Allow camera for preview"
+                  ? "Open passive preview"
+                  : "Allow camera for preview"
             }
             secondary
             disabled={osPermission === "restricted"}
@@ -195,12 +543,18 @@ function PassiveEyePreview() {
                 setError(null);
                 const status = await getCameraPermissionStatus();
                 setOsPermission(status);
-                if (status === "restricted") { setOpen(false); return; }
+                if (status === "restricted") {
+                  setOpen(false);
+                  return;
+                }
                 const current = await refreshPermission();
                 const p = current.granted ? current : await request();
                 const resolved = await getCameraPermissionStatus();
                 setOsPermission(resolved);
-                if (resolved === "restricted") { setOpen(false); return; }
+                if (resolved === "restricted") {
+                  setOpen(false);
+                  return;
+                }
                 if (p.granted) setOpen(true);
                 else
                   setError(
@@ -209,15 +563,18 @@ function PassiveEyePreview() {
               })().catch((e) => setError(String(e)));
             }}
           />
-          {permission && !permission.granted && !permission.canAskAgain && osPermission === "denied" && (
-            <Button
-              title="Open device settings"
-              secondary
-              onPress={() => {
-                void Linking.openSettings();
-              }}
-            />
-          )}
+          {permission &&
+            !permission.granted &&
+            !permission.canAskAgain &&
+            osPermission === "denied" && (
+              <Button
+                title="Open device settings"
+                secondary
+                onPress={() => {
+                  void Linking.openSettings();
+                }}
+              />
+            )}
         </>
       )}
     </Card>
@@ -237,9 +594,23 @@ export function ActiveReactionScreen({ controller, model }: ScreenProps) {
         </Text>
         {model.error && (
           <>
-            <Text accessibilityRole="alert" style={{ color: "#FFC3C3", fontSize: 14 }}>{model.error}</Text>
-            <Text style={{ color: "#FFFFFF", fontSize: 14 }}>End task again to retry saving its terminal evidence. The same ended run stays on screen until its evidence is preserved.</Text>
-            <Button title="Retry saving ended task" secondary onPress={action(controller, () => controller.stopActive("USER_CANCELED"))} />
+            <Text
+              accessibilityRole="alert"
+              style={{ color: "#FFC3C3", fontSize: 14 }}
+            >
+              {model.error}
+            </Text>
+            <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
+              End task again to retry saving its terminal evidence. The same
+              ended run stays on screen until its evidence is preserved.
+            </Text>
+            <Button
+              title="Retry saving ended task"
+              secondary
+              onPress={action(controller, () =>
+                controller.stopActive("USER_CANCELED"),
+              )}
+            />
           </>
         )}
       </View>
@@ -264,7 +635,9 @@ export function ActiveReactionScreen({ controller, model }: ScreenProps) {
           );
         }}
         onComplete={(event) => {
-          void controller.completeNativeTask(event.nativeEvent).catch(error => controller.report(error));
+          void controller
+            .completeNativeTask(event.nativeEvent)
+            .catch((error) => controller.report(error));
         }}
       />
     </View>
@@ -297,24 +670,39 @@ export function CheckScreen({ controller, model }: ScreenProps) {
         </Card>
       </Page>
     );
+  if (model.activeEye)
+    return <ActiveEyeScreen controller={controller} model={model} />;
   if (model.activeTask)
     return <ActiveReactionScreen controller={controller} model={model} />;
   const stage = check.stage,
     index = stages.findIndex((x) => x.id === stage),
     synthetic = check.kind !== "measurement",
-    taskAvailability = getReactionTaskAvailability(),
+    taskAvailability = BUILD.hostedPreview
+      ? {
+          available: false,
+          reason: "the hosted preview contains fictional examples only",
+        }
+      : getReactionTaskAvailability(),
     nativeGeometry =
       dimensions.width >= 240 &&
       dimensions.height >= 560 &&
       dimensions.height > dimensions.width;
   const continueTo = () =>
     controller.setStage(stages[Math.min(index + 1, stages.length - 1)]!.id);
-  const validCardiac = check.attempts.filter(a => a.component === "cardiac" && a.status === "valid");
-  const cardiacChoicePending = validCardiac.length > 1 && !check.selected_cardiac_attempt_id;
+  const validCardiac = check.attempts.filter(
+    (a) => a.component === "cardiac" && a.status === "valid",
+  );
+  const cardiacChoicePending =
+    validCardiac.length > 1 && !check.selected_cardiac_attempt_id;
   const requestedCardiacModality = stage === "ecg" ? "ecg" : "ppg";
-  const cardiacAlreadyCaptured = validCardiac.some(a => cardiacAttemptModality(a) === requestedCardiacModality);
+  const cardiacAlreadyCaptured = validCardiac.some(
+    (a) => cardiacAttemptModality(a) === requestedCardiacModality,
+  );
   const renderedEpoch = controller.epoch;
-  const signalScopeCurrent = () => controller.epoch === renderedEpoch && controller.check?.id === check.id && controller.check.stage === stage;
+  const signalScopeCurrent = () =>
+    controller.epoch === renderedEpoch &&
+    controller.check?.id === check.id &&
+    controller.check.stage === stage;
   const skip = () =>
     controller.ask({
       title: "Continue without this measurement?",
@@ -337,7 +725,7 @@ export function CheckScreen({ controller, model }: ScreenProps) {
             action: () =>
               controller.ask({
                 title: "Discard unsaved check?",
-                text: "This removes the local draft and its attempt evidence. It has never been uploaded.",
+                text: "This removes the local draft and its attempt evidence. Completed evidence has not been uploaded. An approved study check may already have server-side context and started acquisition metadata.",
                 confirm: "Discard draft",
                 danger: true,
                 action: () => controller.discardDraft(),
@@ -400,16 +788,27 @@ export function CheckScreen({ controller, model }: ScreenProps) {
           <Card>
             <Title small>Choose what is available</Title>
             <Paragraph>
-              Qualified hardware is not configured for this release. You may
-              inspect nearby engineering devices or use the fictional local
-              transport. Native reaction practice runs on the phone.
+              Device approval depends on the selected study and protocol.
+              Connect and verify a signed-protocol reader before starting an
+              approved reader check. Guest examples use the separate fictional
+              local transport.{" "}
+              {BUILD.hostedPreview
+                ? "The hosted guest preview does not acquire reaction taps."
+                : "Native reaction practice runs on the phone."}
             </Paragraph>
             <Button
               title="Devices and connection"
               secondary
               onPress={action(controller, () => controller.navigate("device"))}
             />
-            <Fact label="Qualified reader" value="Unavailable" />
+            <Fact
+              label="Selected protocol"
+              value={
+                check.snapshot.mode === "controlled_research"
+                  ? (check.snapshot.protocol_id ?? "Unavailable")
+                  : "Local practice only"
+              }
+            />
             <Fact
               label="Phone reaction module"
               value={
@@ -436,8 +835,9 @@ export function CheckScreen({ controller, model }: ScreenProps) {
               an unqualified reader signal into a concentration.
             </Paragraph>
             <Notice tone="warning">
-              Qualified assay unavailable. THC or metabolite detection alone
-              cannot confirm current intoxication.
+              A measurement requires the current approved assay and collection
+              method. THC or metabolite detection alone cannot confirm current
+              intoxication.
             </Notice>
             {synthetic && (
               <Button
@@ -464,6 +864,11 @@ export function CheckScreen({ controller, model }: ScreenProps) {
               )}
             />
           )}
+          <ApprovedCaptureAction
+            controller={controller}
+            model={model}
+            channel="saliva"
+          />
           {check.snapshot.saliva.length > 0 && <SalivaCard check={check} />}
           <Button
             title={
@@ -483,14 +888,10 @@ export function CheckScreen({ controller, model }: ScreenProps) {
         <>
           <Card>
             <Title small>Eye measurement</Title>
-            <Paragraph>
-              Physical pupil diameter needs a known scale. A light-response
-              measurement also needs an approved optical configuration and
-              timing evidence. This release has neither.
-            </Paragraph>
-            <Notice tone="warning">
-              Unqualified optics · measurement unavailable
-            </Notice>
+            <EyeAcquisitionExplanation
+              check={check}
+              capabilities={model.state?.capabilities ?? null}
+            />
             {synthetic && (
               <Button
                 title={
@@ -503,7 +904,19 @@ export function CheckScreen({ controller, model }: ScreenProps) {
               />
             )}
           </Card>
-          <PassiveEyePreview />
+          <ApprovedCaptureAction
+            controller={controller}
+            model={model}
+            channel="eyes"
+          />
+          {BUILD.hostedPreview ? (
+            <Notice>
+              Camera access and raw recording are unavailable in this fictional
+              preview. The eye example uses synthetic values.
+            </Notice>
+          ) : (
+            <PassiveEyePreview />
+          )}
           <CurrentMeasurement
             title="Eye evidence"
             component={check.snapshot.eyes}
@@ -532,12 +945,13 @@ export function CheckScreen({ controller, model }: ScreenProps) {
             <Paragraph>
               {stage === "ecg"
                 ? "ECG needs a qualified electrode-based acquisition device, contact quality and sampling evidence. Phone PPG and heart rate do not supply an ECG."
-                : "PPG estimates pulse from an optical signal. Motion, contact and acquisition quality belong with every measurement. No qualified live PPG configuration is available."}
+                : "PPG estimates pulse from an optical signal. Motion, contact and acquisition quality belong with every measurement. Live PPG requires a supported signed reader and current approved configuration."}
             </Paragraph>
             <Notice tone="warning">
-              {stage === "ecg" ? "Qualified ECG" : "Qualified PPG"} unavailable.
-              This check can retain one valid PPG and one valid ECG before saving.
-              If both are collected, Review requires you to choose one cardiac
+              {stage === "ecg" ? "ECG" : "PPG"} availability depends on the
+              current approved configuration and device calibration. This check
+              can retain one valid PPG and one valid ECG before saving. If both
+              are collected, Review requires you to choose one cardiac
               observation for the final snapshot. Both original attempts stay in
               the evidence ledger. A valid attempt of the same modality cannot
               be retaken within this check.
@@ -571,41 +985,47 @@ export function CheckScreen({ controller, model }: ScreenProps) {
               workspaceEpoch={controller.epoch}
               channel={stage === "ecg" ? "ecg" : "ppg"}
               disabled={cardiacAlreadyCaptured}
-              onStart={async scenario => { if (signalScopeCurrent()) await controller.simulateDevice(requestedCardiacModality, scenario); }}
-              onStop={async () => { if (signalScopeCurrent()) await controller.stopActive("USER_CANCELED"); }}
-              onDevices={async () => { if (signalScopeCurrent()) await controller.setStage("device"); }}
-              onError={error => { if (signalScopeCurrent()) controller.report(error); }}
+              onStart={async (scenario) => {
+                if (signalScopeCurrent())
+                  await controller.simulateDevice(
+                    requestedCardiacModality,
+                    scenario,
+                  );
+              }}
+              onStop={async () => {
+                if (signalScopeCurrent())
+                  await controller.stopActive("USER_CANCELED");
+              }}
+              onDevices={async () => {
+                if (signalScopeCurrent()) await controller.setStage("device");
+              }}
+              onError={(error) => {
+                if (signalScopeCurrent()) controller.report(error);
+              }}
             />
           )}
+          <ApprovedCaptureAction
+            controller={controller}
+            model={model}
+            channel={stage === "ecg" ? "ecg" : "cardiac"}
+          />
           <CurrentMeasurement
-            title={cardiacChoicePending ? "Cardiac preview (choice pending)" : "Selected cardiac evidence"}
+            title={
+              cardiacChoicePending
+                ? "Cardiac preview (choice pending)"
+                : "Selected cardiac evidence"
+            }
             component={check.snapshot.cardiac}
           />
-          {cardiacChoicePending && <Notice tone="warning">Both cardiac observations are retained. Choose PPG or ECG on Review before saving; the current preview is not a final selection.</Notice>}
+          {cardiacChoicePending && (
+            <Notice tone="warning">
+              Both cardiac observations are retained. Choose PPG or ECG on
+              Review before saving; the current preview is not a final
+              selection.
+            </Notice>
+          )}
           {check.snapshot.cardiac.status === "valid" && (
-            <Card>
-              <Row>
-                <Metric
-                  label="Saved heart rate"
-                  value={numberText(check.snapshot.cardiac.heart_rate_bpm)}
-                  unit="bpm"
-                />
-                <Metric
-                  label="ECG RMSSD"
-                  value={numberText(check.snapshot.cardiac.ecg_rmssd_ms)}
-                  unit="ms"
-                  detail={
-                    check.snapshot.cardiac.modality === "ppg"
-                      ? "Not measured by PPG"
-                      : "Fictional ECG example"
-                  }
-                />
-              </Row>
-              <Fact
-                label="Modality"
-                value={friendly(check.snapshot.cardiac.modality)}
-              />
-            </Card>
+            <CardiacSummary component={check.snapshot.cardiac} />
           )}
           <Button
             title={`Continue to ${stage === "ecg" ? "reaction task" : "ECG"}`}
@@ -614,104 +1034,122 @@ export function CheckScreen({ controller, model }: ScreenProps) {
         </>
       )}
       {stage === "task" && (
-        <>
-          <Card>
-            <Row>
-              <Title small>One reaction task</Title>
-              <Badge tone="warning">Uncalibrated native practice</Badge>
-            </Row>
-            <Paragraph>
-              Tap the side the arrow points to. When WAIT appears, do not tap.
-            </Paragraph>
-            <View style={layout.grid}>
-              <Card style={{ flexGrow: 1 }}>
-                <Title small>← Left</Title>
-                <Paragraph>Tap Left</Paragraph>
-              </Card>
-              <Card style={{ flexGrow: 1 }}>
-                <Title small>Right →</Title>
-                <Paragraph>Tap Right</Paragraph>
-              </Card>
-              <Card style={{ flexGrow: 1 }}>
-                <Title small>WAIT</Title>
-                <Paragraph>Do not tap</Paragraph>
-              </Card>
-            </View>
-            <Paragraph>
-              Six practice trials and 60 scored trials run continuously,
-              approximately two minutes. Hold the device still in portrait. Use
-              End task to stop immediately; the run becomes invalid and cannot
-              resume.
-            </Paragraph>
-            <Notice>
-              The native clock and input events are recorded. Physical
-              display/touch timing and luminance are unmeasured. This task does
-              not determine intoxication or driving safety.
-            </Notice>
-            {check.kind === "engineering_fixture" && (
-              <Notice tone="warning">
-                Authenticated fictional fixtures remain entirely fictional. To
-                record real reaction taps, save this fixture and start a
-                separate measurement check.
-              </Notice>
-            )}
-            {screenReader && (
-              <Notice tone="warning">
-                Screen-reader input is not qualified for this fixed visual task.
-                You may continue without it. Adapted input must use a separately
-                identified practice configuration.
-              </Notice>
-            )}
-            {(!taskAvailability.available || !nativeGeometry) && (
-              <Notice tone="warning">
-                {!taskAvailability.available
-                  ? `Native task unavailable: ${taskAvailability.reason ?? "install a native build"}. Web and Expo Go do not produce native task evidence.`
-                  : "Hold a supported phone in portrait. The native task requires at least 240 × 400 logical points after the screen header."}
-              </Notice>
-            )}
-            {check.snapshot.task.status !== "valid" && (
-              <>
-                <SwitchRow
-                  title="I understand the task instructions."
-                  detail="No network or unrelated storage work runs during the native task."
-                  value={instructions}
-                  onChange={setInstructions}
-                />
-                <Button
-                  title={
-                    check.snapshot.task.status === "invalid"
-                      ? "Start a new task attempt"
-                      : "Start task"
-                  }
-                  disabled={
-                    !instructions ||
-                    !taskAvailability.available ||
-                    !nativeGeometry ||
-                    screenReader ||
-                    check.kind === "engineering_fixture"
-                  }
-                  onPress={action(controller, () =>
-                    controller.startNativeTask(),
-                  )}
-                  testID="start-native-task"
-                />
-              </>
-            )}
-          </Card>
-          <TaskCard check={check} />
-          <Button
-            title={
-              check.snapshot.task.status === "valid"
-                ? "Review check"
-                : "Continue without a valid task"
-            }
-            onPress={action(
-              controller,
-              check.snapshot.task.status === "valid" ? continueTo : skip,
-            )}
-          />
-        </>
+        <ApprovedCaptureAction
+          controller={controller}
+          model={model}
+          channel="task"
+        />
       )}
+      {stage === "task" &&
+        (BUILD.hostedPreview ? (
+          <Card>
+            <Title small>Reaction capture unavailable</Title>
+            <Notice>
+              This browser preview contains fictional UI examples only. No
+              native task runs, reaction taps, camera frames or sensor samples
+              are recorded. Continue to review with this channel explicitly not
+              collected.
+            </Notice>
+          </Card>
+        ) : (
+          <>
+            <Card>
+              <Row>
+                <Title small>One reaction task</Title>
+                <Badge tone="warning">Uncalibrated native practice</Badge>
+              </Row>
+              <Paragraph>
+                Tap the side the arrow points to. When WAIT appears, do not tap.
+              </Paragraph>
+              <View style={layout.grid}>
+                <Card style={{ flexGrow: 1 }}>
+                  <Title small>← Left</Title>
+                  <Paragraph>Tap Left</Paragraph>
+                </Card>
+                <Card style={{ flexGrow: 1 }}>
+                  <Title small>Right →</Title>
+                  <Paragraph>Tap Right</Paragraph>
+                </Card>
+                <Card style={{ flexGrow: 1 }}>
+                  <Title small>WAIT</Title>
+                  <Paragraph>Do not tap</Paragraph>
+                </Card>
+              </View>
+              <Paragraph>
+                Six practice trials and 60 scored trials run continuously,
+                approximately two minutes. Hold the device still in portrait.
+                Use End task to stop immediately; the run becomes invalid and
+                cannot resume.
+              </Paragraph>
+              <Notice>
+                The native clock and input events are recorded. Physical
+                display/touch timing and luminance are unmeasured. This task
+                does not determine intoxication or driving safety.
+              </Notice>
+              {check.kind === "engineering_fixture" && (
+                <Notice tone="warning">
+                  Authenticated fictional fixtures remain entirely fictional. To
+                  record real reaction taps, save this fixture and start a
+                  separate measurement check.
+                </Notice>
+              )}
+              {screenReader && (
+                <Notice tone="warning">
+                  Screen-reader input is not qualified for this fixed visual
+                  task. You may continue without it. Adapted input must use a
+                  separately identified practice configuration.
+                </Notice>
+              )}
+              {(!taskAvailability.available || !nativeGeometry) && (
+                <Notice tone="warning">
+                  {!taskAvailability.available
+                    ? `Native task unavailable: ${taskAvailability.reason ?? "install a native build"}. Web and Expo Go do not produce native task evidence.`
+                    : "Hold a supported phone in portrait. The native task requires at least 240 × 400 logical points after the screen header."}
+                </Notice>
+              )}
+              {check.snapshot.task.status !== "valid" && (
+                <>
+                  <SwitchRow
+                    title="I understand the task instructions."
+                    detail="No network or unrelated storage work runs during the native task."
+                    value={instructions}
+                    onChange={setInstructions}
+                  />
+                  <Button
+                    title={
+                      check.snapshot.task.status === "invalid"
+                        ? "Start a new task attempt"
+                        : "Start task"
+                    }
+                    disabled={
+                      !instructions ||
+                      !taskAvailability.available ||
+                      !nativeGeometry ||
+                      screenReader ||
+                      check.kind === "engineering_fixture"
+                    }
+                    onPress={action(controller, () =>
+                      controller.startNativeTask(),
+                    )}
+                    testID="start-native-task"
+                  />
+                </>
+              )}
+            </Card>
+            <TaskCard check={check} />
+            <Button
+              title={
+                check.snapshot.task.status === "valid"
+                  ? "Review check"
+                  : "Continue without a valid task"
+              }
+              onPress={action(
+                controller,
+                check.snapshot.task.status === "valid" ? continueTo : skip,
+              )}
+            />
+          </>
+        ))}
       {stage === "review" && (
         <>
           <Card>
@@ -728,7 +1166,11 @@ export function CheckScreen({ controller, model }: ScreenProps) {
             <Fact label="Eyes" value={friendly(check.snapshot.eyes.status)} />
             <Fact
               label="Cardiac"
-              value={cardiacChoicePending ? "Two valid observations · selection required" : `${friendly(check.snapshot.cardiac.status)} · ${friendly(check.snapshot.cardiac.modality)}`}
+              value={
+                cardiacChoicePending
+                  ? "Two valid observations · selection required"
+                  : `${friendly(check.snapshot.cardiac.status)} · ${friendly(check.snapshot.cardiac.modality)}`
+              }
             />
             <Fact
               label="Reaction task"
@@ -771,68 +1213,189 @@ export function CheckScreen({ controller, model }: ScreenProps) {
   );
 }
 function CardiacAttemptFacts({ attempt }: { attempt: CaptureAttempt }) {
-  const projection = (attempt.component_metadata.projection ?? {}) as JsonObject;
-  const transport = (attempt.component_metadata.transport_evidence ?? {}) as JsonObject;
+  const projection = (attempt.component_metadata.projection ??
+    {}) as JsonObject;
+  const transport = (attempt.component_metadata.transport_evidence ??
+    {}) as JsonObject;
   const values = (transport.values ?? {}) as JsonObject;
   const start = attempt.started_at ? Date.parse(attempt.started_at) : NaN;
   const end = attempt.ended_at ? Date.parse(attempt.ended_at) : NaN;
-  return <>
-    <Fact label="Attempt" value={attempt.attempt_id} />
-    <Fact label="Source" value={friendly(attempt.source)} />
-    <Fact label="Status" value={friendly(attempt.status)} />
-    <Fact label="Heart rate" value={typeof projection.heart_rate_bpm === "number" ? `${projection.heart_rate_bpm} bpm` : "Not available"} />
-    <Fact label="Started (UTC)" value={attempt.started_at ?? "Not collected"} />
-    <Fact label="Ended (UTC)" value={attempt.ended_at ?? "Not collected"} />
-    <Fact label="Observed duration" value={Number.isFinite(start) && Number.isFinite(end) && end >= start ? `${(end - start) / 1000} s` : "Not available"} />
-    <Fact label="Sample rate" value={typeof projection.sample_rate_hz === "number" ? `${projection.sample_rate_hz} Hz` : "Not reported"} />
-    <Fact label="Lead count" value={cardiacAttemptModality(attempt) === "ecg" ? typeof values.lead_count === "number" ? String(values.lead_count) : "Not reported" : "Not applicable to PPG"} />
-    <Fact label="Waveform scale" value={values.units === "arbitrary_counts" ? "Arbitrary counts (synthetic; no mV calibration)" : cardiacAttemptModality(attempt) === "ecg" ? "No calibrated voltage scale reported" : "PPG optical signal; no ECG waveform"} />
-    <Fact label="ECG RMSSD" value={typeof projection.ecg_rmssd_ms === "number" ? `${projection.ecg_rmssd_ms} ms${attempt.source === "simulated" ? " (fictional)" : ""}` : "Not available"} />
-    <Fact label="Configuration" value={attempt.configuration_id ?? "Not reported"} />
-    <Fact label="Quality flags" value={attempt.quality_flags.join(", ") || "None reported"} />
-  </>;
+  return (
+    <>
+      <Fact label="Attempt" value={attempt.attempt_id} />
+      <Fact label="Source" value={friendly(attempt.source)} />
+      <Fact label="Status" value={friendly(attempt.status)} />
+      <Fact
+        label="Heart rate"
+        value={
+          typeof projection.heart_rate_bpm === "number"
+            ? `${projection.heart_rate_bpm} bpm`
+            : "Not available"
+        }
+      />
+      <Fact
+        label="Started (UTC)"
+        value={attempt.started_at ?? "Not collected"}
+      />
+      <Fact label="Ended (UTC)" value={attempt.ended_at ?? "Not collected"} />
+      <Fact
+        label="Observed duration"
+        value={
+          Number.isFinite(start) && Number.isFinite(end) && end >= start
+            ? `${(end - start) / 1000} s`
+            : "Not available"
+        }
+      />
+      <Fact
+        label="Sample rate"
+        value={
+          typeof projection.sample_rate_hz === "number"
+            ? `${projection.sample_rate_hz} Hz`
+            : "Not reported"
+        }
+      />
+      <Fact
+        label="Lead count"
+        value={
+          cardiacAttemptModality(attempt) === "ecg"
+            ? typeof values.lead_count === "number"
+              ? String(values.lead_count)
+              : "Not reported"
+            : "Not applicable to PPG"
+        }
+      />
+      <Fact
+        label="Waveform scale"
+        value={
+          values.units === "arbitrary_counts"
+            ? "Arbitrary counts (synthetic; no mV calibration)"
+            : cardiacAttemptModality(attempt) === "ecg"
+              ? "No calibrated voltage scale reported"
+              : "PPG optical signal; no ECG waveform"
+        }
+      />
+      <Fact
+        label="ECG RMSSD"
+        value={
+          typeof projection.ecg_rmssd_ms === "number"
+            ? `${projection.ecg_rmssd_ms} ms${attempt.source === "simulated" ? " (fictional)" : ""}`
+            : "Not available"
+        }
+      />
+      <Fact
+        label="Configuration"
+        value={attempt.configuration_id ?? "Not reported"}
+      />
+      <Fact
+        label="Quality flags"
+        value={attempt.quality_flags.join(", ") || "None reported"}
+      />
+    </>
+  );
 }
 function CardiacSelectionCard({ controller, model }: ScreenProps) {
   const check = controller.check;
   if (!check) return null;
-  const attempts = check.attempts.filter(a => a.component === "cardiac" && a.status === "valid");
+  const attempts = check.attempts.filter(
+    (a) => a.component === "cardiac" && a.status === "valid",
+  );
   if (!attempts.length) return null;
-  const selected = check.frozen ? check.manifest?.selected.cardiac : check.selected_cardiac_attempt_id ?? (attempts.length === 1 ? attempts[0]!.attempt_id : null);
-  return <Card>
-    <Title small>{check.frozen ? "Retained cardiac observations" : "Choose the cardiac observation"}</Title>
-    <Paragraph>The saved v0.1 snapshot contains one cardiac observation. PPG and ECG remain separate attempts with their original source, timing and quality. All retained attempts are included in evidence and scoped export.</Paragraph>
-    {attempts.length > 1 && !selected && <Notice tone="warning">Selection required: choose PPG or ECG to enable Save on this device.</Notice>}
-    {attempts.map(attempt => <Card key={attempt.attempt_id}>
-      <Row>
-        <Title small>{cardiacAttemptModality(attempt)?.toUpperCase() ?? "Unknown modality"}</Title>
-        <Badge tone={selected === attempt.attempt_id ? "accent" : "neutral"}>{selected === attempt.attempt_id ? "Selected for snapshot" : "Retained alternative"}</Badge>
-      </Row>
-      <CardiacAttemptFacts attempt={attempt} />
-      {!check.frozen && <Button
-        title={selected === attempt.attempt_id ? `${cardiacAttemptModality(attempt)?.toUpperCase()} selected` : `Select ${cardiacAttemptModality(attempt)?.toUpperCase()} for this check`}
-        secondary={selected !== attempt.attempt_id}
-        disabled={selected === attempt.attempt_id || model.busy}
-        onPress={action(controller, () => controller.selectCardiac(attempt.attempt_id))}
-        testID={`select-cardiac-${cardiacAttemptModality(attempt)}`}
-      />}
-    </Card>)}
-    {check.frozen && <Paragraph muted>The selected modality is frozen. A later acquisition requires a replacement check with a new start time.</Paragraph>}
-  </Card>;
+  const selected = check.frozen
+    ? check.manifest?.selected.cardiac
+    : (check.selected_cardiac_attempt_id ??
+      (attempts.length === 1 ? attempts[0]!.attempt_id : null));
+  return (
+    <Card>
+      <Title small>
+        {check.frozen
+          ? "Retained cardiac observations"
+          : "Choose the cardiac observation"}
+      </Title>
+      <Paragraph>
+        The saved v0.1 snapshot contains one cardiac observation. PPG and ECG
+        remain separate attempts with their original source, timing and quality.
+        All retained attempts are included in evidence and scoped export.
+      </Paragraph>
+      {attempts.length > 1 && !selected && (
+        <Notice tone="warning">
+          Selection required: choose PPG or ECG to enable Save on this device.
+        </Notice>
+      )}
+      {attempts.map((attempt) => (
+        <Card key={attempt.attempt_id}>
+          <Row>
+            <Title small>
+              {cardiacAttemptModality(attempt)?.toUpperCase() ??
+                "Unknown modality"}
+            </Title>
+            <Badge
+              tone={selected === attempt.attempt_id ? "accent" : "neutral"}
+            >
+              {selected === attempt.attempt_id
+                ? "Selected for snapshot"
+                : "Retained alternative"}
+            </Badge>
+          </Row>
+          <CardiacAttemptFacts attempt={attempt} />
+          {!check.frozen && (
+            <Button
+              title={
+                selected === attempt.attempt_id
+                  ? `${cardiacAttemptModality(attempt)?.toUpperCase()} selected`
+                  : `Select ${cardiacAttemptModality(attempt)?.toUpperCase()} for this check`
+              }
+              secondary={selected !== attempt.attempt_id}
+              disabled={selected === attempt.attempt_id || model.busy}
+              onPress={action(controller, () =>
+                controller.selectCardiac(attempt.attempt_id),
+              )}
+              testID={`select-cardiac-${cardiacAttemptModality(attempt)}`}
+            />
+          )}
+        </Card>
+      ))}
+      {check.frozen && (
+        <Paragraph muted>
+          The selected modality is frozen. A later acquisition requires a
+          replacement check with a new start time.
+        </Paragraph>
+      )}
+    </Card>
+  );
 }
 function SalivaMeasurementDetail({ measurement }: { measurement: JsonObject }) {
   const [expanded, setExpanded] = useState(false);
   const display = formatSalivaMeasurement(measurement);
-  return <View style={{ gap: 7, paddingVertical: 12 }}>
-    <Row style={{ justifyContent: "space-between" }}>
-      <Label>{display.name}</Label>
-      <Badge tone={measurement.source === "simulated" ? "warning" : "neutral"}>{friendly(measurement.source)}</Badge>
-    </Row>
-    <Title small>{display.title}</Title>
-    <Paragraph muted>{display.explanation}</Paragraph>
-    {display.facts.slice(0, 9).map(fact => <Fact key={fact.label} {...fact} />)}
-    <Button title={expanded ? "Hide original report and provenance" : "Show original report and provenance"} secondary onPress={() => setExpanded(value => !value)} />
-    {expanded && display.facts.slice(9).map(fact => <Fact key={fact.label} {...fact} />)}
-  </View>;
+  return (
+    <View style={{ gap: 7, paddingVertical: 12 }}>
+      <Row style={{ justifyContent: "space-between" }}>
+        <Label>{display.name}</Label>
+        <Badge
+          tone={measurement.source === "simulated" ? "warning" : "neutral"}
+        >
+          {friendly(measurement.source)}
+        </Badge>
+      </Row>
+      <Title small>{display.title}</Title>
+      <Paragraph muted>{display.explanation}</Paragraph>
+      {display.facts.slice(0, 9).map((fact) => (
+        <Fact key={fact.label} {...fact} />
+      ))}
+      <Button
+        title={
+          expanded
+            ? "Hide original report and provenance"
+            : "Show original report and provenance"
+        }
+        secondary
+        onPress={() => setExpanded((value) => !value)}
+      />
+      {expanded &&
+        display.facts
+          .slice(9)
+          .map((fact) => <Fact key={fact.label} {...fact} />)}
+    </View>
+  );
 }
 export function SalivaCard({ check }: { check: CheckRecord }) {
   return (
@@ -847,14 +1410,41 @@ export function SalivaCard({ check }: { check: CheckRecord }) {
             : "Not collected"
         }
       />
-      <Fact label="Collection method" value={friendly(check.snapshot.sample.collection_method_id)} />
-      <Fact label="Sample status" value={friendly(check.snapshot.sample.status)} />
-      <Fact label="Collected volume" value={typeof check.snapshot.sample.volume_ml === "number" ? `${check.snapshot.sample.volume_ml} mL` : "Not reported"} />
-      <Fact label="Reported dilution factor" value={typeof check.snapshot.sample.dilution_factor === "number" ? String(check.snapshot.sample.dilution_factor) : "Not reported"} />
-      <Paragraph muted>Limits and concentrations use the reporting method's stated matrix and analyte basis. This app does not calculate or repeat a dilution correction. Missing concentrations remain null.</Paragraph>
+      <Fact
+        label="Collection method"
+        value={friendly(check.snapshot.sample.collection_method_id)}
+      />
+      <Fact
+        label="Sample status"
+        value={friendly(check.snapshot.sample.status)}
+      />
+      <Fact
+        label="Collected volume"
+        value={
+          typeof check.snapshot.sample.volume_ml === "number"
+            ? `${check.snapshot.sample.volume_ml} mL`
+            : "Not reported"
+        }
+      />
+      <Fact
+        label="Reported dilution factor"
+        value={
+          typeof check.snapshot.sample.dilution_factor === "number"
+            ? String(check.snapshot.sample.dilution_factor)
+            : "Not reported"
+        }
+      />
+      <Paragraph muted>
+        Limits and concentrations use the reporting method's stated matrix and
+        analyte basis. This app does not calculate or repeat a dilution
+        correction. Missing concentrations remain null.
+      </Paragraph>
       {check.snapshot.saliva.length ? (
         check.snapshot.saliva.map((m) => (
-          <SalivaMeasurementDetail key={String(m.measurement_id)} measurement={m} />
+          <SalivaMeasurementDetail
+            key={String(m.measurement_id)}
+            measurement={m}
+          />
         ))
       ) : (
         <Paragraph muted>No saliva measurements were collected.</Paragraph>
@@ -932,6 +1522,15 @@ export function TaskCard({ check }: { check: CheckRecord }) {
 }
 export function ResultScreen({ controller, model }: ScreenProps) {
   const check = controller.check;
+  const [rawSelection, setRawSelection] = useState<string[]>([]);
+  useEffect(() => setRawSelection([]), [check?.id, controller.epoch]);
+  const pendingRaw = model.state?.queue.find(
+    (q) =>
+      q.kind === "check" && q.check_id === check?.id && q.state !== "synced",
+  );
+  const selectedRaw = pendingRaw
+    ? ((pendingRaw.body.raw_local_ids ?? []) as string[])
+    : rawSelection;
   if (!check)
     return (
       <Page title="Result unavailable">
@@ -961,14 +1560,79 @@ export function ResultScreen({ controller, model }: ScreenProps) {
         <Title small>
           {check.result?.state === "measurement_only"
             ? "Measurements saved"
-            : check.result?.state === "invalid"
-              ? "Check needs attention"
-              : "Result unavailable"}
+            : check.result?.schema_version === "1.1.0"
+              ? check.result.state === "research_estimate"
+                ? "Authorized research result"
+                : "Research result abstained"
+              : check.result?.state === "invalid"
+                ? "Check needs attention"
+                : "Result unavailable"}
         </Title>
-        <Paragraph>
-          No validated impairment model is available for this check.
-          Intoxication cannot be determined.
-        </Paragraph>
+        {check.result?.schema_version === "1.1.0" ? (
+          <>
+            <Notice>
+              Research use only. This result concerns the named endpoint at the
+              historical capture time. It does not determine current
+              intoxication, legal fitness or driving safety.
+            </Notice>
+            <Fact
+              label="Research endpoint"
+              value={check.result.model_execution.endpoint_definition}
+            />
+            <Fact label="Endpoint ID" value={check.result.endpoint_id} />
+            <Fact
+              label="Population scope"
+              value={check.result.model_execution.population_description}
+            />
+            <Fact
+              label="Historical target time"
+              value={dateLabel(check.result.target_at)}
+            />
+            <Fact
+              label="Evaluated at"
+              value={dateLabel(check.result.evaluated_at)}
+            />
+            <Fact
+              label="Model"
+              value={`${check.result.model_id} · ${check.result.model_lifecycle}`}
+            />
+            <Fact
+              label="Model manifest SHA-256"
+              value={check.result.model_execution.manifest_sha256}
+            />
+            <Fact
+              label="Execution authority SHA-256"
+              value={check.result.model_execution.authority_sha256}
+            />
+            {check.result.state === "research_estimate" ? (
+              <>
+                <Metric
+                  label="Probability of the named research endpoint"
+                  value={`${(check.result.probability! * 100).toFixed(1)}%`}
+                />
+                <Fact
+                  label="Research operating threshold"
+                  value={`${(check.result.operating_threshold! * 100).toFixed(1)}%`}
+                />
+                <Fact
+                  label="Endpoint classification"
+                  value={friendly(check.result.classification)}
+                />
+              </>
+            ) : (
+              <Notice>
+                No probability or classification was produced. The admitted
+                model abstained:{" "}
+                {check.result.reason_codes.map(friendly).join(", ")}.
+              </Notice>
+            )}
+          </>
+        ) : (
+          <Paragraph>
+            No validated impairment model is available for this check.
+            Intoxication cannot be determined.
+          </Paragraph>
+        )}
         {check.result?.state === "invalid" && (
           <Paragraph muted>
             Review the invalid acquisitions below. A replacement check uses new
@@ -997,7 +1661,7 @@ export function ResultScreen({ controller, model }: ScreenProps) {
           <Fact
             label="Pupil diameter"
             value={
-              check.snapshot.eyes.scale_basis === "absolute_mm"
+              check.snapshot.eyes.scale_basis === "calibrated_mm"
                 ? `${numberText(check.snapshot.eyes.baseline_diameter_mm, 2)} mm`
                 : "No physical scale available"
             }
@@ -1057,7 +1721,11 @@ export function ResultScreen({ controller, model }: ScreenProps) {
           </Paragraph>
         </Card>
       )}
-      <ReportRevisionsCard key={`${controller.epoch}:${check.id}:${check.generation}`} controller={controller} model={model} />
+      <ReportRevisionsCard
+        key={`${controller.epoch}:${check.id}:${check.generation}`}
+        controller={controller}
+        model={model}
+      />
       <ReplacementLinksCard controller={controller} model={model} />
       <Provenance check={check} />
       <Card>
@@ -1084,6 +1752,21 @@ export function ResultScreen({ controller, model }: ScreenProps) {
           />
         )}
       </Card>
+      {model.identity && check.kind !== "guest_demo" && (
+        <RawUploadSelectionCard
+          files={(model.state?.rawArtifacts ?? []).filter(
+            (file) => file.session_id === check.id,
+          )}
+          selected={selectedRaw}
+          fences={model.state?.rawRecordingFences ?? {}}
+          locked={
+            !!pendingRaw ||
+            check.delivery === "synced" ||
+            check.delivery === "quarantined"
+          }
+          onChange={setRawSelection}
+        />
+      )}
       {model.identity &&
         check.kind !== "guest_demo" &&
         check.delivery !== "synced" &&
@@ -1095,9 +1778,20 @@ export function ResultScreen({ controller, model }: ScreenProps) {
             onPress={action(controller, () =>
               controller.ask({
                 title: "Upload this check?",
-                text: `Upload ${shortId(check.id)} to this account in ${BUILD.environment.toUpperCase()}? The frozen profile, measurements, complete capture attempts and evidence manifest are included. Unapproved raw images and waveforms are excluded. This action does not enable automatic uploads of future checks.`,
+                text: `Upload ${shortId(check.id)} to this account in ${BUILD.environment.toUpperCase()}? The frozen profile, measurements, complete capture attempts and evidence manifest are included. ${
+                  selectedRaw.length
+                    ? `Explicitly selected raw recordings: ${selectedRaw
+                        .map((id) => {
+                          const file = model.state?.rawArtifacts?.find(
+                            (file) => file.local_id === id,
+                          );
+                          return `${file?.format} (${file?.size_bytes} bytes), SHA-256 ${file?.sha256}`;
+                        })
+                        .join("; ")}.`
+                    : "No raw recordings are selected or uploaded."
+                } This action does not enable automatic uploads of future checks.`,
                 confirm: "Upload check",
-                action: () => controller.uploadCheck(),
+                action: () => controller.uploadCheck(selectedRaw),
               }),
             )}
             busy={model.busy}
@@ -1150,10 +1844,27 @@ export function EvidenceScreen({ controller, model }: ScreenProps) {
         <Title small>Frozen context</Title>
         <Fact label="Check ID" value={check.id} />
         <Fact label="Created / target time" value={check.snapshot.target_at} />
-        <Fact label="Capture completed" value={check.snapshot.capture_completed_at ?? "Not completed"} />
-        <Fact label="Original result evaluated" value={check.result?.evaluated_at ?? "Not evaluated"} />
-        <Fact label="Original result state" value={friendly(check.result?.state ?? "unavailable")} />
-        {check.result && <Fact label="Original result reasons" value={check.result.reason_codes.map(friendly).join(", ") || "None recorded"} />}
+        <Fact
+          label="Capture completed"
+          value={check.snapshot.capture_completed_at ?? "Not completed"}
+        />
+        <Fact
+          label="Original result evaluated"
+          value={check.result?.evaluated_at ?? "Not evaluated"}
+        />
+        <Fact
+          label="Original result state"
+          value={friendly(check.result?.state ?? "unavailable")}
+        />
+        {check.result && (
+          <Fact
+            label="Original result reasons"
+            value={
+              check.result.reason_codes.map(friendly).join(", ") ||
+              "None recorded"
+            }
+          />
+        )}
         <Fact
           label="Profile revision"
           value={check.context.profile_version_id ?? "None"}
@@ -1170,7 +1881,10 @@ export function EvidenceScreen({ controller, model }: ScreenProps) {
           label="Original last use"
           value={
             check.context.self_report_context?.last_use_at ??
-            friendly(check.context.self_report_context?.last_use_status ?? "not_recorded")
+            friendly(
+              check.context.self_report_context?.last_use_status ??
+                "not_recorded",
+            )
           }
         />
         <Fact
@@ -1219,7 +1933,12 @@ export function EvidenceScreen({ controller, model }: ScreenProps) {
             <Badge>{friendly(a.source)}</Badge>
           </Row>
           <Fact label="Attempt" value={a.attempt_id} />
-          {a.component === "cardiac" && <Fact label="Modality" value={cardiacAttemptModality(a)?.toUpperCase() ?? "Not reported"} />}
+          {a.component === "cardiac" && (
+            <Fact
+              label="Modality"
+              value={cardiacAttemptModality(a)?.toUpperCase() ?? "Not reported"}
+            />
+          )}
           <Fact
             label="Started / ended"
             value={`${a.started_at ?? "—"} / ${a.ended_at ?? "—"}`}
@@ -1243,7 +1962,11 @@ export function EvidenceScreen({ controller, model }: ScreenProps) {
                   : a.component === "cardiac"
                     ? check.selected_cardiac_attempt_id === a.attempt_id
                       ? "Chosen for snapshot; freezes on save"
-                      : check.attempts.filter(item => item.component === "cardiac" && item.status === "valid").length > 1 && !check.selected_cardiac_attempt_id
+                      : check.attempts.filter(
+                            (item) =>
+                              item.component === "cardiac" &&
+                              item.status === "valid",
+                          ).length > 1 && !check.selected_cardiac_attempt_id
                         ? "Choice pending at Review"
                         : "Retained; not selected"
                     : "Selection freezes on save"

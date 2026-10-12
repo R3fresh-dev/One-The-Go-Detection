@@ -8,6 +8,10 @@ int main() {
   for(const std::string text: {"{\"a\":1,\"nested\":[true,false,null,\"\\uD83D\\uDE00\"]}","{\"value\":-12.56e+4}"}) assert(StrictJson(text).valid());
   for(const std::string text: {"{\"a\":1,\"a\":2}","{\"a\":1,\"\\u0061\":2}","{\"x\":NaN}","{\"x\":1e999}","{\"x\":9007199254740992}","{\"x\":01}","{\"x\":\"\\uD800\"}","{\"x\":1,}","[] trailing"}) assert(!StrictJson(text).valid());
   const std::string deep(20,'['); const std::string invalid=deep+"0"+std::string(20,']'); assert(!StrictJson(invalid).valid());
+  const std::string domain="{\"domain\":\"OTGD capture grant v1\\u0000\"}";
+  assert(!StrictJson(domain).valid());
+  assert(StrictJson(domain,true).valid());
+  assert(!StrictJson("{\"bad\\u0000key\":1}",true).valid());
   const std::string json="{\"protocol_version\":1,\"payload\":{\"source\":\"simulated\"}}";
   auto stream=logicalStream(json); Reassembler receiver; uint8_t frame[20]; const uint16_t count=uint16_t((stream.size()+7)/8);
   size_t size=frameAt(stream,7,1,frame); assert(receiver.push(frame,size,0)==ReceiveResult::Partial); assert(receiver.push(frame,size,1)==ReceiveResult::Duplicate);

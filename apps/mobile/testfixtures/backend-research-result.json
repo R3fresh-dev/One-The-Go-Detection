@@ -1,0 +1,754 @@
+{
+  "evidence_boundary": "Fictional engineered reader interoperability fixture from actual model_engine.execute; not a server-admitted study or validated human model.",
+  "check": {
+    "alcohol": {
+      "boot_id": "fictional-boot",
+      "calibration_id": "fictional-calibration",
+      "collected_at": "2026-10-11T00:00:00.000Z",
+      "configuration_hash": "a4d73ee2904f05b23f70acefa30c32b3e7611a3c5935aa73ce73c02248ede395",
+      "device_id": "fictional-breath-instrument",
+      "limits": {
+        "lod_mg_l": 0.01,
+        "loq_mg_l": 0.02,
+        "upper_mg_l": 1
+      },
+      "measured_at": "2026-10-11T00:00:00.000Z",
+      "measurement_id": "77777777-7777-4777-8777-000000000015",
+      "method_id": "fictional-alcohol-ppg-v1",
+      "qualifier": "quantified",
+      "quality_flags": [
+        "FICTIONAL_FIXTURE"
+      ],
+      "schema_version": "1.0.0",
+      "session_id": "77777777-7777-4777-8777-000000000001",
+      "source": "simulated",
+      "unit": "mg/L",
+      "value_mg_l": 0.1
+    },
+    "attempts": [
+      {
+        "artifact_refs": [],
+        "attempt_id": "77777777-7777-4777-8777-000000000004",
+        "attestation_refs": [],
+        "component": "saliva",
+        "component_metadata": {
+          "fixture_id": "fictional-saliva-ppg-v1",
+          "projection": {
+            "sample": {
+              "sample_id": "22222222-2222-4222-8222-222222222222",
+              "collection_method_id": "synthetic-collection",
+              "collected_at": "2026-10-11T06:18:35.703Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 1.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": [
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "33333333-3333-4333-8333-000000000001",
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "analyte": "THC",
+                "qualifier": "quantified",
+                "value_ng_ml": 12.0,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": 0.3,
+                  "loq_ng_ml": 1.0,
+                  "upper_ng_ml": 200.0
+                },
+                "source": "reference_lab",
+                "method_id": "synthetic-no-assay",
+                "calibration_id": null,
+                "cartridge_lot": null,
+                "instrument_id": "synthetic-reader",
+                "operator_ref": null,
+                "collected_at": "2026-10-11T06:18:35.703Z",
+                "measured_at": "2026-10-11T06:20:05.703Z",
+                "quality_flags": [],
+                "original_report": {
+                  "value": 12.0,
+                  "unit": "ng/mL",
+                  "qualifier": "quantified"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected"
+              },
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "33333333-3333-4333-8333-000000000002",
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "analyte": "THC_COOH",
+                "qualifier": "below_loq",
+                "value_ng_ml": null,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": 0.03,
+                  "loq_ng_ml": 0.1,
+                  "upper_ng_ml": 2.0
+                },
+                "source": "reference_lab",
+                "method_id": "synthetic-no-assay",
+                "calibration_id": null,
+                "cartridge_lot": null,
+                "instrument_id": "synthetic-reader",
+                "operator_ref": null,
+                "collected_at": "2026-10-11T06:18:35.703Z",
+                "measured_at": "2026-10-11T06:20:05.703Z",
+                "quality_flags": [],
+                "original_report": {
+                  "value": null,
+                  "unit": "ng/mL",
+                  "qualifier": "BLQ"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected"
+              },
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "33333333-3333-4333-8333-000000000003",
+                "sample_id": "22222222-2222-4222-8222-222222222222",
+                "analyte": "OH11_THC",
+                "qualifier": "not_measured",
+                "value_ng_ml": null,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": null,
+                  "loq_ng_ml": null,
+                  "upper_ng_ml": null
+                },
+                "source": "reference_lab",
+                "method_id": null,
+                "calibration_id": null,
+                "cartridge_lot": null,
+                "instrument_id": null,
+                "operator_ref": null,
+                "collected_at": "2026-10-11T06:18:35.703Z",
+                "measured_at": null,
+                "quality_flags": [],
+                "original_report": {
+                  "value": null,
+                  "unit": "ng/mL",
+                  "qualifier": "not_measured"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "neat_oral_fluid",
+                "correction_status": "not_corrected"
+              }
+            ]
+          }
+        },
+        "configuration_hash": "97b230e3374a5e5ad9e6f66b95fdd041ce2e603c07a72f75638413591667128a",
+        "configuration_id": "fictional-saliva-ppg-v1",
+        "ended_at": "2026-10-11T00:00:00.000Z",
+        "quality_flags": [],
+        "record_id": "77777777-7777-4777-8777-000000000006",
+        "schema_version": "1.0.0",
+        "session_id": "11111111-1111-4111-8111-111111111111",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-11T00:00:00.000Z",
+        "status": "valid",
+        "supersedes_attempt_id": null
+      },
+      {
+        "artifact_refs": [],
+        "attempt_id": "77777777-7777-4777-8777-000000000010",
+        "attestation_refs": [],
+        "component": "eyes",
+        "component_metadata": {
+          "fixture_id": "fictional-eyes-ppg-v1",
+          "projection": {
+            "status": "valid",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-11T06:18:25.703Z",
+            "ended_at": "2026-10-11T06:20:25.703Z",
+            "quality_flags": [],
+            "capture_config_id": "synthetic-eyes",
+            "camera_id": "synthetic-camera",
+            "frame_rate_hz": 30,
+            "scale_basis": "calibrated_mm",
+            "baseline_diameter_mm": 4.0,
+            "relative_constriction": 0.2,
+            "latency_ms": 250,
+            "raw_artifact_id": null
+          }
+        },
+        "configuration_hash": "c97981906b2c63621aaa4efa27e5371a1974b5751254f19d96a8420ee8a9e6cc",
+        "configuration_id": "fictional-eyes-ppg-v1",
+        "ended_at": "2026-10-11T00:00:00.000Z",
+        "quality_flags": [],
+        "record_id": "77777777-7777-4777-8777-000000000011",
+        "schema_version": "1.0.0",
+        "session_id": "11111111-1111-4111-8111-111111111111",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-11T00:00:00.000Z",
+        "status": "valid",
+        "supersedes_attempt_id": null
+      },
+      {
+        "artifact_refs": [],
+        "attempt_id": "77777777-7777-4777-8777-000000000012",
+        "attestation_refs": [],
+        "component": "cardiac",
+        "component_metadata": {
+          "fixture_id": "fictional-cardiac-ecg-v1",
+          "modality": "ecg",
+          "projection": {
+            "status": "valid",
+            "source": "prototype_sensor",
+            "started_at": "2026-10-11T06:18:25.703Z",
+            "ended_at": "2026-10-11T06:20:25.703Z",
+            "quality_flags": [],
+            "acquisition_config_id": "synthetic-ppg",
+            "modality": "ppg",
+            "heart_rate_bpm": 72.0,
+            "ecg_status": "not_collected",
+            "ecg_rmssd_ms": null,
+            "sample_rate_hz": null,
+            "raw_artifact_id": null
+          }
+        },
+        "configuration_hash": "6e24b3abc6e85fccf060d7ff5df06f7b407a590109524ef63eb30b020f4c779d",
+        "configuration_id": "fictional-cardiac-ecg-v1",
+        "ended_at": "2026-10-11T00:00:00.000Z",
+        "quality_flags": [],
+        "record_id": "77777777-7777-4777-8777-000000000013",
+        "schema_version": "1.0.0",
+        "session_id": "11111111-1111-4111-8111-111111111111",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-11T00:00:00.000Z",
+        "status": "valid",
+        "supersedes_attempt_id": null
+      },
+      {
+        "artifact_refs": [],
+        "attempt_id": "77777777-7777-4777-8777-000000000014",
+        "attestation_refs": [],
+        "component": "alcohol",
+        "component_metadata": {
+          "fixture_id": "fictional-alcohol-ppg-v1",
+          "projection": null
+        },
+        "configuration_hash": "a4d73ee2904f05b23f70acefa30c32b3e7611a3c5935aa73ce73c02248ede395",
+        "configuration_id": "fictional-alcohol-ppg-v1",
+        "ended_at": "2026-10-11T00:00:00.000Z",
+        "quality_flags": [],
+        "record_id": "77777777-7777-4777-8777-000000000015",
+        "schema_version": "1.0.0",
+        "session_id": "11111111-1111-4111-8111-111111111111",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-11T00:00:00.000Z",
+        "status": "valid",
+        "supersedes_attempt_id": null
+      }
+    ],
+    "context": {
+      "baseline_refs": [],
+      "configuration_refs": [
+        {
+          "id": "choice_inhibit_v0_native_dev_1",
+          "scope": "uncalibrated_practice",
+          "sha256": "61bd03244a9f82fdc5a1a2b6658483ca201ab5d39a95e64cde0d00f1d5a666c3",
+          "version": "1.0.0"
+        }
+      ],
+      "context_confirmed_at": "2026-10-11T06:18:25.703Z",
+      "device_associations": [],
+      "history_snapshot_sha256": "3cebc1c086c142947bffadf85e2512b6524c2a93b6bd6447015fa5a005fde413",
+      "profile_snapshot_sha256": "bf31bdf30b1f79b55a993ee47722e7a90d6bf4268a3c81a08b6cdd674ab283ee",
+      "profile_version_id": null,
+      "protocol_id": "engineering-protocol",
+      "schema_version": "1.0.0",
+      "self_report_context": {
+        "confirmed_at": "2026-10-11T00:00:00.000Z",
+        "last_use_at": null,
+        "last_use_status": "unknown"
+      },
+      "session_id": "11111111-1111-4111-8111-111111111111"
+    },
+    "delivery": "local_finalized",
+    "error": null,
+    "evidence_sha256": "dfb6456c62f561e9b4dfb1cafb0b5860f69be055378da8f48ebfc05892483ea0",
+    "frozen": true,
+    "generation": 1,
+    "id": "11111111-1111-4111-8111-111111111111",
+    "kind": "measurement",
+    "manifest": {
+      "schema_version": "1.0.0",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "context_sha256": "726a59314b382848e537572116a83e9578db9e4f4521a504e720a19fc6f4e614",
+      "attempts": [
+        {
+          "attempt_id": "77777777-7777-4777-8777-000000000004",
+          "sha256": "8858cd90cb9951530bee0fb9d8b4460e786924352491858af5bcd92446f08378"
+        },
+        {
+          "attempt_id": "77777777-7777-4777-8777-000000000010",
+          "sha256": "0e870813b719e26145b3d8e792ff39c5804fba2c1de8c3c812a1750195559eca"
+        },
+        {
+          "attempt_id": "77777777-7777-4777-8777-000000000012",
+          "sha256": "6290d0a910d7fc9c6085f496d4469a32c10d5a69463ebc7310c750b94b17c8c6"
+        },
+        {
+          "attempt_id": "77777777-7777-4777-8777-000000000014",
+          "sha256": "2d757ab06cc61ab02353710129c330cb4655372b92227689a6fb6068cdce192e"
+        }
+      ],
+      "selected": {
+        "saliva": "77777777-7777-4777-8777-000000000004",
+        "eyes": "77777777-7777-4777-8777-000000000010",
+        "cardiac": "77777777-7777-4777-8777-000000000012",
+        "task": null,
+        "alcohol": "77777777-7777-4777-8777-000000000014"
+      }
+    },
+    "remote_etag": "\"0\"",
+    "remote_revision": 0,
+    "result": {
+      "schema_version": "1.1.0",
+      "result_id": "40b96dba-420d-4832-94d5-ca09f14c871e",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "state": "research_estimate",
+      "target_at": "2026-10-11T06:18:25.703Z",
+      "evaluated_at": "2026-10-11T06:21:25.845Z",
+      "model_id": "engineering-model",
+      "model_lifecycle": "active_research",
+      "endpoint_id": "engineering-endpoint",
+      "probability": 0.8320183851339245,
+      "classification": "above_threshold",
+      "operating_threshold": 0.5,
+      "uncertainty_policy_id": "uncertainty",
+      "reason_codes": [],
+      "input_sha256": "7c29f1d2abef015ad53f316867397b1a96358a49f2e140855e9448a4c142094b",
+      "provenance_summary": [
+        "prototype_sensor",
+        "reference_lab"
+      ],
+      "replaces_result_id": null,
+      "model_execution": {
+        "schema_version": "1.0.0",
+        "registry_id": "engineering-model",
+        "registry_version": "v1",
+        "manifest_sha256": "898a975e4126cbedeecfd50ce7571974290bc49a1dec0f8b36a3c73c1f7b154a",
+        "model_artifact_sha256": "71e94a14935cc0e202214d419ec396a799c329646edb6afda49a8cfed910720e",
+        "evaluation_report_sha256": "acb21c1d743e14944ea8a04af36ac304503295734e19290fd336fe35c75aea62",
+        "feature_version": "otgd.features.v1",
+        "feature_values_sha256": "0986a13312dbef84f15775bb0e2802b2647f9d10ba14274ea3e67dbdfde3eace",
+        "calibration_id": "engineering-model-calibration",
+        "calibration_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "capture_context_sha256": "726a59314b382848e537572116a83e9578db9e4f4521a504e720a19fc6f4e614",
+        "evidence_manifest_sha256": "dfb6456c62f561e9b4dfb1cafb0b5860f69be055378da8f48ebfc05892483ea0",
+        "baseline_sha256": null,
+        "authority_sha256": "7cc3a4dad11cc99357518ebf0f566120cc9ec1084e7ae0f081927b0a53c8822d",
+        "endpoint_definition": "Fictional engineering endpoint",
+        "population_description": "Fictional engineering cohort",
+        "authority_manifest": {
+          "schema_version": "1.0.0",
+          "model_manifest": {
+            "schema_version": "0.1.0",
+            "model_id": "engineering-model",
+            "lifecycle": "active_research",
+            "artifact_sha256": "71e94a14935cc0e202214d419ec396a799c329646edb6afda49a8cfed910720e",
+            "endpoint_id": "engineering-endpoint",
+            "endpoint_definition": "Fictional engineering endpoint",
+            "input_contract_version": "0.1.0",
+            "required_channels": [
+              "saliva_thc",
+              "pupil",
+              "cardiac_hr",
+              "task"
+            ],
+            "allowed_protocol_ids": [
+              "engineering-protocol"
+            ],
+            "allowed_collection_method_ids": [
+              "synthetic-collection"
+            ],
+            "allowed_assay_ids": [
+              "synthetic-no-assay"
+            ],
+            "allowed_assay_bases": [
+              "free"
+            ],
+            "allowed_hardware_revisions": [
+              "engineering-hw"
+            ],
+            "allowed_task_versions": [
+              "choice_inhibit_v0"
+            ],
+            "allowed_provenance": [
+              "reference_lab",
+              "prototype_sensor"
+            ],
+            "feature_version": "otgd.features.v1",
+            "baseline_mode": "population",
+            "operating_threshold": 0.5,
+            "calibration_id": "engineering-model-calibration",
+            "quality_policy_id": "quality",
+            "co_use_policy_id": "co-use",
+            "population": {
+              "description": "Fictional engineering cohort",
+              "min_age_years": 18,
+              "max_age_years": 65
+            },
+            "max_clock_uncertainty_ms": 10,
+            "max_acquisition_span_ms": 180000,
+            "max_delivery_delay_ms": 3600000,
+            "uncertainty_policy": {
+              "policy_id": "uncertainty",
+              "method": "none",
+              "lower": null,
+              "upper": null,
+              "rationale": "Engineering fixture only"
+            },
+            "validation_report_uri": "https://research.invalid/engineering-report",
+            "approval_refs": [
+              "engineering-review-1",
+              "engineering-review-2"
+            ],
+            "compatibility_policy_id": "compatibility"
+          },
+          "model_registry_version": "v1",
+          "native_timing_calibration_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+          "model_registry_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "calibration_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "quality_policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "co_use_policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "compatibility_policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "study_approval_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "consent_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "registry_events_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "model_artifact_sha256": "71e94a14935cc0e202214d419ec396a799c329646edb6afda49a8cfed910720e",
+          "evaluation_report_sha256": "acb21c1d743e14944ea8a04af36ac304503295734e19290fd336fe35c75aea62"
+        }
+      }
+    },
+    "selected_cardiac_attempt_id": "77777777-7777-4777-8777-000000000012",
+    "snapshot": {
+      "schema_version": "0.1.0",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "supersedes_session_id": null,
+      "mode": "controlled_research",
+      "subject_ref": "synthetic-person-001",
+      "study_id": "engineering-study",
+      "protocol_id": "engineering-protocol",
+      "created_at": "2026-10-11T06:18:25.703Z",
+      "target_at": "2026-10-11T06:18:25.703Z",
+      "clock_uncertainty_ms": 2,
+      "acquisition_span_ms": 120000,
+      "device": {
+        "device_id": "synthetic-reader",
+        "boot_id": "synthetic-boot-001",
+        "hardware_revision": "engineering-hw",
+        "firmware_version": "synthetic-0.1.0"
+      },
+      "profile": {
+        "age_years": 30,
+        "height_cm": 175.0,
+        "weight_kg": 80.0,
+        "bmi": 26.122,
+        "recorded_at": "2026-10-11T06:18:05.703Z",
+        "source": "study_measurement"
+      },
+      "history": {
+        "use_frequency": "unknown",
+        "route": "unknown",
+        "time_since_use_min": null,
+        "recent_exercise": null,
+        "sleep_hours": null,
+        "alcohol_co_use": "not_reported"
+      },
+      "baseline_ref": null,
+      "sample": {
+        "sample_id": "22222222-2222-4222-8222-222222222222",
+        "collection_method_id": "synthetic-collection",
+        "collected_at": "2026-10-11T06:18:35.703Z",
+        "volume_ml": 1.0,
+        "dilution_factor": 1.0,
+        "status": "valid",
+        "quality_flags": []
+      },
+      "saliva": [
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000001",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC",
+          "qualifier": "quantified",
+          "value_ng_ml": 12.0,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.3,
+            "loq_ng_ml": 1.0,
+            "upper_ng_ml": 200.0
+          },
+          "source": "reference_lab",
+          "method_id": "synthetic-no-assay",
+          "calibration_id": null,
+          "cartridge_lot": null,
+          "instrument_id": "synthetic-reader",
+          "operator_ref": null,
+          "collected_at": "2026-10-11T06:18:35.703Z",
+          "measured_at": "2026-10-11T06:20:05.703Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": 12.0,
+            "unit": "ng/mL",
+            "qualifier": "quantified"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        },
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000002",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "THC_COOH",
+          "qualifier": "below_loq",
+          "value_ng_ml": null,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.03,
+            "loq_ng_ml": 0.1,
+            "upper_ng_ml": 2.0
+          },
+          "source": "reference_lab",
+          "method_id": "synthetic-no-assay",
+          "calibration_id": null,
+          "cartridge_lot": null,
+          "instrument_id": "synthetic-reader",
+          "operator_ref": null,
+          "collected_at": "2026-10-11T06:18:35.703Z",
+          "measured_at": "2026-10-11T06:20:05.703Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": null,
+            "unit": "ng/mL",
+            "qualifier": "BLQ"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        },
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "33333333-3333-4333-8333-000000000003",
+          "sample_id": "22222222-2222-4222-8222-222222222222",
+          "analyte": "OH11_THC",
+          "qualifier": "not_measured",
+          "value_ng_ml": null,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": null,
+            "loq_ng_ml": null,
+            "upper_ng_ml": null
+          },
+          "source": "reference_lab",
+          "method_id": null,
+          "calibration_id": null,
+          "cartridge_lot": null,
+          "instrument_id": null,
+          "operator_ref": null,
+          "collected_at": "2026-10-11T06:18:35.703Z",
+          "measured_at": null,
+          "quality_flags": [],
+          "original_report": {
+            "value": null,
+            "unit": "ng/mL",
+            "qualifier": "not_measured"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "neat_oral_fluid",
+          "correction_status": "not_corrected"
+        }
+      ],
+      "eyes": {
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-11T06:18:25.703Z",
+        "ended_at": "2026-10-11T06:20:25.703Z",
+        "quality_flags": [],
+        "capture_config_id": "synthetic-eyes",
+        "camera_id": "synthetic-camera",
+        "frame_rate_hz": 30,
+        "scale_basis": "calibrated_mm",
+        "baseline_diameter_mm": 4.0,
+        "relative_constriction": 0.2,
+        "latency_ms": 250,
+        "raw_artifact_id": null
+      },
+      "cardiac": {
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-11T06:18:25.703Z",
+        "ended_at": "2026-10-11T06:20:25.703Z",
+        "quality_flags": [],
+        "acquisition_config_id": "synthetic-ppg",
+        "modality": "ppg",
+        "heart_rate_bpm": 72.0,
+        "ecg_status": "not_collected",
+        "ecg_rmssd_ms": null,
+        "sample_rate_hz": null,
+        "raw_artifact_id": null
+      },
+      "task": {
+        "status": "valid",
+        "source": "prototype_sensor",
+        "started_at": "2026-10-11T06:18:25.703Z",
+        "ended_at": "2026-10-11T06:20:25.703Z",
+        "quality_flags": [],
+        "task_id": "44444444-4444-4444-8444-444444444444",
+        "task_version": "choice_inhibit_v0",
+        "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "practice_trials": 6,
+        "scored_trials": 60,
+        "go_trials": 48,
+        "no_go_trials": 12,
+        "valid_correct_go_trials": 45,
+        "features": {
+          "median_rt_ms": 340.0,
+          "iqr_rt_ms": 80.0,
+          "p90_rt_ms": 470.0,
+          "omission_rate": 0.041666666666666664,
+          "wrong_go_rate": 0.020833333333333332,
+          "no_go_error_rate": 0.08333333333333333
+        },
+        "events_artifact_id": null
+      },
+      "capture_completed_at": "2026-10-11T06:20:25.703Z"
+    },
+    "snapshot_sha256": "7c29f1d2abef015ad53f316867397b1a96358a49f2e140855e9448a4c142094b",
+    "stage": "profile",
+    "updated_at": "2026-10-11T00:00:00.000Z",
+    "workspace": "local:contract-fixture"
+  },
+  "result": {
+    "schema_version": "1.1.0",
+    "result_id": "40b96dba-420d-4832-94d5-ca09f14c871e",
+    "session_id": "11111111-1111-4111-8111-111111111111",
+    "state": "research_estimate",
+    "target_at": "2026-10-11T06:18:25.703Z",
+    "evaluated_at": "2026-10-11T06:21:25.845Z",
+    "model_id": "engineering-model",
+    "model_lifecycle": "active_research",
+    "endpoint_id": "engineering-endpoint",
+    "probability": 0.8320183851339245,
+    "classification": "above_threshold",
+    "operating_threshold": 0.5,
+    "uncertainty_policy_id": "uncertainty",
+    "reason_codes": [],
+    "input_sha256": "7c29f1d2abef015ad53f316867397b1a96358a49f2e140855e9448a4c142094b",
+    "provenance_summary": [
+      "prototype_sensor",
+      "reference_lab"
+    ],
+    "replaces_result_id": null,
+    "model_execution": {
+      "schema_version": "1.0.0",
+      "registry_id": "engineering-model",
+      "registry_version": "v1",
+      "manifest_sha256": "898a975e4126cbedeecfd50ce7571974290bc49a1dec0f8b36a3c73c1f7b154a",
+      "model_artifact_sha256": "71e94a14935cc0e202214d419ec396a799c329646edb6afda49a8cfed910720e",
+      "evaluation_report_sha256": "acb21c1d743e14944ea8a04af36ac304503295734e19290fd336fe35c75aea62",
+      "feature_version": "otgd.features.v1",
+      "feature_values_sha256": "0986a13312dbef84f15775bb0e2802b2647f9d10ba14274ea3e67dbdfde3eace",
+      "calibration_id": "engineering-model-calibration",
+      "calibration_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "capture_context_sha256": "726a59314b382848e537572116a83e9578db9e4f4521a504e720a19fc6f4e614",
+      "evidence_manifest_sha256": "dfb6456c62f561e9b4dfb1cafb0b5860f69be055378da8f48ebfc05892483ea0",
+      "baseline_sha256": null,
+      "authority_sha256": "7cc3a4dad11cc99357518ebf0f566120cc9ec1084e7ae0f081927b0a53c8822d",
+      "endpoint_definition": "Fictional engineering endpoint",
+      "population_description": "Fictional engineering cohort",
+      "authority_manifest": {
+        "schema_version": "1.0.0",
+        "model_manifest": {
+          "schema_version": "0.1.0",
+          "model_id": "engineering-model",
+          "lifecycle": "active_research",
+          "artifact_sha256": "71e94a14935cc0e202214d419ec396a799c329646edb6afda49a8cfed910720e",
+          "endpoint_id": "engineering-endpoint",
+          "endpoint_definition": "Fictional engineering endpoint",
+          "input_contract_version": "0.1.0",
+          "required_channels": [
+            "saliva_thc",
+            "pupil",
+            "cardiac_hr",
+            "task"
+          ],
+          "allowed_protocol_ids": [
+            "engineering-protocol"
+          ],
+          "allowed_collection_method_ids": [
+            "synthetic-collection"
+          ],
+          "allowed_assay_ids": [
+            "synthetic-no-assay"
+          ],
+          "allowed_assay_bases": [
+            "free"
+          ],
+          "allowed_hardware_revisions": [
+            "engineering-hw"
+          ],
+          "allowed_task_versions": [
+            "choice_inhibit_v0"
+          ],
+          "allowed_provenance": [
+            "reference_lab",
+            "prototype_sensor"
+          ],
+          "feature_version": "otgd.features.v1",
+          "baseline_mode": "population",
+          "operating_threshold": 0.5,
+          "calibration_id": "engineering-model-calibration",
+          "quality_policy_id": "quality",
+          "co_use_policy_id": "co-use",
+          "population": {
+            "description": "Fictional engineering cohort",
+            "min_age_years": 18,
+            "max_age_years": 65
+          },
+          "max_clock_uncertainty_ms": 10,
+          "max_acquisition_span_ms": 180000,
+          "max_delivery_delay_ms": 3600000,
+          "uncertainty_policy": {
+            "policy_id": "uncertainty",
+            "method": "none",
+            "lower": null,
+            "upper": null,
+            "rationale": "Engineering fixture only"
+          },
+          "validation_report_uri": "https://research.invalid/engineering-report",
+          "approval_refs": [
+            "engineering-review-1",
+            "engineering-review-2"
+          ],
+          "compatibility_policy_id": "compatibility"
+        },
+        "model_registry_version": "v1",
+        "native_timing_calibration_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+        "model_registry_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "calibration_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "quality_policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "co_use_policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "compatibility_policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "study_approval_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "consent_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "registry_events_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "model_artifact_sha256": "71e94a14935cc0e202214d419ec396a799c329646edb6afda49a8cfed910720e",
+        "evaluation_report_sha256": "acb21c1d743e14944ea8a04af36ac304503295734e19290fd336fe35c75aea62"
+      }
+    }
+  }
+}

@@ -3,8 +3,15 @@
 from sqlalchemy import select, text
 
 from .config import settings
-from .db import Base, SystemState, Account,engine
-from .schema_migrations import migration_002_replacement_navigation
+from .db import Base, SystemState, Account, engine
+from .schema_migrations import (
+    migration_002_replacement_navigation,
+    migration_003_operator_governance,
+)
+from .raw_retention import migration_004_raw_retention
+from .journal_continuity import bind_migration
+from .participant_migration import (migration_005_participant_acquisition,
+    migration_006_cardiac_interval_anchors, migration_007_capture_guard_unicode)
 
 
 def migrate():
@@ -21,15 +28,24 @@ def migrate():
                 raise RuntimeError("Another migration owns the advisory lock")
         # Additive baseline v1. Subsequent versions must use separate numbered migrations.
         Base.metadata.create_all(connection)
-        from .identity_keys import KEY_STATE,key_descriptor
-        key_identity=key_descriptor(s)
-        prior_key=connection.scalar(select(SystemState.body).where(SystemState.key==KEY_STATE))
+        from .identity_keys import KEY_STATE, key_descriptor
+
+        key_identity = key_descriptor(s)
+        prior_key = connection.scalar(
+            select(SystemState.body).where(SystemState.key == KEY_STATE)
+        )
         if prior_key is None:
             if connection.scalar(select(Account.id).limit(1)):
-                raise RuntimeError('Existing account identity requires independently verified key provenance before migration')
-            connection.execute(SystemState.__table__.insert().values(key=KEY_STATE,body=key_identity))
-        elif prior_key!=key_identity:
-            raise RuntimeError('Identity tombstone key replacement is not supported; retained key provenance must be reconciled')
+                raise RuntimeError(
+                    "Existing account identity requires independently verified key provenance before migration"
+                )
+            connection.execute(
+                SystemState.__table__.insert().values(key=KEY_STATE, body=key_identity)
+            )
+        elif prior_key != key_identity:
+            raise RuntimeError(
+                "Identity tombstone key replacement is not supported; retained key provenance must be reconciled"
+            )
         if postgres:
             connection.execute(
                 text("ALTER TABLE system_state ALTER COLUMN key TYPE varchar(128)")
@@ -63,6 +79,15 @@ def migrate():
                 {"key": "schema_version", "body": json.dumps({"version": 1})},
             )
         migration_002_replacement_navigation(connection)
+        migration_003_operator_governance(connection)
+        migration_004_raw_retention(connection)
+        migration_005_participant_acquisition(connection)
+        migration_006_cardiac_interval_anchors(connection)
+        migration_007_capture_guard_unicode(connection)
+        bind_migration(connection, s)
+        from .capture_signing import bind_signing_key
+
+        bind_signing_key(connection)
         if postgres and s.app_database_password:
             from psycopg import sql
 
@@ -105,13 +130,13 @@ def migrate():
                 # Application can read but cannot manufacture qualification, trust anchors, or recovery evidence.
                 cursor.execute(
                     sql.SQL(
-                        "REVOKE INSERT,UPDATE,DELETE ON operator_registry,system_state FROM {}"
+                        "REVOKE INSERT,UPDATE,DELETE ON operator_registry,operator_registry_versions,operator_registry_events,system_state FROM {}"
                     ).format(sql.Identifier(s.app_database_user))
                 )
                 cursor.execute(
-                    sql.SQL("REVOKE UPDATE,DELETE ON audit FROM {}").format(
-                        sql.Identifier(s.app_database_user)
-                    )
+                    sql.SQL(
+                        "REVOKE UPDATE,DELETE ON audit,raw_upload_tickets FROM {}"
+                    ).format(sql.Identifier(s.app_database_user))
                 )
                 cursor.execute("REVOKE CREATE ON SCHEMA public FROM PUBLIC")
     print("Schema v1 ready; no clinical configuration or model was provisioned.")

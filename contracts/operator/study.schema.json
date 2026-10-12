@@ -1,0 +1,150 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "study_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Study Id",
+      "type": "string"
+    },
+    "protocol_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Protocol Id",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "account_refs": {
+      "items": {
+        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+        "type": "string"
+      },
+      "maxItems": 1000,
+      "title": "Account Refs",
+      "type": "array"
+    },
+    "invitation_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Invitation Id",
+      "type": "string"
+    },
+    "document_version": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Document Version",
+      "type": "string"
+    },
+    "document_text": {
+      "maxLength": 65536,
+      "minLength": 1,
+      "title": "Document Text",
+      "type": "string"
+    },
+    "document_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Document Sha256",
+      "type": "string"
+    },
+    "retention_summary": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Retention Summary",
+      "type": "string"
+    },
+    "channels": {
+      "additionalProperties": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxProperties": 6,
+      "propertyNames": {
+        "enum": [
+          "saliva",
+          "eyes",
+          "cardiac",
+          "ecg",
+          "task",
+          "alcohol"
+        ]
+      },
+      "title": "Channels",
+      "type": "object"
+    },
+    "model_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Id"
+    }
+  },
+  "required": [
+    "registry_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "study_id",
+    "protocol_id",
+    "name",
+    "account_refs",
+    "invitation_id",
+    "document_version",
+    "document_text",
+    "document_sha256",
+    "retention_summary",
+    "channels"
+  ],
+  "title": "Study",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/study.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

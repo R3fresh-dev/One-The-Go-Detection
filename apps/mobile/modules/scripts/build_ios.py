@@ -2,6 +2,7 @@
 """Build the generated iOS app with the selected Xcode. No signing or cloud credentials."""
 from __future__ import annotations
 import json
+import os
 import pathlib
 import subprocess
 
@@ -16,10 +17,12 @@ schemes = data.get("workspace", {}).get("schemes", [])
 if workspace.stem not in schemes:
     raise SystemExit("Generated app scheme missing from Xcode workspace")
 derived = mobile / "native-build" / "ios"
+build_settings = (["ARCHS=arm64", "ONLY_ACTIVE_ARCH=NO"]
+                  if os.environ.get("EXPO_PUBLIC_HOSTED_PREVIEW") == "true" else [])
 subprocess.run([
     "xcodebuild", "-workspace", str(workspace), "-scheme", workspace.stem,
     "-configuration", "Release", "-sdk", "iphonesimulator", "-destination", "generic/platform=iOS Simulator",
-    "-derivedDataPath", str(derived), "CODE_SIGNING_ALLOWED=NO", "build",
+    "-derivedDataPath", str(derived), "CODE_SIGNING_ALLOWED=NO", *build_settings, "build",
 ], check=True, cwd=mobile)
 apps = list((derived / "Build/Products/Release-iphonesimulator").glob("*.app"))
 if len(apps) != 1 or not (apps[0] / "main.jsbundle").is_file():

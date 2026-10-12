@@ -176,6 +176,42 @@ class Registry(Base):
     active: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
+class RegistryVersion(Base):
+    """Submitted content is immutable; reviewed transitions are independently recorded."""
+
+    __tablename__ = "operator_registry_versions"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    registry_key: Mapped[str] = mapped_column(String(512), index=True)
+    version: Mapped[str] = mapped_column(String(64))
+    kind: Mapped[str] = mapped_column(String(32))
+    body: Mapped[dict] = mapped_column(JSON)
+    sha256: Mapped[str] = mapped_column(String(64))
+    submitted_by: Mapped[str] = mapped_column(String(256))
+    submitted_at: Mapped[float] = mapped_column(Float, default=now)
+    state: Mapped[str] = mapped_column(String(16), default="submitted")
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    __table_args__ = (
+        Index("uq_registry_content_version", "registry_key", "version", unique=True),
+        CheckConstraint("revision > 0"),
+        CheckConstraint("state IN ('submitted','approved','active','retired','revoked')"),
+    )
+
+
+class RegistryEvent(Base):
+    __tablename__ = "operator_registry_events"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    version_id: Mapped[str] = mapped_column(ForeignKey("operator_registry_versions.id"), index=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    previous_state: Mapped[str | None] = mapped_column(String(16))
+    state: Mapped[str] = mapped_column(String(16))
+    principal: Mapped[str] = mapped_column(String(256))
+    reason: Mapped[str] = mapped_column(String(1024))
+    submitted_sha256: Mapped[str] = mapped_column(String(64))
+    request_id: Mapped[str] = mapped_column(String(36))
+    created: Mapped[float] = mapped_column(Float, default=now)
+    __table_args__ = (Index("uq_registry_event_revision", "version_id", "revision", unique=True),)
+
+
 class SystemState(Base):
     __tablename__ = "system_state"
     key: Mapped[str] = mapped_column(String(128), primary_key=True)

@@ -1,0 +1,265 @@
+{
+  "$defs": {
+    "HandlingEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Event",
+          "type": "string"
+        },
+        "occurred_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "temperature_c": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": -273.15,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Temperature C"
+        },
+        "duration_min": {
+          "anyOf": [
+            {
+              "maximum": 525600,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Duration Min"
+        }
+      },
+      "required": [
+        "event",
+        "occurred_at",
+        "temperature_c",
+        "duration_min"
+      ],
+      "title": "HandlingEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attempt_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "sample_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Sample Id",
+      "type": "string"
+    },
+    "instruction_receipt_id": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Instruction Receipt Id",
+      "type": "string"
+    },
+    "collection_method_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Collection Method Id",
+      "type": "string"
+    },
+    "collection_method_version": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Collection Method Version",
+      "type": "string"
+    },
+    "collected_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "title": "Collected At",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "valid",
+        "invalid"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "quality_flags": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Quality Flags",
+      "type": "array"
+    },
+    "saliva_volume_ml": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "maximum": 100,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Saliva Volume Ml"
+    },
+    "buffer_volume_ml": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Buffer Volume Ml"
+    },
+    "dilution_factor": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "maximum": 100000,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Dilution Factor"
+    },
+    "collector_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Collector Id"
+    },
+    "collector_lot": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Collector Lot"
+    },
+    "container_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Container Id"
+    },
+    "cartridge_lot": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Cartridge Lot"
+    },
+    "cartridge_expiry": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Cartridge Expiry"
+    },
+    "missing_reasons": {
+      "additionalProperties": {
+        "enum": [
+          "unknown",
+          "declined",
+          "not_applicable"
+        ],
+        "type": "string"
+      },
+      "maxProperties": 8,
+      "propertyNames": {
+        "enum": [
+          "saliva_volume_ml",
+          "buffer_volume_ml",
+          "dilution_factor",
+          "collector_id",
+          "collector_lot",
+          "container_id",
+          "cartridge_lot",
+          "cartridge_expiry"
+        ]
+      },
+      "title": "Missing Reasons",
+      "type": "object"
+    },
+    "storage_handling_events": {
+      "items": {
+        "$ref": "#/$defs/HandlingEvent"
+      },
+      "maxItems": 64,
+      "title": "Storage Handling Events",
+      "type": "array"
+    }
+  },
+  "required": [
+    "attempt_id",
+    "sample_id",
+    "instruction_receipt_id",
+    "collection_method_id",
+    "collection_method_version",
+    "collected_at",
+    "status",
+    "quality_flags",
+    "saliva_volume_ml",
+    "buffer_volume_ml",
+    "dilution_factor",
+    "collector_id",
+    "collector_lot",
+    "container_id",
+    "cartridge_lot",
+    "cartridge_expiry",
+    "missing_reasons",
+    "storage_handling_events"
+  ],
+  "title": "CollectionRequest",
+  "type": "object"
+}

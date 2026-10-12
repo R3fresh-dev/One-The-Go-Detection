@@ -39,6 +39,7 @@ import {
   action,
 } from "./src/ui/account";
 import { CheckScreen, EvidenceScreen, ResultScreen } from "./src/ui/checks";
+import { RawRecordingsScreen } from "./src/ui/raw-recordings";
 import { Button, Confirmation, Notice } from "./src/ui/components";
 import { ThemeProvider, useTheme } from "./src/ui/theme";
 
@@ -124,7 +125,7 @@ function Application() {
     }, 3000);
     const back = BackHandler.addEventListener("hardwareBackPress", () => {
       const current = controller.getSnapshot();
-      if (current.activeTask) {
+      if (current.activeTask || current.activeEye) {
         void controller
           .stopActive("ROUTE_HIDDEN")
           .catch((e) => controller.report(e));
@@ -181,7 +182,8 @@ function Shell({
       !!model.state &&
       !model.locked &&
       (!!model.identity || !!model.state.acknowledgedNotice) &&
-      !model.activeTask;
+      !model.activeTask &&
+      !model.activeEye;
   const props = { controller, model },
     screens: Record<Route, React.ReactNode> = {
       welcome: <WelcomeScreen {...props} />,
@@ -207,6 +209,7 @@ function Shell({
       privacy: <PrivacyScreen {...props} />,
       export: model.state ? <ExportScreen {...props} /> : null,
       studies: <StudiesScreen {...props} />,
+      "raw-recordings": <RawRecordingsScreen {...props} />,
       alcohol: <AlcoholScreen {...props} />,
       about: <AboutScreen {...props} />,
       status: <StatusScreen {...props} />,
@@ -344,7 +347,7 @@ function Shell({
           </View>
         )}
         <View style={{ flex: 1, minWidth: 0, maxWidth: 1100 }}>
-          {!model.activeTask && (
+          {!model.activeTask && !model.activeEye && (
             <View
               style={{
                 paddingHorizontal: 24,
@@ -395,7 +398,7 @@ function Shell({
               </View>
             </View>
           )}
-          {!model.activeTask && (
+          {!model.activeTask && !model.activeEye && (
             <ContextStrip
               key={`${controller.epoch}:${model.state?.generation}`}
               browser={Platform.OS === "web"}
@@ -406,45 +409,68 @@ function Shell({
               }
             />
           )}
-          {!model.activeTask && (model.error || model.message) && (
+          {BUILD.hostedPreview && (
             <View
+              accessibilityRole="text"
+              testID="fictional-preview-banner"
               style={{
                 paddingHorizontal: 24,
-                paddingVertical: 8,
-                gap: 8,
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: model.error
-                  ? colors.dangerSoft
-                  : colors.accentSoft,
+                paddingVertical: 12,
+                backgroundColor: colors.accentSoft,
               }}
             >
-              <Text
-                accessibilityLiveRegion="polite"
-                style={{
-                  flex: 1,
-                  color: model.error ? colors.danger : colors.ink,
-                  fontSize: 13,
-                  lineHeight: 19,
-                }}
-              >
-                {model.error ?? model.message}
+              <Text style={{ color: colors.ink, fontSize: 13, lineHeight: 20 }}>
+                FICTIONAL GUEST PREVIEW · Use invented values only. No account
+                services, sensor permissions, raw recording or uploads.{" "}
+                {Platform.OS === "web"
+                  ? "Browser records last only until this page closes."
+                  : "Fictional records are isolated in this app’s local preview workspace."}
               </Text>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Dismiss message"
-                onPress={() => controller.dismissError()}
-                style={{
-                  minWidth: 48,
-                  minHeight: 48,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: colors.secondary, fontSize: 22 }}>×</Text>
-              </Pressable>
             </View>
           )}
+          {!model.activeTask &&
+            !model.activeEye &&
+            (model.error || model.message) && (
+              <View
+                style={{
+                  paddingHorizontal: 24,
+                  paddingVertical: 8,
+                  gap: 8,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: model.error
+                    ? colors.dangerSoft
+                    : colors.accentSoft,
+                }}
+              >
+                <Text
+                  accessibilityLiveRegion="polite"
+                  style={{
+                    flex: 1,
+                    color: model.error ? colors.danger : colors.ink,
+                    fontSize: 13,
+                    lineHeight: 19,
+                  }}
+                >
+                  {model.error ?? model.message}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Dismiss message"
+                  onPress={() => controller.dismissError()}
+                  style={{
+                    minWidth: 48,
+                    minHeight: 48,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ color: colors.secondary, fontSize: 22 }}>
+                    ×
+                  </Text>
+                </Pressable>
+              </View>
+            )}
           <View style={{ flex: 1, minHeight: 0 }}>
             {model.loading ? (
               <View
@@ -470,10 +496,14 @@ function Shell({
         </View>
       </View>
       <Confirmation
-        sheet={model.activeTask ? null : model.sheet}
-        busy={model.busy}
+        sheet={model.activeTask || model.activeEye ? null : model.sheet}
+        busy={model.sheet?.interrupting ? model.privacyBusy : model.busy}
         onClose={() => controller.closeSheet()}
-        onConfirm={action(controller, () => controller.confirmSheet())}
+        onConfirm={() =>
+          void (model.sheet?.interrupting
+            ? controller.runPrivacy(() => controller.confirmSheet())
+            : controller.run(() => controller.confirmSheet()))
+        }
         onSecondary={action(controller, () => controller.confirmSheet(true))}
       />
       {privateCover && (

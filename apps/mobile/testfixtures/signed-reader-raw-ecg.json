@@ -1,0 +1,186 @@
+{
+  "fixture_scope": "fictional_signed_reader_raw_software_only_not_physical_evidence",
+  "device_public_key_pem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEWxDgsp+2ezIgeukXZ40FM+JBPxsV\nZjv8L/WrOnrWxaFBfY7rfIJK601ztnzI/2+h1wdtIZ6nahWr//+IXxAi1w==\n-----END PUBLIC KEY-----\n",
+  "capabilities": {
+    "protocol_version": 1,
+    "encodings": [
+      1
+    ],
+    "max_logical_bytes": 8192,
+    "max_att_bytes": 512,
+    "source": "prototype_sensor",
+    "protocol_id": "otgd_signed_reader_v1",
+    "device_id": "READER-TEST",
+    "boot_id": "d0f4b080-c10b-495d-a8eb-e4f500b539b2",
+    "hardware_revision": "bench_driver_fixture",
+    "firmware_version": "1.0.0",
+    "key_id": "fixture-p256",
+    "channels": [
+      "ppg",
+      "ecg",
+      "saliva",
+      "alcohol"
+    ],
+    "timestamp_resolution_ms": 1
+  },
+  "binding": {
+    "binding_id": "3d73c065-2e3f-4fc3-a3e9-f9ea0b007222",
+    "device_id": "READER-TEST",
+    "key_id": "fixture-p256",
+    "hardware_revision": "bench_driver_fixture",
+    "firmware_version": "1.0.0",
+    "state": "active",
+    "bound_at": "2026-01-01T00:00:00Z"
+  },
+  "expected": {
+    "environment": "test",
+    "owner_ref": "0eba84ef-a361-4feb-8b2f-4e0bc037e179",
+    "data_generation": 1,
+    "authorization_id": "56d2cad4-29fe-480c-a0a0-f6f6e89d72ca",
+    "binding_id": "3d73c065-2e3f-4fc3-a3e9-f9ea0b007222",
+    "device_id": "READER-TEST",
+    "key_id": "fixture-p256",
+    "configuration_id": "physical_fixture_v1",
+    "configuration_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "max_duration_ms": 1000,
+    "capture_context_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "server_start": {
+      "domain": "OTGD capture grant v1\u0000",
+      "grant": {
+        "attempt_id": "8b4274c4-c501-4078-8704-ede0e67e7fa3",
+        "authorization_id": "56d2cad4-29fe-480c-a0a0-f6f6e89d72ca",
+        "binding_id": "3d73c065-2e3f-4fc3-a3e9-f9ea0b007222",
+        "boot_id": "d0f4b080-c10b-495d-a8eb-e4f500b539b2",
+        "capture_context_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "channel": "ecg",
+        "configuration_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configuration_id": "physical_fixture_v1",
+        "configuration_max_duration_ms": 1000,
+        "configuration_submitted_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "configuration_version": "1.0.0",
+        "data_generation": 1,
+        "device_id": "READER-TEST",
+        "device_key_id": "fixture-p256",
+        "device_nonce": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+        "environment": "test",
+        "expires_at": "2026-10-11T07:24:13.786Z",
+        "issued_at": "2026-10-11T07:23:13.786Z",
+        "nonce": "cfca562f-0449-4206-b02e-4d83a5c063f3",
+        "owner_ref": "0eba84ef-a361-4feb-8b2f-4e0bc037e179",
+        "raw_recording_permission": {
+          "record": true,
+          "upload": false,
+          "receipt_id": "1592b14b-94e4-4fcb-9f9b-0ab752e9ff41",
+          "policy_id": "raw",
+          "policy_version": "1",
+          "policy_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "raw_notice_version": "1",
+          "raw_notice_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "schema_version": "1.0.0",
+        "session_id": "69d03e9a-e1b3-4405-a705-69e31291e995"
+      },
+      "key_id": "test-server",
+      "signature": "MEQCIGzJo1Mv0Rym9hkzkpdL5ol2iAwUTcob6G/WNICk6425AiAqyI4VvIDyf0GwTJIL7tlhcqq2QK+NUQxwDoLIPuChBA=="
+    },
+    "session_id": "69d03e9a-e1b3-4405-a705-69e31291e995",
+    "attempt_id": "8b4274c4-c501-4078-8704-ede0e67e7fa3",
+    "record_id": "658f3bf0-8a57-4e78-8676-b247a1444636",
+    "workspace_epoch": "test-owner:1",
+    "channel": "ecg"
+  },
+  "capture": {
+    "attestation_id": "9cc1ef74-a551-46e7-95dd-7c9a9a1e5862",
+    "deviceEndedMonotonicMs": 2000,
+    "deviceStartedMonotonicMs": 1000,
+    "endedAt": "2026-01-01T00:00:01Z",
+    "envelope": {
+      "attempt_id": "8b4274c4-c501-4078-8704-ede0e67e7fa3",
+      "authorization_id": "56d2cad4-29fe-480c-a0a0-f6f6e89d72ca",
+      "binding_id": "3d73c065-2e3f-4fc3-a3e9-f9ea0b007222",
+      "boot_id": "d0f4b080-c10b-495d-a8eb-e4f500b539b2",
+      "configuration_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "data_generation": 1,
+      "device_id": "READER-TEST",
+      "environment": "test",
+      "key_id": "fixture-p256",
+      "owner_ref": "0eba84ef-a361-4feb-8b2f-4e0bc037e179",
+      "payload_sha256": "2d3570f7e43a93abd80154f35b5287a4af0307dfc00ad42be19523fcdc826efb",
+      "schema_version": "1.0.0",
+      "sequence": 10,
+      "session_id": "69d03e9a-e1b3-4405-a705-69e31291e995"
+    },
+    "modelEligible": false,
+    "normalized_payload": {
+      "acquisition_config_id": "physical_fixture_v1",
+      "ecg_rmssd_ms": null,
+      "ecg_status": "valid",
+      "ended_at": "2026-01-01T00:00:01Z",
+      "heart_rate_bpm": 72,
+      "modality": "ecg",
+      "quality_flags": [
+        "UNQUALIFIED_TEST_FIXTURE"
+      ],
+      "raw_artifact_id": null,
+      "sample_rate_hz": 1000,
+      "source": "prototype_sensor",
+      "started_at": "2026-01-01T00:00:00Z",
+      "status": "valid"
+    },
+    "rawRecording": null,
+    "sampleChunks": [
+      {
+        "envelope": {
+          "attempt_id": "8b4274c4-c501-4078-8704-ede0e67e7fa3",
+          "authorization_id": "56d2cad4-29fe-480c-a0a0-f6f6e89d72ca",
+          "binding_id": "3d73c065-2e3f-4fc3-a3e9-f9ea0b007222",
+          "boot_id": "d0f4b080-c10b-495d-a8eb-e4f500b539b2",
+          "configuration_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "data_generation": 1,
+          "device_id": "READER-TEST",
+          "environment": "test",
+          "key_id": "fixture-p256",
+          "owner_ref": "0eba84ef-a361-4feb-8b2f-4e0bc037e179",
+          "payload_sha256": "4ab1ce543d2fdacfaf2dc267d6c6b254012393f552fd8e61b974ac23a2bf50b7",
+          "schema_version": "1.0.0",
+          "sequence": 9,
+          "session_id": "69d03e9a-e1b3-4405-a705-69e31291e995"
+        },
+        "normalized_payload": {
+          "acquisition_ended_monotonic_us": 2000000,
+          "acquisition_started_monotonic_us": 1000000,
+          "channel": "ecg",
+          "contact": "good",
+          "dropped_before": 0,
+          "first_sample_index": 0,
+          "sample_rate_hz": 1000,
+          "samples": [
+            {
+              "monotonic_us": 1000100,
+              "value": 24
+            },
+            {
+              "monotonic_us": 1001100,
+              "value": -4
+            }
+          ],
+          "schema_version": "1.0.0",
+          "units": "uV"
+        },
+        "signature": "MEYCIQDQK8wvTQVD/ZheJ6dWW95FUUUCrFBcy/OTYxMzAX6zpwIhAJS3sxADy9TbenUyZnXWAXgMYxPqh8PtYJ63YRJO3ZJV"
+      }
+    ],
+    "signature": "MEUCIC6wNVPrGfR7UPIAJ27s9+L9gX8kZZaBIKBOh/0APKUVAiEA/aDY4rE8TdYjO3HwUsa5Jx2W8cZ7QgS19ZMGSLieOfk=",
+    "source": "prototype_sensor",
+    "startedAt": "2026-01-01T00:00:00Z"
+  },
+  "recording": {
+    "format": "OTGD-ECG-SAMPLES-v1",
+    "media_type": "application/octet-stream",
+    "sha256": "3d10287b1a40c1026fd6ddc4947b9baeb4a0ba6baa3ff7cf7d50b0f3e99fb329",
+    "size_bytes": 2279,
+    "chunks": [
+      "T1RHRC1FQ0ctU0FNUExFUy12MQp7ImF0dGVzdGF0aW9uX2lkIjoiOWNjMWVmNzQtYTU1MS00NmU3LTk1ZGQtN2M5YTlhMWU1ODYyIiwiZW52ZWxvcGUiOnsiYXR0ZW1wdF9pZCI6IjhiNDI3NGM0LWM1MDEtNDA3OC04NzA0LWVkZTBlNjdlN2ZhMyIsImF1dGhvcml6YXRpb25faWQiOiI1NmQyY2FkNC0yOWZlLTQ4MGMtYTBhMC1mNmY2ZTg5ZDcyY2EiLCJiaW5kaW5nX2lkIjoiM2Q3M2MwNjUtMmUzZi00ZmMzLWEzZTktZjllYTBiMDA3MjIyIiwiYm9vdF9pZCI6ImQwZjRiMDgwLWMxMGItNDk1ZC1hOGViLWU0ZjUwMGI1MzliMiIsImNvbmZpZ3VyYXRpb25faGFzaCI6ImFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEiLCJkYXRhX2dlbmVyYXRpb24iOjEsImRldmljZV9pZCI6IlJFQURFUi1URVNUIiwiZW52aXJvbm1lbnQiOiJ0ZXN0Iiwia2V5X2lkIjoiZml4dHVyZS1wMjU2Iiwib3duZXJfcmVmIjoiMGViYTg0ZWYtYTM2MS00ZmViLThiMmYtNGUwYmMwMzdlMTc5IiwicGF5bG9hZF9zaGEyNTYiOiIyZDM1NzBmN2U0M2E5M2FiZDgwMTU0ZjM1YjUyODdhNGFmMDMwN2RmYzAwYWQ0MmJlMTk1MjNmY2RjODI2ZWZiIiwic2NoZW1hX3ZlcnNpb24iOiIxLjAuMCIsInNlcXVlbmNlIjoxMCwic2Vzc2lvbl9pZCI6IjY5ZDAzZTlhLWUxYjMtNDQwNS1hNzA1LTY5ZTMxMjkxZTk5NSJ9LCJub3JtYWxpemVkX3BheWxvYWQiOnsiYWNxdWlzaXRpb25fY29uZmlnX2lkIjoicGh5c2ljYWxfZml4dHVyZV92MSIsImVjZ19ybXNzZF9tcyI6bnVsbCwiZWNnX3N0YXR1cyI6InZhbGlkIiwiZW5kZWRfYXQiOiIyMDI2LTAxLTAxVDAwOjAwOjAxWiIsImhlYXJ0X3JhdGVfYnBtIjo3MiwibW9kYWxpdHkiOiJlY2ciLCJxdWFsaXR5X2ZsYWdzIjpbIlVOUVVBTElGSUVEX1RFU1RfRklYVFVSRSJdLCJyYXdfYXJ0aWZhY3RfaWQiOm51bGwsInNhbXBsZV9yYXRlX2h6IjoxMDAwLCJzb3VyY2UiOiJwcm90b3R5cGVfc2Vuc29yIiwic3RhcnRlZF9hdCI6IjIwMjYtMDEtMDFUMDA6MDA6MDBaIiwic3RhdHVzIjoidmFsaWQifSwic2FtcGxlX2NodW5rcyI6W3siZW52ZWxvcGUiOnsiYXR0ZW1wdF9pZCI6IjhiNDI3NGM0LWM1MDEtNDA3OC04NzA0LWVkZTBlNjdlN2ZhMyIsImF1dGhvcml6YXRpb25faWQiOiI1NmQyY2FkNC0yOWZlLTQ4MGMtYTBhMC1mNmY2ZTg5ZDcyY2EiLCJiaW5kaW5nX2lkIjoiM2Q3M2MwNjUtMmUzZi00ZmMzLWEzZTktZjllYTBiMDA3MjIyIiwiYm9vdF9pZCI6ImQwZjRiMDgwLWMxMGItNDk1ZC1hOGViLWU0ZjUwMGI1MzliMiIsImNvbmZpZ3VyYXRpb25faGFzaCI6ImFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEiLCJkYXRhX2dlbmVyYXRpb24iOjEsImRldmljZV9pZCI6IlJFQURFUi1URVNUIiwiZW52aXJvbm1lbnQiOiJ0ZXN0Iiwia2V5X2lkIjoiZml4dHVyZS1wMjU2Iiwib3duZXJfcmVmIjoiMGViYTg0ZWYtYTM2MS00ZmViLThiMmYtNGUwYmMwMzdlMTc5IiwicGF5bG9hZF9zaGEyNTYiOiI0YWIxY2U1NDNkMmZkYWNmYWYyZGMyNjdkNmM2YjI1NDAxMjM5M2Y1NTJmZDhlNjFiOTc0YWMyM2EyYmY1MGI3Iiwic2NoZW1hX3ZlcnNpb24iOiIxLjAuMCIsInNlcXVlbmNlIjo5LCJzZXNzaW9uX2lkIjoiNjlkMDNlOWEtZTFiMy00NDA1LWE3MDUtNjllMzEyOTFlOTk1In0sIm5vcm1hbGl6ZWRfcGF5bG9hZCI6eyJhY3F1aXNpdGlvbl9lbmRlZF9tb25vdG9uaWNfdXMiOjIwMDAwMDAsImFjcXVpc2l0aW9uX3N0YXJ0ZWRfbW9ub3RvbmljX3VzIjoxMDAwMDAwLCJjaGFubmVsIjoiZWNnIiwiY29udGFjdCI6Imdvb2QiLCJkcm9wcGVkX2JlZm9yZSI6MCwiZmlyc3Rfc2FtcGxlX2luZGV4IjowLCJzYW1wbGVfcmF0ZV9oeiI6MTAwMCwic2FtcGxlcyI6W3sibW9ub3RvbmljX3VzIjoxMDAwMTAwLCJ2YWx1ZSI6MjR9LHsibW9ub3RvbmljX3VzIjoxMDAxMTAwLCJ2YWx1ZSI6LTR9XSwic2NoZW1hX3ZlcnNpb24iOiIxLjAuMCIsInVuaXRzIjoidVYifSwic2lnbmF0dXJlIjoiTUVZQ0lRRFFLOHd2VFFWRC9aaGVKNmRXVzk1RlVVVUNyRkJjeS9PVFl4TXpBWDZ6cHdJaEFKUzNzeEFEeTlUYmVuVXlablhXQVhnTVl4UHFoOFB0WUo2M1lSSk8zWkpWIn1dLCJzY2hlbWFfdmVyc2lvbiI6IjEuMC4wIiwic2lnbmF0dXJlIjoiTUVVQ0lDNndOVlByR2ZSN1VQSUFKMjdzOStMOWdYOGtaWmFCSUtCT2gvMEFQS1VWQWlFQS9hRFk0ckU4VGRZak8zSHdVc2E1SngyVzhjWjdRZ1MxOVpNR1NMaWVPZms9In0="
+    ]
+  }
+}

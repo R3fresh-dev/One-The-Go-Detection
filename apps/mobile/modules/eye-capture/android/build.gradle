@@ -1,0 +1,15 @@
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+group = 'expo.modules.otgdeye'
+version = '1.0.0'
+android {
+  namespace 'expo.modules.otgdeye'
+  defaultConfig { minSdkVersion 24; versionCode 1; versionName '1.0.0' }
+  testOptions { unitTests.returnDefaultValues = true; unitTests.all { systemProperty 'otgd.eye.fixture.output', file("${buildDir}/generated-fixtures/native-optical-result-v1.json").absolutePath } }
+  sourceSets { test.resources.srcDirs += ['../fixtures'] }
+}
+dependencies {
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.json:json:20240303'
+  testImplementation 'com.facebook.react:react-android'
+}

@@ -42,12 +42,16 @@ jobs:
           uv run --project services/api python tools/verify_specs.py
           uv run --project services/api python tools/verify_openspec.py
       - name: Strict OpenSpec validation
-        run: npx --yes @fission-ai/openspec@1.14.1 validate production-mobile-platform --strict
+        run: |
+          for change in production-mobile-platform canonical-operator-governance cloud-deployment-customer-access optional-raw-recording-lifecycle authorized-model-execution independent-recovery-admission canonical-optical-native-acquisition canonical-signed-reader-acquisition authorized-raw-export qualified-participant-acquisition; do
+            npx --yes @fission-ai/openspec@1.14.1 validate "$change" --strict
+          done
         env:
           OPENSPEC_TELEMETRY: '0'
       - name: Generated API schema validation and drift
         run: |
           uv run --project services/api python tools/generate_application_contracts.py
+          uv run --project services/api python tools/generate_operator_contracts.py
           uv run --project services/api python - <<'PY'
           import json
           from pathlib import Path
@@ -55,10 +59,11 @@ jobs:
           from openapi_spec_validator import validate
           root = Path('contracts/application')
           validate(json.loads((root / 'openapi.json').read_text()))
-          for path in root.glob('*.schema.json'):
+          for path in Path('contracts').rglob('*.schema.json'):
               Draft202012Validator.check_schema(json.loads(path.read_text()))
+          assert Path('contracts/research/ResearchResult.schema.json').read_bytes() == Path('apps/mobile/src/contracts/ResearchResult.schema.json').read_bytes(), 'Backend/mobile research schema drift'
           PY
-          git diff --exit-code -- contracts/application
+          git diff --exit-code -- contracts/application contracts/operator contracts/research
       - run: uv run --project services/api python scripts/ci_gate.py infra-unit
         env:
           OTGD_ENVIRONMENT: test
@@ -71,6 +76,15 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     services:
+      localstack:
+        image: localstack/localstack:4.14.0@sha256:3ebc37595918b8accb852f8048fef2aff047d465167edd655528065b07bc364a
+        env:
+          SERVICES: s3
+          AWS_DEFAULT_REGION: us-east-2
+        ports: ['4566:4566']
+        options: >-
+          --health-cmd "curl -fsS http://localhost:4566/_localstack/health"
+          --health-interval 5s --health-timeout 3s --health-retries 30
       postgres:
         image: postgres:16-bookworm@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4
         env:
@@ -87,6 +101,7 @@ jobs:
       OTGD_DATABASE_NAME: otgd_ci
       OTGD_DATABASE_POOL_SIZE: '5'
       OTGD_DISPOSABLE_DATABASE: 'true'
+      OTGD_LIVE_S3_ENDPOINT: http://localhost:4566
       OTGD_APP_DATABASE_USER: otgd_app_ci
       OTGD_APP_DATABASE_PASSWORD: disposable_runtime_fixture_only
       OTGD_TOMBSTONE_KEY: '3535353535353535353535353535353535353535353535353535353535353535'
@@ -129,6 +144,10 @@ jobs:
         run: python scripts/local-platform.py check
       - name: Fictional OAuth, HTTP, worker, export and deletion flow
         run: python scripts/local-platform.py check-app --confirm-fictional-workspace
+      - name: Real retained version erasure and late arrival reconciliation
+        run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps api uv run --no-sync python /app/infra/local/raw_version_probe.py
+      - name: Real participant collection, delegated report custody and queued result
+        run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps migrate uv run --no-sync python /app/infra/local/participant_probe.py --confirm-fictional-workspace
       - name: Actual signed concurrent API and SQS performance
         run: python scripts/ci_gate.py performance
       - name: Record limits of this evidence

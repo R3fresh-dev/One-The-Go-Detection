@@ -48,18 +48,46 @@ For a bounded replay, the maintenance identity locks the existing job, increment
 7. The tool rebuilds subject-HMAC lookups for **both** all-data and account deletion, including accounts absent from the backup. It reapplies maximum valid generations, erases restored old-generation health rows for completed deletions, reconstructs missing accepted work and keeps incomplete accounts blocked. Every recovered operator/study/device qualification is suspended.
 8. The tool writes and version-verifies a separate `RecoveryActivation` record. Its authentication cutoff is at least current time and at least every retained earlier cutoff. The database records that receipt and watermark. Signed `auth_time`, not a refreshed token's `iat`, must meet the cutoff after reopening. Fresh sign-in does not automatically restore study or capture permission.
 9. With services still isolated from participant traffic, run targeted probes against deleted and nondeleted fixture accounts, stale tokens, stale generations, old queues, expired exports and unavailable journal/key paths. Pending deletions remain blocked while workers reconcile their accepted scope. Restore current studies/device authority only from independent current approved records, with audit evidence. This release has no preapproved human configurations to re-enable.
-10. Activate only from the actual migration and restore task receipts. Keep `recoveryRequired=true`. Confirm readiness and current authenticated owner behavior before admitting traffic. Record achieved recovery duration and data-loss interval, plus outstanding identity/cleanup cases; do not describe configured RTO/RPO objectives as achieved performance.
+10. With services still stopped, run `verify-admission` against the exact restored image/source and save its actual task receipt. Activate within fifteen minutes of that task's completion using migration, restore and admission receipts, exact-revision GitHub gate evidence and the signed QA approval. Keep `recoveryRequired=true`. Confirm readiness and current authenticated owner behavior before admitting traffic. Record achieved recovery duration and data-loss interval, plus outstanding identity/cleanup cases; do not describe configured RTO/RPO objectives as achieved performance.
 
 ```bash
 uv run --project services/api python deploy/platform.py restore \
   --config infra/config/prod.local.json \
   --release deploy/releases/prod-REVIEWED_COMMIT.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
+  --qa-evidence deploy/receipts/qa-validation-signed.json \
   --trusted-public-key /secure/otgd-release-public.pem \
   --backup-created-at ACTUAL_UTC_RECOVERY_POINT \
   --output deploy/receipts/prod-restore.json
 ```
 
-After successful probes, set `activateServices=true`, retain `recoveryRequired=true`, and pass both `--output deploy/receipts/prod-migration.json` and `--recovery-receipt deploy/receipts/prod-restore.json` to `activate`. The tool verifies the corresponding actual ECS tasks. No script silently changes a failed recovery record to verified.
+After successful isolated probes, run independent admission verification while `activateServices=false`:
+
+```bash
+uv run --project services/api python deploy/platform.py verify-admission \
+  --config infra/config/prod.local.json \
+  --release deploy/releases/prod-REVIEWED_COMMIT.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
+  --qa-evidence deploy/receipts/qa-validation-signed.json \
+  --trusted-public-key /secure/otgd-release-public.pem \
+  --output deploy/receipts/prod-admission.json
+```
+
+Set `activateServices=true`, retain `recoveryRequired=true` and the reviewed snapshot identifier, then activate within fifteen minutes of admission-task completion:
+
+```bash
+uv run --project services/api python deploy/platform.py activate \
+  --config infra/config/prod.local.json \
+  --release deploy/releases/prod-REVIEWED_COMMIT.json \
+  --gate-evidence deploy/receipts/gates-REVIEWED_COMMIT.json \
+  --qa-evidence deploy/receipts/qa-validation-signed.json \
+  --trusted-public-key /secure/otgd-release-public.pem \
+  --output deploy/receipts/prod-migration.json \
+  --recovery-receipt deploy/receipts/prod-restore.json \
+  --admission-receipt deploy/receipts/prod-admission.json
+```
+
+The tool verifies the corresponding actual ECS tasks, exact commands, immutable image and source/account/region bindings. Missing or stale evidence fails closed; if admission expires, rerun it with services stopped and retain a fresh receipt. QA follows the same sequence with QA configuration/release paths and omits `--qa-evidence`; production requires the signed QA approval on every release operation. No script silently changes a failed recovery record to verified. The [deployment guide](../../deploy/README.md) documents the separate QA/prod one-shot wrappers, protected stage journals and DNS/public-access checks.
 
 The standalone [restore-journal.py](../../scripts/restore-journal.py) can run inside the maintenance image for controlled exercises. It requires `OTGD_RECOVERY_REQUIRED=true`, the chosen UTC timestamp and `--confirm-quiesced`. It does not start services. Current support includes the reviewed privacy-v1 events; unknown event/key/retention schemas deliberately block recovery.
 
@@ -75,7 +103,7 @@ For a signing/device compromise, immediately suspend the affected configuration/
 
 ## Rollback, cleanup and QA teardown
 
-Roll back application code to a retained, previously signed digest only if it is compatible with the current schema. The baseline migration supports schema 1 and refuses a downgrade. Stop/verify services, deploy the known digest stopped, execute/verify its compatible migration, and activate through the ordinary release gate. After recovery, a rollback must preserve the recovery-required setting, latest cutoff and journal receipts. Do not roll back the independent journal, subject key or generation barriers.
+Roll back application code to a retained, previously signed digest only if it is compatible with the current schema. The baseline migration supports schema 1 and refuses a downgrade. Stop/verify services, deploy the known digest stopped, execute/verify its compatible migration, run fresh `verify-admission`, and activate with both receipts through the ordinary release gate. Production still requires current signed QA approval bound to that exact release; an expired approval or missing retained gate evidence cannot be waived by calling the operation a rollback. After recovery, preserve the recovery-required setting, latest cutoff, restore receipt and journal authority. Do not roll back the independent journal, subject key or generation barriers. Partial one-shot failure does not imply rollback: inspect its protected `deployment-state.json`, actual completed receipts and current stack before choosing a new deployment attempt or compatible rollback.
 
 QA teardown is explicit: quiesce, verify account/environment, then invoke `qa-destroy --confirm-qa-destroy`. The helper refuses production. CloudFormation keeps the versioned buckets, journal, KMS keys, secrets, software images and retained log groups; the normal QA database policy creates a final snapshot. Recovery-origin databases use retain rather than destroy. Inventory residual resources and costs after deletion; `down` or stack removal does not mean zero AWS cost. Remove residual QA data only under its actual retention/deletion policy and never delete journal evidence needed by retained snapshots.
 

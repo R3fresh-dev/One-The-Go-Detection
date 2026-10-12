@@ -1,0 +1,606 @@
+{
+  "$defs": {
+    "CardiacServerIntervalScope": {
+      "additionalProperties": false,
+      "description": "Reviewed HR-only interval; no claim of a measured device UTC clock.",
+      "properties": {
+        "device_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Device Id",
+          "type": "string"
+        },
+        "key_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Key Id",
+          "type": "string"
+        },
+        "hardware_revision": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Hardware Revision",
+          "type": "string"
+        },
+        "firmware_versions": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Firmware Versions",
+          "type": "array"
+        },
+        "adapter_id": {
+          "enum": [
+            "otgd_esp32_adc_v1",
+            "otgd_sparkfun_max32664_v1"
+          ],
+          "title": "Adapter Id",
+          "type": "string"
+        },
+        "extractor_version": {
+          "enum": [
+            "adc_peak_intervals_v1",
+            "sparkfun_sensor_bpm_v1"
+          ],
+          "title": "Extractor Version",
+          "type": "string"
+        },
+        "channel": {
+          "const": "cardiac",
+          "title": "Channel",
+          "type": "string"
+        },
+        "modality": {
+          "const": "ppg",
+          "title": "Modality",
+          "type": "string"
+        },
+        "configuration_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Configuration Id",
+          "type": "string"
+        },
+        "configuration_version": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+          "title": "Configuration Version",
+          "type": "string"
+        },
+        "configuration_submitted_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Submitted Sha256",
+          "type": "string"
+        },
+        "behavior": {
+          "const": "follows_current_signed_grant",
+          "title": "Behavior",
+          "type": "string"
+        },
+        "timing_method": {
+          "const": "server_issue_to_attestation_receipt_v1",
+          "title": "Timing Method",
+          "type": "string"
+        },
+        "maximum_interval_ms": {
+          "maximum": 120000,
+          "minimum": 100,
+          "title": "Maximum Interval Ms",
+          "type": "integer"
+        },
+        "server_utc_error_ms": {
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Server Utc Error Ms",
+          "type": "number"
+        },
+        "maximum_monotonic_rate_error_ppm": {
+          "anyOf": [
+            {
+              "maximum": 10000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Maximum Monotonic Rate Error Ppm"
+        }
+      },
+      "required": [
+        "device_id",
+        "key_id",
+        "hardware_revision",
+        "firmware_versions",
+        "adapter_id",
+        "extractor_version",
+        "channel",
+        "modality",
+        "configuration_id",
+        "configuration_version",
+        "configuration_submitted_sha256",
+        "behavior",
+        "timing_method",
+        "maximum_interval_ms",
+        "server_utc_error_ms",
+        "maximum_monotonic_rate_error_ppm"
+      ],
+      "title": "CardiacServerIntervalScope",
+      "type": "object"
+    },
+    "NativeTimingScope": {
+      "additionalProperties": false,
+      "properties": {
+        "phone_models": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Phone Models",
+          "type": "array"
+        },
+        "os_versions": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Os Versions",
+          "type": "array"
+        },
+        "native_builds": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Native Builds",
+          "type": "array"
+        },
+        "implementation_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Implementation Version",
+          "type": "string"
+        },
+        "extractor_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Extractor Version",
+          "type": "string"
+        },
+        "input_timestamp_method": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Input Timestamp Method",
+          "type": "string"
+        },
+        "presentation_evidence_method": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Presentation Evidence Method",
+          "type": "string"
+        },
+        "clock_domain": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Clock Domain",
+          "type": "string"
+        },
+        "bias_ms": {
+          "maximum": 1000,
+          "minimum": -1000,
+          "title": "Bias Ms",
+          "type": "number"
+        },
+        "max_uncertainty_ms": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000,
+          "title": "Max Uncertainty Ms",
+          "type": "number"
+        },
+        "qualifying_trial_count": {
+          "maximum": 1000000,
+          "minimum": 30,
+          "title": "Qualifying Trial Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "phone_models",
+        "os_versions",
+        "native_builds",
+        "implementation_version",
+        "extractor_version",
+        "input_timestamp_method",
+        "presentation_evidence_method",
+        "clock_domain",
+        "bias_ms",
+        "max_uncertainty_ms",
+        "qualifying_trial_count"
+      ],
+      "title": "NativeTimingScope",
+      "type": "object"
+    },
+    "OpticalGeometryScope": {
+      "additionalProperties": false,
+      "properties": {
+        "phone_models": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Phone Models",
+          "type": "array"
+        },
+        "os_versions": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Os Versions",
+          "type": "array"
+        },
+        "native_builds": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Native Builds",
+          "type": "array"
+        },
+        "camera_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Camera Id",
+          "type": "string"
+        },
+        "lens_facing": {
+          "enum": [
+            "front",
+            "back"
+          ],
+          "title": "Lens Facing",
+          "type": "string"
+        },
+        "capture_width": {
+          "maximum": 1920,
+          "minimum": 64,
+          "title": "Capture Width",
+          "type": "integer"
+        },
+        "capture_height": {
+          "maximum": 1920,
+          "minimum": 64,
+          "title": "Capture Height",
+          "type": "integer"
+        },
+        "expected_output_rotation_degrees": {
+          "enum": [
+            0,
+            90,
+            180,
+            270
+          ],
+          "title": "Expected Output Rotation Degrees",
+          "type": "integer"
+        },
+        "roi": {
+          "$ref": "#/$defs/OpticalROI"
+        },
+        "roi_sample_width": {
+          "maximum": 128,
+          "minimum": 8,
+          "title": "Roi Sample Width",
+          "type": "integer"
+        },
+        "roi_sample_height": {
+          "maximum": 128,
+          "minimum": 8,
+          "title": "Roi Sample Height",
+          "type": "integer"
+        },
+        "extractor_version": {
+          "const": "otgd-dark-component-v1",
+          "title": "Extractor Version",
+          "type": "string"
+        },
+        "pixel_basis": {
+          "const": "roi_sample_pixels",
+          "title": "Pixel Basis",
+          "type": "string"
+        },
+        "pixels_to_mm": {
+          "exclusiveMinimum": 0,
+          "maximum": 100,
+          "title": "Pixels To Mm",
+          "type": "number"
+        },
+        "min_diameter_pixels": {
+          "exclusiveMinimum": 0,
+          "maximum": 1920,
+          "title": "Min Diameter Pixels",
+          "type": "number"
+        },
+        "max_diameter_pixels": {
+          "exclusiveMinimum": 0,
+          "maximum": 1920,
+          "title": "Max Diameter Pixels",
+          "type": "number"
+        },
+        "max_uncertainty_mm": {
+          "exclusiveMinimum": 0,
+          "maximum": 100,
+          "title": "Max Uncertainty Mm",
+          "type": "number"
+        }
+      },
+      "required": [
+        "phone_models",
+        "os_versions",
+        "native_builds",
+        "camera_id",
+        "lens_facing",
+        "capture_width",
+        "capture_height",
+        "expected_output_rotation_degrees",
+        "roi",
+        "roi_sample_width",
+        "roi_sample_height",
+        "extractor_version",
+        "pixel_basis",
+        "pixels_to_mm",
+        "min_diameter_pixels",
+        "max_diameter_pixels",
+        "max_uncertainty_mm"
+      ],
+      "title": "OpticalGeometryScope",
+      "type": "object"
+    },
+    "OpticalROI": {
+      "additionalProperties": false,
+      "properties": {
+        "x0": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "X0",
+          "type": "number"
+        },
+        "y0": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Y0",
+          "type": "number"
+        },
+        "x1": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "X1",
+          "type": "number"
+        },
+        "y1": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Y1",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "title": "OpticalROI",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "calibration_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Calibration Id",
+      "type": "string"
+    },
+    "purpose": {
+      "enum": [
+        "device",
+        "model",
+        "native_timing",
+        "optical_geometry",
+        "cardiac_server_interval"
+      ],
+      "title": "Purpose",
+      "type": "string"
+    },
+    "native_timing": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/NativeTimingScope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "optical_geometry": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OpticalGeometryScope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "cardiac_server_interval": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CardiacServerIntervalScope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "model_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Id"
+    },
+    "device_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Device Id"
+    },
+    "key_id": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Key Id"
+    },
+    "hardware_revision": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Hardware Revision"
+    },
+    "firmware_versions": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Firmware Versions",
+      "type": "array"
+    },
+    "channels": {
+      "items": {
+        "enum": [
+          "saliva",
+          "eyes",
+          "cardiac",
+          "ecg",
+          "task",
+          "alcohol"
+        ],
+        "type": "string"
+      },
+      "maxItems": 6,
+      "title": "Channels",
+      "type": "array"
+    },
+    "calibration_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Calibration Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "registry_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "calibration_id",
+    "purpose",
+    "calibration_sha256"
+  ],
+  "title": "Calibration",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/calibration.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

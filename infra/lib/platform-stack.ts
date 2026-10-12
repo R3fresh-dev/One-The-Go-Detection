@@ -7,6 +7,7 @@ import {
   aws_logs as logs, aws_cloudwatch as cw, aws_cloudwatch_actions as actions,
   aws_sns as sns, aws_sns_subscriptions as subscriptions, aws_budgets as budgets,
   aws_route53 as route53, aws_route53_targets as targets,
+  aws_cloudfront as cloudfront, aws_cloudfront_origins as origins,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { PlatformConfig } from './config';
@@ -39,6 +40,11 @@ export class PlatformStack extends Stack {
     tag(this,c);
     const dataKey=new kms.Key(this,'DataKey',{enableKeyRotation:true,removalPolicy:RemovalPolicy.RETAIN,description:`${prefix} encrypted data and transport`});
     const journalKey=new kms.Key(this,'JournalKey',{enableKeyRotation:true,removalPolicy:RemovalPolicy.RETAIN,description:`${prefix} independent recovery journal; never erase with account data`});
+    const captureSigningKey=new kms.Key(this,'CaptureSigningKey',{
+      keySpec:kms.KeySpec.ECC_NIST_P256,keyUsage:kms.KeyUsage.SIGN_VERIFY,
+      enableKeyRotation:false,removalPolicy:RemovalPolicy.RETAIN,
+      alias:`alias/${prefix}-capture-grant`,description:`${prefix} server-signed physical capture grants; private key remains in KMS`,
+    });
     const vpc=new ec2.Vpc(this,'Network',{
       ipAddresses:ec2.IpAddresses.cidr(c.vpcCidr),maxAzs:2,natGateways:prod?2:1,
       subnetConfiguration:[
@@ -90,6 +96,42 @@ export class PlatformStack extends Stack {
       removalPolicy:RemovalPolicy.RETAIN,autoDeleteObjects:false,
     });
     const artifacts=bucket('Artifacts',dataKey), exports=bucket('Exports',dataKey), journal=bucket('DeletionJournal',journalKey);
+    // Application assets remain private at their S3 origin; prior release
+    // prefixes are retained for reviewed rollback.
+    const web=new s3.Bucket(this,'WebAssets',{
+      versioned:true,encryption:s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess:s3.BlockPublicAccess.BLOCK_ALL,enforceSSL:true,
+      objectOwnership:s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      removalPolicy:RemovalPolicy.RETAIN,autoDeleteObjects:false,
+    });
+    const webHeaders=new cloudfront.ResponseHeadersPolicy(this,'WebHeaders',{
+      securityHeadersBehavior:{
+        contentTypeOptions:{override:true},frameOptions:{frameOption:cloudfront.HeadersFrameOption.DENY,override:true},
+        referrerPolicy:{referrerPolicy:cloudfront.HeadersReferrerPolicy.NO_REFERRER,override:true},
+        strictTransportSecurity:{accessControlMaxAge:Duration.days(365),includeSubdomains:true,override:true},
+        contentSecurityPolicy:{contentSecurityPolicy:`default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://${c.domain} https://${c.cognitoDomainPrefix}.auth.${c.region}.amazoncognito.com https://cognito-idp.${c.region}.amazonaws.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'`,override:true},
+      },
+      customHeadersBehavior:{customHeaders:[{header:'Permissions-Policy',value:'camera=(self), microphone=(), geolocation=()',override:true}]},
+    });
+    const navigation=new cloudfront.Function(this,'WebNavigation',{
+      runtime:cloudfront.FunctionRuntime.JS_2_0,
+      code:cloudfront.FunctionCode.fromInline("function handler(event) { var request = event.request; if ((request.method === 'GET' || request.method === 'HEAD') && /^\\/[a-zA-Z0-9_\\/-]*$/.test(request.uri)) request.uri = '/index.html'; return request; }"),
+    });
+    const distribution=new cloudfront.Distribution(this,'WebDelivery',{
+      defaultRootObject:'index.html',minimumProtocolVersion:cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+      ...(c.webDomain?{domainNames:[c.webDomain],certificate:acm.Certificate.fromCertificateArn(this,'WebCertificate',c.webCertificateArn!)}:{}),
+      defaultBehavior:{
+        origin:origins.S3BucketOrigin.withOriginAccessControl(web,{originPath:`/releases/${c.releaseId}`}),
+        viewerProtocolPolicy:cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        allowedMethods:cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        cachePolicy:cloudfront.CachePolicy.CACHING_DISABLED,responseHeadersPolicy:webHeaders,compress:true,
+        functionAssociations:[{eventType:cloudfront.FunctionEventType.VIEWER_REQUEST,function:navigation}],
+      },
+      // Rewrite only extensionless SPA navigation; missing assets stay errors.
+    });
+    const webOrigin=`https://${c.webDomain??distribution.distributionDomainName}`;
+    const redirects=[...c.oauthRedirectUris,webOrigin+'/'];
+    const logouts=[...c.oauthLogoutUris,webOrigin+'/'];
     artifacts.addLifecycleRule({id:'TaggedOrphansOnly',enabled:true,tagFilters:{disposition:'orphan'},expiration:Duration.days(1),noncurrentVersionExpiration:Duration.days(1)});
     artifacts.addLifecycleRule({id:'AbandonedMultipart',enabled:true,abortIncompleteMultipartUploadAfter:Duration.days(1)});
     // Access expires at 24 hours in the API. Lifecycle is a delayed safety net.
@@ -111,7 +153,7 @@ export class PlatformStack extends Stack {
       generateSecret:false,enableTokenRevocation:true,preventUserExistenceErrors:true,
       authFlows:{userSrp:true},
       accessTokenValidity:Duration.minutes(15),idTokenValidity:Duration.minutes(15),refreshTokenValidity:Duration.days(30),
-      oAuth:{flows:{authorizationCodeGrant:true,implicitCodeGrant:false},scopes:[cognito.OAuthScope.OPENID,cognito.OAuthScope.EMAIL,cognito.OAuthScope.PROFILE],callbackUrls:c.oauthRedirectUris,logoutUrls:c.oauthLogoutUris},
+      oAuth:{flows:{authorizationCodeGrant:true,implicitCodeGrant:false},scopes:[cognito.OAuthScope.OPENID,cognito.OAuthScope.EMAIL,cognito.OAuthScope.PROFILE],callbackUrls:redirects,logoutUrls:logouts},
     });
     const issuer=`https://cognito-idp.${c.region}.amazonaws.com/${userPool.userPoolId}`;
     const cluster=new ecs.Cluster(this,'Cluster',{vpc,clusterName:prefix,containerInsightsV2:ecs.ContainerInsights.DISABLED});
@@ -123,7 +165,8 @@ export class PlatformStack extends Stack {
       OTGD_DATABASE_SSLMODE:'verify-full',OTGD_DATABASE_SSLROOTCERT:'/app/infra/certs/global-bundle.pem',
       OTGD_ISSUER:issuer,OTGD_CLIENT_ID:client.userPoolClientId,OTGD_JWKS_URL:`${issuer}/.well-known/jwks.json`,
       OTGD_API_ORIGIN:`https://${c.domain}`,OTGD_IDENTITY_ORIGIN:userPoolDomain.baseUrl(),
-      OTGD_OAUTH_REDIRECT_URIS:JSON.stringify(c.oauthRedirectUris),OTGD_AWS_REGION:c.region,
+      OTGD_OAUTH_REDIRECT_URIS:JSON.stringify(redirects),OTGD_AWS_REGION:c.region,
+      OTGD_DEPLOYMENT_ACCOUNT:c.account,OTGD_SOURCE_REVISION:c.releaseId,
       OTGD_ARTIFACT_BUCKET:artifacts.bucketName,OTGD_EXPORT_BUCKET:exports.bucketName,OTGD_JOURNAL_BUCKET:journal.bucketName,
       OTGD_QUEUE_URL:queue.queueUrl,OTGD_DLQ_URL:dlq.queueUrl,OTGD_USER_POOL_ID:userPool.userPoolId,
       OTGD_TOMBSTONE_KEY_ID:'v1',OTGD_STORAGE_KMS_KEY_ID:dataKey.keyArn,OTGD_JOURNAL_KMS_KEY_ID:journalKey.keyArn,
@@ -149,6 +192,8 @@ export class PlatformStack extends Stack {
       return task;
     };
     const api=definition('api',prod?512:256,prod?1024:512,['uv','run','--no-sync','uvicorn','otgd.main:app','--host','0.0.0.0','--port','8000','--no-access-log','--limit-concurrency','100','--timeout-graceful-shutdown','100'],5);
+    api.defaultContainer!.addEnvironment('OTGD_CAPTURE_SIGNING_KEY_ID',captureSigningKey.keyArn);
+    api.addToTaskRolePolicy(new iam.PolicyStatement({actions:['kms:Sign','kms:GetPublicKey'],resources:[captureSigningKey.keyArn]}));
     api.defaultContainer!.addPortMappings({containerPort:8000});
     const worker=definition('worker',512,1024,['uv','run','--no-sync','python','-m','otgd.worker'],3);
     worker.addContainer('metrics',{
@@ -158,6 +203,8 @@ export class PlatformStack extends Stack {
       logging:ecs.LogDrivers.awsLogs({logGroup,streamPrefix:'metrics'}),stopTimeout:Duration.seconds(30),
     });
     const migration=definition('migration',512,1024,['uv','run','--no-sync','python','-m','otgd.migrate'],1,true);
+    migration.defaultContainer!.addEnvironment('OTGD_CAPTURE_SIGNING_KEY_ID',captureSigningKey.keyArn);
+    migration.addToTaskRolePolicy(new iam.PolicyStatement({actions:['kms:GetPublicKey'],resources:[captureSigningKey.keyArn]}));
     const objectPolicy=(task:ecs.FargateTaskDefinition,b:s3.Bucket,permissions:string[])=>task.addToTaskRolePolicy(new iam.PolicyStatement({actions:permissions,resources:[b.arnForObjects('*')]}));
     const listPolicy=(task:ecs.FargateTaskDefinition,b:s3.Bucket)=>task.addToTaskRolePolicy(new iam.PolicyStatement({actions:['s3:ListBucket','s3:ListBucketVersions','s3:GetBucketLocation','s3:GetBucketVersioning'],resources:[b.bucketArn]}));
     objectPolicy(api,artifacts,['s3:PutObject','s3:GetObject','s3:GetObjectVersion','s3:GetObjectTagging','s3:GetObjectVersionTagging']);
@@ -201,6 +248,7 @@ export class PlatformStack extends Stack {
     if (c.hostedZoneId) {
       const zone=route53.HostedZone.fromHostedZoneAttributes(this,'Zone',{hostedZoneId:c.hostedZoneId,zoneName:c.hostedZoneName!});
       new route53.ARecord(this,'ApiDns',{zone,recordName:c.domain,target:route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(loadBalancer))});
+      if(c.webDomain) new route53.CnameRecord(this,'WebDns',{zone,recordName:c.webDomain,domainName:distribution.distributionDomainName,ttl:Duration.minutes(5)});
     }
 
     const notifications=new sns.Topic(this,'OperationalNotifications',{masterKey:dataKey});
@@ -231,7 +279,32 @@ export class PlatformStack extends Stack {
     // ECS DescribeTasks has no resource-level scope; inspection only, no secrets.
     recoveryRole.addToPolicy(new iam.PolicyStatement({actions:['ecs:DescribeTasks'],resources:['*']}));
 
+    // No assumer identity/policy is assigned here. Account operators must grant
+    // three distinct humans permission to assume their corresponding MFA role.
+    // The registry CLI runs with that host's verified STS identity over an
+    // approved private DB path; a generic ECS task identity is not a reviewer.
+    const registryRoles={
+      RegistrySubmitter:new iam.Role(this,'RegistrySubmitter',{roleName:`${prefix}-registry-submitter`,assumedBy:new iam.AccountPrincipal(c.account).withConditions({Bool:{'aws:MultiFactorAuthPresent':'true'}}),maxSessionDuration:Duration.hours(1),description:'MFA operator host: submit typed registry evidence; no runtime trust'}),
+      RegistryReviewer:new iam.Role(this,'RegistryReviewer',{roleName:`${prefix}-registry-reviewer`,assumedBy:new iam.AccountPrincipal(c.account).withConditions({Bool:{'aws:MultiFactorAuthPresent':'true'}}),maxSessionDuration:Duration.hours(1),description:'Independent MFA operator host: review immutable registry evidence'}),
+      RegistryReleaser:new iam.Role(this,'RegistryReleaser',{roleName:`${prefix}-registry-releaser`,assumedBy:new iam.AccountPrincipal(c.account).withConditions({Bool:{'aws:MultiFactorAuthPresent':'true'}}),maxSessionDuration:Duration.hours(1),description:'Independent MFA operator host: release or revoke reviewed registries'}),
+    };
+    for(const role of Object.values(registryRoles)) {
+      role.addToPolicy(new iam.PolicyStatement({actions:['iam:GetRole'],resources:Object.values(registryRoles).map(value=>value.roleArn)}));
+      database.secret!.grantRead(role);
+      // Deliberately no ECS RunTask/PassRole, participant trust or study/model
+      // auto-provisioning. Invocation retains the human's authenticated role.
+    }
+    registryRoles.RegistryReleaser.addToPolicy(new iam.PolicyStatement({actions:['s3:PutObject'],resources:[journal.arnForObjects('scope-resumptions/*')]}));
+    registryRoles.RegistryReleaser.addToPolicy(new iam.PolicyStatement({actions:['s3:ListBucket','s3:ListBucketVersions','s3:GetBucketLocation','s3:GetBucketVersioning','s3:GetBucketObjectLockConfiguration'],resources:[journal.bucketArn]}));
+    registryRoles.RegistryReleaser.addToPolicy(new iam.PolicyStatement({actions:['s3:GetObject','s3:GetObjectVersion','s3:GetObjectRetention'],resources:[journal.arnForObjects('*')]}));
+    registryRoles.RegistryReleaser.addToPolicy(new iam.PolicyStatement({actions:['kms:GenerateDataKey','kms:Encrypt','kms:Decrypt'],resources:[journalKey.keyArn]}));
+    // Runtime event writers cannot fabricate independently reviewed restore
+    // resumption authority, even with their general journal event grants.
+    journal.addToResourcePolicy(new iam.PolicyStatement({effect:iam.Effect.DENY,principals:[api.taskRole,worker.taskRole,migration.taskRole],actions:['s3:PutObject'],resources:[journal.arnForObjects('scope-resumptions/*')]}));
+
     const output:Record<string,string>={ApiOrigin:`https://${c.domain}`,LoadBalancerDns:loadBalancer.loadBalancerDnsName,Issuer:issuer,ClientId:client.userPoolClientId,IdentityOrigin:userPoolDomain.baseUrl(),Cluster:cluster.clusterArn,ApiService:service.serviceName,WorkerService:workerService.serviceName,MigrationTaskDefinition:migration.taskDefinitionArn,MigrationSecurityGroup:migrationSg.securityGroupId,PrivateSubnets:vpc.privateSubnets.map(x=>x.subnetId).join(','),DatabaseIdentifier:database.instanceIdentifier,DatabaseHost:database.dbInstanceEndpointAddress,DatabaseConnectionBudget:String(prod?80:40),DatabaseRecoveryOrigin:c.databaseSnapshotIdentifier??'new',RecoveryRequired:String(c.recoveryRequired),ArtifactBucket:artifacts.bucketName,ExportBucket:exports.bucketName,JournalBucket:journal.bucketName,QueueUrl:queue.queueUrl,DeadLetterQueueUrl:dlq.queueUrl,ApplicationDatabaseSecret:appSecret.secretArn,TombstoneKeySecret:tombstoneSecret.secretArn,JournalKeyArn:journalKey.keyArn,DataKeyArn:dataKey.keyArn,ImageDigest:c.imageDigest,ReleaseId:c.releaseId,RecoveryOperatorRole:recoveryRole.roleArn,LogGroup:logGroup.logGroupName};
+    Object.assign(output,{WebOrigin:webOrigin,WebCallbackUri:webOrigin+'/',WebBucket:web.bucketName,WebDistributionId:distribution.distributionId,WebDistributionDomain:distribution.distributionDomainName,WebReleasePrefix:`releases/${c.releaseId}`,CaptureSigningKeyArn:captureSigningKey.keyArn});
+    for(const [name,role] of Object.entries(registryRoles)) output[name]=role.roleArn;
     for (const [key,value] of Object.entries(output)) new CfnOutput(this,`Output${key}`,{value}).overrideLogicalId(key);
   }
 }

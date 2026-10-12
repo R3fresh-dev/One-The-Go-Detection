@@ -1,0 +1,171 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "authorization_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Authorization Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "account_ref": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+      "title": "Account Ref",
+      "type": "string"
+    },
+    "data_generation": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Data Generation",
+      "type": "integer"
+    },
+    "study_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Study Id",
+      "type": "string"
+    },
+    "raw_kinds": {
+      "items": {
+        "enum": [
+          "eye_video",
+          "ecg_waveform"
+        ],
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "title": "Raw Kinds",
+      "type": "array"
+    },
+    "purpose": {
+      "const": "participant_requested_raw_export",
+      "title": "Purpose",
+      "type": "string"
+    },
+    "purpose_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Purpose Id",
+      "type": "string"
+    },
+    "purpose_text": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Purpose Text",
+      "type": "string"
+    },
+    "retention_policy_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Retention Policy Id",
+      "type": "string"
+    },
+    "retention_policy_version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Retention Policy Version",
+      "type": "string"
+    },
+    "retention_policy_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Retention Policy Sha256",
+      "type": "string"
+    },
+    "export_notice_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Export Notice Version",
+      "type": "string"
+    },
+    "export_notice_text": {
+      "maxLength": 16384,
+      "minLength": 1,
+      "title": "Export Notice Text",
+      "type": "string"
+    },
+    "export_notice_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Export Notice Sha256",
+      "type": "string"
+    },
+    "max_export_lifetime_seconds": {
+      "maximum": 86400,
+      "minimum": 60,
+      "title": "Max Export Lifetime Seconds",
+      "type": "integer"
+    },
+    "max_uncompressed_bytes": {
+      "maximum": 52428800,
+      "minimum": 1,
+      "title": "Max Uncompressed Bytes",
+      "type": "integer"
+    },
+    "max_archive_bytes": {
+      "maximum": 67108864,
+      "minimum": 1,
+      "title": "Max Archive Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "registry_id",
+    "authorization_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "account_ref",
+    "data_generation",
+    "study_id",
+    "raw_kinds",
+    "purpose",
+    "purpose_id",
+    "purpose_text",
+    "retention_policy_id",
+    "retention_policy_version",
+    "retention_policy_sha256",
+    "export_notice_version",
+    "export_notice_text",
+    "export_notice_sha256",
+    "max_export_lifetime_seconds",
+    "max_uncompressed_bytes",
+    "max_archive_bytes"
+  ],
+  "title": "RawExportAuthorization",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/raw_export.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

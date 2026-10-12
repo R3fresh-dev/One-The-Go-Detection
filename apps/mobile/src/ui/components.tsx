@@ -394,10 +394,12 @@ export function SwitchRow({
   detail,
   value,
   onChange,
+  disabled = false,
 }: {
   title: string;
   detail?: string;
   value: boolean;
+  disabled?: boolean;
   onChange: (value: boolean) => void;
 }) {
   const c = useTheme();
@@ -415,6 +417,10 @@ export function SwitchRow({
       </View>
       <Switch
         value={value}
+        disabled={disabled}
+        accessibilityState={{ disabled, checked: value }}
+        aria-disabled={disabled}
+        aria-checked={value}
         onValueChange={onChange}
         accessibilityLabel={title}
         trackColor={{ true: c.accent }}
@@ -593,6 +599,7 @@ export interface SheetSpec {
   text: string;
   confirm: string;
   danger?: boolean;
+  interrupting?: boolean;
   action: () => Promise<void> | void;
   secondary?: { title: string; action: () => Promise<void> | void };
 }

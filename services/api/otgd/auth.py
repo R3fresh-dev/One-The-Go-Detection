@@ -117,6 +117,10 @@ def authenticate(db, authorization, receipt=False):
     from .identity_keys import require_key
     require_key(db)
     subject = subject_hash(claims)
+    from .recovery_authority import require_authority
+    independent_cutoff = require_authority(db)
+    if claims["auth_time"] < independent_cutoff:
+        raise Problem(401, "FRESH_SIGN_IN_REQUIRED")
     recovery = db.get(SystemState, "recovery")
     if settings().recovery_required and (
         not recovery or not recovery.body.get("verified")
@@ -124,14 +128,29 @@ def authenticate(db, authorization, receipt=False):
         raise Problem(503, "RECOVERY_NOT_VERIFIED", retryable=True)
     if recovery and claims["auth_time"] < recovery.body.get("authentication_cutoff", 0):
         raise Problem(401, "FRESH_SIGN_IN_REQUIRED")
-    restored = db.get(SystemState, "subject:" + subject)
+    issuer_revoked = False
+    if settings().environment == 'local':
+        from .local_oauth_state import family_status
+        admitted, issuer_revoked = family_status(db, claims['origin_jti'], claims['sub'])
+        if not admitted or (issuer_revoked and not receipt):
+            raise Problem(401, 'AUTH_REQUIRED')
     account = db.scalar(
         select(Account)
         .where(Account.subject_hash == subject)
         .with_for_update()
         .execution_options(populate_existing=True)
     )
+    if settings().environment == 'local':
+        from .local_oauth_state import family_status, lock_identity
+        # Existing accounts are locked before their identity. For a subject
+        # without an account, serialize issuance/provisioning on its identity
+        # before inserting; an absent SQL row cannot provide a row lock.
+        identity = lock_identity(db, claims['sub'])
+        admitted, issuer_revoked = family_status(db, claims['origin_jti'], claims['sub'])
+        if (identity.consumed and (not receipt or account is None)) or not admitted or (issuer_revoked and not receipt):
+            raise Problem(401, 'AUTH_REQUIRED')
     if account is None:
+        restored = db.get(SystemState, "subject:" + subject)
         if restored:
             data = restored.body
             values = dict(
@@ -154,7 +173,7 @@ def authenticate(db, authorization, receipt=False):
             .with_for_update()
             .execution_options(populate_existing=True)
         )
-    revoked = db.get(Revocation, family_hash(account.id, claims["origin_jti"]))
+    revoked = db.get(Revocation, family_hash(account.id, claims["origin_jti"])) or issuer_revoked
     if revoked and not receipt:
         raise Problem(401, "AUTH_REQUIRED")
     if account.state == "deleted" and not receipt:

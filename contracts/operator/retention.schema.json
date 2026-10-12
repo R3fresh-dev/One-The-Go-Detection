@@ -1,0 +1,147 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "registry_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "exclusiveMinimum": 0,
+      "title": "Expires At",
+      "type": "number"
+    },
+    "evidence_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Evidence Ref",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "policy_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "study_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Study Id",
+      "type": "string"
+    },
+    "raw_kinds": {
+      "items": {
+        "enum": [
+          "eye_video",
+          "ecg_waveform",
+          "source_lab_report"
+        ],
+        "type": "string"
+      },
+      "maxItems": 3,
+      "title": "Raw Kinds",
+      "type": "array"
+    },
+    "max_retention_days": {
+      "maximum": 3650,
+      "minimum": 1,
+      "title": "Max Retention Days",
+      "type": "integer"
+    },
+    "access_roles": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "title": "Access Roles",
+      "type": "array"
+    },
+    "withdrawal_behavior": {
+      "const": "delete_live_data",
+      "title": "Withdrawal Behavior",
+      "type": "string"
+    },
+    "exceptions": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 32,
+      "title": "Exceptions",
+      "type": "array"
+    },
+    "purpose_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Purpose Id",
+      "type": "string"
+    },
+    "purpose_text": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Purpose Text",
+      "type": "string"
+    },
+    "raw_notice_version": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Raw Notice Version",
+      "type": "string"
+    },
+    "raw_notice_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Raw Notice Sha256",
+      "type": "string"
+    },
+    "raw_notice_text": {
+      "maxLength": 16384,
+      "minLength": 1,
+      "title": "Raw Notice Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "registry_id",
+    "version",
+    "expires_at",
+    "evidence_ref",
+    "evidence_sha256",
+    "policy_id",
+    "study_id",
+    "raw_kinds",
+    "max_retention_days",
+    "access_roles",
+    "withdrawal_behavior",
+    "purpose_id",
+    "purpose_text",
+    "raw_notice_version",
+    "raw_notice_sha256",
+    "raw_notice_text"
+  ],
+  "title": "Retention",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://one-the-go-detection.invalid/contracts/operator/retention.schema.json",
+  "description": "Maintenance submission only. Semantic identity, independent review, current dependencies and expiry are additionally enforced by otgd.operator_governance. This schema is not approval."
+}

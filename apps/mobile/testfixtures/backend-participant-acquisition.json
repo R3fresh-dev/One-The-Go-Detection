@@ -1,0 +1,2550 @@
+{
+  "fixture_scope": "FICTIONAL SOFTWARE TEST HTTP RESPONSES; NO HUMAN OR ASSAY APPROVAL; PDF STORAGE DOUBLE",
+  "import_flow": {
+    "configuration": {
+      "schema_version": "1.0.0",
+      "registry_id": "fictional-participant-lab-config",
+      "version": "v1",
+      "expires_at": 1791796067.058375,
+      "evidence_ref": "FICTIONAL-SOFTWARE-FIXTURE-NO-HUMAN-APPROVAL",
+      "evidence_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "configuration_id": "fictional-participant-lab-config",
+      "study_id": "fictional-governance-study",
+      "protocol_id": "fictional-governance-protocol",
+      "channel": "saliva",
+      "sha256": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+      "material": {
+        "schema_version": "1.0.0",
+        "channel": "saliva",
+        "source": "reference_lab",
+        "collection_method_ids": [
+          "FICTIONAL-PARTICIPANT-COLLECTION"
+        ],
+        "assay_bases": [
+          "free"
+        ],
+        "concentration_bases": [
+          "collected_mixture"
+        ],
+        "correction_statuses": [
+          "not_corrected"
+        ]
+      },
+      "qualification_evidence_ref": "fictional-governance-qualification-saliva",
+      "retention_policy_id": "fictional-governance-retention",
+      "max_duration_ms": 600000,
+      "software_adapter_id": "reference_lab_import_v1",
+      "raw_retention_approved": false,
+      "device_id": null,
+      "key_id": null,
+      "calibration_id": null,
+      "approved_hardware": [],
+      "approved_firmware": [],
+      "supported_phone_models": [],
+      "supported_os_versions": [],
+      "supported_native_builds": [],
+      "optical_safety_ref": null,
+      "lab_methods": {
+        "FICTIONAL-INDEPENDENT-LABORATORY-METHOD": {
+          "calibration_ids": [
+            "fictional-calibration"
+          ],
+          "instrument_ids": [
+            "FICTIONAL-LABORATORY-INSTRUMENT"
+          ]
+        }
+      },
+      "participant_protocol": {
+        "schema_version": "1.0.0",
+        "instruction_id": "FICTIONAL-LAB-INSTRUCTIONS",
+        "version": "v1",
+        "text": "FICTIONAL collection instructions for software tests. No human or assay approval.",
+        "sha256": "30ef058a32f73ec6fe943d0a3da8a7193423df2685cdf14bf5573834f70f1c71",
+        "required_confirmations": [
+          {
+            "id": "method_reviewed",
+            "text": "I reviewed this fictional procedure."
+          }
+        ],
+        "maximum_acknowledgment_age_seconds": 120,
+        "kind": "reference_lab",
+        "methods": [
+          {
+            "id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "version": "v1",
+            "instructions": "FICTIONAL buffered specimen procedure; not for participant use.",
+            "saliva_volume_required": true,
+            "buffer_volume_required": true,
+            "dilution_factor_required": true,
+            "dilution_definition": "total_mixture_over_saliva",
+            "fixed_dilution_factor": null,
+            "saliva_volume_min_ml": 0.5,
+            "saliva_volume_max_ml": 2.0,
+            "buffer_volume_min_ml": 0.0,
+            "buffer_volume_max_ml": 2.0,
+            "collector_lot_required": true,
+            "container_required": true,
+            "expiry_required": true,
+            "permitted_containers": [
+              "FICTIONAL-CONTAINER"
+            ],
+            "required_handling_events": [
+              "sealed"
+            ],
+            "permitted_null_reasons": [
+              "unknown",
+              "not_applicable"
+            ]
+          }
+        ],
+        "maximum_collection_submission_delay_seconds": 300,
+        "maximum_analysis_delay_seconds": 86400
+      }
+    },
+    "context": {
+      "schema_version": "1.0.0",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "context_confirmed_at": "2026-10-11T09:07:47.089Z",
+      "profile_version_id": null,
+      "profile_snapshot_sha256": "4d39f5fc853f967791aa2f138220307b3ef56c897c3a47ac82c906bb56eb5ed8",
+      "history_snapshot_sha256": "d88c0743ced64f55fb9073dbbee04b75f2f397311fe596c6a53a7bbbc76ea10f",
+      "protocol_id": "fictional-governance-protocol",
+      "configuration_refs": [
+        {
+          "id": "fictional-participant-lab-config",
+          "version": "v1",
+          "sha256": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "scope": "measurement_collection"
+        }
+      ],
+      "baseline_refs": [],
+      "device_associations": [],
+      "self_report_context": null
+    },
+    "capabilities": {
+      "account_ref": "ba7509fb-d3b9-4431-b3f4-f65c6abef98d",
+      "data_generation": 1,
+      "account_state": "active",
+      "server_time": "2026-10-11T09:07:47.369Z",
+      "notice": {
+        "version": "v1",
+        "sha256": "d7cbc95af587b78603d5c1f7158eebe227f67289100f99f9763f01b30b45f12c",
+        "locale": "en",
+        "content_path": "/v1/notices/v1",
+        "mandatory": true,
+        "acknowledged": true
+      },
+      "inference_available": false,
+      "model_execution_supported": true,
+      "model_reason_codes": [
+        "MODEL_UNAVAILABLE"
+      ],
+      "channels": {
+        "saliva": {
+          "available": true,
+          "authorization_available": true,
+          "software_available": true,
+          "reason_codes": [],
+          "configurations": [
+            {
+              "study_id": "fictional-governance-study",
+              "protocol_id": "fictional-governance-protocol",
+              "configuration_id": "fictional-participant-lab-config",
+              "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+              "configuration_version": "v1",
+              "submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+              "expires_at": "2026-10-12T09:07:47.058Z",
+              "supported_phone_models": [],
+              "supported_os_versions": [],
+              "supported_native_builds": [],
+              "software_adapter_id": "reference_lab_import_v1",
+              "participant_protocol": {
+                "schema_version": "1.0.0",
+                "instruction_id": "FICTIONAL-LAB-INSTRUCTIONS",
+                "version": "v1",
+                "text": "FICTIONAL collection instructions for software tests. No human or assay approval.",
+                "sha256": "30ef058a32f73ec6fe943d0a3da8a7193423df2685cdf14bf5573834f70f1c71",
+                "required_confirmations": [
+                  {
+                    "id": "method_reviewed",
+                    "text": "I reviewed this fictional procedure."
+                  }
+                ],
+                "maximum_acknowledgment_age_seconds": 120,
+                "kind": "reference_lab",
+                "methods": [
+                  {
+                    "id": "FICTIONAL-PARTICIPANT-COLLECTION",
+                    "version": "v1",
+                    "instructions": "FICTIONAL buffered specimen procedure; not for participant use.",
+                    "saliva_volume_required": true,
+                    "buffer_volume_required": true,
+                    "dilution_factor_required": true,
+                    "dilution_definition": "total_mixture_over_saliva",
+                    "fixed_dilution_factor": null,
+                    "saliva_volume_min_ml": 0.5,
+                    "saliva_volume_max_ml": 2.0,
+                    "buffer_volume_min_ml": 0.0,
+                    "buffer_volume_max_ml": 2.0,
+                    "collector_lot_required": true,
+                    "container_required": true,
+                    "expiry_required": true,
+                    "permitted_containers": [
+                      "FICTIONAL-CONTAINER"
+                    ],
+                    "required_handling_events": [
+                      "sealed"
+                    ],
+                    "permitted_null_reasons": [
+                      "unknown",
+                      "not_applicable"
+                    ]
+                  }
+                ],
+                "maximum_collection_submission_delay_seconds": 300,
+                "maximum_analysis_delay_seconds": 86400
+              },
+              "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392"
+            }
+          ]
+        },
+        "eyes": {
+          "available": false,
+          "authorization_available": false,
+          "software_available": true,
+          "reason_codes": [
+            "NO_QUALIFIED_CONFIGURATION"
+          ],
+          "configurations": []
+        },
+        "cardiac": {
+          "available": false,
+          "authorization_available": false,
+          "software_available": true,
+          "reason_codes": [
+            "NO_QUALIFIED_CONFIGURATION"
+          ],
+          "configurations": []
+        },
+        "ecg": {
+          "available": false,
+          "authorization_available": false,
+          "software_available": true,
+          "reason_codes": [
+            "NO_QUALIFIED_CONFIGURATION"
+          ],
+          "configurations": []
+        },
+        "task": {
+          "available": false,
+          "authorization_available": false,
+          "software_available": true,
+          "reason_codes": [
+            "NO_QUALIFIED_CONFIGURATION"
+          ],
+          "configurations": []
+        },
+        "alcohol": {
+          "available": false,
+          "authorization_available": false,
+          "software_available": false,
+          "reason_codes": [
+            "NO_QUALIFIED_CONFIGURATION"
+          ],
+          "configurations": []
+        }
+      },
+      "studies": [
+        {
+          "invitation_id": "fictional-invitation",
+          "document_version": "v1",
+          "document_sha256": "37545f093437e3badedd71db08902c9a1ee3467a5cfb3cf8e749d2c43b4fe616",
+          "accepted": true,
+          "acknowledged_at": "2026-10-11T09:07:47.080Z",
+          "study_id": "fictional-governance-study",
+          "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+          "state": "active",
+          "accepted_at": "2026-10-11T09:07:47.084Z"
+        }
+      ]
+    },
+    "ack_request": {
+      "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+      "configuration_id": "fictional-participant-lab-config",
+      "configuration_version": "v1",
+      "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+      "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "acknowledged_at": "2026-10-11T09:07:47.099Z",
+      "confirmed": true,
+      "confirmations": [
+        "method_reviewed"
+      ],
+      "setup_id": null,
+      "rest_started_at": null,
+      "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+      "collection_method_version": "v1"
+    },
+    "instruction_receipt": {
+      "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+      "configuration_id": "fictional-participant-lab-config",
+      "configuration_version": "v1",
+      "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+      "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "acknowledged_at": "2026-10-11T09:07:47.099Z",
+      "confirmed": true,
+      "confirmations": [
+        "method_reviewed"
+      ],
+      "setup_id": null,
+      "rest_started_at": null,
+      "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+      "collection_method_version": "v1",
+      "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+      "accepted_at": "2026-10-11T09:07:47.112Z"
+    },
+    "authorization": {
+      "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+      "channel": "saliva",
+      "binding_id": null,
+      "device_id": null,
+      "configuration_id": "fictional-participant-lab-config",
+      "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+      "raw_recording_kind": null,
+      "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+      "authorization_id": "2bfbadb6-b169-4006-9246-67b4e2a06ad4",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "state": "issued",
+      "expires_at": "2026-10-11T09:08:47.125Z",
+      "expires_epoch": 1791709727.125345,
+      "configuration_max_duration_ms": 600000,
+      "supported_phone_models": [],
+      "supported_os_versions": [],
+      "supported_native_builds": [],
+      "software_adapter_id": "reference_lab_import_v1",
+      "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+      "configuration_version": "v1",
+      "capture_context_sha256": "4457ec8005dff24875ff1c499bfa3aa928f9e9fbc3fb32aac0c9837c70e78738",
+      "configuration_material": {
+        "schema_version": "1.0.0",
+        "channel": "saliva",
+        "source": "reference_lab",
+        "collection_method_ids": [
+          "FICTIONAL-PARTICIPANT-COLLECTION"
+        ],
+        "assay_bases": [
+          "free"
+        ],
+        "concentration_bases": [
+          "collected_mixture"
+        ],
+        "correction_statuses": [
+          "not_corrected"
+        ]
+      },
+      "raw_recording_permission": null,
+      "participant_protocol": {
+        "schema_version": "1.0.0",
+        "instruction_id": "FICTIONAL-LAB-INSTRUCTIONS",
+        "version": "v1",
+        "text": "FICTIONAL collection instructions for software tests. No human or assay approval.",
+        "sha256": "30ef058a32f73ec6fe943d0a3da8a7193423df2685cdf14bf5573834f70f1c71",
+        "required_confirmations": [
+          {
+            "id": "method_reviewed",
+            "text": "I reviewed this fictional procedure."
+          }
+        ],
+        "maximum_acknowledgment_age_seconds": 120,
+        "kind": "reference_lab",
+        "methods": [
+          {
+            "id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "version": "v1",
+            "instructions": "FICTIONAL buffered specimen procedure; not for participant use.",
+            "saliva_volume_required": true,
+            "buffer_volume_required": true,
+            "dilution_factor_required": true,
+            "dilution_definition": "total_mixture_over_saliva",
+            "fixed_dilution_factor": null,
+            "saliva_volume_min_ml": 0.5,
+            "saliva_volume_max_ml": 2.0,
+            "buffer_volume_min_ml": 0.0,
+            "buffer_volume_max_ml": 2.0,
+            "collector_lot_required": true,
+            "container_required": true,
+            "expiry_required": true,
+            "permitted_containers": [
+              "FICTIONAL-CONTAINER"
+            ],
+            "required_handling_events": [
+              "sealed"
+            ],
+            "permitted_null_reasons": [
+              "unknown",
+              "not_applicable"
+            ]
+          }
+        ],
+        "maximum_collection_submission_delay_seconds": 300,
+        "maximum_analysis_delay_seconds": 86400
+      },
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:47.099Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+        "accepted_at": "2026-10-11T09:07:47.112Z"
+      }
+    },
+    "start": {
+      "authorization_id": "2bfbadb6-b169-4006-9246-67b4e2a06ad4",
+      "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+      "device_boot_id": null,
+      "state": "started",
+      "server_started_at": "2026-10-11T09:07:47.138Z",
+      "raw_recording_permission": null,
+      "server_start": {
+        "grant": {
+          "schema_version": "1.0.0",
+          "environment": "test",
+          "owner_ref": "ba7509fb-d3b9-4431-b3f4-f65c6abef98d",
+          "data_generation": 1,
+          "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+          "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+          "authorization_id": "2bfbadb6-b169-4006-9246-67b4e2a06ad4",
+          "binding_id": null,
+          "device_id": null,
+          "device_key_id": null,
+          "boot_id": null,
+          "channel": "saliva",
+          "configuration_max_duration_ms": 600000,
+          "configuration_id": "fictional-participant-lab-config",
+          "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+          "configuration_version": "v1",
+          "capture_context_sha256": "4457ec8005dff24875ff1c499bfa3aa928f9e9fbc3fb32aac0c9837c70e78738",
+          "issued_at": "2026-10-11T09:07:47.138Z",
+          "expires_at": "2026-10-11T09:08:47.138Z",
+          "device_nonce": null,
+          "nonce": "97966719-9c64-497d-99e2-d41e08ab567b",
+          "raw_recording_permission": null,
+          "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+          "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb"
+        },
+        "signature": "MEYCIQDmQ7Nb/C9c7h4hSb5VEoy4nOSAHRUsGqzc6XnR+Bv7NwIhANerk2twqJ4SeqTzLaaqfZCa+d5U6ReErP5ImaPc2ClV",
+        "key_id": "local-capture-v1:a3e2886a64de03230a385d05bd182067ae5c1e52326f0a9566ffa6684e242033",
+        "domain": "OTGD capture grant v1\u0000"
+      },
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:47.099Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+        "accepted_at": "2026-10-11T09:07:47.112Z"
+      }
+    },
+    "collection_request": {
+      "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+      "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+      "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+      "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+      "collection_method_version": "v1",
+      "collected_at": "2026-10-11T09:07:47.140Z",
+      "status": "valid",
+      "quality_flags": [],
+      "saliva_volume_ml": 1.0,
+      "buffer_volume_ml": 1.0,
+      "dilution_factor": 2.0,
+      "collector_id": "FICTIONAL-COLLECTOR",
+      "collector_lot": "FICTIONAL-KIT-LOT",
+      "container_id": "FICTIONAL-CONTAINER",
+      "cartridge_lot": null,
+      "cartridge_expiry": "2026-10-11T10:07:47.140Z",
+      "missing_reasons": {
+        "cartridge_lot": "not_applicable"
+      },
+      "storage_handling_events": [
+        {
+          "event": "sealed",
+          "occurred_at": "2026-10-11T09:07:47.140Z",
+          "temperature_c": null,
+          "duration_min": null
+        }
+      ]
+    },
+    "collection_receipt": {
+      "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "request": {
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "collected_at": "2026-10-11T09:07:47.140Z",
+        "status": "valid",
+        "quality_flags": [],
+        "saliva_volume_ml": 1.0,
+        "buffer_volume_ml": 1.0,
+        "dilution_factor": 2.0,
+        "collector_id": "FICTIONAL-COLLECTOR",
+        "collector_lot": "FICTIONAL-KIT-LOT",
+        "container_id": "FICTIONAL-CONTAINER",
+        "cartridge_lot": null,
+        "cartridge_expiry": "2026-10-11T10:07:47.140Z",
+        "missing_reasons": {
+          "cartridge_lot": "not_applicable"
+        },
+        "storage_handling_events": [
+          {
+            "event": "sealed",
+            "occurred_at": "2026-10-11T09:07:47.140Z",
+            "temperature_c": null,
+            "duration_min": null
+          }
+        ]
+      },
+      "state": "pending_lab",
+      "accepted_at": "2026-10-11T09:07:47.155Z",
+      "authorization_id": "2bfbadb6-b169-4006-9246-67b4e2a06ad4",
+      "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+      "configuration_version": "v1",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:47.099Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+        "accepted_at": "2026-10-11T09:07:47.112Z"
+      },
+      "projection": {
+        "sample": {
+          "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+          "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+          "collected_at": "2026-10-11T09:07:47.140Z",
+          "volume_ml": 1.0,
+          "dilution_factor": 2.0,
+          "status": "valid",
+          "quality_flags": []
+        },
+        "saliva": []
+      },
+      "attempt": {
+        "schema_version": "1.0.0",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "component": "saliva",
+        "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-11T09:07:47.140Z",
+        "ended_at": "2026-10-11T09:07:47.140Z",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "quality_flags": [],
+        "component_metadata": {
+          "armed_at": "2026-10-11T09:07:47.095Z",
+          "projection": {
+            "sample": {
+              "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:47.140Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": []
+          },
+          "instruction_receipt": {
+            "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+            "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+            "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:47.099Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+            "accepted_at": "2026-10-11T09:07:47.112Z"
+          },
+          "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+          "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590"
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      "attempt_revision": 2,
+      "attempt_sha256": "be146ec8a0c92c1fc2bc3f399fa0219162f900b140875d2663d08f3c7ebed735"
+    },
+    "pending_status": {
+      "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "request": {
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "collected_at": "2026-10-11T09:07:47.140Z",
+        "status": "valid",
+        "quality_flags": [],
+        "saliva_volume_ml": 1.0,
+        "buffer_volume_ml": 1.0,
+        "dilution_factor": 2.0,
+        "collector_id": "FICTIONAL-COLLECTOR",
+        "collector_lot": "FICTIONAL-KIT-LOT",
+        "container_id": "FICTIONAL-CONTAINER",
+        "cartridge_lot": null,
+        "cartridge_expiry": "2026-10-11T10:07:47.140Z",
+        "missing_reasons": {
+          "cartridge_lot": "not_applicable"
+        },
+        "storage_handling_events": [
+          {
+            "event": "sealed",
+            "occurred_at": "2026-10-11T09:07:47.140Z",
+            "temperature_c": null,
+            "duration_min": null
+          }
+        ]
+      },
+      "state": "pending_lab",
+      "accepted_at": "2026-10-11T09:07:47.155Z",
+      "authorization_id": "2bfbadb6-b169-4006-9246-67b4e2a06ad4",
+      "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+      "configuration_version": "v1",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:47.099Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+        "accepted_at": "2026-10-11T09:07:47.112Z"
+      },
+      "projection": {
+        "sample": {
+          "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+          "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+          "collected_at": "2026-10-11T09:07:47.140Z",
+          "volume_ml": 1.0,
+          "dilution_factor": 2.0,
+          "status": "valid",
+          "quality_flags": []
+        },
+        "saliva": []
+      },
+      "attempt": {
+        "schema_version": "1.0.0",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "component": "saliva",
+        "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-11T09:07:47.140Z",
+        "ended_at": "2026-10-11T09:07:47.140Z",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "quality_flags": [],
+        "component_metadata": {
+          "armed_at": "2026-10-11T09:07:47.095Z",
+          "projection": {
+            "sample": {
+              "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:47.140Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": []
+          },
+          "instruction_receipt": {
+            "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+            "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+            "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:47.099Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+            "accepted_at": "2026-10-11T09:07:47.112Z"
+          },
+          "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+          "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590"
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      "attempt_revision": 2,
+      "attempt_sha256": "be146ec8a0c92c1fc2bc3f399fa0219162f900b140875d2663d08f3c7ebed735",
+      "collection_attempt": {
+        "schema_version": "1.0.0",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "component": "saliva",
+        "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-11T09:07:47.140Z",
+        "ended_at": "2026-10-11T09:07:47.140Z",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "quality_flags": [],
+        "component_metadata": {
+          "armed_at": "2026-10-11T09:07:47.095Z",
+          "projection": {
+            "sample": {
+              "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:47.140Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": []
+          },
+          "instruction_receipt": {
+            "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+            "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+            "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:47.099Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+            "accepted_at": "2026-10-11T09:07:47.112Z"
+          },
+          "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+          "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590"
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      "collection_attempt_revision": 2,
+      "collection_attempt_sha256": "be146ec8a0c92c1fc2bc3f399fa0219162f900b140875d2663d08f3c7ebed735",
+      "abandonment": null,
+      "imports": []
+    },
+    "import_request": {
+      "account_ref": "ba7509fb-d3b9-4431-b3f4-f65c6abef98d",
+      "data_generation": 1,
+      "study_id": "fictional-governance-study",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+      "collection_attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+      "source_report_artifact_id": "9c39c015-3b62-4f51-b0bf-b8456e711dbd",
+      "measurements": [
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "2c23c59f-5a2b-4a96-842d-6da75baf8831",
+          "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+          "analyte": "THC",
+          "qualifier": "quantified",
+          "value_ng_ml": 12.0,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.3,
+            "loq_ng_ml": 1.0,
+            "upper_ng_ml": 200.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-INDEPENDENT-LABORATORY-METHOD",
+          "calibration_id": "fictional-calibration",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LABORATORY-INSTRUMENT",
+          "operator_ref": "76b99c48-1b67-4c1d-98ef-ad95b5591a20",
+          "collected_at": "2026-10-11T09:07:47.140Z",
+          "measured_at": "2026-10-11T09:07:47.237Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": 12.0,
+            "unit": "ng/mL",
+            "qualifier": "quantified"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "collected_mixture",
+          "correction_status": "not_corrected"
+        }
+      ]
+    },
+    "import_receipt": {
+      "import_id": "d1d6f7f3-6011-427e-96bf-7187a1a11271",
+      "analysis_attempt_id": "ce4f6900-7db7-47cc-854a-12687f411740",
+      "state": "verified_import"
+    },
+    "import_status": {
+      "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "request": {
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "collected_at": "2026-10-11T09:07:47.140Z",
+        "status": "valid",
+        "quality_flags": [],
+        "saliva_volume_ml": 1.0,
+        "buffer_volume_ml": 1.0,
+        "dilution_factor": 2.0,
+        "collector_id": "FICTIONAL-COLLECTOR",
+        "collector_lot": "FICTIONAL-KIT-LOT",
+        "container_id": "FICTIONAL-CONTAINER",
+        "cartridge_lot": null,
+        "cartridge_expiry": "2026-10-11T10:07:47.140Z",
+        "missing_reasons": {
+          "cartridge_lot": "not_applicable"
+        },
+        "storage_handling_events": [
+          {
+            "event": "sealed",
+            "occurred_at": "2026-10-11T09:07:47.140Z",
+            "temperature_c": null,
+            "duration_min": null
+          }
+        ]
+      },
+      "state": "analysis_available",
+      "accepted_at": "2026-10-11T09:07:47.155Z",
+      "authorization_id": "2bfbadb6-b169-4006-9246-67b4e2a06ad4",
+      "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+      "configuration_version": "v1",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:47.099Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+        "accepted_at": "2026-10-11T09:07:47.112Z"
+      },
+      "projection": {
+        "sample": {
+          "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+          "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+          "collected_at": "2026-10-11T09:07:47.140Z",
+          "volume_ml": 1.0,
+          "dilution_factor": 2.0,
+          "status": "valid",
+          "quality_flags": []
+        },
+        "saliva": []
+      },
+      "attempt": {
+        "schema_version": "1.0.0",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "ce4f6900-7db7-47cc-854a-12687f411740",
+        "component": "saliva",
+        "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "supersedes_attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-11T09:07:47.140Z",
+        "ended_at": "2026-10-11T09:07:47.140Z",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "quality_flags": [],
+        "component_metadata": {
+          "armed_at": "2026-10-11T09:07:47.095Z",
+          "projection": {
+            "sample": {
+              "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:47.140Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": [
+              {
+                "schema_version": "0.1.0",
+                "measurement_id": "2c23c59f-5a2b-4a96-842d-6da75baf8831",
+                "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+                "analyte": "THC",
+                "qualifier": "quantified",
+                "value_ng_ml": 12.0,
+                "unit": "ng/mL",
+                "assay_basis": "free",
+                "limits": {
+                  "lod_ng_ml": 0.3,
+                  "loq_ng_ml": 1.0,
+                  "upper_ng_ml": 200.0
+                },
+                "source": "reference_lab",
+                "method_id": "FICTIONAL-INDEPENDENT-LABORATORY-METHOD",
+                "calibration_id": "fictional-calibration",
+                "cartridge_lot": null,
+                "instrument_id": "FICTIONAL-LABORATORY-INSTRUMENT",
+                "operator_ref": "76b99c48-1b67-4c1d-98ef-ad95b5591a20",
+                "collected_at": "2026-10-11T09:07:47.140Z",
+                "measured_at": "2026-10-11T09:07:47.237Z",
+                "quality_flags": [],
+                "original_report": {
+                  "value": 12.0,
+                  "unit": "ng/mL",
+                  "qualifier": "quantified"
+                },
+                "uncertainty_ng_ml": null,
+                "concentration_basis": "collected_mixture",
+                "correction_status": "not_corrected"
+              }
+            ]
+          },
+          "instruction_receipt": {
+            "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+            "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+            "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:47.099Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+            "accepted_at": "2026-10-11T09:07:47.112Z"
+          },
+          "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+          "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590",
+          "lab_import_id": "d1d6f7f3-6011-427e-96bf-7187a1a11271",
+          "collection_attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1"
+        },
+        "artifact_refs": [
+          "9c39c015-3b62-4f51-b0bf-b8456e711dbd"
+        ],
+        "attestation_refs": []
+      },
+      "attempt_revision": 1,
+      "attempt_sha256": "5d05596d626167870c7c53bf7290825f12b1a96bc8161b5161027c55409cf691",
+      "collection_attempt": {
+        "schema_version": "1.0.0",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+        "component": "saliva",
+        "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-11T09:07:47.140Z",
+        "ended_at": "2026-10-11T09:07:47.140Z",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "quality_flags": [],
+        "component_metadata": {
+          "armed_at": "2026-10-11T09:07:47.095Z",
+          "projection": {
+            "sample": {
+              "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:47.140Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": []
+          },
+          "instruction_receipt": {
+            "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+            "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+            "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:47.099Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+            "accepted_at": "2026-10-11T09:07:47.112Z"
+          },
+          "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+          "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590"
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      "collection_attempt_revision": 2,
+      "collection_attempt_sha256": "be146ec8a0c92c1fc2bc3f399fa0219162f900b140875d2663d08f3c7ebed735",
+      "abandonment": null,
+      "imports": [
+        {
+          "import_id": "d1d6f7f3-6011-427e-96bf-7187a1a11271",
+          "measurements": [
+            {
+              "schema_version": "0.1.0",
+              "measurement_id": "2c23c59f-5a2b-4a96-842d-6da75baf8831",
+              "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+              "analyte": "THC",
+              "qualifier": "quantified",
+              "value_ng_ml": 12.0,
+              "unit": "ng/mL",
+              "assay_basis": "free",
+              "limits": {
+                "lod_ng_ml": 0.3,
+                "loq_ng_ml": 1.0,
+                "upper_ng_ml": 200.0
+              },
+              "source": "reference_lab",
+              "method_id": "FICTIONAL-INDEPENDENT-LABORATORY-METHOD",
+              "calibration_id": "fictional-calibration",
+              "cartridge_lot": null,
+              "instrument_id": "FICTIONAL-LABORATORY-INSTRUMENT",
+              "operator_ref": "76b99c48-1b67-4c1d-98ef-ad95b5591a20",
+              "collected_at": "2026-10-11T09:07:47.140Z",
+              "measured_at": "2026-10-11T09:07:47.237Z",
+              "quality_flags": [],
+              "original_report": {
+                "value": 12.0,
+                "unit": "ng/mL",
+                "qualifier": "quantified"
+              },
+              "uncertainty_ng_ml": null,
+              "concentration_basis": "collected_mixture",
+              "correction_status": "not_corrected"
+            }
+          ],
+          "attempt": {
+            "schema_version": "1.0.0",
+            "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+            "attempt_id": "ce4f6900-7db7-47cc-854a-12687f411740",
+            "component": "saliva",
+            "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+            "supersedes_attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "status": "valid",
+            "source": "reference_lab",
+            "started_at": "2026-10-11T09:07:47.140Z",
+            "ended_at": "2026-10-11T09:07:47.140Z",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "quality_flags": [],
+            "component_metadata": {
+              "armed_at": "2026-10-11T09:07:47.095Z",
+              "projection": {
+                "sample": {
+                  "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+                  "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+                  "collected_at": "2026-10-11T09:07:47.140Z",
+                  "volume_ml": 1.0,
+                  "dilution_factor": 2.0,
+                  "status": "valid",
+                  "quality_flags": []
+                },
+                "saliva": [
+                  {
+                    "schema_version": "0.1.0",
+                    "measurement_id": "2c23c59f-5a2b-4a96-842d-6da75baf8831",
+                    "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+                    "analyte": "THC",
+                    "qualifier": "quantified",
+                    "value_ng_ml": 12.0,
+                    "unit": "ng/mL",
+                    "assay_basis": "free",
+                    "limits": {
+                      "lod_ng_ml": 0.3,
+                      "loq_ng_ml": 1.0,
+                      "upper_ng_ml": 200.0
+                    },
+                    "source": "reference_lab",
+                    "method_id": "FICTIONAL-INDEPENDENT-LABORATORY-METHOD",
+                    "calibration_id": "fictional-calibration",
+                    "cartridge_lot": null,
+                    "instrument_id": "FICTIONAL-LABORATORY-INSTRUMENT",
+                    "operator_ref": "76b99c48-1b67-4c1d-98ef-ad95b5591a20",
+                    "collected_at": "2026-10-11T09:07:47.140Z",
+                    "measured_at": "2026-10-11T09:07:47.237Z",
+                    "quality_flags": [],
+                    "original_report": {
+                      "value": 12.0,
+                      "unit": "ng/mL",
+                      "qualifier": "quantified"
+                    },
+                    "uncertainty_ng_ml": null,
+                    "concentration_basis": "collected_mixture",
+                    "correction_status": "not_corrected"
+                  }
+                ]
+              },
+              "instruction_receipt": {
+                "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+                "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+                "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+                "configuration_id": "fictional-participant-lab-config",
+                "configuration_version": "v1",
+                "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+                "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+                "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+                "acknowledged_at": "2026-10-11T09:07:47.099Z",
+                "confirmed": true,
+                "confirmations": [
+                  "method_reviewed"
+                ],
+                "setup_id": null,
+                "rest_started_at": null,
+                "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+                "collection_method_version": "v1",
+                "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+                "accepted_at": "2026-10-11T09:07:47.112Z"
+              },
+              "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+              "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590",
+              "lab_import_id": "d1d6f7f3-6011-427e-96bf-7187a1a11271",
+              "collection_attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1"
+            },
+            "artifact_refs": [
+              "9c39c015-3b62-4f51-b0bf-b8456e711dbd"
+            ],
+            "attestation_refs": []
+          },
+          "attempt_revision": 1,
+          "attempt_sha256": "5d05596d626167870c7c53bf7290825f12b1a96bc8161b5161027c55409cf691",
+          "source_report_artifact_id": "9c39c015-3b62-4f51-b0bf-b8456e711dbd"
+        }
+      ]
+    },
+    "evidence": {
+      "context": {
+        "schema_version": "1.0.0",
+        "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+        "context_confirmed_at": "2026-10-11T09:07:47.089Z",
+        "profile_version_id": null,
+        "profile_snapshot_sha256": "4d39f5fc853f967791aa2f138220307b3ef56c897c3a47ac82c906bb56eb5ed8",
+        "history_snapshot_sha256": "d88c0743ced64f55fb9073dbbee04b75f2f397311fe596c6a53a7bbbc76ea10f",
+        "protocol_id": "fictional-governance-protocol",
+        "configuration_refs": [
+          {
+            "id": "fictional-participant-lab-config",
+            "version": "v1",
+            "sha256": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "scope": "measurement_collection"
+          }
+        ],
+        "baseline_refs": [],
+        "device_associations": [],
+        "self_report_context": null
+      },
+      "manifest": null,
+      "attempts": [
+        {
+          "schema_version": "1.0.0",
+          "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+          "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+          "component": "saliva",
+          "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+          "supersedes_attempt_id": null,
+          "status": "valid",
+          "source": "reference_lab",
+          "started_at": "2026-10-11T09:07:47.140Z",
+          "ended_at": "2026-10-11T09:07:47.140Z",
+          "configuration_id": "fictional-participant-lab-config",
+          "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "quality_flags": [],
+          "component_metadata": {
+            "armed_at": "2026-10-11T09:07:47.095Z",
+            "projection": {
+              "sample": {
+                "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+                "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+                "collected_at": "2026-10-11T09:07:47.140Z",
+                "volume_ml": 1.0,
+                "dilution_factor": 2.0,
+                "status": "valid",
+                "quality_flags": []
+              },
+              "saliva": []
+            },
+            "instruction_receipt": {
+              "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+              "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+              "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+              "configuration_id": "fictional-participant-lab-config",
+              "configuration_version": "v1",
+              "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+              "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+              "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+              "acknowledged_at": "2026-10-11T09:07:47.099Z",
+              "confirmed": true,
+              "confirmations": [
+                "method_reviewed"
+              ],
+              "setup_id": null,
+              "rest_started_at": null,
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collection_method_version": "v1",
+              "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+              "accepted_at": "2026-10-11T09:07:47.112Z"
+            },
+            "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+            "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590"
+          },
+          "artifact_refs": [],
+          "attestation_refs": []
+        },
+        {
+          "schema_version": "1.0.0",
+          "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+          "attempt_id": "ce4f6900-7db7-47cc-854a-12687f411740",
+          "component": "saliva",
+          "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+          "supersedes_attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+          "status": "valid",
+          "source": "reference_lab",
+          "started_at": "2026-10-11T09:07:47.140Z",
+          "ended_at": "2026-10-11T09:07:47.140Z",
+          "configuration_id": "fictional-participant-lab-config",
+          "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "quality_flags": [],
+          "component_metadata": {
+            "armed_at": "2026-10-11T09:07:47.095Z",
+            "projection": {
+              "sample": {
+                "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+                "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+                "collected_at": "2026-10-11T09:07:47.140Z",
+                "volume_ml": 1.0,
+                "dilution_factor": 2.0,
+                "status": "valid",
+                "quality_flags": []
+              },
+              "saliva": [
+                {
+                  "schema_version": "0.1.0",
+                  "measurement_id": "2c23c59f-5a2b-4a96-842d-6da75baf8831",
+                  "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+                  "analyte": "THC",
+                  "qualifier": "quantified",
+                  "value_ng_ml": 12.0,
+                  "unit": "ng/mL",
+                  "assay_basis": "free",
+                  "limits": {
+                    "lod_ng_ml": 0.3,
+                    "loq_ng_ml": 1.0,
+                    "upper_ng_ml": 200.0
+                  },
+                  "source": "reference_lab",
+                  "method_id": "FICTIONAL-INDEPENDENT-LABORATORY-METHOD",
+                  "calibration_id": "fictional-calibration",
+                  "cartridge_lot": null,
+                  "instrument_id": "FICTIONAL-LABORATORY-INSTRUMENT",
+                  "operator_ref": "76b99c48-1b67-4c1d-98ef-ad95b5591a20",
+                  "collected_at": "2026-10-11T09:07:47.140Z",
+                  "measured_at": "2026-10-11T09:07:47.237Z",
+                  "quality_flags": [],
+                  "original_report": {
+                    "value": 12.0,
+                    "unit": "ng/mL",
+                    "qualifier": "quantified"
+                  },
+                  "uncertainty_ng_ml": null,
+                  "concentration_basis": "collected_mixture",
+                  "correction_status": "not_corrected"
+                }
+              ]
+            },
+            "instruction_receipt": {
+              "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+              "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+              "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+              "configuration_id": "fictional-participant-lab-config",
+              "configuration_version": "v1",
+              "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+              "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+              "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+              "acknowledged_at": "2026-10-11T09:07:47.099Z",
+              "confirmed": true,
+              "confirmations": [
+                "method_reviewed"
+              ],
+              "setup_id": null,
+              "rest_started_at": null,
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collection_method_version": "v1",
+              "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+              "accepted_at": "2026-10-11T09:07:47.112Z"
+            },
+            "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+            "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590",
+            "lab_import_id": "d1d6f7f3-6011-427e-96bf-7187a1a11271",
+            "collection_attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1"
+          },
+          "artifact_refs": [
+            "9c39c015-3b62-4f51-b0bf-b8456e711dbd"
+          ],
+          "attestation_refs": []
+        }
+      ],
+      "instruction_receipts": [
+        {
+          "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+          "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+          "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+          "configuration_id": "fictional-participant-lab-config",
+          "configuration_version": "v1",
+          "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+          "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+          "acknowledged_at": "2026-10-11T09:07:47.099Z",
+          "confirmed": true,
+          "confirmations": [
+            "method_reviewed"
+          ],
+          "setup_id": null,
+          "rest_started_at": null,
+          "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+          "collection_method_version": "v1",
+          "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+          "accepted_at": "2026-10-11T09:07:47.112Z"
+        }
+      ],
+      "collections": [
+        {
+          "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590",
+          "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+          "request": {
+            "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+            "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "collected_at": "2026-10-11T09:07:47.140Z",
+            "status": "valid",
+            "quality_flags": [],
+            "saliva_volume_ml": 1.0,
+            "buffer_volume_ml": 1.0,
+            "dilution_factor": 2.0,
+            "collector_id": "FICTIONAL-COLLECTOR",
+            "collector_lot": "FICTIONAL-KIT-LOT",
+            "container_id": "FICTIONAL-CONTAINER",
+            "cartridge_lot": null,
+            "cartridge_expiry": "2026-10-11T10:07:47.140Z",
+            "missing_reasons": {
+              "cartridge_lot": "not_applicable"
+            },
+            "storage_handling_events": [
+              {
+                "event": "sealed",
+                "occurred_at": "2026-10-11T09:07:47.140Z",
+                "temperature_c": null,
+                "duration_min": null
+              }
+            ]
+          },
+          "state": "pending_lab",
+          "accepted_at": "2026-10-11T09:07:47.155Z",
+          "authorization_id": "2bfbadb6-b169-4006-9246-67b4e2a06ad4",
+          "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+          "configuration_version": "v1",
+          "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+          "instruction_receipt": {
+            "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+            "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+            "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:47.099Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+            "accepted_at": "2026-10-11T09:07:47.112Z"
+          },
+          "projection": {
+            "sample": {
+              "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:47.140Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": []
+          },
+          "attempt": {
+            "schema_version": "1.0.0",
+            "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+            "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+            "component": "saliva",
+            "record_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+            "supersedes_attempt_id": null,
+            "status": "valid",
+            "source": "reference_lab",
+            "started_at": "2026-10-11T09:07:47.140Z",
+            "ended_at": "2026-10-11T09:07:47.140Z",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "quality_flags": [],
+            "component_metadata": {
+              "armed_at": "2026-10-11T09:07:47.095Z",
+              "projection": {
+                "sample": {
+                  "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+                  "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+                  "collected_at": "2026-10-11T09:07:47.140Z",
+                  "volume_ml": 1.0,
+                  "dilution_factor": 2.0,
+                  "status": "valid",
+                  "quality_flags": []
+                },
+                "saliva": []
+              },
+              "instruction_receipt": {
+                "instruction_receipt_id": "14f8685c-2b86-4c3e-9e6f-39f9c7624adb",
+                "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+                "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+                "configuration_id": "fictional-participant-lab-config",
+                "configuration_version": "v1",
+                "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+                "configuration_submitted_sha256": "416af6a9846e4a33f02b63525852dc6872e99513e097c0dddb7669abfcf88926",
+                "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+                "acknowledged_at": "2026-10-11T09:07:47.099Z",
+                "confirmed": true,
+                "confirmations": [
+                  "method_reviewed"
+                ],
+                "setup_id": null,
+                "rest_started_at": null,
+                "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+                "collection_method_version": "v1",
+                "consent_record_id": "39f03f0f-31d5-4080-b5df-4dbf6620d52c",
+                "accepted_at": "2026-10-11T09:07:47.112Z"
+              },
+              "collection_request_sha256": "c77b1b6f87c6613610f21c94c58cf025834e9d1b1bc4e11fd3a63adb1cf75033",
+              "collection_receipt_id": "0a2e03f1-b11d-4f79-b152-575b01535590"
+            },
+            "artifact_refs": [],
+            "attestation_refs": []
+          },
+          "attempt_revision": 2,
+          "attempt_sha256": "be146ec8a0c92c1fc2bc3f399fa0219162f900b140875d2663d08f3c7ebed735"
+        }
+      ],
+      "collection_abandons": [],
+      "alcohol": null,
+      "raw_artifacts_omitted_reason": "NO_RAW_EXPORT_SCOPE"
+    },
+    "frozen_snapshot": {
+      "schema_version": "0.1.0",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "supersedes_session_id": null,
+      "mode": "controlled_research",
+      "subject_ref": "ba7509fb-d3b9-4431-b3f4-f65c6abef98d",
+      "study_id": "fictional-governance-study",
+      "protocol_id": "fictional-governance-protocol",
+      "created_at": "2026-10-11T09:07:47.089Z",
+      "target_at": "2026-10-11T09:07:47.089Z",
+      "clock_uncertainty_ms": 20.0,
+      "acquisition_span_ms": 0.0,
+      "device": {
+        "device_id": "unavailable",
+        "boot_id": "unavailable",
+        "hardware_revision": "unavailable",
+        "firmware_version": "unavailable"
+      },
+      "profile": {
+        "age_years": 35,
+        "height_cm": 175.0,
+        "weight_kg": 80.0,
+        "bmi": 26.122,
+        "recorded_at": "2026-10-10T17:59:00Z",
+        "source": "study_measurement"
+      },
+      "history": {
+        "use_frequency": "unknown",
+        "route": "unknown",
+        "time_since_use_min": null,
+        "recent_exercise": null,
+        "sleep_hours": null,
+        "alcohol_co_use": "unknown"
+      },
+      "baseline_ref": null,
+      "sample": {
+        "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collected_at": "2026-10-11T09:07:47.140Z",
+        "volume_ml": 1.0,
+        "dilution_factor": 2.0,
+        "status": "valid",
+        "quality_flags": []
+      },
+      "saliva": [
+        {
+          "schema_version": "0.1.0",
+          "measurement_id": "2c23c59f-5a2b-4a96-842d-6da75baf8831",
+          "sample_id": "5170a766-fb9b-45cf-9e1b-346f400a700a",
+          "analyte": "THC",
+          "qualifier": "quantified",
+          "value_ng_ml": 12.0,
+          "unit": "ng/mL",
+          "assay_basis": "free",
+          "limits": {
+            "lod_ng_ml": 0.3,
+            "loq_ng_ml": 1.0,
+            "upper_ng_ml": 200.0
+          },
+          "source": "reference_lab",
+          "method_id": "FICTIONAL-INDEPENDENT-LABORATORY-METHOD",
+          "calibration_id": "fictional-calibration",
+          "cartridge_lot": null,
+          "instrument_id": "FICTIONAL-LABORATORY-INSTRUMENT",
+          "operator_ref": "76b99c48-1b67-4c1d-98ef-ad95b5591a20",
+          "collected_at": "2026-10-11T09:07:47.140Z",
+          "measured_at": "2026-10-11T09:07:47.237Z",
+          "quality_flags": [],
+          "original_report": {
+            "value": 12.0,
+            "unit": "ng/mL",
+            "qualifier": "quantified"
+          },
+          "uncertainty_ng_ml": null,
+          "concentration_basis": "collected_mixture",
+          "correction_status": "not_corrected"
+        }
+      ],
+      "eyes": {
+        "status": "not_collected",
+        "source": "prototype_sensor",
+        "started_at": null,
+        "ended_at": null,
+        "quality_flags": [],
+        "capture_config_id": "synthetic-eyes",
+        "camera_id": "synthetic-camera",
+        "frame_rate_hz": null,
+        "scale_basis": "normalized",
+        "baseline_diameter_mm": null,
+        "relative_constriction": null,
+        "latency_ms": null,
+        "raw_artifact_id": null
+      },
+      "cardiac": {
+        "status": "not_collected",
+        "source": "prototype_sensor",
+        "started_at": null,
+        "ended_at": null,
+        "quality_flags": [],
+        "acquisition_config_id": "synthetic-ppg",
+        "modality": "ppg",
+        "heart_rate_bpm": null,
+        "ecg_status": "not_collected",
+        "ecg_rmssd_ms": null,
+        "sample_rate_hz": null,
+        "raw_artifact_id": null
+      },
+      "task": {
+        "status": "not_collected",
+        "source": "prototype_sensor",
+        "started_at": null,
+        "ended_at": null,
+        "quality_flags": [],
+        "task_id": "44444444-4444-4444-8444-444444444444",
+        "task_version": "choice_inhibit_v0",
+        "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "practice_trials": 0,
+        "scored_trials": 0,
+        "go_trials": 0,
+        "no_go_trials": 0,
+        "valid_correct_go_trials": 0,
+        "features": {
+          "median_rt_ms": null,
+          "iqr_rt_ms": null,
+          "p90_rt_ms": null,
+          "omission_rate": null,
+          "wrong_go_rate": null,
+          "no_go_error_rate": null
+        },
+        "events_artifact_id": null
+      },
+      "capture_completed_at": "2026-10-11T09:07:47.300Z"
+    },
+    "manifest": {
+      "schema_version": "1.0.0",
+      "session_id": "53053730-2459-49ad-9b9f-3da337e9c43d",
+      "context_sha256": "4457ec8005dff24875ff1c499bfa3aa928f9e9fbc3fb32aac0c9837c70e78738",
+      "attempts": [
+        {
+          "attempt_id": "4d431c28-5908-49a1-a700-ab0a381a1fe1",
+          "sha256": "be146ec8a0c92c1fc2bc3f399fa0219162f900b140875d2663d08f3c7ebed735"
+        },
+        {
+          "attempt_id": "ce4f6900-7db7-47cc-854a-12687f411740",
+          "sha256": "5d05596d626167870c7c53bf7290825f12b1a96bc8161b5161027c55409cf691"
+        }
+      ],
+      "selected": {
+        "saliva": "ce4f6900-7db7-47cc-854a-12687f411740",
+        "eyes": null,
+        "cardiac": null,
+        "task": null,
+        "alcohol": null
+      }
+    }
+  },
+  "abandon_flow": {
+    "configuration": {
+      "schema_version": "1.0.0",
+      "registry_id": "fictional-participant-lab-config",
+      "version": "v1",
+      "expires_at": 1791796066.895122,
+      "evidence_ref": "FICTIONAL-SOFTWARE-FIXTURE-NO-HUMAN-APPROVAL",
+      "evidence_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "configuration_id": "fictional-participant-lab-config",
+      "study_id": "fictional-governance-study",
+      "protocol_id": "fictional-governance-protocol",
+      "channel": "saliva",
+      "sha256": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+      "material": {
+        "schema_version": "1.0.0",
+        "channel": "saliva",
+        "source": "reference_lab",
+        "collection_method_ids": [
+          "FICTIONAL-PARTICIPANT-COLLECTION"
+        ],
+        "assay_bases": [
+          "free"
+        ],
+        "concentration_bases": [
+          "collected_mixture"
+        ],
+        "correction_statuses": [
+          "not_corrected"
+        ]
+      },
+      "qualification_evidence_ref": "fictional-governance-qualification-saliva",
+      "retention_policy_id": "fictional-governance-retention",
+      "max_duration_ms": 600000,
+      "software_adapter_id": "reference_lab_import_v1",
+      "raw_retention_approved": false,
+      "device_id": null,
+      "key_id": null,
+      "calibration_id": null,
+      "approved_hardware": [],
+      "approved_firmware": [],
+      "supported_phone_models": [],
+      "supported_os_versions": [],
+      "supported_native_builds": [],
+      "optical_safety_ref": null,
+      "lab_methods": {
+        "FICTIONAL-INDEPENDENT-LABORATORY-METHOD": {
+          "calibration_ids": [
+            "fictional-calibration"
+          ],
+          "instrument_ids": [
+            "FICTIONAL-LABORATORY-INSTRUMENT"
+          ]
+        }
+      },
+      "participant_protocol": {
+        "schema_version": "1.0.0",
+        "instruction_id": "FICTIONAL-LAB-INSTRUCTIONS",
+        "version": "v1",
+        "text": "FICTIONAL collection instructions for software tests. No human or assay approval.",
+        "sha256": "30ef058a32f73ec6fe943d0a3da8a7193423df2685cdf14bf5573834f70f1c71",
+        "required_confirmations": [
+          {
+            "id": "method_reviewed",
+            "text": "I reviewed this fictional procedure."
+          }
+        ],
+        "maximum_acknowledgment_age_seconds": 120,
+        "kind": "reference_lab",
+        "methods": [
+          {
+            "id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "version": "v1",
+            "instructions": "FICTIONAL buffered specimen procedure; not for participant use.",
+            "saliva_volume_required": true,
+            "buffer_volume_required": true,
+            "dilution_factor_required": true,
+            "dilution_definition": "total_mixture_over_saliva",
+            "fixed_dilution_factor": null,
+            "saliva_volume_min_ml": 0.5,
+            "saliva_volume_max_ml": 2.0,
+            "buffer_volume_min_ml": 0.0,
+            "buffer_volume_max_ml": 2.0,
+            "collector_lot_required": true,
+            "container_required": true,
+            "expiry_required": true,
+            "permitted_containers": [
+              "FICTIONAL-CONTAINER"
+            ],
+            "required_handling_events": [
+              "sealed"
+            ],
+            "permitted_null_reasons": [
+              "unknown",
+              "not_applicable"
+            ]
+          }
+        ],
+        "maximum_collection_submission_delay_seconds": 300,
+        "maximum_analysis_delay_seconds": 86400
+      }
+    },
+    "context": {
+      "schema_version": "1.0.0",
+      "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+      "context_confirmed_at": "2026-10-11T09:07:46.925Z",
+      "profile_version_id": null,
+      "profile_snapshot_sha256": "4d39f5fc853f967791aa2f138220307b3ef56c897c3a47ac82c906bb56eb5ed8",
+      "history_snapshot_sha256": "d88c0743ced64f55fb9073dbbee04b75f2f397311fe596c6a53a7bbbc76ea10f",
+      "protocol_id": "fictional-governance-protocol",
+      "configuration_refs": [
+        {
+          "id": "fictional-participant-lab-config",
+          "version": "v1",
+          "sha256": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "scope": "measurement_collection"
+        }
+      ],
+      "baseline_refs": [],
+      "device_associations": [],
+      "self_report_context": null
+    },
+    "ack_request": {
+      "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+      "configuration_id": "fictional-participant-lab-config",
+      "configuration_version": "v1",
+      "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+      "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "acknowledged_at": "2026-10-11T09:07:46.934Z",
+      "confirmed": true,
+      "confirmations": [
+        "method_reviewed"
+      ],
+      "setup_id": null,
+      "rest_started_at": null,
+      "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+      "collection_method_version": "v1"
+    },
+    "instruction_receipt": {
+      "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+      "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+      "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+      "configuration_id": "fictional-participant-lab-config",
+      "configuration_version": "v1",
+      "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+      "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "acknowledged_at": "2026-10-11T09:07:46.934Z",
+      "confirmed": true,
+      "confirmations": [
+        "method_reviewed"
+      ],
+      "setup_id": null,
+      "rest_started_at": null,
+      "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+      "collection_method_version": "v1",
+      "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+      "accepted_at": "2026-10-11T09:07:46.947Z"
+    },
+    "authorization": {
+      "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+      "channel": "saliva",
+      "binding_id": null,
+      "device_id": null,
+      "configuration_id": "fictional-participant-lab-config",
+      "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+      "raw_recording_kind": null,
+      "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+      "authorization_id": "6873341f-f7a1-4559-a495-bac8a15f0abc",
+      "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+      "state": "issued",
+      "expires_at": "2026-10-11T09:08:46.960Z",
+      "expires_epoch": 1791709726.960968,
+      "configuration_max_duration_ms": 600000,
+      "supported_phone_models": [],
+      "supported_os_versions": [],
+      "supported_native_builds": [],
+      "software_adapter_id": "reference_lab_import_v1",
+      "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+      "configuration_version": "v1",
+      "capture_context_sha256": "e8204e6a0cd49b5e12737ec74a2296bff9e011adfec2cb84dac88c47e7614f9b",
+      "configuration_material": {
+        "schema_version": "1.0.0",
+        "channel": "saliva",
+        "source": "reference_lab",
+        "collection_method_ids": [
+          "FICTIONAL-PARTICIPANT-COLLECTION"
+        ],
+        "assay_bases": [
+          "free"
+        ],
+        "concentration_bases": [
+          "collected_mixture"
+        ],
+        "correction_statuses": [
+          "not_corrected"
+        ]
+      },
+      "raw_recording_permission": null,
+      "participant_protocol": {
+        "schema_version": "1.0.0",
+        "instruction_id": "FICTIONAL-LAB-INSTRUCTIONS",
+        "version": "v1",
+        "text": "FICTIONAL collection instructions for software tests. No human or assay approval.",
+        "sha256": "30ef058a32f73ec6fe943d0a3da8a7193423df2685cdf14bf5573834f70f1c71",
+        "required_confirmations": [
+          {
+            "id": "method_reviewed",
+            "text": "I reviewed this fictional procedure."
+          }
+        ],
+        "maximum_acknowledgment_age_seconds": 120,
+        "kind": "reference_lab",
+        "methods": [
+          {
+            "id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "version": "v1",
+            "instructions": "FICTIONAL buffered specimen procedure; not for participant use.",
+            "saliva_volume_required": true,
+            "buffer_volume_required": true,
+            "dilution_factor_required": true,
+            "dilution_definition": "total_mixture_over_saliva",
+            "fixed_dilution_factor": null,
+            "saliva_volume_min_ml": 0.5,
+            "saliva_volume_max_ml": 2.0,
+            "buffer_volume_min_ml": 0.0,
+            "buffer_volume_max_ml": 2.0,
+            "collector_lot_required": true,
+            "container_required": true,
+            "expiry_required": true,
+            "permitted_containers": [
+              "FICTIONAL-CONTAINER"
+            ],
+            "required_handling_events": [
+              "sealed"
+            ],
+            "permitted_null_reasons": [
+              "unknown",
+              "not_applicable"
+            ]
+          }
+        ],
+        "maximum_collection_submission_delay_seconds": 300,
+        "maximum_analysis_delay_seconds": 86400
+      },
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:46.934Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+        "accepted_at": "2026-10-11T09:07:46.947Z"
+      }
+    },
+    "start": {
+      "authorization_id": "6873341f-f7a1-4559-a495-bac8a15f0abc",
+      "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+      "device_boot_id": null,
+      "state": "started",
+      "server_started_at": "2026-10-11T09:07:46.974Z",
+      "raw_recording_permission": null,
+      "server_start": {
+        "grant": {
+          "schema_version": "1.0.0",
+          "environment": "test",
+          "owner_ref": "bb542025-d67e-49ac-9aea-d65a0f46e60b",
+          "data_generation": 1,
+          "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+          "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+          "authorization_id": "6873341f-f7a1-4559-a495-bac8a15f0abc",
+          "binding_id": null,
+          "device_id": null,
+          "device_key_id": null,
+          "boot_id": null,
+          "channel": "saliva",
+          "configuration_max_duration_ms": 600000,
+          "configuration_id": "fictional-participant-lab-config",
+          "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+          "configuration_version": "v1",
+          "capture_context_sha256": "e8204e6a0cd49b5e12737ec74a2296bff9e011adfec2cb84dac88c47e7614f9b",
+          "issued_at": "2026-10-11T09:07:46.974Z",
+          "expires_at": "2026-10-11T09:08:46.974Z",
+          "device_nonce": null,
+          "nonce": "c93f60d4-27ea-4a80-9250-7b2bcfbc55bf",
+          "raw_recording_permission": null,
+          "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+          "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b"
+        },
+        "signature": "MEQCIGlCUHucH5BvQwcAmS7D/5EIEQj6zTUZ2sOlm994gzLSAiAFEMFg0CzPs1DtYXeAy7kI0kQPlQIRYMc5KkNfkawmdw==",
+        "key_id": "local-capture-v1:de1b6cabd3d532954f3bb5880352d3bd9b6c2af47abde676767479a88bb499e3",
+        "domain": "OTGD capture grant v1\u0000"
+      },
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:46.934Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+        "accepted_at": "2026-10-11T09:07:46.947Z"
+      }
+    },
+    "collection_request": {
+      "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+      "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+      "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+      "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+      "collection_method_version": "v1",
+      "collected_at": "2026-10-11T09:07:46.975Z",
+      "status": "valid",
+      "quality_flags": [],
+      "saliva_volume_ml": 1.0,
+      "buffer_volume_ml": 1.0,
+      "dilution_factor": 2.0,
+      "collector_id": "FICTIONAL-COLLECTOR",
+      "collector_lot": "FICTIONAL-KIT-LOT",
+      "container_id": "FICTIONAL-CONTAINER",
+      "cartridge_lot": null,
+      "cartridge_expiry": "2026-10-11T10:07:46.975Z",
+      "missing_reasons": {
+        "cartridge_lot": "not_applicable"
+      },
+      "storage_handling_events": [
+        {
+          "event": "sealed",
+          "occurred_at": "2026-10-11T09:07:46.975Z",
+          "temperature_c": null,
+          "duration_min": null
+        }
+      ]
+    },
+    "collection_receipt": {
+      "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172",
+      "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+      "request": {
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+        "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "collected_at": "2026-10-11T09:07:46.975Z",
+        "status": "valid",
+        "quality_flags": [],
+        "saliva_volume_ml": 1.0,
+        "buffer_volume_ml": 1.0,
+        "dilution_factor": 2.0,
+        "collector_id": "FICTIONAL-COLLECTOR",
+        "collector_lot": "FICTIONAL-KIT-LOT",
+        "container_id": "FICTIONAL-CONTAINER",
+        "cartridge_lot": null,
+        "cartridge_expiry": "2026-10-11T10:07:46.975Z",
+        "missing_reasons": {
+          "cartridge_lot": "not_applicable"
+        },
+        "storage_handling_events": [
+          {
+            "event": "sealed",
+            "occurred_at": "2026-10-11T09:07:46.975Z",
+            "temperature_c": null,
+            "duration_min": null
+          }
+        ]
+      },
+      "state": "pending_lab",
+      "accepted_at": "2026-10-11T09:07:46.988Z",
+      "authorization_id": "6873341f-f7a1-4559-a495-bac8a15f0abc",
+      "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+      "configuration_version": "v1",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:46.934Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+        "accepted_at": "2026-10-11T09:07:46.947Z"
+      },
+      "projection": {
+        "sample": {
+          "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+          "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+          "collected_at": "2026-10-11T09:07:46.975Z",
+          "volume_ml": 1.0,
+          "dilution_factor": 2.0,
+          "status": "valid",
+          "quality_flags": []
+        },
+        "saliva": []
+      },
+      "attempt": {
+        "schema_version": "1.0.0",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "component": "saliva",
+        "record_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-11T09:07:46.975Z",
+        "ended_at": "2026-10-11T09:07:46.975Z",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "quality_flags": [],
+        "component_metadata": {
+          "armed_at": "2026-10-11T09:07:46.929Z",
+          "projection": {
+            "sample": {
+              "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:46.975Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": []
+          },
+          "instruction_receipt": {
+            "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+            "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+            "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:46.934Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+            "accepted_at": "2026-10-11T09:07:46.947Z"
+          },
+          "collection_request_sha256": "bed662def4d89cb67822dcced691e606d479ba78105a3a6e976d606f7bf1eba7",
+          "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172"
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      "attempt_revision": 2,
+      "attempt_sha256": "d687e564d757dcde8c8dfa214b7bfb08ded7ceed95fd4e58c486201ab3f6cf33"
+    },
+    "abandon_request": {
+      "confirmation": true,
+      "reason": "PARTICIPANT_DECLINED"
+    },
+    "abandon_receipt": {
+      "abandonment_id": "44ac2f73-7c8f-4dc6-83ce-d92cbfd31a94",
+      "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+      "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+      "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172",
+      "collection_sha256": "0774a24e6b0ae14ef35c8cdb9bc0788ff22572d8947a381d74989fa07ea4533f",
+      "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+      "accepted_at": "2026-10-11T09:07:47.009Z",
+      "confirmation": true,
+      "reason": "PARTICIPANT_DECLINED",
+      "state": "analysis_canceled",
+      "collection": {
+        "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "request": {
+          "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+          "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+          "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+          "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+          "collection_method_version": "v1",
+          "collected_at": "2026-10-11T09:07:46.975Z",
+          "status": "valid",
+          "quality_flags": [],
+          "saliva_volume_ml": 1.0,
+          "buffer_volume_ml": 1.0,
+          "dilution_factor": 2.0,
+          "collector_id": "FICTIONAL-COLLECTOR",
+          "collector_lot": "FICTIONAL-KIT-LOT",
+          "container_id": "FICTIONAL-CONTAINER",
+          "cartridge_lot": null,
+          "cartridge_expiry": "2026-10-11T10:07:46.975Z",
+          "missing_reasons": {
+            "cartridge_lot": "not_applicable"
+          },
+          "storage_handling_events": [
+            {
+              "event": "sealed",
+              "occurred_at": "2026-10-11T09:07:46.975Z",
+              "temperature_c": null,
+              "duration_min": null
+            }
+          ]
+        },
+        "state": "pending_lab",
+        "accepted_at": "2026-10-11T09:07:46.988Z",
+        "authorization_id": "6873341f-f7a1-4559-a495-bac8a15f0abc",
+        "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+        "configuration_version": "v1",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "instruction_receipt": {
+          "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+          "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+          "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+          "configuration_id": "fictional-participant-lab-config",
+          "configuration_version": "v1",
+          "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+          "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+          "acknowledged_at": "2026-10-11T09:07:46.934Z",
+          "confirmed": true,
+          "confirmations": [
+            "method_reviewed"
+          ],
+          "setup_id": null,
+          "rest_started_at": null,
+          "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+          "collection_method_version": "v1",
+          "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+          "accepted_at": "2026-10-11T09:07:46.947Z"
+        },
+        "projection": {
+          "sample": {
+            "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collected_at": "2026-10-11T09:07:46.975Z",
+            "volume_ml": 1.0,
+            "dilution_factor": 2.0,
+            "status": "valid",
+            "quality_flags": []
+          },
+          "saliva": []
+        },
+        "attempt": {
+          "schema_version": "1.0.0",
+          "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+          "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+          "component": "saliva",
+          "record_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+          "supersedes_attempt_id": null,
+          "status": "valid",
+          "source": "reference_lab",
+          "started_at": "2026-10-11T09:07:46.975Z",
+          "ended_at": "2026-10-11T09:07:46.975Z",
+          "configuration_id": "fictional-participant-lab-config",
+          "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+          "quality_flags": [],
+          "component_metadata": {
+            "armed_at": "2026-10-11T09:07:46.929Z",
+            "projection": {
+              "sample": {
+                "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+                "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+                "collected_at": "2026-10-11T09:07:46.975Z",
+                "volume_ml": 1.0,
+                "dilution_factor": 2.0,
+                "status": "valid",
+                "quality_flags": []
+              },
+              "saliva": []
+            },
+            "instruction_receipt": {
+              "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+              "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+              "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+              "configuration_id": "fictional-participant-lab-config",
+              "configuration_version": "v1",
+              "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+              "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+              "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+              "acknowledged_at": "2026-10-11T09:07:46.934Z",
+              "confirmed": true,
+              "confirmations": [
+                "method_reviewed"
+              ],
+              "setup_id": null,
+              "rest_started_at": null,
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collection_method_version": "v1",
+              "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+              "accepted_at": "2026-10-11T09:07:46.947Z"
+            },
+            "collection_request_sha256": "bed662def4d89cb67822dcced691e606d479ba78105a3a6e976d606f7bf1eba7",
+            "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172"
+          },
+          "artifact_refs": [],
+          "attestation_refs": []
+        },
+        "attempt_revision": 2,
+        "attempt_sha256": "d687e564d757dcde8c8dfa214b7bfb08ded7ceed95fd4e58c486201ab3f6cf33"
+      }
+    },
+    "abandon_status": {
+      "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172",
+      "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+      "request": {
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+        "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "collected_at": "2026-10-11T09:07:46.975Z",
+        "status": "valid",
+        "quality_flags": [],
+        "saliva_volume_ml": 1.0,
+        "buffer_volume_ml": 1.0,
+        "dilution_factor": 2.0,
+        "collector_id": "FICTIONAL-COLLECTOR",
+        "collector_lot": "FICTIONAL-KIT-LOT",
+        "container_id": "FICTIONAL-CONTAINER",
+        "cartridge_lot": null,
+        "cartridge_expiry": "2026-10-11T10:07:46.975Z",
+        "missing_reasons": {
+          "cartridge_lot": "not_applicable"
+        },
+        "storage_handling_events": [
+          {
+            "event": "sealed",
+            "occurred_at": "2026-10-11T09:07:46.975Z",
+            "temperature_c": null,
+            "duration_min": null
+          }
+        ]
+      },
+      "state": "analysis_canceled",
+      "accepted_at": "2026-10-11T09:07:46.988Z",
+      "authorization_id": "6873341f-f7a1-4559-a495-bac8a15f0abc",
+      "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+      "configuration_version": "v1",
+      "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+      "instruction_receipt": {
+        "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_version": "v1",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+        "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+        "acknowledged_at": "2026-10-11T09:07:46.934Z",
+        "confirmed": true,
+        "confirmations": [
+          "method_reviewed"
+        ],
+        "setup_id": null,
+        "rest_started_at": null,
+        "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+        "collection_method_version": "v1",
+        "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+        "accepted_at": "2026-10-11T09:07:46.947Z"
+      },
+      "projection": {
+        "sample": {
+          "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+          "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+          "collected_at": "2026-10-11T09:07:46.975Z",
+          "volume_ml": 1.0,
+          "dilution_factor": 2.0,
+          "status": "valid",
+          "quality_flags": []
+        },
+        "saliva": []
+      },
+      "attempt": {
+        "schema_version": "1.0.0",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "component": "saliva",
+        "record_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-11T09:07:46.975Z",
+        "ended_at": "2026-10-11T09:07:46.975Z",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "quality_flags": [],
+        "component_metadata": {
+          "armed_at": "2026-10-11T09:07:46.929Z",
+          "projection": {
+            "sample": {
+              "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:46.975Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": []
+          },
+          "instruction_receipt": {
+            "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+            "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+            "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:46.934Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+            "accepted_at": "2026-10-11T09:07:46.947Z"
+          },
+          "collection_request_sha256": "bed662def4d89cb67822dcced691e606d479ba78105a3a6e976d606f7bf1eba7",
+          "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172"
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      "attempt_revision": 2,
+      "attempt_sha256": "d687e564d757dcde8c8dfa214b7bfb08ded7ceed95fd4e58c486201ab3f6cf33",
+      "collection_attempt": {
+        "schema_version": "1.0.0",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+        "component": "saliva",
+        "record_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+        "supersedes_attempt_id": null,
+        "status": "valid",
+        "source": "reference_lab",
+        "started_at": "2026-10-11T09:07:46.975Z",
+        "ended_at": "2026-10-11T09:07:46.975Z",
+        "configuration_id": "fictional-participant-lab-config",
+        "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+        "quality_flags": [],
+        "component_metadata": {
+          "armed_at": "2026-10-11T09:07:46.929Z",
+          "projection": {
+            "sample": {
+              "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+              "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+              "collected_at": "2026-10-11T09:07:46.975Z",
+              "volume_ml": 1.0,
+              "dilution_factor": 2.0,
+              "status": "valid",
+              "quality_flags": []
+            },
+            "saliva": []
+          },
+          "instruction_receipt": {
+            "instruction_receipt_id": "2e992109-837d-4e72-ab76-882b37b21f7b",
+            "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+            "attempt_id": "8f1f0fd7-2298-4c4a-8b54-6f768e523dec",
+            "configuration_id": "fictional-participant-lab-config",
+            "configuration_version": "v1",
+            "configuration_hash": "8f7981293a92f620625a7252d99cddc955084c5ed8d55f6b096a615987d150ea",
+            "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+            "participant_protocol_sha256": "4a66db60c457b172442a8a80aac32f3db54db037391a6c9fe7c55689216d6392",
+            "acknowledged_at": "2026-10-11T09:07:46.934Z",
+            "confirmed": true,
+            "confirmations": [
+              "method_reviewed"
+            ],
+            "setup_id": null,
+            "rest_started_at": null,
+            "collection_method_id": "FICTIONAL-PARTICIPANT-COLLECTION",
+            "collection_method_version": "v1",
+            "consent_record_id": "ba57e255-846e-4f66-9b82-636b7a18e8c4",
+            "accepted_at": "2026-10-11T09:07:46.947Z"
+          },
+          "collection_request_sha256": "bed662def4d89cb67822dcced691e606d479ba78105a3a6e976d606f7bf1eba7",
+          "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172"
+        },
+        "artifact_refs": [],
+        "attestation_refs": []
+      },
+      "collection_attempt_revision": 2,
+      "collection_attempt_sha256": "d687e564d757dcde8c8dfa214b7bfb08ded7ceed95fd4e58c486201ab3f6cf33",
+      "abandonment": {
+        "abandonment_id": "44ac2f73-7c8f-4dc6-83ce-d92cbfd31a94",
+        "session_id": "3a119566-8259-4736-bc9f-169b4bd2fce9",
+        "sample_id": "1c4f0fd4-e096-49bd-94d7-f52bd6ab5c95",
+        "collection_receipt_id": "7991f832-1fee-4dca-8639-9bcc595d4172",
+        "collection_sha256": "0774a24e6b0ae14ef35c8cdb9bc0788ff22572d8947a381d74989fa07ea4533f",
+        "configuration_submitted_sha256": "01282131aa89c4c9075fa1338a2996a6ae656f28e7b4a042a5e766fca7bf2226",
+        "accepted_at": "2026-10-11T09:07:47.009Z",
+        "confirmation": true,
+        "reason": "PARTICIPANT_DECLINED",
+        "state": "analysis_canceled"
+      },
+      "imports": []
+    }
+  }
+}

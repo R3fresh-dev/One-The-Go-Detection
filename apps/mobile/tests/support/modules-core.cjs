@@ -11,6 +11,17 @@ module.exports = {
             modelEligible: false,
           }),
         }
-      : null,
+      : name === "OTGDEyeCapture"
+        ? {
+            getAvailability: () => ({
+              available: !!globalThis.__otgdUnitRuntime.eyeAvailable,
+              adapter_id: "optical_roi_v1",
+              extractor_version: "otgd-dark-component-v1",
+              model_eligible: false,
+            }),
+            cameraInventory: () => [],
+            cameraPermission: () => "unavailable",
+          }
+        : null,
   requireNativeViewManager: () => () => null,
 };

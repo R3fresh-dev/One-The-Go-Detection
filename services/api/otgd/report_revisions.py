@@ -400,6 +400,9 @@ def _artifact(
         )
     ):
         raise Problem(403, "VERIFIED_REPORT_REQUIRED")
+    from .raw_retention import assert_artifact_admitted
+
+    assert_artifact_admitted(db, account, row)
     return row
 
 
@@ -508,7 +511,12 @@ def report_artifact_upload(request: Request, session_id: UUID, body: ArtifactReq
             expires=now() + 300,
             scope={**body.data(), "purpose": PURPOSE},
         )
+        from .raw_retention import administrative_authority, attach_retention
+
+        frozen = administrative_authority(db, account, check, body.retention_policy_id,
+            PURPOSE, iso(check.created), operator_role="lab_report_revision")
         db.add(row)
+        attach_retention(db, row, frozen)
         ticket = storage.upload_ticket(row)
         ticket["expires_at"] = iso(row.expires)
         return answer(entry, ticket, 201)

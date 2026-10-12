@@ -15,12 +15,17 @@ import {
   type HistoryView,
 } from "../core/historyView";
 import { syncReadiness } from "../services/api";
+import {
+  RawExportChoicesCard,
+  type RawExportChoice,
+} from "./raw-export-choices";
 import { useTheme } from "./theme";
 import { getEnrolledLevelAsync } from "expo-local-authentication";
 import { DevicePanel } from "../device";
 import { digestText, utf8 } from "../core/integrity";
 import type { CheckRecord, JsonObject, PrivacyJob } from "../core/types";
 import { BUILD } from "../platform/config";
+import { configurationsFor } from "../core/acquisition";
 import { assessStudyConsent } from "./study-consent";
 import {
   action,
@@ -61,18 +66,57 @@ export function DeviceScreen({ controller, model }: ScreenProps) {
       )}
       subtitle="Bluetooth discovery starts only when you request it."
     >
-      <DevicePanel controller={controller.device} />
+      <DevicePanel
+        controller={controller.device}
+        allowBluetooth={!BUILD.hostedPreview}
+        onBind={() => controller.run(() => controller.bindConnectedReader())}
+        onRemoteForget={(bindingId) =>
+          controller.runPrivacy(() => controller.forgetReaderBinding(bindingId))
+        }
+      />
+      {!BUILD.hostedPreview && (
+        <Notice>
+          For a provisioned signed reader, use the OS Bluetooth pairing prompt
+          and the passkey on the device's provisioned label. Pairing and key
+          possession do not establish measurement qualification.
+        </Notice>
+      )}
       <Card>
         <Title small>Qualification is separate from connection</Title>
         <Paragraph>
-          Project simulators provide synthetic test data. This release has no
-          approved credentials, assay, optical configuration or human
-          ECG/alcohol hardware. A successful Bluetooth connection cannot enable
-          a human measurement.
+          Project simulators provide fictional data. Signed-protocol readers can
+          prove possession of their approved device key to the service.
+          Measurements require a released study, exact consent, calibrated
+          hardware and an installed adapter for the selected approved
+          configuration. Unknown proprietary reader protocols are unavailable.
         </Paragraph>
-        <Fact label="Qualified human acquisition" value="Unavailable" />
-        <Fact label="Impairment inference" value="Unavailable" />
-        <Fact label="Stored raw human signals" value="Not supported" />
+        <Fact
+          label="Approved acquisition channels"
+          value={
+            Object.entries(model.state?.capabilities?.channels ?? {})
+              .filter(([, channel]) => channel.available)
+              .map(([name]) => friendly(name))
+              .join(", ") || "None available"
+          }
+        />
+        <Fact
+          label="Research model execution"
+          value={
+            model.state?.capabilities?.inference_available
+              ? "Conditional on qualified immutable session evidence"
+              : "No approved model available"
+          }
+        />
+        <Fact
+          label="Optional raw recordings"
+          value={
+            BUILD.hostedPreview
+              ? "Unavailable in fictional preview"
+              : Platform.OS === "web"
+                ? "Acquisition unavailable in browser; owned server receipts remain readable"
+                : "Approved eye ROI / ECG adapters require separate opt-in, fresh signed recording permission and encrypted local storage"
+          }
+        />
       </Card>
       {controller.check && !controller.check.frozen && (
         <Button
@@ -669,7 +713,7 @@ export function SettingsScreen({ controller, model }: ScreenProps) {
           override brightness.
         </Paragraph>
       </Card>
-      <PermissionsCard controller={controller} />
+      {!BUILD.hostedPreview && <PermissionsCard controller={controller} />}
       <DiagnosticsCard
         key={`${controller.epoch}:${state.generation}`}
         controller={controller}
@@ -744,6 +788,12 @@ export function SettingsScreen({ controller, model }: ScreenProps) {
               )}
             />
           </>
+        ) : BUILD.hostedPreview ? (
+          <Notice>
+            Fictional guest preview. Account sign-in and synchronization are
+            unavailable; these examples never leave this workspace through an
+            upload.
+          </Notice>
         ) : (
           <Button
             title="Sign in to a separate account workspace"
@@ -807,6 +857,12 @@ function JobCard({
         <Notice tone="warning">
           The named categories remain under the stated retention policy. This is
           not complete erasure of those categories.
+        </Notice>
+      )}
+      {job.kind === "export" && job.state === "revoked" && (
+        <Notice tone="warning">
+          This export was revoked. It is unavailable for download; cleanup of
+          any service archive is separate from copies already shared.
         </Notice>
       )}
       {job.retained_categories.map((category, index) => (
@@ -1023,7 +1079,7 @@ export function PrivacyScreen({ controller, model }: ScreenProps) {
           {state.queue
             .filter(
               (q) =>
-                ["withdrawal", "deletion"].includes(q.kind) &&
+                ["withdrawal", "deletion", "raw_revocation"].includes(q.kind) &&
                 q.state !== "synced",
             )
             .map((q) => (
@@ -1063,7 +1119,19 @@ export function PrivacyScreen({ controller, model }: ScreenProps) {
 export function ExportScreen({ controller, model }: ScreenProps) {
   const state = model.state!,
     entry = state.exportEntry,
-    [reviewed, setReviewed] = useState(false);
+    [reviewed, setReviewed] = useState(false),
+    [rawChoice, setRawChoice] = useState<RawExportChoice | null>(null),
+    [rawAuthorization, setRawAuthorization] = useState<string>("none");
+  useEffect(() => {
+    setReviewed(false);
+    setRawChoice(null);
+    setRawAuthorization("none");
+  }, [
+    entry?.source,
+    JSON.stringify(entry?.selection),
+    controller.epoch,
+    JSON.stringify(state.rawExportAuthorities),
+  ]);
   if (!entry)
     return (
       <Page title="Choose data to export">
@@ -1079,6 +1147,83 @@ export function ExportScreen({ controller, model }: ScreenProps) {
       eyebrow="Exact selection"
       onBack={action(controller, () => controller.navigate("privacy"))}
     >
+      {entry.source === "cloud" && model.identity && (
+        <>
+          <Button
+            secondary
+            title="Review current separate raw export permissions"
+            onPress={action(controller, () =>
+              controller.refreshRawExportScopes(),
+            )}
+          />
+          {!(state.rawExportAuthorities ?? []).length && (
+            <Notice>
+              No separate approved raw export purpose is loaded. Structured
+              evidence remains the default; recording consent does not authorize
+              raw export.
+            </Notice>
+          )}
+          {!!state.rawExportAuthorities?.length && (
+            <Choice
+              label="Separate raw export purpose"
+              value={rawAuthorization}
+              options={[
+                { value: "none", label: "Structured evidence only" },
+                ...state.rawExportAuthorities.map((a) => ({
+                  value: a.authorization_id,
+                  label: a.purpose_text,
+                })),
+              ]}
+              onChange={(id) => {
+                setRawAuthorization(id);
+                setRawChoice(null);
+                setReviewed(false);
+              }}
+            />
+          )}
+          {(state.rawExportAuthorities ?? [])
+            .filter(
+              (authority) => authority.authorization_id === rawAuthorization,
+            )
+            .map((authority) => (
+              <RawExportChoicesCard
+                key={JSON.stringify([
+                  controller.epoch,
+                  state.generation,
+                  entry.selection,
+                  authority,
+                ])}
+                authority={authority}
+                selection={entry.selection}
+                onChange={(choice) => {
+                  setReviewed(false);
+                  setRawChoice(choice);
+                }}
+                onNext={() =>
+                  void controller.run(() =>
+                    controller.refreshRawExportScopes(
+                      authority.authorization_id,
+                      authority.artifacts_next_cursor!,
+                    ),
+                  )
+                }
+              />
+            ))}
+          {state.rawExportNextCursor && (
+            <Button
+              secondary
+              title="Review next page of separate raw export purposes"
+              onPress={action(controller, () =>
+                controller.refreshRawExportScopes(
+                  undefined,
+                  undefined,
+                  state.rawExportNextCursor!,
+                ),
+              )}
+            />
+          )}
+        </>
+      )}
       <Card>
         <Choice
           label="Record source"
@@ -1089,6 +1234,7 @@ export function ExportScreen({ controller, model }: ScreenProps) {
           ]}
           onChange={(source) => {
             setReviewed(false);
+            setRawChoice(null);
             void controller
               .changeExportSource(source)
               .catch((e) => controller.report(e));
@@ -1121,6 +1267,14 @@ export function ExportScreen({ controller, model }: ScreenProps) {
           Limits: 500 checks, 50 MiB uncompressed, 64 MiB archive. An oversized
           selection fails as a whole; nothing is silently omitted.
         </Paragraph>
+        <Fact
+          label="Explicit raw source selection"
+          value={
+            rawChoice
+              ? rawChoice.artifact_ids.join(", ")
+              : "None; structured evidence only"
+          }
+        />
         <SwitchRow
           title="I have reviewed the source and selected data."
           detail="The export can contain sensitive personal and measurement information."
@@ -1141,12 +1295,12 @@ export function ExportScreen({ controller, model }: ScreenProps) {
               text:
                 entry.source === "device"
                   ? "The system share sheet will receive the selected archive. The private app copy is removed afterward; copies you share cannot be recalled."
-                  : "The service will prepare the exact selected scope. A completed export expires after 24 hours. Download access is rechecked for this account and generation.",
+                  : `The service will prepare the exact selected scope. ${rawChoice ? `Separately authorized raw source IDs: ${rawChoice.artifact_ids.join(", ")}. Their approved export and original retention deadlines determine download expiry.` : "No raw sources are selected. Completed structured exports expire after 24 hours."} Download access is rechecked for this account and generation. Shared recipient copies cannot be recalled.`,
               confirm:
                 entry.source === "device"
                   ? "Create export and share"
                   : "Request export",
-              action: () => controller.createExport(),
+              action: () => controller.createExport(rawChoice ?? undefined),
             }),
           )}
           testID="create-export"
@@ -1276,20 +1430,106 @@ function StudyCard({
           />
         </>
       )}
+      {assessment.current && !study.local_withdrawal_pending && (
+        <StudyCaptureStart study={study} controller={controller} />
+      )}
+      {(assessment.current || consent?.state === "withdrawn") && (
+        <Button
+          title="Review recording choices and retention"
+          secondary
+          onPress={action(controller, () =>
+            controller.openRawRecordings(String(study.study_id)),
+          )}
+        />
+      )}
       {consent?.state === "active" && (
         <Button
           title="Withdraw from this study"
           secondary
-          onPress={action(controller, () =>
-            controller.ask({
-              title: "Withdraw from this study?",
-              text: "The app stops this study’s local work and queues your exact withdrawal. The request remains pending until the service confirms it. Previously accepted data follows the study retention policy; withdrawal and deletion are separate.",
-              confirm: "Stop local work and request withdrawal",
-              danger: true,
-              action: () => controller.withdraw(String(study.study_id)),
-            }),
-          )}
+          onPress={() =>
+            void controller.runPrivacy(() =>
+              controller.ask({
+                title: "Withdraw from this study?",
+                interrupting: true,
+                text: "The app stops this study’s local work and queues your exact withdrawal. The request remains pending until the service confirms it. Previously accepted data follows the study retention policy; withdrawal and deletion are separate.",
+                confirm: "Stop local work and request withdrawal",
+                danger: true,
+                action: () => controller.withdraw(String(study.study_id)),
+              }),
+            )
+          }
         />
+      )}
+    </Card>
+  );
+}
+function StudyCaptureStart({
+  study,
+  controller,
+}: {
+  study: JsonObject;
+  controller: ScreenProps["controller"];
+}) {
+  const [confirmed, setConfirmed] = useState(false),
+    capabilities = controller.getSnapshot().state?.capabilities ?? null;
+  const configurations = configurationsFor(
+    capabilities,
+    String(study.study_id),
+  );
+  const protocols = [
+    ...new Set(configurations.map((config) => config.protocol_id)),
+  ];
+  return (
+    <Card>
+      <Title small>Start an approved research check</Title>
+      <Paragraph>
+        Review your current profile and self-reported context before starting.
+        They freeze at Start; unknown values are allowed. Device binding should
+        be completed before starting a reader check.
+      </Paragraph>
+      <Fact
+        label="Coordinator contact"
+        value={
+          typeof study.contact === "string"
+            ? study.contact
+            : "Refer to your approved study information; no public contact configured"
+        }
+      />
+      <Fact
+        label="Supported phones"
+        value={
+          [
+            ...new Set(
+              configurations.flatMap((config) => config.supported_phone_models),
+            ),
+          ].join(", ") || "No approved phone configuration available"
+        }
+      />
+      <SwitchRow
+        title="I reviewed the current check context and approved protocol."
+        value={confirmed}
+        onChange={setConfirmed}
+      />
+      {protocols.length ? (
+        protocols.map((protocol) => (
+          <Button
+            key={protocol}
+            title={`Start approved protocol ${protocol}`}
+            disabled={!confirmed}
+            onPress={action(controller, () =>
+              controller.beginStudyCheck(
+                String(study.study_id),
+                protocol,
+                confirmed,
+              ),
+            )}
+          />
+        ))
+      ) : (
+        <Notice>
+          No released protocol with an installed capture adapter is available.
+          Refresh membership to check again.
+        </Notice>
       )}
     </Card>
   );
@@ -1309,9 +1549,10 @@ export function StudiesScreen({ controller, model }: ScreenProps) {
           study consent never enables an unqualified device or impairment model.
         </Paragraph>
         <Notice>
-          Qualified human-study capture is unavailable in this release. It would
-          require fresh online authorization and an approved configuration for
-          every capture. Offline native practice remains uncalibrated.
+          Available acquisition depends on your current study approval, exact
+          consent, device calibration and installed software adapter. Each real
+          capture requires a fresh online grant. Offline native practice remains
+          uncalibrated.
         </Notice>
         {model.identity ? (
           <Button
@@ -1319,6 +1560,11 @@ export function StudiesScreen({ controller, model }: ScreenProps) {
             secondary
             onPress={action(controller, () => controller.refreshStudies())}
           />
+        ) : BUILD.hostedPreview ? (
+          <Notice>
+            Study invitations and account services are unavailable in the
+            fictional guest preview.
+          </Notice>
         ) : (
           <Button
             title="Sign in to view invitations"
@@ -1426,7 +1672,7 @@ export function AboutScreen({ controller, model }: ScreenProps) {
       )}
     >
       <Card>
-        <Title small>Measurement-only software</Title>
+        <Title small>Research measurement platform</Title>
         <Paragraph>
           This application organizes optional profile context, saliva
           measurements, eye and cardiac evidence, native reaction practice, and
@@ -1434,14 +1680,23 @@ export function AboutScreen({ controller, model }: ScreenProps) {
           timestamps and immutable evidence links.
         </Paragraph>
         <Notice tone="warning">
-          No validated intoxication or impairment model is included.
-          Measurements cannot be used as an app-provided driving clearance.
+          Ordinary and guest checks are measurement records. A separately
+          admitted qualified research result may describe only its named
+          historical endpoint; scientific approval and current evidence are
+          required. The app does not provide driving clearance.
         </Notice>
         <Fact label="App version" value={BUILD.version} />
         <Fact label="Environment" value={BUILD.environment.toUpperCase()} />
         <Fact label="Application contract" value="1.0.0" />
         <Fact label="Measurement snapshot" value="0.1.0" />
-        <Fact label="Inference" value="Compiled off" />
+        <Fact
+          label="Research result reader"
+          value={
+            BUILD.hostedPreview
+              ? "Fictional measurement-only preview"
+              : "Version 1.1 proof-bound research endpoint support; no model or approval is bundled"
+          }
+        />
         <Fact
           label="Native runtime"
           value={`${Platform.OS} ${String(Platform.Version)}`}
@@ -1525,7 +1780,16 @@ export function StatusScreen({ controller, model }: ScreenProps) {
             model.config?.minimum_app_version ?? "Configuration not loaded"
           }
         />
-        <Fact label="Inference" value="Unavailable in every environment" />
+        <Fact
+          label="Current research execution"
+          value={
+            BUILD.hostedPreview
+              ? "Unavailable in fictional preview"
+              : model.state?.capabilities?.inference_available
+                ? "Conditional on qualified immutable session evidence and current approvals"
+                : "No currently available approved model"
+          }
+        />
         <Button
           title="Refresh service status"
           onPress={action(controller, async () => {
@@ -1560,10 +1824,22 @@ export function StatusScreen({ controller, model }: ScreenProps) {
       ).map(([channel, cap]) => (
         <Card key={channel}>
           <Title small>{friendly(channel)}</Title>
-          <Badge tone="warning">Qualified acquisition unavailable</Badge>
+          <Badge
+            tone={cap.available && !BUILD.hostedPreview ? "accent" : "warning"}
+          >
+            {BUILD.hostedPreview
+              ? "Acquisition unavailable in fictional preview"
+              : cap.available
+                ? "Approved acquisition available"
+                : "Qualified acquisition unavailable"}
+          </Badge>
           <Paragraph muted>
-            {cap.reason_codes.map(friendly).join(" · ") ||
-              "This compiled release does not contain a qualified acquisition implementation."}
+            {BUILD.hostedPreview
+              ? "This guest build never acquires participant measurements."
+              : cap.reason_codes.map(friendly).join(" · ") ||
+                (cap.available
+                  ? "Each Start still rechecks current study, consent, configuration and device authority online."
+                  : "No current approved configuration and installed adapter are available.")}
           </Paragraph>
         </Card>
       ))}

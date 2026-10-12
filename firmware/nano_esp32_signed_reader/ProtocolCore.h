@@ -1,0 +1,1 @@
+../nano_esp32_ble_simulator/ProtocolCore.h

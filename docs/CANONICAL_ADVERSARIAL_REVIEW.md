@@ -6,6 +6,8 @@ Review date: 2026-10-11. Reviewer: a separate implementation-team reviewer worki
 
 The review used HEAD `21ee30a23ba9ac51a581361d4f3da10c72bea03f` plus the concurrent working-tree changes. It precedes the final source freeze and required gate run. This report is part of the source that must be included in that freeze; it is not an assertion that all checks passed on a final commit.
 
+This is a historical review checkpoint. Subsequent implementations, corrections and independent re-review are recorded in [the current alignment audit](REQUIREMENTS_ALIGNMENT_AUDIT.md) and [implementation status](../IMPLEMENTATION_STATUS.md). The missing-software inventory and SQL-lock descriptions below describe that earlier revision. Current runtime registry reads use shared authority advisory locks with SELECT-only registry privileges; operator mutations take the corresponding exclusive lock. Consult the follow-up evidence and exact-revision gates before treating an earlier omission or passing test count as current.
+
 ## Scope and source of evidence
 
 The canonical application consists of `services/api/otgd`, `apps/mobile`, `infra`, `infra/local/compose.yml`, `deploy/platform.py` and the shared scientific/application contracts. The review inspected authentication, consent, acquisition authority, artifact/export/deletion handling, worker fencing, native build regressions, deployment admission, CI enforcement and customer consent behavior.
