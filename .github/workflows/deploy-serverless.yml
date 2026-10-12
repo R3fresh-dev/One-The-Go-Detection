@@ -8,6 +8,11 @@ on:
         required: true
         type: boolean
         default: false
+      recover_initial:
+        description: Preserve and import retained resources from an empty first-attempt infrastructure rollback; requires establish_new
+        required: true
+        type: boolean
+        default: false
 
 # AWS access uses the two existing repository secrets. No OIDC token is issued.
 permissions:
@@ -191,11 +196,15 @@ jobs:
         shell: bash
         env:
           ESTABLISH_NEW: ${{ inputs.establish_new }}
+          RECOVER_INITIAL: ${{ inputs.recover_initial }}
         run: |
           set -euo pipefail
           otgd_deploy_options=()
           if [ "$ESTABLISH_NEW" = true ]; then
             otgd_deploy_options+=(--establish-new)
+          fi
+          if [ "$RECOVER_INITIAL" = true ]; then
+            otgd_deploy_options+=(--recover-initial)
           fi
           uv run --project services/api python deploy/serverless.py deploy \
             --config .local/serverlessconfig/serverless.json \
@@ -213,6 +222,7 @@ jobs:
             reports/serverless-deploy.json
             .local/deploy/serverless-development/**/deployment.json
             .local/deploy/serverless-development/**/deployment-state.json
+            .local/deploy/serverless-development/**/initial-recovery.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

@@ -147,6 +147,7 @@ class ServerlessWorkflowTest(unittest.TestCase):
         trigger = self.workflow.get('on', self.workflow.get(True))
         self.assertEqual(set(trigger), {'workflow_dispatch'})
         self.assertFalse(trigger['workflow_dispatch']['inputs']['establish_new']['default'])
+        self.assertFalse(trigger['workflow_dispatch']['inputs']['recover_initial']['default'])
         credentials = steps[credential_index]['with']
         self.assertEqual(credentials['aws-access-key-id'], '${{ secrets.ACCESS_KEY_ID }}')
         self.assertEqual(credentials['aws-secret-access-key'], '${{ secrets.SECRET_ACCESS_KEY }}')
@@ -167,6 +168,7 @@ class ServerlessWorkflowTest(unittest.TestCase):
             'reports/serverless-plan.json', 'reports/serverless-deploy.json',
             '.local/deploy/serverless-development/**/deployment.json',
             '.local/deploy/serverless-development/**/deployment-state.json',
+            '.local/deploy/serverless-development/**/initial-recovery.json',
         })
         self.assertTrue(upload['with']['include-hidden-files'])
         credentials = next(i for i, step in enumerate(steps) if step.get('id') == 'credentials')
