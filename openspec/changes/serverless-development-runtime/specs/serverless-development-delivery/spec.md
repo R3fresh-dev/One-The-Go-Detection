@@ -77,3 +77,65 @@ Serverless development SHALL preserve retained journals/data on failure and SHAL
 - **GIVEN** only development deployment software and canonical restore tools
 - **WHEN** readiness is documented
 - **THEN** the separate serverless recovery integration remains explicit, without a fabricated restore result.
+
+### Requirement: SDEV-007 Admit only empty first-attempt recovery
+Initial infrastructure recovery SHALL require an exactly owned, fully rolled-back first creation, the exact supported reviewed stopped template, complete creation history, never-created and still-absent database/application functions, and empty retained bucket/multipart/control/identity state. Initialized or unsupported historical deployments SHALL refuse without replacing authority.
+
+#### Scenario: An exactly empty first rollback is admitted
+- **GIVEN** explicit initial-recovery authorization, the matching stopped template, complete first-creation history and verified empty retained authority
+- **WHEN** recovery eligibility is checked
+- **THEN** the exact initial-state plan is retained before any mutation.
+
+#### Scenario: A database or application function was previously created
+- **GIVEN** a database/function completion event, existing application resource, journal version/delete marker, multipart upload, control row or user
+- **WHEN** initial recovery is planned
+- **THEN** it refuses before detaching metadata and cannot establish a replacement journal.
+
+#### Scenario: The original template uses an unsupported protocol
+- **GIVEN** an original template that cannot be proven equal to the supported reviewed stopped deployment
+- **WHEN** initial recovery is requested
+- **THEN** it fails closed for separately reviewed recovery without relaxing identity checks or replacing retained authority.
+
+### Requirement: SDEV-008 Import identical retained infrastructure
+Recovery SHALL detach only failed stack metadata and import the exact surviving retained physical identities, with no resource replacement or journal reset. The actual change set SHALL contain each expected resource exactly once with only Import actions. Protected phase evidence SHALL precede mutation, preserve failures and report only observed infrastructure adoption without claiming rollback or SQL restoration.
+
+#### Scenario: The exact retained resources are imported
+- **GIVEN** an admitted empty plan and exact Import change set
+- **WHEN** adoption completes and actual identities/status/protection are verified
+- **THEN** the original resources remain and the receipt identifies only the completed infrastructure operation.
+
+#### Scenario: The proposed import changes the resource set
+- **GIVEN** an extra, missing, duplicate, foreign or non-Import change
+- **WHEN** the actual change set is verified
+- **THEN** import execution refuses, preserving actual completed-stage evidence.
+
+### Requirement: SDEV-009 Refresh recovery admission and invariants
+Recovery SHALL recheck current-source thirteen-job authority before every cloud mutation and reread retained-state and absent-application invariants before import execution and after adoption. Changed authority/state SHALL stop further mutation and retain the precise protected failure phase; an earlier empty snapshot SHALL not establish current success.
+
+#### Scenario: Authority becomes nonempty during an AWS waiter
+- **GIVEN** an initially empty plan and a later retained-state or application-presence change
+- **WHEN** pre-execution or post-adoption invariants are reread
+- **THEN** recovery remains failed rather than reporting the stale empty snapshot as current success.
+
+#### Scenario: Main or its latest gate changes during recovery
+- **GIVEN** earlier valid source authority followed by changed main or a newer unfinished/failed run
+- **WHEN** another recovery mutation is attempted
+- **THEN** admission stops that mutation and records the precise protected phase.
+
+#### Scenario: Post-adoption state contradicts the plan
+- **GIVEN** completed import metadata but changed retained identities, state or application presence
+- **WHEN** final invariants are verified
+- **THEN** recovery reports failure and preserves completed-stage evidence without claiming rollback.
+
+### Requirement: SDEV-010 Verify the actual AWS account plan
+Development deployment SHALL verify the selected STS account and its active Paid Plan before recovery or deployment mutation. A restricted Free Plan, wrong account, missing or malformed plan state SHALL refuse rather than silently selecting Aurora Express or a different architecture. Planning SHALL describe usage assumptions and shall not represent free credits or budget alerts as a spending cap.
+
+#### Scenario: The selected account has an active Paid Plan
+- **GIVEN** the exact selected account and observed active Paid Plan
+- **WHEN** preflight evaluates the planned Aurora configuration
+- **THEN** deployment can continue to its remaining admission checks without changing the architecture.
+
+#### Scenario: The account has a restricted or unverified plan
+- **GIVEN** a Free Plan, inactive state, wrong account or unavailable plan response
+- **WHEN** preflight runs
+- **THEN** it stops before deployment/recovery mutation and reports the actual prerequisite.

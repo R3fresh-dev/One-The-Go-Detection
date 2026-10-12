@@ -9,6 +9,7 @@ A separate serverless development feature was merged while the release/browser f
 - Verify exact maintenance operation/outcome and deployed function identity.
 - Preserve explicit guest isolation, bounded client deadlines and actual transport limits.
 - Document private operator access and unimplemented serverless restore integration without calling it production qualification.
+- Specify the subsequent external empty first-infrastructure-rollback recovery separately from retained SQL restoration, with fresh mutation admission and repeated state invariants.
 
 ## Impact
 

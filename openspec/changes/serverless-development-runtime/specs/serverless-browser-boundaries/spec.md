@@ -38,3 +38,29 @@ Delivery documentation SHALL distinguish the configured sixty-second CloudFront 
 - **GIVEN** only software/template checks
 - **WHEN** readiness is reported
 - **THEN** actual resumed-database HTTPS behavior remains unexecuted evidence.
+
+### Requirement: SBR-004 Bind browser upload CSP to the exact bucket
+The serverless web Content Security Policy SHALL admit only the exact selected Ohio/account artifact-bucket HTTPS path, including its trailing slash, in addition to the admitted API and identity origins. Wildcard, neighboring bucket-prefix, foreign account/region or arbitrary output origins SHALL refuse. Canonical QA/prod web policy SHALL remain separately validated.
+
+#### Scenario: The selected private upload path is served
+- **GIVEN** the exact artifact bucket and current admitted web distribution
+- **WHEN** the actual response security policy is verified
+- **THEN** its upload network authority is restricted to that bucket path.
+
+#### Scenario: An expanded upload origin is supplied
+- **GIVEN** a wildcard, missing path separator, neighboring prefix or foreign origin
+- **WHEN** policy verification runs
+- **THEN** it refuses rather than broadening browser network authority.
+
+### Requirement: SBR-005 Verify upload preflight and receipt visibility
+Upload readiness SHALL require actual single-web-origin PUT CORS with the exact signed conditional/checksum/SSE headers, exposed ETag/version/checksum receipt headers and admitted cache duration. Positive and unapproved-origin OPTIONS probes SHALL verify the actual browser boundary. Preflight success SHALL not claim an object was uploaded or authenticated customer acceptance completed.
+
+#### Scenario: The admitted web client preflights a signed upload
+- **GIVEN** exact CORS methods, signed headers, exposed receipt fields and cache duration
+- **WHEN** its actual preflight responds
+- **THEN** the selected web origin is admitted and evidence remains scoped to preflight.
+
+#### Scenario: Policy or origin does not match
+- **GIVEN** a foreign origin, expanded policy or missing exposed receipt header
+- **WHEN** actual CORS/preflight verification runs
+- **THEN** upload readiness refuses without reporting a completed object transfer.

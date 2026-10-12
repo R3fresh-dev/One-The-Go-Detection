@@ -187,6 +187,8 @@ def test_producer_uses_atomic_epoch_and_lease_and_release_keeps_wake(store, meta
     assert transaction["ClientRequestToken"] == LEASE_A
     assert len(transaction["TransactItems"]) == 3
     assert transaction["TransactItems"][0]["ConditionCheck"]["Key"] == control._admission_key()
+    stored = transaction["TransactItems"][2]["Put"]["Item"]
+    assert stored["deadlineAt"] == {"N": "180"} and "expiresAt" not in stored
     assert metadata.items["control"]["epoch"] == {"N": "1"}
     assert store.snapshot(now=100).active_leases == (lease,)
     store.release(LEASE_A)
@@ -196,12 +198,17 @@ def test_producer_uses_atomic_epoch_and_lease_and_release_keeps_wake(store, meta
     assert not snapshot.active_leases
 
 
-def test_crashed_producer_expires_after_absolute_lambda_deadline(store):
+def test_crashed_producer_stays_fenced_after_absolute_lambda_budget(store):
     lease = store.acquire(LEASE_A, now=100.25)
     assert lease.expires_at == 1031
     assert lease.expires_at >= 100.25 + 900 + 30
     assert store.snapshot(now=1030.9).active_leases == (lease,)
-    assert not store.snapshot(now=1031).active_leases
+    overdue = store.snapshot(now=1031)
+    assert overdue.active_leases == (lease,)
+    assert not store.mark_reconciled(overdue, None, now=1032)
+    assert store.snapshot(now=253402300799).active_leases == (lease,)
+    store.release(LEASE_A)
+    assert not store.snapshot(now=253402300799).active_leases
 
 
 @pytest.mark.parametrize("deadline", [100, 99, 1001, float("nan"), float("inf"), True, "110"])
@@ -293,12 +300,12 @@ def test_never_stable_epoch_fails_closed_with_bounded_reads(store, metadata):
     assert sum(name == "query" for name, _ in metadata.calls) == control.MAX_ATTEMPTS
 
 
-def test_paginated_snapshot_includes_active_lease_on_last_page(store, metadata):
+def test_paginated_snapshot_retains_overdue_and_current_unreleased_lease(store, metadata):
     metadata.page_size = 1
-    store.acquire(LEASE_A, deadline=101, now=100)
+    overdue = store.acquire(LEASE_A, deadline=101, now=100)
     active = store.acquire(LEASE_B, deadline=200, now=100)
     snapshot = store.snapshot(now=132)
-    assert snapshot.active_leases == (active,)
+    assert snapshot.active_leases == (overdue, active)
     queries = [request for name, request in metadata.calls if name == "query"]
     assert len(queries) == 2 and "ExclusiveStartKey" in queries[1]
 
@@ -333,9 +340,9 @@ def test_repeated_pagination_cursor_and_excessive_record_count_fail_closed(store
 
 @pytest.mark.parametrize("changes", [
     {"request": {"S": "forbidden application metadata"}},
-    {"expiresAt": {"N": "10000"}},
-    {"expiresAt": {"N": "NaN"}},
-    {"expiresAt": {"N": "100.2"}},
+    {"deadlineAt": {"N": "10000"}},
+    {"deadlineAt": {"N": "NaN"}},
+    {"deadlineAt": {"N": "100.2"}},
     {"kind": {"S": "unknown"}},
     {"PK": {"S": "other"}},
     {"SK": {"S": "lease#account-123"}},
@@ -347,6 +354,18 @@ def test_malformed_producer_metadata_fails_closed(store, metadata, changes):
     metadata.items["lease#" + LEASE_A].update(changes)
     with pytest.raises(control.ControlMetadataError):
         store.snapshot(now=101)
+
+
+def test_legacy_ttl_row_is_rejected_as_an_unreconciled_fence_never_ignored(store, metadata):
+    store.acquire(LEASE_A, now=100)
+    row = metadata.items["lease#" + LEASE_A]
+    row["expiresAt"] = row.pop("deadlineAt")
+    with pytest.raises(control.ControlMetadataError, match="producer metadata"):
+        store.snapshot(now=1031)
+    ownership = store.close_admission(LEASE_B)
+    with pytest.raises(control.ControlMetadataError, match="producer metadata"):
+        store.reopen_admission(ownership)
+    assert metadata.items["lease#" + LEASE_A] == row
 
 
 @pytest.mark.parametrize("changes", [
@@ -381,7 +400,7 @@ def test_acquire_failure_prevents_sql_body_and_does_not_release(store, metadata,
     monkeypatch.setattr(control, "control_store", lambda: store)
     sql_calls = []
     with pytest.raises(control.ControlUnavailable):
-        with control.producer_lease(now=100, lease_id=LEASE_A):
+        with control.producer_lease(now=100, lease_id=LEASE_A, dispose=lambda: pytest.fail("Unacquired producer cannot dispose")):
             sql_calls.append("SQL")
     assert not sql_calls
     assert not any(name == "delete" for name, _ in metadata.calls)
@@ -389,16 +408,39 @@ def test_acquire_failure_prevents_sql_body_and_does_not_release(store, metadata,
 
 def test_context_deadline_and_release_on_body_failure(store, monkeypatch):
     monkeypatch.setattr(control, "control_store", lambda: store)
+    disposed = []
+    def dispose():
+        assert len(store.snapshot(now=100).active_leases) == 1
+        disposed.append(True)
 
     class Context:
         def get_remaining_time_in_millis(self):
             return 1250
 
     with pytest.raises(RuntimeError, match="SQL failed"):
-        with control.producer_lease(Context(), now=100, lease_id=LEASE_A, kind="worker") as lease:
+        with control.producer_lease(Context(), now=100, lease_id=LEASE_A, kind="worker", dispose=dispose) as lease:
             assert lease.expires_at == 132
             raise RuntimeError("SQL failed")
     assert not store.snapshot(now=101).active_leases
+    assert disposed == [True]
+
+
+def test_producer_context_keeps_overdue_fence_when_connection_disposal_fails(store, monkeypatch):
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    def failed_disposal():
+        raise RuntimeError("Unconfirmed SQL shutdown")
+    with pytest.raises(RuntimeError, match="SQL shutdown"), control.producer_lease(
+            now=0, lease_id=LEASE_A, dispose=failed_disposal):
+        pass
+    assert len(store.snapshot(now=931).active_leases) == 1
+
+
+def test_producer_context_requires_connection_disposal_before_aws(store, metadata, monkeypatch):
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    with pytest.raises(control.ControlMetadataError, match="disposal"), control.producer_lease(
+            now=0, lease_id=LEASE_A, dispose=None):
+        pytest.fail("No unowned disposal-free producer")
+    assert not metadata.calls
 
 
 @pytest.mark.parametrize("value", ["patient-id", LEASE_A.upper(), "", None])
@@ -541,7 +583,7 @@ def test_missing_admission_is_closed_and_first_closure_is_owned(metadata, monkey
     monkeypatch.setattr(control, "control_store", lambda: store)
     assert store.admission() is None
     with pytest.raises(control.ControlUnavailable, match="closed"):
-        with control.producer_lease(now=100, lease_id=LEASE_A):
+        with control.producer_lease(now=100, lease_id=LEASE_A, dispose=lambda: None):
             pytest.fail("No unestablished runtime may open SQL")
     ownership = store.close_admission(LEASE_B)
     assert ownership == {"owner_id": LEASE_B, "generation": 1, "source_revision": REVISION}
@@ -580,7 +622,7 @@ def test_admission_closing_between_read_and_atomic_acquire_prevents_sql(store, m
     monkeypatch.setattr(metadata, "transact_write_items", close_then_transact)
     monkeypatch.setattr(control, "control_store", lambda: store)
     with pytest.raises(control.ControlUnavailable, match="acquisition failed"):
-        with control.producer_lease(now=100, lease_id=LEASE_B):
+        with control.producer_lease(now=100, lease_id=LEASE_B, dispose=lambda: None):
             pytest.fail("A delayed runtime invocation cannot open SQL after closure")
     assert not store.snapshot(now=100).active_leases
     assert store.snapshot(now=100).epoch == 0
@@ -621,7 +663,8 @@ def test_reopen_atomic_epoch_check_refuses_racing_maintenance(store, metadata, m
 
 
 @pytest.mark.parametrize("changes", [
-    {"protocolVersion": {"S": "0"}}, {"state": {"S": "unsafe"}}, {"generation": {"N": "0"}},
+    {"protocolVersion": {"S": "0"}}, {"protocolVersion": {"S": "1"}},
+    {"state": {"S": "unsafe"}}, {"generation": {"N": "0"}},
     {"generation": {"N": "1.5"}}, {"ownerId": {"S": "not-uuid"}},
     {"sourceRevision": {"S": "not-source"}}, {"health_data": {"S": "forbidden"}},
 ])

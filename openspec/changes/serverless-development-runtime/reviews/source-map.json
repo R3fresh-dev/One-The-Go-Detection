@@ -1,0 +1,828 @@
+{
+  "schema_version": "1.0.0",
+  "review_date": "2026-10-12",
+  "scope": "New frozen working-source integration snapshot; not a final commit, archive or cloud acceptance certificate",
+  "external_merge_baseline": "51a6819661acd420636a758cba2a412b40d94622",
+  "historical_snapshots_preserved": true,
+  "source_count": 83,
+  "source_inventory_sha256": "328965870abe405a10780d57fffb9006c9fc525f026047206a5b07db24b806c0",
+  "inventory_digest_rule": "SHA256 of UTF-8 compact JSON array of sorted [file,sha256] pairs; ensure_ascii=true",
+  "self_referential_files_excluded": [
+    "openspec/changes/serverless-development-runtime/reviews/INTEGRATION_REVIEW.md",
+    "openspec/changes/serverless-development-runtime/reviews/source-map.json"
+  ],
+  "requirement_count": 12,
+  "specified_scenario_count": 24,
+  "requirement_trace": [
+    {
+      "id": "SBR-001",
+      "title": "SBR-001 Preserve one bounded client operation deadline",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-browser-boundaries/spec.md",
+      "scenarios": [
+        "A serverless request refreshes authentication",
+        "A guest or local client inherits a cloud flag"
+      ],
+      "source": [
+        "apps/mobile/src/services/api.ts",
+        "apps/mobile/src/platform/config.ts",
+        "apps/mobile/app.config.ts",
+        "apps/mobile/src/controller.ts"
+      ],
+      "tests": [
+        "apps/mobile/tests/api-deadline.test.ts",
+        "apps/mobile/tests/serverless-build.test.ts"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SBR-002",
+      "title": "SBR-002 Pin guest serverless mode to false",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-browser-boundaries/spec.md",
+      "scenarios": [
+        "The shell was configured for cloud serverless",
+        "A manifest omits or changes the field"
+      ],
+      "source": [
+        "apps/mobile/scripts/build-preview.mjs",
+        ".devcontainer/preview-state.mjs"
+      ],
+      "tests": [
+        "infra/test/test_codespaces_preview.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SBR-003",
+      "title": "SBR-003 Report actual public transport bounds",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-browser-boundaries/spec.md",
+      "scenarios": [
+        "Streaming lifetime is described",
+        "Cold cloud transport has not run"
+      ],
+      "source": [
+        "deploy/serverless_template.py",
+        "deploy/SERVERLESS_AWS.md"
+      ],
+      "tests": [
+        "infra/test/test_serverless_template.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SDEV-001",
+      "title": "SDEV-001 Keep the runtime explicitly developmental",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-development-delivery/spec.md",
+      "scenarios": [
+        "The configured development stack starts",
+        "Production or an ambiguous profile is supplied"
+      ],
+      "source": [
+        "services/api/otgd/config.py",
+        "services/api/otgd/serverless_lifecycle.py",
+        "deploy/serverless_template.py"
+      ],
+      "tests": [
+        "services/api/tests/test_serverless_lifecycle.py",
+        "infra/test/test_serverless_template.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SDEV-002",
+      "title": "SDEV-002 Recheck source admission before mutation",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-development-delivery/spec.md",
+      "scenarios": [
+        "Admitted source remains current",
+        "Authority changes during rollout"
+      ],
+      "source": [
+        "deploy/serverless_gates.py",
+        "deploy/serverless.py",
+        ".github/workflows/deploy-serverless.yml",
+        "deploy/provenance.py"
+      ],
+      "tests": [
+        "infra/test/test_serverless_gate_admission.py",
+        "infra/test/test_serverless_workflow.py",
+        "infra/test/test_serverless_drain.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SDEV-003",
+      "title": "SDEV-003 Bind cost parsing and hashing to one snapshot",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-development-delivery/spec.md",
+      "scenarios": [
+        "Reviewed bounded estimate is supplied",
+        "Evidence changes or exceeds its bound"
+      ],
+      "source": [
+        "deploy/serverless.py",
+        "deploy/provenance.py",
+        "infra/costs/aws-serverless-price-evidence.json"
+      ],
+      "tests": [
+        "infra/test/test_serverless_deploy.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SDEV-004",
+      "title": "SDEV-004 Preserve independent operator access",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-development-delivery/spec.md",
+      "scenarios": [
+        "A genuine operator uses its assigned role",
+        "Runtime or foreign authority is supplied"
+      ],
+      "source": [
+        "deploy/serverless_template.py",
+        "deploy/SERVERLESS_AWS.md"
+      ],
+      "tests": [
+        "infra/test/test_serverless_template.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SDEV-005",
+      "title": "SDEV-005 Verify maintenance identity and outcome",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-development-delivery/spec.md",
+      "scenarios": [
+        "The intended maintenance operation completes",
+        "An apparently successful foreign operation responds"
+      ],
+      "source": [
+        "deploy/serverless.py",
+        "services/api/otgd/serverless_worker.py",
+        "scripts/serverless_runtime.py"
+      ],
+      "tests": [
+        "infra/test/test_serverless_drain.py",
+        "services/api/tests/test_serverless_worker.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SDEV-006",
+      "title": "SDEV-006 Preserve recovery limits and journal continuity",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-development-delivery/spec.md",
+      "scenarios": [
+        "A retained journal cannot be proven",
+        "Recovery capability is reported"
+      ],
+      "source": [
+        "deploy/serverless.py",
+        "infra/local/bootstrap_resources.py",
+        "services/api/otgd/recovery_authority.py",
+        "deploy/SERVERLESS_AWS.md",
+        "openspec/changes/serverless-development-runtime/design.md",
+        "services/api/otgd/journal_continuity.py",
+        "services/api/otgd/migrate.py"
+      ],
+      "tests": [
+        "infra/test/test_serverless_deploy.py",
+        "infra/test/test_serverless_drain.py"
+      ],
+      "disposition": "continuity_and_scope_disclosure_reviewed_restore_adapter_missing"
+    },
+    {
+      "id": "SCTL-001",
+      "title": "SCTL-001 Acquire producer leases before every SQL access",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-runtime-control/spec.md",
+      "scenarios": [
+        "A sweep finds no due work",
+        "Maintenance or disposal blocks progress"
+      ],
+      "source": [
+        "services/api/otgd/serverless_worker.py",
+        "services/api/otgd/serverless_lifecycle.py",
+        "services/api/otgd/worker.py"
+      ],
+      "tests": [
+        "services/api/tests/test_serverless_worker.py",
+        "services/api/tests/test_serverless_lifecycle.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SCTL-002",
+      "title": "SCTL-002 Close acquisition atomically before drainage",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-runtime-control/spec.md",
+      "scenarios": [
+        "An old invocation reaches acquisition after closure",
+        "A producer was leased before closure"
+      ],
+      "source": [
+        "services/api/otgd/serverless_control.py",
+        "deploy/serverless.py"
+      ],
+      "tests": [
+        "services/api/tests/test_serverless_control.py",
+        "services/api/tests/test_serverless_worker.py",
+        "infra/test/test_serverless_drain.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    },
+    {
+      "id": "SCTL-003",
+      "title": "SCTL-003 Allow only deliberately owned maintenance",
+      "spec_file": "openspec/changes/serverless-development-runtime/specs/serverless-runtime-control/spec.md",
+      "scenarios": [
+        "Supported closed and drained runtime enters maintenance",
+        "The existing runtime lacks the protocol"
+      ],
+      "source": [
+        "services/api/otgd/serverless_control.py",
+        "services/api/otgd/serverless_worker.py",
+        "deploy/serverless.py",
+        "deploy/serverless_template.py"
+      ],
+      "tests": [
+        "services/api/tests/test_serverless_control.py",
+        "services/api/tests/test_serverless_worker.py",
+        "infra/test/test_serverless_drain.py"
+      ],
+      "disposition": "source_reviewed_with_focused_checks"
+    }
+  ],
+  "independent_execution": [
+    {
+      "scope": "control and worker",
+      "tests_passed": 111,
+      "skipped": 0,
+      "command": "UV_CACHE_DIR=/tmp/otgd-review-uv-cache uv run --project services/api --no-sync python -m pytest services/api/tests/test_serverless_control.py services/api/tests/test_serverless_worker.py -q",
+      "evidence": "/tmp/otgd-serverless-reviewer-control-worker.xml"
+    },
+    {
+      "scope": "HTTP lifecycle",
+      "tests_passed": 43,
+      "skipped": 0,
+      "command": "UV_CACHE_DIR=/tmp/otgd-review-uv-cache uv run --project services/api --no-sync python -m pytest services/api/tests/test_serverless_lifecycle.py -q",
+      "evidence": "/tmp/otgd-serverless-reviewer-lifecycle.xml"
+    },
+    {
+      "scope": "five serverless caller/template/workflow/admission suites",
+      "tests_passed": 92,
+      "skipped": 0,
+      "command": "UV_CACHE_DIR=/tmp/otgd-review-uv-cache uv run --project services/api --no-sync python -m unittest infra.test.test_serverless_deploy infra.test.test_serverless_drain infra.test.test_serverless_template infra.test.test_serverless_workflow infra.test.test_serverless_gate_admission -q",
+      "evidence": "independently observed process exit 0; provider clients are deterministic doubles"
+    },
+    {
+      "scope": "guest wrapper/Git/loopback",
+      "tests_passed": 8,
+      "skipped": 0,
+      "command": "UV_CACHE_DIR=/tmp/otgd-review-uv-cache uv run --project services/api --no-sync python -m unittest infra.test.test_codespaces_preview -q",
+      "evidence": "independently observed process exit 0; bundler boundary is explicitly doubled"
+    }
+  ],
+  "owner_focused_coverage": [
+    {
+      "file": "deploy/serverless.py",
+      "covered_statements": 425,
+      "statements": 479,
+      "excluded_lines": 0
+    },
+    {
+      "file": "deploy/serverless_gates.py",
+      "covered_statements": 73,
+      "statements": 74,
+      "excluded_lines": 0
+    },
+    {
+      "file": "deploy/serverless_template.py",
+      "covered_statements": 221,
+      "statements": 221,
+      "excluded_lines": 0
+    },
+    {
+      "file": "services/api/otgd/serverless_control.py",
+      "covered_statements": 346,
+      "statements": 375,
+      "excluded_lines": 0
+    },
+    {
+      "file": "services/api/otgd/serverless_worker.py",
+      "covered_statements": 192,
+      "statements": 205,
+      "excluded_lines": 0
+    }
+  ],
+  "current_global_gate_evidence": {
+    "all_seven_local": "pending_parent_execution_for_resulting_revision",
+    "all_thirteen_github": "pending_parent_execution_for_resulting_revision",
+    "mandatory_merge_enforcement": "not_established_by_this_review"
+  },
+  "known_missing_software": [
+    "Aurora/Lambda restore/reconciliation adapter for optional serverless development profile; canonical ECS/RDS restore is separate"
+  ],
+  "unexecuted_external_acceptance": [
+    "Real AWS Lambda/container/REST streaming/IPv6/VPC/cold-resume transport",
+    "Actual Aurora and DynamoDB concurrency/drain behavior",
+    "Three genuine independent operator/MFA/private-network sessions",
+    "Alarm delivery and serverless backup/restore",
+    "Real physical device, study and model qualification; store/hosted customer launch"
+  ],
+  "production_promotion_eligible": false,
+  "reviewer_AWS_mutations": false,
+  "reviewer_production_edits": false,
+  "source_snapshots": [
+    {
+      "file": ".devcontainer/prepare-preview.sh",
+      "sha256": "4442ac5d05f8cb6b1d279fd34be3294843ab6520f4a0dec37980755fb6416e52",
+      "bytes": 211,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": ".devcontainer/preview-state.mjs",
+      "sha256": "c2b20a9edee2856b079e25561ff1d2afdfa0b061b0d44e8f8f8b06435fca7a60",
+      "bytes": 5489,
+      "scope": "integration_source"
+    },
+    {
+      "file": ".devcontainer/start-preview.sh",
+      "sha256": "c25ac4dc96ffec2d90655de2ef8c3341a2a3210661fa018e5f1738223d823416",
+      "bytes": 1080,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": ".github/workflows/deploy-serverless.yml",
+      "sha256": "1282266a138248b577345544d0b93680f33a40b1845123e43618fcc2afce63b4",
+      "bytes": 10396,
+      "scope": "integration_source"
+    },
+    {
+      "file": ".github/workflows/hosted-native-preview.yml",
+      "sha256": "1fe53997450a25c04ee6ee40042ba3982630aa0853091d23e0f539c720016106",
+      "bytes": 7973,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": ".github/workflows/merge-gate.yml",
+      "sha256": "9759a137309d85311e482b4c4672ffb01c14bca7678fd12194fe378d295ab20c",
+      "bytes": 3597,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": ".github/workflows/native-build.yml",
+      "sha256": "174eff9eefce12f322cb00a0883ea653c1eaa422cf47e2e56488b685f0d26fcd",
+      "bytes": 14747,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": ".github/workflows/platform.yml",
+      "sha256": "7e8caa2b8386c9019077a8246fdaedf281e1943c94e68b200a07006f4daa6a61",
+      "bytes": 8170,
+      "scope": "integration_source"
+    },
+    {
+      "file": ".gitignore",
+      "sha256": "17c1927bcc3f39cefbe400425aed25ca98cfa52f0c167077137ce1ba401898be",
+      "bytes": 785,
+      "scope": "integration_source"
+    },
+    {
+      "file": "AGENTS.md",
+      "sha256": "92a015f16480dae34990dca4a58f5d8085ce3ed651e40819f6b3260562d4bfd8",
+      "bytes": 658,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "IMPLEMENTATION_STATUS.md",
+      "sha256": "40ee035b2ce82c7683baca5f6812945527088e18606c8d725ee4c349bb4c972c",
+      "bytes": 20982,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/.env.example",
+      "sha256": "69ed2100982f9b7c3c82096af9333f44c0d073517395d9ac525aeedf714ca0ea",
+      "bytes": 436,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/HOSTED_PREVIEW.md",
+      "sha256": "ea5f0c8361bf79a5434f1c8cb71f0c1c2b5f8a52923798ab9ae2fa9529a350c6",
+      "bytes": 13499,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/app.config.ts",
+      "sha256": "6ffd3cedb54e03f7a8f35f8de0809a879a8325690a535e47b23cf55aa430142b",
+      "bytes": 5687,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/package-lock.json",
+      "sha256": "94e68b06919966cb777700e0e6ea521b7c538afa387b6f777b7885a3e3e9f676",
+      "bytes": 272225,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "apps/mobile/package.json",
+      "sha256": "028825a0e01d90d6db052b438cc644c6fd4a04349a43a347626fe73064ed3e77",
+      "bytes": 2117,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "apps/mobile/scripts/build-preview.mjs",
+      "sha256": "09212ec8b660f801087e9b0a4dc46de34c851a9be28193b02a05655828ab84bf",
+      "bytes": 1950,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/src/controller.ts",
+      "sha256": "1f7f8897a962fb4e9d375630ed8a20bec1277680a76c0e2ec531f8ee3bfab4d7",
+      "bytes": 173154,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/src/platform/config.ts",
+      "sha256": "88860be747ccb4ed9a91793a096dab0f19c2075c9c7701fb288460b573802bef",
+      "bytes": 2190,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/src/services/api.ts",
+      "sha256": "fc7a571b43c25c95966fa9178a1648465fb45118f2515e2dc077654b66f7c958",
+      "bytes": 32372,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/tests/api-deadline.test.ts",
+      "sha256": "b570f5df8f75273390e4493f48d02ecf99c7fa2941ea7d9580b88224e9b61c1d",
+      "bytes": 10503,
+      "scope": "integration_source"
+    },
+    {
+      "file": "apps/mobile/tests/serverless-build.test.ts",
+      "sha256": "77087c0fe85b1f27039d6a207636478e56b82d227c33fb4928371f4b2b318e6f",
+      "bytes": 1929,
+      "scope": "integration_source"
+    },
+    {
+      "file": "deploy/README.md",
+      "sha256": "a69eae1f69d576c8a57dfd6ef4250e832ab0a1285d99257ba1ab41f2442cdd37",
+      "bytes": 29672,
+      "scope": "integration_source"
+    },
+    {
+      "file": "deploy/SERVERLESS_AWS.md",
+      "sha256": "ef884ebaaef989e0ac1d2fa2687abd2418c792eea889b7e8fa9c64d65a1e9497",
+      "bytes": 11496,
+      "scope": "integration_source"
+    },
+    {
+      "file": "deploy/check_access.py",
+      "sha256": "071f9b26a579df15eb38945ed756d66f2a2ee94af717a382ffcd3e9748854d6a",
+      "bytes": 4418,
+      "scope": "integration_source"
+    },
+    {
+      "file": "deploy/orchestrate.py",
+      "sha256": "4fadeb3bc31c38485e5790238e1be247f1b4e17285d2266fdcc725ae12783719",
+      "bytes": 14470,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "deploy/platform.py",
+      "sha256": "6d157097dac3cb938377fe56cb2cc9c66aa2a41fbf5e32ab1550ff0ce9157a6f",
+      "bytes": 36140,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "deploy/provenance.py",
+      "sha256": "1db1bf3611ed164e601cafc39354beafdd458fd12587abb113d1f7a8a1e297cb",
+      "bytes": 14054,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "deploy/serverless.Dockerfile",
+      "sha256": "459c7936d0d8d4e5cd1a7446b6cea745213e8e1fcbb303aae6140d4a5224077a",
+      "bytes": 1969,
+      "scope": "integration_source"
+    },
+    {
+      "file": "deploy/serverless.py",
+      "sha256": "cc75f0190580ca4694a8e6536edf29a48826858fc1e3346f8cc42e4e5a74ed17",
+      "bytes": 38421,
+      "scope": "integration_source"
+    },
+    {
+      "file": "deploy/serverless_gates.py",
+      "sha256": "50deeb2d2bdb4a97eed9f72273f3eace7fc0fb1b6f1157f5a9f7741e48d215d1",
+      "bytes": 4799,
+      "scope": "integration_source"
+    },
+    {
+      "file": "deploy/serverless_template.py",
+      "sha256": "e410086edc9beaf1407c102a89c3caf2febb5a568bb2ab6751c11800dcdd0065",
+      "bytes": 45696,
+      "scope": "integration_source"
+    },
+    {
+      "file": "deploy/web_artifact.py",
+      "sha256": "906b2489abf82cd0841c60b4fa98f2a2990d664ae71d849b72e6f15e11890ba4",
+      "bytes": 18165,
+      "scope": "integration_source"
+    },
+    {
+      "file": "docs/CI_GATES.md",
+      "sha256": "47aa675d018fa66329b7b24346af3fd0425d7ccf5e757d9c1f1acb49fa6e4b19",
+      "bytes": 10181,
+      "scope": "integration_source"
+    },
+    {
+      "file": "docs/RELEASE_AND_BROWSER_TESTING.md",
+      "sha256": "a6d6983c6974a830d3bcc1bdcc2062016aa1bd3e88dc71c3b6165f6d3d45a377",
+      "bytes": 22246,
+      "scope": "integration_source"
+    },
+    {
+      "file": "docs/REQUIREMENTS_ALIGNMENT_AUDIT.md",
+      "sha256": "fe0cde664e555c1154e5d426846a86b06231d8bd959c57bf42a52bf2dd2494ea",
+      "bytes": 93910,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/config/serverless.example.json",
+      "sha256": "77cceca6af7bab052aaaaa5f8ea7c30b38f1fffb344dfcf4f5d51f54467b80c5",
+      "bytes": 316,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/costs/SERVERLESS.md",
+      "sha256": "93cea836ba7b40673ba7ef0dc73402f932066a7a3a336c5838fae894467504aa",
+      "bytes": 15902,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/costs/aws-serverless-price-evidence.json",
+      "sha256": "443c819be5950c88a3a838c449dcb22359671f2b8f28504cc0e4b09befc254da",
+      "bytes": 42123,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/costs/build_serverless_estimate.py",
+      "sha256": "8a40a91f958cd6eb893b1fea261fc11793b16a29bbd374efcba915b627a7e13f",
+      "bytes": 31958,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/costs/serverless-estimate.json",
+      "sha256": "f64d298d003c26cdb3719d538e3bf0afdfb2664f1fa31fd0214fa34e8bd44b80",
+      "bytes": 118773,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/images.lock.json",
+      "sha256": "11d0a8c71bbf004b6fc2cc7dc1943b9a2cc0341c9e6a47aa0b0788508bcaec7e",
+      "bytes": 2161,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/local/bootstrap_resources.py",
+      "sha256": "85f7b3682f1bc705c0e7f2dd9fb2338cb1f8166715230f04553a651044aa2f59",
+      "bytes": 4647,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/test/test_codespaces_preview.py",
+      "sha256": "ac8136e6257658af75932597beb3f50a5308db185a63050a649fea23f2f62908",
+      "bytes": 11113,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/test/test_serverless_deploy.py",
+      "sha256": "437ac030fb4ddb5a1366fb19e2334ba81147af855a56e308f4a6542b74b6410d",
+      "bytes": 33751,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/test/test_serverless_drain.py",
+      "sha256": "641585d578f9a45cd7b677d6a252f5610ff493fff25cd06965a4d74877e68055",
+      "bytes": 46835,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/test/test_serverless_gate_admission.py",
+      "sha256": "734ff8ea8ec5297cde4f366fcf0c907debf15f766c1b6b2a1e5a2f1cc3e389c1",
+      "bytes": 9714,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/test/test_serverless_template.py",
+      "sha256": "6151e96ac04875875fe93a75ed3d4a3e3df022aca253d14de737b40d1d445056",
+      "bytes": 23699,
+      "scope": "integration_source"
+    },
+    {
+      "file": "infra/test/test_serverless_workflow.py",
+      "sha256": "f92f3cd8db04760edf62a5834bcff5fd0e0da0aa00eeec622403da6ca4a9d3b3",
+      "bytes": 10968,
+      "scope": "integration_source"
+    },
+    {
+      "file": "openspec/changes/production-mobile-platform/platform-contract.md",
+      "sha256": "5458569763f9c1954cb4912dbf3aad8a80d6966ebd1efe9b56bc09b44794d050",
+      "bytes": 39362,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "openspec/changes/production-mobile-platform/shared-contracts.md",
+      "sha256": "ed03b4787520b5b54c2f8f8415c27f9b48b290905a28c80966465b2049b5c8dd",
+      "bytes": 34535,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "openspec/changes/serverless-development-runtime/design.md",
+      "sha256": "341e9017063e44f00f2b1c23ba41b6bf5190ae8216c36272446a4154a2ef80ad",
+      "bytes": 2381,
+      "scope": "integration_source"
+    },
+    {
+      "file": "openspec/changes/serverless-development-runtime/proposal.md",
+      "sha256": "c098f636664d55ae0ed483f3c6ec1e09c342deb7f014d414055236eb0d10d6fa",
+      "bytes": 1571,
+      "scope": "integration_source"
+    },
+    {
+      "file": "openspec/changes/serverless-development-runtime/specs/serverless-browser-boundaries/spec.md",
+      "sha256": "55377ad0e753a23ce742bc980451ba18c5f990349c1bf0d1e170a02bdaf29b80",
+      "bytes": 2651,
+      "scope": "integration_source"
+    },
+    {
+      "file": "openspec/changes/serverless-development-runtime/specs/serverless-development-delivery/spec.md",
+      "sha256": "08ed4ced2ac30fd1818e720d37e0e7919018d83d56d01f1a52919ffab9dabcb6",
+      "bytes": 5333,
+      "scope": "integration_source"
+    },
+    {
+      "file": "openspec/changes/serverless-development-runtime/specs/serverless-runtime-control/spec.md",
+      "sha256": "aa823c4bb3e11122389eec85984194c962aa19453f25f376e0b537bc10b5eea4",
+      "bytes": 2664,
+      "scope": "integration_source"
+    },
+    {
+      "file": "openspec/changes/serverless-development-runtime/tasks.md",
+      "sha256": "fdf4741ebf6db8cceb09ce82d72059b75693765a8ac8076667627afc5bb4b63f",
+      "bytes": 1677,
+      "scope": "integration_source"
+    },
+    {
+      "file": "scripts/ci_gate.py",
+      "sha256": "c897f5b4bcf149a2aad78cf18aa996400451690554229e27b885665db4b5847d",
+      "bytes": 7497,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "scripts/serverless_runtime.py",
+      "sha256": "911eb0cc7852345a7db71e4729764da0e1b92c40d656fd35e22afe0aefa77050",
+      "bytes": 3386,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/canonical.py",
+      "sha256": "44400843af24ec301c3f6663e22206d599611934a05cc6b841b58717ffcfc186",
+      "bytes": 1884,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "services/api/otgd/capture_signing.py",
+      "sha256": "234fdc8a6660f81683232461d27bfe1821aa39bd6688513fa906b5fa1a1065d2",
+      "bytes": 9026,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/config.py",
+      "sha256": "cd68b97771ddef6c1ee4d89ab85c32df959bc4e998b4bf0c1fea18a334132b84",
+      "bytes": 8059,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/db.py",
+      "sha256": "a0b15116b7d05b91e6e34428e8fcd2f118d4d416b5d19f4617dc669929234962",
+      "bytes": 11029,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/journal_continuity.py",
+      "sha256": "09eb707c29150acd3e6b520f23e600df1b320ac24d8e3ec1b172b309c60332d2",
+      "bytes": 6743,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "services/api/otgd/main.py",
+      "sha256": "fc2547f87b408ab83cbf164245fc0703c35bfd4012b6f692dec5e46ee52700f4",
+      "bytes": 81519,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/migrate.py",
+      "sha256": "2d11514252952b5f4c808e9bbf37ca643b7411d46be7d177d8f248af3882f3e8",
+      "bytes": 6433,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "services/api/otgd/recovery_authority.py",
+      "sha256": "ffd428ab0b804cded987ff625c1623297c6e7cf887e5c35f35903221465ac821",
+      "bytes": 23441,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/serverless_control.py",
+      "sha256": "45a743525fdbf5026033ee577ef64c8187a29d58e9c6e64466fdc8ef71d438f1",
+      "bytes": 24677,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/serverless_lifecycle.py",
+      "sha256": "6ff1e737006ffed3d155ad24382271807eca5b8c04bb341874aa77724c6476f1",
+      "bytes": 9541,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/serverless_worker.py",
+      "sha256": "5785b43291a7a3508927b0e3a951d7dcfcf519d3cdb17d22b380489c622f0513",
+      "bytes": 13163,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/storage.py",
+      "sha256": "2f840d697e22e25cfb101862a375688f75273ff85a77639a502303c67e69e8f8",
+      "bytes": 6467,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/otgd/worker.py",
+      "sha256": "96a0b4338f8709d21367854b65f5edc3b7bf177148937af360b77cda22d2d9a5",
+      "bytes": 30570,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/pyproject.toml",
+      "sha256": "eb63eecbf3259ea1cb2440a0ee15b61eecc61887e4a154ff50dd2d595b6961a8",
+      "bytes": 894,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "services/api/tests/test_serverless_control.py",
+      "sha256": "3f1a401dcdd126a713598be7dced6e55466e3dc4a0b579894e696568f2310b14",
+      "bytes": 28288,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/tests/test_serverless_lifecycle.py",
+      "sha256": "900424710ac3a78cc5871df1dc90b64a593679719d4454d11425855a58e8a177",
+      "bytes": 23665,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/tests/test_serverless_worker.py",
+      "sha256": "0659c67b7fdd55b5b8ec97f2f4a6e48d4e4dd86024b4d27bfc6e538e78dea764",
+      "bytes": 26384,
+      "scope": "integration_source"
+    },
+    {
+      "file": "services/api/uv.lock",
+      "sha256": "6cb09a75e943c6102a84ea62dd1a30220c897b62f8a52cc6548a6fdb72f22f1c",
+      "bytes": 133536,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "specs/FULL_SPECIFICATION.md",
+      "sha256": "f8c4cd46f9b3e2e7fb24b5940f3a876d2f0e16d94aa29d1bedec21e1516def7a",
+      "bytes": 29211,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "specs/HLD.md",
+      "sha256": "ccfd53e196706ac1c39482676b173614d4fc77837c0a57b9408a6bd7a078e4c0",
+      "bytes": 16730,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "specs/LLD.md",
+      "sha256": "ce59d029fbc3d93afed644df316d4ef444458068e49fe93fea11ed0a365b89ea",
+      "bytes": 27570,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "specs/PRD.md",
+      "sha256": "94c225b380dff7314ad2f72b256bc58aa1d0409019e4fdebac127d0bbf402648",
+      "bytes": 19903,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "tools/spec_validation.py",
+      "sha256": "0a187b8978d7b0a096c4bc1ad6245b1f5b89922a45e183cb8499152c3d6289f8",
+      "bytes": 9492,
+      "scope": "reviewed_dependency"
+    },
+    {
+      "file": "tools/verify_specs.py",
+      "sha256": "7332fe825925dce65fca3071b9d7ecb441d894c8c99b7c4959993911aeb6b687",
+      "bytes": 12284,
+      "scope": "reviewed_dependency"
+    }
+  ]
+}

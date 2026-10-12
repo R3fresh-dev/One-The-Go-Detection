@@ -73,6 +73,7 @@ class ServerlessAdmissionTest(unittest.TestCase):
             run.assert_not_called()
             plan = json.loads(output.getvalue())
             self.assertFalse(plan['deployment_executed'])
+            self.assertEqual(plan['remaining_software'], ['Aurora/Lambda restore/reconciliation adapter'])
             self.assertEqual(plan['budget_plan']['estimated_monthly_usd'], 25)
             self.assertFalse(plan['budget_plan']['budget_is_a_spending_cap'])
             self.assertEqual(plan['budget_plan']['planning_assumptions']['configured_max_acu'], 1)
@@ -188,6 +189,78 @@ class ServerlessAdmissionTest(unittest.TestCase):
 
 
 class ServerlessCloudFormationTest(unittest.TestCase):
+    def test_imported_stack_without_outputs_is_updated_without_creating_a_second_stack(self):
+        aws, cf = self.cloud([])
+        with patch.object(serverless, 'stable_stack', side_effect=[{}, {'ReleaseId': REVISION}]):
+            serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config(), readmission=Mock())
+        self.assertEqual(cf.create_change_set.call_args.kwargs['ChangeSetType'], 'UPDATE')
+        cf.get_waiter.assert_any_call('stack_update_complete')
+
+    def test_completed_import_is_a_real_existing_stack(self):
+        aws = Mock()
+        aws.client.return_value.describe_stacks.return_value = {'Stacks': [
+            {'StackStatus': 'IMPORT_COMPLETE', 'Outputs': []}]}
+        self.assertEqual(serverless.stable_stack(aws, serverless.STACK), {})
+
+    def test_initial_recovery_cannot_be_used_for_routine_deployment(self):
+        aws = Mock()
+        args = SimpleNamespace(gate_evidence=Path('gates.json'), establish_new=False, recover_initial=True)
+        with patch.object(serverless.platform, 'require_clean_source'), \
+                patch.object(serverless, 'verify_serverless_gates'):
+            with self.assertRaisesRegex(Gate, 'first-empty-journal'):
+                serverless.deploy(args, config(), aws, {})
+        aws.client.assert_not_called()
+
+    def test_initial_recovery_and_owned_resume_are_exclusive_before_aws_operations(self):
+        args = SimpleNamespace(gate_evidence=Path('gates.json'), establish_new=True,
+                               recover_initial=True, resume_owner=Path('owned.json'))
+        aws = Mock()
+        with patch.object(serverless.platform, 'require_clean_source'), patch.object(serverless, 'verify_serverless_gates'):
+            with self.assertRaisesRegex(Gate, 'cannot resume initialized'):
+                serverless.deploy(args, config(), aws, {})
+        aws.client.assert_not_called()
+
+    def test_outputless_retained_stack_cannot_bypass_atomic_runtime_drain(self):
+        args = SimpleNamespace(gate_evidence=Path('gates.json'), establish_new=False)
+        aws = Mock()
+        with patch.object(serverless.platform, 'require_clean_source'), patch.object(serverless, 'verify_serverless_gates'), \
+                patch.object(serverless, 'stable_stack', return_value={}), patch.object(serverless, 'preflight') as preflight:
+            with self.assertRaisesRegex(Gate, 'cannot bypass runtime draining'):
+                serverless.deploy(args, config(), aws, {})
+        preflight.assert_not_called()
+        aws.client.assert_not_called()
+
+    def test_legacy_ttl_protocol_is_refused_before_registry_images_or_preflight(self):
+        args = SimpleNamespace(gate_evidence=Path('gates.json'), establish_new=False)
+        for version in ('1', '0', None, 2, True):
+            prior = {'RuntimeControlTable': 'legacy-table', 'AdmissionProtocolVersion': version}
+            aws = Mock()
+            with self.subTest(version=version), patch.object(serverless.platform, 'require_clean_source'), \
+                    patch.object(serverless, 'verify_serverless_gates'), \
+                    patch.object(serverless, 'stable_stack', return_value=prior), \
+                    patch.object(serverless, 'preflight') as preflight, \
+                    patch.object(serverless, 'deploy_stack') as stack, patch.object(serverless, 'build_images') as images:
+                with self.assertRaisesRegex(Gate, 'SQL-session reconciliation'):
+                    serverless.deploy(args, config(), aws, {})
+            preflight.assert_not_called()
+            stack.assert_not_called()
+            images.assert_not_called()
+            aws.client.assert_not_called()
+
+    def test_free_expired_or_foreign_account_plans_block_before_provisioning(self):
+        for change in ({'accountPlanType': 'FREE'}, {'accountPlanStatus': 'EXPIRED'},
+                       {'accountId': '111111111111'}, {'accountPlanType': None}):
+            sts, plans = Mock(), Mock()
+            sts.get_caller_identity.return_value = {'Account': config()['account']}
+            plans.get_account_plan_state.return_value = {
+                'accountId': config()['account'], 'accountPlanType': 'PAID',
+                'accountPlanStatus': 'ACTIVE', **change}
+            aws = Mock()
+            aws.client.side_effect = lambda name: {'sts': sts, 'freetier': plans}[name]
+            with self.subTest(change=change), self.assertRaisesRegex(Gate, 'active AWS Paid Plan'):
+                serverless.preflight(aws, config(), None)
+            self.assertEqual([call.args[0] for call in aws.client.call_args_list], ['sts', 'freetier'])
+
     def test_every_retained_data_or_authority_replacement_is_rejected(self):
         retained = ('AWS::RDS::DBCluster', 'AWS::RDS::DBInstance', 'AWS::KMS::Key',
                     'AWS::S3::Bucket', 'AWS::SecretsManager::Secret',
@@ -213,7 +286,7 @@ class ServerlessCloudFormationTest(unittest.TestCase):
                                                 'Action': 'Modify', 'Replacement': 'Conditional'}}])
         with patch.object(serverless, 'stable_stack', return_value={'Retained': 'fixture'}):
             with self.assertRaises(Gate):
-                serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config())
+                serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config(), readmission=Mock())
         cf.delete_change_set.assert_called_once()
         cf.execute_change_set.assert_not_called()
         cf.update_termination_protection.assert_not_called()
@@ -222,7 +295,7 @@ class ServerlessCloudFormationTest(unittest.TestCase):
         aws, cf = self.cloud([{'ResourceChange': {'ResourceType': 'AWS::Lambda::Function',
                                                 'Action': 'Modify', 'Replacement': 'False'}}])
         with patch.object(serverless, 'stable_stack', side_effect=[{'Retained': 'fixture'}, {'ReleaseId': REVISION}]):
-            self.assertEqual(serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config()),
+            self.assertEqual(serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config(), readmission=Mock()),
                              {'ReleaseId': REVISION})
         self.assertEqual(cf.create_change_set.call_args.kwargs['ChangeSetType'], 'UPDATE')
         cf.update_termination_protection.assert_called_once_with(StackName=serverless.STACK,
@@ -233,13 +306,64 @@ class ServerlessCloudFormationTest(unittest.TestCase):
         aws, cf = self.cloud([])
         with patch.object(serverless, 'stable_stack', return_value=None):
             with self.assertRaisesRegex(Gate, 'private template bucket'):
-                serverless.deploy_stack(aws, serverless.STACK, {'Description': 'x' * 60_000}, config())
+                serverless.deploy_stack(aws, serverless.STACK, {'Description': 'x' * 60_000}, config(), readmission=Mock())
         cf.create_change_set.assert_not_called()
+
+    def test_changed_live_authority_during_changeset_wait_refuses_actual_execution(self):
+        aws, cf = self.cloud([])
+        stale = False
+        def wait(**kwargs):
+            nonlocal stale
+            stale = True
+        cf.get_waiter.return_value.wait.side_effect = wait
+        def admission():
+            if stale:
+                raise Gate('Current main or newest exact-source run changed')
+        with patch.object(serverless, 'stable_stack', return_value={'Retained': 'fixture'}):
+            with self.assertRaisesRegex(Gate, 'Current main'):
+                serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config(), readmission=admission)
+        cf.create_change_set.assert_called_once()
+        cf.update_termination_protection.assert_not_called()
+        cf.execute_change_set.assert_not_called()
+
+    def test_every_cloudformation_mutation_has_fresh_inner_admission(self):
+        for fail_at in (1, 2, 3):
+            aws, cf = self.cloud([])
+            admission = Mock(side_effect=[None] * (fail_at - 1) + [Gate('Newest run changed')])
+            with self.subTest(fail_at=fail_at), patch.object(serverless, 'stable_stack', return_value={'Retained': 'fixture'}):
+                with self.assertRaisesRegex(Gate, 'Newest run'):
+                    serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config(), readmission=admission)
+            self.assertEqual(cf.create_change_set.call_count, int(fail_at > 1))
+            self.assertEqual(cf.update_termination_protection.call_count, int(fail_at > 2))
+            cf.execute_change_set.assert_not_called()
+
+    def test_unreviewed_large_template_upload_or_rejected_changeset_cleanup_is_refused(self):
+        aws, cf = self.cloud([])
+        with patch.object(serverless, 'stable_stack', return_value=None), \
+                patch.object(serverless.web_artifact, 'put_immutable') as upload:
+            with self.assertRaisesRegex(Gate, 'Newest run'):
+                serverless.deploy_stack(aws, serverless.STACK, {'Description': 'x' * 60000}, config(),
+                    'private-fixture-template-bucket', readmission=Mock(side_effect=Gate('Newest run changed')))
+        upload.assert_not_called()
+        cf.create_change_set.assert_not_called()
+        for no_changes in (False, True):
+            aws, cf = self.cloud([{'ResourceChange': {'ResourceType': 'AWS::S3::Bucket', 'Action': 'Remove'}}])
+            if no_changes:
+                cf.get_waiter.return_value.wait.side_effect = RuntimeError('fictional changeset failure')
+                cf.describe_change_set.return_value = {'Status': 'FAILED', 'StatusReason': "didn't contain changes"}
+            with self.subTest(no_changes=no_changes), patch.object(serverless, 'stable_stack', return_value={'Retained': 'fixture'}):
+                with self.assertRaisesRegex(Gate, 'Newest run'):
+                    serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config(),
+                        readmission=Mock(side_effect=[None, Gate('Newest run changed')]))
+            cf.delete_change_set.assert_not_called()
+            cf.execute_change_set.assert_not_called()
 
     def test_zero_capacity_supported_version_is_selected_before_deployment(self):
         aws = Mock()
-        sts, rds, functions = Mock(), Mock(), Mock()
-        aws.client.side_effect = lambda name: {'sts': sts, 'rds': rds, 'lambda': functions}[name]
+        sts, rds, functions, plans = Mock(), Mock(), Mock(), Mock()
+        plans.get_account_plan_state.return_value = {
+            'accountId': config()['account'], 'accountPlanType': 'PAID', 'accountPlanStatus': 'ACTIVE'}
+        aws.client.side_effect = lambda name: {'sts': sts, 'rds': rds, 'lambda': functions, 'freetier': plans}[name]
         sts.get_caller_identity.return_value = {'Account': config()['account']}
         functions.get_account_settings.return_value = {'AccountLimit': {
             'ConcurrentExecutions': 107, 'UnreservedConcurrentExecutions': 107}}
@@ -258,11 +382,13 @@ class ServerlessCloudFormationTest(unittest.TestCase):
     def test_insufficient_lambda_quota_blocks_before_database_provisioning(self):
         for limits in ({'ConcurrentExecutions': 100, 'UnreservedConcurrentExecutions': 100},
                        {'ConcurrentExecutions': 1000, 'UnreservedConcurrentExecutions': 106}):
-            sts, functions = Mock(), Mock()
+            sts, functions, plans = Mock(), Mock(), Mock()
+            plans.get_account_plan_state.return_value = {
+                'accountId': config()['account'], 'accountPlanType': 'PAID', 'accountPlanStatus': 'ACTIVE'}
             sts.get_caller_identity.return_value = {'Account': config()['account']}
             functions.get_account_settings.return_value = {'AccountLimit': limits}
             aws = Mock()
-            aws.client.side_effect = lambda name: {'sts': sts, 'lambda': functions}[name]
+            aws.client.side_effect = lambda name: {'sts': sts, 'lambda': functions, 'freetier': plans}[name]
             with self.subTest(limits=limits), patch.object(serverless, 'stable_stack', return_value=None):
                 with self.assertRaisesRegex(Gate, 'regional concurrency quota'):
                     serverless.preflight(aws, config(), None)
@@ -308,7 +434,7 @@ class ServerlessImageTest(unittest.TestCase):
             source = Path(directory) / 'source.tar'
             self.source(source)
             with patch.object(serverless.platform, 'run', side_effect=run) as called:
-                result = serverless.build_images(aws, config(), {'RepositoryUri': URI}, source)
+                result = serverless.build_images(aws, config(), {'RepositoryUri': URI}, source, readmission=Mock())
         self.assertEqual(result['apiImageUri'], URI + '@' + digest)
         self.assertEqual(result['workerImageUri'], URI + '@' + digest)
         login = called.call_args_list[0]
@@ -321,7 +447,10 @@ class ServerlessImageTest(unittest.TestCase):
             self.assertIn('linux/amd64', command)
             self.assertIn('--provenance=false', command)
             self.assertIn('org.opencontainers.image.revision=' + REVISION, command)
-            self.assertIn('--push', command)
+            self.assertIn('--load', command)
+            self.assertNotIn('--push', command)
+        pushes = [call.args[0] for call in called.call_args_list if call.args[0][:2] == ['docker', 'push']]
+        self.assertEqual(pushes, [['docker', 'push', URI + ':api-' + REVISION], ['docker', 'push', URI + ':worker-' + REVISION]])
 
     def test_reused_image_still_requires_actual_platform_and_exact_source(self):
         for actual in ({'Architecture': 'arm64', 'Os': 'linux', 'Config': {'Labels': {'org.opencontainers.image.revision': REVISION}}},
@@ -333,7 +462,7 @@ class ServerlessImageTest(unittest.TestCase):
                 with patch.object(serverless.platform, 'run', side_effect=lambda command, **kwargs:
                                   json.dumps([actual]) if command[:3] == ['docker', 'image', 'inspect'] else ''):
                     with self.assertRaisesRegex(Gate, 'platform or source'):
-                        serverless.build_images(aws, config(), {'RepositoryUri': URI}, source)
+                        serverless.build_images(aws, config(), {'RepositoryUri': URI}, source, readmission=Mock())
 
     def test_manifest_bytes_must_match_the_actual_ecr_digest(self):
         aws, _, _ = self.cloud(corrupt_manifest=True)
@@ -342,8 +471,29 @@ class ServerlessImageTest(unittest.TestCase):
             self.source(source)
             with patch.object(serverless.platform, 'run') as run:
                 with self.assertRaisesRegex(Gate, 'immutable digest'):
-                    serverless.build_images(aws, config(), {'RepositoryUri': URI}, source)
+                    serverless.build_images(aws, config(), {'RepositoryUri': URI}, source, readmission=Mock())
         self.assertEqual(run.call_count, 1)
+
+    def test_new_run_after_local_image_build_refuses_every_actual_push(self):
+        aws, ecr, _ = self.cloud()
+        ecr.describe_images.side_effect = ClientError({'Error': {'Code': 'ImageNotFoundException'}}, 'DescribeImages')
+        commands = []
+        def run(command, **kwargs):
+            commands.append(command)
+            if command[:3] == ['docker', 'image', 'inspect']:
+                return json.dumps([{'Architecture': 'amd64', 'Os': 'linux',
+                    'Config': {'Labels': {'org.opencontainers.image.revision': REVISION}}}])
+            return ''
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / 'source.tar'
+            self.source(source)
+            with patch.object(serverless.platform, 'run', side_effect=run), self.assertRaisesRegex(Gate, 'Newest run'):
+                serverless.build_images(aws, config(), {'RepositoryUri': URI}, source,
+                    readmission=Mock(side_effect=Gate('Newest run changed during local build')))
+        self.assertTrue(any(c[:3] == ['docker', 'buildx', 'build'] and '--load' in c for c in commands))
+        self.assertTrue(any(c[:3] == ['docker', 'image', 'inspect'] for c in commands))
+        self.assertFalse(any(c[:2] == ['docker', 'push'] or '--push' in c for c in commands))
+        ecr.batch_get_image.assert_not_called()
 
 
 class ServerlessLifecycleTest(unittest.TestCase):
@@ -351,12 +501,12 @@ class ServerlessLifecycleTest(unittest.TestCase):
         c = {**config(), 'apiImageUri': URI + '@sha256:' + 'b' * 64,
              'workerImageUri': URI + '@sha256:' + 'c' * 64}
         out = {'WebOrigin': 'https://web.fixture.test', 'ApiOrigin': 'https://api.fixture.test',
-               'RuntimeControlTable': 'fixture-control-table',
+               'RuntimeControlTable': 'fixture-control-table', 'AdmissionProtocolVersion': '2',
                'CloudWatchDashboardUrl': 'https://dashboard.fixture.test'}
         events = []
         def build_template(current, phase='platform'):
             return {'phase': phase, 'active': current.get('activateServices', False)}
-        def stack(aws, name, template, *args):
+        def stack(aws, name, template, *args, **kwargs):
             events.append('stack-' + ('registry' if template['phase'] == 'registry' else str(template['active'])))
             return {'RepositoryUri': URI, 'DeploymentBucket': 'fixture-private-assets'} if template['phase'] == 'registry' else out
         def maintain(aws, c, out, operation, work, **extra):
@@ -394,6 +544,7 @@ class ServerlessLifecycleTest(unittest.TestCase):
             self.assertEqual(events, ['stack-registry', 'stack-False', 'bootstrap', 'migrate', 'admission', 'stack-True'])
             self.assertEqual(receipt['status'], 'serverless_transport_and_health_verified')
             self.assertFalse(receipt['production_promotion_eligible'])
+            self.assertEqual(receipt['remaining_software'], ['Aurora/Lambda restore/reconciliation adapter'])
             self.assertEqual(receipt['backup_restore'], 'not_executed')
             self.assertEqual(receipt['alarm_delivery'], 'not_executed')
             self.assertEqual(len(list(Path(directory).glob('.local/deploy/serverless-development/**/deployment.json'))), 1)
@@ -414,6 +565,108 @@ class ServerlessLifecycleTest(unittest.TestCase):
             self.assertEqual(state['status'], 'failed')
             self.assertEqual(state['failed_stage'], 'serverless-registry-gate-readmission')
             self.assertFalse(state['rollback_executed'])
+
+
+class ServerlessBrowserUploadTest(unittest.TestCase):
+    def fixture(self):
+        c = config()
+        bucket = f"{serverless.STACK}-{c['account']}-{c['region']}-artifacts"
+        out = {'ArtifactBucket': bucket,
+               'ArtifactUploadOrigin': f"https://s3.dualstack.{c['region']}.amazonaws.com/{bucket}/",
+               'WebOrigin': 'https://reviewed-web.fixture.test'}
+        rule = {'AllowedOrigins': [out['WebOrigin']], 'AllowedMethods': ['PUT'],
+                'AllowedHeaders': sorted(serverless.UPLOAD_HEADERS),
+                'ExposeHeaders': ['ETag', 'x-amz-version-id', 'x-amz-checksum-sha256'], 'MaxAgeSeconds': 300}
+        s3 = Mock()
+        s3.get_bucket_cors.return_value = {'CORSRules': [rule]}
+        aws = Mock()
+        aws.client.return_value = s3
+        allowed = SimpleNamespace(status_code=200, headers={
+            'access-control-allow-origin': out['WebOrigin'],
+            'access-control-allow-methods': 'PUT',
+            'access-control-allow-headers': ', '.join(sorted(serverless.UPLOAD_HEADERS))})
+        denied = SimpleNamespace(status_code=403, headers={})
+        return c, out, aws, s3, rule, allowed, denied
+
+    def test_foreign_or_missing_upload_authority_stops_before_sdk_or_source_build(self):
+        c, out, aws, _, _, _, _ = self.fixture()
+        changes = ({'ArtifactBucket': 'foreign-account-artifacts'}, {'ArtifactBucket': None},
+                   {'ArtifactUploadOrigin': None},
+                   {'ArtifactUploadOrigin': out['ArtifactUploadOrigin'].replace('us-east-2', 'us-west-2')},
+                   {'ArtifactUploadOrigin': out['ArtifactUploadOrigin'].replace('s3.dualstack.', 's3.')},
+                   {'ArtifactUploadOrigin': 'https://unapproved.invalid/' + out['ArtifactBucket'] + '/'})
+        for change in changes:
+            with self.subTest(change=change), patch.object(serverless.tarfile, 'open') as archive, \
+                    patch.object(serverless.subprocess, 'run') as build:
+                with self.assertRaisesRegex(Gate, 'upload authority'):
+                    serverless.build_and_publish_web(aws, c, {**out, **change}, Path('missing-source.tar'), Path('missing-work'), readmission=Mock())
+            archive.assert_not_called()
+            build.assert_not_called()
+        aws.client.assert_not_called()
+
+    def test_wildcard_or_extra_sdk_cors_authorities_are_rejected_before_http(self):
+        for field, value in (('AllowedOrigins', ['*']), ('AllowedOrigins', ['https://foreign.fixture.test']),
+                             ('AllowedMethods', ['PUT', 'GET']), ('AllowedHeaders', ['*']),
+                             ('AllowedHeaders', sorted(serverless.UPLOAD_HEADERS - {'if-none-match'})),
+                             ('ExposeHeaders', []), ('ExposeHeaders', ['ETag']),
+                             ('ExposeHeaders', ['ETag', 'x-amz-version-id', 'x-amz-checksum-sha256', '*']),
+                             ('ExposeHeaders', ['ETag', 'x-amz-version-id', 'Authorization']),
+                             ('MaxAgeSeconds', None), ('MaxAgeSeconds', 86400)):
+            c, out, aws, _, rule, _, _ = self.fixture()
+            rule[field] = value
+            with self.subTest(field=field, value=value), patch.object(serverless.httpx, 'Client') as http:
+                with self.assertRaisesRegex(Gate, 'Actual S3 upload CORS'):
+                    serverless.verify_upload_access(aws, c, out)
+            http.assert_not_called()
+
+    def test_preflight_preserves_every_conditional_checksum_and_encryption_header(self):
+        c, out, aws, s3, _, allowed, denied = self.fixture()
+        with patch.object(serverless.httpx, 'Client') as constructor:
+            http = constructor.return_value.__enter__.return_value
+            http.options.side_effect = [allowed, denied]
+            result = serverless.verify_upload_access(aws, c, out)
+        s3.get_bucket_cors.assert_called_once_with(Bucket=out['ArtifactBucket'])
+        constructor.assert_called_once_with(timeout=30, follow_redirects=False)
+        self.assertEqual(http.options.call_count, 2)
+        approved, rejected = http.options.call_args_list
+        self.assertEqual(approved.args[0], out['ArtifactUploadOrigin'] + 'quarantine/browser-preflight-check')
+        headers = approved.kwargs['headers']
+        self.assertEqual(headers['Origin'], out['WebOrigin'])
+        self.assertEqual(headers['Access-Control-Request-Method'], 'PUT')
+        self.assertEqual(set(headers['Access-Control-Request-Headers'].split(',')), {
+            'content-type', 'if-none-match', 'x-amz-checksum-sha256',
+            'x-amz-server-side-encryption', 'x-amz-server-side-encryption-aws-kms-key-id'})
+        self.assertEqual(rejected.kwargs['headers']['Origin'], 'https://otgd-unapproved-origin.invalid')
+        self.assertEqual(result, {'signed_upload_preflight': 'passed', 'unapproved_origin': 'denied',
+                                  'object_upload': 'not_executed'})
+
+    def test_approved_origin_http_must_advertise_put_and_all_signed_headers(self):
+        cases = [('status', 302), ('access-control-allow-origin', '*'),
+                 ('access-control-allow-origin', 'https://foreign.fixture.test'),
+                 ('access-control-allow-methods', 'GET'),
+                 ('access-control-allow-headers', 'content-type,x-amz-checksum-sha256')]
+        for field, value in cases:
+            c, out, aws, _, _, allowed, _ = self.fixture()
+            if field == 'status':
+                allowed.status_code = value
+            else:
+                allowed.headers[field] = value
+            with self.subTest(field=field), patch.object(serverless.httpx, 'Client') as constructor:
+                http = constructor.return_value.__enter__.return_value
+                http.options.return_value = allowed
+                with self.assertRaisesRegex(Gate, 'browser upload preflight failed'):
+                    serverless.verify_upload_access(aws, c, out)
+                self.assertEqual(http.options.call_count, 1)
+
+    def test_foreign_origin_success_or_allow_origin_header_is_rejected(self):
+        for status, headers in ((200, {}), (403, {'access-control-allow-origin': '*'}),
+                                (403, {'access-control-allow-origin': 'https://otgd-unapproved-origin.invalid'})):
+            c, out, aws, _, _, allowed, _ = self.fixture()
+            with self.subTest(status=status, headers=headers), patch.object(serverless.httpx, 'Client') as constructor:
+                http = constructor.return_value.__enter__.return_value
+                http.options.side_effect = [allowed, SimpleNamespace(status_code=status, headers=headers)]
+                with self.assertRaisesRegex(Gate, 'unapproved browser origin'):
+                    serverless.verify_upload_access(aws, c, out)
 
 
 class ServerlessHealthTest(unittest.TestCase):

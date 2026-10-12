@@ -1,7 +1,10 @@
 """Metadata-only producer fencing for an idle, resumable SQL runtime.
 
 A producer must acquire before opening SQL and release only after all of its
-transactions finish. A reconciler takes a snapshot *before* its SQL scan, then
+transactions finish and database connections are disposed. Unreleased rows
+remain fences after the invocation budget expires: a killed Lambda does not
+prove its PostgreSQL session stopped. No DynamoDB TTL may remove these rows.
+A reconciler takes a snapshot *before* its SQL scan, then
 publishes the next deadline with an epoch compare-and-set. No application IDs,
 request contents or SQL records belong in this table.
 """
@@ -30,7 +33,7 @@ MAX_ATTEMPTS = 3
 MAX_EPOCH = 2**53 - 1
 MAX_TIMESTAMP = 253402300799
 KINDS = frozenset({"api", "worker", "maintenance"})
-ADMISSION_PROTOCOL_VERSION = "1"
+ADMISSION_PROTOCOL_VERSION = "2"
 
 
 class ControlUnavailable(RuntimeError):
@@ -45,7 +48,7 @@ class ControlMetadataError(ControlUnavailable):
 class ProducerLease:
     lease_id: str
     acquired_at: float
-    expires_at: float
+    expires_at: float  # Invocation budget metadata; never automatic release.
     kind: str = "api"
 
 
@@ -54,7 +57,7 @@ class ControlSnapshot:
     epoch: int
     next_wake_at: float | None
     last_reconciled_at: float | None
-    active_leases: tuple[ProducerLease, ...]
+    active_leases: tuple[ProducerLease, ...]  # Every unreleased fence, including overdue rows.
     observed_at: float
 
 
@@ -221,8 +224,8 @@ def _read_lease(item):
     sk = _validate_key(item)
     if (
         not sk.startswith("lease#")
-        or not {"PK", "SK", "acquiredAt", "expiresAt"}.issubset(item)
-        or not set(item).issubset({"PK", "SK", "acquiredAt", "expiresAt", "kind"})
+        or not {"PK", "SK", "acquiredAt", "deadlineAt"}.issubset(item)
+        or not set(item).issubset({"PK", "SK", "acquiredAt", "deadlineAt", "kind"})
     ):
         raise ControlMetadataError("Unexpected producer metadata")
     lease_id = _uuid(sk[6:])
@@ -230,8 +233,9 @@ def _read_lease(item):
     if not isinstance(kind, dict) or set(kind) != {"S"} or not isinstance(kind["S"], str) or kind["S"] not in KINDS:
         raise ControlMetadataError("Invalid producer kind")
     acquired = _number(item, "acquiredAt")
-    expires = _number(item, "expiresAt")
-    # expiresAt is an integer for DynamoDB TTL; round up to avoid early expiry.
+    expires = _number(item, "deadlineAt")
+    # Preserve the bounded invocation-budget field, but never use it as TTL or
+    # infer database quiescence from it. Only verified cleanup can release.
     if expires != int(expires) or not acquired + LEASE_GRACE_SECONDS < expires <= math.ceil(acquired + MAX_INVOCATION_SECONDS + LEASE_GRACE_SECONDS):
         raise ControlMetadataError("Invalid producer expiry")
     return ProducerLease(lease_id, acquired, expires, kind["S"])
@@ -346,7 +350,9 @@ class ControlStore:
             }},
             {"Put": {
                 "TableName": self.table_name,
-                "Item": {**_key("lease#" + lease_id), "acquiredAt": _n(acquired), "expiresAt": _n(expiry), "kind": {"S": kind}},
+                # New leases never carry the legacy TTL attribute. Disabling
+                # DynamoDB TTL is asynchronous and must not erase a new fence.
+                "Item": {**_key("lease#" + lease_id), "acquiredAt": _n(acquired), "deadlineAt": _n(expiry), "kind": {"S": kind}},
                 "ConditionExpression": "attribute_not_exists(PK)",
             }},
         ]
@@ -412,6 +418,7 @@ class ControlStore:
         raise ControlMetadataError("Producer metadata exceeds pagination bound")
 
     def snapshot(self, now=None):
+        """Return every unreleased producer, even beyond its invocation budget."""
         observed = _now(now)
         try:
             for _ in range(MAX_ATTEMPTS):
@@ -422,7 +429,7 @@ class ControlStore:
                     continue
                 if any(lease.acquired_at > observed + 5 for lease in leases):
                     raise ControlMetadataError("Producer acquisition is in the future")
-                return ControlSnapshot(*after, tuple(lease for lease in leases if lease.expires_at > observed), observed)
+                return ControlSnapshot(*after, tuple(leases), observed)
         except (ClientError, BotoCoreError) as error:
             raise ControlUnavailable("Control snapshot failed") from error
         raise ControlUnavailable("Control epoch did not stabilize")
@@ -489,7 +496,15 @@ def release_lease(lease_id):
 
 
 @contextmanager
-def producer_lease(context=None, *, kind="api", lease_id=None, now=None):
+def producer_lease(context=None, *, dispose, kind="api", lease_id=None, now=None):
+    """Release only after caller-supplied connection disposal succeeds.
+
+    The metadata-only module cannot know a producer's database/session adapter.
+    Requiring the cleanup dependency avoids a convenience helper that blindly
+    deletes a fence while SQL may still be running.
+    """
+    if not callable(dispose):
+        raise ControlMetadataError("Producer connection disposal is required")
     acquired = _now(now)
     deadline = acquired + MAX_INVOCATION_SECONDS
     if context is not None:
@@ -502,6 +517,7 @@ def producer_lease(context=None, *, kind="api", lease_id=None, now=None):
     try:
         yield lease
     finally:
+        dispose()
         release_lease(lease_id)
 
 

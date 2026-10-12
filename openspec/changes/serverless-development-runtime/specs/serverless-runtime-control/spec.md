@@ -38,3 +38,20 @@ Closed admission SHALL permit only the explicitly owned maintenance phase; ordin
 - **GIVEN** an unsupported/missing deployed admission version
 - **WHEN** automated quiescence or upgrade is attempted
 - **THEN** it refuses without declaring a safe drain or resetting retained state.
+### Requirement: SCTL-004 Retain unreleased leases after invocation expiry
+Producer lease evidence SHALL persist without automatic TTL deletion until SQL disposal and explicit release complete. Invocation-budget expiry SHALL not prove SQL termination or remove a drain/reopen barrier. New leases SHALL use a non-TTL budget field. Expired, unknown or legacy evidence SHALL block automatic quiescence; older expiry-based protocols SHALL refuse routine upgrade without separately reviewed actual-session reconciliation.
+
+#### Scenario: Failed disposal or hard termination outlives the budget
+- **GIVEN** an unreleased producer whose invocation budget and grace have elapsed
+- **WHEN** control or deployment checks quiescence
+- **THEN** the durable row remains a barrier and no SQL absence is inferred from its timestamp.
+
+#### Scenario: SQL disposal and explicit release finish
+- **GIVEN** an admitted producer with all SQL connections actually disposed
+- **WHEN** its explicit lease release completes
+- **THEN** that row can be removed and remaining admission/epoch/drain conditions still apply.
+
+#### Scenario: An older TTL-based runtime is selected
+- **GIVEN** the old admission protocol or TTL-eligible legacy lease fields
+- **WHEN** an automated upgrade or drain is attempted
+- **THEN** it refuses without deleting evidence, assuming TCP cleanup or resetting retained authority.

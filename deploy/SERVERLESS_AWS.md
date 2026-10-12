@@ -28,12 +28,25 @@ cold start and every quiet interval must fit the actual transport timeout.
 Client retry is bounded and cannot substitute for observing this cold-start
 failure matrix on AWS; that acceptance has not run in this environment.
 
+AWS must report an active **Paid Plan** for this account before provisioning.
+The AWS Free Plan supports Aurora only through restricted Express Configuration;
+that configuration cannot provide this deployment's private VPC, custom KMS
+encryption and managed database credentials. In AWS Billing, choose **Upgrade
+plan**, review the terms, and choose **Upgrade account**. Existing credits carry
+over, and usage beyond those credits is billed at standard rates. The Python
+preflight reads account plan metadata; it never upgrades billing automatically.
+See [AWS Aurora Free Plan restrictions](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-free-tier.html)
+and [AWS plan upgrade instructions](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html).
+
 ## AWS credentials already supplied through GitHub
 
 The repository contains the two secret names the owner confirmed:
 
 - `ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
+- `SECRET_ACCESS_KEY`
+
+GitHub stores secret names in uppercase; this is the owner-provided
+`Secret_access_key` name.
 
 The workflow reads those exact names. It does not rename them or require their
 values in chat, a configuration file, source control, or a deployment bundle.
@@ -57,6 +70,7 @@ Application roles have separate runtime permissions and do not receive the
 deployment keys. A successful account identity check does not prove that every
 deployment API is authorized. An authorization failure blocks its stage and
 leaves a credential-free recovery journal.
+Preflight also requires the read-only `freetier:GetAccountPlanState` permission.
 
 The deployment principal also needs scoped DynamoDB read/conditional-write
 access to the retained control table's `admission` partition and a condition
@@ -110,8 +124,24 @@ disables scheduled/SQS admission, sets producer concurrency to zero and waits
 for leases admitted before closure to drain. An initializing invocation that
 tries to acquire later is refused by the same atomic metadata transaction;
 an empty lease query alone is never a drain proof. Retained stacks must declare
-admission protocol version 1; older stacks require reviewed recovery rather
+admission protocol version 2; older stacks require reviewed recovery rather
 than a timed compatibility bypass.
+
+Unreleased producer rows remain a barrier indefinitely, even after their
+recorded invocation budget ends. Protocol 2 stores that budget as `deadlineAt`,
+which is not a TTL attribute, and explicitly disables the table's old
+`expiresAt` TTL policy. Successful SQL disposal followed by explicit release
+is the only automatic removal of a producer fence. Lambda timeout, process
+death, an expired deadline or a failed disposal does not prove SQL has stopped.
+
+A stale unreleased fence requires separately reviewed reconciliation of the
+actual PostgreSQL sessions and their transactions. No automatic reconciler is
+implemented here. Never delete a lease, relabel old protocol metadata, clear
+the table or reset a journal to make deployment continue. A protocol 1 stack
+may already have lost fences through TTL and is refused before registry,
+image, source or schema mutation; routine upgrade and owned resume cannot
+reconstruct those missing facts. Initial rollback recovery likewise retains
+its exact current-template requirement and refuses older templates.
 
 Bootstrap, migration and independent recovery admission run only under that
 exact closed ownership. Each response must match its requested operation,
@@ -141,6 +171,37 @@ replaces retained state or manufactures a new continuity marker. Uploaded
 closure and owner receipts support explicit operator recovery when the runner
 finishes its artifact step; a hard runner loss is not proof those files were
 uploaded and must be handled through reviewed actual-state recovery.
+
+### Recover a first infrastructure rollback
+
+The first attempt can leave a `ROLLBACK_COMPLETE` application stack before any
+database or Lambda function exists. Its retained identity pool, keys, secrets,
+storage, control table and logs must be preserved. After fixing the cause, use
+`recover_initial=true` together with `establish_new=true` only for this verified
+empty initial state. Python checks the stack ownership, resource inventory,
+absence of application compute/database and empty journal/control/identity
+state before changing CloudFormation metadata. It imports the original retained
+resources into a new stack of the same name, then applies the stopped platform.
+It never deletes retained resources or resets an initialized journal.
+
+The credential-free `initial-recovery.json` artifact records the retained
+resource identifiers and import plan before metadata deletion. Preserve it if
+recovery is interrupted. An initialized or unexpected environment requires a
+separate recovery process and is rejected by this initial recovery option.
+The original template must exactly match the currently reviewed stopped
+template. Older failed stacks without the admission protocol, profile or
+current infrastructure controls are refused; they require manual recovery or
+a separately qualified historical-template path. This CLI does not silently
+accept or rewrite such a template. Admission is reverified immediately before
+each CloudFormation mutation, and authority, resource identity and emptiness
+are rechecked around import waits before execution and success. This narrowly
+recovers a first infrastructure rollback; it does not restore an initialized
+Aurora database or establish backup/restore acceptance.
+Every imported resource must also be closed over the surviving references.
+For example, an artifact bucket whose original CORS configuration references a
+deleted CloudFront distribution cannot be imported by omitting that policy or
+inventing a hostname. Such a rollback is refused and needs separately reviewed
+recovery. The option does not cover every first-attempt failure state.
 
 ## Repeat the Python process locally
 

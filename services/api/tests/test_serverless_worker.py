@@ -235,7 +235,7 @@ def test_deployment_drain_waits_for_sweep_initial_and_no_work_sql(monkeypatch, b
     functions.get_event_source_mapping.return_value = {"State": "Disabled"}
     aws.client.side_effect = lambda service: functions if service == "lambda" else Mock()
     out = {"ControlSchedule": "fictional-schedule", "WorkerMapping": "fictional-mapping",
-           "AdmissionProtocolVersion": "1",
+           "AdmissionProtocolVersion": control.ADMISSION_PROTOCOL_VERSION,
            "RuntimeControlTable": "fictional-sweep-control", **{key: "fictional-" + key
            for key in ("ApiFunction", "WorkerFunction", "DispatcherFunction", "ControlFunction")}}
 
@@ -248,7 +248,7 @@ def test_deployment_drain_waits_for_sweep_initial_and_no_work_sql(monkeypatch, b
         sweep = pool.submit(adapter.sweep, Context())
         try:
             assert blocked.wait(3), "Sweep never reached its fenced SQL operation"
-            drain = pool.submit(deployment.drain, aws, out, source_revision=NEXT_REVISION, owner_id=LEASE_A)
+            drain = pool.submit(deployment.drain, aws, out, source_revision=NEXT_REVISION, owner_id=LEASE_A, readmission=Mock())
             assert draining.wait(3), "Deployment did not observe the active producer"
             assert not drain.done(), "Deployment falsely declared active SQL drained"
             finish_sql.set()
@@ -298,19 +298,20 @@ def test_invocation_delayed_before_acquisition_cannot_open_sql_after_drain(monke
     def delayed_invocation():
         entered.set()
         assert continue_initialization.wait(3)
-        with control.producer_lease(Context(), lease_id=LEASE_B):
+        with control.producer_lease(Context(), lease_id=LEASE_B,
+                dispose=lambda: pytest.fail("Closed producer never acquired a disposal obligation")):
             sql.append("opened")
     aws, functions = Mock(), Mock()
     functions.get_event_source_mapping.return_value = {"State": "Disabled"}
     aws.client.side_effect = lambda service: functions if service == "lambda" else Mock()
-    out = {"AdmissionProtocolVersion": "1", "RuntimeControlTable": "test-control",
+    out = {"AdmissionProtocolVersion": control.ADMISSION_PROTOCOL_VERSION, "RuntimeControlTable": "test-control",
         "ControlSchedule": "fictional-schedule", "WorkerMapping": "fictional-mapping", **{key: "fictional-" + key
         for key in ("ApiFunction", "WorkerFunction", "DispatcherFunction", "ControlFunction")}}
     with ThreadPoolExecutor(max_workers=1) as pool:
         delayed = pool.submit(delayed_invocation)
         try:
             assert entered.wait(3)
-            drained = deployment.drain(aws, out, source_revision=NEXT_REVISION, owner_id=LEASE_A)
+            drained = deployment.drain(aws, out, source_revision=NEXT_REVISION, owner_id=LEASE_A, readmission=Mock())
             assert drained["producer_leases_drained"] is True
             new_deployment.require_closed(drained["ownership"])
             continue_initialization.set()
@@ -319,6 +320,55 @@ def test_invocation_delayed_before_acquisition_cannot_open_sql_after_drain(monke
         finally:
             continue_initialization.set()
     assert not sql and not old_runtime.snapshot().active_leases
+
+
+def test_unreleased_lease_past_930_second_budget_blocks_actual_drain_until_disposal(monkeypatch):
+    """Semantic metadata/SQL doubles, never a shipped dead-session reconciler."""
+    from deploy import serverless as deployment
+
+    from .test_serverless_control import (
+        LEASE_A,
+        LEASE_B,
+        NEXT_REVISION,
+        MetadataTable,
+        opened_store,
+    )
+
+    table = MetadataTable()
+    producer = opened_store(table)
+    lease = producer.acquire(LEASE_A, now=0, deadline=900)
+    assert lease.expires_at == 930
+    new_deployment = control.ControlStore(table, "test-control", source_revision=NEXT_REVISION)
+    monkeypatch.setattr(control, "ControlStore", lambda **kwargs: new_deployment)
+    monkeypatch.setattr(adapter.time, "time", lambda: 931)
+    events = []
+    def disposal():
+        assert events == ["SQL-finished"]
+        assert producer.snapshot().active_leases == (lease,)
+        events.append("SQL-disposed")
+    monkeypatch.setattr(adapter, "dispose_database", disposal)
+    def poll(delay):
+        assert delay == 10 and not events
+        assert producer.snapshot().active_leases == (lease,)
+        assert new_deployment.admission()["state"] == "closed"
+        # Simulate the owner's independently observed SQL completion. Neither
+        # the deadline nor the deployment drain removes an unreleased row.
+        events.append("SQL-finished")
+        adapter.dispose_database()
+        producer.release(LEASE_A)
+        events.append("released")
+    monkeypatch.setattr(deployment.time, "sleep", poll)
+    aws, functions = Mock(), Mock()
+    functions.get_event_source_mapping.return_value = {"State": "Disabled"}
+    aws.client.side_effect = lambda service: functions if service == "lambda" else Mock()
+    out = {"AdmissionProtocolVersion": control.ADMISSION_PROTOCOL_VERSION,
+        "RuntimeControlTable": "test-control", "ControlSchedule": "fictional-schedule", "WorkerMapping": "fictional-mapping",
+        **{key: "fictional-" + key for key in ("ApiFunction", "WorkerFunction", "DispatcherFunction", "ControlFunction")}}
+    drained = deployment.drain(aws, out, source_revision=NEXT_REVISION, owner_id=LEASE_B, readmission=Mock())
+    assert drained["producer_leases_drained"] is True
+    assert events == ["SQL-finished", "SQL-disposed", "released"]
+    new_deployment.require_closed(drained["ownership"])
+    assert not producer.snapshot().active_leases
 
 
 def test_sweep_disposal_failure_keeps_its_producer_lease(monkeypatch):
@@ -338,7 +388,15 @@ def test_sweep_disposal_failure_keeps_its_producer_lease(monkeypatch):
     monkeypatch.setattr(adapter, "dispose_database", fail)
     with pytest.raises(RuntimeError, match="pool cleanup"):
         adapter.sweep(Context())
-    assert len(store.snapshot().active_leases) == 1
+    leases = store.snapshot().active_leases
+    assert len(leases) == 1
+    assert leases[0].expires_at == 1210
+    # Failed cleanup keeps the fence even after the invocation budget/grace.
+    monkeypatch.setattr(adapter.time, "time", lambda: 1211)
+    assert store.snapshot().active_leases == leases
+    ownership = store.close_admission("10000000-0000-0000-0000-000000000001")
+    with pytest.raises(control.ControlUnavailable, match="not drained"):
+        store.reopen_admission(ownership)
 
 
 def test_sqs_heartbeat_preserves_sql_lease_and_extends_lambda_visibility(monkeypatch):

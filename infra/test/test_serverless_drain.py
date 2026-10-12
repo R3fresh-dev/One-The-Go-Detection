@@ -46,7 +46,7 @@ def configuration():
 
 def outputs():
     return {
-        "AdmissionProtocolVersion": "1", "RuntimeControlTable": "fictional-control",
+        "AdmissionProtocolVersion": "2", "RuntimeControlTable": "fictional-control",
         "ControlSchedule": "fictional-schedule", "WorkerMapping": "fictional-mapping",
         "ApiFunction": "fictional-api", "WorkerFunction": "fictional-worker",
         "DispatcherFunction": "fictional-dispatcher", "ControlFunction": "fictional-controller",
@@ -92,7 +92,7 @@ class ServerlessDrainTests(unittest.TestCase):
         with patch.object(control, "ControlStore", return_value=store) as constructor, \
                 patch.object(serverless.time, "monotonic", side_effect=clock.monotonic), \
                 patch.object(serverless.time, "sleep", side_effect=clock.sleep):
-            value = serverless.drain(aws, outputs(), source_revision=REVISION, owner_id=OWNER, **options)
+            value = serverless.drain(aws, outputs(), source_revision=REVISION, owner_id=OWNER, readmission=Mock(), **options)
         return value, clock, constructor
 
     def test_atomic_admission_close_precedes_empty_snapshot_and_late_producer(self):
@@ -163,11 +163,11 @@ class ServerlessDrainTests(unittest.TestCase):
             self.run_drain(aws, store)
         functions.update_event_source_mapping.assert_not_called()
         schedules.disable_rule.assert_not_called()
-        for version in (None, "0", 1, True):
+        for version in (None, "0", "1", 1, True):
             prior = outputs()
             prior["AdmissionProtocolVersion"] = version
             with self.subTest(version=version), patch.object(control, "ControlStore") as constructor, self.assertRaises(Gate):
-                serverless.drain(aws, prior, source_revision=REVISION, owner_id=OWNER)
+                serverless.drain(aws, prior, source_revision=REVISION, owner_id=OWNER, readmission=Mock())
             constructor.assert_not_called()
 
     def test_close_callback_runs_after_ownership_check_before_any_shutdown_even_on_timeout(self):
@@ -264,7 +264,7 @@ class ServerlessMaintenanceReceiptTests(unittest.TestCase):
         with patch.object(serverless.uuid, "uuid4", return_value=UUID(NONCE)), \
                 patch.object(serverless, "control_store", return_value=closed_store):
             return serverless.invoke_maintenance(aws, configuration(), outputs(), operation,
-                self.work, ownership=dict(TOKEN), **extra)
+                self.work, ownership=dict(TOKEN), readmission=Mock(), **extra)
 
     def test_exact_runtime_receipt_is_required_and_stream_is_closed(self):
         for operation in ("bootstrap", "migrate", "admission"):
@@ -386,7 +386,7 @@ class ServerlessMaintenanceReceiptTests(unittest.TestCase):
         for operation, options in cases:
             aws = Mock()
             with self.subTest(operation=operation, fields=list(options)), patch.object(serverless, "control_store") as store, self.assertRaises(Gate):
-                serverless.invoke_maintenance(aws, configuration(), outputs(), operation, self.work, **options)
+                serverless.invoke_maintenance(aws, configuration(), outputs(), operation, self.work, readmission=Mock(), **options)
             store.assert_not_called()
             aws.client.assert_not_called()
 
@@ -428,10 +428,11 @@ class ServerlessPublicAdmissionTests(unittest.TestCase):
             sensitive = {"AWS_SECRET_ACCESS_KEY": "fictional-private-aws", "GH_ADMIN_TOKEN": "fictional-private-github",
                 "EXPO_TOKEN": "fictional-private-expo", "OTGD_DATABASE_URL": "fictional-private-database"}
             with patch.dict(os.environ, sensitive), patch.object(serverless.subprocess, "run", side_effect=export), \
+                    patch.object(serverless, "verify_upload_access", return_value={"object_upload": "not_executed"}) as upload, \
                     patch.object(serverless.web_artifact, "verify_distribution") as distribution, \
                     patch.object(serverless.web_artifact, "put_immutable", side_effect=lambda *args: published.append(args)), \
                     patch.object(serverless.web_artifact, "verify_access") as access:
-                manifest = serverless.build_and_publish_web(aws, configuration(), out, source, root)
+                publication = serverless.build_and_publish_web(aws, configuration(), out, source, root, readmission=Mock())
             self.assertEqual([command for command, _ in commands], [["npm", "ci"], ["npm", "run", "export:web", "--", "--clear"]])
             for _, environment in commands:
                 for key in sensitive:
@@ -442,10 +443,12 @@ class ServerlessPublicAdmissionTests(unittest.TestCase):
             self.assertEqual([entry[2] for entry in published], [prefix + "app.js", prefix + "index.html"])
             distribution.assert_called_once_with(aws, out, prefix.rstrip("/"), REGION)
             access.assert_not_called()
+            upload.assert_called_once_with(aws, configuration(), out)
             clients["cloudfront"].create_invalidation.assert_called_once()
-            files = serverless.web_artifact.contents(root / "web.zip", manifest)
+            files = serverless.web_artifact.contents(root / "web.zip", publication['manifest'])
             with patch.object(serverless.web_artifact, "verify_access", return_value={"passed": True}) as access:
-                self.assertEqual(serverless.verify_published_web(out, manifest, root), {"passed": True})
+                self.assertEqual(serverless.verify_published_web(out, publication, root),
+                                 {"passed": True, "object_upload": "not_executed"})
             access.assert_called_once_with(out, {}, files, timeout=120)
 
     def test_unreviewed_distribution_blocks_public_asset_writes_and_invalidation(self):
@@ -453,11 +456,49 @@ class ServerlessPublicAdmissionTests(unittest.TestCase):
             root = Path(directory)
             aws, out, export, _, clients = self.fixture(root)
             with patch.object(serverless.subprocess, "run", side_effect=export), \
+                    patch.object(serverless, "verify_upload_access", return_value={"object_upload": "not_executed"}), \
                     patch.object(serverless.web_artifact, "verify_distribution", side_effect=Gate("Distribution scope changed")), \
                     patch.object(serverless.web_artifact, "put_immutable") as publish, self.assertRaises(Gate):
-                serverless.build_and_publish_web(aws, configuration(), out, self.source(root), root)
+                serverless.build_and_publish_web(aws, configuration(), out, self.source(root), root, readmission=Mock())
             publish.assert_not_called()
             clients["cloudfront"].create_invalidation.assert_not_called()
+
+    def test_main_advance_during_web_export_prevents_any_actual_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            aws, out, export, _, clients = self.fixture(root)
+            stale = False
+            def changed_export(command, **options):
+                nonlocal stale
+                export(command, **options)
+                if command[:3] == ['npm', 'run', 'export:web']:
+                    stale = True
+            def admission():
+                if stale:
+                    raise Gate('Current main advanced during export')
+            with patch.object(serverless.subprocess, 'run', side_effect=changed_export), \
+                    patch.object(serverless, 'verify_upload_access', return_value={'object_upload': 'not_executed'}), \
+                    patch.object(serverless.web_artifact, 'verify_distribution'), \
+                    patch.object(serverless.web_artifact, 'put_immutable') as publish:
+                with self.assertRaisesRegex(Gate, 'Current main advanced'):
+                    serverless.build_and_publish_web(aws, configuration(), out, self.source(root), root, readmission=admission)
+            publish.assert_not_called()
+            clients['cloudfront'].create_invalidation.assert_not_called()
+
+    def test_each_public_object_and_cloudfront_invalidation_have_fresh_admission(self):
+        for fail_at in (1, 2, 3):
+            with self.subTest(fail_at=fail_at), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                aws, out, export, _, clients = self.fixture(root)
+                admission = Mock(side_effect=[None] * (fail_at - 1) + [Gate('Newest run changed')])
+                with patch.object(serverless.subprocess, 'run', side_effect=export), \
+                        patch.object(serverless, 'verify_upload_access', return_value={'object_upload': 'not_executed'}), \
+                        patch.object(serverless.web_artifact, 'verify_distribution'), \
+                        patch.object(serverless.web_artifact, 'put_immutable') as publish:
+                    with self.assertRaisesRegex(Gate, 'Newest run changed'):
+                        serverless.build_and_publish_web(aws, configuration(), out, self.source(root), root, readmission=admission)
+                self.assertEqual(publish.call_count, fail_at - 1)
+                clients['cloudfront'].create_invalidation.assert_not_called()
 
     def test_closed_or_foreign_source_health_cannot_probe_api_or_claim_ready(self):
         aws, store = Mock(), Mock()
@@ -535,7 +576,7 @@ class ServerlessStageGateTests(unittest.TestCase):
             return result
         def build_template(c, phase="platform"):
             return {"phase": phase, "active": c.get("activateServices", False)}
-        def stack(aws, name, template, *arguments):
+        def stack(aws, name, template, *arguments, **options):
             if template["phase"] == "registry":
                 return effect("serverless-registry", {"RepositoryUri": URI, "DeploymentBucket": "fictional-private-assets"})
             return effect("activate" if template["active"] else "deploy-stopped", out)
@@ -575,12 +616,12 @@ class ServerlessStageGateTests(unittest.TestCase):
             patches.enter_context(patch.object(serverless, "deploy_stack", side_effect=stack))
             patches.enter_context(patch.object(serverless.platform, "run"))
             patches.enter_context(patch.object(serverless, "build_images",
-                side_effect=lambda *arguments: effect("build-immutable-lambda-images", current)))
+                side_effect=lambda *arguments, **options: effect("build-immutable-lambda-images", current)))
             patches.enter_context(patch.object(serverless, "drain", side_effect=drain))
             patches.enter_context(patch.object(serverless, "control_store", return_value=store))
             patches.enter_context(patch.object(serverless, "invoke_maintenance", side_effect=maintenance))
             patches.enter_context(patch.object(serverless, "build_and_publish_web",
-                side_effect=lambda *arguments: effect("publish-web", {"fictional_manifest": True})))
+                side_effect=lambda *arguments, **options: effect("publish-web", {"fictional_manifest": True})))
             patches.enter_context(patch.object(serverless, "verify_published_web", side_effect=public_access))
             patches.enter_context(patch.object(serverless, "observe", return_value={"status": "healthy"}))
             patches.enter_context(patch("sys.stderr", new_callable=io.StringIO))
@@ -712,7 +753,8 @@ class ServerlessResumeOwnerTests(unittest.TestCase):
             with self.subTest(case=index), patch.object(serverless, "control_store") as factory, self.assertRaises(Gate):
                 serverless.validate_resume_owner(Mock(), configuration(), outputs(), self.path)
             factory.assert_not_called()
-        for prior in (None, {}, {**outputs(), "AdmissionProtocolVersion": "0"}):
+        for prior in (None, {}, {**outputs(), "AdmissionProtocolVersion": "0"},
+                      {**outputs(), "AdmissionProtocolVersion": "1"}):
             with self.subTest(prior=bool(prior)), patch.object(serverless, "control_store") as factory, self.assertRaises(Gate):
                 serverless.validate_resume_owner(Mock(), configuration(), prior, self.path)
             factory.assert_not_called()
