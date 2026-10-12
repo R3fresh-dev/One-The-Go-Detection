@@ -248,7 +248,7 @@ jobs:
                   cluster['TagList'] = ownership_tags(cluster.get('TagList'))
           print(json.dumps({'database_cluster_metadata': database}, sort_keys=True))
           writer = aws('rds', 'describe-db-instances', ['--db-instance-identifier', stack + '-writer'],
-              'DBInstances[].{DBInstanceIdentifier:DBInstanceIdentifier,DBInstanceArn:DBInstanceArn,DbiResourceId:DbiResourceId,DBClusterIdentifier:DBClusterIdentifier,DBInstanceStatus:DBInstanceStatus,InstanceCreateTime:InstanceCreateTime,Engine:Engine,EngineVersion:EngineVersion,DBInstanceClass:DBInstanceClass,KmsKeyId:KmsKeyId,StorageEncrypted:StorageEncrypted,PubliclyAccessible:PubliclyAccessible,DBSubnetGroup:DBSubnetGroup,DBParameterGroups:DBParameterGroups,TagList:TagList}')
+              'DBInstances[].{DBInstanceIdentifier:DBInstanceIdentifier,DBInstanceArn:DBInstanceArn,DbiResourceId:DbiResourceId,DBClusterIdentifier:DBClusterIdentifier,DBInstanceStatus:DBInstanceStatus,AvailabilityZone:AvailabilityZone,InstanceCreateTime:InstanceCreateTime,Engine:Engine,EngineVersion:EngineVersion,DBInstanceClass:DBInstanceClass,KmsKeyId:KmsKeyId,StorageEncrypted:StorageEncrypted,PubliclyAccessible:PubliclyAccessible,DBSubnetGroup:DBSubnetGroup,DBParameterGroups:DBParameterGroups,TagList:TagList}')
           if isinstance(writer, list):
               for instance in writer:
                   instance['TagList'] = ownership_tags(instance.get('TagList'))
