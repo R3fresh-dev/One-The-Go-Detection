@@ -356,7 +356,7 @@ def build_and_publish_web(aws, c, out, source, work):
         env['EXPO_PUBLIC_SERVERLESS'] = 'true'
         mobile = context / 'apps/mobile'
         subprocess.run(['npm', 'ci'], cwd=mobile, env=env, check=True)
-        subprocess.run(['npm', 'run', 'export:web', '--', '--clear'], cwd=mobile, env=env, check=True)
+        subprocess.run(['npm', 'run', 'export:web'], cwd=mobile, env=env, check=True)
         manifest = web_artifact.package(mobile / 'dist', work / 'web.zip')
     files = web_artifact.contents(work / 'web.zip', manifest)
     cf = aws.client('cloudfront')
