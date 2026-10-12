@@ -1,0 +1,1197 @@
+[
+  {
+    "service": "AWSLambda",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSLambda/current/us-east-2/index.json",
+    "published_at": "2026-10-09T22:31:22Z",
+    "retrieved_at": "2026-10-12T05:25:19.560321Z",
+    "offer_sha256": "065899c41a6017dc839c084ee691b2b2bc30e1fb7baf18a0fbe438d15f607ac4",
+    "rates": [
+      {
+        "sku": "2NNTB8CK4A9UKUZC",
+        "attributes": {
+          "servicecode": "AWSLambda",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "AWS-Lambda-Processed-Bytes",
+          "groupDescription": "Processed bytes for a streamed response from a Lambda function invocation",
+          "usagetype": "USE2-Lambda-Streaming-Response-Processed-Bytes",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Lambda"
+        },
+        "price": {
+          "rateCode": "2NNTB8CK4A9UKUZC.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.008 per GiB for of Lambda-Streaming-Response-Processed-Bytes usage in US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Processed-Gigabytes",
+          "pricePerUnit": {
+            "USD": "0.0080000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "ZEA64MMVK5QRB5TC",
+        "attributes": {
+          "servicecode": "AWSLambda",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "AWS-Lambda-Requests",
+          "groupDescription": "Invocation call for a Lambda function",
+          "usagetype": "USE2-Request",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Lambda"
+        },
+        "price": {
+          "rateCode": "ZEA64MMVK5QRB5TC.JRTCKXETXF.6YS6EN2CT7",
+          "description": "AWS Lambda - Total Requests - US East (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Request",
+          "pricePerUnit": {
+            "USD": "0.0000002000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3BYZH4NKJN8TJUQ6",
+        "attributes": {
+          "servicecode": "AWSLambda",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "AWS-Lambda-Duration",
+          "groupDescription": "Invocation duration weighted by memory assigned to function, measured in GB-s",
+          "usagetype": "USE2-Lambda-GB-Second",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Lambda"
+        },
+        "price": {
+          "rateCode": "3BYZH4NKJN8TJUQ6.JRTCKXETXF.CUKFZ388N3",
+          "description": "AWS Lambda - Total Compute - US East (Ohio)-Tier-1",
+          "beginRange": "0",
+          "endRange": "6000000000",
+          "unit": "Lambda-GB-Second",
+          "pricePerUnit": {
+            "USD": "0.0000166667"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3BYZH4NKJN8TJUQ6",
+        "attributes": {
+          "servicecode": "AWSLambda",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "AWS-Lambda-Duration",
+          "groupDescription": "Invocation duration weighted by memory assigned to function, measured in GB-s",
+          "usagetype": "USE2-Lambda-GB-Second",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Lambda"
+        },
+        "price": {
+          "rateCode": "3BYZH4NKJN8TJUQ6.JRTCKXETXF.QZE2SB4KVB",
+          "description": "AWS Lambda - Total Compute - US East (Ohio)-Tier-2",
+          "beginRange": "6000000000",
+          "endRange": "15000000000",
+          "unit": "Lambda-GB-Second",
+          "pricePerUnit": {
+            "USD": "0.0000150000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "3BYZH4NKJN8TJUQ6",
+        "attributes": {
+          "servicecode": "AWSLambda",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "AWS-Lambda-Duration",
+          "groupDescription": "Invocation duration weighted by memory assigned to function, measured in GB-s",
+          "usagetype": "USE2-Lambda-GB-Second",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "AWS Lambda"
+        },
+        "price": {
+          "rateCode": "3BYZH4NKJN8TJUQ6.JRTCKXETXF.V7R92EXG27",
+          "description": "AWS Lambda - Total Compute - US East (Ohio)-Tier-3",
+          "beginRange": "15000000000",
+          "endRange": "Inf",
+          "unit": "Lambda-GB-Second",
+          "pricePerUnit": {
+            "USD": "0.0000133334"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonCloudFront",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+    "published_at": "2026-10-03T00:04:26Z",
+    "retrieved_at": "2026-10-12T05:25:21.160040Z",
+    "offer_sha256": "1884ba6955f9df19b7049951a6b3843323b32a2c31e3147b647ce2367f81d5b2",
+    "rates": [
+      {
+        "sku": "NPFD6SEH9MXS8M4J",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "United States",
+          "locationType": "AWS Edge Location",
+          "usagetype": "US-Requests-Tier2-HTTPS",
+          "operation": "",
+          "regionCode": "",
+          "requestDescription": "HTTPS GET and HEAD requests",
+          "requestType": "CloudFront-Request-Tier2",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "NPFD6SEH9MXS8M4J.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.0100 per 10,000 HTTPS Requests",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000010000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.Q3Z75P77EN",
+          "description": "$0.085 per GB - first 10 TB / month data transfer out",
+          "beginRange": "0",
+          "endRange": "10240",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0850000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.VF6T3GAUKQ",
+          "description": "$0.080 per GB - next 40 TB / month data transfer out",
+          "beginRange": "10240",
+          "endRange": "51200",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0800000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.N9EW5UVVPA",
+          "description": "$0.060 per GB - next 100 TB / month data transfer out",
+          "beginRange": "51200",
+          "endRange": "153600",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0600000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.AZ7GJS7NVF",
+          "description": "$0.040 per GB - next 350 TB / month data transfer out",
+          "beginRange": "153600",
+          "endRange": "512000",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0400000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.3B9CK5AZ6J",
+          "description": "$0.030 per GB - next 524 TB / month data transfer out",
+          "beginRange": "512000",
+          "endRange": "1048576",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0300000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.RBMR72YW69",
+          "description": "$0.025 per GB - next 4 PB / month data transfer out",
+          "beginRange": "1048576",
+          "endRange": "5242880",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0250000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.SW9U2ZKBYX",
+          "description": "$0.020 per GB - data transfer out / month over 5 PB",
+          "beginRange": "5242880",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0200000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "U3HVZF9WJEM7TE55",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "CF-Invalidations",
+          "groupDescription": "Charge for invalidating objects (removing the objects from CloudFront edge locations)",
+          "usagetype": "Invalidations",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "U3HVZF9WJEM7TE55.JRTCKXETXF.JXGPBPHWFF",
+          "description": "$0.000 per URL - first 1,000 URLs / month.",
+          "beginRange": "0",
+          "endRange": "1000",
+          "unit": "URL",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "U3HVZF9WJEM7TE55",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "CF-Invalidations",
+          "groupDescription": "Charge for invalidating objects (removing the objects from CloudFront edge locations)",
+          "usagetype": "Invalidations",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "U3HVZF9WJEM7TE55.JRTCKXETXF.MUBTP6UPGZ",
+          "description": "$0.005 per URL - over 1,000 URLs / month.",
+          "beginRange": "1000",
+          "endRange": "Inf",
+          "unit": "URL",
+          "pricePerUnit": {
+            "USD": "0.0050000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "QAZUUEJG8GARJCET",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "CloudFront-Functions",
+          "groupDescription": "CloudFront Function executions",
+          "usagetype": "Executions-CloudFrontFunctions",
+          "operation": "Execution",
+          "regionCode": "",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "QAZUUEJG8GARJCET.JRTCKXETXF.A7TCVR8GS9",
+          "description": "$0 for First 2,000,000 CloudFront Function Executions",
+          "beginRange": "0",
+          "endRange": "2000000",
+          "unit": "FunctionExecutions",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "QAZUUEJG8GARJCET",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "CloudFront-Functions",
+          "groupDescription": "CloudFront Function executions",
+          "usagetype": "Executions-CloudFrontFunctions",
+          "operation": "Execution",
+          "regionCode": "",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "QAZUUEJG8GARJCET.JRTCKXETXF.VQ39PKQRBK",
+          "description": "$0.10 per 1,000,000 CloudFront Function Executions",
+          "beginRange": "2000000",
+          "endRange": "Inf",
+          "unit": "FunctionExecutions",
+          "pricePerUnit": {
+            "USD": "0.0000001000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AGSZEF5XC2MG4FUH",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront to Origin",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "Data Origin",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-OBytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "AGSZEF5XC2MG4FUH.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.020 per GB - All data transfer out to Origin (US)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0200000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonCloudWatch",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/aws-other/index.json",
+    "published_at": "2026-10-07T11:55:40Z",
+    "retrieved_at": "2026-10-12T05:25:22.714305Z",
+    "offer_sha256": "f0b4783415334d4a8ae1d94fb90b749c7f427a5ba81f52e23c7cbaa1d6525f4a",
+    "rates": [
+      {
+        "sku": "5P8PBB6MXV325TDC",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "Dashboard",
+          "groupDescription": "CloudWatch Dashboards",
+          "usagetype": "DashboardsUsageHour-Basic",
+          "operation": "DashboardHour",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch",
+          "version": "Basic"
+        },
+        "price": {
+          "rateCode": "5P8PBB6MXV325TDC.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$3.00 per Dashboard per Month",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Dashboards",
+          "pricePerUnit": {
+            "USD": "3.0000000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonApiGateway",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonApiGateway/current/us-east-2/index.json",
+    "published_at": "2026-10-02T23:15:01Z",
+    "retrieved_at": "2026-10-12T05:25:24.352681Z",
+    "offer_sha256": "92b7531622c879ad232c1cb656b79f333ba4db5b6149e8cb046e408fefae6fcb",
+    "rates": [
+      {
+        "sku": "6GJWQNG8KBVT7A5U",
+        "attributes": {
+          "servicecode": "AmazonApiGateway",
+          "description": "API calls received",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-ApiGatewayRequest",
+          "operation": "ApiGatewayRequest",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon API Gateway"
+        },
+        "price": {
+          "rateCode": "6GJWQNG8KBVT7A5U.JRTCKXETXF.QS4VQ8N7FD",
+          "description": "$3.50/million requests - first 333 million requests/month",
+          "beginRange": "0",
+          "endRange": "333000000",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000035000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "6GJWQNG8KBVT7A5U",
+        "attributes": {
+          "servicecode": "AmazonApiGateway",
+          "description": "API calls received",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-ApiGatewayRequest",
+          "operation": "ApiGatewayRequest",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon API Gateway"
+        },
+        "price": {
+          "rateCode": "6GJWQNG8KBVT7A5U.JRTCKXETXF.DRE2JBTXBV",
+          "description": "$2.80/million requests - next 667 million requests/month",
+          "beginRange": "333000000",
+          "endRange": "1000000000",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000028000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "6GJWQNG8KBVT7A5U",
+        "attributes": {
+          "servicecode": "AmazonApiGateway",
+          "description": "API calls received",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-ApiGatewayRequest",
+          "operation": "ApiGatewayRequest",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon API Gateway"
+        },
+        "price": {
+          "rateCode": "6GJWQNG8KBVT7A5U.JRTCKXETXF.J4SY3H5SUC",
+          "description": "$2.38/million requests - next 19 billion requests/month",
+          "beginRange": "1000000000",
+          "endRange": "20000000000",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000023800"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "6GJWQNG8KBVT7A5U",
+        "attributes": {
+          "servicecode": "AmazonApiGateway",
+          "description": "API calls received",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-ApiGatewayRequest",
+          "operation": "ApiGatewayRequest",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon API Gateway"
+        },
+        "price": {
+          "rateCode": "6GJWQNG8KBVT7A5U.JRTCKXETXF.KVC36CKCEW",
+          "description": "$1.51/million requests - over 20 billion requests/month",
+          "beginRange": "20000000000",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000015100"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonDynamoDB",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonDynamoDB/current/us-east-2/index.json",
+    "published_at": "2026-09-11T12:44:22Z",
+    "retrieved_at": "2026-10-12T05:25:25.504341Z",
+    "offer_sha256": "6fb852c04a82fb5b92affa62d4b25d2c2e22f4ef6c961b49b98d42309ce73cf3",
+    "rates": [
+      {
+        "sku": "GAHPNMT39TQ47AGG",
+        "attributes": {
+          "servicecode": "AmazonDynamoDB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "volumeType": "Amazon DynamoDB - Indexed DataStore",
+          "usagetype": "USE2-TimedStorage-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon DynamoDB"
+        },
+        "price": {
+          "rateCode": "GAHPNMT39TQ47AGG.JRTCKXETXF.G2A93NZ7DT",
+          "description": "$0.00 per GB-Month of storage for first 25 free GB-Months",
+          "beginRange": "0",
+          "endRange": "25",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GAHPNMT39TQ47AGG",
+        "attributes": {
+          "servicecode": "AmazonDynamoDB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "volumeType": "Amazon DynamoDB - Indexed DataStore",
+          "usagetype": "USE2-TimedStorage-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon DynamoDB"
+        },
+        "price": {
+          "rateCode": "GAHPNMT39TQ47AGG.JRTCKXETXF.VYAP54KATQ",
+          "description": "$0.25 per GB-Month of storage used beyond first 25 free GB-Months",
+          "beginRange": "25",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.2500000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "SGMZJPDKSWXTY4VE",
+        "attributes": {
+          "servicecode": "AmazonDynamoDB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "DDB-ReadUnits",
+          "groupDescription": "DynamoDB PayPerRequest Read Request Units",
+          "usagetype": "USE2-ReadRequestUnits",
+          "operation": "PayPerRequestThroughput",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon DynamoDB"
+        },
+        "price": {
+          "rateCode": "SGMZJPDKSWXTY4VE.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.125 per million read request units (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "ReadRequestUnits",
+          "pricePerUnit": {
+            "USD": "0.0000001250"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GGQSXTNTRBHRVS56",
+        "attributes": {
+          "servicecode": "AmazonDynamoDB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "group": "DDB-WriteUnits",
+          "groupDescription": "DynamoDB PayPerRequest Write Request Units",
+          "usagetype": "USE2-WriteRequestUnits",
+          "operation": "PayPerRequestThroughput",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon DynamoDB"
+        },
+        "price": {
+          "rateCode": "GGQSXTNTRBHRVS56.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.625 per million write request units (Ohio)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "WriteRequestUnits",
+          "pricePerUnit": {
+            "USD": "0.0000006250"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "SU36MES57K2M6EHQ",
+        "attributes": {
+          "servicecode": "AmazonDynamoDB",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "volumeType": "Amazon DynamoDB - Point-In-Time-Restore (PITR) Backup Storage",
+          "usagetype": "USE2-TimedPITRStorage-ByteHrs",
+          "operation": "",
+          "regionCode": "us-east-2",
+          "servicename": "Amazon DynamoDB"
+        },
+        "price": {
+          "rateCode": "SU36MES57K2M6EHQ.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.20 per GB-Month of storage used for DynamoDB PITR backup",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.2000000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonRDS",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/us-east-2/index.csv",
+    "published_at": "2026-10-06T22:40:50Z",
+    "retrieved_at": "2026-10-12T05:09:18.506902+00:00",
+    "offer_sha256": "609cc01c4987965dd1feafb00209d5d75451079809536c6cc6239dda1fec4d43",
+    "rates": [
+      {
+        "sku": "6URTSSU2UNPPNGCY",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "regionCode": "us-east-2",
+          "location": "US East (Ohio)",
+          "databaseEngine": "Aurora PostgreSQL",
+          "usagetype": "USE2-Aurora:StorageUsage",
+          "operation": "CreateDBInstance:0021"
+        },
+        "price": {
+          "rateCode": "6URTSSU2UNPPNGCY.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.10 per RDS GB-month of consumed storage (Aurora PostgreSQL)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.1000000000"
+          }
+        },
+        "csv_row": {
+          "SKU": "6URTSSU2UNPPNGCY",
+          "OfferTermCode": "JRTCKXETXF",
+          "RateCode": "6URTSSU2UNPPNGCY.JRTCKXETXF.6YS6EN2CT7",
+          "TermType": "OnDemand",
+          "PriceDescription": "$0.10 per RDS GB-month of consumed storage (Aurora PostgreSQL)",
+          "EffectiveDate": "2026-10-01",
+          "StartingRange": "0",
+          "EndingRange": "Inf",
+          "Unit": "GB-Mo",
+          "PricePerUnit": "0.1000000000",
+          "Currency": "USD",
+          "RelatedTo": "",
+          "LeaseContractLength": "",
+          "PurchaseOption": "",
+          "OfferingClass": "",
+          "Product Family": "Database Storage",
+          "serviceCode": "AmazonRDS",
+          "Location": "US East (Ohio)",
+          "Location Type": "AWS Region",
+          "Instance Type": "",
+          "Current Generation": "",
+          "Instance Family": "",
+          "vCPU": "",
+          "Physical Processor": "",
+          "Clock Speed": "",
+          "Memory": "",
+          "Storage": "",
+          "Network Performance": "",
+          "Processor Architecture": "",
+          "Storage Media": "SSD",
+          "Volume Type": "General Purpose-Aurora",
+          "Min Volume Size": "10 GB",
+          "Max Volume Size": "64 TB",
+          "Engine Code": "21",
+          "Database Engine": "Aurora PostgreSQL",
+          "Database Edition": "",
+          "License Model": "",
+          "Deployment Option": "Single-AZ",
+          "Group": "",
+          "Group Description": "",
+          "usageType": "USE2-Aurora:StorageUsage",
+          "operation": "CreateDBInstance:0021",
+          "ACU": "",
+          "Dedicated EBS Throughput": "",
+          "Deployment Model": "",
+          "Engine Major Version": "",
+          "Engine Media Type": "",
+          "Enhanced Networking Supported": "",
+          "Extended Support Pricing Year": "",
+          "Instance Type Family": "",
+          "LimitlessPreview": "",
+          "Normalization Size Factor": "",
+          "Processor Features": "",
+          "Region Code": "us-east-2",
+          "serviceName": "Amazon Relational Database Service",
+          "Unbundled Licensing": "",
+          "Volume Name": "",
+          "WindowsLicenseMultiplier": ""
+        }
+      },
+      {
+        "sku": "BY4H8DC28FBCKJSH",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "regionCode": "us-east-2",
+          "location": "US East (Ohio)",
+          "databaseEngine": "Aurora PostgreSQL",
+          "usagetype": "USE2-Aurora:StorageIOUsage",
+          "operation": "CreateDBInstance:0021"
+        },
+        "price": {
+          "rateCode": "BY4H8DC28FBCKJSH.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.20 per RDS million I/O requests (Aurora PostgreSQL)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "IOs",
+          "pricePerUnit": {
+            "USD": "0.0000002000"
+          }
+        },
+        "csv_row": {
+          "SKU": "BY4H8DC28FBCKJSH",
+          "OfferTermCode": "JRTCKXETXF",
+          "RateCode": "BY4H8DC28FBCKJSH.JRTCKXETXF.6YS6EN2CT7",
+          "TermType": "OnDemand",
+          "PriceDescription": "$0.20 per RDS million I/O requests (Aurora PostgreSQL)",
+          "EffectiveDate": "2026-10-01",
+          "StartingRange": "0",
+          "EndingRange": "Inf",
+          "Unit": "IOs",
+          "PricePerUnit": "0.0000002000",
+          "Currency": "USD",
+          "RelatedTo": "",
+          "LeaseContractLength": "",
+          "PurchaseOption": "",
+          "OfferingClass": "",
+          "Product Family": "System Operation",
+          "serviceCode": "AmazonRDS",
+          "Location": "US East (Ohio)",
+          "Location Type": "AWS Region",
+          "Instance Type": "",
+          "Current Generation": "",
+          "Instance Family": "",
+          "vCPU": "",
+          "Physical Processor": "",
+          "Clock Speed": "",
+          "Memory": "",
+          "Storage": "",
+          "Network Performance": "",
+          "Processor Architecture": "",
+          "Storage Media": "",
+          "Volume Type": "",
+          "Min Volume Size": "",
+          "Max Volume Size": "",
+          "Engine Code": "21",
+          "Database Engine": "Aurora PostgreSQL",
+          "Database Edition": "",
+          "License Model": "",
+          "Deployment Option": "",
+          "Group": "Aurora I/O Operation",
+          "Group Description": "Input/Output Operation",
+          "usageType": "USE2-Aurora:StorageIOUsage",
+          "operation": "CreateDBInstance:0021",
+          "ACU": "",
+          "Dedicated EBS Throughput": "",
+          "Deployment Model": "",
+          "Engine Major Version": "",
+          "Engine Media Type": "",
+          "Enhanced Networking Supported": "",
+          "Extended Support Pricing Year": "",
+          "Instance Type Family": "",
+          "LimitlessPreview": "",
+          "Normalization Size Factor": "",
+          "Processor Features": "",
+          "Region Code": "us-east-2",
+          "serviceName": "Amazon Relational Database Service",
+          "Unbundled Licensing": "",
+          "Volume Name": "",
+          "WindowsLicenseMultiplier": ""
+        }
+      },
+      {
+        "sku": "F68JYQJBHCXKZMJX",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "regionCode": "us-east-2",
+          "location": "US East (Ohio)",
+          "databaseEngine": "Aurora PostgreSQL",
+          "usagetype": "USE2-Aurora:ServerlessV2Usage",
+          "operation": "CreateDBInstance:0021"
+        },
+        "price": {
+          "rateCode": "F68JYQJBHCXKZMJX.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.12 per Aurora Capacity Unit hour running Aurora PostgreSQL Serverless v2",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "ACU-Hr",
+          "pricePerUnit": {
+            "USD": "0.1200000000"
+          }
+        },
+        "csv_row": {
+          "SKU": "F68JYQJBHCXKZMJX",
+          "OfferTermCode": "JRTCKXETXF",
+          "RateCode": "F68JYQJBHCXKZMJX.JRTCKXETXF.6YS6EN2CT7",
+          "TermType": "OnDemand",
+          "PriceDescription": "USD 0.12 per Aurora Capacity Unit hour running Aurora PostgreSQL Serverless v2",
+          "EffectiveDate": "2026-10-01",
+          "StartingRange": "0",
+          "EndingRange": "Inf",
+          "Unit": "ACU-Hr",
+          "PricePerUnit": "0.1200000000",
+          "Currency": "USD",
+          "RelatedTo": "",
+          "LeaseContractLength": "",
+          "PurchaseOption": "",
+          "OfferingClass": "",
+          "Product Family": "ServerlessV2",
+          "serviceCode": "AmazonRDS",
+          "Location": "US East (Ohio)",
+          "Location Type": "AWS Region",
+          "Instance Type": "",
+          "Current Generation": "",
+          "Instance Family": "",
+          "vCPU": "",
+          "Physical Processor": "",
+          "Clock Speed": "",
+          "Memory": "",
+          "Storage": "",
+          "Network Performance": "",
+          "Processor Architecture": "",
+          "Storage Media": "",
+          "Volume Type": "",
+          "Min Volume Size": "",
+          "Max Volume Size": "",
+          "Engine Code": "21",
+          "Database Engine": "Aurora PostgreSQL",
+          "Database Edition": "",
+          "License Model": "",
+          "Deployment Option": "",
+          "Group": "",
+          "Group Description": "",
+          "usageType": "USE2-Aurora:ServerlessV2Usage",
+          "operation": "CreateDBInstance:0021",
+          "ACU": "",
+          "Dedicated EBS Throughput": "",
+          "Deployment Model": "",
+          "Engine Major Version": "",
+          "Engine Media Type": "",
+          "Enhanced Networking Supported": "",
+          "Extended Support Pricing Year": "",
+          "Instance Type Family": "",
+          "LimitlessPreview": "",
+          "Normalization Size Factor": "",
+          "Processor Features": "",
+          "Region Code": "us-east-2",
+          "serviceName": "Amazon Relational Database Service",
+          "Unbundled Licensing": "",
+          "Volume Name": "",
+          "WindowsLicenseMultiplier": ""
+        }
+      },
+      {
+        "sku": "PYNU7WJBSCTWR8XF",
+        "attributes": {
+          "servicecode": "AmazonRDS",
+          "regionCode": "us-east-2",
+          "location": "US East (Ohio)",
+          "databaseEngine": "Aurora PostgreSQL",
+          "usagetype": "USE2-Aurora:BackupUsage",
+          "operation": "CreateDBInstance:0021"
+        },
+        "price": {
+          "rateCode": "PYNU7WJBSCTWR8XF.JRTCKXETXF.6YS6EN2CT7",
+          "description": "USD 0.021 per GB-month of backup storage exceeding free allocation for Aurora PostgreSQL",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB-Mo",
+          "pricePerUnit": {
+            "USD": "0.0210000000"
+          }
+        },
+        "csv_row": {
+          "SKU": "PYNU7WJBSCTWR8XF",
+          "OfferTermCode": "JRTCKXETXF",
+          "RateCode": "PYNU7WJBSCTWR8XF.JRTCKXETXF.6YS6EN2CT7",
+          "TermType": "OnDemand",
+          "PriceDescription": "USD 0.021 per GB-month of backup storage exceeding free allocation for Aurora PostgreSQL",
+          "EffectiveDate": "2026-10-01",
+          "StartingRange": "0",
+          "EndingRange": "Inf",
+          "Unit": "GB-Mo",
+          "PricePerUnit": "0.0210000000",
+          "Currency": "USD",
+          "RelatedTo": "",
+          "LeaseContractLength": "",
+          "PurchaseOption": "",
+          "OfferingClass": "",
+          "Product Family": "Storage Snapshot",
+          "serviceCode": "AmazonRDS",
+          "Location": "US East (Ohio)",
+          "Location Type": "AWS Region",
+          "Instance Type": "",
+          "Current Generation": "",
+          "Instance Family": "",
+          "vCPU": "",
+          "Physical Processor": "",
+          "Clock Speed": "",
+          "Memory": "",
+          "Storage": "",
+          "Network Performance": "",
+          "Processor Architecture": "",
+          "Storage Media": "AmazonS3",
+          "Volume Type": "",
+          "Min Volume Size": "",
+          "Max Volume Size": "",
+          "Engine Code": "21",
+          "Database Engine": "Aurora PostgreSQL",
+          "Database Edition": "",
+          "License Model": "",
+          "Deployment Option": "Single-AZ",
+          "Group": "",
+          "Group Description": "",
+          "usageType": "USE2-Aurora:BackupUsage",
+          "operation": "CreateDBInstance:0021",
+          "ACU": "",
+          "Dedicated EBS Throughput": "",
+          "Deployment Model": "",
+          "Engine Major Version": "",
+          "Engine Media Type": "",
+          "Enhanced Networking Supported": "",
+          "Extended Support Pricing Year": "",
+          "Instance Type Family": "",
+          "LimitlessPreview": "",
+          "Normalization Size Factor": "",
+          "Processor Features": "",
+          "Region Code": "us-east-2",
+          "serviceName": "Amazon Relational Database Service",
+          "Unbundled Licensing": "",
+          "Volume Name": "",
+          "WindowsLicenseMultiplier": ""
+        }
+      }
+    ]
+  },
+  {
+    "service": "AWSEvents",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSEvents/current/us-east-2/index.json",
+    "published_at": "2026-09-24T16:39:03Z",
+    "retrieved_at": "2026-10-12T05:26:47.598956Z",
+    "offer_sha256": "1fedc8cc588813237deb6a63a49dd886bc20ff1adb73896596ef6cbf119378d5",
+    "rates": [
+      {
+        "sku": "534HQFPF6VT4G9Y5",
+        "attributes": {
+          "servicecode": "AWSEvents",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-ScheduledInvocation",
+          "operation": "Invocation",
+          "invocation": "Scheduled Invocation",
+          "regionCode": "us-east-2",
+          "servicename": "CloudWatch Events",
+          "timeWindow": "N/A"
+        },
+        "price": {
+          "rateCode": "534HQFPF6VT4G9Y5.JRTCKXETXF.W2M3TYBKHH",
+          "description": "$0 for the first 14 million scheduled invocations",
+          "beginRange": "0",
+          "endRange": "14000000",
+          "unit": "Invocations",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "534HQFPF6VT4G9Y5",
+        "attributes": {
+          "servicecode": "AWSEvents",
+          "location": "US East (Ohio)",
+          "locationType": "AWS Region",
+          "usagetype": "USE2-ScheduledInvocation",
+          "operation": "Invocation",
+          "invocation": "Scheduled Invocation",
+          "regionCode": "us-east-2",
+          "servicename": "CloudWatch Events",
+          "timeWindow": "N/A"
+        },
+        "price": {
+          "rateCode": "534HQFPF6VT4G9Y5.JRTCKXETXF.AGTZK4FFDN",
+          "description": "$1.00 per million scheduled invocations in US East (Ohio)",
+          "beginRange": "14000000",
+          "endRange": "Inf",
+          "unit": "Invocations",
+          "pricePerUnit": {
+            "USD": "0.0000010000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonCloudFront",
+    "source": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/",
+    "published_at": null,
+    "retrieved_at": "2026-10-12T05:26:49.637087Z",
+    "source_sha256": "9d6136de449480d0b4c5ce9d661692c836a207d8595965f6b42a05ee5c0fe5ff",
+    "rates": [],
+    "pricing_statements": [
+      "Data Transfer Out (DTO) charges from AWS services to CloudFront are $0/GB.",
+      "Data transfer out of Amazon CloudFront to your origin server, such as POST and PUT requests, will be billed at the regional data transfer out to origin rates listed in the Regional Data Transfer Out to Origin (per GB) table above."
+    ]
+  },
+  {
+    "service": "AmazonApiGateway",
+    "source": "https://aws.amazon.com/api-gateway/pricing/",
+    "published_at": null,
+    "retrieved_at": "2026-10-12T05:26:51.836004Z",
+    "source_sha256": "c8c84245646784219d539be89ccdb7d7b23acde6762f91a64f9e1de09a4e1b83",
+    "rates": [],
+    "pricing_statements": [
+      "65MB response payload per request",
+      "RoundUp (6.5) = 7 billable request(s)"
+    ]
+  },
+  {
+    "service": "AmazonRDS",
+    "source": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html",
+    "published_at": null,
+    "retrieved_at": "2026-10-12T05:26:54.208970Z",
+    "source_sha256": "48ab111ecb51da32f620e73ea088ee766ed036ce52a77875a3415ccbf6e0e1f0",
+    "rates": [],
+    "pricing_statements": [
+      "While an Aurora serverless instance is auto-paused, its instance charge is zero.",
+      "If any user-initiated connections are open to an Aurora serverless instance, the instance won't pause.",
+      "The minimum interval that you can set is 300 seconds (five minutes)."
+    ]
+  },
+  {
+    "service": "AmazonRDS",
+    "source": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html",
+    "published_at": null,
+    "retrieved_at": "2026-10-12T05:52:00.132395Z",
+    "source_sha256": "a4428acbffaee255c7f6945a4df7bbed416b1d42c8761b7b712f28497903a7fc",
+    "rates": [],
+    "capacity_statements": [
+      "Use a value of 1 or higher for the maximum capacity."
+    ]
+  }
+]

@@ -259,6 +259,7 @@ export class AppController {
     BUILD.version,
     () => syncReadiness(this.model.config, BUILD.version),
     () => !BUILD.hostedPreview,
+    { serverless: BUILD.serverless },
   );
   readonly sync = new SyncEngine(
     this.api,

@@ -157,7 +157,7 @@ def heartbeat(claim, receipt, done, lost, health=None, channel=None):
                 storage.client("sqs").change_message_visibility(
                     QueueUrl=settings().queue_url,
                     ReceiptHandle=receipt,
-                    VisibilityTimeout=120,
+                    VisibilityTimeout=settings().serverless_queue_visibility,
                 )
             if health is not None:
                 health.success(channel)
@@ -501,7 +501,7 @@ def fail_claim(claim, error):
             outbox.lease_until = None
 
 
-def run_job(job_id, receipt=None, health=None, channel=None):
+def run_job(job_id, receipt=None, health=None, channel=None, *, heartbeat_join_timeout=1):
     claim = claim_job(job_id)
     if not claim:
         with factory()() as db:
@@ -580,7 +580,10 @@ def run_job(job_id, receipt=None, health=None, channel=None):
         return "deferred" if isinstance(error, Deferred) else "failed"
     finally:
         done.set()
-        thread.join(timeout=1)
+        # Lambda must not return while a heartbeat still owns SQL or SQS work.
+        # Its adapter passes None, joining the actual thread before releasing
+        # its independent producer lease. Continuous workers retain their bound.
+        thread.join(timeout=heartbeat_join_timeout)
 
 
 def dispatch_once():

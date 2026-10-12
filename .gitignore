@@ -46,3 +46,6 @@ coverage.xml
 reports/
 node_modules
 .local-identity/
+
+# Intermediate task files and downloaded pricing evidence
+/work/

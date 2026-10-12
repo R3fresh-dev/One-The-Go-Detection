@@ -249,9 +249,9 @@ def verify_security_headers(headers,out):
         raise Gate('Published web security response headers failed exact policy verification')
 
 
-def verify_access(out,payload,files):
+def verify_access(out,payload,files,*,timeout=15):
     # This public transport probe is not a signed-in customer acceptance test.
-    with httpx.Client(timeout=15,follow_redirects=False) as client:
+    with httpx.Client(timeout=timeout,follow_redirects=False) as client:
         paths=['index.html',next((name for name in files if name.endswith('.js')),'index.html')]
         for path in paths:
             headers=verify_public_bytes(client,out['WebOrigin']+'/'+path,files[path])

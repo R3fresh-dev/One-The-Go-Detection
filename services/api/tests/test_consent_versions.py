@@ -102,10 +102,14 @@ def test_withdrawal_does_not_rewrite_original_acceptance_receipt(client, account
     assert submit(client, acceptance(reinvited)).status_code == 201
 
 
-@pytest.mark.parametrize("invalid", [{"acknowledged_at": iso(now()+60)}, {"acknowledged_at": "1969-01-01T00:00:00.000Z"}, {"accepted": False}])
+@pytest.mark.parametrize("invalid", ["future", {"acknowledged_at": "1969-01-01T00:00:00.000Z"}, {"accepted": False}])
 def test_future_negative_or_unconfirmed_acknowledgment_is_rejected(client, account, invalid):
     value = document(account)
     approve(value)
+    # Calculate the future case when it executes, after any earlier tests. A
+    # timestamp captured during collection can become past in the full suite.
+    if invalid == "future":
+        invalid = {"acknowledged_at": iso(now()+60)}
     assert submit(client, acceptance(value, **invalid)).status_code == 422
     with factory()() as db:
         assert not db.scalar(select(Record).where(Record.kind == "consent_receipt"))

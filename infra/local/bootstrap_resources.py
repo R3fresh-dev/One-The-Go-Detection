@@ -39,7 +39,7 @@ def initialize(cloud=False,establish_new=False):
         queue=sqs.create_queue(QueueName='otgd-local-jobs',Attributes={'VisibilityTimeout':'120','ReceiveMessageWaitTimeSeconds':'20','MessageRetentionPeriod':'345600','SqsManagedSseEnabled':'true','RedrivePolicy':json.dumps({'deadLetterTargetArn':arn,'maxReceiveCount':5})})['QueueUrl']
         if queue!=s.queue_url or dlq!=s.dlq_url: raise RuntimeError('Configured internal queue URL differs from actual LocalStack URL; fix origins before starting')
     attrs=sqs.get_queue_attributes(QueueUrl=s.queue_url,AttributeNames=['All'])['Attributes']
-    if int(attrs['VisibilityTimeout'])!=120 or int(json.loads(attrs['RedrivePolicy'])['maxReceiveCount'])!=5: raise RuntimeError('Queue policy differs from reviewed contract')
+    if int(attrs['VisibilityTimeout'])!=s.serverless_queue_visibility or int(json.loads(attrs['RedrivePolicy'])['maxReceiveCount'])!=5: raise RuntimeError('Queue policy differs from reviewed contract')
     key='control/established.json'
     try:
         head=s3.head_object(Bucket=s.journal_bucket,Key=key)
@@ -51,7 +51,7 @@ def initialize(cloud=False,establish_new=False):
         established={'schema_version':'1.0.0','environment':s.environment,'established_at':datetime.now(timezone.utc).isoformat(),'minimum_retention_days':90,'maximum_recovery_age_days':35}
         raw=canonical(established); version=put_versioned(s.journal_bucket,key,raw,conditional=True)
         if versioned_read(s.journal_bucket,key,version,8192)!=raw: raise RuntimeError('Journal establishment verification failed')
-    print(json.dumps({'status':'verified','environment':s.environment,'buckets':3,'visibility_seconds':120,'max_receive_count':5,'journal_established_at':established['established_at']}))
+    print(json.dumps({'status':'verified','environment':s.environment,'buckets':3,'visibility_seconds':s.serverless_queue_visibility,'max_receive_count':5,'journal_established_at':established['established_at']}))
 
 
 if __name__=='__main__':
