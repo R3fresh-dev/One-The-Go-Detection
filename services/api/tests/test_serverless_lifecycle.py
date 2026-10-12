@@ -138,6 +138,8 @@ def test_dispose_database_never_instantiates_a_missing_engine(monkeypatch):
 def secret_environment(monkeypatch, *, maintenance=False):
     monkeypatch.setattr(lifecycle, '_secret_binding', None)
     monkeypatch.setenv('OTGD_SERVERLESS_MODE', 'true')
+    monkeypatch.setenv('OTGD_ENVIRONMENT', 'qa')
+    monkeypatch.setenv('OTGD_SERVERLESS_DEPLOYMENT_PROFILE', 'serverless-development')
     monkeypatch.setenv('OTGD_AWS_REGION', 'us-east-2')
     monkeypatch.setenv('OTGD_DEPLOYMENT_ACCOUNT', '123456789012')
     prefix = 'arn:aws:secretsmanager:us-east-2:123456789012:secret:'
@@ -217,6 +219,21 @@ def test_legacy_secret_initialization_is_action_free(monkeypatch):
     create.assert_not_called()
 
 
+@pytest.mark.parametrize('name,value', [('OTGD_ENVIRONMENT', 'prod'), ('OTGD_ENVIRONMENT', 'local'),
+    ('OTGD_SERVERLESS_DEPLOYMENT_PROFILE', ''), ('OTGD_SERVERLESS_DEPLOYMENT_PROFILE', 'prod')])
+def test_serverless_development_guard_precedes_secret_client_and_cached_binding(monkeypatch, name, value):
+    prefix = secret_environment(monkeypatch)
+    create = Mock()
+    monkeypatch.setattr(lifecycle.boto3, 'client', create)
+    # Even an already-cached scope must not bypass the explicit profile guard.
+    lifecycle._secret_binding = ('us-east-2', '123456789012', prefix + 'app', None,
+        prefix + 'tombstone', 'otgd_app', 'otgd_app')
+    monkeypatch.setenv(name, value)
+    with pytest.raises(RuntimeError, match='secret initialization is unavailable'):
+        lifecycle.load_runtime_secrets()
+    create.assert_not_called()
+
+
 def test_maintenance_force_refresh_observes_rotated_admin_secret_without_output(monkeypatch, capsys):
     prefix = secret_environment(monkeypatch, maintenance=True)
     values = {prefix + 'admin': {'username': 'otgd_migrator', 'password': 'initial-admin-password'},
@@ -252,6 +269,10 @@ def test_postgres_connection_timeout_tolerates_resume_only_in_serverless_mode(mo
 
 
 def test_service_specific_ipv6_endpoints_preserve_legacy_and_endpoint_guards(monkeypatch):
+    # This endpoint-resolution fixture supplies explicit fictional credentials;
+    # an injected operator profile must not select a real credential provider.
+    monkeypatch.delenv('AWS_PROFILE', raising=False)
+    monkeypatch.delenv('AWS_DEFAULT_PROFILE', raising=False)
     session = boto3.Session(aws_access_key_id='fictional', aws_secret_access_key='fictional', region_name='us-east-2')
     monkeypatch.setenv('AWS_ENDPOINT_URL', 'https://untrusted.invalid')
     monkeypatch.setenv('AWS_USE_DUALSTACK_ENDPOINT', 'true')
@@ -391,7 +412,8 @@ def test_dispatch_invocation_requires_actual_async_acceptance(monkeypatch, statu
 
 def test_serverless_configuration_requires_real_control_resume_and_queue_bounds():
     values = {'environment': 'qa', 'deployment_account': '123456789012', 'source_revision': 'a' * 40,
-        'serverless_mode': True, 'serverless_control_table': 'otgd-serverless-control',
+        'serverless_mode': True, 'serverless_deployment_profile': 'serverless-development',
+        'serverless_control_table': 'otgd-serverless-control',
         'serverless_queue_visibility': 1200, 'database_sslmode': 'verify-full',
         'database_sslrootcert': '/approved/rds-ca.pem', 'database_pool_size': 1,
         'issuer': 'https://cognito-idp.us-east-2.amazonaws.com/pool', 'jwks_url': 'https://cognito-idp.us-east-2.amazonaws.com/pool/keys',
@@ -403,11 +425,15 @@ def test_serverless_configuration_requires_real_control_resume_and_queue_bounds(
     assert accepted.serverless_database_connect_timeout == 45
     for change in ({'serverless_control_table': None}, {'serverless_queue_visibility': 119},
                    {'serverless_database_connect_timeout': 5}, {'aws_region': 'us-west-2'},
+                   {'environment': 'prod'}, {'serverless_deployment_profile': None},
+                   {'serverless_deployment_profile': 'qa'}, {'serverless_deployment_profile': 'prod'},
                    {'serverless_dispatch_function_arn': 'arn:aws:lambda:us-east-2:987654321098:function:foreign'}):
         with pytest.raises(ValueError):
             config.Settings(**{**values, **change})
     with pytest.raises(ValueError):
         config.Settings(serverless_queue_visibility=1200, environment='test')
+    with pytest.raises(ValueError):
+        config.Settings(environment='test', serverless_deployment_profile='serverless-development')
 
 
 def test_serverless_settings_validation_cannot_dump_loaded_password_values(monkeypatch):

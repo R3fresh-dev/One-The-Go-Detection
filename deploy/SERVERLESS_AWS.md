@@ -15,6 +15,19 @@ add resume latency; periodic work and open connections can affect its ability
 to pause. The deployment receipt records observed health, rather than inferring
 health from a successful infrastructure update.
 
+This is a development deployment profile. Every Lambda is explicitly configured
+with `OTGD_SERVERLESS_DEPLOYMENT_PROFILE=serverless-development` and the existing
+QA identity/transport namespace; that namespace does not make this a QA release
+approval. Serverless settings reject production and an absent or different
+profile. The managed QA/prod deployment and promotion criteria remain separate.
+
+CloudFront's configured origin read timeout is 60 seconds. Lambda and API
+Gateway allow a long streaming invocation, but that does not give a cold
+request 15 minutes to produce its first headers. Database resume, application
+cold start and every quiet interval must fit the actual transport timeout.
+Client retry is bounded and cannot substitute for observing this cold-start
+failure matrix on AWS; that acceptance has not run in this environment.
+
 AWS must report an active **Paid Plan** for this account before provisioning.
 The AWS Free Plan supports Aurora only through restricted Express Configuration;
 that configuration cannot provide this deployment's private VPC, custom KMS
@@ -59,6 +72,17 @@ deployment API is authorized. An authorization failure blocks its stage and
 leaves a credential-free recovery journal.
 Preflight also requires the read-only `freetier:GetAccountPlanState` permission.
 
+The deployment principal also needs scoped DynamoDB read/conditional-write
+access to the retained control table's `admission` partition and a condition
+check of the `runtime` epoch when reopening. DynamoDB transactions authorize
+each operation through its underlying IAM action; runtime roles may
+read or condition-check admission but cannot open it or replace its owner.
+The three independent MFA registry roles can retrieve only the actual Aurora
+master secret and decrypt its exact key/Secrets Manager context. Registry
+commands still need an approved private operator host or a properly configured
+CloudShell VPC environment with private PostgreSQL connectivity and verified
+TLS. These permissions do not establish that network path; it must be tested.
+
 ## Deploy through GitHub Actions
 
 1. Review and merge the serverless change only after every mandatory gate passes
@@ -94,6 +118,60 @@ Concurrent attempts for this account and region are serialized. A failed run is
 not evidence of rollback: inspect its stage journal and actual AWS state before
 retrying. Do not enable `establish_new` to bypass a continuity failure.
 
+Before replacing code or migrating SQL, the CLI atomically closes admission
+with a persisted deployment owner, generation and new source revision. It then
+disables scheduled/SQS admission, sets producer concurrency to zero and waits
+for leases admitted before closure to drain. An initializing invocation that
+tries to acquire later is refused by the same atomic metadata transaction;
+an empty lease query alone is never a drain proof. Retained stacks must declare
+admission protocol version 2; older stacks require reviewed recovery rather
+than a timed compatibility bypass.
+
+Unreleased producer rows remain a barrier indefinitely, even after their
+recorded invocation budget ends. Protocol 2 stores that budget as `deadlineAt`,
+which is not a TTL attribute, and explicitly disables the table's old
+`expiresAt` TTL policy. Successful SQL disposal followed by explicit release
+is the only automatic removal of a producer fence. Lambda timeout, process
+death, an expired deadline or a failed disposal does not prove SQL has stopped.
+
+A stale unreleased fence requires separately reviewed reconciliation of the
+actual PostgreSQL sessions and their transactions. No automatic reconciler is
+implemented here. Never delete a lease, relabel old protocol metadata, clear
+the table or reset a journal to make deployment continue. A protocol 1 stack
+may already have lost fences through TTL and is refused before registry,
+image, source or schema mutation; routine upgrade and owned resume cannot
+reconstruct those missing facts. Initial rollback recovery likewise retains
+its exact current-template requirement and refuses older templates.
+
+Bootstrap, migration and independent recovery admission run only under that
+exact closed ownership. Each response must match its requested operation,
+outcome, nonce and runtime identity; the caller also checks the actual image,
+function ARN, IAM role and configured database role. The current exact-source
+13-job GitHub proof is reverified before each cloud mutation stage. The CLI
+publishes immutable frontend bytes while closed and reopens by conditional
+ownership/generation match only after successful admission and fresh gates;
+public readiness probes run after reopening.
+
+Failures preserve closed admission. Keep `deployment-owner.json`,
+`admission-closure.json` when produced, and the stage journal; another owner
+cannot steal a stopped deployment through a routine retry. An operator must
+review current cloud state and explicitly resume the same ownership with
+`--resume-owner /private/path/admission-closure.json`. Protect that downloaded
+receipt with mode 0600. The bounded receipt must match the exact account,
+region, source revision and retained table, and its owner/generation must still
+be closed in actual DynamoDB. Resume repeats gate admission and draining; it
+does not reset data, bypass leases or permit a different source revision.
+An absent receipt, incompatible older runtime or changed owner/generation
+requires a separately reviewed recovery process.
+The CLI does not automatically reopen a failed deployment or infer rollback.
+If the first empty-journal bootstrap fails before its marker is established,
+the retained stack requires separately reviewed first-establishment recovery;
+`--resume-owner` does not permit `--establish-new` on a retained stack. It never
+replaces retained state or manufactures a new continuity marker. Uploaded
+closure and owner receipts support explicit operator recovery when the runner
+finishes its artifact step; a hard runner loss is not proof those files were
+uploaded and must be handled through reviewed actual-state recovery.
+
 ### Recover a first infrastructure rollback
 
 The first attempt can leave a `ROLLBACK_COMPLETE` application stack before any
@@ -110,6 +188,20 @@ The credential-free `initial-recovery.json` artifact records the retained
 resource identifiers and import plan before metadata deletion. Preserve it if
 recovery is interrupted. An initialized or unexpected environment requires a
 separate recovery process and is rejected by this initial recovery option.
+The original template must exactly match the currently reviewed stopped
+template. Older failed stacks without the admission protocol, profile or
+current infrastructure controls are refused; they require manual recovery or
+a separately qualified historical-template path. This CLI does not silently
+accept or rewrite such a template. Admission is reverified immediately before
+each CloudFormation mutation, and authority, resource identity and emptiness
+are rechecked around import waits before execution and success. This narrowly
+recovers a first infrastructure rollback; it does not restore an initialized
+Aurora database or establish backup/restore acceptance.
+Every imported resource must also be closed over the surviving references.
+For example, an artifact bucket whose original CORS configuration references a
+deleted CloudFront distribution cannot be imported by omitting that policy or
+inventing a hostname. Such a rollback is refused and needs separately reviewed
+recovery. The option does not cover every first-attempt failure state.
 
 ## Repeat the Python process locally
 
@@ -154,3 +246,9 @@ CloudWatch measurements, API/frontend transport, restore and alarm delivery
 need their own observed evidence. Physical-device qualification and production
 promotion remain separate requirements. A workflow file, a local plan, or an
 untested dashboard template does not establish a deployed or healthy system.
+
+Aurora snapshot restore and Lambda recovery admission are not integrated into
+this development deployment CLI. The existing managed ECS/RDS restore tooling
+does not target this stack. A serverless-specific restore path and its observed
+backup/restore acceptance remain outstanding under SDEV-006; the receipt keeps
+`backup_restore=not_executed` and cannot serve as restore or promotion evidence.

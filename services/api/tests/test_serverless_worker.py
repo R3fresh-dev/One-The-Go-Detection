@@ -1,11 +1,15 @@
 """Lambda delivery decisions and due SQL work; no live AWS acceptance claims."""
-from contextlib import contextmanager
 import json
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
+from threading import Event
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pytest
-
-from otgd import serverless_control as control, serverless_worker as adapter, worker
+from otgd import serverless_control as control
+from otgd import serverless_worker as adapter
+from otgd import worker
 from otgd.db import Artifact, Job, Outbox, factory, uid
 
 REAL_EMIT_METRICS = adapter.emit_operational_metrics
@@ -131,9 +135,10 @@ def snapshot(epoch=1, active=()):
 def test_sweep_cannot_mark_quiet_when_producer_commits_and_releases_during_sql(monkeypatch, concurrent):
     active = control.ProducerLease(uid(), 1000, 1930)
     before = snapshot(active=(active,) if concurrent == "previous-active" else ())
-    after = snapshot(epoch=2 if concurrent == "new-epoch" else 1)
-    states = iter([before, after])
+    after = snapshot(epoch=3 if concurrent == "new-epoch" else 2)
+    states = iter([before, snapshot(epoch=2), after])
     store = SimpleNamespace(snapshot=lambda: next(states),
+                            acquire=lambda *args, **kwargs: None, release=lambda *args: None,
                             mark_reconciled=lambda *args: pytest.fail("A raced SQL view cannot mark quiet"))
     monkeypatch.setattr(control, "control_store", lambda: store)
     monkeypatch.setattr(adapter, "next_wake_at", lambda *args: 4600)
@@ -169,6 +174,229 @@ def test_sweep_due_work_reconciles_after_own_lease_release(monkeypatch):
     result = adapter.sweep(Context())
     assert result["quiet_marked"] is True and result["next_wake_at"] == 1500
     assert events == ["acquired", "dispatch", "cleanup", "disposed", "released", "quiet"]
+
+
+@pytest.mark.parametrize("blocked_operation", ["initial_scan", "no_due_metrics"])
+def test_deployment_drain_waits_for_sweep_initial_and_no_work_sql(monkeypatch, blocked_operation):
+    """Real drain/control logic with in-memory DynamoDB and blocked SQL doubles.
+
+    No AWS invocation or persistent database is used as integration evidence.
+    """
+    from otgd import db as database
+
+    from deploy import serverless as deployment
+
+    from .test_serverless_control import (
+        LEASE_A,
+        NEXT_REVISION,
+        REVISION,
+        MetadataTable,
+        opened_store,
+    )
+
+    table = MetadataTable()
+    store = opened_store(table, "fictional-sweep-control")
+    deployment_store = control.ControlStore(client=table, table_name="fictional-sweep-control", source_revision=NEXT_REVISION)
+    blocked, finish_sql, draining, finish_poll = (Event() for _ in range(4))
+    events = []
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    monkeypatch.setattr(control, "ControlStore", lambda **kwargs: deployment_store)
+    monkeypatch.setattr(adapter.time, "time", lambda: 1000)
+    monkeypatch.setattr(adapter, "next_wake_at", lambda *args: 4600)
+
+    def block_sql(label):
+        leases = store.snapshot().active_leases
+        assert len(leases) == 1 and leases[0].kind == "maintenance"
+        events.append(label)
+        blocked.set()
+        assert finish_sql.wait(3), "Blocked SQL was not released by the test"
+
+    @contextmanager
+    def opened():
+        assert store.snapshot().active_leases, "Initial SQL opened before producer fencing"
+        if blocked_operation == "initial_scan":
+            block_sql("initial_scan")
+        yield object()
+
+    monkeypatch.setattr(database, "factory", lambda: opened)
+
+    def metrics(db=None):
+        if blocked_operation == "no_due_metrics":
+            block_sql("no_due_metrics")
+    monkeypatch.setattr(adapter, "emit_operational_metrics", metrics)
+
+    def dispose():
+        assert store.snapshot().active_leases, "Lease was released before SQL disposal"
+        events.append("disposed")
+    monkeypatch.setattr(adapter, "dispose_database", dispose)
+
+    aws = Mock()
+    functions = Mock()
+    functions.get_event_source_mapping.return_value = {"State": "Disabled"}
+    aws.client.side_effect = lambda service: functions if service == "lambda" else Mock()
+    out = {"ControlSchedule": "fictional-schedule", "WorkerMapping": "fictional-mapping",
+           "AdmissionProtocolVersion": control.ADMISSION_PROTOCOL_VERSION,
+           "RuntimeControlTable": "fictional-sweep-control", **{key: "fictional-" + key
+           for key in ("ApiFunction", "WorkerFunction", "DispatcherFunction", "ControlFunction")}}
+
+    def poll(delay):
+        assert delay == 10
+        draining.set()
+        assert finish_poll.wait(3), "Drain polling was not released by the test"
+    monkeypatch.setattr(deployment.time, "sleep", poll)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        sweep = pool.submit(adapter.sweep, Context())
+        try:
+            assert blocked.wait(3), "Sweep never reached its fenced SQL operation"
+            drain = pool.submit(deployment.drain, aws, out, source_revision=NEXT_REVISION, owner_id=LEASE_A, readmission=Mock())
+            assert draining.wait(3), "Deployment did not observe the active producer"
+            assert not drain.done(), "Deployment falsely declared active SQL drained"
+            finish_sql.set()
+            result = sweep.result(timeout=3)
+            assert result["quiet_marked"] is True
+            assert events == [blocked_operation, "disposed"]
+            assert not store.snapshot().active_leases
+            finish_poll.set()
+            assert drain.result(timeout=3) == {"services_stopped": True, "producer_leases_drained": True,
+                "ownership": {"owner_id": LEASE_A, "generation": 2, "source_revision": NEXT_REVISION}}
+            assert store.source_revision == REVISION
+        finally:
+            finish_sql.set()
+            finish_poll.set()
+
+
+def test_sweep_acquisition_failure_never_opens_sql(monkeypatch):
+    from otgd import db as database
+    def fail(*args, **kwargs):
+        raise control.ControlUnavailable("fictional metadata outage")
+    store = SimpleNamespace(snapshot=lambda: snapshot(), acquire=fail,
+        release=lambda *args: pytest.fail("Unconfirmed acquisition cannot release producer metadata"))
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    monkeypatch.setattr(database, "factory", lambda: pytest.fail("SQL must follow confirmed producer acquisition"))
+    with pytest.raises(control.ControlUnavailable):
+        adapter.sweep(Context())
+
+
+def test_invocation_delayed_before_acquisition_cannot_open_sql_after_drain(monkeypatch):
+    from deploy import serverless as deployment
+
+    from .test_serverless_control import (
+        LEASE_A,
+        LEASE_B,
+        NEXT_REVISION,
+        MetadataTable,
+        opened_store,
+    )
+
+    table = MetadataTable()
+    old_runtime = opened_store(table)
+    new_deployment = control.ControlStore(table, "test-control", source_revision=NEXT_REVISION)
+    monkeypatch.setattr(control, "control_store", lambda: old_runtime)
+    monkeypatch.setattr(control, "ControlStore", lambda **kwargs: new_deployment)
+    entered, continue_initialization = Event(), Event()
+    sql = []
+    def delayed_invocation():
+        entered.set()
+        assert continue_initialization.wait(3)
+        with control.producer_lease(Context(), lease_id=LEASE_B,
+                dispose=lambda: pytest.fail("Closed producer never acquired a disposal obligation")):
+            sql.append("opened")
+    aws, functions = Mock(), Mock()
+    functions.get_event_source_mapping.return_value = {"State": "Disabled"}
+    aws.client.side_effect = lambda service: functions if service == "lambda" else Mock()
+    out = {"AdmissionProtocolVersion": control.ADMISSION_PROTOCOL_VERSION, "RuntimeControlTable": "test-control",
+        "ControlSchedule": "fictional-schedule", "WorkerMapping": "fictional-mapping", **{key: "fictional-" + key
+        for key in ("ApiFunction", "WorkerFunction", "DispatcherFunction", "ControlFunction")}}
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        delayed = pool.submit(delayed_invocation)
+        try:
+            assert entered.wait(3)
+            drained = deployment.drain(aws, out, source_revision=NEXT_REVISION, owner_id=LEASE_A, readmission=Mock())
+            assert drained["producer_leases_drained"] is True
+            new_deployment.require_closed(drained["ownership"])
+            continue_initialization.set()
+            with pytest.raises(control.ControlUnavailable, match="closed"):
+                delayed.result(timeout=3)
+        finally:
+            continue_initialization.set()
+    assert not sql and not old_runtime.snapshot().active_leases
+
+
+def test_unreleased_lease_past_930_second_budget_blocks_actual_drain_until_disposal(monkeypatch):
+    """Semantic metadata/SQL doubles, never a shipped dead-session reconciler."""
+    from deploy import serverless as deployment
+
+    from .test_serverless_control import (
+        LEASE_A,
+        LEASE_B,
+        NEXT_REVISION,
+        MetadataTable,
+        opened_store,
+    )
+
+    table = MetadataTable()
+    producer = opened_store(table)
+    lease = producer.acquire(LEASE_A, now=0, deadline=900)
+    assert lease.expires_at == 930
+    new_deployment = control.ControlStore(table, "test-control", source_revision=NEXT_REVISION)
+    monkeypatch.setattr(control, "ControlStore", lambda **kwargs: new_deployment)
+    monkeypatch.setattr(adapter.time, "time", lambda: 931)
+    events = []
+    def disposal():
+        assert events == ["SQL-finished"]
+        assert producer.snapshot().active_leases == (lease,)
+        events.append("SQL-disposed")
+    monkeypatch.setattr(adapter, "dispose_database", disposal)
+    def poll(delay):
+        assert delay == 10 and not events
+        assert producer.snapshot().active_leases == (lease,)
+        assert new_deployment.admission()["state"] == "closed"
+        # Simulate the owner's independently observed SQL completion. Neither
+        # the deadline nor the deployment drain removes an unreleased row.
+        events.append("SQL-finished")
+        adapter.dispose_database()
+        producer.release(LEASE_A)
+        events.append("released")
+    monkeypatch.setattr(deployment.time, "sleep", poll)
+    aws, functions = Mock(), Mock()
+    functions.get_event_source_mapping.return_value = {"State": "Disabled"}
+    aws.client.side_effect = lambda service: functions if service == "lambda" else Mock()
+    out = {"AdmissionProtocolVersion": control.ADMISSION_PROTOCOL_VERSION,
+        "RuntimeControlTable": "test-control", "ControlSchedule": "fictional-schedule", "WorkerMapping": "fictional-mapping",
+        **{key: "fictional-" + key for key in ("ApiFunction", "WorkerFunction", "DispatcherFunction", "ControlFunction")}}
+    drained = deployment.drain(aws, out, source_revision=NEXT_REVISION, owner_id=LEASE_B, readmission=Mock())
+    assert drained["producer_leases_drained"] is True
+    assert events == ["SQL-finished", "SQL-disposed", "released"]
+    new_deployment.require_closed(drained["ownership"])
+    assert not producer.snapshot().active_leases
+
+
+def test_sweep_disposal_failure_keeps_its_producer_lease(monkeypatch):
+    from otgd import db as database
+
+    from .test_serverless_control import MetadataTable, opened_store
+    store = opened_store(MetadataTable(), "fictional-sweep-control")
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    monkeypatch.setattr(adapter.time, "time", lambda: 1000)
+    monkeypatch.setattr(adapter, "next_wake_at", lambda *args: 4600)
+    @contextmanager
+    def opened():
+        yield object()
+    monkeypatch.setattr(database, "factory", lambda: opened)
+    def fail():
+        raise RuntimeError("fictional pool cleanup failure")
+    monkeypatch.setattr(adapter, "dispose_database", fail)
+    with pytest.raises(RuntimeError, match="pool cleanup"):
+        adapter.sweep(Context())
+    leases = store.snapshot().active_leases
+    assert len(leases) == 1
+    assert leases[0].expires_at == 1210
+    # Failed cleanup keeps the fence even after the invocation budget/grace.
+    monkeypatch.setattr(adapter.time, "time", lambda: 1211)
+    assert store.snapshot().active_leases == leases
+    ownership = store.close_admission("10000000-0000-0000-0000-000000000001")
+    with pytest.raises(control.ControlUnavailable, match="not drained"):
+        store.reopen_admission(ownership)
 
 
 def test_sqs_heartbeat_preserves_sql_lease_and_extends_lambda_visibility(monkeypatch):
@@ -213,8 +441,23 @@ def test_dispatcher_sweep_stays_app_role_and_admin_handler_rejects_schedules(mon
 
 @pytest.mark.parametrize("operation", ["bootstrap", "migrate", "admission"])
 def test_admin_maintenance_closes_sql_before_lease_release(client, monkeypatch, operation):
+    from otgd import config
+
+    from .test_serverless_control import LEASE_A, LEASE_B, REVISION
     events = []
-    monkeypatch.setattr(control, "acquire_lease", lambda *args: events.append("acquired"))
+    owned = {"owner_id": LEASE_A, "generation": 1, "source_revision": REVISION}
+    monkeypatch.setenv("OTGD_SERVERLESS_ROLE", "maintenance")
+    monkeypatch.setenv("OTGD_LAMBDA_MAINTENANCE_ROLE", "maintenance")
+    monkeypatch.setenv("OTGD_ENVIRONMENT", "qa")
+    monkeypatch.setenv("OTGD_SERVERLESS_DEPLOYMENT_PROFILE", "serverless-development")
+    monkeypatch.setattr(config, "settings", lambda: SimpleNamespace(serverless_mode=True,
+        environment="qa", serverless_deployment_profile="serverless-development", database_user="otgd_migrator",
+        source_revision=REVISION, deployment_account="123456789012", aws_region="us-east-2"))
+    monkeypatch.setattr(adapter, "refresh_admin_credentials", lambda: None)
+    def acquire(*args, **kwargs):
+        assert kwargs == {"ownership": owned}
+        events.append("acquired")
+    monkeypatch.setattr(control, "acquire_lease", acquire)
     monkeypatch.setattr(control, "release_lease", lambda *args: events.append("released"))
     monkeypatch.setattr(adapter, "dispose_database", lambda: events.append("disposed"))
     if operation == "bootstrap":
@@ -229,8 +472,55 @@ def test_admin_maintenance_closes_sql_before_lease_release(client, monkeypatch, 
     else:
         import otgd.recovery_authority
         monkeypatch.setattr(otgd.recovery_authority, "require_authority", lambda db: events.append("verified"))
-    assert adapter.maintenance_handler({"operation": operation}, Context()) == {"status": "passed", "operation": operation}
+    event = {"operation": operation, "request_nonce": LEASE_B, "ownership": owned}
+    if operation == "bootstrap":
+        event["establish_new"] = False
+    assert adapter.maintenance_handler(event, Context()) == {"status": {"bootstrap": "bootstrap_verified", "migrate": "migrated",
+        "admission": "admission_verified"}[operation], "operation": operation, "request_nonce": LEASE_B,
+        "ownership": owned, "deployment_profile": "serverless-development", "maintenance_role": "maintenance",
+        "account": "123456789012", "region": "us-east-2", "source_revision": REVISION}
     assert events == ["acquired", "verified", "disposed", "released"]
+
+
+@pytest.mark.parametrize("changes", [
+    {"request_nonce": "not-uuid"}, {"request_nonce": None}, {"extra": "not-admitted"},
+    {"ownership": {"owner_id": "not-uuid", "generation": 1, "source_revision": "a" * 40}},
+    {"ownership": {"owner_id": "10000000-0000-0000-0000-000000000001", "generation": True, "source_revision": "a" * 40}},
+    {"operation": "bootstrap", "establish_new": "true"},
+])
+def test_admin_maintenance_rejects_invalid_scope_before_credentials_or_sql(monkeypatch, changes):
+    from .test_serverless_control import LEASE_A, LEASE_B, REVISION
+    monkeypatch.setenv("OTGD_SERVERLESS_ROLE", "maintenance")
+    monkeypatch.setenv("OTGD_LAMBDA_MAINTENANCE_ROLE", "maintenance")
+    monkeypatch.setenv("OTGD_ENVIRONMENT", "qa")
+    monkeypatch.setenv("OTGD_SERVERLESS_DEPLOYMENT_PROFILE", "serverless-development")
+    monkeypatch.setattr(adapter, "refresh_admin_credentials", lambda: pytest.fail("Invalid event cannot load credentials"))
+    monkeypatch.setattr(control, "acquire_lease", lambda *args, **kwargs: pytest.fail("Invalid event cannot acquire SQL admission"))
+    event = {"operation": "admission", "request_nonce": LEASE_B,
+             "ownership": {"owner_id": LEASE_A, "generation": 1, "source_revision": REVISION}, **changes}
+    with pytest.raises((ValueError, control.ControlMetadataError)):
+        adapter.maintenance_handler(event, Context())
+
+
+@pytest.mark.parametrize("changes", [{"source_revision": "b" * 40}, {"database_user": "otgd_app"},
+                                   {"serverless_mode": False}, {"environment": "prod"}])
+def test_admin_maintenance_refuses_runtime_binding_mismatch_before_sql(monkeypatch, changes):
+    from otgd import config
+
+    from .test_serverless_control import LEASE_A, LEASE_B, REVISION
+    monkeypatch.setenv("OTGD_SERVERLESS_ROLE", "maintenance")
+    monkeypatch.setenv("OTGD_LAMBDA_MAINTENANCE_ROLE", "maintenance")
+    monkeypatch.setenv("OTGD_ENVIRONMENT", "qa")
+    monkeypatch.setenv("OTGD_SERVERLESS_DEPLOYMENT_PROFILE", "serverless-development")
+    values = {"serverless_mode": True, "environment": "qa", "serverless_deployment_profile": "serverless-development",
+              "database_user": "otgd_migrator", "source_revision": REVISION}
+    monkeypatch.setattr(config, "settings", lambda: SimpleNamespace(**{**values, **changes}))
+    monkeypatch.setattr(adapter, "refresh_admin_credentials", lambda: None)
+    monkeypatch.setattr(control, "acquire_lease", lambda *args, **kwargs: pytest.fail("Wrong runtime cannot acquire SQL admission"))
+    event = {"operation": "admission", "request_nonce": LEASE_B,
+             "ownership": {"owner_id": LEASE_A, "generation": 1, "source_revision": REVISION}}
+    with pytest.raises(ValueError, match="does not match"):
+        adapter.maintenance_handler(event, Context())
 
 
 def test_emf_contains_actual_sql_ages_and_no_identity_dimensions(client, account, monkeypatch, capsys):
@@ -258,7 +548,8 @@ def test_control_adapter_has_no_sql_side_effects(monkeypatch):
 
 
 def test_admin_refresh_observes_rotating_secret_before_any_new_connection(monkeypatch):
-    from otgd import db as database, config, serverless_lifecycle
+    from otgd import config, serverless_lifecycle
+    from otgd import db as database
     events = []
     monkeypatch.setenv("OTGD_SERVERLESS_MODE", "true")
     monkeypatch.setattr(serverless_lifecycle, "load_runtime_secrets", lambda *, force: events.append(("hydrate", force)))

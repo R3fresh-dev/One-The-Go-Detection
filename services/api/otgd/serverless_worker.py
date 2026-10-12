@@ -6,13 +6,12 @@ SQL, immutable S3 versions and the independent journal remain authoritative.
 """
 from __future__ import annotations
 
-import math
 import json
+import math
 import os
-from functools import lru_cache
 import time
+from functools import lru_cache
 from uuid import UUID, uuid4
-
 
 ACKNOWLEDGED = frozenset({"completed", "terminal", "deferred"})
 SAFETY_SECONDS = 3600
@@ -36,6 +35,7 @@ def dispose_database():
 @lru_cache(maxsize=1)
 def metric_collector():
     import runpy
+
     from .config import ROOT
 
     return runpy.run_path(str(ROOT / "scripts/publish-metrics.py"))["collect"]
@@ -122,6 +122,7 @@ def sqs_handler(event, context):
 def next_wake_at(db, instant):
     """Earliest eligible operation using the canonical worker predicates."""
     from sqlalchemy import case, func, select
+
     from .db import Artifact, Job, Outbox
     from .raw_retention import RawRetention
 
@@ -163,23 +164,23 @@ def sweep(context):
 
     store = control_store()
     before = store.snapshot()
-    baseline = before
     had_producer = bool(before.active_leases)
-    owned = None
+    owned = str(uuid4())
+    # Reading the initial deadline and emitting no-work metrics also open SQL.
+    # Deployment draining must observe this invocation before either operation,
+    # even when no cleanup or dispatch becomes eligible.
+    store.acquire(owned, invocation_deadline(context), kind="maintenance")
     next_wake = None
     outcome = {"attempted": 0, "failed": 0}
     try:
+        baseline = store.snapshot()
+        had_producer = had_producer or any(row.lease_id != owned for row in baseline.active_leases)
         from .db import factory
 
         instant = time.time()
         with factory()() as db:
             next_wake = next_wake_at(db, instant)
         if next_wake <= instant:
-            candidate = str(uuid4())
-            store.acquire(candidate, invocation_deadline(context), kind="maintenance")
-            owned = candidate
-            baseline = store.snapshot()
-            had_producer = had_producer or any(row.lease_id != owned for row in baseline.active_leases)
             from .worker import cleanup_once, dispatch_once
 
             dispatch_once()
@@ -193,8 +194,7 @@ def sweep(context):
             emit_operational_metrics()
     finally:
         dispose_database()
-        if owned is not None:
-            store.release(owned)
+        store.release(owned)
     after = store.snapshot()
     quiet = False
     # A producer active before SQL may commit after our read and disappear
@@ -209,17 +209,40 @@ def maintenance_handler(event, context):
     if not isinstance(event, dict) or event.get("operation") not in ("bootstrap", "migrate", "admission"):
         raise ValueError("An explicit maintenance operation is required")
     operation = event["operation"]
+    keys = {"operation", "request_nonce", "ownership"}
+    if operation == "bootstrap":
+        keys.add("establish_new")
+    if set(event) != keys:
+        raise ValueError("Maintenance requires an exact nonce and ownership envelope")
+    from .serverless_control import (
+        _ownership,
+        _uuid,
+        acquire_lease,
+        release_lease,
+        require_runtime_profile,
+    )
+
+    nonce, ownership = _uuid(event["request_nonce"]), _ownership(event["ownership"])
+    require_runtime_profile(maintenance=True)
+    if operation == "bootstrap" and type(event["establish_new"]) is not bool:
+        raise ValueError("Journal establishment must be explicit")
     refresh_admin_credentials()
-    from .serverless_control import acquire_lease, release_lease
+    from .config import settings
+
+    config = settings()
+    if (not config.serverless_mode or config.environment != "qa"
+            or config.serverless_deployment_profile != "serverless-development"
+            or config.database_user != "otgd_migrator"
+            or config.source_revision != ownership["source_revision"]):
+        raise ValueError("Maintenance runtime does not match owned deployment")
 
     lease = str(uuid4())
-    acquire_lease("maintenance", lease, invocation_deadline(context))
+    acquire_lease("maintenance", lease, invocation_deadline(context), ownership=ownership)
     try:
         if operation == "bootstrap":
-            establish = event.get("establish_new", False)
-            if type(establish) is not bool:
-                raise ValueError("Journal establishment must be explicit")
+            establish = event["establish_new"]
             import runpy
+
             from .config import ROOT
 
             initialize = runpy.run_path(str(ROOT / "infra/local/bootstrap_resources.py"))["initialize"]
@@ -234,7 +257,11 @@ def maintenance_handler(event, context):
 
             with factory()() as db:
                 require_authority(db)
-        return {"operation": operation, "status": "passed"}
+        statuses = {"bootstrap": "bootstrap_verified", "migrate": "migrated", "admission": "admission_verified"}
+        return {"operation": operation, "status": statuses[operation], "request_nonce": nonce,
+                "deployment_profile": config.serverless_deployment_profile, "maintenance_role": "maintenance",
+                "account": config.deployment_account, "region": config.aws_region,
+                "source_revision": config.source_revision, "ownership": ownership}
     finally:
         dispose_database()
         release_lease(lease)

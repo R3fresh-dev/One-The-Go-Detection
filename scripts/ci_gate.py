@@ -10,6 +10,12 @@ import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
 REPORTS=ROOT/'reports'
+SERVERLESS_DEPLOYMENT_SOURCES=(
+    'deploy/serverless.py',
+    'deploy/serverless_gates.py',
+    'deploy/serverless_recovery.py',
+    'deploy/serverless_template.py',
+)
 
 
 def require_junit(path):
@@ -38,6 +44,19 @@ def require_file_coverage(path,source):
     return 100*covered/statements
 
 
+def require_serverless_coverage(path):
+    """A healthy aggregate cannot hide an unmeasured deployment entry point."""
+    value=json.loads(Path(path).read_text())
+    files=value.get('files',{})
+    expected={(ROOT/source).resolve() for source in SERVERLESS_DEPLOYMENT_SOURCES}
+    measured=[(ROOT/name).resolve() for name in files]
+    if len(measured)!=len(expected) or set(measured)!=expected:
+        raise RuntimeError('Serverless deployment coverage must contain every canonical source exactly once')
+    if any(entry.get('excluded_lines') for entry in files.values()):
+        raise RuntimeError('Serverless deployment coverage cannot exclude source lines')
+    return {source:require_file_coverage(path,source) for source in SERVERLESS_DEPLOYMENT_SOURCES}
+
+
 def child_environment(env=None, *, local_compose=False):
     values={**os.environ,**(env or {})}
     if local_compose:
@@ -61,15 +80,34 @@ def infrastructure_unit_gate():
     # Executing this file sets sys.path[0] to scripts/. Operational tests import
     # canonical repository packages independently of test discovery order.
     sys.path.insert(0, str(ROOT))
-    suite=unittest.defaultTestLoader.discover(str(ROOT/'infra/test'),pattern='test_*.py')
-    result=unittest.TextTestRunner(verbosity=2).run(suite)
+    # Test discovery imports deployment modules, so tracing must start first.
+    # Keep these data and reports separate from the API/store coverage evidence.
+    from coverage import Coverage
+    REPORTS.mkdir(parents=True,exist_ok=True)
+    report=REPORTS/'infra-serverless-coverage.json'
+    xml=REPORTS/'infra-serverless-coverage.xml'
+    report.unlink(missing_ok=True);xml.unlink(missing_ok=True)
+    coverage=Coverage(source=[str(ROOT/'deploy')],config_file=False,
+                      data_file=str(REPORTS/'.coverage.infra-serverless'))
+    coverage.erase()
+    coverage.start()
+    try:
+        suite=unittest.defaultTestLoader.discover(str(ROOT/'infra/test'),pattern='test_*.py')
+        result=unittest.TextTestRunner(verbosity=2).run(suite)
+    finally:
+        coverage.stop()
+        coverage.save()
+        sources=[str(ROOT/source) for source in SERVERLESS_DEPLOYMENT_SOURCES]
+        coverage.json_report(morfs=sources,outfile=str(report))
+        coverage.xml_report(morfs=sources,outfile=str(xml))
     require_unittest(result)
+    require_serverless_coverage(report)
     pytest_gate('secure-sdk', 'infra/test/test_secure_reader_build.py')
 
 
 def pytest_gate(name,*args,env=None):
     report=REPORTS/(name+'.xml');report.unlink(missing_ok=True)
-    call('uv','run','--project','services/api','pytest',*args,'--junitxml='+str(report),'-q',env=env)
+    call('uv','run','--project','services/api','python','-m','pytest',*args,'--junitxml='+str(report),'-q',env=env)
     require_junit(report)
 
 

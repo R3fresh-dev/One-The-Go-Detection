@@ -32,8 +32,13 @@ def workflow_admission():
 
 def gate_run(run_id, *, conclusion='success', status='completed', **changes):
     return {'id': run_id, 'head_sha': REVISION, 'path': WORKFLOW_PATH,
+            'repository': {'full_name': REPOSITORY}, 'head_repository': {'full_name': REPOSITORY},
             'event': 'push', 'head_branch': 'main', 'status': status,
             'conclusion': conclusion, **changes}
+
+
+def inventory(runs):
+    return {'total_count': len(runs), 'workflow_runs': runs}
 
 
 class ServerlessWorkflowTest(unittest.TestCase):
@@ -44,17 +49,17 @@ class ServerlessWorkflowTest(unittest.TestCase):
         for newer in (gate_run(20, conclusion='failure'),
                       gate_run(20, conclusion=None, status='in_progress'),
                       gate_run(20, conclusion='cancelled')):
-            self.program['github_json'] = Mock(return_value={'workflow_runs': [gate_run(10), newer]})
+            self.program['github_json'] = Mock(return_value=inventory([gate_run(10), newer]))
             with self.subTest(newer=newer), self.assertRaisesRegex(Gate, 'latest trusted'):
                 self.program['select_latest_gate'](REVISION)
 
     def test_selection_requires_exact_source_and_trusted_main_workflow(self):
-        self.program['github_json'] = Mock(return_value={'workflow_runs': [
+        self.program['github_json'] = Mock(return_value=inventory([
             gate_run(10), gate_run(20), gate_run(30, event='pull_request'),
             gate_run(40, event='workflow_dispatch'), gate_run(50, head_branch='feature'),
-            gate_run(60, head_sha='b' * 40), gate_run(70, path='different.yml')]})
+            gate_run(60, head_sha='b' * 40), gate_run(70, path='different.yml')]))
         self.assertEqual(self.program['select_latest_gate'](REVISION), 20)
-        self.program['github_json'] = Mock(return_value={'workflow_runs': [gate_run(30, event='pull_request')]})
+        self.program['github_json'] = Mock(return_value=inventory([gate_run(30, event='pull_request')]))
         with self.assertRaisesRegex(Gate, 'No trusted exact-source'):
             self.program['select_latest_gate'](REVISION)
 
@@ -65,7 +70,7 @@ class ServerlessWorkflowTest(unittest.TestCase):
             self.program['github_json'] = Mock(return_value=response)
             with self.subTest(response=response), self.assertRaises(Gate):
                 self.program['select_latest_gate'](REVISION)
-        self.program['github_json'] = Mock(return_value={'workflow_runs': [gate_run(1)] * 100})
+        self.program['github_json'] = Mock(return_value={'total_count': 1001, 'workflow_runs': [gate_run(1)] * 100})
         with self.assertRaisesRegex(Gate, 'supported bounds'):
             self.program['select_latest_gate'](REVISION)
 
@@ -92,11 +97,12 @@ class ServerlessWorkflowTest(unittest.TestCase):
         proof = {'run_id': 20, 'head_sha': REVISION}
         with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, environment, clear=True), \
                 patch.object(self.program['platform'], 'require_clean_source') as clean, \
-                patch.object(self.program['platform'], 'verify_gate_file', return_value=proof) as verify, \
+                patch.dict(self.program, {'verify_serverless_gates': Mock(return_value=proof)}), \
                 patch.object(self.program['subprocess'], 'run', return_value=Mock(returncode=0)) as downloaded:
             previous = Path.cwd()
             try:
                 os.chdir(directory)
+                verify = self.program['verify_serverless_gates']
                 self.program['admit']()
                 written = Path('.local/serverlessconfig/gate-admission.json')
                 self.assertEqual(json.loads(written.read_text()), proof)
@@ -120,7 +126,7 @@ class ServerlessWorkflowTest(unittest.TestCase):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory, \
                     patch.dict(os.environ, environment, clear=True), \
                     patch.object(self.program['platform'], 'require_clean_source'), \
-                    patch.object(self.program['platform'], 'verify_gate_file', verify), \
+                    patch.dict(self.program, {'verify_serverless_gates': verify}), \
                     patch.object(self.program['subprocess'], 'run', return_value=downloaded):
                 previous = Path.cwd()
                 try:
@@ -168,6 +174,11 @@ class ServerlessWorkflowTest(unittest.TestCase):
             'reports/serverless-plan.json', 'reports/serverless-deploy.json',
             '.local/deploy/serverless-development/**/deployment.json',
             '.local/deploy/serverless-development/**/deployment-state.json',
+            '.local/deploy/serverless-development/**/deployment-owner.json',
+            '.local/deploy/serverless-development/**/admission-closure.json',
+            '.local/deploy/serverless-development/**/bootstrap.json',
+            '.local/deploy/serverless-development/**/migration.json',
+            '.local/deploy/serverless-development/**/admission.json',
             '.local/deploy/serverless-development/**/initial-recovery.json',
         })
         self.assertTrue(upload['with']['include-hidden-files'])

@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "review_date": "2026-10-12",
+  "scope": "Request-time baseline fixture consistency after real1ba CI failures; productionvalidationunchanged; not all7/all13 evidence",
+  "baseline_commit": "1ba8eb771636276aff5eafc23f76624f49c4e920",
+  "source_count": 4,
+  "source_snapshots": [
+    {
+      "file": "services/api/otgd/model_engine.py",
+      "sha256": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+      "bytes": 46783,
+      "scope": "unchanged_executed_validation_dependency"
+    },
+    {
+      "file": "services/api/tests/test_model_admission.py",
+      "sha256": "8a6acceda35200fa5ddc7e1d942185368ced93c71c091e6410e59cb548b2b1bb",
+      "bytes": 22295,
+      "scope": "fixture_correction"
+    },
+    {
+      "file": "services/api/tests/test_model_engine.py",
+      "sha256": "1bf4b788a6089c054bdc6a192b9c0fca8475363dd738b2ca5a69a106535a17ce",
+      "bytes": 18725,
+      "scope": "unchanged_executed_validation_dependency"
+    },
+    {
+      "file": "tools/spec_validation.py",
+      "sha256": "0a187b8978d7b0a096c4bc1ad6245b1f5b89922a45e183cb8499152c3d6289f8",
+      "bytes": 9492,
+      "scope": "unchanged_executed_validation_dependency"
+    }
+  ],
+  "source_inventory_sha256": "ad7b7e7bb8532823d67ac5ef540e9e4a08a3b895f6ed09037ea583c16e6605c5",
+  "historical_serverless_review_sha256": {
+    "FOLLOWUP_REVIEW.md": "514ff9bd8df590ae8b29d30a46c57b21305434ca6e354d68ac43fe18f56cdcd6",
+    "followup-source-map.json": "c4eebc35d3213ef24acd37b6829514303d0b3a1ce4829c31993e39d9ddf421e5",
+    "INTEGRATION_REVIEW.md": "02736cd83182520bd9e248d5bc23ebd758713414c52e86e14c744e042cf7968e",
+    "source-map.json": "05275d11f299fd670a9c61244c108924e2e8478d126cc80a9ab9f5cff7e44478"
+  },
+  "controlled_clock_evidence": {
+    "path": "/tmp/otgd-baseline-clock-review.json",
+    "sha256": "a3c5577f548783839fcc4f82b4e9d0be3041de4e7ff38b3673e195f90ad62b2f",
+    "clock_increment_seconds": 0.002,
+    "start_fractional_second": 0.999,
+    "old_clock_reads": 13,
+    "old_problem": "INVALID_ACQUISITION",
+    "new_clock_reads": 1,
+    "new_problem": "BASELINE_NOT_COMPATIBLE",
+    "unchanged_original_assertions_passed": true,
+    "one_ms_end_after_final_still_rejected": "INVALID_ACQUISITION",
+    "SQL_or_cloud_calls": false
+  },
+  "owner_execution": {
+    "SQLite_case_passed": 1,
+    "PG_configured_case_passed": 1,
+    "skipped": 0,
+    "note": "Selected case is pure model/schema validation even under PG configuration; no client/DB fixture execution or liveDB behavior claimed"
+  },
+  "production_edits": false,
+  "test_thresholds_or_expected_errors_changed": false,
+  "current_global_gates": "pending exactsourceall7+all13; reportedCIperformancefailure remainsopen",
+  "self_referential_files_excluded": [
+    "openspec/changes/serverless-development-runtime/reviews/VERIFICATION_FIXES.md",
+    "openspec/changes/serverless-development-runtime/reviews/verification-source-map.json"
+  ]
+}

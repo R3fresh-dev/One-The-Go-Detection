@@ -30,7 +30,9 @@ import httpx
 from deploy import platform, web_artifact
 from deploy.check_access import identity_selection
 from deploy.orchestrate import StageJournal
-from deploy.provenance import Gate, bounded_json, sha256
+from deploy.provenance import Gate, bounded_file, bounded_json, sha256
+from deploy.serverless_gates import verify_serverless_gates
+from otgd.canonical import canonical, strict_loads
 
 STACK = 'otgd-serverless-development'
 FIELDS = {'environment', 'account', 'region', 'alarmEmail', 'monthlyBudgetUsd', 'releaseId',
@@ -58,7 +60,13 @@ def budget(c):
     path = Path(c['costEstimatePath'])
     if not path.is_absolute():
         path = ROOT / path
-    evidence = bounded_json(path, 262144)
+    evidence_wire = bounded_file(path, 262144)
+    try:
+        evidence = strict_loads(evidence_wire)
+    except (TypeError, ValueError):
+        raise Gate('Serverless pricing evidence must be strict bounded JSON') from None
+    if not isinstance(evidence, dict):
+        raise Gate('Serverless pricing evidence must be an object')
     if (evidence.get('region') != c['region'] or evidence.get('deployment_profile') != c['environment']
             or evidence.get('unverified_rates') != [] or not evidence.get('rates')):
         raise Gate('Verified matching serverless price evidence is required')
@@ -92,7 +100,7 @@ def budget(c):
     if total != Decimal(str(cases[0]['total_monthly_usd'])) or total > Decimal(str(c['monthlyBudgetUsd'])):
         raise Gate('The reconciled serverless workload exceeds the selected budget')
     return {'estimated_monthly_usd': float(total), 'budget_usd': c['monthlyBudgetUsd'],
-            'planned_monthly_users': c['plannedMonthlyUsers'], 'price_evidence_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+            'planned_monthly_users': c['plannedMonthlyUsers'], 'price_evidence_sha256': hashlib.sha256(evidence_wire).hexdigest(),
             'planning_assumptions': assumptions,
             'maximum_capacity_stress_monthly_usd': next(r['total_monthly_usd'] for r in evidence['configured_maximum_1_acu_stress_scenarios']
                 if r['monthly_active_users'] == c['plannedMonthlyUsers']),
@@ -134,7 +142,9 @@ def admit_changes(changes):
             raise Gate('This update would replace retained data or authority; use a reviewed recovery process')
 
 
-def deploy_stack(aws, name, template, c, template_bucket=None):
+def deploy_stack(aws, name, template, c, template_bucket=None, *, readmission):
+    if not callable(readmission):
+        raise Gate('CloudFormation mutations require live source admission')
     cf = aws.client('cloudformation')
     prior = stable_stack(aws, name, absent_ok=True)
     raw = json.dumps(template, separators=(',', ':')).encode()
@@ -148,8 +158,10 @@ def deploy_stack(aws, name, template, c, template_bucket=None):
             raise Gate('A private template bucket is required for the complete serverless stack')
         digest = hashlib.sha256(raw).hexdigest()
         key = 'templates/' + c['releaseId'] + '/' + digest + '.json'
+        readmission()
         web_artifact.put_immutable(aws.client('s3'), template_bucket, key, raw, 'application/json')
         request['TemplateURL'] = f"https://{template_bucket}.s3.{c['region']}.amazonaws.com/{quote(key)}"
+    readmission()
     change = cf.create_change_set(**request)['Id']
     try:
         cf.get_waiter('change_set_create_complete').wait(ChangeSetName=change, StackName=name,
@@ -157,6 +169,7 @@ def deploy_stack(aws, name, template, c, template_bucket=None):
     except Exception:
         status = cf.describe_change_set(ChangeSetName=change, StackName=name)
         if status.get('Status') == 'FAILED' and "didn't contain changes" in status.get('StatusReason', ''):
+            readmission()
             cf.delete_change_set(ChangeSetName=change, StackName=name)
             return stable_stack(aws, name)
         raise
@@ -165,9 +178,12 @@ def deploy_stack(aws, name, template, c, template_bucket=None):
     try:
         admit_changes(changes)
     except Gate:
+        readmission()
         cf.delete_change_set(ChangeSetName=change, StackName=name)
         raise
+    readmission()
     cf.update_termination_protection(StackName=name, EnableTerminationProtection=True)
+    readmission()
     cf.execute_change_set(ChangeSetName=change, StackName=name)
     cf.get_waiter('stack_update_complete' if prior is not None else 'stack_create_complete').wait(
         StackName=name, WaiterConfig={'Delay': 15, 'MaxAttempts': 240})
@@ -211,7 +227,16 @@ def preflight(aws, c, prior):
     return {**c, 'databaseEngineVersion': version}
 
 
-def build_images(aws, c, registry, source):
+def verify_image(c, selector):
+    actual = json.loads(platform.run(['docker', 'image', 'inspect', selector], capture=True))[0]
+    if (actual.get('Architecture') != 'amd64' or actual.get('Os') != 'linux'
+            or actual.get('Config', {}).get('Labels', {}).get('org.opencontainers.image.revision') != c['releaseId']):
+        raise Gate('Actual Lambda image platform or source label differs from this release')
+
+
+def build_images(aws, c, registry, source, *, readmission):
+    if not callable(readmission):
+        raise Gate('Container publication requires live source admission')
     ecr = aws.client('ecr')
     uri = registry['RepositoryUri']
     name = uri.rsplit('/', 1)[1]
@@ -233,11 +258,14 @@ def build_images(aws, c, registry, source):
                 command = ['docker', 'buildx', 'build', '--platform', 'linux/amd64', '--provenance=false',
                     '--sbom=false', '--label', 'org.opencontainers.image.revision=' + c['releaseId'],
                     '--file', str(context / 'deploy/serverless.Dockerfile'), '--target', target,
-                    '--tag', uri + ':' + tag, '--push']
+                    '--tag', uri + ':' + tag, '--load']
                 cert = os.environ.get('CODEX_PROXY_CERT')
                 if cert:
                     command += ['--secret', 'id=proxy_ca,src=' + cert]
                 platform.run(command + [str(context)])
+                verify_image(c, uri + ':' + tag)
+                readmission()
+                platform.run(['docker', 'push', uri + ':' + tag])
                 details = ecr.describe_images(repositoryName=name, imageIds=[{'imageTag': tag}])['imageDetails']
             if len(details) != 1 or not re.fullmatch(r'sha256:[0-9a-f]{64}', details[0]['imageDigest']):
                 raise Gate('A verified immutable container digest is required')
@@ -254,18 +282,79 @@ def build_images(aws, c, registry, source):
                 raise Gate('Lambda requires one Linux/amd64 image manifest')
             immutable = uri + '@' + digest
             platform.run(['docker', 'pull', '--platform', 'linux/amd64', immutable])
-            actual = json.loads(platform.run(['docker', 'image', 'inspect', immutable], capture=True))[0]
-            if (actual.get('Architecture') != 'amd64' or actual.get('Os') != 'linux'
-                    or actual.get('Config', {}).get('Labels', {}).get('org.opencontainers.image.revision') != c['releaseId']):
-                raise Gate('Actual Lambda image platform or source label differs from this release')
+            verify_image(c, immutable)
             result[target + 'ImageUri'] = immutable
     return {**c, **result}
 
 
-def drain(aws, out):
+def control_store(aws, out, source_revision):
+    from otgd.serverless_control import ControlStore
+    return ControlStore(client=aws.client('dynamodb'), table_name=out['RuntimeControlTable'],
+                        source_revision=source_revision)
+
+
+def write_owned_receipt(path, receipt):
+    """Persist private resumption evidence before the next cloud mutation."""
+    wire = canonical(receipt)
+    if len(wire) > 65536:
+        raise Gate('Owned closure evidence exceeds its bound')
+    try:
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    except FileExistsError:
+        if bounded_file(path, 65536, private=True) != wire:
+            raise Gate('Owned closure evidence changed during deployment')
+        return
+    with os.fdopen(descriptor, 'wb') as stream:
+        os.fchmod(stream.fileno(), 0o600)
+        stream.write(wire)
+        stream.flush()
+        os.fsync(stream.fileno())
+    parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(parent)
+    finally:
+        os.close(parent)
+
+
+def validate_resume_owner(aws, c, prior, path):
+    if not prior or prior.get('AdmissionProtocolVersion') != '2':
+        raise Gate('Owned resume requires an existing compatible stopped deployment')
+    try:
+        receipt = strict_loads(bounded_file(path, 65536, private=True))
+    except (ValueError, TypeError):
+        raise Gate('Owned resume requires a strict private bounded closure receipt') from None
+    expected = {'schema_version': '1.0.0', 'source_revision': c['releaseId'],
+                'account': c['account'], 'region': c['region'], 'control_table': prior['RuntimeControlTable']}
+    if (not isinstance(receipt, dict) or set(receipt) != set(expected) | {'ownership'}
+            or any(receipt.get(key) != value for key, value in expected.items())):
+        raise Gate('Owned resume receipt differs from this exact account, source or retained table')
+    ownership = receipt['ownership']
+    if (not isinstance(ownership, dict) or set(ownership) != {'owner_id', 'generation', 'source_revision'}
+            or type(ownership.get('generation')) is not int or ownership['generation'] < 1
+            or ownership.get('source_revision') != c['releaseId']):
+        raise Gate('Owned resume requires exact typed deployment ownership')
+    return control_store(aws, prior, c['releaseId']).require_closed(ownership)
+
+
+def drain(aws, out, *, source_revision, owner_id, readmission, on_closed=None, ownership=None):
     """Stop admission and wait for actual producer leases before changing code/schema."""
+    if not callable(readmission):
+        raise Gate('Runtime quiescence requires live source admission')
+    if out.get('AdmissionProtocolVersion') != '2':
+        raise Gate('Existing runtime cannot prove atomic admission closure; use reviewed recovery')
+    store = control_store(aws, out, source_revision)
+    if ownership is None:
+        readmission()
+        ownership = store.close_admission(owner_id)
+    else:
+        ownership = store.require_closed(ownership)
+    store.require_closed(ownership)
+    if on_closed is not None:
+        on_closed(ownership)
     client = aws.client('lambda')
+    readmission()
     aws.client('events').disable_rule(Name=out['ControlSchedule'])
+    readmission()
     client.update_event_source_mapping(UUID=out['WorkerMapping'], Enabled=False, ScalingConfig={})
     deadline = time.monotonic() + 300
     while time.monotonic() < deadline:
@@ -275,25 +364,66 @@ def drain(aws, out):
     else:
         raise Gate('The SQS mapping did not stop; no source or schema update is allowed')
     for key in ('ApiFunction', 'WorkerFunction', 'DispatcherFunction', 'ControlFunction'):
+        readmission()
         client.put_function_concurrency(FunctionName=out[key], ReservedConcurrentExecutions=0)
-    from otgd.serverless_control import ControlStore
-    store = ControlStore(client=aws.client('dynamodb'), table_name=out['RuntimeControlTable'])
     deadline = time.monotonic() + 960
     while time.monotonic() < deadline:
-        if not store.snapshot().active_leases:
-            return {'services_stopped': True, 'producer_leases_drained': True}
+        store.require_closed(ownership)
+        empty = not store.snapshot().active_leases
+        store.require_closed(ownership)
+        if empty:
+            return {'services_stopped': True, 'producer_leases_drained': True, 'ownership': ownership}
         time.sleep(10)
     raise Gate('Actual producer leases remain active; preserve stopped services and inspect before retry')
 
 
-def invoke_maintenance(aws, c, out, operation, work, **extra):
+def invoke_maintenance(aws, c, out, operation, work, *, readmission, **extra):
+    if not callable(readmission):
+        raise Gate('Maintenance invocation requires live source admission')
+    statuses = {'bootstrap': 'bootstrap_verified', 'migrate': 'migrated', 'admission': 'admission_verified'}
+    if operation not in statuses or set(extra) != ({'ownership', 'establish_new'} if operation == 'bootstrap' else {'ownership'}):
+        raise Gate('Maintenance requires an exact operation and owned closed admission')
+    ownership = extra['ownership']
+    if (not isinstance(ownership, dict) or set(ownership) != {'owner_id', 'generation', 'source_revision'}
+            or type(ownership['generation']) is not int or ownership['generation'] < 1
+            or ownership['source_revision'] != c['releaseId']):
+        raise Gate('Maintenance ownership does not match the reviewed release')
+    try:
+        if str(uuid.UUID(ownership['owner_id'])) != ownership['owner_id']:
+            raise ValueError()
+    except (ValueError, TypeError, AttributeError):
+        raise Gate('Maintenance ownership requires a canonical UUID') from None
+    if operation == 'bootstrap' and type(extra['establish_new']) is not bool:
+        raise Gate('Journal establishment must be explicit')
+    control_store(aws, out, c['releaseId']).require_closed(ownership)
     name = out['MaintenanceFunction']
     client = aws.client('lambda', config=Config(connect_timeout=5, read_timeout=960,
         retries={'mode': 'standard', 'total_max_attempts': 1}))
     actual = client.get_function(FunctionName=name)
-    if actual['Code'].get('ResolvedImageUri') != c['workerImageUri']:
-        raise Gate('Maintenance function differs from the actual reviewed worker image')
-    event = {'operation': operation, **extra}
+    configuration = actual.get('Configuration', {})
+    image_configuration = configuration.get('ImageConfigResponse', {})
+    variables = configuration.get('Environment', {}).get('Variables', {})
+    expected = {'OTGD_SOURCE_REVISION': c['releaseId'], 'OTGD_DEPLOYMENT_ACCOUNT': c['account'],
+        'OTGD_AWS_REGION': c['region'], 'OTGD_ENVIRONMENT': 'qa',
+        'OTGD_SERVERLESS_DEPLOYMENT_PROFILE': 'serverless-development', 'OTGD_SERVERLESS_MODE': 'true',
+        'OTGD_SERVERLESS_ROLE': 'maintenance', 'OTGD_LAMBDA_MAINTENANCE_ROLE': 'maintenance',
+        'OTGD_LAMBDA_HANDLER': 'otgd.serverless_worker.maintenance_handler',
+        'OTGD_DATABASE_USER': 'otgd_migrator'}
+    function_arn = f"arn:aws:lambda:{c['region']}:{c['account']}:function:{name}"
+    if (actual.get('Code', {}).get('ResolvedImageUri') != c['workerImageUri']
+            or out.get('MaintenanceFunctionArn') != function_arn
+            or configuration.get('FunctionArn') != function_arn
+            or image_configuration.get('ImageConfig', {}).get('Command') != ['otgd.serverless_worker.maintenance_handler']
+            or 'Error' in image_configuration
+            or image_configuration.get('ImageConfig', {}).get('EntryPoint') not in (None, [])
+            or image_configuration.get('ImageConfig', {}).get('WorkingDirectory') not in (None, '')
+            or configuration.get('Role') != out.get('MaintenanceRoleArn')
+            or not re.fullmatch(r'arn:aws:iam::' + re.escape(c['account']) + r':role/[A-Za-z0-9_+=,.@/-]{1,512}', out.get('MaintenanceRoleArn', ''))
+            or any(variables.get(key) != value for key, value in expected.items())):
+        raise Gate('Maintenance function, role, configuration or source differs from the reviewed release')
+    request_nonce = str(uuid.uuid4())
+    event = {'operation': operation, 'request_nonce': request_nonce, **extra}
+    readmission()
     result = client.invoke(FunctionName=name, InvocationType='RequestResponse', Payload=json.dumps(event).encode())
     stream = result['Payload']
     try:
@@ -302,20 +432,30 @@ def invoke_maintenance(aws, c, out, operation, work, **extra):
         stream.close()
     if result.get('FunctionError') or result.get('StatusCode') != 200 or len(raw) > 65536:
         raise Gate('Maintenance failed; inspect protected Lambda logs')
-    body = json.loads(raw)
-    if not isinstance(body, dict) or body.get('status') not in ('passed', 'verified', 'completed', 'admission_verified', 'migrated', 'bootstrap_verified'):
-        raise Gate('Maintenance did not return verified completion evidence')
+    try:
+        body = strict_loads(raw)
+    except (ValueError, TypeError):
+        raise Gate('Maintenance did not return strict completion evidence') from None
+    expected_body = {'operation': operation, 'status': statuses[operation], 'request_nonce': request_nonce,
+        'deployment_profile': 'serverless-development', 'maintenance_role': 'maintenance',
+        'account': c['account'], 'region': c['region'], 'source_revision': c['releaseId'], 'ownership': ownership}
+    body_ownership = body.get('ownership') if isinstance(body, dict) else None
+    if (not isinstance(body_ownership, dict) or type(body_ownership.get('generation')) is not int
+            or canonical(body) != canonical(expected_body)):
+        raise Gate('Maintenance completion operation, outcome or authority binding differs')
+    control_store(aws, out, c['releaseId']).require_closed(ownership)
     receipt = {'schema_version': '1.0.0', 'operation': operation, 'status': 'passed',
         'function_arn': actual['Configuration']['FunctionArn'], 'image_uri': c['workerImageUri'],
         'request_id': result['ResponseMetadata']['RequestId'], 'release_id': c['releaseId'],
         'account': c['account'], 'region': c['region'], 'completed_at': datetime.now(timezone.utc).isoformat(),
         'result': body}
-    platform.write_receipt(work / (operation + '.json'), receipt)
+    platform.write_receipt(work / ('migration.json' if operation == 'migrate' else operation + '.json'), receipt)
     return receipt
 
 
 UPLOAD_HEADERS = {'content-type', 'if-none-match', 'x-amz-checksum-sha256',
                   'x-amz-server-side-encryption', 'x-amz-server-side-encryption-aws-kms-key-id'}
+UPLOAD_EXPOSE_HEADERS = {'etag', 'x-amz-version-id', 'x-amz-checksum-sha256'}
 
 
 def verify_upload_access(aws, c, out):
@@ -327,7 +467,9 @@ def verify_upload_access(aws, c, out):
     rules = aws.client('s3').get_bucket_cors(Bucket=expected_bucket).get('CORSRules', [])
     if (len(rules) != 1 or rules[0].get('AllowedOrigins') != [out['WebOrigin']]
             or rules[0].get('AllowedMethods') != ['PUT']
-            or {h.lower() for h in rules[0].get('AllowedHeaders', [])} != UPLOAD_HEADERS):
+            or {h.lower() for h in rules[0].get('AllowedHeaders', [])} != UPLOAD_HEADERS
+            or {h.lower() for h in rules[0].get('ExposeHeaders', [])} != UPLOAD_EXPOSE_HEADERS
+            or rules[0].get('MaxAgeSeconds') != 300):
         raise Gate('Actual S3 upload CORS differs from the admitted web origin and signed headers')
     headers = {'Origin': out['WebOrigin'], 'Access-Control-Request-Method': 'PUT',
                'Access-Control-Request-Headers': ','.join(sorted(UPLOAD_HEADERS))}
@@ -345,7 +487,9 @@ def verify_upload_access(aws, c, out):
     return {'signed_upload_preflight': 'passed', 'unapproved_origin': 'denied', 'object_upload': 'not_executed'}
 
 
-def build_and_publish_web(aws, c, out, source, work):
+def build_and_publish_web(aws, c, out, source, work, *, readmission):
+    if not callable(readmission):
+        raise Gate('Web publication requires live source admission')
     upload = verify_upload_access(aws, c, out)
     with tempfile.TemporaryDirectory(prefix='otgd-serverless-web-') as temporary:
         context = Path(temporary)
@@ -365,17 +509,25 @@ def build_and_publish_web(aws, c, out, source, work):
     s3 = aws.client('s3')
     for name in sorted(files, key=lambda name: (name == 'index.html', name)):
         record = web_artifact.file_record(name, files[name])
+        readmission()
         web_artifact.put_immutable(s3, out['WebBucket'], prefix + '/' + name, files[name], record['content_type'])
+    readmission()
     invalidation = cf.create_invalidation(DistributionId=out['WebDistributionId'],
         InvalidationBatch={'Paths': {'Quantity': 1, 'Items': ['/*']}, 'CallerReference': 'serverless-' + sha256(manifest)})['Invalidation']['Id']
     cf.get_waiter('invalidation_completed').wait(DistributionId=out['WebDistributionId'], Id=invalidation,
         WaiterConfig={'Delay': 20, 'MaxAttempts': 45})
-    return {**web_artifact.verify_access(out, {}, files, timeout=120), **upload}
+    return {'manifest': manifest, 'upload_access': upload}
+
+
+def verify_published_web(out, publication, work):
+    files = web_artifact.contents(work / 'web.zip', publication['manifest'])
+    return {**web_artifact.verify_access(out, {}, files, timeout=120), **publication['upload_access']}
 
 
 def observe(aws, c, out):
     if out.get('ReleaseId') != c['releaseId']:
         raise Gate('Health target differs from the selected source')
+    admission = control_store(aws, out, c['releaseId']).require_open()
     client = aws.client('lambda')
     functions = {}
     for key in ('ApiFunction', 'WorkerFunction', 'DispatcherFunction', 'MaintenanceFunction', 'ControlFunction'):
@@ -412,6 +564,7 @@ def observe(aws, c, out):
     return {'status': 'healthy' if healthy else 'degraded', 'observed_at': datetime.now(timezone.utc).isoformat(),
         'account': c['account'], 'region': c['region'], 'release_id': c['releaseId'], 'functions': functions,
         'database_available': db_ok, 'api_ready': api_ok, 'web_ready': web_ok, 'alarms': states,
+        'runtime_admission': admission,
         'worker_mapping_enabled': mapping_ok, 'control_schedule_enabled': schedule_ok,
         'dashboard_url': out['CloudWatchDashboardUrl'], 'alarm_delivery': 'not_executed', 'backup_restore': 'not_executed'}
 
@@ -420,38 +573,79 @@ def deploy(args, c, aws, price):
     if not args.gate_evidence:
         raise Gate('Passing exact-source GitHub gate evidence is required')
     platform.require_clean_source(c['releaseId'])
-    platform.verify_gate_file(args.gate_evidence, c['releaseId'])
+    initial_gates = verify_serverless_gates(args.gate_evidence, c['releaseId'])
     from deploy.serverless_template import build_template
     recovering = getattr(args, 'recover_initial', False)
     if recovering and not args.establish_new:
         raise Gate('Initial infrastructure recovery requires explicit first-empty-journal initialization')
+    if recovering and getattr(args, 'resume_owner', None):
+        raise Gate('Initial infrastructure recovery cannot resume initialized ownership')
     prior = None if recovering else stable_stack(aws, STACK, absent_ok=True)
+    if prior is not None and not prior:
+        raise Gate('An outputless retained stack requires reviewed initial recovery; it cannot bypass runtime draining')
+    if prior and prior.get('AdmissionProtocolVersion') != '2':
+        raise Gate('An older TTL runtime requires independently verified SQL-session reconciliation before upgrade')
     c = preflight(aws, c, prior)
+    resumed = validate_resume_owner(aws, c, prior, args.resume_owner) if getattr(args, 'resume_owner', None) else None
     if prior is not None and args.establish_new:
         raise Gate('A retained deployment cannot establish a new empty journal')
     work = ROOT / '.local/deploy/serverless-development' / c['releaseId'] / uuid.uuid4().hex
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
+        def readmission():
+            platform.require_clean_source(c['releaseId'])
+            if sha256(verify_serverless_gates(args.gate_evidence, c['releaseId'])) != sha256(initial_gates):
+                raise Gate('The exact-source GitHub gate run changed before a cloud mutation')
+
+        def checked_stage(name, function, *arguments, **options):
+            journal.call(name + '-gate-readmission', readmission)
+            return journal.call(name, function, *arguments, **options)
+
         if recovering:
             from deploy.serverless_recovery import recover_initial
-            journal.call('recover-initial-retained-resources', recover_initial, aws, c, work / 'initial-recovery.json')
-        registry = journal.call('serverless-registry', deploy_stack, aws, STACK + '-registry', build_template(c, phase='registry'), c)
+            checked_stage('recover-initial-retained-resources', recover_initial, aws, c,
+                          work / 'initial-recovery.json', readmission=readmission)
+        registry = checked_stage('serverless-registry', deploy_stack, aws, STACK + '-registry', build_template(c, phase='registry'), c,
+                                 readmission=readmission)
         source = work / 'source.tar'
         journal.call('exact-source-archive', platform.run, ['git', 'archive', '--format=tar', '--output', str(source), c['releaseId']])
-        c = journal.call('build-immutable-lambda-images', build_images, aws, c, registry, source)
+        c = checked_stage('build-immutable-lambda-images', build_images, aws, c, registry, source, readmission=readmission)
         platform.write_receipt(work / 'images.json', {'source_revision': c['releaseId'], 'api_image_uri': c['apiImageUri'], 'worker_image_uri': c['workerImageUri']})
-        if prior:
-            journal.call('drain-existing-runtime', drain, aws, prior)
-        out = journal.call('deploy-stopped', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}), c, registry['DeploymentBucket'])
-        journal.call('bootstrap', invoke_maintenance, aws, c, out, 'bootstrap', work, establish_new=args.establish_new)
-        journal.call('migrate', invoke_maintenance, aws, c, out, 'migrate', work)
-        admission = journal.call('admission', invoke_maintenance, aws, c, out, 'admission', work)
+        owner_id = resumed['owner_id'] if resumed else str(uuid.uuid4())
+        write_owned_receipt(work / 'deployment-owner.json', {'schema_version': '1.0.0',
+            'owner_id': owner_id, 'source_revision': c['releaseId'], 'account': c['account'], 'region': c['region']})
+
+        def persist_closure(ownership):
+            write_owned_receipt(work / 'admission-closure.json', {'schema_version': '1.0.0',
+                'source_revision': c['releaseId'], 'account': c['account'], 'region': c['region'],
+                'control_table': prior['RuntimeControlTable'] if prior else out['RuntimeControlTable'], 'ownership': ownership})
+
+        closure = checked_stage('drain-existing-runtime', drain, aws, prior,
+                               source_revision=c['releaseId'], owner_id=owner_id, on_closed=persist_closure,
+                               ownership=resumed, readmission=readmission) if prior else None
+        out = checked_stage('deploy-stopped', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}), c, registry['DeploymentBucket'], readmission=readmission)
+        if prior and out['RuntimeControlTable'] != prior['RuntimeControlTable']:
+            raise Gate('The retained atomic admission table changed during deployment')
+        store = control_store(aws, out, c['releaseId'])
+        ownership = closure['ownership'] if closure else checked_stage('close-new-admission', store.close_admission, owner_id)
+        store.require_closed(ownership)
+        persist_closure(ownership)
+        checked_stage('bootstrap', invoke_maintenance, aws, c, out, 'bootstrap', work,
+                      establish_new=args.establish_new, ownership=ownership, readmission=readmission)
+        checked_stage('migrate', invoke_maintenance, aws, c, out, 'migrate', work, ownership=ownership, readmission=readmission)
+        admission = checked_stage('admission', invoke_maintenance, aws, c, out, 'admission', work, ownership=ownership, readmission=readmission)
         journal.call('source-readmission', platform.require_clean_source, c['releaseId'])
-        journal.call('gate-readmission', platform.verify_gate_file, args.gate_evidence, c['releaseId'])
+        journal.call('gate-readmission', readmission)
         if (datetime.now(timezone.utc) - datetime.fromisoformat(admission['completed_at'])).total_seconds() > 900:
             raise Gate('Independent admission is stale before activation')
-        out = journal.call('activate', deploy_stack, aws, STACK, build_template({**c, 'activateServices': True}), c, registry['DeploymentBucket'])
-        public = journal.call('publish-and-verify-web', build_and_publish_web, aws, c, out, source, work)
+        store.require_closed(ownership)
+        control_table = out['RuntimeControlTable']
+        out = checked_stage('activate', deploy_stack, aws, STACK, build_template({**c, 'activateServices': True}), c, registry['DeploymentBucket'], readmission=readmission)
+        if out['RuntimeControlTable'] != control_table:
+            raise Gate('The retained atomic admission table changed before reopening')
+        manifest = checked_stage('publish-web', build_and_publish_web, aws, c, out, source, work, readmission=readmission)
+        checked_stage('reopen-admission', store.reopen_admission, ownership)
+        public = journal.call('verify-public-access', verify_published_web, out, manifest, work)
         deadline = time.monotonic() + 600
         snapshot = None
         while time.monotonic() < deadline:
@@ -467,6 +661,7 @@ def deploy(args, c, aws, price):
             'web_origin': out['WebOrigin'], 'api_origin': out['ApiOrigin'],
             'cloudwatch_dashboard_url': out['CloudWatchDashboardUrl'], 'public_checks': public,
             'health': snapshot, 'budget_plan': price, 'production_promotion_eligible': False,
+            'remaining_software': ['Aurora/Lambda restore/reconciliation adapter'],
             'alarm_delivery': 'not_executed', 'backup_restore': 'not_executed'}
         journal.call('write-deployment-receipt', platform.write_receipt, work / 'deployment.json', receipt)
         journal.finish()
@@ -481,11 +676,16 @@ def main(argv=None):
     parser.add_argument('--identity')
     parser.add_argument('--gate-evidence', type=Path)
     parser.add_argument('--establish-new', action='store_true')
+    parser.add_argument('--resume-owner', type=Path, help='Explicitly resume the exact saved private closed ownership receipt')
     parser.add_argument('--recover-initial', action='store_true', help='Import retained resources from a verified empty first-attempt infrastructure rollback; never use for an initialized deployment')
     args = parser.parse_args(argv)
     try:
         if args.profile and args.identity:
             raise Gate('Choose one AWS identity selector')
+        if args.resume_owner and args.operation != 'deploy':
+            raise Gate('Owned resume is only available for an explicit deployment')
+        if args.recover_initial and (args.operation != 'deploy' or args.resume_owner):
+            raise Gate('Initial infrastructure recovery is a separate explicit deployment; it cannot resume initialized ownership')
         c = read_config(args.config)
         price = budget(c)
         if args.operation == 'plan':
@@ -494,6 +694,7 @@ def main(argv=None):
                 'architecture': 'Lambda API/workers, Aurora Serverless PostgreSQL, Cognito, SQS, S3/CloudFront, DynamoDB runtime control and CloudWatch',
                 'database_idle_capacity': 0, 'database_maximum_capacity_acus': 1,
                 'credential_route': 'GitHub repository secrets ACCESS_KEY_ID and SECRET_ACCESS_KEY',
+                'remaining_software': ['Aurora/Lambda restore/reconciliation adapter'],
                 'remaining_live_checks': ['Exact main CI', 'AWS IPv6 routing and streaming', 'Actual health and alarm delivery', 'Backup restore']}
         else:
             with identity_selection(args.identity) as selected:

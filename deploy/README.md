@@ -4,7 +4,9 @@ The CLI [platform.py](platform.py) makes every paid or operational action explic
 
 ## One command for QA, a separate command for production
 
-[qa.py](qa.py) and [prod.py](prod.py) orchestrate infrastructure, security, API/worker code, private web hosting, maintenance, health and browser publication. They reuse the exact-source release admission below; they do not bypass it. Use the API's locked Python environment, Node 24.19.0, Docker Buildx for service build/promotion, the committed npm locks, actual AWS profiles, issued certificates and your independently trusted signing authority. Install `infra` dependencies before invoking them. No AWS account has been supplied or deployment executed here.
+[qa.py](qa.py) and [prod.py](prod.py) orchestrate infrastructure, security, API/worker code, private web hosting, maintenance, health and browser publication. They reuse the exact-source release admission below; they do not bypass it. Use the API's locked Python environment, Node 24.19.0, Docker Buildx for service build/promotion, the committed npm locks, actual AWS profiles, issued certificates and your independently trusted signing authority. Install `infra` dependencies before invoking them. No canonical QA/prod deployment has been executed here. A separately merged development configuration references an AWS account; the current managed worker has no observed ready AWS outbound identity.
+
+The optional [serverless development guide](SERVERLESS_AWS.md) documents its separate Aurora/Lambda script. That development-only path cannot serve as canonical QA evidence or production promotion. Its admission protocol and maintenance receipts are independently specified; an Aurora/Lambda restore/reconciliation adapter remains absent.
 
 Validate an operator-supplied config and show the sequence without AWS access, builds, signing or mutations:
 

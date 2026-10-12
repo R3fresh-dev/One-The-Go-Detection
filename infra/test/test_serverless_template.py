@@ -116,6 +116,7 @@ class ServerlessTemplateTest(unittest.TestCase):
         self.assertNotIn("ImageConfig", self.properties("ApiFunction"))
         for role, handler in [("Worker", "sqs_handler"), ("Dispatcher", "dispatch_handler"), ("Maintenance", "maintenance_handler"), ("Control", "control_handler")]:
             self.assertEqual(self.properties(role + "Function")["ImageConfig"]["Command"], ["otgd.serverless_worker." + handler])
+            self.assertEqual(self.properties(role + "Function")["Environment"]["Variables"]["OTGD_LAMBDA_HANDLER"], "otgd.serverless_worker." + handler)
         self.assertEqual(self.template["Outputs"]["DatabaseClusterIdentifier"]["Value"], {"Ref": "Database"})
         self.assertEqual(self.template["Outputs"]["MaintenanceFunction"]["Value"], {"Ref": "MaintenanceFunction"})
         self.assertEqual(self.template["Outputs"]["ApiImageUri"]["Value"], self.config["apiImageUri"])
@@ -177,6 +178,44 @@ class ServerlessTemplateTest(unittest.TestCase):
         denial = next(row for row in self.statements("Worker") if row["Effect"] == "Deny" and "ec2:CreateNetworkInterface" in row["Action"])
         self.assertIn(dispatcher, denial["Condition"]["ArnEquals"]["lambda:SourceFunctionArn"])
 
+    def test_runtime_can_check_admission_but_cannot_open_or_steal_deployment_ownership(self):
+        for role in ["Api", "Worker", "Maintenance", "Control"]:
+            grants = [row for row in self.statements(role) if row.get("Condition", {}).get(
+                "ForAllValues:StringEquals", {}).get("dynamodb:LeadingKeys") == ["admission"]]
+            self.assertEqual(len(grants), 1)
+            self.assertEqual(grants[0]["Resource"], {"Fn::GetAtt": ["RuntimeControl", "Arn"]})
+            self.assertEqual(set(grants[0]["Action"]), {"dynamodb:GetItem", "dynamodb:ConditionCheckItem"})
+            self.assertNotIn("dynamodb:PutItem", grants[0]["Action"])
+            self.assertNotIn("dynamodb:UpdateItem", grants[0]["Action"])
+        self.assertEqual(self.template["Outputs"]["AdmissionProtocolVersion"]["Value"], "2")
+        self.assertEqual(self.template["Outputs"]["MaintenanceFunctionArn"]["Value"], {"Fn::GetAtt": ["MaintenanceFunction", "Arn"]})
+        self.assertEqual(self.template["Outputs"]["MaintenanceRoleArn"]["Value"], {"Fn::GetAtt": ["MaintenanceRole", "Arn"]})
+
+    def test_each_independent_human_registry_role_can_load_only_its_exact_admin_secret(self):
+        master = {"Fn::GetAtt": ["Database", "MasterUserSecret.SecretArn"]}
+        for duty in ["Submitter", "Reviewer", "Releaser"]:
+            properties = self.properties("Registry" + duty)
+            trust = properties["AssumeRolePolicyDocument"]["Statement"]
+            self.assertEqual(trust[0]["Principal"], {"AWS": "arn:aws:iam::123456789012:root"})
+            self.assertEqual(trust[0]["Condition"], {"Bool": {"aws:MultiFactorAuthPresent": "true"}})
+            rows = properties["Policies"][0]["PolicyDocument"]["Statement"]
+            secret = [r for r in rows if "secretsmanager:GetSecretValue" in r["Action"]]
+            self.assertEqual(len(secret), 1)
+            self.assertEqual(secret[0]["Resource"], master)
+            decrypt = [r for r in rows if r["Action"] == ["kms:Decrypt"]]
+            self.assertEqual(len(decrypt), 1)
+            self.assertEqual(decrypt[0]["Resource"], {"Fn::GetAtt": ["DataKey", "Arn"]})
+            self.assertEqual(decrypt[0]["Condition"], {"StringEquals": {
+                "kms:ViaService": "secretsmanager.us-east-2.amazonaws.com", "kms:EncryptionContext:SecretARN": master}})
+
+    def test_all_serverless_roles_are_explicit_development_profile_even_control_only(self):
+        for role in ["Api", "Worker", "Dispatcher", "Maintenance", "Control"]:
+            values = self.properties(role + "Function")["Environment"]["Variables"]
+            self.assertEqual(values["OTGD_ENVIRONMENT"], "qa")
+            self.assertEqual(values["OTGD_SERVERLESS_DEPLOYMENT_PROFILE"], "serverless-development")
+            self.assertEqual(values["OTGD_DEPLOYMENT_ACCOUNT"], "123456789012")
+            self.assertEqual(values["OTGD_SERVERLESS_ROLE"], role.lower())
+
     def test_independent_immutable_journal_and_conditional_api_uploads(self):
         journal = self.properties("DeletionJournal")
         self.assertTrue(journal["ObjectLockEnabled"])
@@ -221,7 +260,7 @@ class ServerlessTemplateTest(unittest.TestCase):
         self.assertEqual(self.properties("ControlSchedule")["ScheduleExpression"], "rate(1 minute)")
         self.assertEqual(self.properties("RuntimeControl")["BillingMode"], "PAY_PER_REQUEST")
         self.assertEqual(self.properties("RuntimeControl")["KeySchema"], [{"AttributeName": "PK", "KeyType": "HASH"}, {"AttributeName": "SK", "KeyType": "RANGE"}])
-        self.assertEqual(self.properties("RuntimeControl")["TimeToLiveSpecification"], {"AttributeName": "expiresAt", "Enabled": True})
+        self.assertEqual(self.properties("RuntimeControl")["TimeToLiveSpecification"], {"AttributeName": "expiresAt", "Enabled": False})
         for role in ["Api", "Worker", "Maintenance", "Control"]:
             grant = next(row for row in self.statements(role) if "dynamodb:PutItem" in row["Action"])
             self.assertEqual(grant["Condition"], {"ForAllValues:StringEquals": {"dynamodb:LeadingKeys": ["runtime"]}})

@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     database_password: str = ""
     database_pool_size: int = 5
     serverless_mode: bool = False
+    serverless_deployment_profile: Literal["serverless-development"] | None = None
     serverless_control_table: str | None = None
     serverless_queue_visibility: int = 120
     serverless_database_connect_timeout: int = 45
@@ -83,8 +84,9 @@ class Settings(BaseSettings):
         if not 1 <= self.database_pool_size <= 5:
             raise ValueError("Database pool outside reviewed capacity")
         if self.serverless_mode:
-            if self.environment not in ("qa", "prod") or self.aws_region != "us-east-2":
-                raise ValueError("Serverless cloud runtime requires its reviewed Ohio environment")
+            if (self.environment != "qa" or self.aws_region != "us-east-2"
+                    or self.serverless_deployment_profile != "serverless-development"):
+                raise ValueError("Serverless runtime is only the explicit Ohio development profile; production is forbidden")
             if not re.fullmatch(r"[A-Za-z0-9_.-]{3,255}", self.serverless_control_table or ""):
                 raise ValueError("Serverless runtime requires its actual control table")
             if not 120 <= self.serverless_queue_visibility <= 43200:
@@ -98,8 +100,8 @@ class Settings(BaseSettings):
                 r":function:[A-Za-z0-9_-]{1,64}", self.serverless_dispatch_function_arn
             ):
                 raise ValueError("Serverless dispatch must target its actual account and region")
-        elif self.serverless_queue_visibility != 120:
-            raise ValueError("The existing managed runtime requires 120-second queue visibility")
+        elif self.serverless_queue_visibility != 120 or self.serverless_deployment_profile is not None:
+            raise ValueError("The existing managed runtime requires 120-second queue visibility and no serverless profile")
         if self.environment in ("qa", "prod"):
             if not re.fullmatch(r"[0-9]{12}", self.deployment_account or "") or not re.fullmatch(r"[0-9a-f]{40}", self.source_revision or ""):
                 raise ValueError("Cloud admission requires its actual AWS account and immutable source revision")

@@ -3,26 +3,26 @@
 These tests verify the fencing protocol; they are not live AWS acceptance.
 """
 
-from copy import deepcopy
-from decimal import Decimal
-from concurrent.futures import ThreadPoolExecutor
 import io
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import threading
+from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+from decimal import Decimal
+from pathlib import Path
 from uuid import UUID
 
-from botocore.exceptions import ClientError, EndpointConnectionError
 import pytest
-
+from botocore.exceptions import ClientError, EndpointConnectionError
 from otgd import serverless_control as control
-
 
 LEASE_A = "10000000-0000-0000-0000-000000000001"
 LEASE_B = "10000000-0000-0000-0000-000000000002"
+REVISION = "a" * 40
+NEXT_REVISION = "b" * 40
 
 
 def aws_error(code, operation="TransactWriteItems", **fields):
@@ -40,13 +40,48 @@ class MetadataTable:
         self.failures = []
         self.after_query = None
 
+    @staticmethod
+    def item_key(key):
+        return "admission" if key["PK"]["S"] == "admission" else key["SK"]["S"]
+
+    def check_admission(self, request):
+        item = self.items.get("admission", {})
+        values = request["ExpressionAttributeValues"]
+        for field, placeholder in [("protocolVersion", ":protocol"), ("state", ":state"), ("ownerId", ":owner"),
+                                   ("generation", ":generation"), ("sourceRevision", ":source")]:
+            if item.get(field) != values[placeholder]:
+                raise aws_error("TransactionCanceledException", CancellationReasons=[{"Code": "ConditionalCheckFailed"}])
+
+    def put_item(self, **request):
+        self.calls.append(("put", deepcopy(request)))
+        with self.lock:
+            if request["ConditionExpression"] == "attribute_not_exists(PK)":
+                if "admission" in self.items:
+                    raise aws_error("ConditionalCheckFailedException", "PutItem")
+            else:
+                self.check_admission(request)
+            self.items["admission"] = deepcopy(request["Item"])
+        return {}
+
     def transact_write_items(self, **request):
         self.calls.append(("transaction", deepcopy(request)))
         if self.failures:
             raise self.failures.pop(0)
-        update, put = request["TransactItems"]
+        transactions = request["TransactItems"]
+        if len(transactions) == 2:
+            check, update = transactions
+            with self.lock:
+                values = check["ConditionCheck"]["ExpressionAttributeValues"]
+                epoch = self.items.get("control", {}).get("epoch", {"N": "0"})
+                if Decimal(epoch["N"]) != Decimal(values[":epoch"]["N"]):
+                    raise aws_error("TransactionCanceledException")
+                self.check_admission(update["Update"])
+                self.items["admission"]["state"] = deepcopy(update["Update"]["ExpressionAttributeValues"][":open"])
+            return {}
+        admission, update, put = transactions
         item = deepcopy(put["Put"]["Item"])
         with self.lock:
+            self.check_admission(admission["ConditionCheck"])
             if item["SK"]["S"] in self.items:
                 raise aws_error("TransactionCanceledException", CancellationReasons=[{"Code": "None"}, {"Code": "ConditionalCheckFailed"}])
             metadata = self.items.setdefault("control", control._key("control"))
@@ -61,14 +96,14 @@ class MetadataTable:
     def delete_item(self, **request):
         self.calls.append(("delete", deepcopy(request)))
         with self.lock:
-            self.items.pop(request["Key"]["SK"]["S"], None)
+            self.items.pop(self.item_key(request["Key"]), None)
         return {}
 
     def get_item(self, **request):
         self.calls.append(("get", deepcopy(request)))
         assert request["ConsistentRead"] is True
         with self.lock:
-            item = self.items.get(request["Key"]["SK"]["S"])
+            item = self.items.get(self.item_key(request["Key"]))
             return {"Item": deepcopy(item)} if item else {}
 
     def query(self, **request):
@@ -118,15 +153,42 @@ def metadata():
 
 @pytest.fixture
 def store(metadata):
-    return control.ControlStore(metadata, "test-control")
+    return opened_store(metadata)
+
+
+def opened_store(metadata, name="test-control"):
+    store = control.ControlStore(metadata, name, source_revision=REVISION)
+    ownership = store.close_admission(LEASE_B)
+    store.reopen_admission(ownership)
+    metadata.calls.clear()
+    return store
+
+
+class OpenControllerStore:
+    def admission(self):
+        return {"state": "open", "ownership": {"owner_id": LEASE_A, "generation": 1, "source_revision": REVISION}}
+
+    def require_open(self):
+        return {"state": "open", "generation": 1, "source_revision": REVISION}
+
+
+@pytest.fixture(autouse=True)
+def runtime_profile(monkeypatch):
+    monkeypatch.setenv("OTGD_SERVERLESS_DEPLOYMENT_PROFILE", "serverless-development")
+    monkeypatch.setenv("OTGD_ENVIRONMENT", "qa")
+    monkeypatch.delenv("OTGD_SERVERLESS_ROLE", raising=False)
+    monkeypatch.delenv("OTGD_LAMBDA_MAINTENANCE_ROLE", raising=False)
 
 
 def test_producer_uses_atomic_epoch_and_lease_and_release_keeps_wake(store, metadata):
     lease = store.acquire(LEASE_A, deadline=150, now=100, kind="worker")
     assert lease == control.ProducerLease(LEASE_A, 100, 180, "worker")
-    transaction = metadata.calls[0][1]
+    transaction = next(request for name, request in metadata.calls if name == "transaction")
     assert transaction["ClientRequestToken"] == LEASE_A
-    assert len(transaction["TransactItems"]) == 2
+    assert len(transaction["TransactItems"]) == 3
+    assert transaction["TransactItems"][0]["ConditionCheck"]["Key"] == control._admission_key()
+    stored = transaction["TransactItems"][2]["Put"]["Item"]
+    assert stored["deadlineAt"] == {"N": "180"} and "expiresAt" not in stored
     assert metadata.items["control"]["epoch"] == {"N": "1"}
     assert store.snapshot(now=100).active_leases == (lease,)
     store.release(LEASE_A)
@@ -136,12 +198,17 @@ def test_producer_uses_atomic_epoch_and_lease_and_release_keeps_wake(store, meta
     assert not snapshot.active_leases
 
 
-def test_crashed_producer_expires_after_absolute_lambda_deadline(store):
+def test_crashed_producer_stays_fenced_after_absolute_lambda_budget(store):
     lease = store.acquire(LEASE_A, now=100.25)
     assert lease.expires_at == 1031
     assert lease.expires_at >= 100.25 + 900 + 30
     assert store.snapshot(now=1030.9).active_leases == (lease,)
-    assert not store.snapshot(now=1031).active_leases
+    overdue = store.snapshot(now=1031)
+    assert overdue.active_leases == (lease,)
+    assert not store.mark_reconciled(overdue, None, now=1032)
+    assert store.snapshot(now=253402300799).active_leases == (lease,)
+    store.release(LEASE_A)
+    assert not store.snapshot(now=253402300799).active_leases
 
 
 @pytest.mark.parametrize("deadline", [100, 99, 1001, float("nan"), float("inf"), True, "110"])
@@ -233,12 +300,12 @@ def test_never_stable_epoch_fails_closed_with_bounded_reads(store, metadata):
     assert sum(name == "query" for name, _ in metadata.calls) == control.MAX_ATTEMPTS
 
 
-def test_paginated_snapshot_includes_active_lease_on_last_page(store, metadata):
+def test_paginated_snapshot_retains_overdue_and_current_unreleased_lease(store, metadata):
     metadata.page_size = 1
-    store.acquire(LEASE_A, deadline=101, now=100)
+    overdue = store.acquire(LEASE_A, deadline=101, now=100)
     active = store.acquire(LEASE_B, deadline=200, now=100)
     snapshot = store.snapshot(now=132)
-    assert snapshot.active_leases == (active,)
+    assert snapshot.active_leases == (overdue, active)
     queries = [request for name, request in metadata.calls if name == "query"]
     assert len(queries) == 2 and "ExclusiveStartKey" in queries[1]
 
@@ -273,9 +340,9 @@ def test_repeated_pagination_cursor_and_excessive_record_count_fail_closed(store
 
 @pytest.mark.parametrize("changes", [
     {"request": {"S": "forbidden application metadata"}},
-    {"expiresAt": {"N": "10000"}},
-    {"expiresAt": {"N": "NaN"}},
-    {"expiresAt": {"N": "100.2"}},
+    {"deadlineAt": {"N": "10000"}},
+    {"deadlineAt": {"N": "NaN"}},
+    {"deadlineAt": {"N": "100.2"}},
     {"kind": {"S": "unknown"}},
     {"PK": {"S": "other"}},
     {"SK": {"S": "lease#account-123"}},
@@ -287,6 +354,18 @@ def test_malformed_producer_metadata_fails_closed(store, metadata, changes):
     metadata.items["lease#" + LEASE_A].update(changes)
     with pytest.raises(control.ControlMetadataError):
         store.snapshot(now=101)
+
+
+def test_legacy_ttl_row_is_rejected_as_an_unreconciled_fence_never_ignored(store, metadata):
+    store.acquire(LEASE_A, now=100)
+    row = metadata.items["lease#" + LEASE_A]
+    row["expiresAt"] = row.pop("deadlineAt")
+    with pytest.raises(control.ControlMetadataError, match="producer metadata"):
+        store.snapshot(now=1031)
+    ownership = store.close_admission(LEASE_B)
+    with pytest.raises(control.ControlMetadataError, match="producer metadata"):
+        store.reopen_admission(ownership)
+    assert metadata.items["lease#" + LEASE_A] == row
 
 
 @pytest.mark.parametrize("changes", [
@@ -321,7 +400,7 @@ def test_acquire_failure_prevents_sql_body_and_does_not_release(store, metadata,
     monkeypatch.setattr(control, "control_store", lambda: store)
     sql_calls = []
     with pytest.raises(control.ControlUnavailable):
-        with control.producer_lease(now=100, lease_id=LEASE_A):
+        with control.producer_lease(now=100, lease_id=LEASE_A, dispose=lambda: pytest.fail("Unacquired producer cannot dispose")):
             sql_calls.append("SQL")
     assert not sql_calls
     assert not any(name == "delete" for name, _ in metadata.calls)
@@ -329,16 +408,39 @@ def test_acquire_failure_prevents_sql_body_and_does_not_release(store, metadata,
 
 def test_context_deadline_and_release_on_body_failure(store, monkeypatch):
     monkeypatch.setattr(control, "control_store", lambda: store)
+    disposed = []
+    def dispose():
+        assert len(store.snapshot(now=100).active_leases) == 1
+        disposed.append(True)
 
     class Context:
         def get_remaining_time_in_millis(self):
             return 1250
 
     with pytest.raises(RuntimeError, match="SQL failed"):
-        with control.producer_lease(Context(), now=100, lease_id=LEASE_A, kind="worker") as lease:
+        with control.producer_lease(Context(), now=100, lease_id=LEASE_A, kind="worker", dispose=dispose) as lease:
             assert lease.expires_at == 132
             raise RuntimeError("SQL failed")
     assert not store.snapshot(now=101).active_leases
+    assert disposed == [True]
+
+
+def test_producer_context_keeps_overdue_fence_when_connection_disposal_fails(store, monkeypatch):
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    def failed_disposal():
+        raise RuntimeError("Unconfirmed SQL shutdown")
+    with pytest.raises(RuntimeError, match="SQL shutdown"), control.producer_lease(
+            now=0, lease_id=LEASE_A, dispose=failed_disposal):
+        pass
+    assert len(store.snapshot(now=931).active_leases) == 1
+
+
+def test_producer_context_requires_connection_disposal_before_aws(store, metadata, monkeypatch):
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    with pytest.raises(control.ControlMetadataError, match="disposal"), control.producer_lease(
+            now=0, lease_id=LEASE_A, dispose=None):
+        pytest.fail("No unowned disposal-free producer")
+    assert not metadata.calls
 
 
 @pytest.mark.parametrize("value", ["patient-id", LEASE_A.upper(), "", None])
@@ -412,7 +514,7 @@ def test_control_handler_only_reads_metadata_and_invokes_due_work(monkeypatch, w
     snapshot = control.ControlSnapshot(1, wake, reconciled, (control.ProducerLease(LEASE_A, 99, 999),) if lease else (), current)
     reads = []
 
-    class ReadOnlyStore:
+    class ReadOnlyStore(OpenControllerStore):
         def snapshot(self, now):
             reads.append(now)
             return snapshot
@@ -440,7 +542,7 @@ def test_control_handler_only_reads_metadata_and_invokes_due_work(monkeypatch, w
 
 
 def test_control_handler_rejects_unaccepted_invoke_and_metadata_failure(monkeypatch):
-    class Store:
+    class Store(OpenControllerStore):
         def snapshot(self, now):
             return control.ControlSnapshot(0, None, None, (), now)
 
@@ -454,7 +556,7 @@ def test_control_handler_rejects_unaccepted_invoke_and_metadata_failure(monkeypa
     with pytest.raises(control.ControlUnavailable, match="not accepted"):
         control.control_handler({}, None)
 
-    class BrokenStore:
+    class BrokenStore(OpenControllerStore):
         def snapshot(self, now):
             raise control.ControlUnavailable("metadata unavailable")
 
@@ -464,7 +566,7 @@ def test_control_handler_rejects_unaccepted_invoke_and_metadata_failure(monkeypa
 
 
 def test_control_handler_requires_dispatcher_and_does_not_invoke_admin_maintenance(monkeypatch):
-    class Store:
+    class Store(OpenControllerStore):
         def snapshot(self, now):
             return control.ControlSnapshot(0, None, None, (), now)
 
@@ -473,4 +575,117 @@ def test_control_handler_requires_dispatcher_and_does_not_invoke_admin_maintenan
     monkeypatch.setenv("OTGD_SERVERLESS_MAINTENANCE_FUNCTION", "admin-must-not-be-invoked")
     monkeypatch.setattr(control, "_sdk_client", lambda service: pytest.fail("must not invoke admin maintenance"))
     with pytest.raises(control.ControlMetadataError, match="dispatcher function ARN"):
+        control.control_handler({}, None)
+
+
+def test_missing_admission_is_closed_and_first_closure_is_owned(metadata, monkeypatch):
+    store = control.ControlStore(metadata, "test-control", source_revision=REVISION)
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    assert store.admission() is None
+    with pytest.raises(control.ControlUnavailable, match="closed"):
+        with control.producer_lease(now=100, lease_id=LEASE_A, dispose=lambda: None):
+            pytest.fail("No unestablished runtime may open SQL")
+    ownership = store.close_admission(LEASE_B)
+    assert ownership == {"owner_id": LEASE_B, "generation": 1, "source_revision": REVISION}
+    assert store.require_closed(ownership) == ownership
+    assert store.close_admission(LEASE_B) == ownership
+    with pytest.raises(control.ControlUnavailable, match="Another deployment"):
+        store.close_admission(LEASE_A)
+    store.reopen_admission(ownership)
+    assert store.require_open() == {"state": "open", "generation": 1, "source_revision": REVISION}
+
+
+def test_closed_revision_transition_fences_all_runtime_producers_and_old_code(store, metadata, monkeypatch):
+    monkeypatch.setattr(control.time, "time", lambda: 101)
+    active = store.acquire(LEASE_A, now=100)
+    newer = control.ControlStore(metadata, "test-control", source_revision=NEXT_REVISION)
+    ownership = newer.close_admission(LEASE_B)
+    assert ownership["generation"] == 2 and newer.require_closed(ownership) == ownership
+    for kind in control.KINDS:
+        with pytest.raises(control.ControlUnavailable, match="closed"):
+            store.acquire(LEASE_B, now=101, kind=kind)
+    assert store.snapshot(now=101).active_leases == (active,)
+    with pytest.raises(control.ControlUnavailable, match="not drained"):
+        newer.reopen_admission(ownership)
+    store.release(LEASE_A)
+    newer.reopen_admission(ownership)
+    with pytest.raises(control.ControlUnavailable, match="another revision"):
+        store.acquire(LEASE_A, now=102)
+    assert newer.acquire(LEASE_A, now=102).kind == "api"
+
+
+def test_admission_closing_between_read_and_atomic_acquire_prevents_sql(store, metadata, monkeypatch):
+    real = metadata.transact_write_items
+    def close_then_transact(**request):
+        store.close_admission(LEASE_A)
+        return real(**request)
+    monkeypatch.setattr(metadata, "transact_write_items", close_then_transact)
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    with pytest.raises(control.ControlUnavailable, match="acquisition failed"):
+        with control.producer_lease(now=100, lease_id=LEASE_B, dispose=lambda: None):
+            pytest.fail("A delayed runtime invocation cannot open SQL after closure")
+    assert not store.snapshot(now=100).active_leases
+    assert store.snapshot(now=100).epoch == 0
+
+
+def test_owned_maintenance_requires_exact_closed_generation_source_and_real_role(store, monkeypatch):
+    monkeypatch.setattr(control.time, "time", lambda: 101)
+    ownership = store.close_admission(LEASE_A)
+    with pytest.raises(control.ControlUnavailable, match="maintenance"):
+        store.acquire(LEASE_B, now=100, kind="maintenance", ownership=ownership)
+    monkeypatch.setenv("OTGD_SERVERLESS_ROLE", "maintenance")
+    monkeypatch.setenv("OTGD_LAMBDA_MAINTENANCE_ROLE", "maintenance")
+    for changes in ({"generation": 3}, {"source_revision": NEXT_REVISION}, {"owner_id": LEASE_B}):
+        with pytest.raises(control.ControlUnavailable):
+            store.acquire(LEASE_B, now=100, kind="maintenance", ownership={**ownership, **changes})
+    with pytest.raises(control.ControlMetadataError, match="Only maintenance"):
+        store.acquire(LEASE_B, now=100, kind="api", ownership=ownership)
+    lease = store.acquire(LEASE_B, now=100, kind="maintenance", ownership=ownership)
+    assert store.snapshot(now=100).active_leases == (lease,)
+    with pytest.raises(control.ControlUnavailable, match="not drained"):
+        store.reopen_admission(ownership)
+
+
+def test_reopen_atomic_epoch_check_refuses_racing_maintenance(store, metadata, monkeypatch):
+    ownership = store.close_admission(LEASE_A)
+    monkeypatch.setenv("OTGD_SERVERLESS_ROLE", "maintenance")
+    monkeypatch.setenv("OTGD_LAMBDA_MAINTENANCE_ROLE", "maintenance")
+    real = metadata.transact_write_items
+    def acquire_before_reopen(**request):
+        if len(request["TransactItems"]) == 2:
+            store.acquire(LEASE_B, kind="maintenance", ownership=ownership)
+        return real(**request)
+    monkeypatch.setattr(metadata, "transact_write_items", acquire_before_reopen)
+    with pytest.raises(control.ControlUnavailable, match="reopening failed"):
+        store.reopen_admission(ownership)
+    assert store.require_closed(ownership) == ownership
+    assert len(store.snapshot().active_leases) == 1
+
+
+@pytest.mark.parametrize("changes", [
+    {"protocolVersion": {"S": "0"}}, {"protocolVersion": {"S": "1"}},
+    {"state": {"S": "unsafe"}}, {"generation": {"N": "0"}},
+    {"generation": {"N": "1.5"}}, {"ownerId": {"S": "not-uuid"}},
+    {"sourceRevision": {"S": "not-source"}}, {"health_data": {"S": "forbidden"}},
+])
+def test_malformed_admission_refuses_runtime_and_deployment(store, metadata, changes):
+    metadata.items["admission"].update(changes)
+    with pytest.raises(control.ControlMetadataError):
+        store.acquire(LEASE_A, now=100)
+    with pytest.raises(control.ControlMetadataError):
+        store.close_admission(LEASE_A)
+
+
+@pytest.mark.parametrize("admission", [None, {"state": "closed"}])
+def test_closed_control_handler_never_schedules_sql(monkeypatch, admission):
+    store = type("ClosedStore", (), {"admission": lambda self: admission})()
+    monkeypatch.setattr(control, "control_store", lambda: store)
+    monkeypatch.setattr(control, "_sdk_client", lambda *args: pytest.fail("Closed runtime cannot schedule SQL"))
+    assert control.control_handler({}, None) == {"status": "closed", "database_accessed": False}
+
+
+def test_control_runtime_rejects_production_profile_before_aws(monkeypatch):
+    monkeypatch.setenv("OTGD_ENVIRONMENT", "prod")
+    monkeypatch.setattr(control, "control_store", lambda: pytest.fail("Forbidden profile cannot touch metadata"))
+    with pytest.raises(control.ControlUnavailable, match="development"):
         control.control_handler({}, None)

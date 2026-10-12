@@ -78,6 +78,7 @@ function expected() {
     build?.APP_ENV !== "local" ||
     build.EXPO_PUBLIC_APP_ENV !== "local" ||
     build.EXPO_PUBLIC_HOSTED_PREVIEW !== "true" ||
+    build.EXPO_PUBLIC_SERVERLESS !== "false" ||
     build.EXPO_NO_DOTENV !== "1" ||
     build.EXPO_PUBLIC_API_URL !== "https://unavailable.invalid" ||
     build.EXPO_PUBLIC_OAUTH_ISSUER !== "https://unavailable.invalid" ||

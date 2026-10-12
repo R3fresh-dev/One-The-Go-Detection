@@ -1,5 +1,12 @@
 # Low-level design
 
+This document preserves the original proposed implementation contract. Its
+starter-only status and proposed module paths describe that baseline. The
+current source uses `apps/mobile`, `services/api`, `infra` and `deploy`; see
+[implementation status](../IMPLEMENTATION_STATUS.md) and the
+[requirements alignment audit](../docs/REQUIREMENTS_ALIGNMENT_AUDIT.md) for
+implementation details, recorded deviations and remaining work.
+
 Version 0.1.0 | 2026-10-10, America/Chicago | Proposed implementation contract
 
 ## 1. Scope and implementation status

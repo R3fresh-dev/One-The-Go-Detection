@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 ROOT=Path(__file__).resolve().parents[2]
 spec=importlib.util.spec_from_file_location('ci_gate',ROOT/'scripts/ci_gate.py');gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
 
@@ -49,6 +49,76 @@ class EvidenceTest(unittest.TestCase):
     with self.assertRaises(RuntimeError):gate.require_file_coverage(path,source)
    path.write_text(json.dumps({'files':{source:{'summary':{'num_statements':1000,'covered_lines':801,'excluded_lines':0}}}}))
    self.assertGreater(gate.require_file_coverage(path,source),80)
+
+ def test_serverless_gate_rejects_missing_duplicate_extra_and_excluded_sources(self):
+  def valid_files():
+   return {source:{'summary':{'num_statements':100,'covered_lines':81,'excluded_lines':0,'num_excluded':0},'excluded_lines':[]} for source in gate.SERVERLESS_DEPLOYMENT_SOURCES}
+  with tempfile.TemporaryDirectory() as directory:
+   path=Path(directory)/'coverage.json'
+   for label in ('missing','different','duplicate','extra','exact-eighty','zero-statements','summary-exclusion','legacy-exclusion','actual-exclusion'):
+    files=valid_files();source=gate.SERVERLESS_DEPLOYMENT_SOURCES[0]
+    if label=='missing':files.pop(source)
+    elif label=='different':files['deploy/unrelated.py']=files.pop(source)
+    elif label=='duplicate':files['deploy/./serverless.py']=files[source]
+    elif label=='extra':files['deploy/unrelated.py']=files[source]
+    elif label=='exact-eighty':files[source]['summary']['covered_lines']=80
+    elif label=='zero-statements':files[source]['summary'].update(num_statements=0,covered_lines=0)
+    elif label=='summary-exclusion':files[source]['summary']['excluded_lines']=1
+    elif label=='legacy-exclusion':files[source]['summary']['num_excluded']=1
+    elif label=='actual-exclusion':files[source]['excluded_lines']=[1]
+    path.write_text(json.dumps({'totals':{'num_statements':1000,'covered_lines':999},'files':files}))
+    with self.subTest(label=label),self.assertRaises(RuntimeError):gate.require_serverless_coverage(path)
+   path.write_text(json.dumps({'files':valid_files()}))
+   self.assertEqual(gate.require_serverless_coverage(path),dict.fromkeys(gate.SERVERLESS_DEPLOYMENT_SOURCES,81.0))
+
+
+class InfrastructureCoverageLifecycleTest(unittest.TestCase):
+ def exercise(self, *, discovery_error=False, low_coverage=False):
+  with tempfile.TemporaryDirectory() as directory:
+   reports=Path(directory);outer=reports/'unit-coverage.json';outer.write_text('preserved API/store evidence')
+   json_report=reports/'infra-serverless-coverage.json';json_report.write_text('stale evidence')
+   xml_report=reports/'infra-serverless-coverage.xml';xml_report.write_text('stale XML')
+   chronology=[];coverage=Mock()
+   coverage.erase.side_effect=lambda:chronology.append('erase')
+   coverage.start.side_effect=lambda:chronology.append('start')
+   coverage.stop.side_effect=lambda:chronology.append('stop')
+   coverage.save.side_effect=lambda:chronology.append('save')
+   def discover(*args,**kwargs):
+    chronology.append('discover')
+    self.assertFalse(json_report.exists());self.assertFalse(xml_report.exists())
+    if discovery_error:raise RuntimeError('Discovery failed before execution')
+    return unittest.TestSuite()
+   def write_json(**kwargs):
+    files={source:{'summary':{'num_statements':100,'covered_lines':81,'excluded_lines':0,'num_excluded':0},'excluded_lines':[]} for source in gate.SERVERLESS_DEPLOYMENT_SOURCES}
+    if low_coverage:files[gate.SERVERLESS_DEPLOYMENT_SOURCES[-1]]['summary']['covered_lines']=80
+    Path(kwargs['outfile']).write_text(json.dumps({'files':files}))
+   coverage.json_report.side_effect=write_json
+   coverage.xml_report.side_effect=lambda **kwargs:Path(kwargs['outfile']).write_text('<coverage/>')
+   result=unittest.TestResult();result.testsRun=1
+   with patch.object(gate,'REPORTS',reports),patch('coverage.Coverage',return_value=coverage) as constructor,patch.object(unittest.defaultTestLoader,'discover',side_effect=discover),patch.object(unittest,'TextTestRunner') as runner,patch.object(gate,'pytest_gate') as sdk:
+    runner.return_value.run.return_value=result
+    if discovery_error or low_coverage:
+     with self.assertRaises(RuntimeError):gate.infrastructure_unit_gate()
+     sdk.assert_not_called()
+    else:
+     gate.infrastructure_unit_gate()
+     sdk.assert_called_once_with('secure-sdk','infra/test/test_secure_reader_build.py')
+    constructor.assert_called_once_with(source=[str(gate.ROOT/'deploy')],config_file=False,data_file=str(reports/'.coverage.infra-serverless'))
+    self.assertEqual(chronology,['erase','start','discover','stop','save'])
+    sources=[str(gate.ROOT/source) for source in gate.SERVERLESS_DEPLOYMENT_SOURCES]
+    coverage.json_report.assert_called_once_with(morfs=sources,outfile=str(json_report))
+    coverage.xml_report.assert_called_once_with(morfs=sources,outfile=str(xml_report))
+    self.assertEqual(outer.read_text(),'preserved API/store evidence')
+    self.assertTrue(json_report.exists());self.assertEqual(xml_report.read_text(),'<coverage/>')
+
+ def test_measurement_starts_before_discovery_and_keeps_existing_evidence_and_sdk(self):
+  self.exercise()
+
+ def test_discovery_failure_stops_tracing_and_never_runs_the_sdk_gate(self):
+  self.exercise(discovery_error=True)
+
+ def test_one_deployment_source_at_eighty_blocks_the_sdk_gate(self):
+  self.exercise(low_coverage=True)
 
 
 class RetainedComposeEnvironmentTest(unittest.TestCase):

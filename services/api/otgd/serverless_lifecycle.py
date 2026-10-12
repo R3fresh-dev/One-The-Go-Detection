@@ -22,6 +22,9 @@ def load_runtime_secrets(*, force=False):
     global _secret_binding
     if not _enabled():
         return
+    if (os.environ.get("OTGD_ENVIRONMENT") != "qa" or
+            os.environ.get("OTGD_SERVERLESS_DEPLOYMENT_PROFILE") != "serverless-development"):
+        raise RuntimeError("Serverless runtime secret initialization is unavailable")
     region = os.environ.get("OTGD_AWS_REGION", "us-east-2")
     account = os.environ.get("OTGD_DEPLOYMENT_ACCOUNT", "")
     database = os.environ.get("OTGD_DATABASE_SECRET_ARN", "")

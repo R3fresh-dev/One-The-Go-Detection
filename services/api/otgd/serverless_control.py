@@ -1,26 +1,28 @@
 """Metadata-only producer fencing for an idle, resumable SQL runtime.
 
 A producer must acquire before opening SQL and release only after all of its
-transactions finish. A reconciler takes a snapshot *before* its SQL scan, then
+transactions finish and database connections are disposed. Unreleased rows
+remain fences after the invocation budget expires: a killed Lambda does not
+prove its PostgreSQL session stopped. No DynamoDB TTL may remove these rows.
+A reconciler takes a snapshot *before* its SQL scan, then
 publishes the next deadline with an epoch compare-and-set. No application IDs,
 request contents or SQL records belong in this table.
 """
 
-from contextlib import contextmanager
-from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation
-from functools import lru_cache
 import json
 import math
 import os
 import re
 import time
+from contextlib import contextmanager
+from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
+from functools import lru_cache
 from uuid import UUID, uuid4
 
 import boto3
 from botocore.config import Config
 from botocore.exceptions import BotoCoreError, ClientError
-
 
 MAX_INVOCATION_SECONDS = 900
 LEASE_GRACE_SECONDS = 30
@@ -31,6 +33,7 @@ MAX_ATTEMPTS = 3
 MAX_EPOCH = 2**53 - 1
 MAX_TIMESTAMP = 253402300799
 KINDS = frozenset({"api", "worker", "maintenance"})
+ADMISSION_PROTOCOL_VERSION = "2"
 
 
 class ControlUnavailable(RuntimeError):
@@ -45,7 +48,7 @@ class ControlMetadataError(ControlUnavailable):
 class ProducerLease:
     lease_id: str
     acquired_at: float
-    expires_at: float
+    expires_at: float  # Invocation budget metadata; never automatic release.
     kind: str = "api"
 
 
@@ -54,7 +57,7 @@ class ControlSnapshot:
     epoch: int
     next_wake_at: float | None
     last_reconciled_at: float | None
-    active_leases: tuple[ProducerLease, ...]
+    active_leases: tuple[ProducerLease, ...]  # Every unreleased fence, including overdue rows.
     observed_at: float
 
 
@@ -135,6 +138,65 @@ def _key(sk):
     return {"PK": {"S": "runtime"}, "SK": {"S": sk}}
 
 
+def _admission_key():
+    # Runtime IAM can read/condition-check this partition, never write it.
+    return {"PK": {"S": "admission"}, "SK": {"S": "control"}}
+
+
+def _revision(value):
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{40}", value):
+        raise ControlMetadataError("An exact source revision is required")
+    return value
+
+
+def _ownership(value):
+    if not isinstance(value, dict) or set(value) != {"owner_id", "generation", "source_revision"}:
+        raise ControlMetadataError("Exact deployment ownership is required")
+    if type(value["generation"]) is not int or not 1 <= value["generation"] <= MAX_EPOCH:
+        raise ControlMetadataError("Invalid admission generation")
+    return {"owner_id": _uuid(value["owner_id"]), "generation": value["generation"],
+            "source_revision": _revision(value["source_revision"])}
+
+
+def require_runtime_profile(*, maintenance=False):
+    if (os.environ.get("OTGD_SERVERLESS_DEPLOYMENT_PROFILE") != "serverless-development"
+            or os.environ.get("OTGD_ENVIRONMENT") != "qa"):
+        raise ControlUnavailable("Only the explicit development runtime is supported")
+    if maintenance and (os.environ.get("OTGD_SERVERLESS_ROLE") != "maintenance"
+                        or os.environ.get("OTGD_LAMBDA_MAINTENANCE_ROLE") != "maintenance"):
+        raise ControlUnavailable("Owned administrative maintenance is required")
+
+
+def _read_admission(item):
+    if item is None:
+        return None
+    expected = {"PK", "SK", "protocolVersion", "state", "ownerId", "generation", "sourceRevision"}
+    if not isinstance(item, dict) or set(item) != expected or any(item.get(k) != v for k, v in _admission_key().items()):
+        raise ControlMetadataError("Invalid admission metadata")
+    def string(key):
+        value = item[key]
+        if not isinstance(value, dict) or set(value) != {"S"} or not isinstance(value["S"], str):
+            raise ControlMetadataError("Invalid admission metadata")
+        return value["S"]
+    if string("protocolVersion") != ADMISSION_PROTOCOL_VERSION or string("state") not in {"open", "closed"}:
+        raise ControlMetadataError("Unsupported admission protocol")
+    owned = _ownership({"owner_id": string("ownerId"), "generation": _number(item, "generation", integer=True),
+                        "source_revision": string("sourceRevision")})
+    return {"state": string("state"), "ownership": owned}
+
+
+def _admission_condition(admission):
+    owned = admission["ownership"]
+    return {
+        "ConditionExpression": "#protocol = :protocol AND #state = :state AND #owner = :owner AND #generation = :generation AND #source = :source",
+        "ExpressionAttributeNames": {"#protocol": "protocolVersion", "#state": "state", "#owner": "ownerId",
+                                     "#generation": "generation", "#source": "sourceRevision"},
+        "ExpressionAttributeValues": {":protocol": {"S": ADMISSION_PROTOCOL_VERSION}, ":state": {"S": admission["state"]},
+                                      ":owner": {"S": owned["owner_id"]}, ":generation": _n(owned["generation"]),
+                                      ":source": {"S": owned["source_revision"]}},
+    }
+
+
 def _validate_key(item, sk=None):
     if not isinstance(item, dict) or item.get("PK") != {"S": "runtime"}:
         raise ControlMetadataError("Invalid control partition")
@@ -162,8 +224,8 @@ def _read_lease(item):
     sk = _validate_key(item)
     if (
         not sk.startswith("lease#")
-        or not {"PK", "SK", "acquiredAt", "expiresAt"}.issubset(item)
-        or not set(item).issubset({"PK", "SK", "acquiredAt", "expiresAt", "kind"})
+        or not {"PK", "SK", "acquiredAt", "deadlineAt"}.issubset(item)
+        or not set(item).issubset({"PK", "SK", "acquiredAt", "deadlineAt", "kind"})
     ):
         raise ControlMetadataError("Unexpected producer metadata")
     lease_id = _uuid(sk[6:])
@@ -171,8 +233,9 @@ def _read_lease(item):
     if not isinstance(kind, dict) or set(kind) != {"S"} or not isinstance(kind["S"], str) or kind["S"] not in KINDS:
         raise ControlMetadataError("Invalid producer kind")
     acquired = _number(item, "acquiredAt")
-    expires = _number(item, "expiresAt")
-    # expiresAt is an integer for DynamoDB TTL; round up to avoid early expiry.
+    expires = _number(item, "deadlineAt")
+    # Preserve the bounded invocation-budget field, but never use it as TTL or
+    # infer database quiescence from it. Only verified cleanup can release.
     if expires != int(expires) or not acquired + LEASE_GRACE_SECONDS < expires <= math.ceil(acquired + MAX_INVOCATION_SECONDS + LEASE_GRACE_SECONDS):
         raise ControlMetadataError("Invalid producer expiry")
     return ProducerLease(lease_id, acquired, expires, kind["S"])
@@ -187,13 +250,77 @@ def _conflict(error):
 
 
 class ControlStore:
-    def __init__(self, client=None, table_name=None):
+    def __init__(self, client=None, table_name=None, *, source_revision=None):
         self.table_name = table_name or os.environ.get("OTGD_SERVERLESS_CONTROL_TABLE", "")
         if not isinstance(self.table_name, str) or not re.fullmatch(r"[A-Za-z0-9_.-]{3,255}", self.table_name):
             raise ControlMetadataError("A control table name is required")
         self.client = client if client is not None else _sdk_client("dynamodb")
+        self.source_revision = source_revision if source_revision is not None else os.environ.get("OTGD_SOURCE_REVISION", "")
 
-    def acquire(self, lease_id, deadline=None, now=None, *, kind="api"):
+    def admission(self):
+        try:
+            result = self.client.get_item(TableName=self.table_name, Key=_admission_key(), ConsistentRead=True)
+            return _read_admission(result.get("Item"))
+        except (ClientError, BotoCoreError) as error:
+            raise ControlUnavailable("Admission metadata unavailable") from error
+
+    def _open_admission(self):
+        revision = _revision(self.source_revision)
+        admission = self.admission()
+        if admission is None or admission["state"] != "open" or admission["ownership"]["source_revision"] != revision:
+            raise ControlUnavailable("Runtime admission is closed or belongs to another revision")
+        return admission
+
+    def require_open(self):
+        admission = self._open_admission()
+        return {"state": "open", "generation": admission["ownership"]["generation"], "source_revision": self.source_revision}
+
+    def require_closed(self, ownership):
+        ownership = _ownership(ownership)
+        if ownership["source_revision"] != _revision(self.source_revision):
+            raise ControlUnavailable("Deployment source does not match ownership")
+        admission = self.admission()
+        if admission != {"state": "closed", "ownership": ownership}:
+            raise ControlUnavailable("Closed admission does not belong to this deployment")
+        return ownership
+
+    def close_admission(self, owner_id):
+        owner_id, revision = _uuid(owner_id), _revision(self.source_revision)
+        current = self.admission()
+        if current is not None and current["state"] == "closed":
+            if current["ownership"]["owner_id"] == owner_id and current["ownership"]["source_revision"] == revision:
+                return current["ownership"]
+            raise ControlUnavailable("Another deployment owns closed admission")
+        generation = 1 if current is None else current["ownership"]["generation"] + 1
+        owned = _ownership({"owner_id": owner_id, "generation": generation, "source_revision": revision})
+        condition = {"ConditionExpression": "attribute_not_exists(PK)"} if current is None else _admission_condition(current)
+        try:
+            self.client.put_item(TableName=self.table_name,
+                Item={**_admission_key(), "protocolVersion": {"S": ADMISSION_PROTOCOL_VERSION}, "state": {"S": "closed"},
+                      "ownerId": {"S": owner_id}, "generation": _n(generation), "sourceRevision": {"S": revision}}, **condition)
+        except (ClientError, BotoCoreError) as error:
+            raise ControlUnavailable("Admission closure failed") from error
+        return owned
+
+    def reopen_admission(self, ownership):
+        owned = self.require_closed(ownership)
+        snapshot = self.snapshot()
+        if snapshot.active_leases:
+            raise ControlUnavailable("Deployment maintenance has not drained")
+        check = {"ConditionExpression": "#epoch = :epoch OR (attribute_not_exists(#epoch) AND :epoch = :zero)",
+                 "ExpressionAttributeNames": {"#epoch": "epoch"}, "ExpressionAttributeValues": {":epoch": _n(snapshot.epoch), ":zero": _n(0)}}
+        update = _admission_condition({"state": "closed", "ownership": owned})
+        update["ExpressionAttributeValues"][":open"] = {"S": "open"}
+        try:
+            self.client.transact_write_items(TransactItems=[
+                {"ConditionCheck": {"TableName": self.table_name, "Key": _key("control"), **check}},
+                {"Update": {"TableName": self.table_name, "Key": _admission_key(), "UpdateExpression": "SET #state = :open", **update}},
+            ], ClientRequestToken=str(uuid4()))
+        except (ClientError, BotoCoreError) as error:
+            raise ControlUnavailable("Admission reopening failed") from error
+        return owned
+
+    def acquire(self, lease_id, deadline=None, now=None, *, kind="api", ownership=None):
         lease_id = _uuid(lease_id)
         if not isinstance(kind, str) or kind not in KINDS:
             raise ControlMetadataError("Invalid producer kind")
@@ -204,7 +331,15 @@ class ControlStore:
         expiry = math.ceil(deadline + LEASE_GRACE_SECONDS)
         _timestamp(expiry)
         lease = ProducerLease(lease_id, acquired, expiry, kind)
+        if ownership is None:
+            admission = self._open_admission()
+        else:
+            if kind != "maintenance":
+                raise ControlMetadataError("Only maintenance can use deployment ownership")
+            require_runtime_profile(maintenance=True)
+            admission = {"state": "closed", "ownership": self.require_closed(ownership)}
         transaction = [
+            {"ConditionCheck": {"TableName": self.table_name, "Key": _admission_key(), **_admission_condition(admission)}},
             {"Update": {
                 "TableName": self.table_name,
                 "Key": _key("control"),
@@ -215,7 +350,9 @@ class ControlStore:
             }},
             {"Put": {
                 "TableName": self.table_name,
-                "Item": {**_key("lease#" + lease_id), "acquiredAt": _n(acquired), "expiresAt": _n(expiry), "kind": {"S": kind}},
+                # New leases never carry the legacy TTL attribute. Disabling
+                # DynamoDB TTL is asynchronous and must not erase a new fence.
+                "Item": {**_key("lease#" + lease_id), "acquiredAt": _n(acquired), "deadlineAt": _n(expiry), "kind": {"S": kind}},
                 "ConditionExpression": "attribute_not_exists(PK)",
             }},
         ]
@@ -281,6 +418,7 @@ class ControlStore:
         raise ControlMetadataError("Producer metadata exceeds pagination bound")
 
     def snapshot(self, now=None):
+        """Return every unreleased producer, even beyond its invocation budget."""
         observed = _now(now)
         try:
             for _ in range(MAX_ATTEMPTS):
@@ -291,7 +429,7 @@ class ControlStore:
                     continue
                 if any(lease.acquired_at > observed + 5 for lease in leases):
                     raise ControlMetadataError("Producer acquisition is in the future")
-                return ControlSnapshot(*after, tuple(lease for lease in leases if lease.expires_at > observed), observed)
+                return ControlSnapshot(*after, tuple(leases), observed)
         except (ClientError, BotoCoreError) as error:
             raise ControlUnavailable("Control snapshot failed") from error
         raise ControlUnavailable("Control epoch did not stabilize")
@@ -349,8 +487,8 @@ def control_store():
     return _store(os.environ.get("OTGD_SERVERLESS_CONTROL_TABLE", ""))
 
 
-def acquire_lease(kind, lease_id, deadline=None, *, now=None):
-    return control_store().acquire(lease_id, deadline, now, kind=kind)
+def acquire_lease(kind, lease_id, deadline=None, *, now=None, ownership=None):
+    return control_store().acquire(lease_id, deadline, now, kind=kind, ownership=ownership)
 
 
 def release_lease(lease_id):
@@ -358,7 +496,15 @@ def release_lease(lease_id):
 
 
 @contextmanager
-def producer_lease(context=None, *, kind="api", lease_id=None, now=None):
+def producer_lease(context=None, *, dispose, kind="api", lease_id=None, now=None):
+    """Release only after caller-supplied connection disposal succeeds.
+
+    The metadata-only module cannot know a producer's database/session adapter.
+    Requiring the cleanup dependency avoids a convenience helper that blindly
+    deletes a fence while SQL may still be running.
+    """
+    if not callable(dispose):
+        raise ControlMetadataError("Producer connection disposal is required")
     acquired = _now(now)
     deadline = acquired + MAX_INVOCATION_SECONDS
     if context is not None:
@@ -371,13 +517,20 @@ def producer_lease(context=None, *, kind="api", lease_id=None, now=None):
     try:
         yield lease
     finally:
+        dispose()
         release_lease(lease_id)
 
 
 def control_handler(event, context):
     """Run outside the VPC: inspect metadata without resuming Aurora."""
+    require_runtime_profile()
     current = _now()
-    snapshot = control_store().snapshot(now=current)
+    store = control_store()
+    admission = store.admission()
+    if admission is None or admission["state"] == "closed":
+        return {"status": "closed", "database_accessed": False}
+    store.require_open()
+    snapshot = store.snapshot(now=current)
     due = bool(snapshot.active_leases) or (
         snapshot.next_wake_at is not None and snapshot.next_wake_at <= current
     ) or snapshot.last_reconciled_at is None or snapshot.last_reconciled_at <= current - 3600
