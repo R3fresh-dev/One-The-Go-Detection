@@ -2,10 +2,13 @@
 
 from copy import deepcopy
 from io import BytesIO
+from pathlib import Path
+import runpy
 from types import SimpleNamespace
 
+from botocore.exceptions import ClientError
 import pytest
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, text
 
 from otgd.canonical import canonical
 from otgd.db import Account, Base, SystemState
@@ -214,3 +217,102 @@ def test_pre_schema_database_does_not_manufacture_a_binding():
     with eng.connect() as connection:
         assert preflight_bootstrap(connection, CONFIG, Journal()) is None
     eng.dispose()
+
+
+@pytest.fixture
+def cloud_bootstrap(monkeypatch):
+    """Real disposable SQL inventory; only external S3/SQS calls are doubled."""
+    eng = create_engine("sqlite://")
+    config = SimpleNamespace(**{
+        **vars(CONFIG), "environment": "qa", "artifact_bucket": "fictional-artifacts",
+        "export_bucket": "fictional-exports", "queue_url": "fictional-queue",
+        "serverless_queue_visibility": 1200,
+    })
+    journal = Journal({**BODY, "environment": config.environment})
+    journal.present = False
+    writes = []
+
+    def head_object(**args):
+        assert args == {"Bucket": config.journal_bucket, "Key": CONTROL_KEY}
+        if not journal.present:
+            raise ClientError({"ResponseMetadata": {"HTTPStatusCode": 404},
+                               "Error": {"Code": "NoSuchKey"}}, "HeadObject")
+        return {"VersionId": journal.version}
+
+    def put_versioned(bucket, key, raw, *, conditional):
+        assert (bucket, key, conditional) == (config.journal_bucket, CONTROL_KEY, True)
+        assert not journal.present
+        writes.append(raw)
+        journal.raw, journal.present = raw, True
+        return journal.version
+
+    def versioned_read(bucket, key, version, limit):
+        assert (bucket, key, version, limit) == (
+            config.journal_bucket, CONTROL_KEY, journal.version, 8192)
+        return journal.raw
+
+    journal.head_object = head_object
+    journal.head_bucket = lambda **_: None
+    journal.get_bucket_versioning = lambda **_: {"Status": "Enabled"}
+    queue = SimpleNamespace(get_queue_attributes=lambda **_: {"Attributes": {
+        "VisibilityTimeout": "1200", "RedrivePolicy": '{"maxReceiveCount":5}',
+    }})
+    initialize = runpy.run_path(str(
+        Path(__file__).resolve().parents[3] / "infra/local/bootstrap_resources.py"
+    ))["initialize"]
+    monkeypatch.setitem(initialize.__globals__, "settings", lambda: config)
+    monkeypatch.setitem(initialize.__globals__, "client", lambda service: journal if service == "s3" else queue)
+    monkeypatch.setitem(initialize.__globals__, "put_versioned", put_versioned)
+    monkeypatch.setitem(initialize.__globals__, "versioned_read", versioned_read)
+    monkeypatch.setattr("otgd.db.engine", lambda: eng)
+    yield SimpleNamespace(engine=eng, config=config, journal=journal, queue=queue,
+                          writes=writes, initialize=initialize)
+    eng.dispose()
+
+
+@pytest.mark.parametrize("inventory", ["empty-application-schema", "empty-other-table", "populated-other-table"])
+def test_first_cloud_anchor_refuses_existing_sql_tables(cloud_bootstrap, inventory):
+    bootstrap = cloud_bootstrap
+    if inventory == "empty-application-schema":
+        Base.metadata.create_all(bootstrap.engine)
+    else:
+        with bootstrap.engine.begin() as connection:
+            connection.execute(text("CREATE TABLE prior_activity (id INTEGER PRIMARY KEY)"))
+            if inventory == "populated-other-table":
+                connection.execute(text("INSERT INTO prior_activity VALUES (1)"))
+    with pytest.raises(RuntimeError, match="no existing application tables"):
+        bootstrap.initialize(cloud=True, establish_new=True)
+    assert bootstrap.writes == []
+    assert bootstrap.journal.present is False
+
+
+def test_first_cloud_anchor_checks_sql_again_immediately_before_write(cloud_bootstrap):
+    bootstrap = cloud_bootstrap
+    attributes = bootstrap.queue.get_queue_attributes
+
+    def create_table_after_preflight(**kwargs):
+        with bootstrap.engine.begin() as connection:
+            connection.execute(text("CREATE TABLE late_activity (id INTEGER PRIMARY KEY)"))
+        return attributes(**kwargs)
+
+    bootstrap.queue.get_queue_attributes = create_table_after_preflight
+    with pytest.raises(RuntimeError, match="no existing application tables"):
+        bootstrap.initialize(cloud=True, establish_new=True)
+    assert bootstrap.writes == []
+    assert bootstrap.journal.present is False
+
+
+@pytest.mark.parametrize("establish_again", [False, True])
+def test_empty_cloud_anchor_is_conditional_and_reused_after_migration(cloud_bootstrap, establish_again):
+    bootstrap = cloud_bootstrap
+    bootstrap.initialize(cloud=True, establish_new=True)
+    assert len(bootstrap.writes) == 1
+    original = bootstrap.journal.raw
+    Base.metadata.create_all(bootstrap.engine)
+    with bootstrap.engine.begin() as connection:
+        bind_migration(connection, bootstrap.config, bootstrap.journal)
+        connection.execute(Account.__table__.insert().values(
+            id="account", subject_hash="a" * 64, generation=1, state="active"))
+    bootstrap.initialize(cloud=True, establish_new=establish_again)
+    assert bootstrap.writes == [original]
+    assert bootstrap.journal.raw == original

@@ -9,6 +9,7 @@ from otgd.config import settings
 from otgd.storage import client, put_versioned, versioned_read
 from otgd.canonical import canonical, strict_loads
 from botocore.exceptions import ClientError
+from sqlalchemy import inspect
 
 
 def initialize(cloud=False,establish_new=False):
@@ -48,6 +49,13 @@ def initialize(cloud=False,establish_new=False):
     except ClientError as e:
         if e.response['ResponseMetadata']['HTTPStatusCode']!=404: raise
         if retained or (cloud and not establish_new): raise RuntimeError('Missing journal continuity evidence; only a confirmed empty first deployment may establish a new journal')
+        if cloud:
+            # First cloud bootstrap precedes migration. Even empty application
+            # tables prove this database is beyond that initialization boundary.
+            with engine().connect() as connection:
+                schema='public' if connection.dialect.name=='postgresql' else None
+                if inspect(connection).get_table_names(schema=schema):
+                    raise RuntimeError('New journal establishment requires a database with no existing application tables')
         established={'schema_version':'1.0.0','environment':s.environment,'established_at':datetime.now(timezone.utc).isoformat(),'minimum_retention_days':90,'maximum_recovery_age_days':35}
         raw=canonical(established); version=put_versioned(s.journal_bucket,key,raw,conditional=True)
         if versioned_read(s.journal_bucket,key,version,8192)!=raw: raise RuntimeError('Journal establishment verification failed')
