@@ -136,6 +136,9 @@ jobs:
           from collections import Counter
           from datetime import datetime, timezone
           import json
+          import hashlib
+          import os
+          from pathlib import Path
           import re
           import subprocess
 
@@ -143,6 +146,7 @@ jobs:
           allowed = {('sts', 'get-caller-identity'), ('cloudformation', 'describe-stacks'),
               ('cloudformation', 'describe-stack-events'), ('cloudformation', 'list-stack-resources'),
               ('cloudformation', 'list-change-sets'), ('cloudformation', 'describe-change-set'),
+              ('cloudformation', 'get-template'),
               ('rds', 'describe-db-clusters'), ('lambda', 'get-function-configuration')}
 
           def aws(service, operation, options=(), query=None):
@@ -209,4 +213,46 @@ jobs:
                   if isinstance(change.get('StatusReason'), str):
                       change['StatusReason'] = change['StatusReason'][:1000]
           print(json.dumps({'latest_change_sets': changes}, sort_keys=True))
+          template_response = aws('cloudformation', 'get-template',
+              ['--stack-name', stack, '--template-stage', 'Original'])
+          if not isinstance(template_response, dict) or 'TemplateBody' not in template_response:
+              raise SystemExit('Read-only template observation unavailable')
+          template_body = template_response['TemplateBody']
+          if isinstance(template_body, str):
+              if len(template_body.encode()) > 51200:
+                  raise SystemExit('Read-only template observation exceeds bound')
+              template_body = json.loads(template_body)
+          raw = json.dumps(template_body, separators=(',', ':'), sort_keys=True).encode()
+          if len(raw) > 51200 or not isinstance(template_body, dict):
+              raise SystemExit('Read-only template observation exceeds bound')
+          # Refuse to publish any literal value-bearing secret/password fields.
+          # Generated-secret schemas and policy metadata are safe source fields.
+          def sensitive_literal(value):
+              if isinstance(value, dict):
+                  if any(key.lower() in {'secretstring', 'secretbinary', 'masteruserpassword', 'password', 'token', 'accesskeyid', 'secretaccesskey'} for key in value):
+                      return True
+                  return any(sensitive_literal(child) for child in value.values())
+              if isinstance(value, list):
+                  return any(sensitive_literal(child) for child in value)
+              return False
+          if sensitive_literal(template_body):
+              raise SystemExit('Read-only template export blocked: literal credential-bearing field')
+          digest = hashlib.sha256(raw).hexdigest()
+          expected_digest = '6081b2fb2aed05c2891715d45f114661637960bba3caee780f937cebdc4b4099'
+          destination = Path(os.environ['RUNNER_TEMP']) / 'observer-template'
+          destination.mkdir()
+          (destination / 'actual-template.json').write_text(json.dumps(template_body, indent=2, sort_keys=True) + '\n')
+          proof = {'actual_canonical_sha256': digest, 'protected_original_canonical_sha256': expected_digest,
+              'canonical_template_equal': digest == expected_digest, 'actual_template_bytes': len(raw)}
+          (destination / 'template-observation.json').write_text(json.dumps(proof, indent=2) + '\n')
+          print(json.dumps({'template_observation': proof}, sort_keys=True))
+          print(json.dumps({'credential_free_actual_template': template_body}, sort_keys=True))
           PYCODE
+
+      - name: Preserve credential-free Original template source evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: readonly-import-template-${{ github.run_id }}
+          path: ${{ runner.temp }}/observer-template/
+          if-no-files-found: error
+          retention-days: 7
