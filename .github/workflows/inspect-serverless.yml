@@ -111,10 +111,15 @@ jobs:
                           detail = json.loads(event['CloudTrailEvent'])
                           request = detail.get('requestParameters') or {}
                           stack_name = request.get('stackName', '')
-                          if stack_name not in ('otgd-serverless-development', recovery['original_stack_id']):
+                          failure_window = (event_name == 'CreateChangeSet' and detail.get('errorCode')
+                              and not stack_name
+                              and datetime(2026, 10, 12, 15, 49, 25, tzinfo=timezone.utc)
+                                  <= event['EventTime'] <= datetime(2026, 10, 12, 15, 49, 40, tzinfo=timezone.utc))
+                          if stack_name not in ('otgd-serverless-development', recovery['original_stack_id']) and not failure_window:
                               continue
                           trail_rows.append({'time': str(event.get('EventTime', '')),
                               'event_id': event.get('EventId'), 'event_name': event_name,
+                              'event_source': detail.get('eventSource'),
                               'error_code': detail.get('errorCode'),
                               'error_message': str(detail.get('errorMessage', ''))[:1000],
                               'request_stack_name': stack_name, 'change_set_type': request.get('changeSetType')})
