@@ -21,6 +21,11 @@
 !infra/certs/**
 !scripts/
 !scripts/**
+!deploy/
+!deploy/fargate.Dockerfile
+!deploy/fargate-nginx.conf
+!fargate-web/
+!fargate-web/**
 
 # These exclusions apply at every depth, including within the allowlist above.
 **/.env

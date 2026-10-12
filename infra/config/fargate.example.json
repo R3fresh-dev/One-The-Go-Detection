@@ -1,0 +1,10 @@
+{
+  "environment": "fargate-development",
+  "account": "738470137867",
+  "region": "us-east-2",
+  "alarmEmail": "jacobtyrawa@mail.com",
+  "monthlyBudgetUsd": 100,
+  "releaseId": "264cd2e92a4a5a9d4f76a09d79722b3083099040",
+  "plannedMonthlyUsers": 10,
+  "costEstimatePath": "infra/costs/fargate-estimate.json"
+}
