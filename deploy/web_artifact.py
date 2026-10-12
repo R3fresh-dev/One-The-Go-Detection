@@ -10,6 +10,7 @@ sys.path.insert(0,str(ROOT))
 
 import base64
 import hashlib
+import io
 import json
 import os
 import re
@@ -17,11 +18,12 @@ import subprocess
 import tarfile
 import tempfile
 import zipfile
+from urllib.parse import urlsplit
 
 from botocore.exceptions import ClientError
 import httpx
 
-from deploy.provenance import Gate, sha256, verify_signed_record
+from deploy.provenance import Gate, bounded_file, sha256, verify_signed_record
 
 MAX_FILES = 256
 MAX_BYTES = 128 * 1024 * 1024
@@ -49,7 +51,7 @@ def package(directory, archive):
     for path in sorted(directory.rglob('*')):
         if path.is_symlink():raise Gate('Web artifact must not contain symlinks')
         if not path.is_file():continue
-        data=path.read_bytes();record=file_record(path.relative_to(directory).as_posix(),data)
+        data=bounded_file(path,MAX_FILE_BYTES);record=file_record(path.relative_to(directory).as_posix(),data)
         files.append((record,data));total+=len(data)
         if len(files)>MAX_FILES or total>MAX_BYTES:raise Gate('Web artifact exceeds supported limits')
     if not files or 'index.html' not in {r['path'] for r,_ in files}:raise Gate('Web build has no index.html')
@@ -64,13 +66,14 @@ def package(directory, archive):
     return manifest
 
 
-def contents(archive, manifest):
-    if archive.stat().st_size>MAX_BYTES:raise Gate('Web archive exceeds supported limits')
+def contents(archive, manifest, *, snapshot=None):
+    snapshot=bounded_file(archive,MAX_BYTES) if snapshot is None else snapshot
+    if len(snapshot)>MAX_BYTES:raise Gate('Web archive exceeds supported limits')
     records=manifest.get('files') if isinstance(manifest,dict) else None
     if (not isinstance(records,list) or not 0<len(records)<=MAX_FILES or
         manifest.get('schema_version')!='1.0.0' or manifest.get('digest_algorithm')!='RFC8785-SHA256'):
         raise Gate('Invalid signed web file manifest')
-    with zipfile.ZipFile(archive) as source:
+    with zipfile.ZipFile(io.BytesIO(snapshot)) as source:
         entries=source.infolist()
         names=[entry.filename for entry in entries]
         if len(names)!=len(set(names)) or set(names)!={r.get('path') for r in records} or len(names)!=len(records):
@@ -121,24 +124,25 @@ def build(platform,args,c,out,service_release,archive,record_path):
     platform.require_clean_source(c['releaseId'])
     platform.require_release(args,c)
     payload={'schema_version':'1.0.0','purpose':'web-release','environment':c['environment'],'account':c['account'],'region':c['region'],
-        'release_id':c['releaseId'],'image_digest':c['imageDigest'],'service_release_sha256':hashlib.sha256(args.release.read_bytes()).hexdigest(),
+        'release_id':c['releaseId'],'image_digest':c['imageDigest'],'service_release_sha256':hashlib.sha256(bounded_file(args.release,65_536)).hexdigest(),
         'gate_provenance_sha256':service_release['gate_provenance_sha256'],'runtime':runtime,'runtime_sha256':sha256(runtime),
-        'package_lock_sha256':lock_sha,'archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),
+        'package_lock_sha256':lock_sha,'archive_sha256':hashlib.sha256(bounded_file(archive,MAX_BYTES)).hexdigest(),
         'manifest':manifest,'manifest_sha256':sha256(manifest),'release_prefix':'releases/'+c['releaseId'],'inference_available':False}
-    if c['environment']=='prod':payload['qa_web_release_sha256']=hashlib.sha256(args.source_web_release.read_bytes()).hexdigest()
+    if c['environment']=='prod':payload['qa_web_release_sha256']=hashlib.sha256(bounded_file(args.source_web_release,65_536)).hexdigest()
     platform.sign_release(payload,record_path,args.signing_key)
     return payload
 
 
 def verify(record_path,archive,public_key,c,service_path,service_release,out=None,qa_web_release_sha256=None):
+    snapshot=bounded_file(archive,MAX_BYTES)
     payload=verify_signed_record(record_path,public_key)
     expected={'schema_version':'1.0.0','purpose':'web-release','environment':c['environment'],'account':c['account'],'region':c['region'],
-        'release_id':c['releaseId'],'image_digest':c['imageDigest'],'service_release_sha256':hashlib.sha256(service_path.read_bytes()).hexdigest(),
+        'release_id':c['releaseId'],'image_digest':c['imageDigest'],'service_release_sha256':hashlib.sha256(bounded_file(service_path,65_536)).hexdigest(),
         'gate_provenance_sha256':service_release['gate_provenance_sha256'],'release_prefix':'releases/'+c['releaseId'],'inference_available':False}
     if any(payload.get(k)!=v for k,v in expected.items()):raise Gate('Web release differs from its signed service/environment/source')
     if c['environment']=='prod' and (not re.fullmatch(r'[0-9a-f]{64}',qa_web_release_sha256 or '') or payload.get('qa_web_release_sha256')!=qa_web_release_sha256):
         raise Gate('Production web release lacks the independently approved QA web binding')
-    if (payload.get('archive_sha256')!=hashlib.sha256(archive.read_bytes()).hexdigest() or payload.get('manifest_sha256')!=sha256(payload.get('manifest')) or
+    if (payload.get('archive_sha256')!=hashlib.sha256(snapshot).hexdigest() or payload.get('manifest_sha256')!=sha256(payload.get('manifest')) or
         payload.get('runtime_sha256')!=sha256(payload.get('runtime')) or not re.fullmatch(r'[0-9a-f]{64}',payload.get('package_lock_sha256',''))):
         raise Gate('Web release artifact/runtime digest does not match')
     runtime=payload['runtime']
@@ -146,7 +150,7 @@ def verify(record_path,archive,public_key,c,service_path,service_release,out=Non
         raise Gate('Web runtime configuration differs from the environment')
     if out and runtime!={'environment':c['environment'],'api_url':out['ApiOrigin'],'issuer':out['Issuer'],'client_id':out['ClientId'],'web_origin':out['WebOrigin'],'callback_uri':out['WebCallbackUri']}:
         raise Gate('Web artifact does not match the actual deployed service identity')
-    return payload,contents(archive,payload['manifest'])
+    return payload,contents(archive,payload['manifest'],snapshot=snapshot)
 
 
 def put_immutable(s3,bucket,key,data,content_type):
@@ -163,13 +167,41 @@ def put_immutable(s3,bucket,key,data,content_type):
     if hashlib.sha256(actual).digest()!=digest or len(actual)!=len(data):raise Gate('Published web bytes conflict with this immutable release')
 
 
+def verify_distribution(aws,out,release_prefix,region):
+    """Bind delivery and DNS admission to the actual enabled private origin."""
+    cf=aws.client('cloudfront')
+    distribution=cf.get_distribution(Id=out['WebDistributionId'])['Distribution']
+    config=distribution['DistributionConfig']
+    behavior=config.get('DefaultCacheBehavior',{})
+    origins=config.get('Origins',{}).get('Items',[])
+    selected=[origin for origin in origins if origin.get('Id')==behavior.get('TargetOriginId')]
+    suffix='amazonaws.com.cn' if region.startswith('cn-') else 'amazonaws.com'
+    if (distribution.get('Status')!='Deployed' or config.get('Enabled') is not True
+        or len(origins)!=1 or config.get('CacheBehaviors',{}).get('Quantity',0)!=0
+        or config.get('CacheBehaviors',{}).get('Items') or config.get('OriginGroups',{}).get('Quantity',0)!=0
+        or config.get('OriginGroups',{}).get('Items')
+        or distribution.get('DomainName')!=out['WebDistributionDomain']
+        or behavior.get('ViewerProtocolPolicy')!='redirect-to-https' or len(selected)!=1
+        or selected[0].get('DomainName')!=out['WebBucket']+'.s3.'+region+'.'+suffix
+        or selected[0].get('OriginPath')!='/'+release_prefix
+        or not isinstance(selected[0].get('S3OriginConfig'),dict)
+        or selected[0].get('CustomOriginConfig') is not None
+        or not isinstance(selected[0].get('OriginAccessControlId'),str) or not selected[0]['OriginAccessControlId']):
+        raise Gate('Actual enabled CloudFront private origin differs from the admitted web target')
+    control=cf.get_origin_access_control(Id=selected[0]['OriginAccessControlId'])['OriginAccessControl']
+    authority=control.get('OriginAccessControlConfig',{})
+    if (control.get('Id')!=selected[0]['OriginAccessControlId']
+        or authority.get('OriginAccessControlOriginType')!='s3'
+        or authority.get('SigningBehavior')!='always' or authority.get('SigningProtocol')!='sigv4'):
+        raise Gate('Actual CloudFront origin must always use S3 SigV4 access control')
+    return distribution
+
+
 def publish(aws,out,payload,files):
     if out['WebReleasePrefix']!=payload['release_prefix'] or out['ReleaseId']!=payload['release_id'] or out['ImageDigest']!=payload['image_digest']:
         raise Gate('Web target does not match the admitted release')
-    cf=aws.client('cloudfront');distribution=cf.get_distribution(Id=out['WebDistributionId'])['Distribution']
-    config=distribution['DistributionConfig'];origins=config['Origins']['Items'];behavior=config['DefaultCacheBehavior']
-    if distribution['Status']!='Deployed' or distribution['DomainName']!=out['WebDistributionDomain'] or behavior.get('ViewerProtocolPolicy')!='redirect-to-https' or not any(origin.get('Id')==behavior.get('TargetOriginId') and origin.get('OriginAccessControlId') and origin.get('OriginPath')=='/'+payload['release_prefix'] and origin['DomainName'].startswith(out['WebBucket']+'.s3.') for origin in origins):
-        raise Gate('Actual CloudFront private origin differs from the admitted web target')
+    verify_distribution(aws,out,payload['release_prefix'],payload['region'])
+    cf=aws.client('cloudfront')
     s3=aws.client('s3')
     # The entry point is the publication barrier and is written last.
     for name in sorted(files,key=lambda name:(name=='index.html',name)):
@@ -179,19 +211,71 @@ def publish(aws,out,payload,files):
     return {'distribution_id':out['WebDistributionId'],'invalidation_id':invalidation,'manifest_sha256':payload['manifest_sha256']}
 
 
+def verify_security_headers(headers,out):
+    origins=[]
+    for name in ('ApiOrigin','IdentityOrigin','Issuer'):
+        value=urlsplit(out[name])
+        if value.scheme!='https' or not value.hostname or value.username or value.password or value.query or value.fragment:
+            raise Gate('Browser network policy requires actual HTTPS deployment origins')
+        origins.append('https://'+value.netloc)
+    expected={
+        'default-src':{"'self'"}, 'script-src':{"'self'"},
+        'style-src':{"'self'","'unsafe-inline'"}, 'img-src':{"'self'",'data:'},
+        'font-src':{"'self'"}, 'connect-src':{"'self'",*origins},
+        'object-src':{"'none'"}, 'base-uri':{"'self'"}, 'frame-ancestors':{"'none'"},
+    }
+    raw=headers.get('content-security-policy','')
+    actual={}
+    if len(raw)>8192:raise Gate('Published browser policy exceeds its bounded size')
+    for item in raw.split(';'):
+        fields=item.split()
+        if not fields:continue
+        name=fields[0].lower()
+        if name in actual or len(fields[1:])!=len(set(fields[1:])):
+            raise Gate('Published browser policy contains ambiguous directives')
+        actual[name]=set(fields[1:])
+    transport={}
+    for item in headers.get('strict-transport-security','').split(';'):
+        parts=item.strip().lower().split('=',1)
+        if not parts[0] or parts[0] in transport:
+            raise Gate('Published HSTS policy is missing or ambiguous')
+        transport[parts[0]]=parts[1] if len(parts)>1 else ''
+    age=transport.get('max-age','')
+    if (actual!=expected or headers.get('referrer-policy','').lower()!='no-referrer'
+        or headers.get('x-content-type-options','').lower()!='nosniff'
+        or headers.get('x-frame-options','').upper()!='DENY'
+        or not age.isdigit() or int(age)<31536000 or transport.get('includesubdomains')!=''
+        or set(transport)-{'max-age','includesubdomains','preload'}):
+        raise Gate('Published web security response headers failed exact policy verification')
+
+
 def verify_access(out,payload,files):
     # This public transport probe is not a signed-in customer acceptance test.
     with httpx.Client(timeout=15,follow_redirects=False) as client:
         paths=['index.html',next((name for name in files if name.endswith('.js')),'index.html')]
         for path in paths:
-            response=client.get(out['WebOrigin']+'/'+path)
-            if response.status_code!=200 or hashlib.sha256(response.content).hexdigest()!=hashlib.sha256(files[path]).hexdigest():raise Gate('Published web HTTPS bytes failed verification')
-            if path=='index.html' and (response.headers.get('x-content-type-options')!='nosniff' or response.headers.get('x-frame-options')!='DENY' or not response.headers.get('strict-transport-security') or "object-src 'none'" not in response.headers.get('content-security-policy','')):
-                raise Gate('Published web security response headers failed verification')
-        deep=client.get(out['WebOrigin']+'/history')
-        if deep.status_code!=200 or deep.content!=files['index.html']:raise Gate('SPA navigation failed')
-        missing=client.get(out['WebOrigin']+'/otgd-missing-release-asset.js')
-        if missing.status_code not in (403,404):raise Gate('Missing web asset was hidden by SPA fallback')
-        ready=client.get(out['ApiOrigin']+'/health/ready')
-        if ready.status_code!=200:raise Gate('API readiness failed after rollout')
+            headers=verify_public_bytes(client,out['WebOrigin']+'/'+path,files[path])
+            if path=='index.html':verify_security_headers(headers,out)
+        headers=verify_public_bytes(client,out['WebOrigin']+'/history',files['index.html'])
+        verify_security_headers(headers,out)
+        with client.stream('GET',out['WebOrigin']+'/otgd-missing-release-asset.js') as missing:
+            if missing.status_code not in (403,404):raise Gate('Missing web asset was hidden by SPA fallback')
+        with client.stream('GET',out['ApiOrigin']+'/health/ready') as ready:
+            if ready.status_code!=200:raise Gate('API readiness failed after rollout')
     return {'web_https':'passed','spa_navigation':'passed','missing_asset':'passed','api_ready':'passed','authenticated_customer_acceptance':'not_executed'}
+
+
+def verify_public_bytes(client,url,expected):
+    # Request an uncompressed body, then refuse unsolicited encoding before
+    # reading: a malicious compressed response cannot inflate outside the bound.
+    with client.stream('GET',url,headers={'Accept-Encoding':'identity'}) as response:
+        if response.status_code!=200 or response.headers.get('content-encoding','identity').lower()!='identity':
+            raise Gate('Published web HTTPS response failed verification')
+        total=0;observed=hashlib.sha256()
+        for part in response.iter_bytes(chunk_size=min(65536,len(expected)+1)):
+            total+=len(part)
+            if total>len(expected):raise Gate('Published web response exceeded its exact admitted size')
+            observed.update(part)
+        if total!=len(expected) or observed.digest()!=hashlib.sha256(expected).digest():
+            raise Gate('Published web HTTPS bytes failed verification')
+        return response.headers

@@ -55,7 +55,7 @@ This directory has its own lockfile. Run `npm ci` here; do not create a second r
 
 ## Start the local account backend
 
-From the repository root, follow [infra/README.md](../../infra/README.md) to install Python/uv, Docker Compose and the required LocalStack credentials. For iOS simulator and desktop browser development:
+From the repository root, follow [infra/README.md](../../infra/README.md) to install Python/uv and Docker Compose. The pinned LocalStack 4.14.0 community image is the default and needs no authentication token. For iOS simulator and desktop browser development:
 
 ```bash
 uv sync --project services/api --locked
@@ -64,7 +64,7 @@ python scripts/local-platform.py up
 python scripts/local-platform.py check
 ```
 
-`prepare` writes local secrets to protected ignored settings. It does not print credentials. LocalStack startup requires its valid token. The isolated local issuer offers **Fictional Account A** and **Fictional Account B** for engineering; it is not a production identity provider. Use synthetic accounts/data with this stack.
+`prepare` writes local secrets to protected ignored settings. It does not print credentials. An explicitly selected licensed LocalStack alternative requires its genuine token; the community default does not. The isolated local issuer offers **Fictional Account A** and **Fictional Account B** for engineering; it is not a production identity provider. Use synthetic accounts/data with this stack.
 
 Copy `.env.example` to `.env` inside `apps/mobile` and choose one consistent network origin before generating the native build:
 
@@ -200,14 +200,14 @@ For a serverless Chromium alternative, verify that `FONTCONFIG_FILE` points to a
 
 ## QA, production and store builds
 
-Configure the real environment's API origin, issuer, Cognito public client, OAuth redirects and EAS project ID before building. The build fails on missing cloud origins or local/example identities. `APP_BUILD_NUMBER` supplies a positive iOS build number / Android version code for local reproducibility; coordinate unique release numbering with EAS auto-increment when publishing.
+Follow [STORE_RELEASE.md](STORE_RELEASE.md) for the guarded store automation, exact inputs, nonpublic submission and status semantics. Configure the actual backend API origin, issuer, public client, OAuth redirects and Expo project. Local CI uses `APP_BUILD_NUMBER`; store profiles use EAS remote version numbering and pin the actual returned native version.
 
 ```bash
-# On an authenticated Expo/EAS workstation with configured environment values:
-npx eas-cli build --profile qa --platform all
-npx eas-cli build --profile production --platform all
+# Pure configuration plan; no account/build/submission:
+uv run --project ../../services/api python modules/scripts/store_release.py plan \
+  --config /secure/store-config.json --platform ios
 ```
 
-`eas.json` defines development, internal QA and production profiles. Actual Apple/Google signing identities, provisioning, store entries, privacy declarations, any required encryption declaration, production domains and environment secrets must be supplied by the project owner/operator. No signing identity, store submission, deployed cloud environment or downloadable production binary is implied by source compilation.
+`eas.json` separates development, direct-install QA, QA store and production store profiles. The store helper requires exact trusted release gates, signed backend/production QA authority and genuine signing/store inputs; it inspects the actual device IPA/AAB before deliberate submission. Apple/Google review, privacy declarations and tester/public release remain operator actions. No downloadable production binary is implied by source compilation or a draft upload.
 
 Record the exact release digest and actual device evidence in [VERIFICATION.md](VERIFICATION.md). Run native installation/account transitions, lock/key-loss, cancellation/background races, VoiceOver/TalkBack and text scaling, Bluetooth denial/disconnect/replay, camera denial/restriction, export cancellation/temp cleanup, deletion/recovery and environment isolation on representative Android/iOS devices. Human hardware qualification and clinical inference validation remain separate evidence gates.

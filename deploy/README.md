@@ -54,7 +54,7 @@ The actual shared application opens at the receipt's HTTPS `web_origin`. Default
 
 For a custom name, add `webDomain` and `webCertificateArn` to the environment JSON. The certificate must be issued for that name in **us-east-1**, in the same AWS account. Keep the separate API `certificateArn` in the deployment region. When the existing public `hostedZoneId`/`hostedZoneName` is supplied, the web name must be a subdomain; CDK creates its CNAME automatically. The zone apex is rejected because CNAME is requested. Without managed Route 53, register the output `WebDistributionDomain` through your DNS provider after TLS/distribution validation.
 
-[register_cname.py](register_cname.py) also supports a separately selected existing public Route 53 zone. It accepts no arbitrary destination and checks the exact admitted stack/distribution, alias, issued TLS and zone ownership. It defaults to a live-validated preview. Add `--apply` to execute the single UPSERT and wait at most ten minutes:
+[register_cname.py](register_cname.py) also supports a separately selected existing public Route 53 zone. It accepts no arbitrary destination and checks the exact admitted stack/distribution, enabled state, regional S3 origin, release prefix, always-signed SigV4 OAC, alias, issued TLS and zone ownership. It defaults to a live-validated preview. Select the target's normal AWS profile through `AWS_PROFILE` when using this command. Add `--apply` to create an absent CNAME and await propagation under a ten-minute observed-success deadline. SDK socket/retry time can delay failure reporting; a late success is refused, and a failure does not imply rollback of a created record. An exact existing target is left unchanged, including its TTL; a record created concurrently causes an atomic Route 53 CREATE refusal rather than an overwrite:
 
 ```bash
 uv run --project services/api python deploy/register_cname.py \
@@ -64,7 +64,7 @@ uv run --project services/api python deploy/register_cname.py \
   --trusted-public-key /secure/otgd-release-public.pem --hosted-zone-id YOUR_ACTUAL_ZONE_ID
 ```
 
-Production DNS additionally requires the signed `--qa-evidence`. Apex/private/foreign zones, pending TLS, unready distributions and existing conflicting records fail without DNS mutation. DNS propagation status is not customer acceptance. Outputs contain resource IDs/public identities, never secret values. Static assets are private at S3 and served only through SigV4 OAC; viewer headers include CSP/HSTS/frame denial/no-sniff/no-referrer. Extensionless SPA routes rewrite to the app; missing asset paths stay errors.
+Production DNS additionally requires the signed `--qa-evidence`. Apex/private/foreign zones, pending TLS, disabled or mismatching distributions and existing conflicting records fail without DNS mutation. DNS propagation status is not customer acceptance. Outputs contain resource IDs/public identities, never secret values. Static assets are private at S3 and served only through SigV4 OAC; viewer headers include CSP/HSTS/frame denial/no-sniff/no-referrer. Public verification checks the complete configured CSP on both `index.html` and `/history`, requires one-year HSTS with subdomains, and binds network sources to the actual API, Cognito hosted identity and issuer origins. Wildcard or extra script/network authority fails the probe. Extensionless SPA routes rewrite to the app; missing asset paths stay errors.
 
 The focused [OpenSpec delta](../openspec/changes/cloud-deployment-customer-access/proposal.md) defines implementation and acceptance boundaries. The detailed operations below remain available for inspection/recovery and individually repeat the same release checks.
 
@@ -125,7 +125,7 @@ The registry keeps tags immutable and images retained so rollback targets are no
 
 ## 3. Build and sign the immutable release
 
-Use a release-signing key controlled by the responsible operator. The CLI expects Ed25519 PEM, readable only by its owner. Keep the private key outside the repository/image; distribute the public key through a separate trusted operator/CI channel. Do not trust a public key supplied inside an untrusted release record.
+Use a release-signing key controlled by the responsible operator. The CLI expects an unencrypted Ed25519 PEM in a regular file of at most 8 KiB, owned by that operator with owner-only permissions and one filesystem link. Symlinks, FIFOs, exposed permissions and a file that changes during its bounded read are refused. Keep the private key outside the repository/image; distribute the public key through a separate trusted operator/CI channel. Do not trust a public key supplied inside an untrusted release record.
 
 The `build` command requires a clean, committed checkout and `releaseId` equal to its full Git commit. Download `gates.json` from that revision's **Required application gates** run and supply `--gate-evidence` for release operations. The CLI verifies the actual GitHub API run and every job in its latest attempt; the file's claims alone cannot authorize a release. Configure authorized Actions read access through `GH_TOKEN` or `GITHUB_TOKEN` when the repository requires it. Tokens stay in request headers and must never be committed or placed in command arguments.
 

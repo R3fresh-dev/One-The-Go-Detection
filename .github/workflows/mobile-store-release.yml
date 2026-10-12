@@ -1,0 +1,197 @@
+name: Manual mobile store release
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Plan/build/status or readonly reconcile; initial store upload is unsupported here
+        type: choice
+        options: [plan, build, reconcile, status]
+        default: plan
+        required: true
+      platform:
+        description: One deliberately selected native platform
+        type: choice
+        options: [ios, android]
+        required: true
+      environment:
+        description: Separately configured protected store environment
+        type: choice
+        options: [qa, prod]
+        default: qa
+        required: true
+      receipt_artifact_id:
+        description: Exact encrypted receipt artifact numeric ID (required for reconcile/status)
+        type: string
+        default: ''
+      candidate_build_id:
+        description: Exact EAS build UUID bound by that signed receipt (reconcile/status)
+        type: string
+        default: ''
+      submission_id:
+        description: Exact existing EAS submission UUID for pending-intent reconciliation/status
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: mobile-store-${{ inputs.environment }}-${{ inputs.platform }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-26
+    timeout-minutes: 180
+    # Owners must configure reviewers, main-only deployment rules and real values.
+    # This declaration alone does not establish that protection is configured.
+    environment: store-${{ inputs.environment }}
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.4.1.app/Contents/Developer
+      CI: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require deliberately selected committed main source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+          enable-cache: true
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        if: inputs.platform == 'android' && (inputs.operation == 'build' || inputs.operation == 'reconcile')
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: uv sync --project services/api --locked
+      - name: Validate protected-input software without any cloud/store call
+        run: uv run --project services/api python -m unittest infra.test.test_store_inputs -v
+      - run: npm ci --ignore-scripts
+        if: inputs.operation == 'build' || inputs.operation == 'reconcile'
+        working-directory: infra
+      - name: Materialize only action-required private inputs and authenticated receipt bytes
+        id: inputs
+        env:
+          STORE_RELEASE_INPUTS: ${{ secrets.STORE_RELEASE_INPUTS }}
+          STORE_RECEIPT_KEY: ${{ secrets.STORE_RECEIPT_KEY }}
+          STORE_RECEIPT_PACKAGE: ${{ secrets.STORE_RECEIPT_PACKAGE }}
+          STORE_AWS_ROLE_ARN: ${{ vars.STORE_AWS_ROLE_ARN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          STORE_OPERATION: ${{ inputs.operation }}
+          STORE_PLATFORM: ${{ inputs.platform }}
+          STORE_ENVIRONMENT: ${{ inputs.environment }}
+          RECEIPT_ARTIFACT_ID: ${{ inputs.receipt_artifact_id }}
+          CANDIDATE_BUILD_ID: ${{ inputs.candidate_build_id }}
+          SUBMISSION_ID: ${{ inputs.submission_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          case "$STORE_OPERATION" in
+            reconcile) STORE_OPERATION=submit ;;
+            plan|build|status) ;;
+            *) exit 1 ;;
+          esac
+          uv run --project services/api python apps/mobile/modules/scripts/store_inputs.py prepare \
+            --operation "$STORE_OPERATION" --platform "$STORE_PLATFORM" --environment "$STORE_ENVIRONMENT" \
+            --revision "$GITHUB_SHA" --receipt-artifact-id "$RECEIPT_ARTIFACT_ID" \
+            --candidate-build-id "$CANDIDATE_BUILD_ID" --submission-id "$SUBMISSION_ID"
+      - name: Authenticate only the intended AWS account for fresh build/reconciliation admission
+        if: inputs.operation == 'build' || inputs.operation == 'reconcile'
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # official v6.1.0, verified 2026-10-12
+        with:
+          aws-region: ${{ steps.inputs.outputs.region }}
+          role-to-assume: ${{ steps.inputs.outputs.role_arn }}
+          allowed-account-ids: ${{ steps.inputs.outputs.account }}
+          role-session-name: otgd-store-${{ github.run_id }}
+          mask-aws-account-id: true
+          unset-current-credentials: true
+          output-credentials: false
+          action-timeout-s: 120
+      - name: Retrieve and verify the pinned Android inspection tool
+        if: inputs.platform == 'android' && (inputs.operation == 'build' || inputs.operation == 'reconcile')
+        env:
+          STORE_DIRECTORY: ${{ steps.inputs.outputs.directory }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          target = Path(os.environ['STORE_DIRECTORY']) / 'bundletool.jar'
+          fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+          sha, count = hashlib.sha256(), 0
+          with os.fdopen(fd, 'wb') as output, urllib.request.urlopen('https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar', timeout=30) as response:
+              if not response.geturl().startswith('https://'):
+                  raise SystemExit('Inspection tool HTTPS destination refused')
+              while part := response.read(65536):
+                  count += len(part)
+                  if count > 64 * 1024 * 1024:
+                      raise SystemExit('Inspection tool size bound exceeded')
+                  sha.update(part)
+                  output.write(part)
+          if sha.hexdigest() != 'a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29':
+              raise SystemExit('Inspection tool checksum differs from the approved pin')
+          PY
+      - name: Execute the existing store helper with original authority; reconcile only queries an existing UUID
+        env:
+          STORE_DIRECTORY: ${{ steps.inputs.outputs.directory }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          uv run --project services/api python apps/mobile/modules/scripts/store_inputs.py run --directory "$STORE_DIRECTORY"
+      - name: Encrypt only genuine signed success or pending-intent receipts
+        id: seal
+        if: always() && steps.inputs.outputs.directory != '' && (inputs.operation == 'build' || inputs.operation == 'reconcile')
+        env:
+          STORE_DIRECTORY: ${{ steps.inputs.outputs.directory }}
+          STORE_RECEIPT_KEY: ${{ secrets.STORE_RECEIPT_KEY }}
+        run: uv run --project services/api python apps/mobile/modules/scripts/store_inputs.py seal --directory "$STORE_DIRECTORY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: receipt
+        if: always() && steps.seal.outputs.sealed == 'true'
+        with:
+          name: store-receipts-${{ inputs.environment }}-${{ inputs.platform }}-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ steps.seal.outputs.encrypted_artifact }}
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+      - name: Remove only this run's fixed private material
+        if: always() && steps.inputs.outputs.directory != ''
+        env:
+          STORE_DIRECTORY: ${{ steps.inputs.outputs.directory }}
+        run: uv run --project services/api python apps/mobile/modules/scripts/store_inputs.py cleanup --directory "$STORE_DIRECTORY"
+      - name: Record the actual manual-operation boundary
+        if: always()
+        env:
+          RECEIPT_ARTIFACT_ID: ${{ steps.receipt.outputs.artifact-id }}
+        run: |
+          python3 - <<'PY'
+          import os
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              output.write('Manual store operation concluded; inspect step conclusions. No public store rollout or downloadable app availability is asserted.\n')
+              value = os.environ.get('RECEIPT_ARTIFACT_ID', '')
+              if value.isdigit():
+                  output.write('Encrypted operator receipt artifact ID for a deliberate next operation: ' + value + '\n')
+          PY

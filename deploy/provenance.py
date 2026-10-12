@@ -7,6 +7,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import re
+import stat
 
 import httpx
 from cryptography.hazmat.primitives import serialization
@@ -38,11 +39,36 @@ QA_PROBES = frozenset({
 })
 
 
+def bounded_file(path: Path, limit, *, private=False):
+    """A stable regular-file snapshot, including before any blocking read."""
+    descriptor=None
+    try:
+        flags=os.O_RDONLY|getattr(os,'O_NOFOLLOW',0)|getattr(os,'O_NONBLOCK',0)|getattr(os,'O_CLOEXEC',0)
+        descriptor=os.open(path,flags)
+        before=os.fstat(descriptor)
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink!=1 or not 0<=before.st_size<=limit
+            or (private and os.name!='nt' and (before.st_mode&0o077 or before.st_uid!=os.getuid()))):
+            raise Gate('Input must be a bounded regular file with the required ownership/permissions')
+        raw=bytearray()
+        while len(raw)<=limit:
+            part=os.read(descriptor,min(65536,limit+1-len(raw)))
+            if not part:break
+            raw.extend(part)
+        after=os.fstat(descriptor)
+        named=os.stat(path,follow_symlinks=False)
+        identity=lambda metadata:(metadata.st_dev,metadata.st_ino,metadata.st_mode,metadata.st_uid,
+            metadata.st_nlink,metadata.st_size,metadata.st_mtime_ns,metadata.st_ctime_ns)
+        if identity(before)!=identity(after) or identity(after)!=identity(named) or len(raw)!=before.st_size:
+            raise Gate('Input changed during its bounded read')
+        return bytes(raw)
+    except OSError:
+        raise Gate('Input is unavailable or is not a stable regular file') from None
+    finally:
+        if descriptor is not None:os.close(descriptor)
+
+
 def bounded_json(path: Path, limit=65_536):
-    with path.open("rb") as stream:
-        raw = stream.read(limit + 1)
-    if len(raw) > limit:
-        raise Gate("Evidence exceeds its supported size")
+    raw=bounded_file(path,limit)
     try:
         value = strict_loads(raw)
     except (ValueError, TypeError):
@@ -189,7 +215,7 @@ def verify_signed_record(path, public_path):
             not isinstance(envelope.get("payload"), dict) or
             envelope.get("payload_sha256") != sha256(envelope["payload"])):
         raise Gate("Invalid signed evidence envelope")
-    public = serialization.load_pem_public_key(public_path.read_bytes())
+    public = serialization.load_pem_public_key(bounded_file(public_path,8192))
     if not isinstance(public, Ed25519PublicKey):
         raise Gate("Expected an independently trusted Ed25519 key")
     try:

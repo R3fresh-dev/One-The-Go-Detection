@@ -3,7 +3,10 @@ import copy
 from datetime import datetime, timedelta, timezone
 import importlib.util
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -70,6 +73,31 @@ def qa_fixture(now=NOW):
 
 
 class ProvenanceTest(unittest.TestCase):
+    def test_evidence_and_trusted_key_inputs_refuse_links_and_oversize_before_read(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);evidence=root/'evidence.json';evidence.write_text('{"revision":"fictional"}')
+            self.assertEqual(p.bounded_json(evidence),{'revision':'fictional'})
+            link=root/'linked-evidence.json';link.symlink_to(evidence)
+            with self.assertRaises(p.Gate):p.bounded_json(link)
+            evidence.write_bytes(b'x'*65537)
+            with patch.object(p.os,'read') as read,self.assertRaises(p.Gate):p.bounded_json(evidence)
+            read.assert_not_called()
+            private,public=keys(root)
+            record=root/'signed.json';d.sign_release({'fictional':'software'},record,private)
+            linked=root/'linked-public.pem';linked.symlink_to(public)
+            with self.assertRaises(p.Gate):p.verify_signed_record(record,linked)
+            public.write_bytes(b'x'*8193)
+            with self.assertRaises(p.Gate):p.verify_signed_record(record,public)
+
+    def test_fifo_evidence_is_rejected_without_waiting_for_a_writer(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            fifo=Path(tmp)/'fifo.json';os.mkfifo(fifo,0o600)
+            code="from pathlib import Path; from deploy.provenance import bounded_json, Gate; import sys\ntry: bounded_json(Path(sys.argv[1]))\nexcept Gate: raise SystemExit(0)\nraise SystemExit(1)"
+            environment={key:value for key,value in os.environ.items() if not key.startswith(('AWS_','OTGD_','GH_','GITHUB_'))}
+            result=subprocess.run([sys.executable,'-c',code,str(fifo)],cwd=ROOT,env=environment,
+                capture_output=True,text=True,timeout=5)
+            self.assertEqual(result.returncode,0,result.stderr)
+
     def test_latest_attempt_requires_every_nested_job_and_aggregate(self):
         evidence, run, jobs = gate_fixture()
         # Independent pagination: mandatory jobs are not necessarily on page one.

@@ -17,7 +17,7 @@ import time
 import uuid
 
 from deploy import platform, web_artifact
-from deploy.provenance import Gate, bounded_json, verify_qa_approval
+from deploy.provenance import Gate, bounded_file, bounded_json, verify_qa_approval
 
 
 def parser(environment):
@@ -78,7 +78,7 @@ class StageJournal:
         receipts={}
         for name in ('bootstrap.json','migration.json','restore.json','admission.json','service-release.json','web-release.json','deployment.json'):
             path=self.work/name
-            if path.is_file():receipts[name]={'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+            if path.is_file():receipts[name]={'path':str(path),'sha256':hashlib.sha256(bounded_file(path,65_536)).hexdigest()}
         self.state['completed_receipts']=receipts
         raw=json.dumps(self.state,indent=2).encode()
         if len(raw)>65_536:raise Gate('Deployment stage journal exceeds its bounded size')
@@ -114,10 +114,10 @@ def admit_source_web(args,c):
         raise Gate('Production must preserve the reviewed source from a separate QA account')
     source=platform.verify_release(args.source_release,args.trusted_public_key,source_c)
     expected={'account':source_c['account'],'region':source_c['region'],'image_digest':source['image_digest'],'release_id':source['release_id'],
-        'qa_release_sha256':hashlib.sha256(args.source_release.read_bytes()).hexdigest(),'gate_provenance_sha256':source['gate_provenance_sha256']}
+        'qa_release_sha256':hashlib.sha256(bounded_file(args.source_release,65_536)).hexdigest(),'gate_provenance_sha256':source['gate_provenance_sha256']}
     approval=verify_qa_approval(args.qa_evidence,args.trusted_public_key,expected)
     web,files=web_artifact.verify(args.source_web_release,args.source_web_artifact,args.trusted_public_key,source_c,args.source_release,source)
-    digest=hashlib.sha256(args.source_web_release.read_bytes()).hexdigest()
+    digest=hashlib.sha256(bounded_file(args.source_web_release,65_536)).hexdigest()
     if 'web_customer_access' not in approval['passed_gates'] or approval['evidence_refs'].get('web_customer_access')!='sha256:'+digest:
         raise Gate('Signed QA approval must explicitly bind the tested web release envelope')
     results=approval['evidence_refs'].get('web_customer_access_results')

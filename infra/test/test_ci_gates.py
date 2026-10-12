@@ -41,6 +41,15 @@ class EvidenceTest(unittest.TestCase):
    path.write_text(json.dumps({'totals':{'num_statements':1000,'covered_lines':801}}))
    self.assertGreater(gate.require_coverage(path),80)
 
+ def test_release_tool_cannot_hide_below_overall_coverage_or_use_exclusions(self):
+  with tempfile.TemporaryDirectory() as directory:
+   path=Path(directory)/'coverage.json';source='apps/mobile/modules/scripts/store_release.py'
+   for files in ({}, {'another.py':{'summary':{'num_statements':100,'covered_lines':100,'excluded_lines':0}}}, {source:{'summary':{'num_statements':100,'covered_lines':80,'excluded_lines':0}}}, {source:{'summary':{'num_statements':100,'covered_lines':100,'excluded_lines':1,'num_excluded':0}}}, {source:{'summary':{'num_statements':100,'covered_lines':100,'excluded_lines':0,'num_excluded':1}}}, {source:{'summary':{'num_statements':0,'covered_lines':0,'excluded_lines':0}}}):
+    path.write_text(json.dumps({'totals':{'num_statements':1000,'covered_lines':1000},'files':files}))
+    with self.assertRaises(RuntimeError):gate.require_file_coverage(path,source)
+   path.write_text(json.dumps({'files':{source:{'summary':{'num_statements':1000,'covered_lines':801,'excluded_lines':0}}}}))
+   self.assertGreater(gate.require_file_coverage(path,source),80)
+
 
 class RetainedComposeEnvironmentTest(unittest.TestCase):
  def setUp(self):

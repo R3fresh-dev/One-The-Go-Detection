@@ -1,0 +1,12 @@
+{
+  "name": "otgd-store-release-toolchain",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=24.19.0"
+  },
+  "dependencies": {
+    "eas-cli": "24.12.1",
+    "typescript": "5.9.3"
+  }
+}
