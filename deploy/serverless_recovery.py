@@ -9,15 +9,18 @@ from __future__ import annotations
 
 from copy import deepcopy
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import re
 import uuid
+from zipfile import BadZipFile, ZipFile
 
 from botocore.exceptions import ClientError
+import httpx
 
-from deploy.provenance import Gate
+from deploy.provenance import Gate, REPOSITORY, _github_json, bounded_file, strict_loads
 from deploy.serverless_template import build_template
 
 
@@ -153,7 +156,7 @@ def _verify_retained(aws, config, logical, resource, physical):
         _require_tags([{'Key': key, 'Value': value} for key, value in client.list_tags_for_resource(resourceArn=arn).get('tags', {}).items()])
 
 
-def initial_recovery_plan(aws, config):
+def initial_recovery_plan(aws, config, *, _detached_stack_id=None):
     """Validate the complete recovery before any mutation and retain no secrets."""
     if (config.get('environment') != 'serverless-development' or config.get('region') != 'us-east-2'
             or not re.fullmatch(r'\d{12}', config.get('account', ''))
@@ -162,12 +165,15 @@ def initial_recovery_plan(aws, config):
     if aws.client('sts').get_caller_identity()['Account'] != config['account']:
         raise Gate('Initial recovery credentials do not match the selected account')
     cf = aws.client('cloudformation')
-    stack = cf.describe_stacks(StackName=STACK)['Stacks'][0]
+    stack = cf.describe_stacks(StackName=_detached_stack_id or STACK)['Stacks'][0]
     stack_tags = {tag['Key']: tag['Value'] for tag in stack.get('Tags', [])}
-    if (stack.get('StackStatus') != 'ROLLBACK_COMPLETE'
+    expected_status = 'DELETE_COMPLETE' if _detached_stack_id else 'ROLLBACK_COMPLETE'
+    if (stack.get('StackStatus') != expected_status
             or stack_tags.get('deployment') != STACK or stack_tags.get('purpose') != 'serverless-development'
             or not stack.get('StackId', '').startswith(f"arn:aws:cloudformation:{config['region']}:{config['account']}:stack/{STACK}/")):
-        raise Gate('Only the owned fully rolled-back first application stack can use initial recovery')
+        raise Gate('Only the owned failed first application stack can use initial recovery')
+    if _detached_stack_id and stack['StackId'] != _detached_stack_id:
+        raise Gate('Detached recovery history belongs to a different stack identity')
     original = cf.get_template(StackName=stack['StackId'], TemplateStage='Original')['TemplateBody']
     if isinstance(original, str):
         if len(original.encode()) > 1048576:
@@ -236,7 +242,8 @@ def initial_recovery_plan(aws, config):
     template = {'AWSTemplateFormatVersion': '2010-09-09',
                 'Description': 'Retained resources from the uninitialized first serverless deployment',
                 'Resources': imported}
-    body = json.dumps(template, separators=(',', ':'))
+    legacy_body = json.dumps(template, separators=(',', ':'))
+    body = json.dumps(template, separators=(',', ':'), sort_keys=True)
     if len(body.encode()) > 51200:
         raise Gate('Initial recovery import template exceeds the direct CloudFormation limit')
     summaries = cf.get_template_summary(TemplateBody=body).get('ResourceIdentifierSummaries', [])
@@ -256,6 +263,8 @@ def initial_recovery_plan(aws, config):
             'release_id': config['releaseId'], 'stack_name': STACK, 'original_stack_id': stack['StackId'],
             'original_release_id': old_config['releaseId'], 'retained_physical_ids': physical_ids,
             'import_template': template, 'import_template_sha256': hashlib.sha256(body.encode()).hexdigest(),
+            'import_template_hash_encoding': 'canonical-json',
+            'legacy_import_template_sha256': hashlib.sha256(legacy_body.encode()).hexdigest(),
             'resources_to_import': [{'LogicalResourceId': logical, 'ResourceType': imported[logical]['Type'],
                 'ResourceIdentifier': {identifiers[logical]: physical_ids[logical]}} for logical in sorted(imported)],
             'initial_state': {'database_absent': True, 'application_functions_absent': True,
@@ -264,13 +273,8 @@ def initial_recovery_plan(aws, config):
             'actual_resources_deleted': False, 'application_deployment_completed': False}
 
 
-def recover_initial(aws, config, evidence_path):
-    """Detach failed stack metadata, then adopt the identical retained resources."""
-    path = Path(evidence_path)
-    if path.exists() or not path.parent.is_dir():
-        raise Gate('Use a new protected initial recovery journal in an existing deployment work directory')
-    evidence = initial_recovery_plan(aws, config)
-    _write(path, evidence)
+def _import_retained(aws, config, evidence, path):
+    """Adopt a validated manifest; import cannot specify stack-level Tags."""
     cf = aws.client('cloudformation')
 
     def phase(status):
@@ -278,19 +282,12 @@ def recover_initial(aws, config, evidence_path):
         _write(path, evidence)
 
     try:
-        phase('detaching-failed-stack-metadata')
-        cf.update_termination_protection(StackName=evidence['original_stack_id'], EnableTerminationProtection=False)
-        cf.delete_stack(StackName=evidence['original_stack_id'])
-        cf.get_waiter('stack_delete_complete').wait(StackName=evidence['original_stack_id'],
-            WaiterConfig={'Delay': 5, 'MaxAttempts': 120})
-        phase('failed-stack-metadata-detached')
         # Re-read authority and emptiness after detachment, before adoption.
         for logical, resource in evidence['import_template']['Resources'].items():
             _verify_retained(aws, config, logical, resource, evidence['retained_physical_ids'][logical])
         change = cf.create_change_set(StackName=STACK, ChangeSetName='initial-import-' + uuid.uuid4().hex,
-            ChangeSetType='IMPORT', TemplateBody=json.dumps(evidence['import_template'], separators=(',', ':')),
-            ResourcesToImport=evidence['resources_to_import'],
-            Tags=[{'Key': 'deployment', 'Value': STACK}, {'Key': 'purpose', 'Value': 'serverless-development'}])['Id']
+            ChangeSetType='IMPORT', TemplateBody=json.dumps(evidence['import_template'], separators=(',', ':'), sort_keys=True),
+            ResourcesToImport=evidence['resources_to_import'])['Id']
         evidence['import_change_set_id'] = change
         phase('import-change-set-created')
         cf.get_waiter('change_set_create_complete').wait(StackName=STACK, ChangeSetName=change,
@@ -323,3 +320,167 @@ def recover_initial(aws, config, evidence_path):
         evidence['failure_type'] = type(error).__name__
         phase('blocked-recovery-inspect-protected-journal-before-retry')
         raise
+
+
+def recover_initial(aws, config, evidence_path):
+    """Detach failed stack metadata, then adopt the identical retained resources."""
+    path = Path(evidence_path)
+    if path.exists() or not path.parent.is_dir():
+        raise Gate('Use a new protected initial recovery journal in an existing deployment work directory')
+    evidence = initial_recovery_plan(aws, config)
+    _write(path, evidence)
+    cf = aws.client('cloudformation')
+    try:
+        evidence['status'] = 'detaching-failed-stack-metadata'
+        _write(path, evidence)
+        cf.update_termination_protection(StackName=evidence['original_stack_id'], EnableTerminationProtection=False)
+        cf.delete_stack(StackName=evidence['original_stack_id'])
+        cf.get_waiter('stack_delete_complete').wait(StackName=evidence['original_stack_id'],
+            WaiterConfig={'Delay': 5, 'MaxAttempts': 120})
+        evidence['status'] = 'failed-stack-metadata-detached'
+        _write(path, evidence)
+    except Exception as error:
+        evidence.update(failed_phase=evidence['status'], failure_type=type(error).__name__,
+                        status='blocked-recovery-inspect-protected-journal-before-retry')
+        _write(path, evidence)
+        raise
+    return _import_retained(aws, config, evidence, path)
+
+
+def verify_recovery_artifact(manifest_path, artifact_proof, *, client=None):
+    """Bind exact manifest bytes to a real failed trusted GitHub deployment ZIP.
+
+    ``artifact_proof`` contains the run ID, artifact ID and downloaded ZIP path.
+    Its assertions alone confer no trust: live repository metadata and the ZIP
+    digest must match, and the ZIP must contain these exact manifest bytes.
+    """
+    if (not isinstance(artifact_proof, dict) or set(artifact_proof) != {'run_id', 'artifact_id', 'archive_path'}
+            or any(type(artifact_proof.get(key)) is not int or artifact_proof[key] <= 0
+                   for key in ('run_id', 'artifact_id'))):
+        raise Gate('A downloaded trusted GitHub recovery artifact is required')
+    if client is None:
+        headers = {'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'}
+        token = os.getenv('GH_TOKEN') or os.getenv('GITHUB_TOKEN')
+        if token:
+            headers['Authorization'] = 'Bearer ' + token
+        with httpx.Client(headers=headers, timeout=15, follow_redirects=False) as owned:
+            return verify_recovery_artifact(manifest_path, artifact_proof, client=owned)
+    manifest_raw = bounded_file(manifest_path, 262144)
+    try:
+        manifest = strict_loads(manifest_raw)
+    except (ValueError, TypeError):
+        raise Gate('Recovery artifact manifest is not strict JSON') from None
+    if not isinstance(manifest, dict):
+        raise Gate('Recovery artifact manifest must be an object')
+    run_id, artifact_id = artifact_proof['run_id'], artifact_proof['artifact_id']
+    run = _github_json(client, f'actions/runs/{run_id}')
+    workflow_id = run.get('workflow_id')
+    workflow_path = '.github/workflows/deploy-serverless.yml'
+    if (run.get('id') != run_id or run.get('head_sha') != manifest.get('release_id')
+            or run.get('status') != 'completed' or run.get('conclusion') != 'failure'
+            or run.get('path') != workflow_path or run.get('event') != 'workflow_dispatch'
+            or run.get('head_branch') != 'main' or type(workflow_id) is not int or workflow_id <= 0
+            or run.get('repository', {}).get('full_name') != REPOSITORY
+            or run.get('head_repository', {}).get('full_name') != REPOSITORY):
+        raise Gate('Recovery artifact must belong to a failed trusted-main serverless deployment')
+    workflow = _github_json(client, f'actions/workflows/{workflow_id}')
+    if workflow.get('id') != workflow_id or workflow.get('path') != workflow_path or workflow.get('state') != 'active':
+        raise Gate('Recovery artifact does not belong to the trusted deployment workflow')
+    artifact = _github_json(client, f'actions/artifacts/{artifact_id}')
+    revision = manifest['release_id']
+    binding = artifact.get('workflow_run', {})
+    if (artifact.get('id') != artifact_id or artifact.get('expired') is not False
+            or artifact.get('name') != f'serverless-deployment-{revision}-{run_id}'
+            or binding.get('id') != run_id or binding.get('head_sha') != revision
+            or binding.get('head_branch') != 'main' or binding.get('repository_id') != run['repository'].get('id')
+            or binding.get('head_repository_id') != run['head_repository'].get('id')):
+        raise Gate('Recovery archive metadata is not bound to the trusted failed run')
+    archive_path = artifact_proof['archive_path']
+    archive = bounded_file(archive_path, 32 * 1024 * 1024)
+    digest = hashlib.sha256(archive).hexdigest()
+    if artifact.get('digest') != 'sha256:' + digest:
+        raise Gate('Downloaded recovery archive differs from the trusted GitHub digest')
+    try:
+        with ZipFile(io.BytesIO(archive)) as zipped:
+            candidates = [entry for entry in zipped.infolist() if entry.filename.endswith('/initial-recovery.json')]
+            if (len(candidates) != 1 or candidates[0].file_size > 262144
+                    or candidates[0].filename.count('..')
+                    or not candidates[0].filename.startswith('.local/deploy/serverless-development/' + revision + '/')):
+                raise Gate('Recovery archive must contain one bounded deployment recovery manifest')
+            if zipped.read(candidates[0]) != manifest_raw:
+                raise Gate('Recovery manifest bytes differ from the trusted archived manifest')
+    except (BadZipFile, OSError, RuntimeError):
+        raise Gate('Trusted recovery archive cannot be read') from None
+    current = _github_json(client, f'actions/runs/{run_id}')
+    if any(current.get(key) != run.get(key) for key in ('id', 'run_attempt', 'head_sha', 'workflow_id', 'status', 'conclusion')):
+        raise Gate('Trusted recovery run changed during evidence verification')
+    return {'provider': 'github_actions', 'repository': REPOSITORY, 'workflow_path': workflow_path,
+            'run_id': run_id, 'head_sha': revision, 'artifact_id': artifact_id,
+            'archive_sha256': digest, 'manifest_sha256': hashlib.sha256(manifest_raw).hexdigest()}
+
+
+def resume_initial(aws, config, manifest_path, evidence_path, *, artifact_proof):
+    """Import preserved initial resources from a trusted interrupted-run manifest.
+
+    The caller must first admit its current exact reviewed source. This helper
+    independently verifies the failed deployment artifact and revalidates the
+    deleted stack's original template, full creation history and live resources.
+    It accepts only an absent current stack; no stack metadata is deleted again.
+    Deleted-stack history must still be available from CloudFormation (90 days).
+    """
+    path = Path(evidence_path)
+    if path.exists() or not path.parent.is_dir():
+        raise Gate('Use a new protected initial recovery journal in an existing deployment work directory')
+    proof = verify_recovery_artifact(manifest_path, artifact_proof)
+    manifest_raw = bounded_file(manifest_path, 262144)
+    if hashlib.sha256(manifest_raw).hexdigest() != proof['manifest_sha256']:
+        raise Gate('Trusted recovery manifest changed after artifact verification')
+    try:
+        manifest = strict_loads(manifest_raw)
+    except (ValueError, TypeError):
+        raise Gate('Recovery manifest is not strict JSON') from None
+    if not isinstance(manifest, dict):
+        raise Gate('Recovery manifest must be an object')
+    if (manifest.get('schema_version') != '1.0.0' or manifest.get('operation') != 'serverless-initial-recovery'
+            or manifest.get('status') != 'blocked-recovery-inspect-protected-journal-before-retry'
+            or manifest.get('failed_phase') != 'failed-stack-metadata-detached'
+            or manifest.get('account') != config.get('account') or manifest.get('region') != config.get('region')
+            or manifest.get('stack_name') != STACK or manifest.get('actual_resources_deleted') is not False
+            or manifest.get('application_deployment_completed') is not False
+            or 'import_change_set_id' in manifest or 'recovered_stack_id' in manifest):
+        raise Gate('Resume accepts only the trusted uninitialized post-detachment failure manifest')
+    old_stack_id = manifest.get('original_stack_id', '')
+    if not isinstance(old_stack_id, str) or not old_stack_id.startswith(
+            f"arn:aws:cloudformation:{config.get('region')}:{config.get('account')}:stack/{STACK}/"):
+        raise Gate('Recovery manifest does not identify the original owned stack')
+    if aws.client('sts').get_caller_identity()['Account'] != config['account']:
+        raise Gate('Initial recovery credentials do not match the selected account')
+    cf = aws.client('cloudformation')
+    try:
+        cf.describe_stacks(StackName=STACK)
+    except ClientError as error:
+        info = error.response.get('Error', {})
+        if info.get('Code') != 'ValidationError' or 'does not exist' not in info.get('Message', ''):
+            raise
+    else:
+        raise Gate('Initial recovery resume requires an absent current application stack')
+    # Reconstruct rather than trust the saved template, ownership, identifiers,
+    # empty-state assertions or legacy order-sensitive hash.
+    evidence = initial_recovery_plan(aws, config, _detached_stack_id=old_stack_id)
+    for key in ('original_release_id', 'original_stack_id', 'import_template',
+                'retained_physical_ids', 'resources_to_import'):
+        if manifest.get(key) != evidence[key]:
+            raise Gate('Recovery manifest differs from the original reviewed retained resources')
+    hash_encoding = manifest.get('import_template_hash_encoding')
+    expected_hash = evidence['import_template_sha256'] if hash_encoding == 'canonical-json' else evidence['legacy_import_template_sha256']
+    if hash_encoding not in (None, 'canonical-json') or manifest.get('import_template_sha256') != expected_hash:
+        raise Gate('Recovery manifest import template hash cannot be verified')
+    empty = manifest.get('initial_state', {})
+    if not isinstance(empty, dict) or any(empty.get(key) is not True for key in (
+            'database_absent', 'application_functions_absent', 'retained_buckets_empty',
+            'control_table_empty', 'user_pool_empty', 'initial_creation_history_verified')):
+        raise Gate('Trusted recovery manifest does not establish the required empty initial state')
+    evidence.update(status='failed-stack-metadata-detached', operation='serverless-initial-recovery-resume',
+                    resumed_from=proof, resumed_from_release_id=manifest['release_id'])
+    _write(path, evidence)
+    return _import_retained(aws, config, evidence, path)

@@ -1,6 +1,8 @@
 # Deploy and promote a reviewed release
 
-The CLI [platform.py](platform.py) makes every paid or operational action explicit. No AWS deployment has been performed in this workspace. It uses the normal AWS SDK credential chain, validates the account with STS, and passes database credentials through ECS secret references. Its defaults do not invent an AWS account, domain, alarm recipient, signing key or monthly budget.
+For the approved Ohio development deployment, use [the Fargate deployment guide](FARGATE_AWS.md) and [fargate.py](fargate.py). Its Python process deploys the UI, API, controller, jobs and maintenance as ECS Fargate containers with private Aurora, CloudFront and CloudWatch. GitHub Actions uses the existing repository secrets after exact-source gate admission; the selected monthly budget is $100.
+
+The separate QA and production process below uses [platform.py](platform.py), the normal AWS SDK credential chain, account validation with STS, and ECS secret references. It requires its own signed release authority and acceptance evidence.
 
 ## One command for QA, a separate command for production
 
@@ -13,7 +15,7 @@ uv run --project services/api python deploy/qa.py --config infra/config/qa.local
 uv run --project services/api python deploy/prod.py --config infra/config/prod.local.json --plan
 ```
 
-Example templates intentionally fail until real inputs and a current regional cost estimate are supplied. The existing published estimate describes the API baseline; add the fourth retained static-assets bucket, CloudFront request/egress/function usage and optional DNS assumptions before approving the hosting workload. CloudFront/S3 usage and retained versions continue to incur cost; a budget alert does not cap spending.
+QA and production templates intentionally fail until their own inputs and a current regional cost estimate are supplied. The [Fargate development estimate](../infra/costs/FARGATE.md) covers the current development architecture separately. CloudFront/S3 usage and retained versions continue to incur cost; a budget alert does not cap spending.
 
 For a first empty QA environment:
 
