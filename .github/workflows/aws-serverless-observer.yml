@@ -269,13 +269,13 @@ jobs:
                           vpc_ids.add(entry['VpcId'])
                       subnet_ids.update(row['SubnetIdentifier'] for row in entry.get('Subnets', [])
                           if isinstance(row.get('SubnetIdentifier'), str))
-          if subnet_ids:
-              subnets = aws('ec2', 'describe-subnets', ['--subnet-ids', *sorted(subnet_ids)[:10]],
+          for subnet_id in sorted(subnet_ids)[:10]:
+              subnets = aws('ec2', 'describe-subnets', ['--subnet-ids', subnet_id],
                   'Subnets[].{SubnetId:SubnetId,VpcId:VpcId,State:State,AvailabilityZone:AvailabilityZone,CidrBlock:CidrBlock,Ipv6CidrBlockAssociationSet:Ipv6CidrBlockAssociationSet,Tags:Tags}')
               if isinstance(subnets, list):
                   for subnet in subnets:
                       subnet['Tags'] = ownership_tags(subnet.get('Tags'))
-              print(json.dumps({'live_database_subnet_ownership': subnets}, sort_keys=True))
+              print(json.dumps({'observed_subnet_id': subnet_id, 'live_database_subnet_ownership': subnets}, sort_keys=True))
           if vpc_ids:
               vpcs = aws('ec2', 'describe-vpcs', ['--vpc-ids', *sorted(vpc_ids)[:2]],
                   'Vpcs[].{VpcId:VpcId,State:State,CidrBlock:CidrBlock,IsDefault:IsDefault,Ipv6CidrBlockAssociationSet:Ipv6CidrBlockAssociationSet,Tags:Tags}')
@@ -289,13 +289,13 @@ jobs:
                   for group in cluster.get('VpcSecurityGroups', []) if isinstance(group.get('VpcSecurityGroupId'), str))
           sg_ids.update(row['PhysicalResourceId'] for row in rows
               if row.get('ResourceType') == 'AWS::EC2::SecurityGroup' and isinstance(row.get('PhysicalResourceId'), str))
-          if sg_ids:
-              security_groups = aws('ec2', 'describe-security-groups', ['--group-ids', *sorted(sg_ids)[:10]],
+          for security_group_id in sorted(sg_ids)[:10]:
+              security_groups = aws('ec2', 'describe-security-groups', ['--group-ids', security_group_id],
                   'SecurityGroups[].{GroupId:GroupId,GroupName:GroupName,VpcId:VpcId,OwnerId:OwnerId,Tags:Tags}')
               if isinstance(security_groups, list):
                   for group in security_groups:
                       group['Tags'] = ownership_tags(group.get('Tags'))
-              print(json.dumps({'live_database_security_group_ownership': security_groups}, sort_keys=True))
+              print(json.dumps({'observed_security_group_id': security_group_id, 'live_database_security_group_ownership': security_groups}, sort_keys=True))
           for role in ('api', 'worker', 'dispatcher', 'maintenance', 'control'):
               function = aws('lambda', 'get-function-configuration', ['--function-name', stack + '-' + role],
                   '{State:State,LastUpdateStatus:LastUpdateStatus,StateReasonCode:StateReasonCode,LastUpdateStatusReasonCode:LastUpdateStatusReasonCode,source_revision:Environment.Variables.OTGD_SOURCE_REVISION}')
