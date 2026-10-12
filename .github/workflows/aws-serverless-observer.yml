@@ -147,7 +147,10 @@ jobs:
               ('cloudformation', 'describe-stack-events'), ('cloudformation', 'list-stack-resources'),
               ('cloudformation', 'list-change-sets'), ('cloudformation', 'describe-change-set'),
               ('cloudformation', 'get-template'),
+              ('cloudformation', 'describe-stack-resource'),
               ('rds', 'describe-db-clusters'), ('rds', 'describe-db-instances'),
+              ('rds', 'describe-db-subnet-groups'),
+              ('ec2', 'describe-subnets'), ('ec2', 'describe-vpcs'), ('ec2', 'describe-security-groups'),
               ('lambda', 'get-function-configuration'),
               ('ecr', 'describe-images')}
 
@@ -189,7 +192,7 @@ jobs:
                       event['ResourceStatusReason'] = event['ResourceStatusReason'][:1000]
           print(json.dumps({'recent_application_events': events}, sort_keys=True))
           history = aws('cloudformation', 'describe-stack-events', ['--stack-name', stack, '--max-items', '2000'],
-              '{Events:StackEvents[].{Timestamp:Timestamp,LogicalResourceId:LogicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus,ResourceStatusReason:ResourceStatusReason},NextToken:NextToken}')
+              '{Events:StackEvents[].{Timestamp:Timestamp,LogicalResourceId:LogicalResourceId,PhysicalResourceId:PhysicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus,ResourceStatusReason:ResourceStatusReason},NextToken:NextToken}')
           if isinstance(history, dict) and isinstance(history.get('Events'), list):
               event_rows = history['Events']
               starts = [row['Timestamp'] for row in event_rows
@@ -209,6 +212,12 @@ jobs:
                   'failure_count': len(failed), 'first_create_or_update_failure': initiating[:1],
                   'first_non_cancelled_create_or_update_failure': meaningful[:1],
                   'failed_events': failed[:20]}}, sort_keys=True))
+              writer_events = [row for row in event_rows if row.get('LogicalResourceId') == 'DatabaseWriter'
+                  and row.get('Timestamp', '') >= (update_started or '')]
+              for row in writer_events:
+                  if isinstance(row.get('ResourceStatusReason'), str):
+                      row['ResourceStatusReason'] = row['ResourceStatusReason'][:1000]
+              print(json.dumps({'writer_cloudformation_history': writer_events[:20]}, sort_keys=True))
           else:
               print(json.dumps({'current_update_failure_history': history}, sort_keys=True))
           resources = aws('cloudformation', 'list-stack-resources', ['--stack-name', stack, '--max-items', '200'])
@@ -229,11 +238,64 @@ jobs:
               'Stacks[0].{StackId:StackId,StackStatus:StackStatus,LastUpdatedTime:LastUpdatedTime}')
           print(json.dumps({'registry_stack': registry}, sort_keys=True))
           database = aws('rds', 'describe-db-clusters', ['--db-cluster-identifier', stack],
-              'DBClusters[].Status')
-          print(json.dumps({'database_cluster_status': database}, sort_keys=True))
+              'DBClusters[].{DBClusterIdentifier:DBClusterIdentifier,DBClusterArn:DBClusterArn,DbClusterResourceId:DbClusterResourceId,Status:Status,ClusterCreateTime:ClusterCreateTime,Engine:Engine,EngineVersion:EngineVersion,DatabaseName:DatabaseName,MasterUsername:MasterUsername,KmsKeyId:KmsKeyId,StorageEncrypted:StorageEncrypted,DeletionProtection:DeletionProtection,DBSubnetGroup:DBSubnetGroup,DBClusterParameterGroup:DBClusterParameterGroup,VpcSecurityGroups:VpcSecurityGroups,DBClusterMembers:DBClusterMembers,ServerlessV2ScalingConfiguration:ServerlessV2ScalingConfiguration,MasterUserSecret:MasterUserSecret,TagList:TagList}')
+          ownership_keys = {'deployment', 'environment', 'purpose', 'project', 'owner_role', 'cost_center', 'source_revision'}
+          def ownership_tags(items):
+              return [tag for tag in (items or []) if tag.get('Key') in ownership_keys]
+          if isinstance(database, list):
+              for cluster in database:
+                  cluster['TagList'] = ownership_tags(cluster.get('TagList'))
+          print(json.dumps({'database_cluster_metadata': database}, sort_keys=True))
           writer = aws('rds', 'describe-db-instances', ['--db-instance-identifier', stack + '-writer'],
-              'DBInstances[].{DBInstanceIdentifier:DBInstanceIdentifier,DBClusterIdentifier:DBClusterIdentifier,DBInstanceStatus:DBInstanceStatus}')
-          print(json.dumps({'database_writer_status': writer}, sort_keys=True))
+              'DBInstances[].{DBInstanceIdentifier:DBInstanceIdentifier,DBInstanceArn:DBInstanceArn,DbiResourceId:DbiResourceId,DBClusterIdentifier:DBClusterIdentifier,DBInstanceStatus:DBInstanceStatus,InstanceCreateTime:InstanceCreateTime,Engine:Engine,EngineVersion:EngineVersion,DBInstanceClass:DBInstanceClass,KmsKeyId:KmsKeyId,StorageEncrypted:StorageEncrypted,PubliclyAccessible:PubliclyAccessible,DBSubnetGroup:DBSubnetGroup,DBParameterGroups:DBParameterGroups,TagList:TagList}')
+          if isinstance(writer, list):
+              for instance in writer:
+                  instance['TagList'] = ownership_tags(instance.get('TagList'))
+          print(json.dumps({'database_writer_metadata': writer}, sort_keys=True))
+          writer_cf = aws('cloudformation', 'describe-stack-resource', ['--stack-name', stack, '--logical-resource-id', 'DatabaseWriter'],
+              'StackResourceDetail.{StackId:StackId,LogicalResourceId:LogicalResourceId,PhysicalResourceId:PhysicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus}')
+          print(json.dumps({'writer_current_cloudformation_metadata': writer_cf}, sort_keys=True))
+          subnet_group_names = sorted({cluster['DBSubnetGroup'] for cluster in database
+              if isinstance(cluster, dict) and isinstance(cluster.get('DBSubnetGroup'), str)}) if isinstance(database, list) else []
+          subnet_ids = set()
+          vpc_ids = set()
+          for group_name in subnet_group_names[:2]:
+              group = aws('rds', 'describe-db-subnet-groups', ['--db-subnet-group-name', group_name],
+                  'DBSubnetGroups[].{DBSubnetGroupName:DBSubnetGroupName,DBSubnetGroupArn:DBSubnetGroupArn,VpcId:VpcId,SubnetGroupStatus:SubnetGroupStatus,Subnets:Subnets,SupportedNetworkTypes:SupportedNetworkTypes}')
+              print(json.dumps({'live_database_subnet_group': group}, sort_keys=True))
+              if isinstance(group, list):
+                  for entry in group:
+                      if isinstance(entry.get('VpcId'), str):
+                          vpc_ids.add(entry['VpcId'])
+                      subnet_ids.update(row['SubnetIdentifier'] for row in entry.get('Subnets', [])
+                          if isinstance(row.get('SubnetIdentifier'), str))
+          if subnet_ids:
+              subnets = aws('ec2', 'describe-subnets', ['--subnet-ids', *sorted(subnet_ids)[:10]],
+                  'Subnets[].{SubnetId:SubnetId,VpcId:VpcId,State:State,AvailabilityZone:AvailabilityZone,CidrBlock:CidrBlock,Ipv6CidrBlockAssociationSet:Ipv6CidrBlockAssociationSet,Tags:Tags}')
+              if isinstance(subnets, list):
+                  for subnet in subnets:
+                      subnet['Tags'] = ownership_tags(subnet.get('Tags'))
+              print(json.dumps({'live_database_subnet_ownership': subnets}, sort_keys=True))
+          if vpc_ids:
+              vpcs = aws('ec2', 'describe-vpcs', ['--vpc-ids', *sorted(vpc_ids)[:2]],
+                  'Vpcs[].{VpcId:VpcId,State:State,CidrBlock:CidrBlock,IsDefault:IsDefault,Ipv6CidrBlockAssociationSet:Ipv6CidrBlockAssociationSet,Tags:Tags}')
+              if isinstance(vpcs, list):
+                  for vpc in vpcs:
+                      vpc['Tags'] = ownership_tags(vpc.get('Tags'))
+              print(json.dumps({'live_database_vpc_ownership': vpcs}, sort_keys=True))
+          sg_ids = set()
+          if isinstance(database, list):
+              sg_ids.update(group['VpcSecurityGroupId'] for cluster in database
+                  for group in cluster.get('VpcSecurityGroups', []) if isinstance(group.get('VpcSecurityGroupId'), str))
+          sg_ids.update(row['PhysicalResourceId'] for row in rows
+              if row.get('ResourceType') == 'AWS::EC2::SecurityGroup' and isinstance(row.get('PhysicalResourceId'), str))
+          if sg_ids:
+              security_groups = aws('ec2', 'describe-security-groups', ['--group-ids', *sorted(sg_ids)[:10]],
+                  'SecurityGroups[].{GroupId:GroupId,GroupName:GroupName,VpcId:VpcId,OwnerId:OwnerId,Tags:Tags}')
+              if isinstance(security_groups, list):
+                  for group in security_groups:
+                      group['Tags'] = ownership_tags(group.get('Tags'))
+              print(json.dumps({'live_database_security_group_ownership': security_groups}, sort_keys=True))
           for role in ('api', 'worker', 'dispatcher', 'maintenance', 'control'):
               function = aws('lambda', 'get-function-configuration', ['--function-name', stack + '-' + role],
                   '{State:State,LastUpdateStatus:LastUpdateStatus,StateReasonCode:StateReasonCode,LastUpdateStatusReasonCode:LastUpdateStatusReasonCode,source_revision:Environment.Variables.OTGD_SOURCE_REVISION}')
@@ -271,48 +333,51 @@ jobs:
               'WorkerLogs': '/otgd-serverless-development/worker'}
           destination = Path(os.environ['RUNNER_TEMP']) / 'observer-template'
           destination.mkdir()
-          if (snapshot.get('StackStatus') != 'IMPORT_COMPLETE' or len(rows) != 15
-                  or resources.get('NextToken')
-                  or {row.get('LogicalResourceId'): row.get('PhysicalResourceId') for row in rows}
-                      != expected_retained_physical_ids
-                  or any(row.get('ResourceType') not in retained_types for row in rows)):
-              proof = {'raw_template_export': 'omitted',
-                  'reason': 'Stack is outside the exact 15-resource retained import phase'}
-              (destination / 'template-observation.json').write_text(json.dumps(proof, indent=2) + '\n')
-              print(json.dumps({'template_observation': proof}, sort_keys=True))
-              raise SystemExit(0)
           template_response = aws('cloudformation', 'get-template',
               ['--stack-name', stack, '--template-stage', 'Original'])
           if not isinstance(template_response, dict) or 'TemplateBody' not in template_response:
               raise SystemExit('Read-only template observation unavailable')
           template_body = template_response['TemplateBody']
           if isinstance(template_body, str):
-              if len(template_body.encode()) > 51200:
+              if len(template_body.encode()) > 1048576:
                   raise SystemExit('Read-only template observation exceeds bound')
               template_body = json.loads(template_body)
           raw = json.dumps(template_body, separators=(',', ':'), sort_keys=True).encode()
-          if len(raw) > 51200 or not isinstance(template_body, dict):
+          if len(raw) > 1048576 or not isinstance(template_body, dict):
               raise SystemExit('Read-only template observation exceeds bound')
-          # Refuse to publish any literal value-bearing secret/password fields.
-          # Generated-secret schemas and policy metadata are safe source fields.
-          def sensitive_literal(value):
-              if isinstance(value, dict):
-                  if any(key.lower() in {'secretstring', 'secretbinary', 'masteruserpassword', 'password', 'token', 'accesskeyid', 'secretaccesskey'} for key in value):
-                      return True
-                  return any(sensitive_literal(child) for child in value.values())
-              if isinstance(value, list):
-                  return any(sensitive_literal(child) for child in value)
-              return False
-          if sensitive_literal(template_body):
-              raise SystemExit('Read-only template export blocked: literal credential-bearing field')
           digest = hashlib.sha256(raw).hexdigest()
           expected_digest = '6081b2fb2aed05c2891715d45f114661637960bba3caee780f937cebdc4b4099'
-          (destination / 'actual-template.json').write_text(json.dumps(template_body, indent=2, sort_keys=True) + '\n')
           proof = {'actual_canonical_sha256': digest, 'protected_original_canonical_sha256': expected_digest,
-              'canonical_template_equal': digest == expected_digest, 'actual_template_bytes': len(raw)}
+              'canonical_template_equal': digest == expected_digest, 'actual_template_bytes': len(raw),
+              'raw_template_export': 'omitted; selector-only structural summary'}
           (destination / 'template-observation.json').write_text(json.dumps(proof, indent=2) + '\n')
           print(json.dumps({'template_observation': proof}, sort_keys=True))
-          print(json.dumps({'credential_free_actual_template': template_body}, sort_keys=True))
+          property_selectors = {
+              'AWS::RDS::DBCluster': {'DBClusterIdentifier', 'Engine', 'EngineVersion', 'EngineMode', 'DBSubnetGroupName',
+                  'DBClusterParameterGroupName', 'VpcSecurityGroupIds', 'StorageEncrypted', 'KmsKeyId', 'DeletionProtection',
+                  'ServerlessV2ScalingConfiguration'},
+              'AWS::RDS::DBInstance': {'DBInstanceIdentifier', 'DBClusterIdentifier', 'DBInstanceClass', 'Engine',
+                  'PubliclyAccessible', 'AutoMinorVersionUpgrade'},
+              'AWS::RDS::DBSubnetGroup': {'SubnetIds'},
+              'AWS::RDS::DBClusterParameterGroup': {'Family', 'Parameters'},
+              'AWS::EC2::SecurityGroup': {'VpcId'},
+              'AWS::EC2::Subnet': {'VpcId', 'AvailabilityZone', 'CidrBlock', 'Ipv6CidrBlock', 'AssignIpv6AddressOnCreation'},
+              'AWS::EC2::VPC': {'CidrBlock', 'EnableDnsHostnames', 'EnableDnsSupport'}}
+          summary = []
+          for logical, resource in template_body.get('Resources', {}).items():
+              row = {'LogicalResourceId': logical, 'ResourceType': resource.get('Type'),
+                  'DeletionPolicy': resource.get('DeletionPolicy'), 'UpdateReplacePolicy': resource.get('UpdateReplacePolicy')}
+              selectors = property_selectors.get(resource.get('Type'), set())
+              if selectors:
+                  row['SelectedProperties'] = {key: value for key, value in resource.get('Properties', {}).items() if key in selectors}
+              summary.append(row)
+          relation = {'template_resource_count': len(summary), 'inventory_resource_count': len(rows),
+              'template_only_logical_ids': sorted(set(template_body.get('Resources', {})) - {row.get('LogicalResourceId') for row in rows}),
+              'inventory_only_logical_ids': sorted({row.get('LogicalResourceId') for row in rows} - set(template_body.get('Resources', {}))),
+              'writer_in_template': 'DatabaseWriter' in template_body.get('Resources', {}),
+              'writer_in_current_inventory': any(row.get('LogicalResourceId') == 'DatabaseWriter' for row in rows)}
+          (destination / 'template-structural-summary.json').write_text(json.dumps({'resources': summary, 'managed_relation': relation}, indent=2, sort_keys=True) + '\n')
+          print(json.dumps({'template_structural_summary': summary, 'managed_relation': relation}, sort_keys=True))
           PYCODE
 
       - name: Preserve credential-free Original template source evidence
