@@ -147,7 +147,8 @@ jobs:
               ('cloudformation', 'describe-stack-events'), ('cloudformation', 'list-stack-resources'),
               ('cloudformation', 'list-change-sets'), ('cloudformation', 'describe-change-set'),
               ('cloudformation', 'get-template'),
-              ('rds', 'describe-db-clusters'), ('lambda', 'get-function-configuration')}
+              ('rds', 'describe-db-clusters'), ('lambda', 'get-function-configuration'),
+              ('ecr', 'describe-images')}
 
           def aws(service, operation, options=(), query=None):
               if (service, operation) not in allowed:
@@ -187,6 +188,7 @@ jobs:
                       event['ResourceStatusReason'] = event['ResourceStatusReason'][:1000]
           print(json.dumps({'recent_application_events': events}, sort_keys=True))
           resources = aws('cloudformation', 'list-stack-resources', ['--stack-name', stack, '--max-items', '200'])
+          rows = []
           if isinstance(resources, dict) and isinstance(resources.get('StackResourceSummaries'), list):
               rows = resources['StackResourceSummaries']
               print(json.dumps({'resource_status_counts': dict(Counter(row['ResourceStatus'] for row in rows)),
@@ -213,6 +215,42 @@ jobs:
                   if isinstance(change.get('StatusReason'), str):
                       change['StatusReason'] = change['StatusReason'][:1000]
           print(json.dumps({'latest_change_sets': changes}, sort_keys=True))
+          revision = 'f91674be10db91ededa853fad205868e717f668f'
+          for role in ('api', 'worker'):
+              image_tag = role + '-' + revision
+              image = aws('ecr', 'describe-images',
+                  ['--repository-name', stack, '--image-ids', 'imageTag=' + image_tag],
+                  'imageDetails[].imageDigest')
+              print(json.dumps({'image_tag': image_tag, 'image_digests': image,
+                  'digest_present': isinstance(image, list) and len(image) == 1}, sort_keys=True))
+          expected_retained_physical_ids = {
+              'Accounts': 'us-east-2_d5tqQ5fVy',
+              'ApiLogs': '/otgd-serverless-development/api',
+              'ApplicationSecret': 'arn:aws:secretsmanager:us-east-2:738470137867:secret:otgd-serverless-development-database-app-2AaejZ',
+              'CaptureSigningKey': 'f58b580f-dad8-4b42-b4e4-b8bbffa5260b',
+              'ControlLogs': '/otgd-serverless-development/control',
+              'DataKey': 'ff17e353-38bf-43df-a08c-85bd60b77aff',
+              'DeletionJournal': 'otgd-serverless-development-738470137867-us-east-2-journal',
+              'DispatcherLogs': '/otgd-serverless-development/dispatcher',
+              'Exports': 'otgd-serverless-development-738470137867-us-east-2-exports',
+              'JournalKey': 'a3bac0e3-0a4e-49bc-9122-6822efaedb3e',
+              'MaintenanceLogs': '/otgd-serverless-development/maintenance',
+              'RuntimeControl': 'otgd-serverless-development-control',
+              'TombstoneSecret': 'arn:aws:secretsmanager:us-east-2:738470137867:secret:otgd-serverless-development-tombstone-gkIe6Q',
+              'WebAssets': 'otgd-serverless-development-738470137867-us-east-2-web',
+              'WorkerLogs': '/otgd-serverless-development/worker'}
+          destination = Path(os.environ['RUNNER_TEMP']) / 'observer-template'
+          destination.mkdir()
+          if (snapshot.get('StackStatus') != 'IMPORT_COMPLETE' or len(rows) != 15
+                  or resources.get('NextToken')
+                  or {row.get('LogicalResourceId'): row.get('PhysicalResourceId') for row in rows}
+                      != expected_retained_physical_ids
+                  or any(row.get('ResourceType') not in retained_types for row in rows)):
+              proof = {'raw_template_export': 'omitted',
+                  'reason': 'Stack is outside the exact 15-resource retained import phase'}
+              (destination / 'template-observation.json').write_text(json.dumps(proof, indent=2) + '\n')
+              print(json.dumps({'template_observation': proof}, sort_keys=True))
+              raise SystemExit(0)
           template_response = aws('cloudformation', 'get-template',
               ['--stack-name', stack, '--template-stage', 'Original'])
           if not isinstance(template_response, dict) or 'TemplateBody' not in template_response:
@@ -239,8 +277,6 @@ jobs:
               raise SystemExit('Read-only template export blocked: literal credential-bearing field')
           digest = hashlib.sha256(raw).hexdigest()
           expected_digest = '6081b2fb2aed05c2891715d45f114661637960bba3caee780f937cebdc4b4099'
-          destination = Path(os.environ['RUNNER_TEMP']) / 'observer-template'
-          destination.mkdir()
           (destination / 'actual-template.json').write_text(json.dumps(template_body, indent=2, sort_keys=True) + '\n')
           proof = {'actual_canonical_sha256': digest, 'protected_original_canonical_sha256': expected_digest,
               'canonical_template_equal': digest == expected_digest, 'actual_template_bytes': len(raw)}
