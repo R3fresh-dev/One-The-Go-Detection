@@ -305,4 +305,9 @@ def build_template(config, phase="platform"):
     values["LogGroup"] = ref("ApiLogs")
     for duty in ["Submitter", "Reviewer", "Releaser"]:
         values["Registry" + duty] = att("Registry" + duty, "Arn")
+    # A retained writer still needs its VPC, subnets and database configuration
+    # after rollback. Keep that dependency graph available for reviewed recovery.
+    for name in ["Network", "NetworkIpv6", "PrivateA", "PrivateB", "LambdaSecurityGroup",
+                 "DatabaseSecurityGroup", "DatabaseSubnets", "DatabaseParameters", "DatabaseWriter"]:
+        resources[name].update(DeletionPolicy="Retain", UpdateReplacePolicy="Retain")
     return output(values)

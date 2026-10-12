@@ -127,7 +127,9 @@ def stable_stack(aws, name, absent_ok=False):
 
 def admit_changes(changes):
     protected = {'AWS::RDS::DBCluster', 'AWS::RDS::DBInstance', 'AWS::KMS::Key',
-                 'AWS::S3::Bucket', 'AWS::SecretsManager::Secret', 'AWS::Cognito::UserPool', 'AWS::DynamoDB::Table'}
+                 'AWS::S3::Bucket', 'AWS::SecretsManager::Secret', 'AWS::Cognito::UserPool', 'AWS::DynamoDB::Table',
+                 'AWS::RDS::DBSubnetGroup', 'AWS::RDS::DBClusterParameterGroup',
+                 'AWS::EC2::VPC', 'AWS::EC2::VPCCidrBlock', 'AWS::EC2::Subnet', 'AWS::EC2::SecurityGroup'}
     for entry in changes:
         r = entry.get('ResourceChange', {})
         if r.get('ResourceType') in protected and (r.get('Action') == 'Remove' or r.get('Replacement') in ('True', 'Conditional')):
@@ -174,7 +176,7 @@ def deploy_stack(aws, name, template, c, template_bucket=None):
     return stable_stack(aws, name)
 
 
-def preflight(aws, c, prior):
+def preflight(aws, c, prior, retained_engine_version=None):
     if aws.client('sts').get_caller_identity()['Account'] != c['account']:
         raise Gate('AWS credentials do not match the selected account')
     plan = aws.client('freetier').get_account_plan_state()
@@ -203,7 +205,13 @@ def preflight(aws, c, prior):
                     and row.get('ServerlessV2FeaturesSupport', {}).get('MinCapacity') == 0]
         if not versions:
             raise Gate('Aurora PostgreSQL 16 with zero-capacity auto-pause is unavailable')
-        version = max(versions, key=lambda row: int(row['EngineVersion'].split('.')[1]))['EngineVersion']
+        if retained_engine_version is not None:
+            matches = [row for row in versions if row['EngineVersion'] == retained_engine_version]
+            if len(matches) != 1:
+                raise Gate('The retained Aurora engine version no longer matches reviewed available capacity')
+            version = retained_engine_version
+        else:
+            version = max(versions, key=lambda row: int(row['EngineVersion'].split('.')[1]))['EngineVersion']
     orderable = rds.describe_orderable_db_instance_options(Engine='aurora-postgresql',
         EngineVersion=version, DBInstanceClass='db.serverless')['OrderableDBInstanceOptions']
     if not orderable:
@@ -431,13 +439,27 @@ def deploy(args, c, aws, price):
         raise Gate('Initial recovery resume requires the original manifest and its independently verified SHA-256')
     if resume and (not recovering or not re.fullmatch(r'[0-9a-f]{64}', resume_hash)):
         raise Gate('Initial recovery resume requires explicit recovery and a valid original manifest SHA-256')
-    prior = None if recovering else stable_stack(aws, STACK, absent_ok=True)
-    c = preflight(aws, c, prior)
+    continuing = getattr(args, 'continue_uninitialized', None)
+    continuation_hash = getattr(args, 'continue_uninitialized_sha256', None)
+    if (bool(continuing) != bool(continuation_hash)
+            or (continuing and (not args.establish_new or recovering or resume
+                or not re.fullmatch(r'[0-9a-f]{64}', continuation_hash)))):
+        raise Gate('Uninitialized continuation requires its protected bundle/hash, explicit establishment and no initial recovery flags')
+    continuation = None
+    if continuing:
+        from deploy.serverless_recovery import uninitialized_continuation_plan
+        continuation = uninitialized_continuation_plan(aws, c, continuing, continuation_hash)
+    prior = None if recovering or continuing else stable_stack(aws, STACK, absent_ok=True)
+    c = preflight(aws, c, prior, continuation['database_engine_version']) if continuation else preflight(aws, c, prior)
     if prior is not None and args.establish_new:
         raise Gate('A retained deployment cannot establish a new empty journal')
     work = ROOT / '.local/deploy/serverless-development' / c['releaseId'] / uuid.uuid4().hex
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
+        if continuing:
+            from deploy.serverless_recovery import continue_uninitialized
+            continuation = journal.call('continue-uninitialized-retained-resources', continue_uninitialized,
+                aws, c, work / 'uninitialized-continuation.json', continuing, continuation_hash)
         if recovering:
             from deploy.serverless_recovery import recover_initial, resume_initial
             if resume:
@@ -453,6 +475,9 @@ def deploy(args, c, aws, price):
         if prior:
             journal.call('drain-existing-runtime', drain, aws, prior)
         out = journal.call('deploy-stopped', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}), c, registry['DeploymentBucket'])
+        if continuation:
+            from deploy.serverless_recovery import verify_continued_database
+            journal.call('verify-continued-database', verify_continued_database, aws, c, out, continuation)
         journal.call('bootstrap', invoke_maintenance, aws, c, out, 'bootstrap', work, establish_new=args.establish_new)
         journal.call('migrate', invoke_maintenance, aws, c, out, 'migrate', work)
         admission = journal.call('admission', invoke_maintenance, aws, c, out, 'admission', work)
@@ -495,6 +520,8 @@ def main(argv=None):
     parser.add_argument('--recover-initial', action='store_true', help='Import retained resources from a verified empty first-attempt infrastructure rollback; never use for an initialized deployment')
     parser.add_argument('--resume-initial', type=Path, help='Resume detached initial recovery from the original protected manifest; requires --recover-initial and --establish-new')
     parser.add_argument('--resume-initial-sha256', help='Independently verified SHA-256 of the original recovery manifest')
+    parser.add_argument('--continue-uninitialized', type=Path, help='Continue the exact protected failed stopped deployment before first initialization')
+    parser.add_argument('--continue-uninitialized-sha256', help='Independently authenticated SHA-256 of the continuation bundle')
     args = parser.parse_args(argv)
     try:
         if args.profile and args.identity:
@@ -504,6 +531,11 @@ def main(argv=None):
                     or not args.resume_initial or not args.resume_initial_sha256
                     or not re.fullmatch(r'[0-9a-f]{64}', args.resume_initial_sha256)):
                 raise Gate('Initial recovery resume requires deploy, both recovery flags, the original manifest and its verified SHA-256')
+        if args.continue_uninitialized or args.continue_uninitialized_sha256:
+            if (args.operation != 'deploy' or not args.establish_new or args.recover_initial or args.resume_initial
+                    or not args.continue_uninitialized or not args.continue_uninitialized_sha256
+                    or not re.fullmatch(r'[0-9a-f]{64}', args.continue_uninitialized_sha256)):
+                raise Gate('Uninitialized continuation requires deploy, explicit establishment and the protected bundle/hash only')
         c = read_config(args.config)
         price = budget(c)
         if args.operation == 'plan':

@@ -1,13 +1,14 @@
 """First-stack recovery contracts; these fixtures are not AWS acceptance proof."""
 from collections import OrderedDict
 from copy import deepcopy
+from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from botocore.exceptions import ClientError
 from botocore.handlers import json_decode_template_body
@@ -37,7 +38,8 @@ class FakeCloud:
         self.template = build_template({**self.config, 'releaseId': 'b' * 40,
             'apiImageUri': image + 'a' * 64, 'workerImageUri': image + 'b' * 64})
         self.retained = {name: value for name, value in self.template['Resources'].items()
-            if value.get('DeletionPolicy') == 'Retain' and name not in ('Artifacts', 'DatabaseWriter')}
+            if value.get('DeletionPolicy') == 'Retain' and value['Type'] in recovery.RETAINED_TYPES
+            and name not in ('Artifacts', 'DatabaseWriter')}
         self.physical = {}
         for name, value in self.retained.items():
             props = value['Properties']
@@ -829,6 +831,460 @@ class InitialRecoveryTest(unittest.TestCase):
         self.assertEqual(recovery._references({'Fn::Sub': ['${Arn}/* ${DataKey.Arn} ${AWS::AccountId} ${!literal}',
             {'Arn': {'Fn::GetAtt': ['DeletionJournal', 'Arn']}}], 'DependsOn': 'JournalKey'}),
             {'DeletionJournal', 'DataKey', 'JournalKey'})
+
+
+class ContinuationCloud(FakeCloud):
+    """The observed 15-authority/8-tracked/1-detached-writer boundary."""
+    def __init__(self, directory):
+        super().__init__()
+        source_path, source = self.detached_manifest(directory)
+        self.failed_release = self.config['releaseId']
+        adoption = {**source, 'release_id': self.failed_release,
+            'status': 'uninitialized-retained-resources-imported', 'recovered_stack_id': NEW_STACK,
+            'source_manifest_sha256': hashlib.sha256(source_path.read_bytes()).hexdigest()}
+        self.bundle = {'schema_version': '1.0.0', 'operation': 'serverless-uninitialized-continuation',
+            'account': ACCOUNT, 'region': REGION, 'stack_name': recovery.STACK,
+            'failed_run_id': 123, 'failed_run_attempt': 1, 'failed_release_id': self.failed_release,
+            'artifact_sha256': 'e' * 64, 'failed_run_started_at': '2020-01-01T00:00:00Z',
+            'failed_run_completed_at': '2020-01-01T01:00:00Z',
+            'original_recovery_raw': source_path.read_text(), 'adoption_raw': json.dumps(adoption),
+            'deployment_state_raw': json.dumps({'schema_version': '1.0.0',
+                'environment': 'serverless-development', 'account': ACCOUNT, 'region': REGION,
+                'release_id': self.failed_release, 'status': 'failed', 'current_stage': 'deploy-stopped',
+                'failed_stage': 'deploy-stopped', 'completed_stages': [
+                    'resume-initial-retained-resources', 'serverless-registry',
+                    'exact-source-archive', 'build-immutable-lambda-images'],
+                'completed_receipts': {}, 'rollback_executed': False}),
+            'gate_admission_raw': json.dumps({'provider': 'github_actions', 'repository': recovery.REPOSITORY,
+                'workflow_path': recovery.WORKFLOW_PATH, 'head_sha': self.failed_release,
+                'event': 'push', 'head_branch': 'main',
+                'jobs': {name: index + 1 for index, name in enumerate(sorted(recovery.REQUIRED_JOBS))}}),
+            'serverless_plan_raw': json.dumps({'environment': 'serverless-development',
+                'account': ACCOUNT, 'region': REGION, 'deployment_executed': False})}
+        self.bundle_path = Path(directory) / 'continuation-source.json'
+        self.config['releaseId'] = 'd' * 40
+        self.status = 'UPDATE_ROLLBACK_COMPLETE'
+        self.current_template = deepcopy(source['import_template'])
+        self.graph = {**self.physical, 'Database': recovery.STACK,
+            'DatabaseWriter': recovery.STACK + '-writer', 'DatabaseParameters': 'parameters-fixture',
+            'DatabaseSubnets': 'subnet-group-fixture', 'Network': 'vpc-fixture',
+            'NetworkIpv6': 'vpc-cidr-assoc-fixture', 'PrivateA': 'subnet-a-fixture',
+            'DatabaseSecurityGroup': 'sg-database-fixture', 'LambdaSecurityGroup': 'sg-lambda-fixture'}
+        self.deleted_subnet = 'subnet-b-deleted'
+        self.current_rows = [{'LogicalResourceId': name, 'ResourceType': resource['Type'],
+            'PhysicalResourceId': self.graph[name], 'ResourceStatus': 'UPDATE_COMPLETE'}
+            for name, resource in self.retained.items()]
+        self.current_rows += [{'LogicalResourceId': name, 'ResourceType': kind,
+            'PhysicalResourceId': self.graph[name], 'ResourceStatus': 'CREATE_COMPLETE'}
+            for name, (kind, _) in recovery.DATABASE_IMPORT_IDS.items() if name != 'DatabaseWriter']
+        self.current_events = [{'LogicalResourceId': recovery.STACK, 'ResourceType': 'AWS::CloudFormation::Stack',
+            'PhysicalResourceId': NEW_STACK, 'ResourceStatus': 'UPDATE_IN_PROGRESS', 'Timestamp': '2020-01-01T00:01:00Z'}]
+        self.current_events += [{'LogicalResourceId': name, 'ResourceType': kind,
+            'PhysicalResourceId': self.graph[name], 'ResourceStatus': 'CREATE_COMPLETE',
+            'Timestamp': '2020-01-01T00:02:00Z'}
+            for name, (kind, _) in recovery.DATABASE_IMPORT_IDS.items() if name != 'DatabaseWriter']
+        self.current_events += [{'LogicalResourceId': 'DatabaseWriter', 'ResourceType': 'AWS::RDS::DBInstance',
+            'PhysicalResourceId': self.graph['DatabaseWriter'], 'ResourceStatus': 'DELETE_SKIPPED',
+            'Timestamp': '2020-01-01T00:04:00Z'},
+            {'LogicalResourceId': 'PrivateB', 'ResourceType': 'AWS::EC2::Subnet',
+             'PhysicalResourceId': self.deleted_subnet, 'ResourceStatus': 'DELETE_COMPLETE',
+             'Timestamp': '2020-01-01T00:04:00Z'}]
+        # The real failed stopped deployment did create its concurrency-zero
+        # control Lambda, and then deleted it. Other application Lambdas did not.
+        for status, timestamp in [('CREATE_COMPLETE', '00:02:00'), ('DELETE_COMPLETE', '00:04:00')]:
+            self.current_events.append({'LogicalResourceId': 'ControlFunction', 'ResourceType': 'AWS::Lambda::Function',
+                'PhysicalResourceId': recovery.STACK + '-control', 'ResourceStatus': status,
+                'Timestamp': '2020-01-01T' + timestamp + 'Z'})
+        self.changes = [{'ResourceChange': {'Action': 'Import', 'LogicalResourceId': name,
+            'ResourceType': kind}} for name, (kind, _) in recovery.DATABASE_IMPORT_IDS.items()]
+        cf = self.clients['cloudformation']
+        cf.get_template.side_effect = lambda **kwargs: {'TemplateBody': deepcopy(
+            self.template if kwargs['StackName'] == OLD_STACK else self.current_template)}
+        cf.get_template_summary.side_effect = self.continuation_summary
+        cf.get_paginator.side_effect = self.continuation_paginator
+        cf.get_waiter.side_effect = self.continuation_waiter
+        cf.describe_stack_resource.side_effect = ClientError({'Error': {'Code': 'ValidationError',
+            'Message': 'Stack does not contain resource DatabaseWriter'}}, 'DescribeStackResource')
+        self.clients['ec2'] = Mock(name='ec2')
+        self.clients['ecr'] = Mock(name='ecr')
+        self.configure_database()
+        self.configure_images()
+
+    def write_bundle(self):
+        recovery._write(self.bundle_path, self.bundle)
+        return self.bundle_path, hashlib.sha256(self.bundle_path.read_bytes()).hexdigest()
+
+    def continuation_summary(self, **kwargs):
+        resources = json.loads(kwargs['TemplateBody'])['Resources']
+        old = {'AWS::KMS::Key': 'KeyId', 'AWS::SecretsManager::Secret': 'Id',
+            'AWS::S3::Bucket': 'BucketName', 'AWS::DynamoDB::Table': 'TableName',
+            'AWS::Cognito::UserPool': 'UserPoolId', 'AWS::Logs::LogGroup': 'LogGroupName'}
+        return {'ResourceIdentifierSummaries': [{'ResourceType': resource['Type'],
+            'LogicalResourceIds': [name], 'ResourceIdentifiers': [','.join(recovery.DATABASE_IMPORT_IDS[name][1])
+                if name in recovery.DATABASE_IMPORT_IDS else old[resource['Type']]]}
+            for name, resource in resources.items()]}
+
+    def continuation_paginator(self, operation):
+        if operation in ('describe_stack_events', 'list_stack_resources'):
+            def paginate(**kwargs):
+                original = kwargs['StackName'] == OLD_STACK
+                key = 'StackEvents' if operation == 'describe_stack_events' else 'StackResourceSummaries'
+                rows = (self.events if original else self.current_events) if key == 'StackEvents' else (
+                    self.rows if original else self.current_rows)
+                return [{key: rows}]
+            return SimpleNamespace(paginate=paginate)
+        if operation == 'describe_change_set':
+            return SimpleNamespace(paginate=lambda **kwargs: [{'Changes': self.changes}])
+        raise AssertionError(operation)
+
+    def continuation_waiter(self, name):
+        def wait(**kwargs):
+            if name == 'stack_import_complete':
+                self.adopt(json.loads(self.clients['cloudformation'].create_change_set.call_args.kwargs['TemplateBody']))
+        return SimpleNamespace(wait=wait)
+
+    def adopt(self, template):
+        self.status = 'IMPORT_COMPLETE'
+        self.current_template = deepcopy(template)
+        self.current_rows = [{'LogicalResourceId': name, 'ResourceType': resource['Type'],
+            'PhysicalResourceId': self.graph[name], 'ResourceStatus': 'UPDATE_COMPLETE'}
+            for name, resource in template['Resources'].items()]
+
+    def configure_images(self):
+        ecr = self.clients['ecr']
+        uri = f'{ACCOUNT}.dkr.ecr.{REGION}.amazonaws.com/{recovery.STACK}'
+        ecr.describe_repositories.return_value = {'repositories': [{'repositoryName': recovery.STACK,
+            'repositoryUri': uri, 'registryId': ACCOUNT, 'imageTagMutability': 'IMMUTABLE', 'repositoryArn': 'repo-arn'}]}
+        ecr.list_tags_for_resource.return_value = {'tags': self.tags}
+        manifests = {role: json.dumps({'mediaType': 'application/vnd.oci.image.manifest.v1+json',
+            'schemaVersion': 2, 'config': {'digest': role}}) for role in ('api', 'worker')}
+        digests = {role: 'sha256:' + hashlib.sha256(raw.encode()).hexdigest() for role, raw in manifests.items()}
+        ecr.describe_images.side_effect = lambda **kwargs: {'imageDetails': [{'imageTags': [kwargs['imageIds'][0]['imageTag']],
+            'imageDigest': digests[kwargs['imageIds'][0]['imageTag'].split('-')[0]]}]}
+        ecr.batch_get_image.side_effect = lambda **kwargs: {'images': [{'imageManifest': next(
+            manifests[role] for role in manifests if digests[role] == kwargs['imageIds'][0]['imageDigest'])}]}
+
+    def configure_database(self):
+        p, rds, ec2 = self.graph, self.clients['rds'], self.clients['ec2']
+        key = f'arn:aws:kms:{REGION}:{ACCOUNT}:key/{p["DataKey"]}'
+        self.cluster = {'DBClusterIdentifier': p['Database'], 'DBClusterArn': f'arn:aws:rds:{REGION}:{ACCOUNT}:cluster:{p["Database"]}',
+            'Status': 'available', 'Engine': 'aurora-postgresql', 'EngineVersion': '16.15', 'DatabaseName': 'otgd',
+            'MasterUsername': 'otgd_migrator', 'StorageEncrypted': True, 'KmsKeyId': key, 'DeletionProtection': True,
+            'BackupRetentionPeriod': 7, 'DBClusterMembers': [{'DBInstanceIdentifier': p['DatabaseWriter'],
+                'IsClusterWriter': True, 'DBClusterParameterGroupStatus': 'in-sync'}],
+            'MasterUserSecret': {'SecretStatus': 'active', 'KmsKeyId': key,
+                'SecretArn': f'arn:aws:secretsmanager:{REGION}:{ACCOUNT}:secret:rds!cluster-fixture'},
+            'ServerlessV2ScalingConfiguration': {'MinCapacity': 0, 'MaxCapacity': 1, 'SecondsUntilAutoPause': 300},
+            'DBClusterParameterGroup': p['DatabaseParameters'], 'DBSubnetGroup': p['DatabaseSubnets'],
+            'DbClusterResourceId': 'cluster-unique-fixture', 'ClusterCreateTime': '2020-01-01T00:02:00Z',
+            'VpcSecurityGroups': [{'VpcSecurityGroupId': p['DatabaseSecurityGroup'], 'Status': 'active'}], 'TagList': self.tags}
+        group = {'DBSubnetGroupName': p['DatabaseSubnets'], 'DBSubnetGroupArn': 'group-arn',
+            'SubnetGroupStatus': 'Complete', 'VpcId': p['Network'], 'Subnets': [
+                {'SubnetIdentifier': item, 'SubnetStatus': 'Active'} for item in (p['PrivateA'], self.deleted_subnet)]}
+        self.writer = {'DBInstanceIdentifier': p['DatabaseWriter'], 'DBInstanceArn': f'arn:aws:rds:{REGION}:{ACCOUNT}:db:{p["DatabaseWriter"]}',
+            'DBInstanceStatus': 'available', 'Engine': 'aurora-postgresql', 'EngineVersion': '16.15',
+            'DBInstanceClass': 'db.serverless', 'DBClusterIdentifier': p['Database'], 'PubliclyAccessible': False,
+            'AutoMinorVersionUpgrade': False, 'StorageEncrypted': True, 'KmsKeyId': key,
+            'DbiResourceId': 'db-unique-fixture', 'InstanceCreateTime': '2020-01-01T00:05:00Z',
+            'DBSubnetGroup': group, 'TagList': self.tags}
+        rds.describe_db_clusters.side_effect = lambda **kwargs: {'DBClusters': [self.cluster]}
+        rds.describe_db_instances.side_effect = lambda **kwargs: {'DBInstances': [self.writer]}
+        rds.describe_db_subnet_groups.return_value = {'DBSubnetGroups': [group]}
+        rds.describe_db_cluster_parameter_groups.return_value = {'DBClusterParameterGroups': [{
+            'DBClusterParameterGroupName': p['DatabaseParameters'], 'DBParameterGroupFamily': 'aurora-postgresql16',
+            'Description': 'Verified PostgreSQL TLS required', 'DBClusterParameterGroupArn': 'parameters-arn'}]}
+        rds.list_tags_for_resource.return_value = {'TagList': self.tags}
+        rds.get_paginator.return_value = SimpleNamespace(paginate=lambda **kwargs: [{'Parameters': [
+            {'ParameterName': 'rds.force_ssl', 'ParameterValue': '1'}]}])
+        self.vpc = {'VpcId': p['Network'], 'State': 'available', 'IsDefault': False, 'CidrBlock': '10.76.0.0/16',
+            'Tags': self.tags, 'Ipv6CidrBlockAssociationSet': [{'AssociationId': p['NetworkIpv6'],
+                'Ipv6CidrBlockState': {'State': 'associated'}, 'Ipv6Pool': 'Amazon', 'NetworkBorderGroup': REGION,
+                'Ipv6CidrBlock': '2600:1f16:1d94:dd00::/56'}]}
+        self.subnet = {'SubnetId': p['PrivateA'], 'VpcId': p['Network'], 'State': 'available',
+            'CidrBlock': '10.76.0.0/24', 'MapPublicIpOnLaunch': False, 'AssignIpv6AddressOnCreation': True,
+            'AvailabilityZone': REGION + 'a', 'Tags': self.tags, 'Ipv6CidrBlockAssociationSet': [
+                {'Ipv6CidrBlock': '2600:1f16:1d94:dd00::/64', 'Ipv6CidrBlockState': {'State': 'associated'}}]}
+        ec2.describe_vpcs.side_effect = lambda **kwargs: {'Vpcs': [self.vpc]}
+        def subnets(**kwargs):
+            if kwargs['SubnetIds'] == [self.deleted_subnet]:
+                raise absent('InvalidSubnetID.NotFound')
+            return {'Subnets': [self.subnet]}
+        ec2.describe_subnets.side_effect = subnets
+        ec2.describe_vpc_attribute.side_effect = lambda **kwargs: {'VpcId': p['Network'],
+            kwargs['Attribute'][0].upper() + kwargs['Attribute'][1:]: {'Value': True}}
+        def rule(port, field, value):
+            key = {'IpRanges': 'CidrIp', 'Ipv6Ranges': 'CidrIpv6', 'UserIdGroupPairs': 'GroupId'}[field]
+            return {'IpProtocol': 'tcp', 'FromPort': port, 'ToPort': port, field: [{key: value}]}
+        self.groups = [{'GroupId': p['DatabaseSecurityGroup'], 'VpcId': p['Network'], 'OwnerId': ACCOUNT, 'Tags': self.tags,
+            'IpPermissions': [rule(5432, 'UserIdGroupPairs', p['LambdaSecurityGroup'])],
+            'IpPermissionsEgress': [rule(5432, 'IpRanges', '127.0.0.1/32')]},
+            {'GroupId': p['LambdaSecurityGroup'], 'VpcId': p['Network'], 'OwnerId': ACCOUNT, 'Tags': self.tags,
+             'IpPermissions': [], 'IpPermissionsEgress': [rule(443, 'IpRanges', '0.0.0.0/0'), rule(443, 'Ipv6Ranges', '::/0')]}]
+        ec2.describe_security_groups.side_effect = lambda **kwargs: {'SecurityGroups': self.groups}
+
+
+class UninitializedContinuationTest(unittest.TestCase):
+    def plan(self, cloud):
+        path, digest = cloud.write_bundle()
+        with patch.object(recovery, '_historical_builder', return_value=build_template) as builder:
+            result = recovery.uninitialized_continuation_plan(cloud.aws, cloud.config, path, digest)
+            builder.assert_called_once_with(cloud.failed_release)
+        return result
+
+    def test_read_only_plan_preserves_observed_graph_and_composite_identifier(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = ContinuationCloud(directory)
+            # Historic reconstruction remains exact when current desired budget changes.
+            cloud.config['monthlyBudgetUsd'] = 100
+            result = self.plan(cloud)
+            self.assertEqual(result['retained_physical_ids'], cloud.graph)
+            self.assertEqual(len(result['import_template']['Resources']), 24)
+            self.assertEqual(result['database_engine_version'], '16.15')
+            self.assertEqual(result['import_template']['Resources']['DatabaseSubnets']['Properties']['SubnetIds'],
+                [cloud.graph['PrivateA'], cloud.deleted_subnet])
+            ipv6 = next(row for row in result['resources_to_import'] if row['LogicalResourceId'] == 'NetworkIpv6')
+            self.assertEqual(ipv6['ResourceIdentifier'], {'Id': cloud.graph['NetworkIpv6'], 'VpcId': cloud.graph['Network']})
+            self.assertEqual(len(result['resources_to_import']), 9)
+            self.assertFalse(result['journal_established'])
+            cloud.no_mutations(self)
+
+    def test_import_journal_and_existing_import_resume_preserve_every_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = ContinuationCloud(directory)
+            source, digest = cloud.write_bundle()
+            before = source.read_bytes()
+            journal = Path(directory) / 'continued.json'
+            def requesting(**kwargs):
+                saved = json.loads(journal.read_text())
+                self.assertEqual(saved['status'], 'surviving-database-import-requesting')
+                self.assertEqual(saved['retained_physical_ids'], cloud.graph)
+                self.assertEqual(journal.stat().st_mode & 0o777, 0o600)
+                self.assertEqual(kwargs['ChangeSetType'], 'IMPORT')
+                self.assertNotIn('Tags', kwargs)
+                return {'Id': 'fixture-import-change'}
+            cf = cloud.clients['cloudformation']
+            cf.create_change_set.side_effect = requesting
+            with patch.object(recovery, '_historical_builder', return_value=build_template):
+                result = recovery.continue_uninitialized(cloud.aws, cloud.config, journal, source, digest)
+                resumed = recovery.continue_uninitialized(cloud.aws, cloud.config,
+                    Path(directory) / 'resumed.json', source, digest)
+            self.assertEqual(result['status'], 'retained-uninitialized-database-adopted')
+            self.assertEqual(resumed['retained_physical_ids'], cloud.graph)
+            self.assertTrue(resumed['already_adopted'])
+            self.assertEqual(source.read_bytes(), before)
+            cf.create_change_set.assert_called_once()
+            cf.execute_change_set.assert_called_once()
+            cf.delete_stack.assert_not_called()
+            cf.update_termination_protection.assert_not_called()
+            for logical in recovery.DATABASE_IMPORT_IDS:
+                self.assertEqual(result['import_template']['Resources'][logical]['DeletionPolicy'], 'Retain')
+            cloud.clients['secretsmanager'].get_secret_value.assert_not_called()
+
+    def test_invalid_bundle_never_reaches_cloud(self):
+        changes = [('account', '000000000000'), ('failed_run_id', True), ('failed_run_attempt', 0),
+            ('artifact_sha256', 'bad'), ('failed_run_completed_at', '2020-01-01T01:00:00'),
+            ('failed_run_started_at', '2020-01-02T00:00:00Z'), ('unexpected', 'field')]
+        for field, value in changes:
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                cloud.bundle[field] = value
+                path, digest = cloud.write_bundle()
+                for client in cloud.clients.values():
+                    client.reset_mock()
+                with self.assertRaises(Gate):
+                    recovery.uninitialized_continuation_plan(cloud.aws, cloud.config, path, digest)
+                for client in cloud.clients.values():
+                    self.assertEqual(client.mock_calls, [])
+
+    def test_bundle_hash_and_first_bootstrap_boundary_fail_closed(self):
+        for mode in ('wrong-hash', 'bootstrap-stage', 'bootstrap-receipt', 'gate-source', 'adoption-source'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                if mode in ('bootstrap-stage', 'bootstrap-receipt'):
+                    state = json.loads(cloud.bundle['deployment_state_raw'])
+                    if mode == 'bootstrap-stage':
+                        state['completed_stages'].append('bootstrap')
+                    else:
+                        state['completed_receipts'] = {'bootstrap': {'ok': True}}
+                    cloud.bundle['deployment_state_raw'] = json.dumps(state)
+                elif mode in ('gate-source', 'adoption-source'):
+                    field = 'gate_admission_raw' if mode == 'gate-source' else 'adoption_raw'
+                    record = json.loads(cloud.bundle[field])
+                    record['head_sha' if mode == 'gate-source' else 'source_manifest_sha256'] = 'f' * 64
+                    cloud.bundle[field] = json.dumps(record)
+                path, digest = cloud.write_bundle()
+                with self.assertRaises(Gate), patch.object(recovery, '_historical_builder') as builder:
+                    recovery.uninitialized_continuation_plan(cloud.aws, cloud.config, path,
+                        '0' * 64 if mode == 'wrong-hash' else digest)
+                builder.assert_not_called()
+                cloud.no_mutations(self)
+
+    def test_live_drift_absence_history_and_unstable_stack_block_before_import(self):
+        mutations = {
+            'cleanup': lambda c: setattr(c, 'status', 'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS'),
+            'extra-resource': lambda c: c.current_rows.append(dict(c.current_rows[0])),
+            'authority-id': lambda c: c.current_rows[0].update(PhysicalResourceId='changed'),
+            'runtime-live': lambda c: setattr(c.clients['lambda'].get_function, 'side_effect', None),
+            'journal-written': lambda c: c.clients['s3'].list_object_versions.configure_mock(
+                return_value={'Versions': [{'Key': 'first-anchor'}]}),
+            'pending-database': lambda c: c.cluster.update(PendingModifiedValues={'EngineVersion': '16.16'}),
+            'pending-writer': lambda c: c.writer.update(PendingModifiedValues={'DBInstanceClass': 'other'}),
+            'unapplied-tls': lambda c: c.cluster['DBClusterMembers'][0].update(DBClusterParameterGroupStatus='pending-reboot'),
+            'wrong-key': lambda c: c.cluster.update(KmsKeyId='different'),
+            'outside-run': lambda c: c.writer.update(InstanceCreateTime='2019-01-01T00:00:00Z'),
+            'public-writer': lambda c: c.writer.update(PubliclyAccessible=True),
+            'unexpected-rule': lambda c: c.groups[1]['IpPermissions'].append({'IpProtocol': '-1',
+                'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}),
+            'other-function-created': lambda c: c.current_events.append({'LogicalResourceId': 'ApiFunction',
+                'ResourceStatus': 'CREATE_COMPLETE'}),
+            'control-never-deleted': lambda c: setattr(c, 'current_events', [row for row in c.current_events
+                if row.get('LogicalResourceId') != 'ControlFunction' or row.get('ResourceStatus') != 'DELETE_COMPLETE']),
+            'unbound-update': lambda c: c.current_events[0].update(Timestamp='2019-01-01T00:00:00Z'),
+            'actual-template-drift': lambda c: c.current_template['Resources']['DataKey']['Properties'].update(Enabled=False),
+        }
+        for mode, mutate in mutations.items():
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                mutate(cloud)
+                with self.assertRaises(Gate):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+
+    def test_imported_writer_identity_and_complete_status_remain_authoritative(self):
+        for mode in ('writer-id', 'create-status', 'template-drift'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                cloud.adopt(self.plan(cloud)['import_template'])
+                if mode == 'writer-id':
+                    next(row for row in cloud.current_rows if row['LogicalResourceId'] == 'DatabaseWriter').update(
+                        PhysicalResourceId='different-existing-writer')
+                elif mode == 'create-status':
+                    cloud.current_rows[0]['ResourceStatus'] = 'CREATE_COMPLETE'
+                else:
+                    cloud.current_template['Resources']['Database']['DeletionPolicy'] = 'Snapshot'
+                with self.assertRaises(Gate):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+
+    def test_schema_or_change_set_add_modify_remove_never_executes(self):
+        for mode in ('composite-alternative', 'missing-identifier', 'Add', 'Modify', 'Remove', 'replacement'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                cf = cloud.clients['cloudformation']
+                if mode in ('composite-alternative', 'missing-identifier'):
+                    original = cloud.continuation_summary
+                    def summary(**kwargs):
+                        result = original(**kwargs)
+                        if 'DatabaseWriter' in json.loads(kwargs['TemplateBody'])['Resources']:
+                            if mode == 'missing-identifier':
+                                result['ResourceIdentifierSummaries'] = [row for row in result['ResourceIdentifierSummaries']
+                                    if row['LogicalResourceIds'] != ['NetworkIpv6']]
+                            else:
+                                next(row for row in result['ResourceIdentifierSummaries']
+                                    if row['LogicalResourceIds'] == ['NetworkIpv6'])['ResourceIdentifiers'] = ['Id', 'VpcId']
+                        return result
+                    cf.get_template_summary.side_effect = summary
+                elif mode == 'replacement':
+                    cloud.changes[0]['ResourceChange']['Replacement'] = 'True'
+                else:
+                    cloud.changes[0]['ResourceChange']['Action'] = mode
+                path, digest = cloud.write_bundle()
+                with self.assertRaises(Gate), patch.object(recovery, '_historical_builder', return_value=build_template):
+                    recovery.continue_uninitialized(cloud.aws, cloud.config, Path(directory) / 'blocked.json', path, digest)
+                cf.execute_change_set.assert_not_called()
+                cf.delete_stack.assert_not_called()
+
+    def test_cloudformation_ownership_rejection_has_protected_journal_and_no_fallback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = ContinuationCloud(directory)
+            path, digest = cloud.write_bundle()
+            cf = cloud.clients['cloudformation']
+            cf.create_change_set.side_effect = ClientError({'Error': {'Code': 'ValidationError',
+                'Message': 'Resource already managed'}}, 'CreateChangeSet')
+            evidence_path = Path(directory) / 'blocked.json'
+            with self.assertRaises(ClientError), patch.object(recovery, '_historical_builder', return_value=build_template):
+                recovery.continue_uninitialized(cloud.aws, cloud.config, evidence_path, path, digest)
+            evidence = json.loads(evidence_path.read_text())
+            self.assertEqual(evidence['failed_phase'], 'surviving-database-import-requesting')
+            self.assertEqual(evidence['failure_operation'], 'CreateChangeSet')
+            self.assertEqual(evidence['retained_physical_ids'], cloud.graph)
+            self.assertFalse(evidence['journal_established'])
+            self.assertNotIn('failure_message', evidence)
+            cf.execute_change_set.assert_not_called()
+            cf.delete_stack.assert_not_called()
+
+    def test_changed_authority_before_execution_or_after_import_blocks_first_anchor(self):
+        for phase in ('before-execution', 'after-import'):
+            with self.subTest(phase=phase), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                path, digest = cloud.write_bundle()
+                cf = cloud.clients['cloudformation']
+                if phase == 'before-execution':
+                    def create(**kwargs):
+                        cloud.cluster['DbClusterResourceId'] = 'cluster-other-authority'
+                        return {'Id': 'fixture-import-change'}
+                    cf.create_change_set.side_effect = create
+                else:
+                    original_waiter = cloud.continuation_waiter
+                    def waiter(name):
+                        original = original_waiter(name)
+                        def wait(**kwargs):
+                            original.wait(**kwargs)
+                            if name == 'stack_import_complete':
+                                cloud.writer['DbiResourceId'] = 'db-other-authority'
+                        return SimpleNamespace(wait=wait)
+                    cf.get_waiter.side_effect = waiter
+                evidence_path = Path(directory) / 'blocked.json'
+                with self.assertRaises(Gate), patch.object(recovery, '_historical_builder', return_value=build_template):
+                    recovery.continue_uninitialized(cloud.aws, cloud.config, evidence_path, path, digest)
+                evidence = json.loads(evidence_path.read_text())
+                self.assertFalse(evidence['journal_established'])
+                self.assertFalse(evidence['actual_resources_deleted'])
+                self.assertEqual(evidence['database_snapshot']['cluster_resource_id'], 'cluster-unique-fixture')
+                if phase == 'before-execution':
+                    cf.execute_change_set.assert_not_called()
+                else:
+                    cf.execute_change_set.assert_called_once()
+                cf.delete_stack.assert_not_called()
+
+    def test_post_stopped_verification_allows_in_place_runtime_change_but_never_db_replacement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = ContinuationCloud(directory)
+            evidence = self.plan(cloud)
+            cloud.adopt(evidence['import_template'])
+            cloud.status = 'UPDATE_COMPLETE'
+            cloud.cluster['NetworkType'] = 'DUAL'
+            outputs = {'ReleaseId': cloud.config['releaseId'], 'ActivateServices': 'false'}
+            result = recovery.verify_continued_database(cloud.aws, cloud.config, outputs, evidence)
+            self.assertTrue(result['first_anchor_still_requires_empty_sql'])
+            for field in ('DbClusterResourceId', 'EngineVersion', 'MasterUserSecret'):
+                original = deepcopy(cloud.cluster[field])
+                cloud.cluster[field] = {'SecretArn': 'new-secret'} if field == 'MasterUserSecret' else 'different'
+                with self.subTest(field=field), self.assertRaises(Gate):
+                    recovery.verify_continued_database(cloud.aws, cloud.config, outputs, evidence)
+                cloud.cluster[field] = original
+
+    def test_historical_builder_supports_real_future_import_and_rejects_other_top_level_code(self):
+        # Use repository source, including the real future import that originally
+        # blocked f916 admission; historical source is never read from bundle JSON.
+        source = Path(recovery.__file__).with_name('serverless_template.py').read_bytes()
+        results = [SimpleNamespace(stdout=str(len(source)).encode()), SimpleNamespace(stdout=source)]
+        with patch.object(recovery.subprocess, 'run', side_effect=results) as git:
+            builder = recovery._historical_builder('f91674be10db91ededa853fad205868e717f668f')
+        cloud = FakeCloud()
+        self.assertEqual(builder({**cloud.config,
+            'apiImageUri': cloud.template['Resources']['ApiFunction']['Properties']['Code']['ImageUri'],
+            'workerImageUri': cloud.template['Resources']['WorkerFunction']['Properties']['Code']['ImageUri']}),
+            build_template({**cloud.config,
+                'apiImageUri': cloud.template['Resources']['ApiFunction']['Properties']['Code']['ImageUri'],
+                'workerImageUri': cloud.template['Resources']['WorkerFunction']['Properties']['Code']['ImageUri']}))
+        self.assertIn('f91674be10db91ededa853fad205868e717f668f:deploy/serverless_template.py', git.call_args.args[0])
+        for malicious in (b'import os\ndef build_template(config): return {}',
+                          b'from pathlib import Path\ndef build_template(config): return {}',
+                          b'open("should-not-exist", "w")\ndef build_template(config): return {}'):
+            with self.subTest(source=malicious), patch.object(recovery.subprocess, 'run', side_effect=[
+                    SimpleNamespace(stdout=str(len(malicious)).encode()), SimpleNamespace(stdout=malicious)]), self.assertRaises(Gate):
+                recovery._historical_builder('f' * 40)
 
 
 if __name__ == '__main__':

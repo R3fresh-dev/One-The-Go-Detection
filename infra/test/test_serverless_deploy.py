@@ -316,6 +316,65 @@ class ServerlessCloudFormationTest(unittest.TestCase):
             read.assert_not_called()
             aws.assert_not_called()
 
+    def test_uninitialized_continuation_cli_rejects_invalid_flags_before_config_or_identity(self):
+        bundle = ['--continue-uninitialized', 'continuation.json',
+                  '--continue-uninitialized-sha256', 'd' * 64]
+        invalid = (('deploy', ['--continue-uninitialized', 'continuation.json', '--establish-new']),
+                   ('deploy', ['--continue-uninitialized-sha256', 'd' * 64, '--establish-new']),
+                   ('deploy', bundle),
+                   ('deploy', ['--continue-uninitialized', 'continuation.json',
+                               '--continue-uninitialized-sha256', 'invalid', '--establish-new']),
+                   ('deploy', [*bundle, '--establish-new', '--recover-initial']),
+                   ('deploy', [*bundle, '--establish-new', '--recover-initial',
+                               '--resume-initial', 'original.json', '--resume-initial-sha256', 'c' * 64]),
+                   ('deploy', [*bundle, '--establish-new', '--resume-initial-sha256', 'c' * 64]),
+                   ('plan', [*bundle, '--establish-new']),
+                   ('health', [*bundle, '--establish-new']))
+        for operation, options in invalid:
+            with self.subTest(operation=operation, options=options), \
+                    patch.object(serverless, 'read_config') as read, \
+                    patch.object(serverless.platform, 'CloudSession') as aws, patch('sys.stderr', io.StringIO()):
+                self.assertEqual(serverless.main([operation, '--config', 'not-read.json', *options]), 2)
+            read.assert_not_called()
+            aws.assert_not_called()
+
+    def test_uninitialized_continuation_direct_call_requires_bound_bundle_and_first_initialization(self):
+        valid = {'gate_evidence': Path('gates.json'), 'establish_new': True,
+                 'continue_uninitialized': Path('continuation.json'),
+                 'continue_uninitialized_sha256': 'd' * 64}
+        for changes in ({'continue_uninitialized': None}, {'continue_uninitialized_sha256': None},
+                        {'continue_uninitialized_sha256': 'invalid'}, {'establish_new': False},
+                        {'recover_initial': True},
+                        {'recover_initial': True, 'resume_initial': Path('original.json'),
+                         'resume_initial_sha256': 'c' * 64}):
+            aws = Mock()
+            with self.subTest(changes=changes), \
+                    patch.object(serverless.platform, 'require_clean_source'), \
+                    patch.object(serverless.platform, 'verify_gate_file'), \
+                    patch('deploy.serverless_recovery.uninitialized_continuation_plan') as plan, \
+                    patch.object(serverless, 'preflight') as preflight, self.assertRaises(Gate):
+                serverless.deploy(SimpleNamespace(**{**valid, **changes}), config(), aws, {})
+            plan.assert_not_called()
+            preflight.assert_not_called()
+            aws.client.assert_not_called()
+
+    def test_failed_source_admission_prevents_uninitialized_continuation_inventory(self):
+        args = SimpleNamespace(gate_evidence=Path('gates.json'), establish_new=True,
+            continue_uninitialized=Path('continuation.json'), continue_uninitialized_sha256='d' * 64)
+        for failing in ('require_clean_source', 'verify_gate_file'):
+            aws = Mock()
+            with self.subTest(failing=failing), \
+                    patch.object(serverless.platform, 'require_clean_source') as clean, \
+                    patch.object(serverless.platform, 'verify_gate_file') as gates, \
+                    patch('deploy.serverless_recovery.uninitialized_continuation_plan') as plan, \
+                    patch.object(serverless, 'preflight') as preflight:
+                (clean if failing == 'require_clean_source' else gates).side_effect = Gate('Current source not admitted')
+                with self.assertRaisesRegex(Gate, 'Current source not admitted'):
+                    serverless.deploy(args, config(), aws, {})
+            plan.assert_not_called()
+            preflight.assert_not_called()
+            aws.client.assert_not_called()
+
     def test_free_expired_or_foreign_account_plans_block_before_provisioning(self):
         for change in ({'accountPlanType': 'FREE'}, {'accountPlanStatus': 'EXPIRED'},
                        {'accountId': '111111111111'}, {'accountPlanType': None}):
@@ -333,7 +392,10 @@ class ServerlessCloudFormationTest(unittest.TestCase):
     def test_every_retained_data_or_authority_replacement_is_rejected(self):
         retained = ('AWS::RDS::DBCluster', 'AWS::RDS::DBInstance', 'AWS::KMS::Key',
                     'AWS::S3::Bucket', 'AWS::SecretsManager::Secret',
-                    'AWS::Cognito::UserPool', 'AWS::DynamoDB::Table')
+                    'AWS::Cognito::UserPool', 'AWS::DynamoDB::Table',
+                    'AWS::RDS::DBSubnetGroup', 'AWS::RDS::DBClusterParameterGroup',
+                    'AWS::EC2::VPC', 'AWS::EC2::VPCCidrBlock', 'AWS::EC2::Subnet',
+                    'AWS::EC2::SecurityGroup')
         for resource in retained:
             for change in ({'Action': 'Remove'}, {'Action': 'Modify', 'Replacement': 'True'},
                            {'Action': 'Modify', 'Replacement': 'Conditional'}):
@@ -398,6 +460,52 @@ class ServerlessCloudFormationTest(unittest.TestCase):
         self.assertEqual(selected['databaseEngineVersion'], '16.8')
         rds.describe_orderable_db_instance_options.assert_called_once_with(
             Engine='aurora-postgresql', EngineVersion='16.8', DBInstanceClass='db.serverless')
+
+    def retained_engine_cloud(self, versions):
+        sts, plans, functions, rds = Mock(), Mock(), Mock(), Mock()
+        sts.get_caller_identity.return_value = {'Account': config()['account']}
+        plans.get_account_plan_state.return_value = {
+            'accountId': config()['account'], 'accountPlanType': 'PAID', 'accountPlanStatus': 'ACTIVE'}
+        functions.get_account_settings.return_value = {'AccountLimit': {
+            'ConcurrentExecutions': 107, 'UnreservedConcurrentExecutions': 107}}
+        rds.get_paginator.return_value.paginate.return_value = [{'DBEngineVersions': versions}]
+        rds.describe_orderable_db_instance_options.return_value = {'OrderableDBInstanceOptions': [{}]}
+        aws = Mock()
+        aws.client.side_effect = lambda name: {'sts': sts, 'freetier': plans, 'lambda': functions, 'rds': rds}[name]
+        return aws, rds
+
+    def test_uninitialized_continuation_pins_retained_engine_when_newer_version_is_available(self):
+        versions = [{'Status': 'available', 'EngineVersion': version,
+                     'ServerlessV2FeaturesSupport': {'MinCapacity': 0}} for version in ('16.15', '16.16')]
+        aws, rds = self.retained_engine_cloud(versions)
+        with patch.object(serverless, 'stable_stack', return_value=None):
+            selected = serverless.preflight(aws, config(), None, '16.15')
+        self.assertEqual(selected['databaseEngineVersion'], '16.15')
+        rds.describe_db_clusters.assert_not_called()
+        rds.describe_orderable_db_instance_options.assert_called_once_with(
+            Engine='aurora-postgresql', EngineVersion='16.15', DBInstanceClass='db.serverless')
+
+    def test_unavailable_or_ambiguous_retained_engine_cannot_fall_forward_to_newer_version(self):
+        retained = {'Status': 'available', 'EngineVersion': '16.15',
+                    'ServerlessV2FeaturesSupport': {'MinCapacity': 0}}
+        newer = {**retained, 'EngineVersion': '16.16'}
+        for versions in ([newer], [{**retained, 'Status': 'deprecated'}, newer],
+                         [{**retained, 'ServerlessV2FeaturesSupport': {'MinCapacity': 0.5}}, newer],
+                         [retained, retained, newer]):
+            aws, rds = self.retained_engine_cloud(versions)
+            with self.subTest(versions=versions), patch.object(serverless, 'stable_stack', return_value=None):
+                with self.assertRaisesRegex(Gate, 'retained Aurora engine version'):
+                    serverless.preflight(aws, config(), None, '16.15')
+            rds.describe_orderable_db_instance_options.assert_not_called()
+
+    def test_retained_engine_still_requires_orderable_serverless_capacity(self):
+        versions = [{'Status': 'available', 'EngineVersion': '16.15',
+                     'ServerlessV2FeaturesSupport': {'MinCapacity': 0}}]
+        aws, rds = self.retained_engine_cloud(versions)
+        rds.describe_orderable_db_instance_options.return_value = {'OrderableDBInstanceOptions': []}
+        with patch.object(serverless, 'stable_stack', return_value=None):
+            with self.assertRaisesRegex(Gate, 'pinned Aurora version'):
+                serverless.preflight(aws, config(), None, '16.15')
 
     def test_insufficient_lambda_quota_blocks_before_database_provisioning(self):
         for limits in ({'ConcurrentExecutions': 100, 'UnreservedConcurrentExecutions': 100},
@@ -493,6 +601,117 @@ class ServerlessImageTest(unittest.TestCase):
 
 
 class ServerlessLifecycleTest(unittest.TestCase):
+    def run_uninitialized_continuation(self, root, *, database_changed=False):
+        c = {**config(), 'databaseEngineVersion': '16.16',
+             'apiImageUri': URI + '@sha256:' + 'b' * 64,
+             'workerImageUri': URI + '@sha256:' + 'c' * 64}
+        out = {'WebOrigin': 'https://web.fixture.test', 'ApiOrigin': 'https://api.fixture.test',
+               'CloudWatchDashboardUrl': 'https://dashboard.fixture.test'}
+        args = SimpleNamespace(gate_evidence=Path('gates.json'), establish_new=True,
+            continue_uninitialized=Path('continuation.json'), continue_uninitialized_sha256='d' * 64)
+        aws, events, maintenance_options = Mock(), [], {}
+        plan = {'database_engine_version': '16.15', 'already_adopted': False}
+        adopted = {**plan, 'already_adopted': True}
+
+        def planned(*arguments):
+            events.append('plan-continuation')
+            return plan
+
+        def preflighted(aws, current, prior, version):
+            events.append('preflight')
+            return {**current, 'databaseEngineVersion': version}
+
+        def continued(*arguments):
+            events.append('continue')
+            return adopted
+
+        def stack(aws, name, template, *arguments):
+            phase = 'registry' if template['phase'] == 'registry' else str(template['active'])
+            events.append('stack-' + phase)
+            return {'RepositoryUri': URI, 'DeploymentBucket': 'fixture-private-assets'} if phase == 'registry' else out
+
+        def database_verified(*arguments):
+            events.append('verify-database')
+            if database_changed:
+                raise Gate('Retained database identity changed')
+
+        def maintained(aws, current, outputs, operation, work, **extra):
+            events.append(operation)
+            maintenance_options[operation] = extra
+            return {'completed_at': datetime.now(timezone.utc).isoformat()}
+
+        with patch.object(serverless, 'ROOT', root), \
+                patch.object(serverless.platform, 'require_clean_source', side_effect=lambda *args: events.append('admit-source')), \
+                patch.object(serverless.platform, 'verify_gate_file', side_effect=lambda *args: events.append('admit-gates')), \
+                patch('deploy.serverless_recovery.uninitialized_continuation_plan', side_effect=planned) as planning, \
+                patch.object(serverless, 'preflight', side_effect=preflighted) as preflight, \
+                patch('deploy.serverless_recovery.continue_uninitialized', side_effect=continued) as continuation, \
+                patch('deploy.serverless_recovery.verify_continued_database', side_effect=database_verified) as database, \
+                patch.object(serverless, 'stable_stack') as stable, \
+                patch.object(serverless_template, 'build_template', side_effect=lambda current, phase='platform':
+                             {'phase': phase, 'active': current.get('activateServices', False)}), \
+                patch.object(serverless, 'deploy_stack', side_effect=stack), \
+                patch.object(serverless.platform, 'run'), \
+                patch.object(serverless, 'build_images', side_effect=lambda aws, current, *args: current), \
+                patch.object(serverless, 'drain') as drain, \
+                patch.object(serverless, 'invoke_maintenance', side_effect=maintained), \
+                patch.object(serverless, 'build_and_publish_web', return_value={'passed': True}), \
+                patch.object(serverless, 'observe', return_value={'status': 'healthy'}):
+            if database_changed:
+                with self.assertRaisesRegex(Gate, 'Retained database identity changed'):
+                    serverless.deploy(args, c, aws, {})
+                receipt = None
+            else:
+                receipt = serverless.deploy(args, c, aws, {})
+        states = list(root.glob('.local/deploy/serverless-development/**/deployment-state.json'))
+        self.assertEqual(len(states), 1)
+        state = json.loads(states[0].read_text())
+        return receipt, events, maintenance_options, state, {
+            'planning': planning, 'preflight': preflight, 'continuation': continuation,
+            'database': database, 'stable': stable, 'drain': drain,
+            'config': c, 'aws': aws, 'outputs': out, 'args': args, 'adopted': adopted}
+
+    def test_uninitialized_continuation_preserves_database_before_first_journal_initialization(self):
+        with tempfile.TemporaryDirectory() as directory:
+            receipt, events, options, state, calls = self.run_uninitialized_continuation(Path(directory))
+        self.assertEqual(events[:5], ['admit-source', 'admit-gates', 'plan-continuation', 'preflight', 'continue'])
+        self.assertLess(events.index('continue'), events.index('stack-registry'))
+        self.assertLess(events.index('stack-False'), events.index('verify-database'))
+        self.assertLess(events.index('verify-database'), events.index('bootstrap'))
+        self.assertLess(events.index('bootstrap'), events.index('migrate'))
+        self.assertLess(events.index('admission'), events.index('stack-True'))
+        calls['planning'].assert_called_once_with(calls['aws'], calls['config'],
+            calls['args'].continue_uninitialized, calls['args'].continue_uninitialized_sha256)
+        calls['preflight'].assert_called_once_with(calls['aws'], calls['config'], None, '16.15')
+        continued = calls['continuation'].call_args.args
+        self.assertEqual(continued[1]['databaseEngineVersion'], '16.15')
+        self.assertEqual(continued[2].name, 'uninitialized-continuation.json')
+        self.assertEqual(continued[3:], (calls['args'].continue_uninitialized,
+                                       calls['args'].continue_uninitialized_sha256))
+        calls['database'].assert_called_once_with(calls['aws'], continued[1], calls['outputs'], calls['adopted'])
+        calls['stable'].assert_not_called()
+        calls['drain'].assert_not_called()
+        self.assertEqual(options, {'bootstrap': {'establish_new': True}, 'migrate': {}, 'admission': {}})
+        self.assertEqual(state['completed_stages'][0], 'continue-uninitialized-retained-resources')
+        self.assertLess(state['completed_stages'].index('verify-continued-database'),
+                        state['completed_stages'].index('bootstrap'))
+        self.assertEqual(receipt['status'], 'serverless_transport_and_health_verified')
+
+    def test_changed_database_after_stopped_continuation_blocks_bootstrap_and_activation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            receipt, events, options, state, calls = self.run_uninitialized_continuation(
+                Path(directory), database_changed=True)
+        self.assertIsNone(receipt)
+        self.assertNotIn('bootstrap', events)
+        self.assertNotIn('migrate', events)
+        self.assertNotIn('stack-True', events)
+        self.assertEqual(options, {})
+        self.assertEqual(state['status'], 'failed')
+        self.assertEqual(state['failed_stage'], 'verify-continued-database')
+        self.assertIn('deploy-stopped', state['completed_stages'])
+        self.assertNotIn('verify-continued-database', state['completed_stages'])
+        self.assertFalse(state['rollback_executed'])
+
     def run_lifecycle(self, root, *, readmission_failed=False, existing=False):
         c = {**config(), 'apiImageUri': URI + '@sha256:' + 'b' * 64,
              'workerImageUri': URI + '@sha256:' + 'c' * 64}
