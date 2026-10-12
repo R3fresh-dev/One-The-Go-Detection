@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: df854cf106988f4e86117a104b48df5fbdf9c23c
+          ref: 264cd2e92a4a5a9d4f76a09d79722b3083099040
           persist-credentials: false
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
         with:
@@ -28,14 +28,25 @@ jobs:
       - run: uv sync --project services/api --locked
       - name: Verify the actual reviewed application revision before AWS authentication
         run: |
-          gh run download 38215835475 --name exact-revision-merge-evidence --dir .local/inspect-gates
+          gh run download 38222770720 --name exact-revision-merge-evidence --dir .local/inspect-gates
           uv run --project services/api python - <<'PY'
           from pathlib import Path
           from deploy import platform
-          revision = 'df854cf106988f4e86117a104b48df5fbdf9c23c'
+          revision = '264cd2e92a4a5a9d4f76a09d79722b3083099040'
           platform.require_clean_source(revision)
           platform.verify_gate_file(Path('.local/inspect-gates/gates.json'), revision)
           PY
+      - name: Download the known failed main recovery manifest without printing it
+        run: |
+          gh run view 38272959415 --json headSha,headBranch,event,workflowName > .local/inspect-gates/recovery-run.json
+          uv run --project services/api python - <<'PY'
+          import json
+          from pathlib import Path
+          run = json.loads(Path('.local/inspect-gates/recovery-run.json').read_text())
+          assert run['headSha'] == '264cd2e92a4a5a9d4f76a09d79722b3083099040'
+          assert run['headBranch'] == 'main' and run['event'] == 'workflow_dispatch'
+          PY
+          gh run download 38272959415 --name serverless-deployment-264cd2e92a4a5a9d4f76a09d79722b3083099040-38272959415 --dir .local/inspect-recovery
       - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
@@ -50,12 +61,67 @@ jobs:
         run: |
           uv run --project services/api python - <<'PY'
           import json
+          from datetime import datetime, timedelta, timezone
+          from pathlib import Path
           from botocore.exceptions import ClientError
           from deploy.platform import CloudSession
+          from deploy.provenance import Gate
+          from deploy.serverless_recovery import _verify_retained
           aws = CloudSession('us-east-2', None)
           assert aws.client('sts').get_caller_identity()['Account'] == '738470137867'
           cf = aws.client('cloudformation')
           result = {}
+          paths = list(Path('.local/inspect-recovery').rglob('initial-recovery.json'))
+          assert len(paths) == 1
+          assert paths[0].stat().st_size <= 262144
+          recovery = json.loads(paths[0].read_text())
+          assert recovery['account'] == '738470137867' and recovery['region'] == 'us-east-2'
+          assert recovery['release_id'] == '264cd2e92a4a5a9d4f76a09d79722b3083099040'
+          assert recovery['operation'] == 'serverless-initial-recovery'
+          assert recovery['stack_name'] == 'otgd-serverless-development'
+          assert recovery['failed_phase'] == 'failed-stack-metadata-detached'
+          resources = recovery['import_template']['Resources']
+          physical_ids = recovery['retained_physical_ids']
+          assert len(resources) == 15 and resources.keys() == physical_ids.keys()
+          config = {'account': recovery['account'], 'region': recovery['region']}
+          retained = []
+          for logical in sorted(resources):
+              row = {'logical_id': logical, 'resource_type': resources[logical]['Type']}
+              try:
+                  _verify_retained(aws, config, logical, resources[logical], physical_ids[logical])
+                  row['status'] = 'passed'
+              except ClientError as error:
+                  row.update(status='blocked', error_code=error.response['Error']['Code'],
+                             operation=error.operation_name, reason=error.response['Error'].get('Message', '')[:1000])
+              except Gate as error:
+                  row.update(status='blocked', reason=str(error)[:1000])
+              retained.append(row)
+          result['retained_resource_checks'] = retained
+          now = datetime.now(timezone.utc)
+          trail = aws.client('cloudtrail')
+          trail_rows = []
+          for event_name in ('CreateChangeSet', 'UpdateTerminationProtection', 'DeleteStack'):
+              try:
+                  for index, page in enumerate(trail.get_paginator('lookup_events').paginate(
+                          LookupAttributes=[{'AttributeKey': 'EventName', 'AttributeValue': event_name}],
+                          StartTime=now - timedelta(minutes=60), EndTime=now)):
+                      if index >= 20:
+                          raise RuntimeError('Bounded CloudTrail inspection exceeded')
+                      for event in page.get('Events', []):
+                          detail = json.loads(event['CloudTrailEvent'])
+                          request = detail.get('requestParameters') or {}
+                          stack_name = request.get('stackName', '')
+                          if stack_name not in ('otgd-serverless-development', recovery['original_stack_id']):
+                              continue
+                          trail_rows.append({'time': str(event.get('EventTime', '')),
+                              'event_id': event.get('EventId'), 'event_name': event_name,
+                              'error_code': detail.get('errorCode'),
+                              'error_message': str(detail.get('errorMessage', ''))[:1000],
+                              'request_stack_name': stack_name, 'change_set_type': request.get('changeSetType')})
+              except ClientError as error:
+                  trail_rows.append({'event_name': event_name, 'error_code': error.response['Error']['Code'],
+                                     'operation': error.operation_name})
+          result['cloudtrail_mutation_metadata'] = trail_rows
           try:
               plan = aws.client('freetier').get_account_plan_state()
               result['account_plan'] = {key: plan.get(key) for key in
