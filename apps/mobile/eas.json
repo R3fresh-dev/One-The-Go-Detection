@@ -1,9 +1,68 @@
 {
-  "cli": { "version": ">=16.0.0", "appVersionSource": "local" },
-  "build": {
-    "development": { "developmentClient": true, "distribution": "internal", "env": { "APP_ENV": "local" } },
-    "qa": { "distribution": "internal", "environment": "preview", "env": { "APP_ENV": "qa" } },
-    "production": { "environment": "production", "env": { "APP_ENV": "prod" }, "autoIncrement": true }
+  "cli": {
+    "version": "24.12.1",
+    "appVersionSource": "remote",
+    "requireCommit": true
   },
-  "submit": { "production": {} }
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": { "APP_ENV": "local" }
+    },
+    "qa": {
+      "distribution": "internal",
+      "environment": "preview",
+      "env": {
+        "APP_ENV": "qa",
+        "EXPO_PUBLIC_APP_ENV": "qa",
+        "EXPO_PUBLIC_HOSTED_PREVIEW": "false",
+        "EXPO_NO_DOTENV": "1"
+      }
+    },
+    "qa-store": {
+      "distribution": "store",
+      "environment": "preview",
+      "env": {
+        "APP_ENV": "qa",
+        "EXPO_PUBLIC_APP_ENV": "qa",
+        "EXPO_PUBLIC_HOSTED_PREVIEW": "false",
+        "EXPO_NO_DOTENV": "1"
+      },
+      "android": { "buildType": "app-bundle" },
+      "ios": { "simulator": false },
+      "autoIncrement": true
+    },
+    "production": {
+      "distribution": "store",
+      "environment": "production",
+      "env": {
+        "APP_ENV": "prod",
+        "EXPO_PUBLIC_APP_ENV": "prod",
+        "EXPO_PUBLIC_HOSTED_PREVIEW": "false",
+        "EXPO_NO_DOTENV": "1"
+      },
+      "android": { "buildType": "app-bundle" },
+      "ios": { "simulator": false },
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "qa-store": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft",
+        "changesNotSentForReview": true
+      },
+      "ios": {}
+    },
+    "production": {
+      "android": {
+        "track": "production",
+        "releaseStatus": "draft",
+        "changesNotSentForReview": true
+      },
+      "ios": {}
+    }
+  }
 }

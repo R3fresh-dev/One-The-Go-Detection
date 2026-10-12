@@ -1,0 +1,376 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Independent working-source release/browser audit; not release authority or merge approval",
+  "review_date": "2026-10-12",
+  "base_revision": "96945549ab0466c26300a2863f907cf20da35042",
+  "source_revision_scope": "Frozen working files before the follow-up commit; no recursive final-commit claim",
+  "change": "verified-release-and-browser-access",
+  "specification_inventory": {
+    "capability_documents": 4,
+    "requirement_operations": 26,
+    "ADDED": 24,
+    "MODIFIED": 2,
+    "scenarios": 57
+  },
+  "source_snapshot_count": 52,
+  "source_snapshots": [
+    {
+      "file": ".devcontainer/devcontainer.json",
+      "sha256": "a8ebb49014b75ee00f28fcf5c361fb4ccf047172a30dd3e17d6c1c57c7f04264",
+      "bytes": 726
+    },
+    {
+      "file": ".devcontainer/prepare-preview.sh",
+      "sha256": "4442ac5d05f8cb6b1d279fd34be3294843ab6520f4a0dec37980755fb6416e52",
+      "bytes": 211
+    },
+    {
+      "file": ".devcontainer/preview-state.mjs",
+      "sha256": "19e7cf2d31890ef9992b9122c6f34f48c69a4e4e755bc360ddaeee7901f9ad2f",
+      "bytes": 5441
+    },
+    {
+      "file": ".devcontainer/start-preview.sh",
+      "sha256": "c25ac4dc96ffec2d90655de2ef8c3341a2a3210661fa018e5f1738223d823416",
+      "bytes": 1080
+    },
+    {
+      "file": ".github/workflows/mobile-store-release.yml",
+      "sha256": "5404c7aaca64553e897f5831e460832b5b3e2234ebd8c05aba47e74d5b2890d9",
+      "bytes": 9158
+    },
+    {
+      "file": ".github/workflows/platform.yml",
+      "sha256": "6a3cb7c29a957cb0d3b66bf467003a21225d0d55f08b4e95237b7b0924cbd83d",
+      "bytes": 8139
+    },
+    {
+      "file": "IMPLEMENTATION_STATUS.md",
+      "sha256": "d848e800d36e84859991c04b8eabfb8cc761d9a2b86bf4e1543ef214ecfe0d6b",
+      "bytes": 19850
+    },
+    {
+      "file": "apps/mobile/HOSTED_PREVIEW.md",
+      "sha256": "e6f1ebae3dbf7d751e5a6898a6230219b30269133de8df38f60574a2a7a75549",
+      "bytes": 13463
+    },
+    {
+      "file": "apps/mobile/README.md",
+      "sha256": "471faed02e18ee56a52517a24be73773227165a311369e2900ca22a0113baad1",
+      "bytes": 30595
+    },
+    {
+      "file": "apps/mobile/STORE_RELEASE.md",
+      "sha256": "181c1968982b6212c7e1fe241585c2c7f35fd726c729c9f19da9feccb312dd68",
+      "bytes": 15508
+    },
+    {
+      "file": "apps/mobile/app.config.ts",
+      "sha256": "3f21a0e00095a89d1d9a156cf081d9ddd67fea3e247fcc79b7125712a744a483",
+      "bytes": 5319
+    },
+    {
+      "file": "apps/mobile/distribution/eas-toolchain/package-lock.json",
+      "sha256": "83bdc3cd905c6453e0e06d3844e87c25acadfd8390eef2d4779000097d1c801f",
+      "bytes": 227599
+    },
+    {
+      "file": "apps/mobile/distribution/eas-toolchain/package.json",
+      "sha256": "2511dc1f9b6b707f5026b3ab4fe17774954ecf7c1d0859b2839aa8b2b9d40d5e",
+      "bytes": 207
+    },
+    {
+      "file": "apps/mobile/distribution/store-prod.example.json",
+      "sha256": "20401463ac1f920c07278e6da912ade4ae4dee201c6ab97a657ff390b3995f12",
+      "bytes": 1157
+    },
+    {
+      "file": "apps/mobile/distribution/store-qa.example.json",
+      "sha256": "4aff3404343b3b59a11b7da1a03451616309009b6e1f8605114919d14198b90b",
+      "bytes": 1131
+    },
+    {
+      "file": "apps/mobile/eas.json",
+      "sha256": "de18ede90f3031701821e8056b8ac1cfa7718026a5d1d5a6777cbd2872a55a82",
+      "bytes": 1603
+    },
+    {
+      "file": "apps/mobile/modules/scripts/store_inputs.py",
+      "sha256": "ed9437199abcf244abb249528d38ea0be35e09fd1c826a0f270cbb89c1b2b189",
+      "bytes": 41013
+    },
+    {
+      "file": "apps/mobile/modules/scripts/store_release.py",
+      "sha256": "d2311e8935870844cb2b3c1f19d1267b4c78431cbfdbb5521fbe588e06cf3a6d",
+      "bytes": 65480
+    },
+    {
+      "file": "apps/mobile/package-lock.json",
+      "sha256": "94e68b06919966cb777700e0e6ea521b7c538afa387b6f777b7885a3e3e9f676",
+      "bytes": 272225
+    },
+    {
+      "file": "apps/mobile/package.json",
+      "sha256": "028825a0e01d90d6db052b438cc644c6fd4a04349a43a347626fe73064ed3e77",
+      "bytes": 2117
+    },
+    {
+      "file": "apps/mobile/scripts/build-preview.mjs",
+      "sha256": "0c98e861b385abb07a5bad5b8943f4edcacaf62f11b4a5539f7cbe38f2deba2e",
+      "bytes": 1870
+    },
+    {
+      "file": "deploy/README.md",
+      "sha256": "db69652dcd930361e3d0ace12ae8c51ed8964272aace287e65c33a0b8a219dbb",
+      "bytes": 29193
+    },
+    {
+      "file": "deploy/orchestrate.py",
+      "sha256": "4fadeb3bc31c38485e5790238e1be247f1b4e17285d2266fdcc725ae12783719",
+      "bytes": 14470
+    },
+    {
+      "file": "deploy/platform.py",
+      "sha256": "6d157097dac3cb938377fe56cb2cc9c66aa2a41fbf5e32ab1550ff0ce9157a6f",
+      "bytes": 36140
+    },
+    {
+      "file": "deploy/prod.py",
+      "sha256": "87aed9fbdf220b8f1b49c82aaef19455bb8f6ef6b871d72f5b49d9e66f1263f6",
+      "bytes": 386
+    },
+    {
+      "file": "deploy/provenance.py",
+      "sha256": "1db1bf3611ed164e601cafc39354beafdd458fd12587abb113d1f7a8a1e297cb",
+      "bytes": 14054
+    },
+    {
+      "file": "deploy/qa.py",
+      "sha256": "747bbb570786a74fb27a777361436ea658a6832eb87f61badc04e896f1427658",
+      "bytes": 390
+    },
+    {
+      "file": "deploy/register_cname.py",
+      "sha256": "7651a8deb585a9a170b83a61034e040094ddf9709fe6c3fdfef4a206264283e3",
+      "bytes": 5462
+    },
+    {
+      "file": "deploy/web_artifact.py",
+      "sha256": "7837d2ab39cf5033fedca85426d7d3e0f43aa711e21cbb373c36611fa840be83",
+      "bytes": 18147
+    },
+    {
+      "file": "docs/BROWSER_ACCESS_AND_SERVICES.md",
+      "sha256": "6afad3b4149d31bd085638d3548051318f301cc33046ee3474d45939ba7bab29",
+      "bytes": 7394
+    },
+    {
+      "file": "docs/CI_GATES.md",
+      "sha256": "9f2342c55144e4e4a5cb15436e840818de6373da2525a6f720da87934d610fe3",
+      "bytes": 9690
+    },
+    {
+      "file": "docs/RELEASE_AND_BROWSER_TESTING.md",
+      "sha256": "f73741f14db5cd0715c44c3c24e69cafb465e85dba0103dce353a7589efd2776",
+      "bytes": 20369
+    },
+    {
+      "file": "infra/config/prod.example.json",
+      "sha256": "0bb370e9f288a08b8fc52d721f442a1a8911ebc8bc05556c90e390ae4baf74ae",
+      "bytes": 866
+    },
+    {
+      "file": "infra/test/test_ci_gates.py",
+      "sha256": "82805a98da905f9704f2016c67c726ad10c679f55f548179ed8981cf177f7904",
+      "bytes": 5977
+    },
+    {
+      "file": "infra/test/test_codespaces_preview.py",
+      "sha256": "86bf9b8b88e96ca030d5c148d2d46b8fe764ae7a610351704ae419fda759fd28",
+      "bytes": 8177
+    },
+    {
+      "file": "infra/test/test_maintenance.py",
+      "sha256": "f7222dcd026bcbe70c73279fbb8c75a65bef166e311e93e0729f3d3570b356bf",
+      "bytes": 6706
+    },
+    {
+      "file": "infra/test/test_provenance.py",
+      "sha256": "662029c364a357fcb4dc6f9a8a0e74720d3f10ac1f96498f983b038e07444d96",
+      "bytes": 18056
+    },
+    {
+      "file": "infra/test/test_release.py",
+      "sha256": "3013213897c8f1721e0f28a2c4610f18b48cb46ed6a5f5900ebb4495f3e3f9d5",
+      "bytes": 6466
+    },
+    {
+      "file": "infra/test/test_store_inputs.py",
+      "sha256": "8fb54f33f66e14f35df22dc56bfb41713f48208a63b5f35ec2e30a48deafeab0",
+      "bytes": 75476
+    },
+    {
+      "file": "infra/test/test_web_deployment.py",
+      "sha256": "9fdb6f3e34c6febb50237c93f4d9cd2408222c1f33f17f9e30c061e8acc83132",
+      "bytes": 36320
+    },
+    {
+      "file": "openspec/changes/verified-release-and-browser-access/design.md",
+      "sha256": "06794cc87f40d93ba575ca1238d38cb89bb8051a6d64eea43fecb018de4bf458",
+      "bytes": 5703
+    },
+    {
+      "file": "openspec/changes/verified-release-and-browser-access/proposal.md",
+      "sha256": "a33af1f2251bd94dfcba8421d16c6a36a7d1599861884eb29aee4350fcb9a1c1",
+      "bytes": 1875
+    },
+    {
+      "file": "openspec/changes/verified-release-and-browser-access/reviews/RELEASE_REVIEW.md",
+      "sha256": "1fdd047fcfb0fe6019a2ab52acd34a594a2fc166d409d2ddfa212645ff682e03",
+      "bytes": 8819
+    },
+    {
+      "file": "openspec/changes/verified-release-and-browser-access/specs/cloud-browser-delivery/spec.md",
+      "sha256": "758f7dd11a72a15750d44a61d49d986b923232ac981fcb9ab304a56526e5bb6c",
+      "bytes": 3728
+    },
+    {
+      "file": "openspec/changes/verified-release-and-browser-access/specs/cloud-release-orchestration/spec.md",
+      "sha256": "c62bb011c5e71f177ededaf19e710e2ec40a97618a5b427d144f97bcd67d7a26",
+      "bytes": 2813
+    },
+    {
+      "file": "openspec/changes/verified-release-and-browser-access/specs/fictional-browser-preview/spec.md",
+      "sha256": "1a331132cf6b66413d1705dc09d0c7f885b8fe1375ea72250dcd5a451162e241",
+      "bytes": 2729
+    },
+    {
+      "file": "openspec/changes/verified-release-and-browser-access/specs/mobile-store-delivery/spec.md",
+      "sha256": "8dd256054b4cc55a8fe8141b5589fa39cf9a655cf1af16cb28cde8ed0c4622ea",
+      "bytes": 17741
+    },
+    {
+      "file": "openspec/changes/verified-release-and-browser-access/tasks.md",
+      "sha256": "ae8acab7f2181b11dd34eedc1527b640cacf0691d25f5ee95165127003c12d97",
+      "bytes": 2313
+    },
+    {
+      "file": "scripts/ci_gate.py",
+      "sha256": "c897f5b4bcf149a2aad78cf18aa996400451690554229e27b885665db4b5847d",
+      "bytes": 7497
+    },
+    {
+      "file": "services/api/otgd/canonical.py",
+      "sha256": "44400843af24ec301c3f6663e22206d599611934a05cc6b841b58717ffcfc186",
+      "bytes": 1884
+    },
+    {
+      "file": "services/api/tests/conftest.py",
+      "sha256": "9805699e452fcbdfdbefb1206798bdaa929be70798d2da6dfecd5abe80a6849c",
+      "bytes": 3078
+    },
+    {
+      "file": "services/api/tests/test_mobile_store_release.py",
+      "sha256": "b371b7707c6106868225fc5a00847fc4702c755ef0eb1522eb1fa11776d526d6",
+      "bytes": 46031
+    }
+  ],
+  "snapshot_sha256": "ef2702b2d3d6ac6522c9548f37f18ab701acef4edae497257f4996e9c595a0e6",
+  "independent_focused_executions": [
+    {
+      "command": "uv run --project services/api --no-sync python -m unittest infra.test.test_release infra.test.test_provenance infra.test.test_web_deployment -v",
+      "passed": 43,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Source/file/DNS/policy checks; AWS clients are doubles"
+    },
+    {
+      "command": "uv run --project services/api --no-sync python -m unittest infra.test.test_codespaces_preview -v",
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Actual disposable Git and loopback HTTP/process probes; no hosted session"
+    },
+    {
+      "command": "OTGD_DATABASE_URL=sqlite:// uv run --no-sync pytest -q tests/test_mobile_store_release.py --junitxml=/tmp/otgd-independent-store-release.xml",
+      "working_directory": "services/api",
+      "passed": 33,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Actual JDK signatures, local processes and storage barriers; provider/macOS boundaries are doubles"
+    },
+    {
+      "command": "uv run --project services/api --no-sync python -m unittest infra.test.test_store_inputs -v",
+      "passed": 50,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Actual cryptography/private files/pack wire preservation; GitHub/provider requests are doubles"
+    },
+    {
+      "command": "uv run --project services/api --no-sync python -m unittest infra.test.test_ci_gates -q",
+      "passed": 7,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Coverage.py excluded_lines and legacy num_excluded both refuse exclusions; strict801/1000positive and exact80negative; no live services"
+    }
+  ],
+  "owner_combined_helper_evidence": {
+    "tests_passed": 83,
+    "subcases_passed": 208,
+    "failed": 0,
+    "skipped": 0,
+    "store_release_statement_coverage_percent": 85.0556,
+    "store_inputs_statement_coverage_percent": 95.9259,
+    "excluded_statements": 0,
+    "independently_rerun_coverage": false,
+    "scope": "Owner combined helper report; focused executions independently rerun separately"
+  },
+  "historical_checkpoint": {
+    "revision": "96945549ab0466c26300a2863f907cf20da35042",
+    "seven_local_categories_passed": true,
+    "thirteen_GitHub_jobs_passed": true,
+    "run_id": 38131498621,
+    "tested_pr_merge_revision": "ae530e6e8642b640782f0c0cc8f0a25b48a69c0d",
+    "equivalent_git_tree": "1482001b2ab43d8edeb75a4b68dfb488db135c4a",
+    "applies_to_changed_source": false
+  },
+  "changed_scope_unresolved_software_blockers": [],
+  "unsupported_automated_operation": "Fresh store upload from the ephemeral Actions workflow; persistent operator helper supplies initial submission",
+  "remaining_interface_implementation_dependencies": [
+    "Selected selective saliva assay complete vendor interface and analytical method",
+    "Complete calibrated breath instrument/sampling interface",
+    "Independently observed human ECG power/charging/cable/isolation interface"
+  ],
+  "external_acceptance_unexecuted": [
+    "Genuine study/operator/device/assay/model/data approval and physical qualification",
+    "Actual AWS QA/prod deployment and authenticated customer acceptance",
+    "Actual Codespaces/Appetize launch",
+    "Actual signed EAS/store builds, provider upload/processing, tester/public availability",
+    "Actual main merge-rule enforcement"
+  ],
+  "fresh_all_seven_local_gates_claim": false,
+  "fresh_all_thirteen_GitHub_jobs_claim": false,
+  "AWS_or_store_or_hosted_launch_claim": false,
+  "clinical_qualification_claim": false,
+  "merge_approval": false,
+  "post_review_gate_schema_correction": {
+    "finding": "New release-tool coverage check used the wrong exclusion summary key",
+    "correction": "Reject actual coverage.py excluded_lines and legacy num_excluded; original reported helpers had zero exclusions",
+    "source_files": [
+      "infra/test/test_ci_gates.py",
+      "scripts/ci_gate.py"
+    ],
+    "independent_tests_passed": 7,
+    "old_helper_results_invalidated": false,
+    "fresh_full_gates_still_required": true
+  },
+  "final_whitespace_normalization": {
+    "file": "infra/test/test_store_inputs.py",
+    "change": "Removed one trailing blank EOF line before staging; no executable change"
+  }
+}

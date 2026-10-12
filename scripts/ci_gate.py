@@ -27,6 +27,17 @@ def require_coverage(path):
     return 100*covered/statements
 
 
+def require_file_coverage(path,source):
+    value=json.loads(Path(path).read_text())
+    expected=(ROOT/source).resolve()
+    matches=[entry for name,entry in value.get('files',{}).items() if (ROOT/name).resolve()==expected]
+    if len(matches)!=1:raise RuntimeError('Required release-tool source is absent from current coverage')
+    totals=matches[0]['summary'];statements=totals['num_statements'];covered=totals['covered_lines']
+    if totals.get('excluded_lines',0) or totals.get('num_excluded',0) or not statements or 100*covered<=80*statements:
+        raise RuntimeError('Each release tool must exceed 80% without excluded source')
+    return 100*covered/statements
+
+
 def child_environment(env=None, *, local_compose=False):
     values={**os.environ,**(env or {})}
     if local_compose:
@@ -79,8 +90,10 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('gate',choices=['unit-coverage','atdd','components','live-dependencies','docker-health','localstack-api','performance','verify-junit','infra-unit']);parser.add_argument('paths',nargs='*');args=parser.parse_args();REPORTS.mkdir(exist_ok=True)
     if args.gate=='unit-coverage':
         coverage=REPORTS/'unit-coverage.json';coverage.unlink(missing_ok=True)
-        pytest_gate('unit','services/api/tests','-m','not postgres','--cov=otgd','--cov=spec_validation','--cov=model_evaluation','--cov-report=json:'+str(coverage),'--cov-report=xml:'+str(REPORTS/'coverage.xml'),env={'OTGD_ENVIRONMENT':'test','OTGD_DATABASE_URL':'sqlite://'})
+        pytest_gate('unit','services/api/tests','infra/test/test_store_inputs.py','-m','not postgres','--cov=otgd','--cov=spec_validation','--cov=model_evaluation','--cov=store_release','--cov=store_inputs','--cov-report=json:'+str(coverage),'--cov-report=xml:'+str(REPORTS/'coverage.xml'),env={'OTGD_ENVIRONMENT':'test','OTGD_DATABASE_URL':'sqlite://'})
         require_coverage(coverage)
+        for source in ('apps/mobile/modules/scripts/store_release.py','apps/mobile/modules/scripts/store_inputs.py'):
+            require_file_coverage(coverage,source)
         call('uv','run','--project','services/api','python','scripts/ci_gate.py','infra-unit',env={'OTGD_ENVIRONMENT':'test','OTGD_DATABASE_URL':'sqlite://'})
         call('npm','run','test:coverage',cwd=ROOT/'apps/mobile')
     elif args.gate in ('atdd','components'):browser_gate(args.gate)

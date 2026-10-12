@@ -34,7 +34,7 @@ from botocore.config import Config
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey,Ed25519PublicKey
 from otgd.canonical import canonical,strict_loads
-from deploy.provenance import (Gate, bounded_json, sha256, validate_gate_binding,
+from deploy.provenance import (Gate, bounded_file, bounded_json, sha256, validate_gate_binding,
     verify_gate_file, verify_signed_record, validate_qa_approval, verify_qa_approval)
 
 
@@ -141,15 +141,19 @@ def task(aws,out,command,extra_environment=None):
 
 
 def private_key(path):
-    if os.name!='nt' and path.stat().st_mode & 0o077:raise Gate('Release private key must be readable by its owner only')
-    key=serialization.load_pem_private_key(path.read_bytes(),password=None)
+    # Open without following links or blocking on a FIFO before checking its
+    # metadata. The same opened file must remain private and unchanged through
+    # the bounded read; replacement cannot silently select another authority.
+    raw=bounded_file(path,8192,private=True)
+    try:key=serialization.load_pem_private_key(bytes(raw),password=None)
+    except (ValueError,TypeError):raise Gate('Release private key must be an unencrypted Ed25519 PEM') from None
     if not isinstance(key,Ed25519PrivateKey):raise Gate('Expected an Ed25519 signing key')
     return key
 
 
 def require_trusted_signer(private_path,public_path):
     if not public_path:raise Gate('Supply an independently trusted --trusted-public-key before signing')
-    trusted=serialization.load_pem_public_key(public_path.read_bytes())
+    trusted=serialization.load_pem_public_key(bounded_file(public_path,8192))
     actual=private_key(private_path).public_key()
     if (not isinstance(trusted,Ed25519PublicKey) or
         trusted.public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)!=actual.public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)):
@@ -188,7 +192,7 @@ def require_release(args,c,aws=None):
     if sha256(proof)!=payload['gate_provenance_sha256']:raise Gate('Live latest-attempt GitHub evidence differs from the signed release receipt')
     if c['environment']=='prod':
         verify_qa_approval(args.qa_evidence,args.trusted_public_key,payload['qa_source'])
-        if hashlib.sha256(args.qa_evidence.read_bytes()).hexdigest()!=payload['qa_evidence_sha256']:raise Gate('QA approval differs from the signed production promotion')
+        if hashlib.sha256(bounded_file(args.qa_evidence,65_536)).hexdigest()!=payload['qa_evidence_sha256']:raise Gate('QA approval differs from the signed production promotion')
     if aws is not None:verify_release_image(aws,c,payload)
     return payload
 
@@ -322,7 +326,7 @@ def main():
         if c['environment']!='qa' or not a.qa_evidence or not a.signing_key or not a.output:raise Gate('QA approval requires reviewed probe evidence, protected signing key and new output')
         source=require_release(a,c)
         expected={'account':c['account'],'region':c['region'],'image_digest':source['image_digest'],'release_id':source['release_id'],
-            'qa_release_sha256':hashlib.sha256(a.release.read_bytes()).hexdigest(),'gate_provenance_sha256':source['gate_provenance_sha256']}
+            'qa_release_sha256':hashlib.sha256(bounded_file(a.release,65_536)).hexdigest(),'gate_provenance_sha256':source['gate_provenance_sha256']}
         approval=validate_qa_approval(bounded_json(a.qa_evidence),expected)
         require_trusted_signer(a.signing_key,a.trusted_public_key)
         sign_release(approval,a.output,a.signing_key)
@@ -365,7 +369,7 @@ def main():
         proof=verify_gate_file(a.gate_evidence,c['releaseId'])
         if sha256(proof)!=source['gate_provenance_sha256']:raise Gate('Latest GitHub run does not match the signed QA release')
         expected={'account':source_c['account'],'region':source_c['region'],'image_digest':source['image_digest'],'release_id':source['release_id'],
-            'qa_release_sha256':hashlib.sha256(a.source_release.read_bytes()).hexdigest(),'gate_provenance_sha256':source['gate_provenance_sha256']}
+            'qa_release_sha256':hashlib.sha256(bounded_file(a.source_release,65_536)).hexdigest(),'gate_provenance_sha256':source['gate_provenance_sha256']}
         if source_c['account']==c['account']:raise Gate('QA and production must use separate accounts')
         verify_qa_approval(a.qa_evidence,a.trusted_public_key,expected)
         require_trusted_signer(a.signing_key,a.trusted_public_key)
@@ -379,7 +383,7 @@ def main():
         verify_release_image(aws,c,source)
         if sha256(verify_gate_file(a.gate_evidence,c['releaseId']))!=source['gate_provenance_sha256']:raise Gate('GitHub evidence changed during promotion; production approval remains blocked')
         verify_qa_approval(a.qa_evidence,a.trusted_public_key,expected)
-        body={**source,'environment':'prod','account':c['account'],'region':c['region'],'repository':target_repo,'promoted_from_release_sha256':expected['qa_release_sha256'],'qa_evidence_sha256':hashlib.sha256(a.qa_evidence.read_bytes()).hexdigest(),'qa_source':expected,'created_at':datetime.now(timezone.utc).isoformat()}
+        body={**source,'environment':'prod','account':c['account'],'region':c['region'],'repository':target_repo,'promoted_from_release_sha256':expected['qa_release_sha256'],'qa_evidence_sha256':hashlib.sha256(bounded_file(a.qa_evidence,65_536)).hexdigest(),'qa_source':expected,'created_at':datetime.now(timezone.utc).isoformat()}
         sign_release(body,a.output,a.signing_key);return
     if a.operation=='deploy-stopped':
         require_release(a,c,aws)

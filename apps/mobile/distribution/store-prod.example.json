@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "environment": "prod",
+  "project_id": "REPLACE_WITH_ACTUAL_EXPO_PROJECT_UUID",
+  "expo_account": "REPLACE_WITH_ACCOUNT_OR_ORGANIZATION_SLUG",
+  "api_url": "https://REPLACE_WITH_DEPLOYED_PRODUCTION_API_ORIGIN",
+  "oauth_issuer": "https://REPLACE_WITH_DEPLOYED_PRODUCTION_COGNITO_ISSUER",
+  "oauth_client_id": "REPLACE_WITH_DEPLOYED_PUBLIC_CLIENT_ID",
+  "artifact_hosts": ["REPLACE_WITH_APPROVED_EAS_ARTIFACT_HOST"],
+  "bundletool_jar": "/tmp/otgd-store-inputs/bundletool-all-1.18.3.jar",
+  "android": {
+    "upload_certificate_sha256": "REPLACE_WITH_ACTUAL_UPLOAD_CERTIFICATE_DER_SHA256",
+    "service_account_key_path": "/tmp/otgd-store-inputs/google-service-account.json"
+  },
+  "ios": {
+    "asc_app_id": "REPLACE_WITH_PRODUCTION_APP_STORE_CONNECT_NUMERIC_ID",
+    "apple_team_id": "REPLACE_WITH_ACTUAL_APPLE_TEAM_ID",
+    "distribution_certificate_sha256": "REPLACE_WITH_ACTUAL_APPLE_DISTRIBUTION_CERTIFICATE_DER_SHA256",
+    "api_key_path": "/tmp/otgd-store-inputs/apple-api-key.p8",
+    "api_key_id": "REPLACE_WITH_APP_STORE_CONNECT_API_KEY_ID",
+    "api_issuer_id": "REPLACE_WITH_APP_STORE_CONNECT_ISSUER_UUID"
+  }
+}

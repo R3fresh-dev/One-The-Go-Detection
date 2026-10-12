@@ -18,6 +18,26 @@ from deploy import orchestrate, platform, register_cname, web_artifact as web
 from deploy.provenance import Gate, sha256
 
 
+def private_distribution(out,prefix):
+    return {'Distribution':{'Status':'Deployed','DomainName':out['WebDistributionDomain'],
+        'DistributionConfig':{'Enabled':True,
+            'DefaultCacheBehavior':{'TargetOriginId':'web','ViewerProtocolPolicy':'redirect-to-https'},
+            'Origins':{'Items':[{'Id':'web','DomainName':out['WebBucket']+'.s3.us-east-2.amazonaws.com',
+                'OriginAccessControlId':'OAC1','OriginPath':'/'+prefix,
+                'S3OriginConfig':{'OriginAccessIdentity':''}}]}}}}
+
+
+def access_control():
+    return {'OriginAccessControl':{'Id':'OAC1','OriginAccessControlConfig':{
+        'OriginAccessControlOriginType':'s3','SigningBehavior':'always','SigningProtocol':'sigv4'}}}
+
+
+def public_headers():
+    return {'x-content-type-options':'nosniff','x-frame-options':'DENY',
+        'strict-transport-security':'max-age=31536000; includeSubDomains','referrer-policy':'no-referrer',
+        'content-security-policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.otgd.test https://fixture.auth.us-east-2.amazoncognito.com https://cognito-idp.us-east-2.amazonaws.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"}
+
+
 class WebArtifactTest(unittest.TestCase):
     def test_browser_build_environment_retains_transport_settings_without_deploy_credentials(self):
         runtime={'environment':'qa','api_url':'https://api.qa.otgd.test','issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','client_id':'public-client'}
@@ -105,6 +125,25 @@ class WebArtifactTest(unittest.TestCase):
             with zipfile.ZipFile(archive,'a') as output:output.writestr('injected.js','tampered')
             with self.assertRaises(Gate):web.verify(record,archive,public,c,service,service_payload,out)
 
+    def test_archive_bound_precedes_hashing_and_admission_uses_one_stable_snapshot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);archive=root/'oversize.zip'
+            with archive.open('wb') as stream:stream.truncate(web.MAX_BYTES+1)
+            with patch.object(web,'verify_signed_record') as verifier,self.assertRaises(Gate):
+                web.verify(root/'unused.json',archive,root/'unused.pem',{},root/'unused-service.json',{})
+            verifier.assert_not_called()
+        with tempfile.TemporaryDirectory() as tmp:
+            directory,archive,manifest,c,service,service_payload,public,record,body,out=self.fixture(Path(tmp))
+            original=web.verify_signed_record
+            def replace_after_snapshot(*args):
+                result=original(*args)
+                archive.write_bytes(b'replaced after the admitted file snapshot')
+                return result
+            with patch.object(web,'verify_signed_record',side_effect=replace_after_snapshot):
+                payload,files=web.verify(record,archive,public,c,service,service_payload,out)
+            self.assertEqual(payload,body)
+            self.assertEqual(files['app.js'],b'console.log("measurement-only")')
+
     def test_public_asset_types_paths_symlinks_and_duplicate_zip_entries_are_rejected(self):
         for name in ('../outside.js','/root.js','foo\\bar.js','secret.env','app.js.map','nested//app.js'):
             with self.subTest(name=name),self.assertRaises(Gate):web.file_record(name,b'fixture')
@@ -121,7 +160,8 @@ class WebArtifactTest(unittest.TestCase):
             directory,archive,manifest,c,service,service_payload,public,record,body,out=self.fixture(Path(tmp))
             files=web.contents(archive,manifest);stored={};order=[]
             s3=Mock();cf=Mock();aws=Mock();aws.client.side_effect=lambda kind:s3 if kind=='s3' else cf
-            cf.get_distribution.return_value={'Distribution':{'Status':'Deployed','DomainName':out['WebDistributionDomain'],'DistributionConfig':{'DefaultCacheBehavior':{'TargetOriginId':'web','ViewerProtocolPolicy':'redirect-to-https'},'Origins':{'Items':[{'Id':'web','DomainName':'private-assets.s3.us-east-2.amazonaws.com','OriginAccessControlId':'OAC1','OriginPath':'/'+body['release_prefix']}]}}}}
+            cf.get_distribution.return_value=private_distribution(out,body['release_prefix'])
+            cf.get_origin_access_control.return_value=access_control()
             cf.create_invalidation.return_value={'Invalidation':{'Id':'I123'}}
             def put(**kwargs):stored[kwargs['Key']]=kwargs['Body'];order.append(kwargs['Key']);self.assertEqual(kwargs['IfNoneMatch'],'*')
             s3.put_object.side_effect=put;s3.get_object.side_effect=lambda **kwargs:{'Body':io.BytesIO(stored[kwargs['Key']])}
@@ -137,16 +177,31 @@ class WebArtifactTest(unittest.TestCase):
         with self.assertRaises(Gate):web.put_immutable(s3,'private','release/app.js',b'reviewed','application/javascript')
         with tempfile.TemporaryDirectory() as tmp:
             *_,body,out=self.fixture(Path(tmp));s3=Mock();cf=Mock();aws=Mock();aws.client.side_effect=lambda kind:s3 if kind=='s3' else cf
-            cf.get_distribution.return_value={'Distribution':{'Status':'Deployed','DomainName':out['WebDistributionDomain'],'DistributionConfig':{'DefaultCacheBehavior':{'TargetOriginId':'web','ViewerProtocolPolicy':'redirect-to-https'},'Origins':{'Items':[{'Id':'web','DomainName':'private-assets.s3.us-east-2.amazonaws.com','OriginAccessControlId':'OAC1','OriginPath':'/'+body['release_prefix']}]}}}}
+            cf.get_distribution.return_value=private_distribution(out,body['release_prefix'])
+            cf.get_origin_access_control.return_value=access_control()
             s3.put_object.side_effect=RuntimeError('dependency outage')
             with self.assertRaises(RuntimeError):web.publish(aws,out,body,{'index.html':b'index','app.js':b'app'})
             self.assertTrue(s3.put_object.call_args.kwargs['Key'].endswith('/app.js'));cf.create_invalidation.assert_not_called()
 
+    def test_unreviewed_cache_routes_origins_and_failover_groups_block_all_publication(self):
+        for mutation in ('behavior','origin','group'):
+            with self.subTest(mutation=mutation),tempfile.TemporaryDirectory() as tmp:
+                *_,body,out=self.fixture(Path(tmp))
+                s3=Mock();cf=Mock();aws=Mock();aws.client.side_effect=lambda kind:s3 if kind=='s3' else cf
+                cf.get_distribution.return_value=private_distribution(out,body['release_prefix'])
+                config=cf.get_distribution.return_value['Distribution']['DistributionConfig']
+                if mutation=='behavior':config['CacheBehaviors']={'Quantity':1,'Items':[{'PathPattern':'/assets/*','TargetOriginId':'foreign'}]}
+                elif mutation=='origin':config['Origins']['Items'].append({'Id':'foreign','DomainName':'foreign.test'})
+                else:config['OriginGroups']={'Quantity':1,'Items':[{'Id':'unreviewed-failover'}]}
+                with self.assertRaises(Gate):web.publish(aws,out,body,{'index.html':b'entry','app.js':b'javascript'})
+                s3.put_object.assert_not_called();cf.create_invalidation.assert_not_called()
+
     def test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance(self):
-        out={'WebOrigin':'https://web.otgd.test','ApiOrigin':'https://api.otgd.test'};files={'index.html':b'entry','app.js':b'javascript'}
+        out={'WebOrigin':'https://web.otgd.test','ApiOrigin':'https://api.otgd.test',
+            'IdentityOrigin':'https://fixture.auth.us-east-2.amazoncognito.com','Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool'};files={'index.html':b'entry','app.js':b'javascript'}
         def respond(request):
             path=request.url.path
-            if path in ('/','/index.html','/history'):return httpx.Response(200,content=b'entry',headers={'x-content-type-options':'nosniff','x-frame-options':'DENY','strict-transport-security':'max-age=31536000','content-security-policy':"object-src 'none'"})
+            if path in ('/','/index.html','/history'):return httpx.Response(200,content=b'entry',headers=public_headers())
             if path=='/app.js':return httpx.Response(200,content=b'javascript')
             if path=='/health/ready':return httpx.Response(200,content=b'{}')
             return httpx.Response(404)
@@ -155,13 +210,68 @@ class WebArtifactTest(unittest.TestCase):
             result=web.verify_access(out,{},files)
         self.assertEqual(result['authenticated_customer_acceptance'],'not_executed')
 
+    def test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport(self):
+        out={'ApiOrigin':'https://api.otgd.test','IdentityOrigin':'https://fixture.auth.us-east-2.amazoncognito.com',
+            'Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool'}
+        headers=public_headers()
+        web.verify_security_headers(httpx.Headers(headers),out)
+        reordered={**headers,'content-security-policy':'; '.join(reversed(headers['content-security-policy'].split('; ')))}
+        web.verify_security_headers(httpx.Headers(reordered),out)
+        invalid=[{**headers,'referrer-policy':'origin'}, {**headers,'strict-transport-security':'max-age=0; includeSubDomains'},
+            {**headers,'strict-transport-security':'max-age=31536000'}, {**headers,'x-frame-options':'SAMEORIGIN'},
+            {**headers,'content-security-policy':"object-src 'none'"}]
+        for old,new in [("script-src 'self'","script-src 'self' 'unsafe-inline'"),
+            ("script-src 'self'","script-src 'self' 'unsafe-eval'"),
+            ("connect-src 'self'","connect-src *"),
+            ('https://api.otgd.test','https://foreign.otgd.test'),
+            ("frame-ancestors 'none'","frame-ancestors 'self'"),
+            ("base-uri 'self'","base-uri *")]:
+            invalid.append({**headers,'content-security-policy':headers['content-security-policy'].replace(old,new)})
+        invalid.append({**headers,'content-security-policy':headers['content-security-policy']+"; script-src *"})
+        for index,value in enumerate(invalid):
+            with self.subTest(case=index),self.assertRaises(Gate):
+                web.verify_security_headers(httpx.Headers(value),out)
+
+    def test_navigation_cannot_omit_required_policy_when_index_is_secure(self):
+        out={'WebOrigin':'https://web.otgd.test','ApiOrigin':'https://api.otgd.test',
+            'IdentityOrigin':'https://fixture.auth.us-east-2.amazoncognito.com','Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool'}
+        def respond(request):
+            if request.url.path=='/app.js':return httpx.Response(200,content=b'javascript')
+            return httpx.Response(200,content=b'entry',headers=public_headers() if request.url.path=='/index.html' else {})
+        client=httpx.Client(transport=httpx.MockTransport(respond))
+        with patch.object(web.httpx,'Client',return_value=client),self.assertRaises(Gate):
+            web.verify_access(out,{}, {'index.html':b'entry','app.js':b'javascript'})
+
+    def test_public_body_overrun_and_unsolicited_compression_stop_before_unbounded_reads(self):
+        class Tracked(httpx.SyncByteStream):
+            def __init__(self):self.reads=0;self.closed=False
+            def __iter__(self):
+                for value in (b'entry',b'!',b'unread trailing data'):
+                    self.reads+=1
+                    yield value
+            def close(self):self.closed=True
+        for encoded in (False,True):
+            with self.subTest(encoded=encoded):
+                source=Tracked()
+                def respond(request):
+                    self.assertEqual(request.headers['accept-encoding'],'identity')
+                    return httpx.Response(200,headers={'content-encoding':'gzip'} if encoded else {},stream=source)
+                with httpx.Client(transport=httpx.MockTransport(respond)) as client,self.assertRaises(Gate):
+                    web.verify_public_bytes(client,'https://web.otgd.test/index.html',b'entry')
+                self.assertTrue(source.closed)
+                self.assertEqual(source.reads,0 if encoded else 2)
+
 
 class CnameTest(unittest.TestCase):
     def fixture(self):
-        c={'webDomain':'app.qa.otgd.test','hostedZoneName':'otgd.test','webCertificateArn':'arn:aws:acm:us-east-1:123456789012:certificate/fixture'}
-        out={'WebDistributionId':'D1','WebDistributionDomain':'d1.cloudfront.net','WebOrigin':'https://'+c['webDomain'],'ReleaseId':'c'*40}
+        c={'webDomain':'app.qa.otgd.test','hostedZoneName':'otgd.test','webCertificateArn':'arn:aws:acm:us-east-1:123456789012:certificate/fixture',
+            'region':'us-east-2','releaseId':'c'*40}
+        out={'WebDistributionId':'D1','WebDistributionDomain':'d1.cloudfront.net','WebOrigin':'https://'+c['webDomain'],
+            'ReleaseId':c['releaseId'],'WebReleasePrefix':'releases/'+c['releaseId'],'WebBucket':'private-assets'}
         r53=Mock();r53.get_hosted_zone.return_value={'HostedZone':{'Name':'otgd.test.','Config':{'PrivateZone':False}}};r53.list_resource_record_sets.return_value={'ResourceRecordSets':[]};r53.change_resource_record_sets.return_value={'ChangeInfo':{'Id':'C1'}}
-        cf=Mock();cf.get_distribution.return_value={'Distribution':{'Status':'Deployed','DomainName':'d1.cloudfront.net','DistributionConfig':{'Aliases':{'Items':[c['webDomain']]},'ViewerCertificate':{'ACMCertificateArn':c['webCertificateArn']}}}}
+        cf=Mock();cf.get_distribution.return_value=private_distribution(out,out['WebReleasePrefix'])
+        cf.get_distribution.return_value['Distribution']['DistributionConfig'].update(Aliases={'Items':[c['webDomain']]},ViewerCertificate={'ACMCertificateArn':c['webCertificateArn']})
+        cf.get_origin_access_control.return_value=access_control()
         acm=Mock();acm.describe_certificate.return_value={'Certificate':{'Status':'ISSUED','SubjectAlternativeNames':[c['webDomain']]}}
         aws=Mock();aws.client.side_effect=lambda service,**kwargs:{'route53':r53,'cloudfront':cf,'acm':acm}[service]
         return c,out,r53,cf,acm,aws
@@ -171,11 +281,45 @@ class CnameTest(unittest.TestCase):
         self.assertFalse(result['applied']);r53.change_resource_record_sets.assert_not_called()
         result=register_cname.change(aws,c,out,'Z1',apply=True)
         self.assertTrue(result['applied']);self.assertEqual(result['record']['ResourceRecords'],[{'Value':'d1.cloudfront.net'}]);r53.get_waiter.return_value.wait.assert_called_once()
+        self.assertEqual(r53.change_resource_record_sets.call_args.kwargs['ChangeBatch']['Changes'][0]['Action'],'CREATE')
 
     def test_equivalent_existing_dns_case_and_trailing_dot_are_idempotent(self):
         c,out,r53,cf,acm,aws=self.fixture()
         r53.list_resource_record_sets.return_value={'ResourceRecordSets':[{'Name':'APP.QA.OTGD.TEST.','Type':'CNAME','ResourceRecords':[{'Value':'D1.CLOUDFRONT.NET.'}]}]}
-        self.assertFalse(register_cname.change(aws,c,out,'Z1')['applied'])
+        result=register_cname.change(aws,c,out,'Z1',apply=True)
+        self.assertFalse(result['applied']);self.assertTrue(result['unchanged'])
+        r53.change_resource_record_sets.assert_not_called();r53.get_waiter.assert_not_called()
+
+    def test_intervening_dns_record_fails_atomic_create_without_overwrite(self):
+        c,out,r53,cf,acm,aws=self.fixture()
+        r53.change_resource_record_sets.side_effect=ClientError({'Error':{'Code':'InvalidChangeBatch','Message':'record already exists'}},'ChangeResourceRecordSets')
+        with self.assertRaises(ClientError):register_cname.change(aws,c,out,'Z1',apply=True)
+        self.assertEqual(r53.change_resource_record_sets.call_args.kwargs['ChangeBatch']['Changes'][0]['Action'],'CREATE')
+        r53.get_waiter.assert_not_called()
+
+    def test_late_dns_success_is_refused_without_claiming_rollback(self):
+        c,out,r53,cf,acm,aws=self.fixture()
+        with patch.object(register_cname.time,'monotonic',side_effect=[0,0,601]),self.assertRaises(Gate):
+            register_cname.change(aws,c,out,'Z1',apply=True)
+        r53.change_resource_record_sets.assert_called_once()
+        r53.get_waiter.return_value.wait.assert_called_once()
+
+    def test_disabled_foreign_origin_or_non_sigv4_distribution_cannot_publish_dns(self):
+        for mutation in ('disabled','bucket','region','prefix','oac','custom','behavior','extra_origin','group'):
+            c,out,r53,cf,acm,aws=self.fixture()
+            config=cf.get_distribution.return_value['Distribution']['DistributionConfig']
+            origin=config['Origins']['Items'][0]
+            if mutation=='disabled':config['Enabled']=False
+            elif mutation=='bucket':origin['DomainName']='private-assets.s3.us-east-2.amazonaws.com.foreign.test'
+            elif mutation=='region':origin['DomainName']='private-assets.s3.us-west-2.amazonaws.com'
+            elif mutation=='prefix':origin['OriginPath']='/releases/'+'d'*40
+            elif mutation=='oac':cf.get_origin_access_control.return_value['OriginAccessControl']['OriginAccessControlConfig']['SigningBehavior']='never'
+            elif mutation=='custom':origin['CustomOriginConfig']={}
+            elif mutation=='behavior':config['CacheBehaviors']={'Quantity':1,'Items':[{'PathPattern':'/assets/*','TargetOriginId':'foreign'}]}
+            elif mutation=='extra_origin':config['Origins']['Items'].append({'Id':'foreign','DomainName':'foreign.test'})
+            else:config['OriginGroups']={'Quantity':1,'Items':[{'Id':'foreign'}]}
+            with self.subTest(mutation=mutation),self.assertRaises(Gate):register_cname.change(aws,c,out,'Z1',apply=True)
+            r53.change_resource_record_sets.assert_not_called()
 
     def test_apex_foreign_private_zone_unready_tls_alias_and_existing_record_conflicts_fail_closed(self):
         for mutate in ('apex','foreign','private','tls','alias','distribution','existing'):

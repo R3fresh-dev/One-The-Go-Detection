@@ -1,8 +1,12 @@
 # Implementation and release evidence
 
-Updated **2026-10-11**. This report separates supplied implementation, executed verification, conditional software still absent, and external release evidence. A build or a fictional fixture does not establish that the product detects current intoxication.
+Updated **2026-10-12**. This report separates supplied implementation, executed verification, conditional software still absent, and external release evidence. A build or a fictional fixture does not establish that the product detects current intoxication.
 
 ## Product status
+
+The latest completed software checkpoint is [`9694554`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/96945549ab0466c26300a2863f907cf20da35042): all seven local gate categories and [all thirteen required GitHub jobs](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38131498621) passed. Python statement coverage was 88.53%; mobile business-code coverage was 90.08% locally and 90.05% in CI. The current release/browser follow-up is separate work and requires fresh exact-source checks. The older `155c60d` tables below are historical evidence. Supported GitHub metadata at the follow-up audit shows `main` unprotected with no effective rules; protection administration still returns 403. No merge or full-product release is authorized by these passing software checks.
+
+Use [release and browser-testing instructions](docs/RELEASE_AND_BROWSER_TESTING.md) for the current QA/prod/CNAME commands, native store delivery, click-only preview paths and remaining implementation prerequisites. The follow-up supplies store build/inspection/submission/status tooling, stricter deployment admission, isolated Codespaces exports and an optional protected macOS build/status/reconciliation workflow. Fresh upload from ephemeral Actions is refused; initial submission preserves its signed intent on persistent operator storage. These additions require their own exact-source checks and are not established by the `9694554` checkpoint.
 
 The repository contains the Android/iOS application, Kotlin/Swift reaction, optical and Bluetooth modules, FastAPI API and worker, PostgreSQL persistence, synthetic and protected signed-reader firmware, LocalStack setup, and separate AWS QA/production infrastructure. The reviewed specification checkpoint is [`47d8ecb`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/47d8ecbfc871b5026f32d4f5f474908e9c0e1b14), committed before implementation.
 
