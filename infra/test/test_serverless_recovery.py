@@ -929,8 +929,7 @@ class ContinuationCloud(FakeCloud):
         cf.get_template_summary.side_effect = self.continuation_summary
         cf.get_paginator.side_effect = self.continuation_paginator
         cf.get_waiter.side_effect = self.continuation_waiter
-        cf.describe_stack_resource.side_effect = ClientError({'Error': {'Code': 'ValidationError',
-            'Message': 'Stack does not contain resource DatabaseWriter'}}, 'DescribeStackResource')
+        cf.describe_stack_resource.side_effect = self.describe_current_resource
         self.clients['ec2'] = Mock(name='ec2')
         self.clients['ecr'] = Mock(name='ecr')
         self.configure_database()
@@ -939,6 +938,16 @@ class ContinuationCloud(FakeCloud):
     def write_bundle(self):
         recovery._write(self.bundle_path, self.bundle)
         return self.bundle_path, hashlib.sha256(self.bundle_path.read_bytes()).hexdigest()
+
+    def describe_current_resource(self, **kwargs):
+        logical = kwargs['LogicalResourceId']
+        matches = [row for row in self.current_rows if row['LogicalResourceId'] == logical]
+        if not matches:
+            raise ClientError({'Error': {'Code': 'ValidationError',
+                'Message': 'Stack does not contain resource ' + logical}}, 'DescribeStackResource')
+        if len(matches) != 1:
+            raise AssertionError('Ambiguous fixture resource ' + logical)
+        return {'StackResourceDetail': deepcopy(matches[0])}
 
     def continuation_summary(self, **kwargs):
         resources = json.loads(kwargs['TemplateBody'])['Resources']
@@ -1071,8 +1080,209 @@ class UninitializedContinuationTest(unittest.TestCase):
             ipv6 = next(row for row in result['resources_to_import'] if row['LogicalResourceId'] == 'NetworkIpv6')
             self.assertEqual(ipv6['ResourceIdentifier'], {'Id': cloud.graph['NetworkIpv6'], 'VpcId': cloud.graph['Network']})
             self.assertEqual(len(result['resources_to_import']), 9)
+            self.assertEqual(result['managed_import_bindings'], {
+                name: cloud.graph[name] for name in recovery.DATABASE_IMPORT_IDS if name != 'DatabaseWriter'})
             self.assertFalse(result['journal_established'])
             cloud.no_mutations(self)
+
+    def test_detached_database_and_subnet_group_or_all_targets_still_import_the_full_live_graph(self):
+        for detached in ({'Database', 'DatabaseSubnets'},
+                         {'Database', 'DatabaseSubnets', 'DatabaseParameters'},
+                         recovery.DATABASE_IMPORT_IDS.keys() - {'DatabaseWriter'}):
+            with self.subTest(detached=detached), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                cloud.current_rows = [row for row in cloud.current_rows if row['LogicalResourceId'] not in detached]
+                self.assertEqual(len(cloud.current_rows), 23 - len(detached))
+                before = self.plan(cloud)
+                expected_bindings = {name: cloud.graph[name] for name in recovery.DATABASE_IMPORT_IDS
+                                     if name not in detached | {'DatabaseWriter'}}
+                self.assertEqual(before['managed_import_bindings'], expected_bindings)
+                self.assertEqual(before['retained_physical_ids'], cloud.graph)
+                self.assertEqual(len(before['resources_to_import']), 9)
+                cloud.no_mutations(self)
+                source, digest = cloud.write_bundle()
+                original_bytes = source.read_bytes()
+                cf = cloud.clients['cloudformation']
+                journal = Path(directory) / 'continued.json'
+                with patch.object(recovery, '_historical_builder', return_value=build_template):
+                    after = recovery.continue_uninitialized(cloud.aws, cloud.config,
+                        journal, source, digest)
+                self.assertEqual(len(cloud.current_rows), 24)
+                self.assertEqual(after['retained_physical_ids'], cloud.graph)
+                self.assertEqual(after['managed_import_bindings'], {
+                    name: cloud.graph[name] for name in recovery.DATABASE_IMPORT_IDS})
+                self.assertEqual(json.loads(journal.read_text())['managed_import_bindings'], after['managed_import_bindings'])
+                self.assertEqual(after['database_snapshot'], before['database_snapshot'])
+                self.assertEqual(after['canonical_import_template_sha256'], before['canonical_import_template_sha256'])
+                self.assertEqual(source.read_bytes(), original_bytes)
+                self.assertEqual({row['LogicalResourceId'] for row in cf.create_change_set.call_args.kwargs['ResourcesToImport']},
+                                 recovery.DATABASE_IMPORT_IDS.keys())
+                cf.execute_change_set.assert_called_once()
+                cf.delete_stack.assert_not_called()
+                self.assertFalse(after['journal_established'])
+
+    def test_missing_cloudformation_binding_requires_precise_absence_for_that_logical_id(self):
+        invalid = [('AccessDeniedException', 'Stack does not contain resource Database'),
+                   ('ValidationError', 'Stack does not contain resource DatabaseSubnets'),
+                   ('ValidationError', 'Stack does not contain resource DatabaseWriter'),
+                   ('ValidationError', 'Stack does not exist'),
+                   ('ValidationError', 'Database request is malformed')]
+        for code, message in invalid:
+            with self.subTest(code=code, message=message), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                cloud.current_rows = [row for row in cloud.current_rows if row['LogicalResourceId'] != 'Database']
+                original = cloud.describe_current_resource
+                def describe(**kwargs):
+                    if kwargs['LogicalResourceId'] == 'Database':
+                        raise ClientError({'Error': {'Code': code, 'Message': message}}, 'DescribeStackResource')
+                    return original(**kwargs)
+                cloud.clients['cloudformation'].describe_stack_resource.side_effect = describe
+                with self.assertRaises(ClientError):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+
+    def test_resource_omitted_from_inventory_but_still_bound_to_stack_is_not_detached(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = ContinuationCloud(directory)
+            database = next(row for row in cloud.current_rows if row['LogicalResourceId'] == 'Database')
+            cloud.current_rows.remove(database)
+            original = cloud.describe_current_resource
+            cloud.clients['cloudformation'].describe_stack_resource.side_effect = lambda **kwargs: (
+                {'StackResourceDetail': deepcopy(database)} if kwargs['LogicalResourceId'] == 'Database'
+                else original(**kwargs))
+            with self.assertRaises(Gate):
+                self.plan(cloud)
+            cloud.no_mutations(self)
+
+    def test_detached_targets_must_still_exist_in_rds_and_ec2(self):
+        missing = [('rds', 'describe_db_clusters', 'DBClusterNotFoundFault'),
+                   ('rds', 'describe_db_instances', 'DBInstanceNotFound'),
+                   ('rds', 'describe_db_subnet_groups', 'DBSubnetGroupNotFoundFault'),
+                   ('rds', 'describe_db_cluster_parameter_groups', 'DBParameterGroupNotFound'),
+                   ('ec2', 'describe_vpcs', 'InvalidVpcID.NotFound'),
+                   ('ec2', 'describe_subnets', 'InvalidSubnetID.NotFound'),
+                   ('ec2', 'describe_security_groups', 'InvalidGroup.NotFound')]
+        for service, operation, code in missing:
+            with self.subTest(service=service, operation=operation), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                cloud.current_rows = [row for row in cloud.current_rows if row['LogicalResourceId'] in cloud.physical]
+                getattr(cloud.clients[service], operation).side_effect = absent(code)
+                with self.assertRaises(ClientError):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = ContinuationCloud(directory)
+            cloud.current_rows = [row for row in cloud.current_rows if row['LogicalResourceId'] in cloud.physical]
+            cloud.vpc['Ipv6CidrBlockAssociationSet'] = []
+            with self.assertRaises(Gate):
+                self.plan(cloud)
+            cloud.no_mutations(self)
+
+    def test_each_target_requires_one_exact_failed_run_creation_event_even_when_all_are_detached(self):
+        logical_ids = recovery.DATABASE_IMPORT_IDS.keys() - {'DatabaseWriter'}
+        for logical in logical_ids:
+            for mode in ('missing', 'duplicate', 'conflicting', 'wrong-type', 'outside-run', 'empty-id'):
+                with self.subTest(logical=logical, mode=mode), tempfile.TemporaryDirectory() as directory:
+                    cloud = ContinuationCloud(directory)
+                    cloud.current_rows = [row for row in cloud.current_rows if row['LogicalResourceId'] in cloud.physical]
+                    created = next(row for row in cloud.current_events if row['LogicalResourceId'] == logical
+                                   and row['ResourceStatus'] == 'CREATE_COMPLETE')
+                    if mode == 'missing':
+                        cloud.current_events.remove(created)
+                    elif mode in ('duplicate', 'conflicting'):
+                        other = deepcopy(created)
+                        if mode == 'conflicting':
+                            other['PhysicalResourceId'] = 'different-source-identity'
+                        cloud.current_events.append(other)
+                    else:
+                        field, value = {'wrong-type': ('ResourceType', 'AWS::S3::Bucket'),
+                            'outside-run': ('Timestamp', '2019-01-01T00:02:00Z'),
+                            'empty-id': ('PhysicalResourceId', '')}[mode]
+                        created[field] = value
+                    with self.assertRaises(Gate):
+                        self.plan(cloud)
+                    cloud.no_mutations(self)
+
+    def test_detached_writer_requires_exact_unique_skipped_history_in_failed_run(self):
+        for mode in ('missing', 'duplicate', 'wrong-name', 'wrong-type', 'outside-run'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                event = next(row for row in cloud.current_events if row['LogicalResourceId'] == 'DatabaseWriter')
+                if mode == 'missing':
+                    cloud.current_events.remove(event)
+                elif mode == 'duplicate':
+                    cloud.current_events.append(deepcopy(event))
+                else:
+                    field, value = {'wrong-name': ('PhysicalResourceId', 'different-writer'),
+                        'wrong-type': ('ResourceType', 'AWS::RDS::DBCluster'),
+                        'outside-run': ('Timestamp', '2019-01-01T00:04:00Z')}[mode]
+                    event[field] = value
+                with self.assertRaises(Gate):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+
+    def test_subset_inventory_still_requires_all_original_authorities_and_exact_source_bindings(self):
+        for mode in ('original-missing', 'unexplained', 'duplicate-original', 'duplicate-target',
+                     'target-source-id', 'target-type', 'target-status', 'writer-bound'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                target = next(row for row in cloud.current_rows if row['LogicalResourceId'] == 'Database')
+                if mode == 'original-missing':
+                    cloud.current_rows.pop(0)
+                elif mode == 'unexplained':
+                    cloud.current_rows.append({'LogicalResourceId': 'Unexplained', 'ResourceType': 'AWS::SQS::Queue',
+                        'ResourceStatus': 'CREATE_COMPLETE', 'PhysicalResourceId': 'unexplained-queue'})
+                elif mode == 'duplicate-original':
+                    cloud.current_rows.append(deepcopy(cloud.current_rows[0]))
+                elif mode == 'duplicate-target':
+                    cloud.current_rows.append(deepcopy(target))
+                elif mode == 'writer-bound':
+                    cloud.current_rows.append({'LogicalResourceId': 'DatabaseWriter', 'ResourceType': 'AWS::RDS::DBInstance',
+                        'ResourceStatus': 'CREATE_COMPLETE', 'PhysicalResourceId': cloud.graph['DatabaseWriter']})
+                else:
+                    field, value = {'target-source-id': ('PhysicalResourceId', 'different-source-identity'),
+                        'target-type': ('ResourceType', 'AWS::RDS::DBInstance'),
+                        'target-status': ('ResourceStatus', 'DELETE_FAILED')}[mode]
+                    target[field] = value
+                with self.assertRaises(Gate):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+
+    def test_completed_import_requires_all_twenty_four_resources(self):
+        for missing in ('Database', 'DatabaseSubnets', 'DatabaseWriter', 'DataKey'):
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                cloud.adopt(self.plan(cloud)['import_template'])
+                cloud.current_rows = [row for row in cloud.current_rows if row['LogicalResourceId'] != missing]
+                with self.assertRaises(Gate):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+
+    def test_binding_inventory_change_before_execution_blocks_import_even_with_unchanged_live_graph(self):
+        for mode in ('detach', 'reattach'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = ContinuationCloud(directory)
+                target = next(row for row in cloud.current_rows if row['LogicalResourceId'] == 'Database')
+                if mode == 'reattach':
+                    cloud.current_rows.remove(target)
+                path, digest = cloud.write_bundle()
+                def create(**kwargs):
+                    if mode == 'detach':
+                        cloud.current_rows.remove(target)
+                    else:
+                        cloud.current_rows.append(target)
+                    return {'Id': 'fixture-import-change'}
+                cf = cloud.clients['cloudformation']
+                cf.create_change_set.side_effect = create
+                evidence_path = Path(directory) / 'blocked.json'
+                with self.assertRaises(Gate), patch.object(recovery, '_historical_builder', return_value=build_template):
+                    recovery.continue_uninitialized(cloud.aws, cloud.config, evidence_path, path, digest)
+                cf.execute_change_set.assert_not_called()
+                cf.delete_stack.assert_not_called()
+                evidence = json.loads(evidence_path.read_text())
+                self.assertFalse(evidence['journal_established'])
+                self.assertEqual(evidence['managed_import_bindings'].get('Database'),
+                                 cloud.graph['Database'] if mode == 'detach' else None)
 
     def test_import_journal_and_existing_import_resume_preserve_every_identity(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -712,7 +712,7 @@ def _resource_tags(client, arn):
     _require_tags(client.list_tags_for_resource(ResourceName=arn).get('TagList', []))
 
 
-def _history_for_continuation(cf, bundle, stack_id, physical, failed_template):
+def _history_for_continuation(cf, bundle, stack_id, failed_template):
     events = [event for page in _pages(cf, 'describe_stack_events', StackName=stack_id)
               for event in page.get('StackEvents', [])]
     if len(events) > 2000:
@@ -740,26 +740,45 @@ def _history_for_continuation(cf, bundle, stack_id, physical, failed_template):
                 or failed_template['Resources']['ControlFunction']['Properties'].get('ReservedConcurrentExecutions') != 0
                 or failed_template['Resources']['ControlSchedule']['Properties'].get('State') != 'DISABLED'):
             raise Gate('Uninitialized continuation control function was not the exact stopped and deleted first control')
+    physical = {}
     for logical in DATABASE_IMPORT_IDS.keys() - {'DatabaseWriter'}:
         matching = [event for event in events if event.get('LogicalResourceId') == logical
-                    and event.get('PhysicalResourceId') == physical[logical]
-                    and event.get('ResourceType') == DATABASE_IMPORT_IDS[logical][0]
-                    and event.get('ResourceStatus') == 'CREATE_COMPLETE'
-                    and start <= _utc_time(event.get('Timestamp')) <= end]
-        if not matching:
+                    and event.get('ResourceStatus') == 'CREATE_COMPLETE']
+        if (len(matching) != 1 or matching[0].get('ResourceType') != DATABASE_IMPORT_IDS[logical][0]
+                or not isinstance(matching[0].get('PhysicalResourceId'), str)
+                or not matching[0]['PhysicalResourceId']
+                or not start <= _utc_time(matching[0].get('Timestamp')) <= end):
             raise Gate('Uninitialized continuation lacks exact failed-run creation history for ' + logical)
+        physical[logical] = matching[0]['PhysicalResourceId']
     writer = [event for event in events if event.get('LogicalResourceId') == 'DatabaseWriter'
-              and event.get('PhysicalResourceId') == physical['DatabaseWriter']
-              and event.get('ResourceType') == 'AWS::RDS::DBInstance'
-              and event.get('ResourceStatus') == 'DELETE_SKIPPED'
-              and start <= _utc_time(event.get('Timestamp')) <= end]
+              and event.get('ResourceStatus') == 'DELETE_SKIPPED']
     missing = [event for event in events if event.get('LogicalResourceId') == 'PrivateB'
                and event.get('ResourceType') == 'AWS::EC2::Subnet'
                and event.get('ResourceStatus') == 'DELETE_COMPLETE'
                and start <= _utc_time(event.get('Timestamp')) <= end]
-    if len(writer) != 1 or len(missing) != 1 or not missing[0].get('PhysicalResourceId'):
+    if (len(writer) != 1 or writer[0].get('ResourceType') != 'AWS::RDS::DBInstance'
+            or writer[0].get('PhysicalResourceId') != STACK + '-writer'
+            or not start <= _utc_time(writer[0].get('Timestamp')) <= end
+            or len(missing) != 1 or not isinstance(missing[0].get('PhysicalResourceId'), str)
+            or not missing[0]['PhysicalResourceId']):
         raise Gate('Uninitialized continuation requires the exact retained writer and deleted second subnet history')
-    return missing[0]['PhysicalResourceId']
+    physical['DatabaseWriter'] = writer[0]['PhysicalResourceId']
+    return physical, missing[0]['PhysicalResourceId']
+
+
+def _absent_stack_binding(cf, stack_id, logical):
+    """Require precise missing metadata; this does not prove resource absence."""
+    try:
+        cf.describe_stack_resource(StackName=stack_id, LogicalResourceId=logical)
+    except ClientError as error:
+        details = error.response.get('Error', {})
+        message = details.get('Message', '')
+        if (details.get('Code') != 'ValidationError' or not isinstance(message, str)
+                or not re.search(r'\b' + re.escape(logical) + r'\b', message)
+                or not any(text in message for text in ('does not exist', 'does not contain'))):
+            raise
+    else:
+        raise Gate('Uninitialized continuation found ambiguous current metadata for ' + logical)
 
 
 def _security_rules(rows):
@@ -973,20 +992,21 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
     rows = [row for page in _pages(cf, 'list_stack_resources', StackName=stack['StackId'])
             for row in page.get('StackResourceSummaries', [])]
     imported = stack['StackStatus'] == 'IMPORT_COMPLETE'
-    expected_ids = old['retained_physical_ids'].keys() | (DATABASE_IMPORT_IDS.keys() if imported
-                    else DATABASE_IMPORT_IDS.keys() - {'DatabaseWriter'})
+    original_ids = old['retained_physical_ids'].keys()
+    allowed_ids = original_ids | (DATABASE_IMPORT_IDS.keys() if imported
+                  else DATABASE_IMPORT_IDS.keys() - {'DatabaseWriter'})
+    actual_ids = {row.get('LogicalResourceId') for row in rows}
     statuses = ('IMPORT_COMPLETE', 'UPDATE_COMPLETE') if imported else ('CREATE_COMPLETE', 'UPDATE_COMPLETE')
-    if (len(rows) != len(expected_ids) or {row.get('LogicalResourceId') for row in rows} != expected_ids
+    if (len(rows) != len(actual_ids) or not original_ids <= actual_ids or not actual_ids <= allowed_ids
+            or (imported and actual_ids != allowed_ids)
             or any(row.get('ResourceStatus') not in statuses for row in rows)):
         raise Gate('Uninitialized continuation surviving inventory differs from the exact reviewed graph')
-    physical = {row['LogicalResourceId']: row.get('PhysicalResourceId') for row in rows}
-    if not imported:
-        physical['DatabaseWriter'] = STACK + '-writer'
+    bindings = {row['LogicalResourceId']: row.get('PhysicalResourceId') for row in rows}
     for row in rows:
         logical = row['LogicalResourceId']
         kind = old['import_template']['Resources'][logical]['Type'] if logical in old['retained_physical_ids'] else DATABASE_IMPORT_IDS[logical][0]
-        if (row.get('ResourceType') != kind or not physical[logical]
-                or (logical in old['retained_physical_ids'] and physical[logical] != old['retained_physical_ids'][logical])):
+        if (row.get('ResourceType') != kind or not isinstance(bindings[logical], str) or not bindings[logical]
+                or (logical in original_ids and bindings[logical] != old['retained_physical_ids'][logical])):
             raise Gate('Uninitialized continuation changed a surviving resource type or physical identity')
     images = _failed_images(aws, config, bundle['failed_release_id'])
     cluster_preview = _one(aws.client('rds').describe_db_clusters(DBClusterIdentifier=STACK), 'DBClusters')
@@ -997,17 +1017,14 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
     # not retroactively change that historical template.
     failed_template = builder({**historical_config, **images, 'releaseId': bundle['failed_release_id'],
         'databaseEngineVersion': cluster_preview.get('EngineVersion'), 'activateServices': False})
-    deleted_subnet = _history_for_continuation(cf, bundle, stack['StackId'], physical, failed_template)
+    source_physical, deleted_subnet = _history_for_continuation(cf, bundle, stack['StackId'], failed_template)
+    physical = {**old['retained_physical_ids'], **source_physical}
+    managed_import_bindings = {logical: bindings[logical] for logical in sorted(actual_ids - original_ids)}
+    if any(physical[logical] != bindings[logical] for logical in actual_ids):
+        raise Gate('Uninitialized continuation current bindings differ from their exact source creation identities')
     if not imported:
-        try:
-            cf.describe_stack_resource(StackName=stack['StackId'], LogicalResourceId='DatabaseWriter')
-        except ClientError as error:
-            details = error.response.get('Error', {})
-            if (details.get('Code') != 'ValidationError' or 'DatabaseWriter' not in details.get('Message', '')
-                    or not any(text in details.get('Message', '') for text in ('does not exist', 'does not contain'))):
-                raise
-        else:
-            raise Gate('Uninitialized continuation writer is not the exact detached retained instance')
+        for logical in sorted(DATABASE_IMPORT_IDS.keys() - actual_ids):
+            _absent_stack_binding(cf, stack['StackId'], logical)
     snapshot = _database_snapshot(aws, config, bundle, physical, deleted_subnet)
     if snapshot['engine_version'] != cluster_preview.get('EngineVersion'):
         raise Gate('Uninitialized continuation database version changed during inventory')
@@ -1036,6 +1053,7 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
         'artifact_sha256': bundle['artifact_sha256'], 'source_bundle_sha256': source_bundle_sha256,
         'stack_name': STACK, 'stack_id': stack['StackId'], 'original_stack_id': old['original_stack_id'],
         'original_retained_physical_ids': old['retained_physical_ids'], 'retained_physical_ids': physical,
+        'managed_import_bindings': managed_import_bindings,
         'deleted_subnet_id': deleted_subnet, 'database_snapshot': snapshot,
         'database_engine_version': snapshot['engine_version'], 'already_adopted': imported,
         'import_template': candidate, 'canonical_import_template_sha256': _body_hash(candidate),
@@ -1043,10 +1061,12 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
         'journal_established': False, 'application_deployment_completed': False}
 
 
-def _same_continuation(before, after):
+def _same_continuation(before, after, *, check_bindings=False):
     for field in ('stack_id', 'retained_physical_ids', 'database_snapshot', 'canonical_import_template_sha256'):
         if before[field] != after[field]:
             raise Gate('Uninitialized continuation authority or configuration changed before execution')
+    if check_bindings and before['managed_import_bindings'] != after['managed_import_bindings']:
+        raise Gate('Uninitialized continuation resource bindings changed before execution')
 
 
 def continue_uninitialized(aws, config, evidence_path, source_bundle, source_bundle_sha256):
@@ -1084,7 +1104,7 @@ def continue_uninitialized(aws, config, evidence_path, source_bundle, source_bun
                                != evidence['retained_physical_ids'][row['LogicalResourceId']]) for row in changes)):
                 raise Gate('Uninitialized continuation change set is not exactly nine preserved-resource imports')
             _same_continuation(evidence, uninitialized_continuation_plan(
-                aws, config, source_bundle, source_bundle_sha256))
+                aws, config, source_bundle, source_bundle_sha256), check_bindings=True)
             phase('surviving-database-import-executing')
             cf.execute_change_set(StackName=evidence['stack_id'], ChangeSetName=change)
             cf.get_waiter('stack_import_complete').wait(StackName=evidence['stack_id'],
@@ -1094,6 +1114,7 @@ def continue_uninitialized(aws, config, evidence_path, source_bundle, source_bun
         if not after['already_adopted']:
             raise Gate('Uninitialized continuation did not prove complete survivor adoption')
         evidence['already_adopted'] = True
+        evidence['managed_import_bindings'] = after['managed_import_bindings']
         phase('retained-uninitialized-database-adopted')
         return evidence
     except Exception as error:
