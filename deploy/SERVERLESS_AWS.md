@@ -111,6 +111,26 @@ resource identifiers and import plan before metadata deletion. Preserve it if
 recovery is interrupted. An initialized or unexpected environment requires a
 separate recovery process and is rejected by this initial recovery option.
 
+If initial recovery stopped after detaching the failed stack metadata, supply
+that failed deployment's numeric Actions run ID as `resume_initial_run_id`, with
+both `recover_initial` and `establish_new` enabled. Before AWS authentication,
+the workflow checks that the selected run is a failed deployment from reviewed
+`main`, verifies its historical exact-source gates, and binds the original
+recovery manifest's SHA-256. Recovery then compares the manifest with the
+original deleted stack's template and history and rechecks every retained
+identity and empty authority store. It imports those same resources without
+deleting another stack or adding tags to the import request; CloudFormation
+rejects tag changes during import. The normal stopped-platform update applies
+the stack tags afterward. Missing, changed, initialized or unrelated recovery
+evidence blocks the operation.
+
+For an authorized local operator, the equivalent additional options are
+`--resume-initial /protected/initial-recovery.json` and
+`--resume-initial-sha256 VERIFIED_MANIFEST_SHA256`, alongside
+`--recover-initial --establish-new`. Obtain the manifest and its verified hash
+from the original protected deployment artifact. Preserve the original file;
+each resumed attempt writes a separate recovery journal.
+
 ## Repeat the Python process locally
 
 Use a clean checkout of the exact reviewed `main` commit, the locked toolchain,

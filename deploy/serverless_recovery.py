@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import uuid
 
 from botocore.exceptions import ClientError
@@ -153,7 +154,7 @@ def _verify_retained(aws, config, logical, resource, physical):
         _require_tags([{'Key': key, 'Value': value} for key, value in client.list_tags_for_resource(resourceArn=arn).get('tags', {}).items()])
 
 
-def initial_recovery_plan(aws, config):
+def _initial_recovery_plan(aws, config, original_stack_id=None):
     """Validate the complete recovery before any mutation and retain no secrets."""
     if (config.get('environment') != 'serverless-development' or config.get('region') != 'us-east-2'
             or not re.fullmatch(r'\d{12}', config.get('account', ''))
@@ -162,11 +163,12 @@ def initial_recovery_plan(aws, config):
     if aws.client('sts').get_caller_identity()['Account'] != config['account']:
         raise Gate('Initial recovery credentials do not match the selected account')
     cf = aws.client('cloudformation')
-    stack = cf.describe_stacks(StackName=STACK)['Stacks'][0]
+    stack = cf.describe_stacks(StackName=original_stack_id or STACK)['Stacks'][0]
     stack_tags = {tag['Key']: tag['Value'] for tag in stack.get('Tags', [])}
-    if (stack.get('StackStatus') != 'ROLLBACK_COMPLETE'
+    if (stack.get('StackStatus') != ('DELETE_COMPLETE' if original_stack_id else 'ROLLBACK_COMPLETE')
             or stack_tags.get('deployment') != STACK or stack_tags.get('purpose') != 'serverless-development'
-            or not stack.get('StackId', '').startswith(f"arn:aws:cloudformation:{config['region']}:{config['account']}:stack/{STACK}/")):
+            or not stack.get('StackId', '').startswith(f"arn:aws:cloudformation:{config['region']}:{config['account']}:stack/{STACK}/")
+            or (original_stack_id and stack.get('StackId') != original_stack_id)):
         raise Gate('Only the owned fully rolled-back first application stack can use initial recovery')
     original = cf.get_template(StackName=stack['StackId'], TemplateStage='Original')['TemplateBody']
     if isinstance(original, str):
@@ -264,6 +266,91 @@ def initial_recovery_plan(aws, config):
             'actual_resources_deleted': False, 'application_deployment_completed': False}
 
 
+def initial_recovery_plan(aws, config):
+    """Inspect only the owned rolled-back first stack before detachment."""
+    return _initial_recovery_plan(aws, config)
+
+
+def _verify_initial_state(aws, config, evidence):
+    for logical, resource in evidence['import_template']['Resources'].items():
+        _verify_retained(aws, config, logical, resource, evidence['retained_physical_ids'][logical])
+    rds = aws.client('rds')
+    _absent(rds, 'describe_db_clusters', {'DBClusterNotFoundFault'}, DBClusterIdentifier=STACK)
+    _absent(rds, 'describe_db_instances', {'DBInstanceNotFound'}, DBInstanceIdentifier=STACK + '-writer')
+    for role in ('api', 'worker', 'dispatcher', 'maintenance', 'control'):
+        _absent(aws.client('lambda'), 'get_function', {'ResourceNotFoundException'},
+                FunctionName=STACK + '-' + role)
+
+
+def _verify_imported_stack(cf, evidence, stack):
+    resources = evidence['import_template']['Resources']
+    rows = [row for page in _pages(cf, 'list_stack_resources', StackName=stack['StackId'])
+            for row in page.get('StackResourceSummaries', [])]
+    tags = {tag['Key']: tag['Value'] for tag in stack.get('Tags', [])}
+    if (stack.get('StackStatus') != 'IMPORT_COMPLETE'
+            or (tags and (tags.get('deployment') != STACK or tags.get('purpose') != 'serverless-development'))
+            or stack.get('StackId') == evidence['original_stack_id']
+            or not stack.get('StackId', '').startswith(
+                f"arn:aws:cloudformation:{evidence['region']}:{evidence['account']}:stack/{STACK}/")
+            or len(rows) != len(resources)
+            or {row.get('LogicalResourceId'): row.get('PhysicalResourceId') for row in rows}
+                != evidence['retained_physical_ids']
+            or any(row.get('ResourceType') != resources.get(row.get('LogicalResourceId'), {}).get('Type')
+                   or row.get('ResourceStatus') != 'IMPORT_COMPLETE' for row in rows)):
+        raise Gate('Initial recovery did not prove adoption of every original retained resource')
+    original = cf.get_template(StackName=stack['StackId'], TemplateStage='Original')['TemplateBody']
+    if isinstance(original, str):
+        if len(original.encode()) > 51200:
+            raise Gate('Initial recovery imported template exceeded its bound')
+        original = json.loads(original)
+    if original != evidence['import_template']:
+        raise Gate('Initial recovery imported stack template differs from the preserved resources')
+
+
+def _record_failure(evidence, phase, error):
+    evidence['failed_phase'] = evidence['status']
+    evidence['failure_type'] = type(error).__name__
+    if isinstance(error, ClientError):
+        evidence['failure_operation'] = str(error.operation_name)[:100]
+        evidence['failure_code'] = str(error.response.get('Error', {}).get('Code', ''))[:100]
+        evidence['failure_request_id'] = str(error.response.get('ResponseMetadata', {}).get('RequestId', ''))[:100]
+    phase('blocked-recovery-inspect-protected-journal-before-retry')
+
+
+def _import_retained(aws, config, evidence, phase):
+    cf = aws.client('cloudformation')
+    _verify_initial_state(aws, config, evidence)
+    change = cf.create_change_set(StackName=STACK, ChangeSetName='initial-import-' + uuid.uuid4().hex,
+        ChangeSetType='IMPORT', TemplateBody=json.dumps(evidence['import_template'], separators=(',', ':')),
+        ResourcesToImport=evidence['resources_to_import'])['Id']
+    evidence['import_change_set_id'] = change
+    phase('import-change-set-created')
+    cf.get_waiter('change_set_create_complete').wait(StackName=STACK, ChangeSetName=change,
+        WaiterConfig={'Delay': 3, 'MaxAttempts': 120})
+    changes = [row.get('ResourceChange', {}) for page in _pages(cf, 'describe_change_set',
+        StackName=STACK, ChangeSetName=change) for row in page.get('Changes', [])]
+    resources = evidence['import_template']['Resources']
+    if (len(changes) != len(resources) or {row.get('LogicalResourceId') for row in changes} != resources.keys()
+            or any(row.get('Action') != 'Import' or row.get('ResourceType') != resources[row['LogicalResourceId']]['Type']
+                   or row.get('Replacement') in ('True', 'Conditional') for row in changes)):
+        cf.delete_change_set(StackName=STACK, ChangeSetName=change)
+        raise Gate('Initial recovery change set is not an import of the exact preserved resources')
+    # Recheck live authority immediately before executing the reviewed import.
+    _verify_initial_state(aws, config, evidence)
+    cf.update_termination_protection(StackName=STACK, EnableTerminationProtection=True)
+    phase('import-executing')
+    cf.execute_change_set(StackName=STACK, ChangeSetName=change)
+    cf.get_waiter('stack_import_complete').wait(StackName=STACK,
+        WaiterConfig={'Delay': 5, 'MaxAttempts': 180})
+    stack = cf.describe_stacks(StackName=STACK)['Stacks'][0]
+    _verify_imported_stack(cf, evidence, stack)
+    if not stack.get('EnableTerminationProtection'):
+        raise Gate('Initial recovery imported stack lacks termination protection')
+    evidence['recovered_stack_id'] = stack['StackId']
+    phase('uninitialized-retained-resources-imported')
+    return evidence
+
+
 def recover_initial(aws, config, evidence_path):
     """Detach failed stack metadata, then adopt the identical retained resources."""
     path = Path(evidence_path)
@@ -284,42 +371,152 @@ def recover_initial(aws, config, evidence_path):
         cf.get_waiter('stack_delete_complete').wait(StackName=evidence['original_stack_id'],
             WaiterConfig={'Delay': 5, 'MaxAttempts': 120})
         phase('failed-stack-metadata-detached')
-        # Re-read authority and emptiness after detachment, before adoption.
-        for logical, resource in evidence['import_template']['Resources'].items():
-            _verify_retained(aws, config, logical, resource, evidence['retained_physical_ids'][logical])
-        change = cf.create_change_set(StackName=STACK, ChangeSetName='initial-import-' + uuid.uuid4().hex,
-            ChangeSetType='IMPORT', TemplateBody=json.dumps(evidence['import_template'], separators=(',', ':')),
-            ResourcesToImport=evidence['resources_to_import'],
-            Tags=[{'Key': 'deployment', 'Value': STACK}, {'Key': 'purpose', 'Value': 'serverless-development'}])['Id']
-        evidence['import_change_set_id'] = change
-        phase('import-change-set-created')
-        cf.get_waiter('change_set_create_complete').wait(StackName=STACK, ChangeSetName=change,
-            WaiterConfig={'Delay': 3, 'MaxAttempts': 120})
-        changes = [row.get('ResourceChange', {}) for page in _pages(cf, 'describe_change_set',
-            StackName=STACK, ChangeSetName=change) for row in page.get('Changes', [])]
-        resources = evidence['import_template']['Resources']
-        if (len(changes) != len(resources) or {row.get('LogicalResourceId') for row in changes} != resources.keys()
-                or any(row.get('Action') != 'Import' or row.get('ResourceType') != resources[row['LogicalResourceId']]['Type']
-                       for row in changes)):
-            cf.delete_change_set(StackName=STACK, ChangeSetName=change)
-            raise Gate('Initial recovery change set is not an import of the exact preserved resources')
-        cf.update_termination_protection(StackName=STACK, EnableTerminationProtection=True)
-        phase('import-executing')
-        cf.execute_change_set(StackName=STACK, ChangeSetName=change)
-        cf.get_waiter('stack_import_complete').wait(StackName=STACK,
-            WaiterConfig={'Delay': 5, 'MaxAttempts': 180})
-        stack = cf.describe_stacks(StackName=STACK)['Stacks'][0]
-        rows = [row for page in _pages(cf, 'list_stack_resources', StackName=STACK)
-                for row in page.get('StackResourceSummaries', [])]
-        if (stack.get('StackStatus') != 'IMPORT_COMPLETE' or not stack.get('EnableTerminationProtection')
-                or len(rows) != len(resources) or {row['LogicalResourceId']: row.get('PhysicalResourceId') for row in rows}
-                    != evidence['retained_physical_ids']):
-            raise Gate('Initial recovery did not prove adoption of every original retained resource')
+        return _import_retained(aws, config, evidence, phase)
+    except Exception as error:
+        _record_failure(evidence, phase, error)
+        raise
+
+
+def _read_source_manifest(path, expected_sha256):
+    if not isinstance(expected_sha256, str) or not re.fullmatch(r'[0-9a-f]{64}', expected_sha256):
+        raise Gate('Initial recovery resume requires the trusted artifact manifest SHA-256')
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(descriptor, 'rb') as stream:
+        info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_size > 262144 or info.st_mode & 0o022:
+            raise Gate('Initial recovery source manifest must be a bounded protected regular file')
+        raw = stream.read(262145)
+    if len(raw) > 262144 or hashlib.sha256(raw).hexdigest() != expected_sha256:
+        raise Gate('Initial recovery source manifest differs from the trusted artifact SHA-256')
+
+    def closed_pairs(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise Gate('Initial recovery source manifest contains duplicate JSON keys')
+            result[key] = value
+        return result
+
+    try:
+        evidence = json.loads(raw, object_pairs_hook=closed_pairs)
+    except (ValueError, UnicodeError) as error:
+        raise Gate('Initial recovery source manifest is not valid JSON evidence') from error
+    if not isinstance(evidence, dict):
+        raise Gate('Initial recovery source manifest must be a JSON object')
+    return evidence
+
+
+def _verify_source_manifest(aws, config, source):
+    detached = source.get('status') == 'failed-stack-metadata-detached' or (
+        source.get('status') == 'blocked-recovery-inspect-protected-journal-before-retry'
+        and source.get('failed_phase') == 'failed-stack-metadata-detached')
+    if (source.get('schema_version') != '1.0.0' or source.get('operation') != 'serverless-initial-recovery'
+            or source.get('account') != config.get('account') or source.get('region') != config.get('region')
+            or source.get('environment', 'serverless-development') != 'serverless-development'
+            or source.get('stack_name') != STACK or not detached or source.get('import_change_set_id')
+            or source.get('actual_resources_deleted') is not False
+            or source.get('application_deployment_completed') is not False
+            or not isinstance(source.get('release_id'), str)
+            or not re.fullmatch(r'[0-9a-f]{40}', source['release_id'])
+            or not isinstance(source.get('original_release_id'), str)
+            or not re.fullmatch(r'[0-9a-f]{40}', source['original_release_id'])
+            or not isinstance(source.get('import_template_sha256'), str)
+            or not re.fullmatch(r'[0-9a-f]{64}', source['import_template_sha256'])
+            or not isinstance(source.get('original_stack_id'), str)
+            or not re.fullmatch(
+                f"arn:aws:cloudformation:{re.escape(config.get('region', ''))}:{re.escape(config.get('account', ''))}"
+                f":stack/{STACK}/[A-Za-z0-9-]+", source['original_stack_id'])):
+        raise Gate('Initial recovery source manifest is not the exact detached first-deployment recovery')
+    # The trusted journal is evidence, while deleted-stack history independently
+    # establishes the original complete inventory, stopped template and absence
+    # of any successfully created application runtime.
+    plan = _initial_recovery_plan(aws, config, source['original_stack_id'])
+    for field in ('original_stack_id', 'original_release_id', 'retained_physical_ids', 'import_template'):
+        if source.get(field) != plan[field]:
+            raise Gate('Initial recovery source manifest differs from the original deleted-stack ' + field)
+    descriptors = source.get('resources_to_import')
+    if (not isinstance(descriptors, list) or not all(isinstance(row, dict)
+            and isinstance(row.get('LogicalResourceId'), str) for row in descriptors)
+            or len(descriptors) != len(plan['resources_to_import'])
+            or {row['LogicalResourceId']: row for row in descriptors}
+                != {row['LogicalResourceId']: row for row in plan['resources_to_import']}):
+        raise Gate('Initial recovery source manifest differs from the original deleted-stack import identifiers')
+    # Legacy evidence hashed insertion-ordered JSON, then sorted its keys while
+    # saving. The trusted whole-file digest preserves that legacy hash. Compare
+    # canonical content against independent AWS history instead of requiring an
+    # undocumented API ordering to reproduce the lost original serialization.
+    canonical = hashlib.sha256(json.dumps(source['import_template'],
+        separators=(',', ':'), sort_keys=True).encode()).hexdigest()
+    authoritative = hashlib.sha256(json.dumps(plan['import_template'],
+        separators=(',', ':'), sort_keys=True).encode()).hexdigest()
+    if canonical != authoritative or source.get('canonical_import_template_sha256', canonical) != canonical:
+        raise Gate('Initial recovery source manifest canonical template hash differs from deleted-stack history')
+    initial = source.get('initial_state')
+    if not isinstance(initial, dict) or any(initial.get(field) is not True for field in (
+            'database_absent', 'application_functions_absent', 'retained_buckets_empty',
+            'control_table_empty', 'user_pool_empty', 'initial_creation_history_verified')):
+        raise Gate('Initial recovery source manifest does not prove the original uninitialized state')
+    count = initial.get('stack_event_count')
+    if type(count) is not int or not 1 <= count <= plan['initial_state']['stack_event_count']:
+        raise Gate('Initial recovery source manifest original history count differs from deleted-stack history')
+    return plan
+
+
+def _resume_stack(cf):
+    try:
+        stacks = cf.describe_stacks(StackName=STACK)['Stacks']
+    except ClientError as error:
+        details = error.response.get('Error', {})
+        if (details.get('Code') == 'ValidationError' and details.get('Message') in (
+                f'Stack with id {STACK} does not exist', f'Stack with id {STACK} does not exist.')):
+            return None
+        raise
+    if len(stacks) != 1:
+        raise Gate('Initial recovery resume target stack inventory is ambiguous')
+    return stacks[0]
+
+
+def resume_initial(aws, config, evidence_path, source_manifest, source_manifest_sha256):
+    """Resume detached metadata using trusted evidence and deleted-stack history.
+
+    The caller must verify the source artifact's workflow and historic source
+    admission before supplying its SHA-256. This path never deletes a stack or
+    creates authority resources, and writes only a new local protected journal.
+    """
+    path = Path(evidence_path)
+    if path.exists() or path.is_symlink() or not path.parent.is_dir():
+        raise Gate('Use a new protected initial recovery journal in an existing deployment work directory')
+    source = _read_source_manifest(source_manifest, source_manifest_sha256)
+    plan = _verify_source_manifest(aws, config, source)
+    cf = aws.client('cloudformation')
+    stack = _resume_stack(cf)
+    if stack:
+        # An interrupted import can be admitted only after complete adoption;
+        # REVIEW_IN_PROGRESS and all active/updated stacks need a separate review.
+        _verify_imported_stack(cf, plan, stack)
+    evidence = deepcopy(source)
+    evidence.update(release_id=config['releaseId'], prior_recovery_release_id=source['release_id'],
+        source_manifest_sha256=source_manifest_sha256,
+        canonical_import_template_sha256=hashlib.sha256(json.dumps(source['import_template'],
+            separators=(',', ':'), sort_keys=True).encode()).hexdigest(),
+        status='failed-stack-metadata-detached')
+    for field in ('failed_phase', 'failure_type', 'failure_operation', 'failure_code', 'failure_request_id'):
+        evidence.pop(field, None)
+    _write(path, evidence)
+
+    def phase(status):
+        evidence['status'] = status
+        _write(path, evidence)
+
+    try:
+        if not stack:
+            return _import_retained(aws, config, evidence, phase)
+        _verify_initial_state(aws, config, evidence)
+        if not stack.get('EnableTerminationProtection'):
+            cf.update_termination_protection(StackName=stack['StackId'], EnableTerminationProtection=True)
         evidence['recovered_stack_id'] = stack['StackId']
         phase('uninitialized-retained-resources-imported')
         return evidence
     except Exception as error:
-        evidence['failed_phase'] = evidence['status']
-        evidence['failure_type'] = type(error).__name__
-        phase('blocked-recovery-inspect-protected-journal-before-retry')
+        _record_failure(evidence, phase, error)
         raise
