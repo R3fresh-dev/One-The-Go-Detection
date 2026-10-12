@@ -175,6 +175,12 @@ jobs:
             result = subprocess.run(command,capture_output=True,text=True,timeout=45)
             if result.returncode or len(result.stdout.encode()) > 1048576:
                 match = re.search(r'An error occurred \(([A-Za-z0-9_.-]+)\)',result.stderr)
+                if service=='resourcegroupstaggingapi' and operation=='get-resources' and match:
+                    detail=re.search(r'GetResources operation:\s*(.{1,500})',result.stderr)
+                    if detail and not re.search(r'credential|authorization|access.?key|secret|session.?token',detail[1],re.I):
+                        safe=re.sub(r'https?://\S+','[URL omitted]',detail[1])
+                        proof['inventory_parameter_error']=safe
+                        print(json.dumps({'inventory_parameter_error':safe}),flush=True)
                 raise RuntimeError('Pause AWS call failed: '+service+'/'+operation+'/'+(match[1] if match else 'Unavailable'))
             return json.loads(result.stdout)
 
@@ -255,11 +261,31 @@ jobs:
                 time.sleep(15)
             else:
                 raise RuntimeError('Stop requested; bounded stopped-state verification timed out')
-            tagged=aws('resourcegroupstaggingapi','get-resources',
-                ['--tag-filters','Key=project,Values=one-the-go-detection','--resources-per-page','100','--max-items','200'])
-            if tagged.get('PaginationToken') or tagged.get('NextToken'):
-                raise RuntimeError('Owned billable resource inventory exceeds its bounded page limit')
-            resources=[r for r in tagged.get('ResourceTagMappingList',[]) if owned(r.get('Tags'))]
+            tagged_rows=[]
+            token=None
+            for page in range(2):
+                options=['--no-paginate','--tag-filters','Key=project,Values=one-the-go-detection',
+                    '--resources-per-page','100']
+                if token:
+                    options += ['--pagination-token',token]
+                tagged=aws('resourcegroupstaggingapi','get-resources',options)
+                batch=tagged.get('ResourceTagMappingList')
+                if (not isinstance(batch,list) or len(batch)>100
+                    or any(not isinstance(row,dict) or not isinstance(row.get('ResourceARN'),str) for row in batch)):
+                    raise RuntimeError('Owned billable resource inventory is malformed')
+                tagged_rows.extend(batch)
+                token=tagged.get('PaginationToken')
+                if not token:
+                    break
+                if not isinstance(token,str) or len(token)>2048:
+                    raise RuntimeError('Owned billable resource pagination token is malformed')
+            else:
+                raise RuntimeError('Owned billable resource inventory exceeds two bounded service pages')
+            if len({row['ResourceARN'] for row in tagged_rows})!=len(tagged_rows):
+                raise RuntimeError('Owned billable resource inventory contains duplicate identities')
+            resources=[r for r in tagged_rows if owned(r.get('Tags'))]
+            if not {cluster['DBClusterArn'],writer['DBInstanceArn']} <= {r['ResourceARN'] for r in resources}:
+                raise RuntimeError('Tagged inventory does not cover the known owned database resources')
             proof['owned_tagged_inventory']=[{'arn':r['ResourceARN'],'service':r['ResourceARN'].split(':')[2]} for r in resources]
             proof['owned_resource_counts']=dict(Counter(r['service'] for r in proof['owned_tagged_inventory']))
             # Stop only positively owned service/task/build resources discovered in the tagged inventory.
