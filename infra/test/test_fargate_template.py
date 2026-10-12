@@ -48,6 +48,20 @@ class FargateTemplateTest(unittest.TestCase):
                          {"Mode": "COMPLIANCE", "Days": 90})
         self.assertNotIn("LifecycleConfiguration", journal)
 
+    def test_database_transition_preserves_existing_security_group_identities(self):
+        prior = MODULE.original_template({**self.config, "monthlyBudgetUsd": 50})["Resources"]
+        for active in (False, True):
+            resources = MODULE.build_template({**self.config, "activateServices": active})["Resources"]
+            self.assertEqual(resources["LambdaSecurityGroup"], prior["LambdaSecurityGroup"])
+            database = resources["DatabaseSecurityGroup"]
+            for field in ("GroupDescription", "VpcId"):
+                self.assertEqual(database["Properties"][field], prior["DatabaseSecurityGroup"]["Properties"][field])
+            self.assertEqual(database["Properties"]["SecurityGroupIngress"], [{
+                "IpProtocol": "tcp", "FromPort": 5432, "ToPort": 5432,
+                "SourceSecurityGroupId": {"Ref": "TaskSecurityGroup"}}])
+            self.assertEqual(database["DeletionPolicy"], "Retain")
+            self.assertEqual(database["UpdateReplacePolicy"], "Retain")
+
     def test_only_fargate_compute_and_private_dualstack_ingress_are_created(self):
         kinds = [row["Type"] for row in self.resources.values()]
         self.assertEqual(kinds.count("AWS::ECS::Service"), 1)

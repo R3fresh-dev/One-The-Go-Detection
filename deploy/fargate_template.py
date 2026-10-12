@@ -78,7 +78,7 @@ def build_template(config, phase="platform"):
         kind = resources[name]["Type"]
         if (kind.startswith("AWS::Lambda::") or kind.startswith("AWS::ApiGateway")
                 or kind == "AWS::CloudFront::Function" or kind == "AWS::CloudWatch::Alarm"
-                or name in {"ControlSchedule", "ControlRole", "LambdaSecurityGroup", "DatabaseEgress",
+                or name in {"ControlSchedule", "ControlRole", "DatabaseEgress",
                             "S3Endpoint", "WebOriginAccess", "HealthDashboard"}):
             del resources[name]
     for name in list(outputs):
@@ -114,8 +114,9 @@ def build_template(config, phase="platform"):
                                   "SourceSecurityGroupId": ref("IngressSecurityGroup")}],
         "SecurityGroupEgress": [{"IpProtocol": "tcp", "FromPort": 443, "ToPort": 443, "CidrIpv6": "::/0"}],
         "Tags": tags})
+    # Its description is immutable; update grants without replacing the
+    # existing database group. Keep the unused legacy group as a survivor.
     resources["DatabaseSecurityGroup"]["Properties"].update(
-        GroupDescription="Only owned Fargate tasks reach private PostgreSQL",
         SecurityGroupIngress=[{"IpProtocol": "tcp", "FromPort": 5432, "ToPort": 5432,
                                "SourceSecurityGroupId": ref("TaskSecurityGroup")}])
     resource("DatabaseEgress", "AWS::EC2::SecurityGroupEgress", {
