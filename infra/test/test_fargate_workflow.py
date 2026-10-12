@@ -292,7 +292,7 @@ class FargateWorkflowTest(unittest.TestCase):
         trigger = self.workflow.get('on', self.workflow.get(True))
         self.assertEqual(set(trigger), {'workflow_dispatch'})
         self.assertFalse(trigger['workflow_dispatch']['inputs']['establish_new']['default'])
-        self.assertEqual(trigger['workflow_dispatch']['inputs']['recovery_run_id']['default'], '38272959415')
+        self.assertEqual(trigger['workflow_dispatch']['inputs']['recovery_run_id']['default'], '')
         recovery_index = next(i for i, step in enumerate(steps) if step.get('id') == 'recovery')
         self.assertLess(plan_index, recovery_index)
         self.assertLess(recovery_index, credential_index)

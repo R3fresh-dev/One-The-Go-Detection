@@ -77,6 +77,25 @@ class FargateContinuationWorkflowTest(unittest.TestCase):
                 with self.assertRaises(Gate):
                     self.program['continuation_run_id']()
 
+    def test_explicit_blank_recovery_input_uses_dispatch_defaults_without_selecting_both_routes(self):
+        trigger = self.workflow.get('on', self.workflow.get(True))
+        definitions = trigger['workflow_dispatch']['inputs']
+        requested = {'recovery_run_id': '', 'continue_uninitialized_run_id': '38294513822',
+                     'establish_new': True}
+        # GitHub resolves an explicitly blank optional input to its YAML default.
+        resolved = {name: requested[name] or definitions[name]['default'] for name in requested}
+        environment = {'RECOVERY_RUN_ID': resolved['recovery_run_id'],
+                       'CONTINUE_UNINITIALIZED_RUN_ID': resolved['continue_uninitialized_run_id'],
+                       'ESTABLISH_NEW': str(resolved['establish_new']).lower(), 'GH_REPO': REPOSITORY}
+        _, recovery = workflow_program('recovery')
+        recovery['github_json'] = Mock()
+        with patch.dict(os.environ, environment, clear=True), \
+                patch.object(recovery['subprocess'], 'run') as download:
+            self.assertIsNone(recovery['prepare_recovery']())
+            self.assertEqual(self.program['continuation_run_id'](), 38294513822)
+        recovery['github_json'].assert_not_called()
+        download.assert_not_called()
+
     def test_continuation_archive_binds_unique_safe_bounded_records_without_extracting(self):
         files = continuation_files()
         entries = [('records/' + name, raw, stat.S_IFREG | 0o600) for name, raw in files.items()]

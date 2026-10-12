@@ -12,7 +12,7 @@ on:
         description: Failed legacy deployment run containing the protected initial recovery journal; leave empty after adoption
         required: false
         type: string
-        default: '38272959415'
+        default: ''
       continue_uninitialized_run_id:
         description: Failed stopped legacy run proving no first initialization; requires establish_new and an empty recovery_run_id
         required: false
