@@ -549,6 +549,8 @@ class ServerlessWorkflowTest(unittest.TestCase):
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
             self.assertEqual(bundle['failed_run_id'], 30)
             self.assertEqual(bundle['failed_run_attempt'], 1)
+            self.assertEqual(bundle['failed_run_started_at'], deployment_run()['run_started_at'])
+            self.assertEqual(bundle['failed_run_completed_at'], deployment_run()['updated_at'])
             self.assertEqual(bundle['failed_release_id'], PREVIOUS_REVISION)
             self.assertEqual(bundle['artifact_sha256'], hashlib.sha256(archive).hexdigest())
             for key, name in (('original_recovery_raw', 'original-initial-recovery.json'),

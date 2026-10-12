@@ -415,6 +415,7 @@ jobs:
               bundle = {'schema_version': '1.0.0', 'operation': 'serverless-uninitialized-continuation',
                         'account': '738470137867', 'region': 'us-east-2', 'stack_name': 'otgd-serverless-development',
                         'failed_run_id': run_id, 'failed_run_attempt': run['run_attempt'],
+                        'failed_run_started_at': run['run_started_at'], 'failed_run_completed_at': run['updated_at'],
                         'failed_release_id': run['head_sha'], 'artifact_sha256': archive_hash,
                         'original_recovery_raw': files['original-initial-recovery.json'].decode('utf-8'),
                         'adoption_raw': files['initial-recovery.json'].decode('utf-8'),
