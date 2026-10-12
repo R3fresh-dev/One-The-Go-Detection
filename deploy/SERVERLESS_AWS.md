@@ -15,6 +15,16 @@ add resume latency; periodic work and open connections can affect its ability
 to pause. The deployment receipt records observed health, rather than inferring
 health from a successful infrastructure update.
 
+AWS must report an active **Paid Plan** for this account before provisioning.
+The AWS Free Plan supports Aurora only through restricted Express Configuration;
+that configuration cannot provide this deployment's private VPC, custom KMS
+encryption and managed database credentials. In AWS Billing, choose **Upgrade
+plan**, review the terms, and choose **Upgrade account**. Existing credits carry
+over, and usage beyond those credits is billed at standard rates. The Python
+preflight reads account plan metadata; it never upgrades billing automatically.
+See [AWS Aurora Free Plan restrictions](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-free-tier.html)
+and [AWS plan upgrade instructions](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html).
+
 ## AWS credentials already supplied through GitHub
 
 The repository contains the two secret names the owner confirmed:
@@ -47,6 +57,7 @@ Application roles have separate runtime permissions and do not receive the
 deployment keys. A successful account identity check does not prove that every
 deployment API is authorized. An authorization failure blocks its stage and
 leaves a credential-free recovery journal.
+Preflight also requires the read-only `freetier:GetAccountPlanState` permission.
 
 ## Deploy through GitHub Actions
 
@@ -82,6 +93,23 @@ stage journals are credential-free.
 Concurrent attempts for this account and region are serialized. A failed run is
 not evidence of rollback: inspect its stage journal and actual AWS state before
 retrying. Do not enable `establish_new` to bypass a continuity failure.
+
+### Recover a first infrastructure rollback
+
+The first attempt can leave a `ROLLBACK_COMPLETE` application stack before any
+database or Lambda function exists. Its retained identity pool, keys, secrets,
+storage, control table and logs must be preserved. After fixing the cause, use
+`recover_initial=true` together with `establish_new=true` only for this verified
+empty initial state. Python checks the stack ownership, resource inventory,
+absence of application compute/database and empty journal/control/identity
+state before changing CloudFormation metadata. It imports the original retained
+resources into a new stack of the same name, then applies the stopped platform.
+It never deletes retained resources or resets an initialized journal.
+
+The credential-free `initial-recovery.json` artifact records the retained
+resource identifiers and import plan before metadata deletion. Preserve it if
+recovery is interrupted. An initialized or unexpected environment requires a
+separate recovery process and is rejected by this initial recovery option.
 
 ## Repeat the Python process locally
 

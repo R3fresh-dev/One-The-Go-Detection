@@ -176,6 +176,42 @@ class ServerlessAdmissionTest(unittest.TestCase):
 
 
 class ServerlessCloudFormationTest(unittest.TestCase):
+    def test_imported_stack_without_outputs_is_updated_without_creating_a_second_stack(self):
+        aws, cf = self.cloud([])
+        with patch.object(serverless, 'stable_stack', side_effect=[{}, {'ReleaseId': REVISION}]):
+            serverless.deploy_stack(aws, serverless.STACK, {'Resources': {}}, config())
+        self.assertEqual(cf.create_change_set.call_args.kwargs['ChangeSetType'], 'UPDATE')
+        cf.get_waiter.assert_any_call('stack_update_complete')
+
+    def test_completed_import_is_a_real_existing_stack(self):
+        aws = Mock()
+        aws.client.return_value.describe_stacks.return_value = {'Stacks': [
+            {'StackStatus': 'IMPORT_COMPLETE', 'Outputs': []}]}
+        self.assertEqual(serverless.stable_stack(aws, serverless.STACK), {})
+
+    def test_initial_recovery_cannot_be_used_for_routine_deployment(self):
+        aws = Mock()
+        args = SimpleNamespace(gate_evidence=Path('gates.json'), establish_new=False, recover_initial=True)
+        with patch.object(serverless.platform, 'require_clean_source'), \
+                patch.object(serverless.platform, 'verify_gate_file'):
+            with self.assertRaisesRegex(Gate, 'first-empty-journal'):
+                serverless.deploy(args, config(), aws, {})
+        aws.client.assert_not_called()
+
+    def test_free_expired_or_foreign_account_plans_block_before_provisioning(self):
+        for change in ({'accountPlanType': 'FREE'}, {'accountPlanStatus': 'EXPIRED'},
+                       {'accountId': '111111111111'}, {'accountPlanType': None}):
+            sts, plans = Mock(), Mock()
+            sts.get_caller_identity.return_value = {'Account': config()['account']}
+            plans.get_account_plan_state.return_value = {
+                'accountId': config()['account'], 'accountPlanType': 'PAID',
+                'accountPlanStatus': 'ACTIVE', **change}
+            aws = Mock()
+            aws.client.side_effect = lambda name: {'sts': sts, 'freetier': plans}[name]
+            with self.subTest(change=change), self.assertRaisesRegex(Gate, 'active AWS Paid Plan'):
+                serverless.preflight(aws, config(), None)
+            self.assertEqual([call.args[0] for call in aws.client.call_args_list], ['sts', 'freetier'])
+
     def test_every_retained_data_or_authority_replacement_is_rejected(self):
         retained = ('AWS::RDS::DBCluster', 'AWS::RDS::DBInstance', 'AWS::KMS::Key',
                     'AWS::S3::Bucket', 'AWS::SecretsManager::Secret',
@@ -226,8 +262,10 @@ class ServerlessCloudFormationTest(unittest.TestCase):
 
     def test_zero_capacity_supported_version_is_selected_before_deployment(self):
         aws = Mock()
-        sts, rds, functions = Mock(), Mock(), Mock()
-        aws.client.side_effect = lambda name: {'sts': sts, 'rds': rds, 'lambda': functions}[name]
+        sts, rds, functions, plans = Mock(), Mock(), Mock(), Mock()
+        plans.get_account_plan_state.return_value = {
+            'accountId': config()['account'], 'accountPlanType': 'PAID', 'accountPlanStatus': 'ACTIVE'}
+        aws.client.side_effect = lambda name: {'sts': sts, 'rds': rds, 'lambda': functions, 'freetier': plans}[name]
         sts.get_caller_identity.return_value = {'Account': config()['account']}
         functions.get_account_settings.return_value = {'AccountLimit': {
             'ConcurrentExecutions': 107, 'UnreservedConcurrentExecutions': 107}}
@@ -246,11 +284,13 @@ class ServerlessCloudFormationTest(unittest.TestCase):
     def test_insufficient_lambda_quota_blocks_before_database_provisioning(self):
         for limits in ({'ConcurrentExecutions': 100, 'UnreservedConcurrentExecutions': 100},
                        {'ConcurrentExecutions': 1000, 'UnreservedConcurrentExecutions': 106}):
-            sts, functions = Mock(), Mock()
+            sts, functions, plans = Mock(), Mock(), Mock()
+            plans.get_account_plan_state.return_value = {
+                'accountId': config()['account'], 'accountPlanType': 'PAID', 'accountPlanStatus': 'ACTIVE'}
             sts.get_caller_identity.return_value = {'Account': config()['account']}
             functions.get_account_settings.return_value = {'AccountLimit': limits}
             aws = Mock()
-            aws.client.side_effect = lambda name: {'sts': sts, 'lambda': functions}[name]
+            aws.client.side_effect = lambda name: {'sts': sts, 'lambda': functions, 'freetier': plans}[name]
             with self.subTest(limits=limits), patch.object(serverless, 'stable_stack', return_value=None):
                 with self.assertRaisesRegex(Gate, 'regional concurrency quota'):
                     serverless.preflight(aws, config(), None)

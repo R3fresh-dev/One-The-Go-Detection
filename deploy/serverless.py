@@ -120,7 +120,7 @@ def stable_stack(aws, name, absent_ok=False):
         cf.get_waiter('stack_create_complete' if status == 'CREATE_IN_PROGRESS' else 'stack_update_complete').wait(
             StackName=name, WaiterConfig={'Delay': 15, 'MaxAttempts': 240})
         row = cf.describe_stacks(StackName=name)['Stacks'][0]
-    if row['StackStatus'] not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'):
+    if row['StackStatus'] not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE', 'IMPORT_COMPLETE'):
         raise Gate('Existing stack requires recovery before another deployment')
     return {r['OutputKey']: r['OutputValue'] for r in row.get('Outputs', [])}
 
@@ -139,7 +139,7 @@ def deploy_stack(aws, name, template, c, template_bucket=None):
     prior = stable_stack(aws, name, absent_ok=True)
     raw = json.dumps(template, separators=(',', ':')).encode()
     request = {'StackName': name, 'ChangeSetName': 'serverless-' + uuid.uuid4().hex,
-               'ChangeSetType': 'UPDATE' if prior else 'CREATE', 'Capabilities': ['CAPABILITY_NAMED_IAM'],
+               'ChangeSetType': 'UPDATE' if prior is not None else 'CREATE', 'Capabilities': ['CAPABILITY_NAMED_IAM'],
                'Tags': [{'Key': 'deployment', 'Value': STACK}, {'Key': 'purpose', 'Value': 'serverless-development'}]}
     if len(raw) <= 51200:
         request['TemplateBody'] = raw.decode()
@@ -169,7 +169,7 @@ def deploy_stack(aws, name, template, c, template_bucket=None):
         raise
     cf.update_termination_protection(StackName=name, EnableTerminationProtection=True)
     cf.execute_change_set(ChangeSetName=change, StackName=name)
-    cf.get_waiter('stack_update_complete' if prior else 'stack_create_complete').wait(
+    cf.get_waiter('stack_update_complete' if prior is not None else 'stack_create_complete').wait(
         StackName=name, WaiterConfig={'Delay': 15, 'MaxAttempts': 240})
     return stable_stack(aws, name)
 
@@ -177,6 +177,10 @@ def deploy_stack(aws, name, template, c, template_bucket=None):
 def preflight(aws, c, prior):
     if aws.client('sts').get_caller_identity()['Account'] != c['account']:
         raise Gate('AWS credentials do not match the selected account')
+    plan = aws.client('freetier').get_account_plan_state()
+    if (plan.get('accountId') != c['account'] or plan.get('accountPlanType') != 'PAID'
+            or plan.get('accountPlanStatus') != 'ACTIVE'):
+        raise Gate('An active AWS Paid Plan is required: the Free Plan only supports restricted Aurora Express configuration. Upgrade the account plan in AWS Billing before retrying')
     if stable_stack(aws, 'otgd-qa-platform', absent_ok=True):
         raise Gate('Managed QA already uses this account/region authority; select a separate development account')
     functions = aws.client('lambda')
@@ -418,13 +422,19 @@ def deploy(args, c, aws, price):
     platform.require_clean_source(c['releaseId'])
     platform.verify_gate_file(args.gate_evidence, c['releaseId'])
     from deploy.serverless_template import build_template
-    prior = stable_stack(aws, STACK, absent_ok=True)
+    recovering = getattr(args, 'recover_initial', False)
+    if recovering and not args.establish_new:
+        raise Gate('Initial infrastructure recovery requires explicit first-empty-journal initialization')
+    prior = None if recovering else stable_stack(aws, STACK, absent_ok=True)
     c = preflight(aws, c, prior)
-    if prior and args.establish_new:
+    if prior is not None and args.establish_new:
         raise Gate('A retained deployment cannot establish a new empty journal')
     work = ROOT / '.local/deploy/serverless-development' / c['releaseId'] / uuid.uuid4().hex
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
+        if recovering:
+            from deploy.serverless_recovery import recover_initial
+            journal.call('recover-initial-retained-resources', recover_initial, aws, c, work / 'initial-recovery.json')
         registry = journal.call('serverless-registry', deploy_stack, aws, STACK + '-registry', build_template(c, phase='registry'), c)
         source = work / 'source.tar'
         journal.call('exact-source-archive', platform.run, ['git', 'archive', '--format=tar', '--output', str(source), c['releaseId']])
@@ -471,6 +481,7 @@ def main(argv=None):
     parser.add_argument('--identity')
     parser.add_argument('--gate-evidence', type=Path)
     parser.add_argument('--establish-new', action='store_true')
+    parser.add_argument('--recover-initial', action='store_true', help='Import retained resources from a verified empty first-attempt infrastructure rollback; never use for an initialized deployment')
     args = parser.parse_args(argv)
     try:
         if args.profile and args.identity:
