@@ -139,6 +139,36 @@ class ServerlessTemplateTest(unittest.TestCase):
         self.assertGreaterEqual(self.properties("JobsQueue")["VisibilityTimeout"], 6 * self.properties("WorkerFunction")["Timeout"])
         self.assertEqual(self.properties("JobsQueue")["RedrivePolicy"]["maxReceiveCount"], 5)
 
+    def test_queue_resource_policies_use_one_resource_per_statement_and_deny_plaintext_for_both_queues(self):
+        for active in (False, True):
+            resources = MODULE.build_template({**self.config, "activateServices": active})["Resources"]
+            queues = {name for name, resource in resources.items() if resource["Type"] == "AWS::SQS::Queue"}
+            policies = [resource["Properties"] for resource in resources.values()
+                        if resource["Type"] == "AWS::SQS::QueuePolicy"]
+            attached, denied = set(), []
+            for policy in policies:
+                targets = {queue["Ref"] for queue in policy["Queues"]}
+                attached |= targets
+                for statement in policy["PolicyDocument"]["Statement"]:
+                    resource = statement["Resource"]
+                    # SetQueueAttributes rejects a statement naming more than
+                    # one resource even when the document is attached to both.
+                    identities = resource if isinstance(resource, list) else [resource]
+                    self.assertEqual(len(identities), 1, "AWS SQS requires one resource per statement")
+                    identity = identities[0]
+                    self.assertEqual(set(identity), {"Fn::GetAtt"})
+                    queue, attribute = identity["Fn::GetAtt"]
+                    self.assertIn(queue, targets)
+                    self.assertEqual(attribute, "Arn")
+                    self.assertEqual(statement["Effect"], "Deny")
+                    self.assertEqual(statement["Principal"], "*")
+                    self.assertEqual(statement["Action"], "sqs:*")
+                    self.assertEqual(statement["Condition"], {"Bool": {"aws:SecureTransport": "false"}})
+                    denied.append(queue)
+            with self.subTest(active=active):
+                self.assertEqual(attached, queues)
+                self.assertCountEqual(denied, queues)
+
     def test_redeployment_explicitly_restores_controller_concurrency_after_sdk_drain(self):
         # The CLI drains actual controller concurrency to zero. CloudFormation
         # must then see a property transition when reopening, rather than an
