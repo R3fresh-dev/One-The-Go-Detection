@@ -56,6 +56,13 @@ jobs:
           assert aws.client('sts').get_caller_identity()['Account'] == '738470137867'
           cf = aws.client('cloudformation')
           result = {}
+          try:
+              plan = aws.client('freetier').get_account_plan_state()
+              result['account_plan'] = {key: plan.get(key) for key in
+                  ('accountId', 'accountPlanType', 'accountPlanStatus')}
+          except ClientError as error:
+              result['account_plan'] = {'error_code': error.response['Error']['Code'],
+                                        'operation': error.operation_name}
           for name in ('otgd-serverless-development', 'otgd-serverless-development-registry'):
               try:
                   stack = cf.describe_stacks(StackName=name)['Stacks'][0]
@@ -73,8 +80,23 @@ jobs:
                           raise RuntimeError('Bounded deployment inspection exceeded')
                       resources.extend({key: row.get(key) for key in ('LogicalResourceId', 'PhysicalResourceId', 'ResourceType', 'ResourceStatus')}
                           for row in page['StackResourceSummaries'])
-                  result[name] = {'status': stack['StackStatus'], 'reason': stack.get('StackStatusReason'),
-                                  'failures': events, 'resources': resources, 'outputs': stack.get('Outputs', [])}
+                  metadata = {'status': stack['StackStatus'], 'reason': stack.get('StackStatusReason'),
+                              'failures': events, 'resources': resources, 'outputs': stack.get('Outputs', []),
+                              'creation_time': str(stack.get('CreationTime', '')),
+                              'termination_protection': stack.get('EnableTerminationProtection'),
+                              'tags': stack.get('Tags', [])}
+                  try:
+                      original = cf.get_template(StackName=name, TemplateStage='Original')['TemplateBody']
+                      if isinstance(original, str):
+                          original = json.loads(original)
+                      metadata['retained_resources'] = sorted(logical_id for logical_id, resource in
+                          original.get('Resources', {}).items() if resource.get('DeletionPolicy') == 'Retain')
+                      summary = cf.get_template_summary(StackName=name)
+                      metadata['resource_identifier_summaries'] = summary.get('ResourceIdentifierSummaries', [])
+                  except ClientError as error:
+                      metadata['template_inspection_error'] = {'error_code': error.response['Error']['Code'],
+                                                               'operation': error.operation_name}
+                  result[name] = metadata
               except ClientError as error:
                   result[name] = {'error_code': error.response['Error']['Code'], 'operation': error.operation_name}
           print(json.dumps(result, indent=2))
