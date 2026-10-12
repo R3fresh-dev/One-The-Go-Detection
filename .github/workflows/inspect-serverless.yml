@@ -1,7 +1,7 @@
 name: Inspect serverless AWS failure
 on:
   push:
-    branches: [work-aws-serverless-inspection]
+    branches: [work-fargate-import-inspection]
 permissions:
   contents: read
   actions: read
