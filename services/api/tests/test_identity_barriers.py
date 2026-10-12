@@ -33,8 +33,16 @@ def test_empty_initial_migration_records_key_once_and_replays(client, monkeypatc
     with factory()() as db:assert db.get(SystemState,KEY_STATE).body==key_descriptor()
     assert client.get('/health/ready').status_code==200
 
-@pytest.mark.parametrize('claims',[{'auth_time':True},{'iat':True},{'exp':float(now())+900},{'auth_time':-1},{'auth_time':int(now())+1,'iat':int(now())}])
-def test_signed_access_claims_have_strict_integer_time_order(client,claims):
+@pytest.mark.parametrize('case',['boolean_auth','boolean_issue','floating_expiry','negative_auth','auth_after_issue'])
+def test_signed_access_claims_have_strict_integer_time_order(client,case):
+    stamp=int(now())
+    claims={
+        'boolean_auth':{'auth_time':True},
+        'boolean_issue':{'iat':True},
+        'floating_expiry':{'exp':stamp+900.0},
+        'negative_auth':{'auth_time':-1},
+        'auth_after_issue':{'auth_time':stamp+1,'iat':stamp},
+    }[case]
     assert client.get('/v1/me/capabilities',headers=headers(**claims)).status_code==401
 
 def test_deleted_identity_can_read_only_its_minimal_deletion_receipt(client,account):
