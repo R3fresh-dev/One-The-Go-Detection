@@ -1,0 +1,81 @@
+name: Inspect serverless AWS failure
+on:
+  push:
+    branches: [work-aws-serverless-inspection]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      AWS_REGION: us-east-2
+      AWS_DEFAULT_REGION: us-east-2
+      AWS_EC2_METADATA_DISABLED: 'true'
+      AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: R3fresh-dev/One-The-Go-Detection
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: df854cf106988f4e86117a104b48df5fbdf9c23c
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+      - run: uv sync --project services/api --locked
+      - name: Verify the actual reviewed application revision before AWS authentication
+        run: |
+          gh run download 38215835475 --name exact-revision-merge-evidence --dir .local/inspect-gates
+          uv run --project services/api python - <<'PY'
+          from pathlib import Path
+          from deploy import platform
+          revision = 'df854cf106988f4e86117a104b48df5fbdf9c23c'
+          platform.require_clean_source(revision)
+          platform.verify_gate_file(Path('.local/inspect-gates/gates.json'), revision)
+          PY
+      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-2
+          allowed-account-ids: '738470137867'
+          unset-current-credentials: true
+          force-skip-oidc: true
+          output-credentials: false
+      - name: Read only deployment stack and resource failure metadata
+        run: |
+          uv run --project services/api python - <<'PY'
+          import json
+          from botocore.exceptions import ClientError
+          from deploy.platform import CloudSession
+          aws = CloudSession('us-east-2', None)
+          assert aws.client('sts').get_caller_identity()['Account'] == '738470137867'
+          cf = aws.client('cloudformation')
+          result = {}
+          for name in ('otgd-serverless-development', 'otgd-serverless-development-registry'):
+              try:
+                  stack = cf.describe_stacks(StackName=name)['Stacks'][0]
+                  events = []
+                  for index, page in enumerate(cf.get_paginator('describe_stack_events').paginate(StackName=name)):
+                      if index >= 20:
+                          raise RuntimeError('Bounded deployment inspection exceeded')
+                      for event in page['StackEvents']:
+                          if 'FAILED' in event['ResourceStatus']:
+                              events.append({key: str(event.get(key, ''))[:2000] for key in
+                                  ('Timestamp', 'LogicalResourceId', 'ResourceType', 'ResourceStatus', 'ResourceStatusReason')})
+                  resources = []
+                  for index, page in enumerate(cf.get_paginator('list_stack_resources').paginate(StackName=name)):
+                      if index >= 20:
+                          raise RuntimeError('Bounded deployment inspection exceeded')
+                      resources.extend({key: row.get(key) for key in ('LogicalResourceId', 'PhysicalResourceId', 'ResourceType', 'ResourceStatus')}
+                          for row in page['StackResourceSummaries'])
+                  result[name] = {'status': stack['StackStatus'], 'reason': stack.get('StackStatusReason'),
+                                  'failures': events, 'resources': resources, 'outputs': stack.get('Outputs', [])}
+              except ClientError as error:
+                  result[name] = {'error_code': error.response['Error']['Code'], 'operation': error.operation_name}
+          print(json.dumps(result, indent=2))
+          PY
