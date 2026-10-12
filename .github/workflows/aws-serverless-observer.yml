@@ -25,10 +25,10 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: f91674be10db91ededa853fad205868e717f668f
+          ref: 49c4bc924c63099e981628c617250f955d75edbe
           persist-credentials: false
 
-      - name: Admit clean current main and exact successful all-13 gate evidence
+      - name: Admit clean current main and exact successful all-14 job evidence
         shell: bash
         run: |
           set -euo pipefail
@@ -39,14 +39,14 @@ jobs:
           import subprocess
           import tempfile
 
-          revision = 'f91674be10db91ededa853fad205868e717f668f'
+          revision = '49c4bc924c63099e981628c617250f955d75edbe'
           repository = 'R3fresh-dev/One-The-Go-Detection'
-          run_id = 38293021726
+          run_id = 38299249698
           workflow_path = '.github/workflows/merge-gate.yml'
           required_jobs = {'unit-coverage', 'components', 'atdd', 'preview / ios',
               'platform / postgres-integration', 'native / android', 'native / protected-reader',
               'native / ios', 'platform / localstack-integration', 'native / shared-and-firmware',
-              'platform / contracts-and-synthesis', 'preview / android', 'merge-gate'}
+              'platform / contracts-and-synthesis', 'platform / fargate-container-runtime', 'preview / android', 'merge-gate'}
           required_labels = {'unit-coverage', 'atdd', 'components', 'performance', 'live-dependencies',
               'docker-health', 'localstack-api', 'specifications', 'native-android', 'native-ios',
               'firmware', 'hosted-android', 'hosted-ios'}
@@ -86,13 +86,13 @@ jobs:
               raise SystemExit('Read-only snapshot admission blocked: latest gate differs')
           inventory = api(f"actions/runs/{run_id}/attempts/{run['run_attempt']}/jobs?per_page=100")
           jobs = inventory['jobs']
-          if (inventory['total_count'] != 13 or len(jobs) != 13
+          if (inventory['total_count'] != 14 or len(jobs) != 14
                   or {job['name'] for job in jobs} != required_jobs
-                  or len({job['id'] for job in jobs}) != 13
+                  or len({job['id'] for job in jobs}) != 14
                   or any(job.get('status') != 'completed' or job.get('conclusion') != 'success'
                       or job.get('head_sha') != revision or job.get('run_id') != run_id
                       or job.get('run_attempt') != run['run_attempt'] for job in jobs)):
-              raise SystemExit('Read-only snapshot admission blocked: all-13 jobs differ')
+              raise SystemExit('Read-only snapshot admission blocked: all-14 jobs differ')
           with tempfile.TemporaryDirectory(prefix='observer-gates-') as destination:
               command(['gh', 'run', 'download', str(run_id), '--repo', repository,
                   '--name', 'exact-revision-merge-evidence', '--dir', destination], timeout=60)
@@ -111,7 +111,7 @@ jobs:
           if (api('git/ref/heads/main')['object']['sha'] != revision
                   or command(['git', 'status', '--porcelain']).strip()):
               raise SystemExit('Read-only snapshot admission blocked: source changed')
-          print(json.dumps({'admitted_revision': revision, 'gate_run': run_id, 'successful_jobs': 13}))
+          print(json.dumps({'admitted_revision': revision, 'gate_run': run_id, 'successful_jobs': 14}))
           PYCODE
 
       - name: Configure existing repository AWS secrets after source admission
