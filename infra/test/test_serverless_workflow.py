@@ -149,7 +149,7 @@ class ServerlessWorkflowTest(unittest.TestCase):
         self.assertFalse(trigger['workflow_dispatch']['inputs']['establish_new']['default'])
         credentials = steps[credential_index]['with']
         self.assertEqual(credentials['aws-access-key-id'], '${{ secrets.ACCESS_KEY_ID }}')
-        self.assertEqual(credentials['aws-secret-access-key'], '${{ secrets.AWS_SECRET_ACCESS_KEY }}')
+        self.assertEqual(credentials['aws-secret-access-key'], '${{ secrets.SECRET_ACCESS_KEY }}')
         self.assertEqual(credentials['allowed-account-ids'], '738470137867')
         self.assertFalse(credentials['output-credentials'])
         self.assertTrue(credentials['force-skip-oidc'])
