@@ -254,9 +254,10 @@ export class PlatformStack extends Stack {
     const notifications=new sns.Topic(this,'OperationalNotifications',{masterKey:dataKey});
     dataKey.addToResourcePolicy(new iam.PolicyStatement({principals:[new iam.ServicePrincipal('cloudwatch.amazonaws.com')],actions:['kms:Decrypt','kms:GenerateDataKey*'],resources:['*'],conditions:{StringEquals:{'aws:SourceAccount':c.account},ArnLike:{'aws:SourceArn':`arn:aws:cloudwatch:${c.region}:${c.account}:alarm:*`}}}));
     notifications.addSubscription(new subscriptions.EmailSubscription(c.alarmEmail));
+    const healthAlarms:cw.Alarm[]=[];
     const alarm=(name:string,metric:cw.IMetric,threshold:number,periods=1)=>{
       const a=new cw.Alarm(this,name,{metric,threshold,evaluationPeriods:periods,treatMissingData:cw.TreatMissingData.NOT_BREACHING,comparisonOperator:cw.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD});
-      a.addAlarmAction(new actions.SnsAction(notifications));return a;
+      a.addAlarmAction(new actions.SnsAction(notifications));healthAlarms.push(a);return a;
     };
     alarm('DeadLetterMessages',dlq.metricApproximateNumberOfMessagesVisible({period:Duration.minutes(1)}),1);
     alarm('OldSourceMessage',queue.metricApproximateAgeOfOldestMessage({period:Duration.minutes(1)}),300);
@@ -268,6 +269,66 @@ export class PlatformStack extends Stack {
     if (prod) alarm('UnhealthyTargets',targetGroup.metrics.unhealthyHostCount({period:Duration.minutes(1)}),1,5);
     const errorPercent=new cw.MathExpression({expression:'IF(requests>=20,100*errors/requests,0)',period:Duration.minutes(5),usingMetrics:{requests:loadBalancer.metrics.requestCount({period:Duration.minutes(5),statistic:'Sum'}),errors:loadBalancer.metrics.httpCodeTarget(elb.HttpCodeTarget.TARGET_5XX_COUNT,{period:Duration.minutes(5),statistic:'Sum'})}});
     alarm('ApiErrorRate',errorPercent,5);
+    // Missing telemetry is an outage signal only after services are activated.
+    // The aggregate publisher always emits a nonnegative outbox age, including
+    // zero when idle, so this threshold breaches only on five missing minutes.
+    if(c.activateServices) {
+      for(const [name,metric,threshold,description] of [
+        ['MissingOperationalMetrics',custom('OldestOutboxSeconds'),0,'No aggregate worker metrics for five minutes; inspect worker tasks, database and CloudWatch publishing permissions.'],
+        ['NoHealthyApiTargets',targetGroup.metrics.healthyHostCount({period:Duration.minutes(1),statistic:'Minimum'}),1,'No ready API target for five minutes; inspect ECS deployment events and /health/ready dependencies.'],
+      ] as const) {
+        const a=new cw.Alarm(this,name,{metric,threshold,evaluationPeriods:5,comparisonOperator:cw.ComparisonOperator.LESS_THAN_THRESHOLD,treatMissingData:cw.TreatMissingData.BREACHING,alarmDescription:description});
+        a.addAlarmAction(new actions.SnsAction(notifications));healthAlarms.push(a);
+      }
+    }
+    const period=Duration.minutes(5);
+    const webMetricOptions={period,region:'us-east-1',dimensionsMap:{DistributionId:distribution.distributionId,Region:'Global'}};
+    const dashboard=new cw.Dashboard(this,'HealthDashboard',{
+      dashboardName:`${prefix}-health`,defaultInterval:Duration.hours(6),periodOverride:cw.PeriodOverride.INHERIT,
+    });
+    dashboard.addWidgets(
+      new cw.TextWidget({width:24,height:3,markdown:`# ${prefix} system health\nAPI, web delivery, workers, database and queue health. Services configured **${c.activateServices?'active':'stopped for migration/recovery'}**; release \`${c.releaseId}\`.\nCustom aggregate metrics publish every minute. A graph with no data does not establish health; confirm SNS email subscription and run an alarm-delivery probe.`}),
+      new cw.AlarmStatusWidget({title:'Operational alarms',alarms:healthAlarms,width:24,height:4}),
+      new cw.GraphWidget({title:'API ready and unhealthy targets',width:12,height:6,left:[
+        targetGroup.metrics.healthyHostCount({period,statistic:'Minimum',label:'Ready targets (minimum)'}),
+        targetGroup.metrics.unhealthyHostCount({period,statistic:'Maximum',label:'Unhealthy targets (maximum)'}),
+      ],leftYAxis:{min:0}}),
+      new cw.GraphWidget({title:'API requests and server errors per five minutes',width:12,height:6,left:[
+        loadBalancer.metrics.requestCount({period,statistic:'Sum',label:'Requests'}),
+        loadBalancer.metrics.httpCodeTarget(elb.HttpCodeTarget.TARGET_5XX_COUNT,{period,statistic:'Sum',label:'Target 5xx'}),
+        loadBalancer.metrics.httpCodeElb(elb.HttpCodeElb.ELB_5XX_COUNT,{period,statistic:'Sum',label:'Load balancer 5xx'}),
+      ],leftYAxis:{min:0}}),
+      new cw.GraphWidget({title:'API latency and error rate (minimum 20 requests)',width:12,height:6,left:[
+        targetGroup.metrics.targetResponseTime({period,statistic:'p95',label:'p95 response time (seconds)'}),
+      ],right:[errorPercent],leftYAxis:{min:0},rightYAxis:{min:0,max:100,label:'Target 5xx %'}}),
+      new cw.GraphWidget({title:'API and worker utilization',width:12,height:6,left:[
+        service.metricCpuUtilization({period,label:'API CPU %'}),service.metricMemoryUtilization({period,label:'API memory %'}),
+        workerService.metricCpuUtilization({period,label:'Worker CPU %'}),workerService.metricMemoryUtilization({period,label:'Worker memory %'}),
+      ],leftYAxis:{min:0,max:100}}),
+      new cw.GraphWidget({title:'Database connections and CPU',width:12,height:6,left:[
+        database.metricDatabaseConnections({period,statistic:'Maximum',label:'Connections (maximum)'}),
+      ],right:[database.metricCPUUtilization({period,label:'Database CPU %'})],leftYAxis:{min:0},rightYAxis:{min:0,max:100},leftAnnotations:[{value:prod?80:40,label:'Application connection budget'}]}),
+      new cw.GraphWidget({title:'Database available memory and disk (bytes)',width:12,height:6,left:[
+        database.metricFreeableMemory({period,statistic:'Minimum'}),database.metricFreeStorageSpace({period,statistic:'Minimum'}),
+      ],leftYAxis:{min:0}}),
+      new cw.GraphWidget({title:'Queue backlog, in-flight work and dead letters',width:12,height:6,left:[
+        queue.metricApproximateNumberOfMessagesVisible({period,statistic:'Maximum',label:'Queued messages'}),
+        queue.metricApproximateNumberOfMessagesNotVisible({period,statistic:'Maximum',label:'In-flight messages'}),
+        dlq.metricApproximateNumberOfMessagesVisible({period,statistic:'Maximum',label:'Dead letters'}),
+      ],leftYAxis:{min:0}}),
+      new cw.GraphWidget({title:'Queue, outbox and privacy job age (seconds)',width:12,height:6,left:[
+        queue.metricApproximateAgeOfOldestMessage({period,statistic:'Maximum',label:'Oldest queued message'}),
+        custom('OldestOutboxSeconds'),custom('OldestPrivacyJobSeconds'),
+      ],leftYAxis:{min:0}}),
+      new cw.SingleValueWidget({title:'Overdue cleanup items',width:6,height:6,metrics:[custom('CleanupOverdueCount')],setPeriodToTimeRange:false,sparkline:true}),
+      // CloudFront basic metrics are global and are always read in us-east-1.
+      new cw.GraphWidget({title:'Web requests per five minutes',width:9,height:6,left:[
+        distribution.metricRequests({...webMetricOptions,statistic:'Sum'}),
+      ],region:'us-east-1',leftYAxis:{min:0}}),
+      new cw.GraphWidget({title:'Web 4xx and 5xx error rates',width:9,height:6,left:[
+        distribution.metric4xxErrorRate(webMetricOptions),distribution.metric5xxErrorRate(webMetricOptions),
+      ],region:'us-east-1',leftYAxis:{min:0,max:100}}),
+    );
     new budgets.CfnBudget(this,'MonthlyBudget',{
       budget:{budgetName:`${prefix}-monthly`,budgetType:'COST',timeUnit:'MONTHLY',budgetLimit:{amount:c.monthlyBudgetUsd,unit:'USD'},costFilters:{TagKeyValue:[`user:deployment$${prefix}`]}},
       notificationsWithSubscribers:[...([50,80,100] as const).map(threshold=>({notification:{comparisonOperator:'GREATER_THAN',notificationType:'ACTUAL',threshold,thresholdType:'PERCENTAGE'},subscribers:[{address:c.alarmEmail,subscriptionType:'EMAIL'}]})),{notification:{comparisonOperator:'GREATER_THAN',notificationType:'FORECASTED',threshold:100,thresholdType:'PERCENTAGE'},subscribers:[{address:c.alarmEmail,subscriptionType:'EMAIL'}]}],
@@ -303,7 +364,7 @@ export class PlatformStack extends Stack {
     journal.addToResourcePolicy(new iam.PolicyStatement({effect:iam.Effect.DENY,principals:[api.taskRole,worker.taskRole,migration.taskRole],actions:['s3:PutObject'],resources:[journal.arnForObjects('scope-resumptions/*')]}));
 
     const output:Record<string,string>={ApiOrigin:`https://${c.domain}`,LoadBalancerDns:loadBalancer.loadBalancerDnsName,Issuer:issuer,ClientId:client.userPoolClientId,IdentityOrigin:userPoolDomain.baseUrl(),Cluster:cluster.clusterArn,ApiService:service.serviceName,WorkerService:workerService.serviceName,MigrationTaskDefinition:migration.taskDefinitionArn,MigrationSecurityGroup:migrationSg.securityGroupId,PrivateSubnets:vpc.privateSubnets.map(x=>x.subnetId).join(','),DatabaseIdentifier:database.instanceIdentifier,DatabaseHost:database.dbInstanceEndpointAddress,DatabaseConnectionBudget:String(prod?80:40),DatabaseRecoveryOrigin:c.databaseSnapshotIdentifier??'new',RecoveryRequired:String(c.recoveryRequired),ArtifactBucket:artifacts.bucketName,ExportBucket:exports.bucketName,JournalBucket:journal.bucketName,QueueUrl:queue.queueUrl,DeadLetterQueueUrl:dlq.queueUrl,ApplicationDatabaseSecret:appSecret.secretArn,TombstoneKeySecret:tombstoneSecret.secretArn,JournalKeyArn:journalKey.keyArn,DataKeyArn:dataKey.keyArn,ImageDigest:c.imageDigest,ReleaseId:c.releaseId,RecoveryOperatorRole:recoveryRole.roleArn,LogGroup:logGroup.logGroupName};
-    Object.assign(output,{WebOrigin:webOrigin,WebCallbackUri:webOrigin+'/',WebBucket:web.bucketName,WebDistributionId:distribution.distributionId,WebDistributionDomain:distribution.distributionDomainName,WebReleasePrefix:`releases/${c.releaseId}`,CaptureSigningKeyArn:captureSigningKey.keyArn});
+    Object.assign(output,{WebOrigin:webOrigin,WebCallbackUri:webOrigin+'/',WebBucket:web.bucketName,WebDistributionId:distribution.distributionId,WebDistributionDomain:distribution.distributionDomainName,WebReleasePrefix:`releases/${c.releaseId}`,CaptureSigningKeyArn:captureSigningKey.keyArn,CloudWatchDashboardName:dashboard.dashboardName,CloudWatchDashboardUrl:`https://${c.region}.console.aws.amazon.com/cloudwatch/home?region=${c.region}#dashboards/dashboard/${dashboard.dashboardName}`});
     for(const [name,role] of Object.entries(registryRoles)) output[name]=role.roleArn;
     for (const [key,value] of Object.entries(output)) new CfnOutput(this,`Output${key}`,{value}).overrideLogicalId(key);
   }

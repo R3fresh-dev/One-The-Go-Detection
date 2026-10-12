@@ -222,6 +222,16 @@
       "rate_code": "28VSMYRVQXUWCTMA.JRTCKXETXF.6YS6EN2CT7",
       "description": "$0.10 per alarm metric month (standard resolution) - US East (Ohio)"
     },
+    "cw_dashboard_month": {
+      "usd": 3.0,
+      "unit": "Dashboards",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/aws-other/index.json",
+      "published_at": "2026-10-07T11:55:40Z",
+      "sku": "5P8PBB6MXV325TDC",
+      "rate_code": "5P8PBB6MXV325TDC.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$3.00 per Dashboard per Month",
+      "retrieved_at": "2026-10-12T04:33:47.262513Z"
+    },
     "cw_request": {
       "usd": 1e-05,
       "unit": "Requests",
@@ -276,6 +286,66 @@
       "rate_code": "KF338J7FCKZPUBD9.JRTCKXETXF.6YS6EN2CT7",
       "description": "$0.010 per GB - regional data transfer - in/out/between EC2 AZs or using elastic IPs or ELB"
     },
+    "cloudfront_us_https_request": {
+      "usd": 1e-06,
+      "unit": "Requests",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "NPFD6SEH9MXS8M4J",
+      "rate_code": "NPFD6SEH9MXS8M4J.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.0100 per 10,000 HTTPS Requests",
+      "retrieved_at": "2026-10-12T04:33:46.300972Z"
+    },
+    "cloudfront_us_egress_gb": {
+      "usd": 0.085,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "GV2WFGX37Q9PDSHF",
+      "rate_code": "GV2WFGX37Q9PDSHF.JRTCKXETXF.Q3Z75P77EN",
+      "description": "$0.085 per GB - first 10 TB / month data transfer out",
+      "retrieved_at": "2026-10-12T04:33:46.300972Z"
+    },
+    "cloudfront_us_origin_transfer_gb": {
+      "usd": 0.02,
+      "unit": "GB",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "AGSZEF5XC2MG4FUH",
+      "rate_code": "AGSZEF5XC2MG4FUH.JRTCKXETXF.6YS6EN2CT7",
+      "description": "$0.020 per GB - All data transfer out to Origin (US)",
+      "retrieved_at": "2026-10-12T04:33:46.300972Z"
+    },
+    "cloudfront_function": {
+      "usd": 1e-07,
+      "unit": "FunctionExecutions",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "QAZUUEJG8GARJCET",
+      "rate_code": "QAZUUEJG8GARJCET.JRTCKXETXF.VQ39PKQRBK",
+      "description": "$0.10 per 1,000,000 CloudFront Function Executions",
+      "retrieved_at": "2026-10-12T04:33:46.300972Z"
+    },
+    "cloudfront_invalidation_path": {
+      "usd": 0.005,
+      "unit": "URL",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+      "published_at": "2026-10-03T00:04:26Z",
+      "sku": "U3HVZF9WJEM7TE55",
+      "rate_code": "U3HVZF9WJEM7TE55.JRTCKXETXF.MUBTP6UPGZ",
+      "description": "$0.005 per URL - over 1,000 URLs / month.",
+      "retrieved_at": "2026-10-12T04:33:46.300972Z"
+    },
+    "route53_standard_dns_query": {
+      "usd": 4e-07,
+      "unit": "Queries",
+      "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRoute53/current/index.json",
+      "published_at": "2026-09-11T12:45:04Z",
+      "sku": "JHRA6QBEDT9FZVT5",
+      "rate_code": "JHRA6QBEDT9FZVT5.JRTCKXETXF.ZN357FEBCK",
+      "description": "$0.40 per 1,000,000 queries for the first 1 Billion queries",
+      "retrieved_at": "2026-10-12T04:33:48.924899Z"
+    },
     "nat_hour": {
       "usd": 0.045,
       "unit": "Hrs",
@@ -296,6 +366,8 @@
       "checks_per_month": 0,
       "raw_human_capture_enabled": false,
       "database_allocated_gb": 20,
+      "web_https_requests": 5000,
+      "web_internet_transfer_gb": 1.0,
       "items": [
         {
           "item": "Fargate Linux/x86 vCPU",
@@ -394,6 +466,48 @@
           "monthly_usd": 0.0
         },
         {
+          "item": "S3 fourth private web bucket retained release/version GB-months",
+          "quantity": 1,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 web release PUT requests (4 releases x 500 objects)",
+          "quantity": 2000,
+          "rate": "s3_put",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 web origin GET/HEAD requests with CloudFront cache disabled",
+          "quantity": 5000,
+          "rate": "s3_get",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US viewer HTTPS requests",
+          "quantity": 5000,
+          "rate": "cloudfront_us_https_request",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront US static web internet transfer GB",
+          "quantity": 1.0,
+          "rate": "cloudfront_us_egress_gb",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "CloudFront viewer-request navigation function executions",
+          "quantity": 5000,
+          "rate": "cloudfront_function",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront wildcard invalidation paths (4 releases)",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "monthly_usd": 0.02
+        },
+        {
           "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
           "quantity": 262800,
           "rate": "sqs_request",
@@ -418,10 +532,10 @@
           "monthly_usd": 0.01
         },
         {
-          "item": "KMS data/journal key versions (initial year)",
-          "quantity": 2,
+          "item": "KMS data/journal/capture-signing key versions (initial year)",
+          "quantity": 3,
           "rate": "kms_key_version_month",
-          "monthly_usd": 2.0
+          "monthly_usd": 3.0
         },
         {
           "item": "KMS symmetric requests",
@@ -448,10 +562,16 @@
           "monthly_usd": 0.9
         },
         {
-          "item": "CloudWatch standard alarm metric-months",
-          "quantity": 8,
+          "item": "CloudWatch standard alarm metric-months incl. 2 active-only health alarms",
+          "quantity": 10,
           "rate": "cw_alarm_metric_month",
-          "monthly_usd": 0.8
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "monthly_usd": 3.0
         },
         {
           "item": "CloudWatch PutMetricData requests",
@@ -478,7 +598,7 @@
           "monthly_usd": 0.0
         }
       ],
-      "total_monthly_usd": 121.0
+      "total_monthly_usd": 125.35
     },
     {
       "environment": "qa",
@@ -486,6 +606,8 @@
       "checks_per_month": 3000,
       "raw_human_capture_enabled": false,
       "database_allocated_gb": 30,
+      "web_https_requests": 65000,
+      "web_internet_transfer_gb": 16.0,
       "items": [
         {
           "item": "Fargate Linux/x86 vCPU",
@@ -584,6 +706,48 @@
           "monthly_usd": 0.01
         },
         {
+          "item": "S3 fourth private web bucket retained release/version GB-months",
+          "quantity": 1,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 web release PUT requests (4 releases x 500 objects)",
+          "quantity": 2000,
+          "rate": "s3_put",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 web origin GET/HEAD requests with CloudFront cache disabled",
+          "quantity": 65000,
+          "rate": "s3_get",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "CloudFront US viewer HTTPS requests",
+          "quantity": 65000,
+          "rate": "cloudfront_us_https_request",
+          "monthly_usd": 0.07
+        },
+        {
+          "item": "CloudFront US static web internet transfer GB",
+          "quantity": 16.0,
+          "rate": "cloudfront_us_egress_gb",
+          "monthly_usd": 1.36
+        },
+        {
+          "item": "CloudFront viewer-request navigation function executions",
+          "quantity": 65000,
+          "rate": "cloudfront_function",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront wildcard invalidation paths (4 releases)",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "monthly_usd": 0.02
+        },
+        {
           "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
           "quantity": 275700,
           "rate": "sqs_request",
@@ -608,10 +772,10 @@
           "monthly_usd": 0.01
         },
         {
-          "item": "KMS data/journal key versions (initial year)",
-          "quantity": 2,
+          "item": "KMS data/journal/capture-signing key versions (initial year)",
+          "quantity": 3,
           "rate": "kms_key_version_month",
-          "monthly_usd": 2.0
+          "monthly_usd": 3.0
         },
         {
           "item": "KMS symmetric requests",
@@ -638,10 +802,16 @@
           "monthly_usd": 0.9
         },
         {
-          "item": "CloudWatch standard alarm metric-months",
-          "quantity": 8,
+          "item": "CloudWatch standard alarm metric-months incl. 2 active-only health alarms",
+          "quantity": 10,
           "rate": "cw_alarm_metric_month",
-          "monthly_usd": 0.8
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "monthly_usd": 3.0
         },
         {
           "item": "CloudWatch PutMetricData requests",
@@ -668,7 +838,7 @@
           "monthly_usd": 0.0
         }
       ],
-      "total_monthly_usd": 124.94
+      "total_monthly_usd": 130.66
     },
     {
       "environment": "qa",
@@ -676,6 +846,8 @@
       "checks_per_month": 30000,
       "raw_human_capture_enabled": false,
       "database_allocated_gb": 70,
+      "web_https_requests": 605000,
+      "web_internet_transfer_gb": 151.0,
       "items": [
         {
           "item": "Fargate Linux/x86 vCPU",
@@ -774,6 +946,48 @@
           "monthly_usd": 0.03
         },
         {
+          "item": "S3 fourth private web bucket retained release/version GB-months",
+          "quantity": 1,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 web release PUT requests (4 releases x 500 objects)",
+          "quantity": 2000,
+          "rate": "s3_put",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 web origin GET/HEAD requests with CloudFront cache disabled",
+          "quantity": 605000,
+          "rate": "s3_get",
+          "monthly_usd": 0.24
+        },
+        {
+          "item": "CloudFront US viewer HTTPS requests",
+          "quantity": 605000,
+          "rate": "cloudfront_us_https_request",
+          "monthly_usd": 0.61
+        },
+        {
+          "item": "CloudFront US static web internet transfer GB",
+          "quantity": 151.0,
+          "rate": "cloudfront_us_egress_gb",
+          "monthly_usd": 12.84
+        },
+        {
+          "item": "CloudFront viewer-request navigation function executions",
+          "quantity": 605000,
+          "rate": "cloudfront_function",
+          "monthly_usd": 0.06
+        },
+        {
+          "item": "CloudFront wildcard invalidation paths (4 releases)",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "monthly_usd": 0.02
+        },
+        {
           "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
           "quantity": 391800,
           "rate": "sqs_request",
@@ -798,10 +1012,10 @@
           "monthly_usd": 0.01
         },
         {
-          "item": "KMS data/journal key versions (initial year)",
-          "quantity": 2,
+          "item": "KMS data/journal/capture-signing key versions (initial year)",
+          "quantity": 3,
           "rate": "kms_key_version_month",
-          "monthly_usd": 2.0
+          "monthly_usd": 3.0
         },
         {
           "item": "KMS symmetric requests",
@@ -828,10 +1042,16 @@
           "monthly_usd": 0.9
         },
         {
-          "item": "CloudWatch standard alarm metric-months",
-          "quantity": 8,
+          "item": "CloudWatch standard alarm metric-months incl. 2 active-only health alarms",
+          "quantity": 10,
           "rate": "cw_alarm_metric_month",
-          "monthly_usd": 0.8
+          "monthly_usd": 1.0
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "monthly_usd": 3.0
         },
         {
           "item": "CloudWatch PutMetricData requests",
@@ -858,7 +1078,7 @@
           "monthly_usd": 0.0
         }
       ],
-      "total_monthly_usd": 153.68
+      "total_monthly_usd": 171.68
     },
     {
       "environment": "prod",
@@ -866,6 +1086,8 @@
       "checks_per_month": 0,
       "raw_human_capture_enabled": false,
       "database_allocated_gb": 20,
+      "web_https_requests": 5000,
+      "web_internet_transfer_gb": 1.0,
       "items": [
         {
           "item": "Fargate Linux/x86 vCPU",
@@ -964,6 +1186,48 @@
           "monthly_usd": 0.0
         },
         {
+          "item": "S3 fourth private web bucket retained release/version GB-months",
+          "quantity": 1,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 web release PUT requests (4 releases x 500 objects)",
+          "quantity": 2000,
+          "rate": "s3_put",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 web origin GET/HEAD requests with CloudFront cache disabled",
+          "quantity": 5000,
+          "rate": "s3_get",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront US viewer HTTPS requests",
+          "quantity": 5000,
+          "rate": "cloudfront_us_https_request",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront US static web internet transfer GB",
+          "quantity": 1.0,
+          "rate": "cloudfront_us_egress_gb",
+          "monthly_usd": 0.09
+        },
+        {
+          "item": "CloudFront viewer-request navigation function executions",
+          "quantity": 5000,
+          "rate": "cloudfront_function",
+          "monthly_usd": 0.0
+        },
+        {
+          "item": "CloudFront wildcard invalidation paths (4 releases)",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "monthly_usd": 0.02
+        },
+        {
           "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
           "quantity": 262800,
           "rate": "sqs_request",
@@ -988,10 +1252,10 @@
           "monthly_usd": 0.01
         },
         {
-          "item": "KMS data/journal key versions (initial year)",
-          "quantity": 2,
+          "item": "KMS data/journal/capture-signing key versions (initial year)",
+          "quantity": 3,
           "rate": "kms_key_version_month",
-          "monthly_usd": 2.0
+          "monthly_usd": 3.0
         },
         {
           "item": "KMS symmetric requests",
@@ -1018,10 +1282,16 @@
           "monthly_usd": 0.9
         },
         {
-          "item": "CloudWatch standard alarm metric-months",
-          "quantity": 13,
+          "item": "CloudWatch standard alarm metric-months incl. 2 active-only health alarms",
+          "quantity": 15,
           "rate": "cw_alarm_metric_month",
-          "monthly_usd": 1.3
+          "monthly_usd": 1.5
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "monthly_usd": 3.0
         },
         {
           "item": "CloudWatch PutMetricData requests",
@@ -1048,7 +1318,7 @@
           "monthly_usd": 0.0
         }
       ],
-      "total_monthly_usd": 259.55
+      "total_monthly_usd": 263.9
     },
     {
       "environment": "prod",
@@ -1056,6 +1326,8 @@
       "checks_per_month": 3000,
       "raw_human_capture_enabled": false,
       "database_allocated_gb": 30,
+      "web_https_requests": 65000,
+      "web_internet_transfer_gb": 16.0,
       "items": [
         {
           "item": "Fargate Linux/x86 vCPU",
@@ -1154,6 +1426,48 @@
           "monthly_usd": 0.01
         },
         {
+          "item": "S3 fourth private web bucket retained release/version GB-months",
+          "quantity": 1,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 web release PUT requests (4 releases x 500 objects)",
+          "quantity": 2000,
+          "rate": "s3_put",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 web origin GET/HEAD requests with CloudFront cache disabled",
+          "quantity": 65000,
+          "rate": "s3_get",
+          "monthly_usd": 0.03
+        },
+        {
+          "item": "CloudFront US viewer HTTPS requests",
+          "quantity": 65000,
+          "rate": "cloudfront_us_https_request",
+          "monthly_usd": 0.07
+        },
+        {
+          "item": "CloudFront US static web internet transfer GB",
+          "quantity": 16.0,
+          "rate": "cloudfront_us_egress_gb",
+          "monthly_usd": 1.36
+        },
+        {
+          "item": "CloudFront viewer-request navigation function executions",
+          "quantity": 65000,
+          "rate": "cloudfront_function",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "CloudFront wildcard invalidation paths (4 releases)",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "monthly_usd": 0.02
+        },
+        {
           "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
           "quantity": 275700,
           "rate": "sqs_request",
@@ -1178,10 +1492,10 @@
           "monthly_usd": 0.01
         },
         {
-          "item": "KMS data/journal key versions (initial year)",
-          "quantity": 2,
+          "item": "KMS data/journal/capture-signing key versions (initial year)",
+          "quantity": 3,
           "rate": "kms_key_version_month",
-          "monthly_usd": 2.0
+          "monthly_usd": 3.0
         },
         {
           "item": "KMS symmetric requests",
@@ -1208,10 +1522,16 @@
           "monthly_usd": 0.9
         },
         {
-          "item": "CloudWatch standard alarm metric-months",
-          "quantity": 13,
+          "item": "CloudWatch standard alarm metric-months incl. 2 active-only health alarms",
+          "quantity": 15,
           "rate": "cw_alarm_metric_month",
-          "monthly_usd": 1.3
+          "monthly_usd": 1.5
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "monthly_usd": 3.0
         },
         {
           "item": "CloudWatch PutMetricData requests",
@@ -1238,7 +1558,7 @@
           "monthly_usd": 0.0
         }
       ],
-      "total_monthly_usd": 265.41
+      "total_monthly_usd": 271.13
     },
     {
       "environment": "prod",
@@ -1246,6 +1566,8 @@
       "checks_per_month": 30000,
       "raw_human_capture_enabled": false,
       "database_allocated_gb": 70,
+      "web_https_requests": 605000,
+      "web_internet_transfer_gb": 151.0,
       "items": [
         {
           "item": "Fargate Linux/x86 vCPU",
@@ -1344,6 +1666,48 @@
           "monthly_usd": 0.03
         },
         {
+          "item": "S3 fourth private web bucket retained release/version GB-months",
+          "quantity": 1,
+          "rate": "s3_gb_month",
+          "monthly_usd": 0.02
+        },
+        {
+          "item": "S3 web release PUT requests (4 releases x 500 objects)",
+          "quantity": 2000,
+          "rate": "s3_put",
+          "monthly_usd": 0.01
+        },
+        {
+          "item": "S3 web origin GET/HEAD requests with CloudFront cache disabled",
+          "quantity": 605000,
+          "rate": "s3_get",
+          "monthly_usd": 0.24
+        },
+        {
+          "item": "CloudFront US viewer HTTPS requests",
+          "quantity": 605000,
+          "rate": "cloudfront_us_https_request",
+          "monthly_usd": 0.61
+        },
+        {
+          "item": "CloudFront US static web internet transfer GB",
+          "quantity": 151.0,
+          "rate": "cloudfront_us_egress_gb",
+          "monthly_usd": 12.84
+        },
+        {
+          "item": "CloudFront viewer-request navigation function executions",
+          "quantity": 605000,
+          "rate": "cloudfront_function",
+          "monthly_usd": 0.06
+        },
+        {
+          "item": "CloudFront wildcard invalidation paths (4 releases)",
+          "quantity": 4,
+          "rate": "cloudfront_invalidation_path",
+          "monthly_usd": 0.02
+        },
+        {
           "item": "SQS 64-KiB request units incl. 2 idle long-poll consumers",
           "quantity": 391800,
           "rate": "sqs_request",
@@ -1368,10 +1732,10 @@
           "monthly_usd": 0.01
         },
         {
-          "item": "KMS data/journal key versions (initial year)",
-          "quantity": 2,
+          "item": "KMS data/journal/capture-signing key versions (initial year)",
+          "quantity": 3,
           "rate": "kms_key_version_month",
-          "monthly_usd": 2.0
+          "monthly_usd": 3.0
         },
         {
           "item": "KMS symmetric requests",
@@ -1398,10 +1762,16 @@
           "monthly_usd": 0.9
         },
         {
-          "item": "CloudWatch standard alarm metric-months",
-          "quantity": 13,
+          "item": "CloudWatch standard alarm metric-months incl. 2 active-only health alarms",
+          "quantity": 15,
           "rate": "cw_alarm_metric_month",
-          "monthly_usd": 1.3
+          "monthly_usd": 1.5
+        },
+        {
+          "item": "CloudWatch custom system health dashboard",
+          "quantity": 1,
+          "rate": "cw_dashboard_month",
+          "monthly_usd": 3.0
         },
         {
           "item": "CloudWatch PutMetricData requests",
@@ -1428,11 +1798,12 @@
           "monthly_usd": 0.0
         }
       ],
-      "total_monthly_usd": 301.85
+      "total_monthly_usd": 319.85
     }
   ],
   "exclusions": [
     "Domain registration and an existing optional Route 53 hosted zone",
+    "Optional custom web CNAME DNS query usage at the published standard-query rate",
     "Paid AWS support, LocalStack licensing, CI/macOS runners, app store accounts and taxes",
     "Human study/laboratory/clinical validation, shipping and hardware",
     "WAF, CloudTrail paid data-event selectors, externally selected audit archive, additional observability tools and independent security review",
@@ -1446,9 +1817,38 @@
     "RDS Multi-AZ instance/storage rates already include the standby; they are not doubled again.",
     "Automated backup retention is QA 7 days and production 35 days. Additional charged snapshot allowances are explicit line items.",
     "KMS annual key rotations can add retained key-version charges; reprice as keys rotate.",
-    "CloudWatch Container Insights is disabled. Basic AWS service metrics plus three custom metrics are used.",
-    "ALB aliases in an existing Route 53 zone add no ALB alias-query charge; hosting/domain costs belong to the owner supplied domain and are excluded.",
+    "CloudWatch Container Insights and paid CloudFront additional metrics are disabled. Basic service metrics plus three custom metrics, one custom dashboard and the two active-only health alarms are included.",
+    "Static web hosting uses a fourth private versioned S3 bucket and the default CloudFront HTTPS domain; optional custom DNS is priced separately below.",
+    "CloudFront pricing depends on viewer edge location, not the Ohio origin region. These scenarios assume United States viewers and pay-as-you-go pricing; other edge locations or pricing plans require a revised estimate.",
+    "The CloudFront cache is disabled in the actual stack, so every viewer request is budgeted as an S3 GET/HEAD and viewer-request function execution.",
+    "Web retained release/version storage is a 1 GB planning allowance (four 0.25 GB releases, including noncurrent-version allowance). No automatic expiry is configured; storage grows beyond this allowance as releases accumulate.",
+    "ALB aliases in an existing Route 53 zone add no ALB alias-query charge. The optional web CNAME has standard DNS query charges; domain registration and hosted zone ownership costs remain excluded.",
     "AWS Budget alerts notify; they do not stop spending. The required monthly budget remains an owner input.",
     "Free-tier allowances are account-wide and can reduce these gross estimates; no availability is assumed."
-  ]
+  ],
+  "web_workload_assumptions": {
+    "viewer_edge_location": "United States",
+    "pricing_plan": "pay-as-you-go",
+    "web_sessions_per_user_per_month": 30,
+    "https_requests_per_session": 20,
+    "transferred_gb_per_session": 0.005,
+    "baseline_https_requests_per_month": 5000,
+    "baseline_web_transfer_gb_per_month": 1,
+    "retained_web_release_version_gb": 1,
+    "publishes_per_month": 4,
+    "objects_per_publish": 500,
+    "invalidation_paths_per_publish": 1,
+    "origin_cache_policy": "CACHING_DISABLED",
+    "origin_request_fraction": 1,
+    "custom_dashboards_per_environment": 1,
+    "additional_active_alarm_metric_months": 2
+  },
+  "optional_web_cname_dns": {
+    "included_in_totals": false,
+    "condition": "Optional custom web hostname uses a CNAME in an existing Route 53 public hosted zone",
+    "rate": "route53_standard_dns_query",
+    "example_monthly_query_count": 1000000,
+    "example_monthly_usd": 0.4,
+    "query_count_assumption": "Measure recursive-resolver query volume; browser requests are not DNS queries"
+  }
 }

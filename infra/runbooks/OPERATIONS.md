@@ -6,6 +6,8 @@ These procedures correspond to the [platform contract](../../openspec/changes/pr
 
 Use the exact environment's stack outputs and image digest. Check ALB target health, ECS desired/running counts, readiness, RDS availability/connections, SQS source/dead-letter age and custom outbox/privacy/cleanup metrics. Inspect request/job references and reason codes only. Do not put access tokens, signed upload URLs, request bodies, raw measurements or email addresses into incident logs.
 
+Open the stack output `CloudWatchDashboardUrl` for the environment's `otgd-qa-health` or `otgd-prod-health` dashboard. It shows alarm states, ready API targets, traffic/errors/latency, API and worker utilization, database capacity, source/dead-letter queues, aggregate privacy/cleanup health and CloudFront web delivery. CloudFront widgets read basic metrics from `us-east-1` with the `Region=Global` dimension. Empty graphs require investigation; they do not establish healthy services. ECS desired/running counts still come from ECS service inspection because Container Insights is disabled.
+
 | Signal | Initial alarm | Operator response |
 |---|---|---|
 | Any DLQ message | One visible message | Inspect its stable job ID and database disposition; follow replay procedure. |
@@ -16,8 +18,10 @@ Use the exact environment's stack outputs and image digest. Check ALB target hea
 | Database connections | 30 QA / 70 production for five minutes | Inspect task overlap/pools; keep zero overflow and the 40/80 application budgets. |
 | Unhealthy production target | Above zero for five minutes | Check migration/readiness and rollback a verified incompatible release. |
 | API server errors | At least 5% over five minutes with at least 20 requests | Correlate random request references, dependency health and recent rollout. |
+| No ready API targets | Fewer than one target for five minutes after activation; missing data breaches | Check ECS desired/running tasks, rollout events, readiness dependencies and ALB registration. |
+| Missing aggregate worker metrics | Five missing one-minute publications after activation | Inspect worker/metrics sidecar tasks, database access and CloudWatch permissions; idle workers must still publish zero ages/counts. |
 
-The sidecar publishes three aggregate metrics once per minute, without identity dimensions. Maximum aggregation tolerates duplicate publishers during rollout. Three consecutive publishing failures terminate the essential sidecar so ECS restarts that worker task. Service metrics still require an external alarm-delivery probe; verify the SNS subscription and KMS permissions. Do not test notification delivery to an invented recipient.
+The sidecar publishes three aggregate metrics once per minute, without identity dimensions. Maximum aggregation tolerates duplicate publishers during rollout. Three consecutive publishing failures terminate the essential sidecar so ECS restarts that worker task. The missing-publisher and no-ready-target alarms are omitted while `activateServices=false`, preserving stopped migration/recovery stages. Service metrics still require an external alarm-delivery probe; verify the SNS subscription and KMS permissions. Do not test notification delivery to an invented recipient.
 
 ## A failed or delayed deletion
 

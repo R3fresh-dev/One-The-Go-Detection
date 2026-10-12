@@ -1,0 +1,512 @@
+[
+  {
+    "service": "AmazonCloudFront",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json",
+    "published_at": "2026-10-03T00:04:26Z",
+    "retrieved_at": "2026-10-12T04:33:46.300972Z",
+    "offer_sha256": "1884ba6955f9df19b7049951a6b3843323b32a2c31e3147b647ce2367f81d5b2",
+    "rates": [
+      {
+        "sku": "NPFD6SEH9MXS8M4J",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "United States",
+          "locationType": "AWS Edge Location",
+          "usagetype": "US-Requests-Tier2-HTTPS",
+          "operation": "",
+          "regionCode": "",
+          "requestDescription": "HTTPS GET and HEAD requests",
+          "requestType": "CloudFront-Request-Tier2",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "NPFD6SEH9MXS8M4J.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.0100 per 10,000 HTTPS Requests",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Requests",
+          "pricePerUnit": {
+            "USD": "0.0000010000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.Q3Z75P77EN",
+          "description": "$0.085 per GB - first 10 TB / month data transfer out",
+          "beginRange": "0",
+          "endRange": "10240",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0850000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.VF6T3GAUKQ",
+          "description": "$0.080 per GB - next 40 TB / month data transfer out",
+          "beginRange": "10240",
+          "endRange": "51200",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0800000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.N9EW5UVVPA",
+          "description": "$0.060 per GB - next 100 TB / month data transfer out",
+          "beginRange": "51200",
+          "endRange": "153600",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0600000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.AZ7GJS7NVF",
+          "description": "$0.040 per GB - next 350 TB / month data transfer out",
+          "beginRange": "153600",
+          "endRange": "512000",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0400000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.3B9CK5AZ6J",
+          "description": "$0.030 per GB - next 524 TB / month data transfer out",
+          "beginRange": "512000",
+          "endRange": "1048576",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0300000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.RBMR72YW69",
+          "description": "$0.025 per GB - next 4 PB / month data transfer out",
+          "beginRange": "1048576",
+          "endRange": "5242880",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0250000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "GV2WFGX37Q9PDSHF",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront Outbound",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "External",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-Bytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "GV2WFGX37Q9PDSHF.JRTCKXETXF.SW9U2ZKBYX",
+          "description": "$0.020 per GB - data transfer out / month over 5 PB",
+          "beginRange": "5242880",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0200000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "U3HVZF9WJEM7TE55",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "CF-Invalidations",
+          "groupDescription": "Charge for invalidating objects (removing the objects from CloudFront edge locations)",
+          "usagetype": "Invalidations",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "U3HVZF9WJEM7TE55.JRTCKXETXF.JXGPBPHWFF",
+          "description": "$0.000 per URL - first 1,000 URLs / month.",
+          "beginRange": "0",
+          "endRange": "1000",
+          "unit": "URL",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "U3HVZF9WJEM7TE55",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "CF-Invalidations",
+          "groupDescription": "Charge for invalidating objects (removing the objects from CloudFront edge locations)",
+          "usagetype": "Invalidations",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "U3HVZF9WJEM7TE55.JRTCKXETXF.MUBTP6UPGZ",
+          "description": "$0.005 per URL - over 1,000 URLs / month.",
+          "beginRange": "1000",
+          "endRange": "Inf",
+          "unit": "URL",
+          "pricePerUnit": {
+            "USD": "0.0050000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "QAZUUEJG8GARJCET",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "CloudFront-Functions",
+          "groupDescription": "CloudFront Function executions",
+          "usagetype": "Executions-CloudFrontFunctions",
+          "operation": "Execution",
+          "regionCode": "",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "QAZUUEJG8GARJCET.JRTCKXETXF.A7TCVR8GS9",
+          "description": "$0 for First 2,000,000 CloudFront Function Executions",
+          "beginRange": "0",
+          "endRange": "2000000",
+          "unit": "FunctionExecutions",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "QAZUUEJG8GARJCET",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "location": "Any",
+          "locationType": "Other",
+          "group": "CloudFront-Functions",
+          "groupDescription": "CloudFront Function executions",
+          "usagetype": "Executions-CloudFrontFunctions",
+          "operation": "Execution",
+          "regionCode": "",
+          "servicename": "Amazon CloudFront"
+        },
+        "price": {
+          "rateCode": "QAZUUEJG8GARJCET.JRTCKXETXF.VQ39PKQRBK",
+          "description": "$0.10 per 1,000,000 CloudFront Function Executions",
+          "beginRange": "2000000",
+          "endRange": "Inf",
+          "unit": "FunctionExecutions",
+          "pricePerUnit": {
+            "USD": "0.0000001000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "AGSZEF5XC2MG4FUH",
+        "attributes": {
+          "servicecode": "AmazonCloudFront",
+          "transferType": "CloudFront to Origin",
+          "fromLocation": "United States",
+          "fromLocationType": "AWS Edge Location",
+          "toLocation": "Data Origin",
+          "toLocationType": "Other",
+          "usagetype": "US-DataTransfer-Out-OBytes",
+          "operation": "",
+          "fromRegionCode": "",
+          "servicename": "Amazon CloudFront",
+          "toRegionCode": ""
+        },
+        "price": {
+          "rateCode": "AGSZEF5XC2MG4FUH.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$0.020 per GB - All data transfer out to Origin (US)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "GB",
+          "pricePerUnit": {
+            "USD": "0.0200000000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonCloudWatch",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/aws-other/index.json",
+    "published_at": "2026-10-07T11:55:40Z",
+    "retrieved_at": "2026-10-12T04:33:47.262513Z",
+    "offer_sha256": "f0b4783415334d4a8ae1d94fb90b749c7f427a5ba81f52e23c7cbaa1d6525f4a",
+    "rates": [
+      {
+        "sku": "5P8PBB6MXV325TDC",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "Dashboard",
+          "groupDescription": "CloudWatch Dashboards",
+          "usagetype": "DashboardsUsageHour-Basic",
+          "operation": "DashboardHour",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch",
+          "version": "Basic"
+        },
+        "price": {
+          "rateCode": "5P8PBB6MXV325TDC.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$3.00 per Dashboard per Month",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Dashboards",
+          "pricePerUnit": {
+            "USD": "3.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "8AWBXE5MPQY58BK4",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "Dashboard",
+          "groupDescription": "CloudWatch Dashboards",
+          "usagetype": "DashboardsUsageHour",
+          "operation": "DashboardHour",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch",
+          "version": "Extended"
+        },
+        "price": {
+          "rateCode": "8AWBXE5MPQY58BK4.JRTCKXETXF.6YS6EN2CT7",
+          "description": "$3.00 per Dashboard per Month (>50 metrics)",
+          "beginRange": "0",
+          "endRange": "Inf",
+          "unit": "Dashboards",
+          "pricePerUnit": {
+            "USD": "3.0000000000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "ZXHCNVUBD6E8UPH8",
+        "attributes": {
+          "servicecode": "AmazonCloudWatch",
+          "location": "Any",
+          "locationType": "AWS Region",
+          "group": "Dashboard",
+          "groupDescription": "CloudWatch Dashboards",
+          "usagetype": "Global-DashboardsUsageHour-Basic",
+          "operation": "DashboardHour",
+          "regionCode": "",
+          "servicename": "AmazonCloudWatch",
+          "version": "Basic (Free)"
+        },
+        "price": {
+          "rateCode": "ZXHCNVUBD6E8UPH8.A429C66SYZ.D5YRXPX4C7",
+          "description": "Global",
+          "beginRange": "0",
+          "endRange": "3",
+          "unit": "Dashboards",
+          "pricePerUnit": {
+            "USD": "0.0000000000"
+          },
+          "appliesTo": [
+            "5P8PBB6MXV325TDC"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonRoute53",
+    "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRoute53/current/index.json",
+    "published_at": "2026-09-11T12:45:04Z",
+    "retrieved_at": "2026-10-12T04:33:48.924899Z",
+    "offer_sha256": "e2f11e8f4a44ee5c7d837e26f788a25f2528002e02cd040d889a132e68d5a975",
+    "rates": [
+      {
+        "sku": "JHRA6QBEDT9FZVT5",
+        "attributes": {
+          "servicecode": "AmazonRoute53",
+          "location": "Any",
+          "locationType": "Other",
+          "routingType": "Standard",
+          "routingTarget": "External",
+          "usagetype": "DNS-Queries",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "Amazon Route 53"
+        },
+        "price": {
+          "rateCode": "JHRA6QBEDT9FZVT5.JRTCKXETXF.ZN357FEBCK",
+          "description": "$0.40 per 1,000,000 queries for the first 1 Billion queries",
+          "beginRange": "0",
+          "endRange": "1000000000",
+          "unit": "Queries",
+          "pricePerUnit": {
+            "USD": "0.0000004000"
+          },
+          "appliesTo": []
+        }
+      },
+      {
+        "sku": "JHRA6QBEDT9FZVT5",
+        "attributes": {
+          "servicecode": "AmazonRoute53",
+          "location": "Any",
+          "locationType": "Other",
+          "routingType": "Standard",
+          "routingTarget": "External",
+          "usagetype": "DNS-Queries",
+          "operation": "",
+          "regionCode": "",
+          "servicename": "Amazon Route 53"
+        },
+        "price": {
+          "rateCode": "JHRA6QBEDT9FZVT5.JRTCKXETXF.AGD8ADSNTG",
+          "description": "$0.20 per 1,000,000 queries over 1 Billion queries",
+          "beginRange": "1000000000",
+          "endRange": "Inf",
+          "unit": "Queries",
+          "pricePerUnit": {
+            "USD": "0.0000002000"
+          },
+          "appliesTo": []
+        }
+      }
+    ]
+  },
+  {
+    "service": "AmazonCloudFront",
+    "source": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/",
+    "retrieved_at": "2026-10-12T04:47:53.831669Z",
+    "source_sha256": "f8a589fcdab394d62d39de6d59f203679c8e3250ea936c94e61b06516274e382",
+    "published_at": null,
+    "rates": [],
+    "pricing_statements": [
+      "Data Transfer Out (DTO) charges from AWS services to CloudFront are $0/GB.",
+      "Data transfer out of Amazon CloudFront to your origin server, such as POST and PUT requests, will be billed at the regional data transfer out to origin rates listed in the Regional Data Transfer Out to Origin (per GB) table above."
+    ]
+  }
+]

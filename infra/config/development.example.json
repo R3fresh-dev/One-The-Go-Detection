@@ -1,0 +1,10 @@
+{
+  "environment": "development",
+  "account": "738470137867",
+  "region": "us-east-2",
+  "alarmEmail": "jacobtyrawa@mail.com",
+  "monthlyBudgetUsd": 50,
+  "releaseId": "4f046941176c7a42f6275b346c68bb619f6f67b1",
+  "plannedMonthlyUsers": 10,
+  "costEstimatePath": "infra/costs/development-estimate.json"
+}

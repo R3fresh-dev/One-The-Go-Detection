@@ -203,6 +203,7 @@ def deployment(args,environment):
         receipt={'schema_version':'1.0.0','operation':'one-shot-deploy','status':'public_transport_verified','environment':environment,
             'account':c['account'],'region':c['region'],'release_id':c['releaseId'],'image_digest':c['imageDigest'],
             'service_release':str(args.release),'web_release':str(web_record),'web_artifact':str(archive),'web_origin':out['WebOrigin'],
+            'cloudwatch_dashboard_name':out.get('CloudWatchDashboardName'),'cloudwatch_dashboard_url':out.get('CloudWatchDashboardUrl'),
             'migration_receipt':str(migration),'admission_receipt':str(admission),'publication':publication,'public_checks':public,'worker_progress_health':'passed','cloud_operational_acceptance':'not_inferred'}
         journal.call('write-access-receipt',platform.write_receipt,work/'deployment.json',receipt)
         journal.finish()

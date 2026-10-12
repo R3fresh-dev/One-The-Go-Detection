@@ -1,5 +1,12 @@
 # Deploy and promote a reviewed release
 
+For the selected **$50/month development deployment**, start with
+[AWS connection and development commands](CONNECT_AWS.md) and
+[the reviewed smaller cost profile](../infra/costs/DEVELOPMENT.md).
+`development.py plan|deploy|health` uses AWS-generated CloudFront HTTPS names,
+a private application host and self-managed PostgreSQL. This separate profile
+does not authorize promotion through the managed QA/production process below.
+
 The CLI [platform.py](platform.py) makes every paid or operational action explicit. No AWS deployment has been performed in this workspace. It uses the normal AWS SDK credential chain, validates the account with STS, and passes database credentials through ECS secret references. Its defaults do not invent an AWS account, domain, alarm recipient, signing key or monthly budget.
 
 ## One command for QA, a separate command for production
@@ -47,6 +54,20 @@ uv run --project services/api python deploy/prod.py \
 ```
 
 Use `--establish-new` only for the first empty production environment. Promotion preserves the exact QA service digest and source. The production web build uses the same reviewed source/npm lock with fixed production API/issuer/client values, so its bytes differ from QA; its signed web record explicitly binds the approved QA web envelope. Missing/stale QA approval, artifact tampering, different accounts/source/runtime or a failed stage stops the sequence. Later web upload failure does not imply that already activated backend services were rolled back; inspect protected stage logs and use the runbook. No final verified-access receipt is written on failure.
+
+## Read-only system health
+
+After activation, check the actual deployed resources with the same ignored configuration and normal AWS SDK credentials. No access key or token belongs in this command or the configuration file:
+
+```bash
+uv run --project services/api python deploy/health.py \
+  --config .local/deploy/qa/REVIEWED_COMMIT/QA_ATTEMPT/active.local.json \
+  --profile your-qa-profile
+```
+
+The Python command verifies STS account and exact stable stack release, both ECS services and every returned task, worker progress health, all essential containers including the metrics publisher, RDS availability, only the deployed stack's CloudWatch alarms, fresh samples for all three operational metrics, the CloudWatch dashboard and public API readiness over HTTPS. SDK requests, result pagination and public responses are bounded; redirects are rejected. Containers without an ECS healthcheck must be running with the configured image digest; fresh custom metrics independently verify publisher progress. JSON includes the dashboard URL and observation time, excludes secret values and task logs, and reports stopped services or insufficient metric/alarm data explicitly. Exit code `0` means these observations passed; degraded, stopped, incomplete or blocked observations return `2`.
+
+Use `--skip-public` when inspecting only AWS resources; the receipt explicitly records public readiness as unexecuted. This command makes no AWS writes and does not execute authenticated browser acceptance, alarm-delivery drills, recovery qualification or signed QA approval. The one-shot deployment receipt and its protected stage journal remain the source of deployment evidence.
 
 ## Browser URL, custom TLS and CNAME
 

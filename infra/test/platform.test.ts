@@ -13,6 +13,17 @@ const fixture=(environment:'qa'|'prod'):PlatformConfig=>({
   imageDigest:'sha256:'+'a'.repeat(64),releaseId:'fixture-commit',monthlyBudgetUsd:500,alarmEmail:'operator@otgd.test',ownerRole:'platform-operator',costCenter:'fixture-only',costEstimatePath:'fixture.json',databaseEngineVersion:'16.14',activateServices:true,recoveryRequired:false,
 });
 
+// Materialize only the CloudFormation string intrinsics used in dashboard JSON;
+// keep resource references distinct so a widget bound to the wrong resource fails.
+function dashboardString(value:any):string {
+  if(typeof value==='string') return value;
+  if(value['Fn::Join']) return value['Fn::Join'][1].map(dashboardString).join(value['Fn::Join'][0]);
+  if(value.Ref) return `ref-${value.Ref}`;
+  if(value['Fn::GetAtt']) return `getatt-${value['Fn::GetAtt'].join('-')}`;
+  if(value['Fn::Select']?.[1]?.['Fn::Split']) return `select-${value['Fn::Select'][0]}-${dashboardString(value['Fn::Select'][1]['Fn::Split'][1])}`;
+  throw new Error(`Unsupported dashboard intrinsic: ${JSON.stringify(value)}`);
+}
+
 for (const env of ['qa','prod'] as const) {
   test(`${env}: synthesized network, identity, storage and queue boundaries`,()=>{
     const app=new App();const c=fixture(env);
@@ -127,7 +138,55 @@ for (const env of ['qa','prod'] as const) {
     t.hasResourceProperties('AWS::Logs::LogGroup',{RetentionInDays:env==='prod'?30:7,KmsKeyId:Match.anyValue()});
     t.resourceCountIs('AWS::Budgets::Budget',1);
     // Two additional production alarms drive queue step scaling.
-    t.resourceCountIs('AWS::CloudWatch::Alarm',env==='prod'?10:7);
+    t.resourceCountIs('AWS::CloudWatch::Alarm',env==='prod'?12:9);
+    const alarmResources=t.findResources('AWS::CloudWatch::Alarm') as Record<string,any>;
+    const missingMetrics=Object.entries(alarmResources).find(([id])=>id.startsWith('MissingOperationalMetrics'))![1].Properties;
+    assert.equal(missingMetrics.Namespace,`OTGD/${env}`);
+    assert.equal(missingMetrics.MetricName,'OldestOutboxSeconds');
+    assert.equal(missingMetrics.ComparisonOperator,'LessThanThreshold');
+    assert.equal(missingMetrics.Threshold,0);
+    assert.equal(missingMetrics.Period,60);
+    assert.equal(missingMetrics.EvaluationPeriods,5);
+    assert.equal(missingMetrics.TreatMissingData,'breaching');
+    assert.equal(missingMetrics.AlarmActions.length,1);
+    const noReadyTarget=Object.entries(alarmResources).find(([id])=>id.startsWith('NoHealthyApiTargets'))![1].Properties;
+    assert.equal(noReadyTarget.Namespace,'AWS/ApplicationELB');
+    assert.equal(noReadyTarget.MetricName,'HealthyHostCount');
+    assert.equal(noReadyTarget.Statistic,'Minimum');
+    assert.equal(noReadyTarget.ComparisonOperator,'LessThanThreshold');
+    assert.equal(noReadyTarget.Threshold,1);
+    assert.equal(noReadyTarget.EvaluationPeriods,5);
+    assert.equal(noReadyTarget.TreatMissingData,'breaching');
+    assert.deepEqual(noReadyTarget.AlarmActions,missingMetrics.AlarmActions);
+    t.resourceCountIs('AWS::CloudWatch::Dashboard',1);
+    const [dashboardId,dashboard]=Object.entries(t.findResources('AWS::CloudWatch::Dashboard'))[0] as [string,any];
+    assert.equal(dashboard.Properties.DashboardName,`otgd-${env}-health`);
+    const dashboardBody=JSON.parse(dashboardString(dashboard.Properties.DashboardBody));
+    assert.equal(dashboardBody.periodOverride,'inherit');
+    const widgets=dashboardBody.widgets as any[];
+    const status=widgets.find(widget=>widget.type==='alarm');
+    assert.equal(status.properties.alarms.length,env==='prod'?10:9);
+    for(const id of Object.keys(alarmResources).filter(id=>!id.includes('QueueBacklog'))) {
+      assert.ok(status.properties.alarms.includes(`getatt-${id}-Arn`));
+    }
+    const metrics=widgets.filter(widget=>widget.type==='metric').flatMap(widget=>widget.properties.metrics);
+    const serializedMetrics=JSON.stringify(metrics);
+    for(const name of ['HealthyHostCount','UnHealthyHostCount','RequestCount','HTTPCode_Target_5XX_Count','HTTPCode_ELB_5XX_Count','TargetResponseTime','CPUUtilization','MemoryUtilization','DatabaseConnections','FreeableMemory','FreeStorageSpace','ApproximateNumberOfMessagesVisible','ApproximateNumberOfMessagesNotVisible','ApproximateAgeOfOldestMessage','OldestOutboxSeconds','OldestPrivacyJobSeconds','CleanupOverdueCount']) {
+      assert.ok(serializedMetrics.includes(name),`Missing real system health metric: ${name}`);
+    }
+    const serviceResources=t.findResources('AWS::ECS::Service') as Record<string,any>;
+    for(const id of Object.keys(serviceResources)) assert.ok(serializedMetrics.includes(`getatt-${id}-Name`));
+    assert.ok(serializedMetrics.includes(`OTGD/${env}`));
+    assert.ok(!serializedMetrics.includes('ECS/ContainerInsights'));
+    const webWidgets=widgets.filter(widget=>widget.title?.startsWith('Web ') || widget.properties.title?.startsWith('Web '));
+    assert.equal(webWidgets.length,2);
+    for(const widget of webWidgets) {
+      assert.equal(widget.properties.region,'us-east-1');
+      assert.ok(JSON.stringify(widget.properties.metrics).includes('AWS/CloudFront'));
+      assert.ok(JSON.stringify(widget.properties.metrics).includes('Global'));
+    }
+    assert.deepEqual(t.toJSON().Outputs.CloudWatchDashboardName.Value,{Ref:dashboardId});
+    assert.equal(dashboardString(t.toJSON().Outputs.CloudWatchDashboardUrl.Value),`https://${c.region}.console.aws.amazon.com/cloudwatch/home?region=${c.region}#dashboards/dashboard/ref-${dashboardId}`);
     t.hasResourceProperties('AWS::Budgets::Budget',{Budget:Match.objectLike({CostFilters:{TagKeyValue:[`user:deployment$otgd-${env}`]}})});
     t.hasResourceProperties('AWS::Cognito::UserPool',{UserPoolTier:'LITE'});
     for(const rule of Object.values(t.findResources('AWS::EC2::SecurityGroupIngress')) as any[]) {
@@ -151,6 +210,9 @@ test('first deployment keeps API and worker stopped until bootstrap/migration',(
   const registry=new RegistryStack(app,'boot-registry',{config:c});
   const t=Template.fromStack(new PlatformStack(app,'boot-platform',{config:c,repository:registry.repository,env:{account:c.account,region:c.region}}));
   for(const service of Object.values(t.findResources('AWS::ECS::Service')) as any[]) assert.equal(service.Properties.DesiredCount,0);
+  const alarms=Object.keys(t.findResources('AWS::CloudWatch::Alarm'));
+  assert.ok(alarms.every(id=>!id.startsWith('MissingOperationalMetrics') && !id.startsWith('NoHealthyApiTargets')));
+  t.resourceCountIs('AWS::CloudWatch::Dashboard',1);
 });
 
 test('snapshot restore preserves storage size and retained dependencies with recovery denied until verified',()=>{
@@ -162,6 +224,7 @@ test('snapshot restore preserves storage size and retained dependencies with rec
   assert.equal(db.Properties.AllocatedStorage,undefined);
   assert.equal(db.UpdateReplacePolicy,'Retain');
   for(const service of Object.values(t.findResources('AWS::ECS::Service')) as any[]) assert.equal(service.Properties.DesiredCount,0);
+  assert.ok(Object.keys(t.findResources('AWS::CloudWatch::Alarm')).every(id=>!id.startsWith('MissingOperationalMetrics') && !id.startsWith('NoHealthyApiTargets')));
   assert.ok(JSON.stringify(t.toJSON()).includes('OTGD_DATABASE_SSLMODE'));
 });
 

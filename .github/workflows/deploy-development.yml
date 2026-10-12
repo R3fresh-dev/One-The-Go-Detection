@@ -1,0 +1,229 @@
+name: Deploy reduced-cost development to AWS
+
+on:
+  workflow_dispatch:
+    inputs:
+      establish_new:
+        description: Establish the first empty development journal; never enable for an existing journal
+        required: true
+        type: boolean
+        default: false
+
+# AWS access uses the two existing repository secrets. No OIDC token is issued.
+permissions:
+  contents: read
+  actions: read
+
+# Serialize all attempts for this actual account/region, including manual retries.
+concurrency:
+  group: otgd-development-738470137867-us-east-2
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.event.repository.default_branch == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+      AWS_REGION: us-east-2
+      AWS_DEFAULT_REGION: us-east-2
+      AWS_EC2_METADATA_DISABLED: 'true'
+      AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --project services/api --locked
+
+      - name: Admit only reviewed main sources with current successful mandatory gates
+        id: admission
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --project services/api python - <<'PYCODE'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          from deploy import platform
+          from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH, trusted_branch
+
+          def github_json(path):
+              result = subprocess.run(['gh', 'api', path], capture_output=True, text=True, timeout=30)
+              if result.returncode != 0 or len(result.stdout.encode()) > 2_097_152:
+                  raise Gate('Authorized GitHub gate metadata is unavailable')
+              try:
+                  value = json.loads(result.stdout)
+              except (TypeError, ValueError):
+                  raise Gate('GitHub gate metadata is malformed') from None
+              if not isinstance(value, dict):
+                  raise Gate('GitHub gate metadata is malformed')
+              return value
+
+          def select_latest_gate(revision):
+              runs = []
+              for page in range(1, 11):
+                  response = github_json(
+                      f'repos/{REPOSITORY}/actions/workflows/merge-gate.yml/runs'
+                      f'?head_sha={revision}&per_page=100&page={page}')
+                  batch = response.get('workflow_runs')
+                  if not isinstance(batch, list) or len(batch) > 100:
+                      raise Gate('GitHub workflow inventory is malformed')
+                  for run in batch:
+                      if not isinstance(run, dict):
+                          raise Gate('GitHub workflow inventory is malformed')
+                      if (run.get('head_sha') == revision and run.get('path') == WORKFLOW_PATH
+                              and trusted_branch(run.get('event'), run.get('head_branch'))):
+                          if type(run.get('id')) is not int or run['id'] <= 0:
+                              raise Gate('GitHub workflow identity is malformed')
+                          runs.append(run)
+                  if len(batch) < 100:
+                      break
+              else:
+                  raise Gate('GitHub workflow inventory exceeds its supported bounds')
+              if not runs:
+                  raise Gate('No trusted exact-source Required application gates run exists')
+              latest = max(runs, key=lambda run: run['id'])
+              if latest.get('status') != 'completed' or latest.get('conclusion') != 'success':
+                  raise Gate('The latest trusted exact-source gate run must finish successfully')
+              return latest['id']
+
+          def admit():
+              revision = os.environ['GITHUB_SHA']
+              if (os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch'
+                      or os.environ.get('GITHUB_REF') != 'refs/heads/main'
+                      or os.environ.get('GH_REPO') != REPOSITORY
+                      or not re.fullmatch(r'[0-9a-f]{40}', revision)):
+                  raise Gate('Development deployment requires reviewed main sources')
+              repository = github_json(f'repos/{REPOSITORY}')
+              current_main = github_json(f'repos/{REPOSITORY}/git/ref/heads/main')
+              if (repository.get('default_branch') != 'main'
+                      or current_main.get('object', {}).get('sha') != revision):
+                  raise Gate('Dispatch again from the current default main revision')
+              platform.require_clean_source(revision)
+              run_id = select_latest_gate(revision)
+              directory = Path('.local/deploymentconfig')
+              evidence_directory = directory / 'gates'
+              evidence_directory.mkdir(parents=True, exist_ok=True)
+              downloaded = subprocess.run(
+                  ['gh', 'run', 'download', str(run_id), '--repo', REPOSITORY,
+                   '--name', 'exact-revision-merge-evidence', '--dir', str(evidence_directory)],
+                  capture_output=True, text=True, timeout=60)
+              if downloaded.returncode != 0:
+                  raise Gate('Exact-source aggregate gate artifact is unavailable')
+              evidence = evidence_directory / 'gates.json'
+              proof = platform.verify_gate_file(evidence, revision)
+              if proof['run_id'] != run_id:
+                  raise Gate('Downloaded gate evidence belongs to a different workflow run')
+              (directory / 'gate-admission.json').write_text(json.dumps(proof, indent=2) + '\n')
+
+          if __name__ == '__main__':
+              try:
+                  admit()
+              except Exception as error:
+                  message = str(error) if isinstance(error, Gate) else type(error).__name__
+                  raise SystemExit('Deployment admission blocked: ' + message)
+          PYCODE
+
+      - name: Bind reviewed configuration to this exact source and verify the budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python3 - <<'PYCODE'
+          import json
+          import os
+          from pathlib import Path
+          config = json.loads(Path('infra/config/development.example.json').read_text())
+          if (config['environment'] != 'development' or config['account'] != '738470137867'
+                  or config['region'] != 'us-east-2' or config['monthlyBudgetUsd'] != 50):
+              raise SystemExit('Development target differs from the reviewed account, region or budget')
+          config['releaseId'] = os.environ['GITHUB_SHA']
+          Path('.local/deploymentconfig/development.json').write_text(json.dumps(config, indent=2) + '\n')
+          PYCODE
+          uv run --project services/api python deploy/development.py plan \
+            --config .local/deploymentconfig/development.json > reports/development-plan.json
+
+      - name: Configure the existing repository AWS secrets after source admission
+        id: credentials
+        # Official aws-actions v5 annotated tag resolved to this reviewed commit.
+        uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-2
+          allowed-account-ids: '738470137867'
+          unset-current-credentials: true
+          force-skip-oidc: true
+          output-credentials: false
+          retry-max-attempts: 3
+          action-timeout-s: 90
+
+      - name: Verify the actual AWS target without printing credentials
+        run: uv run --project services/api python deploy/check_access.py --account 738470137867 --region us-east-2
+
+      - name: Deploy the private development system and verify actual health
+        shell: bash
+        env:
+          ESTABLISH_NEW: ${{ inputs.establish_new }}
+        run: |
+          set -euo pipefail
+          otgd_deploy_options=()
+          if [ "$ESTABLISH_NEW" = true ]; then
+            otgd_deploy_options+=(--establish-new)
+          fi
+          uv run --project services/api python deploy/development.py deploy \
+            --config .local/deploymentconfig/development.json \
+            --gate-evidence .local/deploymentconfig/gates/gates.json \
+            "${otgd_deploy_options[@]}" > reports/development-deploy.json
+
+      - name: Publish credential-free deployment and health receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always() && steps.admission.outcome == 'success'
+        with:
+          name: development-deployment-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            .local/deploymentconfig/gate-admission.json
+            reports/development-plan.json
+            reports/development-deploy.json
+            .local/deploy/development/**/deployment.json
+            .local/deploy/development/**/deployment-state.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Record verified development endpoints and remaining release checks
+        shell: bash
+        run: |
+          python3 - <<'PYCODE'
+          import json
+          import os
+          from pathlib import Path
+          receipt = json.loads(Path('reports/development-deploy.json').read_text())
+          if receipt.get('status') != 'development_transport_and_health_verified':
+              raise SystemExit('No verified development deployment receipt exists')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('Private development deployment verified for source `' + receipt['release_id'] + '`.\n\n')
+              summary.write('- Web: ' + receipt['web_origin'] + '\n')
+              summary.write('- API: ' + receipt['api_origin'] + '\n')
+              summary.write('- CloudWatch health: ' + receipt['cloudwatch_dashboard_url'] + '\n\n')
+              summary.write('Confirm the SNS email subscription and exercise alarm delivery and backup restore. The $50 estimate is not a spending cap. QA acceptance, physical-device qualification and production promotion remain separate checks.\n')
+          PYCODE
