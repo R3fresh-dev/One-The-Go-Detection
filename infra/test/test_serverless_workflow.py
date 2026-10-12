@@ -260,6 +260,7 @@ class ServerlessWorkflowTest(unittest.TestCase):
             '.local/deploy/serverless-development/**/deployment.json',
             '.local/deploy/serverless-development/**/deployment-state.json',
             '.local/deploy/serverless-development/**/initial-recovery.json',
+            '.local/deploy/serverless-development/**/uninitialized-continuation.json',
         })
         self.assertTrue(upload['with']['include-hidden-files'])
         credentials = next(i for i, step in enumerate(steps) if step.get('id') == 'credentials')

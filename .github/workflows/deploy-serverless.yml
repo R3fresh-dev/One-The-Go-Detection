@@ -596,6 +596,7 @@ jobs:
             .local/deploy/serverless-development/**/deployment.json
             .local/deploy/serverless-development/**/deployment-state.json
             .local/deploy/serverless-development/**/initial-recovery.json
+            .local/deploy/serverless-development/**/uninitialized-continuation.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
