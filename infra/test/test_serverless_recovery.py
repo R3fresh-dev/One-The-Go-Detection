@@ -508,6 +508,31 @@ class InitialRecoveryTest(unittest.TestCase):
                               'schedule_key_deletion', 'get_secret_value', 'get_object'):
                 getattr(client, forbidden).assert_not_called()
 
+    def test_completed_import_accepts_aws_normalized_resource_status_without_relaxing_inventory(self):
+        cloud = FakeCloud()
+        with tempfile.TemporaryDirectory() as directory:
+            source_path, source = cloud.detached_manifest(directory)
+            cloud.status = 'IMPORT_COMPLETE'
+            cloud.import_tags = []
+            cloud.protection = True
+            original_paginator = cloud.paginator
+            def paginator(operation):
+                original = original_paginator(operation)
+                def paginate(**kwargs):
+                    pages = deepcopy(list(original.paginate(**kwargs)))
+                    if operation == 'list_stack_resources' and kwargs['StackName'] == NEW_STACK:
+                        for row in pages[0]['StackResourceSummaries']:
+                            row['ResourceStatus'] = 'UPDATE_COMPLETE'
+                    return pages
+                return SimpleNamespace(paginate=paginate)
+            cloud.clients['cloudformation'].get_paginator.side_effect = paginator
+            destination = Path(directory) / 'normalized-import.json'
+            result = recovery.resume_initial(cloud.aws, cloud.config, destination, source_path,
+                hashlib.sha256(source_path.read_bytes()).hexdigest())
+            self.assertEqual(result['retained_physical_ids'], cloud.physical)
+            cloud.clients['cloudformation'].create_change_set.assert_not_called()
+            cloud.clients['cloudformation'].execute_change_set.assert_not_called()
+
     def test_resume_canonical_comparison_accepts_changed_aws_and_descriptor_order(self):
         cloud = FakeCloud()
         with tempfile.TemporaryDirectory() as directory:

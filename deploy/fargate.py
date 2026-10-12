@@ -491,11 +491,11 @@ def deploy(args, c, aws, price):
     from deploy.fargate_template import build_template
     prior = stable_stack(aws, STACK, absent_ok=True)
     c = preflight(aws, c, prior)
-    if prior is not None and args.establish_new:
-        raise Gate('An existing deployment cannot establish a new empty deletion journal')
     recovery = [args.recovery_manifest, args.recovery_archive, args.recovery_run_id, args.recovery_artifact_id]
-    if any(recovery) and (not all(recovery) or not args.establish_new or prior is not None):
-        raise Gate('Trusted initial import requires all recovery inputs, an absent stack and explicit first-empty initialization')
+    if prior is not None and args.establish_new and not all(recovery):
+        raise Gate('An existing deployment cannot establish a new empty deletion journal')
+    if any(recovery) and (not all(recovery) or not args.establish_new):
+        raise Gate('Trusted initial recovery requires all inputs and explicit first-empty initialization')
     work = ROOT / '.local/deploy/fargate-development' / c['releaseId'] / uuid.uuid4().hex
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
@@ -505,6 +505,9 @@ def deploy(args, c, aws, price):
                 {**c, 'environment': 'serverless-development', 'monthlyBudgetUsd': 50},
                 args.recovery_manifest, work / 'initial-resume.json', artifact_proof={
                     'run_id': args.recovery_run_id, 'artifact_id': args.recovery_artifact_id, 'archive_path': args.recovery_archive})
+            # Only the helper can admit an already completed, still empty
+            # fifteen-resource import. It refuses active or updated platforms.
+            prior = stable_stack(aws, STACK)
         registry = journal.call('fargate-registry', deploy_stack, aws, STACK + '-registry', build_template(c, 'registry'), c)
         source = work / 'source.tar'
         journal.call('exact-source-archive', archive_source, c, source)
