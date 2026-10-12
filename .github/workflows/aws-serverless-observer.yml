@@ -147,7 +147,8 @@ jobs:
               ('cloudformation', 'describe-stack-events'), ('cloudformation', 'list-stack-resources'),
               ('cloudformation', 'list-change-sets'), ('cloudformation', 'describe-change-set'),
               ('cloudformation', 'get-template'),
-              ('rds', 'describe-db-clusters'), ('lambda', 'get-function-configuration'),
+              ('rds', 'describe-db-clusters'), ('rds', 'describe-db-instances'),
+              ('lambda', 'get-function-configuration'),
               ('ecr', 'describe-images')}
 
           def aws(service, operation, options=(), query=None):
@@ -187,6 +188,29 @@ jobs:
                   if isinstance(event.get('ResourceStatusReason'), str):
                       event['ResourceStatusReason'] = event['ResourceStatusReason'][:1000]
           print(json.dumps({'recent_application_events': events}, sort_keys=True))
+          history = aws('cloudformation', 'describe-stack-events', ['--stack-name', stack, '--max-items', '2000'],
+              '{Events:StackEvents[].{Timestamp:Timestamp,LogicalResourceId:LogicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus,ResourceStatusReason:ResourceStatusReason},NextToken:NextToken}')
+          if isinstance(history, dict) and isinstance(history.get('Events'), list):
+              event_rows = history['Events']
+              starts = [row['Timestamp'] for row in event_rows
+                  if row.get('LogicalResourceId') == stack and row.get('ResourceType') == 'AWS::CloudFormation::Stack'
+                  and row.get('ResourceStatus') == 'UPDATE_IN_PROGRESS']
+              update_started = max(starts) if starts else snapshot.get('LastUpdatedTime')
+              failed = sorted([row for row in event_rows if row.get('Timestamp', '') >= (update_started or '')
+                  and row.get('ResourceStatus') in {'CREATE_FAILED', 'UPDATE_FAILED', 'DELETE_FAILED'}],
+                  key=lambda row: row.get('Timestamp', ''))
+              for row in failed:
+                  if isinstance(row.get('ResourceStatusReason'), str):
+                      row['ResourceStatusReason'] = row['ResourceStatusReason'][:1000]
+              initiating = [row for row in failed if row.get('ResourceStatus') in {'CREATE_FAILED', 'UPDATE_FAILED'}]
+              meaningful = [row for row in initiating if not re.search(r'cancelled|canceled', row.get('ResourceStatusReason') or '', re.I)]
+              print(json.dumps({'current_update_failure_history': {'update_started': update_started,
+                  'observed_event_count': len(event_rows), 'history_complete': not bool(history.get('NextToken')),
+                  'failure_count': len(failed), 'first_create_or_update_failure': initiating[:1],
+                  'first_non_cancelled_create_or_update_failure': meaningful[:1],
+                  'failed_events': failed[:20]}}, sort_keys=True))
+          else:
+              print(json.dumps({'current_update_failure_history': history}, sort_keys=True))
           resources = aws('cloudformation', 'list-stack-resources', ['--stack-name', stack, '--max-items', '200'])
           rows = []
           if isinstance(resources, dict) and isinstance(resources.get('StackResourceSummaries'), list):
@@ -196,6 +220,9 @@ jobs:
               print(json.dumps({'retained_resources': [{key: row.get(key) for key in
                   ('LogicalResourceId', 'ResourceType', 'PhysicalResourceId', 'ResourceStatus')}
                   for row in rows if row.get('ResourceType') in retained_types]}, sort_keys=True))
+              print(json.dumps({'remaining_application_resource_identities': [{key: row.get(key) for key in
+                  ('LogicalResourceId', 'ResourceType', 'PhysicalResourceId', 'ResourceStatus')}
+                  for row in rows if row.get('ResourceType') not in retained_types]}, sort_keys=True))
           else:
               print(json.dumps({'resource_inventory': resources}, sort_keys=True))
           registry = aws('cloudformation', 'describe-stacks', ['--stack-name', stack + '-registry'],
@@ -204,6 +231,9 @@ jobs:
           database = aws('rds', 'describe-db-clusters', ['--db-cluster-identifier', stack],
               'DBClusters[].Status')
           print(json.dumps({'database_cluster_status': database}, sort_keys=True))
+          writer = aws('rds', 'describe-db-instances', ['--db-instance-identifier', stack + '-writer'],
+              'DBInstances[].{DBInstanceIdentifier:DBInstanceIdentifier,DBClusterIdentifier:DBClusterIdentifier,DBInstanceStatus:DBInstanceStatus}')
+          print(json.dumps({'database_writer_status': writer}, sort_keys=True))
           for role in ('api', 'worker', 'dispatcher', 'maintenance', 'control'):
               function = aws('lambda', 'get-function-configuration', ['--function-name', stack + '-' + role],
                   '{State:State,LastUpdateStatus:LastUpdateStatus,StateReasonCode:StateReasonCode,LastUpdateStatusReasonCode:LastUpdateStatusReasonCode,source_revision:Environment.Variables.OTGD_SOURCE_REVISION}')
