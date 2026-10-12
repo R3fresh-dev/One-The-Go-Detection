@@ -218,7 +218,7 @@ def build_ui(aws, c, registry, out, source, work):
         env['EXPO_PUBLIC_SERVERLESS'] = 'true'
         mobile = context / 'apps/mobile'
         build_command(['npm', 'ci'], cwd=mobile, env=env)
-        build_command(['npm', 'run', 'export:web', '--', '--clear'], cwd=mobile, env=env)
+        build_command(['npm', 'run', 'export:web'], cwd=mobile, env=env)
         manifest = web_artifact.package(mobile / 'dist', work / 'web.zip')
         files = web_artifact.contents(work / 'web.zip', manifest)
         web = context / 'fargate-web'

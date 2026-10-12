@@ -299,8 +299,8 @@ def _verify_imported_stack(cf, evidence, stack):
             or {row.get('LogicalResourceId'): row.get('PhysicalResourceId') for row in rows}
                 != evidence['retained_physical_ids']
             or any(row.get('ResourceType') != resources.get(row.get('LogicalResourceId'), {}).get('Type')
-                   # AWS list_stack_resources normalizes adopted resources to
-                   # UPDATE_COMPLETE, while the stack remains IMPORT_COMPLETE.
+                   # CloudFormation applies stack-level tags during import and
+                   # reports those preserved resources as UPDATE_COMPLETE.
                    or row.get('ResourceStatus') not in ('IMPORT_COMPLETE', 'UPDATE_COMPLETE') for row in rows)):
         raise Gate('Initial recovery did not prove adoption of every original retained resource')
     original = cf.get_template(StackName=stack['StackId'], TemplateStage='Original')['TemplateBody']

@@ -70,6 +70,7 @@ class FakeCloud:
         self.status = 'ROLLBACK_COMPLETE'
         self.original_deleted = False
         self.import_tags = []
+        self.import_resource_status = 'IMPORT_COMPLETE'
         self.protection = True
         self.clients = {name: Mock(name=name) for name in
             ('sts', 'cloudformation', 'rds', 'lambda', 's3', 'dynamodb', 'cognito-idp', 'secretsmanager', 'kms', 'logs')}
@@ -141,7 +142,7 @@ class FakeCloud:
         if operation == 'list_stack_resources':
             def paginate(**kwargs):
                 if kwargs['StackName'] == NEW_STACK:
-                    rows = [{**row, 'ResourceStatus': 'IMPORT_COMPLETE'} for row in self.rows
+                    rows = [{**row, 'ResourceStatus': self.import_resource_status} for row in self.rows
                             if row['LogicalResourceId'] in self.retained]
                 else:
                     rows = self.rows
@@ -677,6 +678,41 @@ class InitialRecoveryTest(unittest.TestCase):
         cf.execute_change_set.assert_not_called()
         cf.delete_stack.assert_not_called()
         cf.update_termination_protection.assert_called_once_with(StackName=NEW_STACK, EnableTerminationProtection=True)
+
+    def test_import_tag_application_update_complete_rows_preserve_exact_resources_and_resume(self):
+        # Real AWS import38279993813 finished at stackIMPORT_COMPLETE while its
+        # retained rows became UPDATE_COMPLETE after automatic tag application.
+        cloud = FakeCloud()
+        cloud.import_resource_status = 'UPDATE_COMPLETE'
+        with tempfile.TemporaryDirectory() as directory:
+            initial = recovery.recover_initial(cloud.aws, cloud.config, Path(directory) / 'initial.json')
+            self.assertEqual(initial['status'], 'uninitialized-retained-resources-imported')
+            self.assertEqual(initial['retained_physical_ids'], cloud.physical)
+        cloud = FakeCloud()
+        cloud.import_resource_status = 'UPDATE_COMPLETE'
+        with tempfile.TemporaryDirectory() as directory:
+            source_path, _ = cloud.detached_manifest(directory)
+            cloud.status = 'IMPORT_COMPLETE'
+            resumed = recovery.resume_initial(cloud.aws, cloud.config, Path(directory) / 'resumed.json',
+                source_path, hashlib.sha256(source_path.read_bytes()).hexdigest())
+            self.assertEqual(resumed['status'], 'uninitialized-retained-resources-imported')
+            self.assertEqual(resumed['retained_physical_ids'], cloud.physical)
+        cloud.no_mutations(self)
+
+    def test_import_completion_blocks_nonfinal_or_unexpected_retained_resource_statuses(self):
+        for status in ('CREATE_COMPLETE', 'IMPORT_IN_PROGRESS', 'IMPORT_FAILED', 'UPDATE_IN_PROGRESS',
+                       'UPDATE_FAILED', 'DELETE_COMPLETE', 'DELETE_SKIPPED'):
+            cloud = FakeCloud()
+            cloud.import_resource_status = status
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as directory:
+                source_path, _ = cloud.detached_manifest(directory)
+                cloud.status = 'IMPORT_COMPLETE'
+                destination = Path(directory) / 'resumed.json'
+                with self.assertRaisesRegex(Gate, 'adoption'):
+                    recovery.resume_initial(cloud.aws, cloud.config, destination, source_path,
+                        hashlib.sha256(source_path.read_bytes()).hexdigest())
+                self.assertFalse(destination.exists())
+            cloud.no_mutations(self)
 
     def test_resume_blocks_other_stack_states_and_changed_imported_inventory(self):
         for kind in ('REVIEW_IN_PROGRESS', 'IMPORT_IN_PROGRESS', 'UPDATE_COMPLETE', 'ROLLBACK_COMPLETE',

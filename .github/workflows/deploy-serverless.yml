@@ -403,7 +403,8 @@ jobs:
           uv run --project services/api python deploy/serverless.py deploy \
             --config .local/serverlessconfig/serverless.json \
             --gate-evidence .local/serverlessconfig/gates/gates.json \
-            "${otgd_deploy_options[@]}" > reports/serverless-deploy.json
+            --receipt reports/serverless-deploy.json \
+            "${otgd_deploy_options[@]}"
 
       - name: Publish credential-free deployment and health receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
