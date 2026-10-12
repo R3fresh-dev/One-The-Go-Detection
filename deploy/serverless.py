@@ -490,6 +490,7 @@ def main(argv=None):
     parser.add_argument('--profile')
     parser.add_argument('--identity')
     parser.add_argument('--gate-evidence', type=Path)
+    parser.add_argument('--receipt', type=Path, help='Write a successful result as JSON to a new receipt file')
     parser.add_argument('--establish-new', action='store_true')
     parser.add_argument('--recover-initial', action='store_true', help='Import retained resources from a verified empty first-attempt infrastructure rollback; never use for an initialized deployment')
     parser.add_argument('--resume-initial', type=Path, help='Resume detached initial recovery from the original protected manifest; requires --recover-initial and --establish-new')
@@ -518,8 +519,11 @@ def main(argv=None):
                 if aws.client('sts').get_caller_identity()['Account'] != c['account']:
                     raise Gate('AWS credentials do not match the selected account')
                 result = deploy(args, c, aws, price) if args.operation == 'deploy' else observe(aws, c, stable_stack(aws, STACK))
+        exit_code = 2 if result.get('status') == 'degraded' else 0
+        if args.receipt and exit_code == 0:
+            platform.write_receipt(args.receipt, result)
         print(json.dumps(result, indent=2))
-        return 2 if result.get('status') == 'degraded' else 0
+        return exit_code
     except Exception as error:
         reason = str(error) if isinstance(error, Gate) else type(error).__name__ + '; inspect protected stage evidence'
         print(json.dumps({'status': 'blocked', 'reason': reason, 'deployment_completed': False,

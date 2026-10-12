@@ -7,6 +7,8 @@ import io
 import json
 import os
 from pathlib import Path
+import subprocess
+import sys
 import tarfile
 import tempfile
 import threading
@@ -47,6 +49,93 @@ def price_evidence():
 
 
 class ServerlessAdmissionTest(unittest.TestCase):
+    def receipt_cli(self, path, outcome='success'):
+        receipt = {'schema_version': '1.0.0', 'operation': 'serverless-deploy',
+            'status': 'serverless_transport_and_health_verified',
+            'environment': config()['environment'], 'account': config()['account'],
+            'region': config()['region'], 'release_id': REVISION,
+            'web_origin': 'https://web.fixture.test', 'api_origin': 'https://api.fixture.test'}
+        # Run the actual CLI in a subprocess so its subprocesses inherit the real
+        # stdout descriptor, as Docker/npm do in Actions. Only AWS/deploy work is
+        # replaced; receipt serialization and exclusive file creation stay real.
+        program = '''
+import json
+from pathlib import Path
+import subprocess
+import sys
+from unittest.mock import Mock, patch
+from deploy import serverless
+from deploy.provenance import Gate
+
+config = json.loads(sys.argv[1])
+path = Path(sys.argv[2])
+outcome = sys.argv[3]
+receipt = json.loads(sys.argv[4])
+aws = Mock()
+aws.client.return_value.get_caller_identity.return_value = {'Account': config['account']}
+
+def noisy_result(*args):
+    subprocess.run([sys.executable, '-c',
+                    'print("Docker fixture build output"); print("npm fixture progress")'], check=True)
+    if outcome == 'failure':
+        raise Gate('Actual health did not stabilize')
+    if outcome == 'degraded':
+        return {'status': 'degraded'}
+    return receipt
+
+operation = 'health' if outcome == 'degraded' else 'deploy'
+with patch.object(serverless, 'read_config', return_value=config), \\
+        patch.object(serverless, 'budget', return_value={}), \\
+        patch.object(serverless.platform, 'CloudSession', return_value=aws), \\
+        patch.object(serverless, 'deploy', side_effect=noisy_result), \\
+        patch.object(serverless, 'observe', side_effect=noisy_result), \\
+        patch.object(serverless, 'stable_stack', return_value={}):
+    raise SystemExit(serverless.main([operation, '--config', 'fixture-not-read.json', '--receipt', str(path)]))
+'''
+        process = subprocess.run([sys.executable, '-c', program, json.dumps(config()), str(path),
+                                  outcome, json.dumps(receipt)], cwd=serverless.ROOT,
+                                 capture_output=True, text=True, timeout=30)
+        return process, receipt
+
+    def test_explicit_success_receipt_remains_json_when_subprocesses_print_build_diagnostics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'reports/serverless-deploy.json'
+            process, receipt = self.receipt_cli(path)
+            self.assertEqual(process.returncode, 0, process.stderr)
+            self.assertIn('Docker fixture build output', process.stdout)
+            self.assertIn('npm fixture progress', process.stdout)
+            self.assertIn('serverless_transport_and_health_verified', process.stdout)
+            self.assertEqual(json.loads(path.read_text()), receipt)
+            self.assertNotIn('Docker fixture', path.read_text())
+            self.assertEqual(process.stderr, '')
+
+    def test_failed_deploy_and_degraded_health_do_not_create_success_receipts(self):
+        for outcome in ('failure', 'degraded'):
+            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / 'serverless-result.json'
+                process, receipt = self.receipt_cli(path, outcome)
+                self.assertEqual(process.returncode, 2)
+                self.assertIn('Docker fixture build output', process.stdout)
+                self.assertFalse(path.exists())
+                if outcome == 'failure':
+                    blocked = json.loads(process.stderr)
+                    self.assertEqual(blocked['status'], 'blocked')
+                    self.assertFalse(blocked['deployment_completed'])
+
+    def test_explicit_receipt_preserves_existing_file_and_does_not_follow_symlinks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            original = Path(directory) / 'existing.json'
+            original.write_text('immutable earlier receipt\n')
+            linked = Path(directory) / 'linked.json'
+            linked.symlink_to(original)
+            for path in (original, linked):
+                with self.subTest(path=path):
+                    process, receipt = self.receipt_cli(path)
+                    self.assertEqual(process.returncode, 2)
+                    self.assertEqual(json.loads(process.stderr)['status'], 'blocked')
+                    self.assertEqual(original.read_text(), 'immutable earlier receipt\n')
+            self.assertTrue(linked.is_symlink())
+
     def test_plan_reconciles_evidence_without_selecting_aws_or_building(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
