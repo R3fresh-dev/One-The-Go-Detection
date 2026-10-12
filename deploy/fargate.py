@@ -500,8 +500,8 @@ def deploy(args, c, aws, price):
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
         if all(recovery):
-            from deploy.serverless_recovery import resume_initial
-            journal.call('resume-preserved-initial-import', resume_initial, aws,
+            from deploy.serverless_recovery import resume_initial_from_artifact
+            journal.call('resume-preserved-initial-import', resume_initial_from_artifact, aws,
                 {**c, 'environment': 'serverless-development', 'monthlyBudgetUsd': 50},
                 args.recovery_manifest, work / 'initial-resume.json', artifact_proof={
                     'run_id': args.recovery_run_id, 'artifact_id': args.recovery_artifact_id, 'archive_path': args.recovery_archive})

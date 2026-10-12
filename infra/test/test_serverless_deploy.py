@@ -198,6 +198,35 @@ class ServerlessCloudFormationTest(unittest.TestCase):
                 serverless.deploy(args, config(), aws, {})
         aws.client.assert_not_called()
 
+    def test_resume_requires_bound_manifest_and_explicit_initial_recovery_before_aws(self):
+        for changes in ({'resume_initial': Path('manifest.json')},
+                        {'resume_initial_sha256': 'c' * 64},
+                        {'resume_initial': Path('manifest.json'), 'resume_initial_sha256': 'invalid'},
+                        {'resume_initial': Path('manifest.json'), 'resume_initial_sha256': 'c' * 64,
+                         'recover_initial': False}):
+            aws = Mock()
+            args = SimpleNamespace(**{'gate_evidence': Path('gates.json'),
+                'establish_new': True, 'recover_initial': True, **changes})
+            with self.subTest(changes=changes), \
+                    patch.object(serverless.platform, 'require_clean_source'), \
+                    patch.object(serverless.platform, 'verify_gate_file'), self.assertRaises(Gate):
+                serverless.deploy(args, config(), aws, {})
+            aws.client.assert_not_called()
+
+    def test_resume_cli_rejects_invalid_combinations_before_identity_or_config(self):
+        invalid = (['--resume-initial', 'manifest.json'],
+                   ['--resume-initial-sha256', 'c' * 64],
+                   ['--resume-initial', 'manifest.json', '--resume-initial-sha256', 'c' * 64],
+                   ['--resume-initial', 'manifest.json', '--resume-initial-sha256', 'invalid',
+                    '--recover-initial', '--establish-new'])
+        for options in invalid:
+            with self.subTest(options=options), \
+                    patch.object(serverless, 'read_config') as read, \
+                    patch.object(serverless.platform, 'CloudSession') as aws, patch('sys.stderr', io.StringIO()):
+                self.assertEqual(serverless.main(['deploy', '--config', 'not-read.json', *options]), 2)
+            read.assert_not_called()
+            aws.assert_not_called()
+
     def test_free_expired_or_foreign_account_plans_block_before_provisioning(self):
         for change in ({'accountPlanType': 'FREE'}, {'accountPlanStatus': 'EXPIRED'},
                        {'accountId': '111111111111'}, {'accountPlanType': None}):
