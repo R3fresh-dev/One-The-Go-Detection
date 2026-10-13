@@ -1,4 +1,4 @@
-name: Read-only East 1 and West 2 preflight
+name: Read-only Ohio decommission inventory
 
 on:
   workflow_dispatch:
@@ -9,14 +9,14 @@ permissions:
 
 jobs:
   snapshot:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/work-aws-regional-preflight' && github.event.repository.default_branch == 'main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/work-aws-ohio-inventory' && github.event.repository.default_branch == 'main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: R3fresh-dev/One-The-Go-Detection
-      AWS_REGION: us-east-1
-      AWS_DEFAULT_REGION: us-east-1
+      AWS_REGION: us-east-2
+      AWS_DEFAULT_REGION: us-east-2
       AWS_EC2_METADATA_DISABLED: 'true'
       AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
       AWS_MAX_ATTEMPTS: '3'
@@ -27,18 +27,23 @@ jobs:
           ref: 6bca4fc7a77d268f35ea6a5b0f577f37389158cc
           persist-credentials: false
 
-      - name: Admit clean current main and exact successful all-14 job evidence
+      - name: Admit immutable historical qualified source for read-only inventory only
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PYCODE'
+          import hashlib
+          import io
           import json
           import os
-          from pathlib import Path
           import subprocess
-          import tempfile
+          import zipfile
 
           revision = '6bca4fc7a77d268f35ea6a5b0f577f37389158cc'
+          source_tree = '2d7b50c07ab35b3db6fb3d3069928cc595cbb1cd'
+          observed_main = 'f06f9b036dcb1d82df26cc71a1cfb2fbdf315697'
+          artifact_id = 11777961370
+          artifact_digest = 'sha256:eb7da6b70d0678a393321576e44fd7912f01a470b1708576578461ca1276eed8'
           repository = 'R3fresh-dev/One-The-Go-Detection'
           run_id = 38316406153
           workflow_path = '.github/workflows/merge-gate.yml'
@@ -60,17 +65,18 @@ jobs:
               return json.loads(command(['gh', 'api', ('repos/' + repository + '/' + path).rstrip('/')]))
 
           if (os.environ['GH_REPO'] != repository or os.environ['GITHUB_EVENT_NAME'] != 'workflow_dispatch'
-                  or os.environ['GITHUB_REF'] != 'refs/heads/work-aws-regional-preflight'
+                  or os.environ['GITHUB_REF'] != 'refs/heads/work-aws-ohio-inventory'
                   or command(['git', 'rev-parse', 'HEAD']).strip() != revision
+                  or command(['git', 'rev-parse', 'HEAD^{tree}']).strip() != source_tree
                   or command(['git', 'status', '--porcelain']).strip()):
               raise SystemExit('Read-only snapshot admission blocked: source or trigger differs')
           if (api('')['default_branch'] != 'main'
-                  or api('git/ref/heads/main')['object']['sha'] != revision):
+                  or api('git/ref/heads/main')['object']['sha'] != observed_main):
               raise SystemExit('Read-only snapshot admission blocked: current main differs')
           run = api('actions/runs/' + str(run_id))
           if (run.get('head_sha') != revision or run.get('status') != 'completed'
                   or run.get('conclusion') != 'success' or run.get('path') != workflow_path
-                  or run.get('head_branch') != 'main' or run.get('event') not in {'push', 'workflow_dispatch'}
+                  or run.get('head_branch') != 'main' or run.get('event') != 'push' or run.get('run_attempt') != 1
                   or run.get('repository', {}).get('full_name') != repository
                   or run.get('head_repository', {}).get('full_name') != repository):
               raise SystemExit('Read-only snapshot admission blocked: gate run differs')
@@ -80,7 +86,7 @@ jobs:
           latest = api('actions/workflows/merge-gate.yml/runs?head_sha=' + revision + '&per_page=100')
           trusted = [r for r in latest['workflow_runs'] if r.get('head_sha') == revision
               and r.get('path') == workflow_path and r.get('head_branch') == 'main'
-              and r.get('event') in {'push', 'workflow_dispatch'}]
+              and r.get('event') == 'push']
           if not trusted or max(r['id'] for r in trusted) != run_id:
               raise SystemExit('Read-only snapshot admission blocked: latest gate differs')
           inventory = api(f"actions/runs/{run_id}/attempts/{run['run_attempt']}/jobs?per_page=100")
@@ -92,25 +98,47 @@ jobs:
                       or job.get('head_sha') != revision or job.get('run_id') != run_id
                       or job.get('run_attempt') != run['run_attempt'] for job in jobs)):
               raise SystemExit('Read-only snapshot admission blocked: all-14 jobs differ')
-          with tempfile.TemporaryDirectory(prefix='observer-gates-') as destination:
-              command(['gh', 'run', 'download', str(run_id), '--repo', repository,
-                  '--name', 'exact-revision-merge-evidence', '--dir', destination], timeout=60)
-              path = Path(destination) / 'gates.json'
-              if not path.is_file() or path.stat().st_size > 262144:
-                  raise SystemExit('Read-only snapshot admission blocked: aggregate evidence unavailable')
-              evidence = json.loads(path.read_text())
-              labels = evidence.get('passed')
-              if (evidence.get('revision') != revision
-                      or evidence.get('run_url') != f'https://github.com/{repository}/actions/runs/{run_id}'
-                      or not isinstance(labels, list) or len(labels) != 13 or set(labels) != required_labels):
-                  raise SystemExit('Read-only snapshot admission blocked: aggregate evidence differs')
+          artifact_rows = api(f'actions/runs/{run_id}/artifacts?per_page=100')
+          matching = [item for item in artifact_rows.get('artifacts', []) if item.get('name') == 'exact-revision-merge-evidence']
+          if artifact_rows.get('total_count', 101) > 100 or len(matching) != 1:
+              raise SystemExit('Read-only snapshot admission blocked: aggregate artifact ambiguous')
+          artifact = matching[0]
+          aggregate_job = next(job for job in jobs if job['name'] == 'merge-gate')
+          if (artifact.get('id') != artifact_id or artifact.get('expired') is not False
+                  or artifact.get('digest') != artifact_digest or artifact.get('size_in_bytes') != 394
+                  or artifact.get('workflow_run', {}).get('id') != run_id
+                  or artifact.get('workflow_run', {}).get('head_sha') != revision
+                  or not aggregate_job['started_at'] <= artifact.get('created_at', '') <= aggregate_job['completed_at']):
+              raise SystemExit('Read-only snapshot admission blocked: historical raw aggregate binding differs')
+          download = subprocess.run(['gh', 'api', f'repos/{repository}/actions/artifacts/{artifact_id}/zip'],
+                                    capture_output=True, timeout=60)
+          if (download.returncode or len(download.stdout) != 394
+                  or 'sha256:' + hashlib.sha256(download.stdout).hexdigest() != artifact_digest):
+              raise SystemExit('Read-only snapshot admission blocked: historical raw aggregate digest differs')
+          with zipfile.ZipFile(io.BytesIO(download.stdout)) as archive:
+              members = [item for item in archive.infolist() if not item.is_dir()]
+              if (len(members) != 1 or members[0].filename != 'gates.json'
+                      or members[0].file_size > 262144 or (members[0].external_attr >> 16) & 0o170000 == 0o120000):
+                  raise SystemExit('Read-only snapshot admission blocked: aggregate archive member differs')
+              evidence = json.loads(archive.read(members[0]))
+          labels = evidence.get('passed')
+          if (evidence.get('revision') != revision
+                  or evidence.get('run_url') != f'https://github.com/{repository}/actions/runs/{run_id}'
+                  or not isinstance(labels, list) or len(labels) != 13 or set(labels) != required_labels):
+              raise SystemExit('Read-only snapshot admission blocked: aggregate evidence differs')
+          after_artifact = api('actions/artifacts/' + str(artifact_id))
+          if any(after_artifact.get(key) != artifact.get(key) for key in
+                 ('id', 'name', 'expired', 'digest', 'size_in_bytes', 'created_at', 'workflow_run')):
+              raise SystemExit('Read-only snapshot admission blocked: historical artifact changed')
           current = api('actions/runs/' + str(run_id))
           if any(current.get(k) != run.get(k) for k in ('id', 'head_sha', 'run_attempt', 'status', 'conclusion', 'workflow_id')):
               raise SystemExit('Read-only snapshot admission blocked: gate changed')
-          if (api('git/ref/heads/main')['object']['sha'] != revision
+          if (api('git/ref/heads/main')['object']['sha'] != observed_main
                   or command(['git', 'status', '--porcelain']).strip()):
               raise SystemExit('Read-only snapshot admission blocked: source changed')
-          print(json.dumps({'admitted_revision': revision, 'gate_run': run_id, 'successful_jobs': 14}))
+          print(json.dumps({'admitted_revision': revision, 'admitted_tree': source_tree, 'gate_run': run_id,
+              'successful_jobs': 14, 'raw_aggregate_digest': artifact_digest, 'observed_current_main': observed_main,
+              'current_main_qualification': 'UNQUALIFIED_NOT_EXECUTED', 'admission_scope': 'READ_ONLY_OHIO_INVENTORY_ONLY'}))
           PYCODE
 
       - name: Configure existing repository AWS secrets after source admission
@@ -119,7 +147,7 @@ jobs:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
+          aws-region: us-east-2
           allowed-account-ids: '738470137867'
           unset-current-credentials: true
           force-skip-oidc: true
@@ -127,8 +155,8 @@ jobs:
           retry-max-attempts: 3
           action-timeout-s: 90
 
-      - name: Read selected regional capacity and named resource metadata only
-        id: regional
+      - name: Read bounded Ohio identities, protections and retained storage metadata only
+        id: inventory
         shell: bash
         run: |
           set -euo pipefail
@@ -143,171 +171,423 @@ jobs:
           import time
 
           ACCOUNT = '738470137867'
-          REGIONS = ('us-east-1', 'us-west-2')
-          STACKS = ('otgd-serverless-development', 'otgd-serverless-development-registry', 'otgd-qa-platform')
-          ALLOWED = {('sts', 'get-caller-identity'), ('ec2', 'describe-availability-zones'),
-                     ('rds', 'describe-db-engine-versions'), ('rds', 'describe-orderable-db-instance-options'),
-                     ('rds', 'describe-db-clusters'), ('rds', 'describe-db-instances'),
-                     ('cloudformation', 'describe-stacks'), ('pricing', 'get-products')}
+          REGION = 'us-east-2'
+          PREFIX = 'otgd-serverless-development'
+          VPC = 'vpc-03d6cfa8bde278d3f'
+          CLUSTER_UID = 'cluster-TWBMR2BY5PK4PVSPRZ6S2O2U6E'
+          WRITER_UID = 'db-JEOVXOBFSUIYXQ2F6GA6J7WZVY'
+          STACK_ID = 'arn:aws:cloudformation:us-east-2:738470137867:stack/otgd-serverless-development/865843c0-c654-11f1-96fa-06a08a49cfef'
+          REGISTRY_ID = 'arn:aws:cloudformation:us-east-2:738470137867:stack/otgd-serverless-development-registry/d529b1b0-c60d-11f1-a5c0-06c6c7e66e0f'
+          ALLOWED = {
+              ('sts', 'get-caller-identity'),
+              ('cloudformation', 'describe-stacks'), ('cloudformation', 'list-stack-resources'), ('cloudformation', 'get-template'),
+              ('resourcegroupstaggingapi', 'get-resources'),
+              ('rds', 'describe-db-clusters'), ('rds', 'describe-db-instances'), ('rds', 'describe-db-subnet-groups'),
+              ('rds', 'describe-db-cluster-parameter-groups'), ('rds', 'describe-db-cluster-snapshots'),
+              ('rds', 'describe-db-cluster-automated-backups'), ('rds', 'list-tags-for-resource'),
+              ('backup', 'list-recovery-points-by-resource'), ('backup', 'describe-backup-vault'), ('backup', 'describe-recovery-point'),
+              ('ec2', 'describe-vpcs'), ('ec2', 'describe-subnets'), ('ec2', 'describe-security-groups'),
+              ('ec2', 'describe-network-interfaces'), ('ec2', 'describe-route-tables'), ('ec2', 'describe-internet-gateways'),
+              ('ec2', 'describe-egress-only-internet-gateways'), ('ec2', 'describe-nat-gateways'),
+              ('ec2', 'describe-vpc-endpoints'), ('ec2', 'describe-instances'), ('ec2', 'describe-addresses'),
+              ('s3api', 'get-bucket-location'), ('s3api', 'get-bucket-tagging'), ('s3api', 'get-bucket-versioning'),
+              ('s3api', 'get-object-lock-configuration'), ('s3api', 'get-bucket-encryption'),
+              ('s3api', 'get-public-access-block'), ('s3api', 'list-object-versions'), ('s3api', 'list-multipart-uploads'),
+              ('s3api', 'head-object'), ('s3api', 'get-object-retention'), ('s3api', 'get-object-legal-hold'),
+              ('kms', 'describe-key'), ('kms', 'list-resource-tags'), ('kms', 'list-aliases'),
+              ('secretsmanager', 'describe-secret'), ('ecr', 'describe-repositories'), ('ecr', 'describe-images'),
+              ('ecr', 'list-tags-for-resource'), ('logs', 'describe-log-groups'), ('logs', 'list-tags-log-group'),
+              ('dynamodb', 'describe-table'), ('dynamodb', 'describe-continuous-backups'), ('dynamodb', 'list-backups'),
+              ('dynamodb', 'list-tags-of-resource'), ('cognito-idp', 'describe-user-pool'),
+              ('cognito-idp', 'list-tags-for-resource'), ('cognito-idp', 'list-user-pool-clients'), ('lambda', 'get-function-configuration'),
+              ('sqs', 'list-queues'), ('sqs', 'get-queue-attributes'), ('sqs', 'list-queue-tags'),
+              ('cloudwatch', 'describe-alarms'), ('cloudwatch', 'list-dashboards'), ('cloudwatch', 'list-tags-for-resource'),
+              ('codebuild', 'batch-get-projects'), ('codebuild', 'list-builds-for-project'), ('codebuild', 'batch-get-builds'),
+              ('codebuild', 'batch-get-fleets'),
+              ('iam', 'get-role'), ('ecs', 'describe-clusters'), ('elasticloadbalancing', 'describe-load-balancers'),
+              ('budgets', 'describe-budget'), ('budgets', 'describe-budget-actions-for-budget'), ('budgets', 'list-tags-for-resource'),
+          }
           STARTED = time.monotonic()
-          DESTINATION = Path(os.environ['RUNNER_TEMP']) / 'regional-preflight'
+          DESTINATION = Path(os.environ['RUNNER_TEMP']) / 'ohio-inventory'
           DESTINATION.mkdir(mode=0o700, exist_ok=False)
-          snapshot = {'schema_version': '1.0.0', 'operation': 'read-only-regional-preflight',
-                      'snapshot_utc': datetime.now(timezone.utc).isoformat(), 'account': ACCOUNT,
-                      'source_revision': '6bca4fc7a77d268f35ea6a5b0f577f37389158cc', 'gate_run_id': 38316406153,
-                      'observer_run_id': os.environ['GITHUB_RUN_ID'], 'observer_run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
-                      'targets': {}, 'pricing': [], 'aws_mutations': []}
+          snapshot = {
+              'schema_version': '1.0.0', 'operation': 'read-only-ohio-decommission-inventory',
+              'account': ACCOUNT, 'region': REGION, 'snapshot_utc': datetime.now(timezone.utc).isoformat(),
+              'source_revision': '6bca4fc7a77d268f35ea6a5b0f577f37389158cc', 'gate_run_id': 38316406153,
+              'observed_current_main': 'f06f9b036dcb1d82df26cc71a1cfb2fbdf315697',
+              'current_main_qualification': 'UNQUALIFIED_NOT_EXECUTED', 'admission_scope': 'READ_ONLY_OHIO_INVENTORY_ONLY',
+              'observer_run_id': os.environ['GITHUB_RUN_ID'], 'observer_run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'aws_mutations': [], 'observations': {},
+              'limits': {'deadline_seconds': 720, 'aws_calls': 360, 'response_bytes': 2097152,
+                         'artifact_bytes': 2097152, 'max_pages_per_scan': 4, 's3_versions_per_page': 1000,
+                         's3_protection_versions_per_bucket': 40},
+              'scope': 'Exact original Ohio identities, Ohio registry CloudFormation graph, and matching project/deployment/environment tags only. No account-wide absence claim.',
+          }
+          CALLS = 0
 
 
           def persist():
               raw = (json.dumps(snapshot, indent=2, sort_keys=True) + '\n').encode()
-              path = DESTINATION / 'regional-preflight.json'
+              if len(raw) > snapshot['limits']['artifact_bytes']:
+                  raise SystemExit('Bounded inventory artifact exceeded size limit')
+              path = DESTINATION / 'ohio-inventory.json'
               path.write_bytes(raw)
               path.chmod(0o600)
 
 
-          def aws(service, operation, region, options=(), query=None):
-              if (service, operation) not in ALLOWED or region not in REGIONS:
-                  raise SystemExit('Regional observation operation or region is outside its read-only allowlist')
-              if time.monotonic() - STARTED > 480:
-                  return {'observation_error_code': 'ObservationDeadlineExceeded'}
-              args = ['aws', service, operation, '--region', region, '--output', 'json', '--no-paginate',
-                      '--cli-connect-timeout', '10', '--cli-read-timeout', '20', *options]
+          def aws(service, operation, options=(), query=None):
+              global CALLS
+              if (service, operation) not in ALLOWED or os.environ['AWS_REGION'] != REGION:
+                  raise SystemExit('Ohio inventory blocked: operation or region outside read-only allowlist')
+              if time.monotonic() - STARTED > 720 or CALLS >= 360:
+                  return {'observation_error_code': 'ObservationBoundExceeded', 'presence': 'unverified'}
+              CALLS += 1
+              args = ['aws', service, operation, '--region', REGION, '--output', 'json', '--no-paginate',
+                      '--cli-connect-timeout', '5', '--cli-read-timeout', '15', *options]
               if query:
                   args += ['--query', query]
               try:
-                  result = subprocess.run(args, capture_output=True, text=True, timeout=40)
+                  result = subprocess.run(args, capture_output=True, text=True, timeout=25)
               except subprocess.TimeoutExpired:
-                  return {'observation_error_code': 'BoundedTimeout'}
+                  return {'observation_error_code': 'BoundedTimeout', 'presence': 'unverified'}
               if result.returncode:
                   match = re.search(r'An error occurred \(([A-Za-z0-9_.-]+)\)', result.stderr)
                   code = match.group(1) if match else 'CommandUnavailable'
-                  absent = (code in {'DBClusterNotFoundFault', 'DBInstanceNotFound'}
-                            or (service == 'cloudformation' and code == 'ValidationError'
-                                and re.search(r'Stack with id [^\n]+ does not exist', result.stderr)))
+                  absent_codes = {'DBClusterNotFoundFault', 'DBInstanceNotFound', 'NoSuchBucket', 'NoSuchEntity',
+                                  'ResourceNotFoundException', 'RepositoryNotFoundException', 'UserPoolNotFoundException',
+                                  'DBSubnetGroupNotFoundFault', 'DBParameterGroupNotFound', 'NotFoundException',
+                                  'InvalidVpcID.NotFound', 'InvalidSubnetID.NotFound', 'InvalidGroup.NotFound'}
+                  absent = code in absent_codes or (service == 'cloudformation' and code == 'ValidationError'
+                             and re.search(r'Stack with id [^\n]+ does not exist', result.stderr))
                   return {'observation_error_code': code, 'presence': 'absent' if absent else 'unverified'}
-              if len(result.stdout.encode()) > 2_097_152:
-                  return {'observation_error_code': 'ResponseBoundExceeded'}
+              if len(result.stdout.encode()) > 2097152:
+                  return {'observation_error_code': 'ResponseBoundExceeded', 'presence': 'unverified'}
               try:
                   return json.loads(result.stdout)
               except ValueError:
-                  return {'observation_error_code': 'MalformedJson'}
+                  return {'observation_error_code': 'MalformedJson', 'presence': 'unverified'}
 
 
-          def rds_pages(operation, region, options, query, collection, max_pages=5):
+          def record(label, value):
+              snapshot['observations'][label] = value
+              persist()
+              summary = {'observation': label, 'aws_calls': CALLS}
+              if isinstance(value, dict):
+                  summary.update({key: value[key] for key in ('observation_error_code', 'presence', 'complete',
+                      'row_count', 'version_count', 'delete_marker_count', 'protection_scan_complete') if key in value})
+              elif isinstance(value, list):
+                  summary['row_count'] = len(value)
+              print(json.dumps(summary, sort_keys=True), flush=True)
+              return value
+
+
+          def pages(service, operation, options, query, collection, token='NextToken', argument='--next-token', max_pages=4):
               rows, marker = [], None
               for _ in range(max_pages):
-                  result = aws('rds', operation, region,
-                               [*options, '--max-records', '100', *(['--marker', marker] if marker else [])], query)
+                  paging = ([argument, json.dumps({token: marker}) if argument == '--cli-input-json' else marker] if marker else [])
+                  result = aws(service, operation, [*options, *paging], query)
                   if not isinstance(result, dict) or not isinstance(result.get(collection), list):
-                      return result
-                  rows += result[collection]
-                  marker = result.get('Marker')
+                      return {'rows': rows, 'row_count': len(rows), 'complete': False, 'observation': result}
+                  rows.extend(result[collection])
+                  marker = result.get(token)
                   if not marker:
-                      return {'rows': rows, 'complete': True}
+                      return {'rows': rows, 'row_count': len(rows), 'complete': True}
                   if not isinstance(marker, str) or len(marker) > 4096:
-                      return {'observation_error_code': 'PaginationMarkerInvalid'}
-              return {'observation_error_code': 'PaginationBoundExceeded', 'observed_row_count': len(rows), 'complete': False}
+                      return {'rows': rows, 'row_count': len(rows), 'complete': False, 'observation_error_code': 'InvalidPaginationToken'}
+              return {'rows': rows, 'row_count': len(rows), 'complete': False, 'observation_error_code': 'PaginationBoundExceeded'}
 
 
-          for region in REGIONS:
-              identity = aws('sts', 'get-caller-identity', region, query='Account')
-              if identity != ACCOUNT:
-                  raise SystemExit('Regional observation blocked: actual account differs')
-              target = {'account': identity, 'region': region, 'stacks': {}}
-              snapshot['targets'][region] = target
-              zones = aws('ec2', 'describe-availability-zones', region,
-                          ['--all-availability-zones', '--filters', 'Name=zone-type,Values=availability-zone'],
-                          'AvailabilityZones[].{ZoneName:ZoneName,ZoneId:ZoneId,State:State,ZoneType:ZoneType,OptInStatus:OptInStatus,RegionName:RegionName}')
-              target['availability_zones'] = zones
-              target['eligible_standard_vpc_origin_zones'] = sorted(
-                  [row for row in zones if isinstance(row, dict) and row.get('State') == 'available'
-                   and row.get('ZoneType') == 'availability-zone' and row.get('RegionName') == region
-                   and not (region == 'us-east-1' and row.get('ZoneId') == 'use1-az3')],
-                  key=lambda row: (row.get('ZoneId', ''), row.get('ZoneName', ''))) if isinstance(zones, list) else []
-              engines = rds_pages('describe-db-engine-versions', region, ['--engine', 'aurora-postgresql'],
-                  '{Versions:DBEngineVersions[].{Engine:Engine,EngineVersion:EngineVersion,Status:Status,DBParameterGroupFamily:DBParameterGroupFamily,SupportedEngineModes:SupportedEngineModes,ServerlessV2FeaturesSupport:ServerlessV2FeaturesSupport},Marker:Marker}', 'Versions')
-              if isinstance(engines, dict) and engines.get('complete'):
-                  engine_rows = [row for row in engines['rows'] if row.get('Status') == 'available'
-                                 and re.fullmatch(r'16\.\d+', row.get('EngineVersion', ''))]
-                  target['available_aurora_postgresql_16'] = engine_rows
-                  zero = [row for row in engine_rows if isinstance(row.get('ServerlessV2FeaturesSupport'), dict) and row['ServerlessV2FeaturesSupport'].get('MinCapacity') == 0]
-                  target['zero_min_capacity_versions'] = sorted(row['EngineVersion'] for row in zero)
-                  if zero:
-                      selected = max(zero, key=lambda row: int(row['EngineVersion'].split('.')[1]))['EngineVersion']
-                      target['selected_latest_zero_min_capacity_engine'] = selected
-                      orderable = rds_pages('describe-orderable-db-instance-options', region,
-                          ['--engine', 'aurora-postgresql', '--engine-version', selected, '--db-instance-class', 'db.serverless'],
-                          '{Options:OrderableDBInstanceOptions[].{Engine:Engine,EngineVersion:EngineVersion,DBInstanceClass:DBInstanceClass,AvailabilityZones:AvailabilityZones,SupportedNetworkTypes:SupportedNetworkTypes,Vpc:Vpc},Marker:Marker}', 'Options')
-                      target['selected_serverless_orderable'] = orderable
-                      target['selected_serverless_dual_network_available'] = (
-                          isinstance(orderable, dict) and orderable.get('complete') is True
-                          and any('DUAL' in row.get('SupportedNetworkTypes', []) for row in orderable['rows']))
-              else:
-                  target['available_aurora_postgresql_16'] = engines
-              for name in (*STACKS, *(('otgd-fargate-development-us-west-2-recovery',) if region == 'us-west-2' else ())):
-                  target['stacks'][name] = aws('cloudformation', 'describe-stacks', region, ['--stack-name', name],
-                      'Stacks[].{StackName:StackName,StackId:StackId,StackStatus:StackStatus,EnableTerminationProtection:EnableTerminationProtection}')
-              target['named_database_cluster'] = aws('rds', 'describe-db-clusters', region,
-                  ['--db-cluster-identifier', 'otgd-serverless-development'],
-                  'DBClusters[].{DBClusterIdentifier:DBClusterIdentifier,DBClusterArn:DBClusterArn,DbClusterResourceId:DbClusterResourceId,Status:Status,Engine:Engine,EngineVersion:EngineVersion,StorageEncrypted:StorageEncrypted,DeletionProtection:DeletionProtection}')
-              target['named_database_writer'] = aws('rds', 'describe-db-instances', region,
-                  ['--db-instance-identifier', 'otgd-serverless-development-writer'],
-                  'DBInstances[].{DBInstanceIdentifier:DBInstanceIdentifier,DBInstanceArn:DBInstanceArn,DbiResourceId:DbiResourceId,DBInstanceStatus:DBInstanceStatus,AvailabilityZone:AvailabilityZone,Engine:Engine,EngineVersion:EngineVersion,PubliclyAccessible:PubliclyAccessible,StorageEncrypted:StorageEncrypted}')
-              persist()
-              print(json.dumps({'regional_target': target}, sort_keys=True), flush=True)
+          if aws('sts', 'get-caller-identity', query='Account') != ACCOUNT:
+              raise SystemExit('Ohio inventory blocked: actual account differs')
 
-          price_requests = [
-              ('AmazonECS', 'us-east-1', 'USE1-Fargate-vCPU-Hours:perCPU', {}),
-              ('AmazonECS', 'us-east-1', 'USE1-Fargate-GB-Hours', {}),
-              ('AmazonRDS', 'us-east-1', 'USE1-Aurora:ServerlessV2Usage', {'databaseEngine': 'Aurora PostgreSQL'}),
-              ('AmazonRDS', 'us-east-1', 'USE1-Aurora:StorageUsage', {'databaseEngine': 'Aurora PostgreSQL'}),
-              ('AmazonRDS', 'us-east-1', 'USE1-Aurora:BackupUsage', {'databaseEngine': 'Aurora PostgreSQL'}),
-              ('AmazonRDS', 'us-west-2', 'USW2-Aurora:BackupUsage', {'databaseEngine': 'Aurora PostgreSQL'}),
-              ('AmazonS3', 'us-west-2', 'USW2-TimedStorage-ByteHrs', {}),
-          ]
-          for service, region, usage, extras in price_requests:
-              filters = [{'Type': 'TERM_MATCH', 'Field': field, 'Value': value}
-                         for field, value in {'regionCode': region, 'usagetype': usage, **extras}.items()]
-              observed = {'service': service, 'target_region': region, 'filters': filters, 'products': [], 'complete': False}
-              token = None
-              for _ in range(2):
-                  response = aws('pricing', 'get-products', 'us-east-1',
-                      ['--service-code', service, '--filters', json.dumps(filters), '--max-results', '100',
-                       *(['--next-token', token] if token else [])])
-                  if not isinstance(response, dict) or not isinstance(response.get('PriceList'), list):
-                      observed['observation'] = response
+          stack_rows = record('application_stack', aws('cloudformation', 'describe-stacks', ['--stack-name', STACK_ID],
+              'Stacks[].{StackName:StackName,StackId:StackId,StackStatus:StackStatus,CreationTime:CreationTime,LastUpdatedTime:LastUpdatedTime,EnableTerminationProtection:EnableTerminationProtection,Tags:Tags}'))
+          inventory = record('application_inventory', pages('cloudformation', 'list-stack-resources', ['--stack-name', STACK_ID],
+              '{Rows:StackResourceSummaries[].{LogicalResourceId:LogicalResourceId,PhysicalResourceId:PhysicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus},NextToken:NextToken}', 'Rows'))
+          record('application_inventory_canonical_sha256', hashlib.sha256(json.dumps(sorted(inventory.get('rows', []),
+              key=lambda row: row['LogicalResourceId']), sort_keys=True, separators=(',', ':')).encode()).hexdigest())
+          template_response = aws('cloudformation', 'get-template', ['--stack-name', STACK_ID, '--template-stage', 'Original'], 'TemplateBody')
+          if isinstance(template_response, str):
+              try:
+                  template_response = json.loads(template_response)
+              except ValueError:
+                  template_response = {'observation_error_code': 'NonJsonTemplate', 'presence': 'unverified'}
+          if isinstance(template_response, dict) and isinstance(template_response.get('Resources'), dict):
+              record('application_template', {'canonical_sha256': hashlib.sha256(json.dumps(template_response,
+                  sort_keys=True, separators=(',', ':')).encode()).hexdigest(), 'resources': [
+                  {'logical_id': name, 'type': resource.get('Type'), 'deletion_policy': resource.get('DeletionPolicy'),
+                   'update_replace_policy': resource.get('UpdateReplacePolicy')} for name, resource in sorted(template_response['Resources'].items())]})
+          else:
+              record('application_template', template_response)
+          registry_stack = record('registry_stack', aws('cloudformation', 'describe-stacks', ['--stack-name', REGISTRY_ID],
+              'Stacks[].{StackName:StackName,StackId:StackId,StackStatus:StackStatus,EnableTerminationProtection:EnableTerminationProtection,Tags:Tags}'))
+          registry = record('registry_inventory', pages('cloudformation', 'list-stack-resources', ['--stack-name', REGISTRY_ID],
+              '{Rows:StackResourceSummaries[].{LogicalResourceId:LogicalResourceId,PhysicalResourceId:PhysicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus},NextToken:NextToken}', 'Rows'))
+          registry_identity_matches = isinstance(registry_stack, list) and len(registry_stack) == 1 and registry_stack[0].get('StackId') == REGISTRY_ID
+          record('registry_identity_binding', {'exact_historical_registry_stack_id_matches': registry_identity_matches})
+          if not registry_identity_matches:
+              registry = {'rows': [], 'complete': False, 'observation_error_code': 'RegistryIdentityNotProven'}
+          registry_template = aws('cloudformation', 'get-template', ['--stack-name', REGISTRY_ID, '--template-stage', 'Original'], 'TemplateBody')
+          if isinstance(registry_template, str):
+              try:
+                  registry_template = json.loads(registry_template)
+              except ValueError:
+                  registry_template = {'observation_error_code': 'NonJsonTemplate', 'presence': 'unverified'}
+          if isinstance(registry_template, dict) and isinstance(registry_template.get('Resources'), dict):
+              record('registry_template', {'canonical_sha256': hashlib.sha256(json.dumps(registry_template, sort_keys=True, separators=(',', ':')).encode()).hexdigest(),
+                  'resources': [{'logical_id': name, 'type': resource.get('Type'), 'deletion_policy': resource.get('DeletionPolicy'),
+                                 'update_replace_policy': resource.get('UpdateReplacePolicy')} for name, resource in sorted(registry_template['Resources'].items())]})
+          else:
+              record('registry_template', registry_template)
+          tagged = record('owned_tagged_inventory', pages('resourcegroupstaggingapi', 'get-resources',
+              ['--resources-per-page', '100', '--tag-filters', 'Key=project,Values=one-the-go-detection',
+               'Key=deployment,Values=' + PREFIX, 'Key=environment,Values=serverless-development'],
+              '{Rows:ResourceTagMappingList[].{ARN:ResourceARN,Tags:Tags},NextToken:PaginationToken}', 'Rows',
+              token='NextToken', argument='--pagination-token'))
+
+          cluster_arn = 'arn:aws:rds:' + REGION + ':' + ACCOUNT + ':cluster:' + PREFIX
+          cluster = record('database_cluster', aws('rds', 'describe-db-clusters', ['--db-cluster-identifier', PREFIX],
+              'DBClusters[].{DBClusterIdentifier:DBClusterIdentifier,DBClusterArn:DBClusterArn,DbClusterResourceId:DbClusterResourceId,Status:Status,Engine:Engine,EngineVersion:EngineVersion,ClusterCreateTime:ClusterCreateTime,StorageEncrypted:StorageEncrypted,KmsKeyId:KmsKeyId,DeletionProtection:DeletionProtection,DBSubnetGroup:DBSubnetGroup,DBClusterParameterGroup:DBClusterParameterGroup,VpcSecurityGroups:VpcSecurityGroups,DBClusterMembers:DBClusterMembers,BackupRetentionPeriod:BackupRetentionPeriod,LatestRestorableTime:LatestRestorableTime,EarliestRestorableTime:EarliestRestorableTime,MasterUserSecret:MasterUserSecret,TagList:TagList}'))
+          writer = record('database_writer', aws('rds', 'describe-db-instances', ['--db-instance-identifier', PREFIX + '-writer'],
+              'DBInstances[].{DBInstanceIdentifier:DBInstanceIdentifier,DBInstanceArn:DBInstanceArn,DbiResourceId:DbiResourceId,DBClusterIdentifier:DBClusterIdentifier,DBInstanceStatus:DBInstanceStatus,AvailabilityZone:AvailabilityZone,Engine:Engine,EngineVersion:EngineVersion,InstanceCreateTime:InstanceCreateTime,StorageEncrypted:StorageEncrypted,KmsKeyId:KmsKeyId,DeletionProtection:DeletionProtection,PubliclyAccessible:PubliclyAccessible,DBSubnetGroup:DBSubnetGroup,DBParameterGroups:DBParameterGroups,TagList:TagList}'))
+          record('database_identity_binding', {'cluster_uid_matches': isinstance(cluster, list) and len(cluster) == 1 and cluster[0].get('DbClusterResourceId') == CLUSTER_UID,
+              'writer_uid_matches': isinstance(writer, list) and len(writer) == 1 and writer[0].get('DbiResourceId') == WRITER_UID})
+          record('database_subnet_group', aws('rds', 'describe-db-subnet-groups', ['--db-subnet-group-name', PREFIX + '-databasesubnets-6j1kyh1yaoxh'],
+              'DBSubnetGroups[].{DBSubnetGroupName:DBSubnetGroupName,DBSubnetGroupArn:DBSubnetGroupArn,VpcId:VpcId,SubnetGroupStatus:SubnetGroupStatus,Subnets:Subnets,SupportedNetworkTypes:SupportedNetworkTypes}'))
+          record('database_parameter_group', aws('rds', 'describe-db-cluster-parameter-groups', ['--db-cluster-parameter-group-name', PREFIX + '-databaseparameters-uipyb9afu23l'],
+              'DBClusterParameterGroups[].{DBClusterParameterGroupName:DBClusterParameterGroupName,DBClusterParameterGroupArn:DBClusterParameterGroupArn,DBParameterGroupFamily:DBParameterGroupFamily}'))
+          record('database_snapshots', pages('rds', 'describe-db-cluster-snapshots', ['--db-cluster-identifier', PREFIX, '--include-shared', '--no-include-public', '--max-records', '100'],
+              '{Rows:DBClusterSnapshots[].{DBClusterSnapshotIdentifier:DBClusterSnapshotIdentifier,DBClusterSnapshotArn:DBClusterSnapshotArn,DBClusterIdentifier:DBClusterIdentifier,DbClusterResourceId:DbClusterResourceId,Status:Status,SnapshotType:SnapshotType,SnapshotCreateTime:SnapshotCreateTime,ClusterCreateTime:ClusterCreateTime,StorageEncrypted:StorageEncrypted,KmsKeyId:KmsKeyId,SourceDBClusterSnapshotArn:SourceDBClusterSnapshotArn,Engine:Engine,EngineVersion:EngineVersion,AllocatedStorage:AllocatedStorage,TagList:TagList},Marker:Marker}', 'Rows', token='Marker', argument='--marker'))
+          record('database_automated_backups', pages('rds', 'describe-db-cluster-automated-backups', ['--db-cluster-resource-id', CLUSTER_UID, '--max-records', '100'],
+              '{Rows:DBClusterAutomatedBackups[].{DBClusterArn:DBClusterArn,DBClusterIdentifier:DBClusterIdentifier,DbClusterResourceId:DbClusterResourceId,DBClusterAutomatedBackupsArn:DBClusterAutomatedBackupsArn,Status:Status,RestoreWindow:RestoreWindow,BackupRetentionPeriod:BackupRetentionPeriod,StorageEncrypted:StorageEncrypted,KmsKeyId:KmsKeyId,AllocatedStorage:AllocatedStorage},Marker:Marker}', 'Rows', token='Marker', argument='--marker'))
+          recovery_points = record('database_backup_recovery_points', pages('backup', 'list-recovery-points-by-resource', ['--resource-arn', cluster_arn, '--max-results', '100'],
+              '{Rows:RecoveryPoints[].{RecoveryPointArn:RecoveryPointArn,CreationDate:CreationDate,Status:Status,BackupVaultName:BackupVaultName,ResourceType:ResourceType,EncryptionKeyArn:EncryptionKeyArn,BackupSizeBytes:BackupSizeBytes},NextToken:NextToken}', 'Rows'))
+          observed_vaults = set()
+          for point in recovery_points.get('rows', []):
+              vault, arn = point.get('BackupVaultName'), point.get('RecoveryPointArn')
+              if (not isinstance(vault, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,50}', vault)
+                      or not isinstance(arn, str) or not arn.startswith(('arn:aws:backup:' + REGION + ':' + ACCOUNT + ':', 'arn:aws:rds:' + REGION + ':' + ACCOUNT + ':'))):
+                  continue
+              if vault not in observed_vaults:
+                  observed_vaults.add(vault)
+                  record('database_backup_vault_' + vault, aws('backup', 'describe-backup-vault', ['--backup-vault-name', vault],
+                      '{BackupVaultName:BackupVaultName,BackupVaultArn:BackupVaultArn,CreationDate:CreationDate,EncryptionKeyArn:EncryptionKeyArn,Locked:Locked,MinRetentionDays:MinRetentionDays,MaxRetentionDays:MaxRetentionDays,LockDate:LockDate,NumberOfRecoveryPoints:NumberOfRecoveryPoints}'))
+              record('database_backup_point_' + hashlib.sha256(arn.encode()).hexdigest(), aws('backup', 'describe-recovery-point',
+                  ['--backup-vault-name', vault, '--recovery-point-arn', arn],
+                  '{RecoveryPointArn:RecoveryPointArn,ResourceArn:ResourceArn,ResourceType:ResourceType,Status:Status,CreationDate:CreationDate,CompletionDate:CompletionDate,Lifecycle:Lifecycle,CalculatedLifecycle:CalculatedLifecycle,EncryptionKeyArn:EncryptionKeyArn,IsEncrypted:IsEncrypted,StorageClass:StorageClass,BackupSizeInBytes:BackupSizeInBytes}'))
+
+          for label, operation, options, query in [
+              ('vpc', 'describe-vpcs', ['--vpc-ids', VPC], 'Vpcs[].{VpcId:VpcId,OwnerId:OwnerId,State:State,CidrBlock:CidrBlock,Ipv6CidrBlockAssociationSet:Ipv6CidrBlockAssociationSet,Tags:Tags}'),
+              ('subnets', 'describe-subnets', ['--filters', 'Name=vpc-id,Values=' + VPC], 'Subnets[].{SubnetId:SubnetId,OwnerId:OwnerId,VpcId:VpcId,State:State,AvailabilityZone:AvailabilityZone,AvailabilityZoneId:AvailabilityZoneId,CidrBlock:CidrBlock,Ipv6CidrBlockAssociationSet:Ipv6CidrBlockAssociationSet,MapPublicIpOnLaunch:MapPublicIpOnLaunch,Tags:Tags}'),
+              ('security_groups', 'describe-security-groups', ['--filters', 'Name=vpc-id,Values=' + VPC], 'SecurityGroups[].{GroupId:GroupId,GroupName:GroupName,OwnerId:OwnerId,VpcId:VpcId,IpPermissions:IpPermissions,IpPermissionsEgress:IpPermissionsEgress,Tags:Tags}'),
+              ('network_interfaces', 'describe-network-interfaces', ['--filters', 'Name=vpc-id,Values=' + VPC], 'NetworkInterfaces[].{NetworkInterfaceId:NetworkInterfaceId,OwnerId:OwnerId,VpcId:VpcId,SubnetId:SubnetId,Status:Status,InterfaceType:InterfaceType,RequesterManaged:RequesterManaged,RequesterId:RequesterId,Groups:Groups,Attachment:{InstanceId:Attachment.InstanceId,Status:Attachment.Status,DeleteOnTermination:Attachment.DeleteOnTermination},Association:{AllocationId:Association.AllocationId,PublicIp:Association.PublicIp},TagSet:TagSet}'),
+              ('route_tables', 'describe-route-tables', ['--filters', 'Name=vpc-id,Values=' + VPC], 'RouteTables[].{RouteTableId:RouteTableId,VpcId:VpcId,Associations:Associations,Routes:Routes,Tags:Tags}'),
+              ('internet_gateways', 'describe-internet-gateways', ['--filters', 'Name=attachment.vpc-id,Values=' + VPC], 'InternetGateways[].{InternetGatewayId:InternetGatewayId,Attachments:Attachments,Tags:Tags}'),
+              ('egress_only_gateways', 'describe-egress-only-internet-gateways', [], "EgressOnlyInternetGateways[?Attachments[?VpcId=='" + VPC + "']].{EgressOnlyInternetGatewayId:EgressOnlyInternetGatewayId,Attachments:Attachments,Tags:Tags}"),
+              ('nat_gateways', 'describe-nat-gateways', ['--filter', 'Name=vpc-id,Values=' + VPC], 'NatGateways[].{NatGatewayId:NatGatewayId,VpcId:VpcId,SubnetId:SubnetId,State:State,NatGatewayAddresses:NatGatewayAddresses,Tags:Tags}'),
+              ('vpc_endpoints', 'describe-vpc-endpoints', ['--filters', 'Name=vpc-id,Values=' + VPC], 'VpcEndpoints[].{VpcEndpointId:VpcEndpointId,VpcId:VpcId,State:State,VpcEndpointType:VpcEndpointType,ServiceName:ServiceName,SubnetIds:SubnetIds,NetworkInterfaceIds:NetworkInterfaceIds,Groups:Groups,Tags:Tags}'),
+              ('instances', 'describe-instances', ['--filters', 'Name=vpc-id,Values=' + VPC], 'Reservations[].Instances[].{InstanceId:InstanceId,VpcId:VpcId,SubnetId:SubnetId,State:State,InstanceType:InstanceType,Tags:Tags}'),
+              ('tagged_elastic_addresses', 'describe-addresses', ['--filters', 'Name=tag:deployment,Values=' + PREFIX, 'Name=tag:project,Values=one-the-go-detection'], 'Addresses[].{AllocationId:AllocationId,AssociationId:AssociationId,NetworkInterfaceId:NetworkInterfaceId,InstanceId:InstanceId,PublicIp:PublicIp,Tags:Tags}'),
+          ]:
+              record(label, pages('ec2', operation, options, '{Rows:' + query + ',NextToken:NextToken}', 'Rows', argument='--cli-input-json'))
+
+          for key in ('ff17e353-38bf-43df-a08c-85bd60b77aff', 'a3bac0e3-0a4e-49bc-9122-6822efaedb3e', 'f58b580f-dad8-4b42-b4e4-b8bbffa5260b'):
+              metadata = aws('kms', 'describe-key', ['--key-id', key],
+                  'KeyMetadata.{KeyId:KeyId,Arn:Arn,AWSAccountId:AWSAccountId,CreationDate:CreationDate,Enabled:Enabled,KeyState:KeyState,DeletionDate:DeletionDate,KeyUsage:KeyUsage,KeySpec:KeySpec,Origin:Origin,MultiRegion:MultiRegion,MultiRegionConfiguration:MultiRegionConfiguration}')
+              record('kms_' + key, {'metadata': metadata,
+                  'tags': aws('kms', 'list-resource-tags', ['--key-id', key], 'Tags'),
+                  'aliases': aws('kms', 'list-aliases', ['--key-id', key], 'Aliases[].{AliasName:AliasName,AliasArn:AliasArn,TargetKeyId:TargetKeyId}')})
+          for secret in ('otgd-serverless-development-database-app-2AaejZ', 'otgd-serverless-development-tombstone-gkIe6Q', 'rds!cluster-6a5788ff-c430-430b-bb8d-03cf34c72487-GSOFwb'):
+              arn = 'arn:aws:secretsmanager:' + REGION + ':' + ACCOUNT + ':secret:' + secret
+              record('secret_' + secret, aws('secretsmanager', 'describe-secret', ['--secret-id', arn],
+                  '{ARN:ARN,Name:Name,KmsKeyId:KmsKeyId,CreatedDate:CreatedDate,LastChangedDate:LastChangedDate,DeletedDate:DeletedDate,OwningService:OwningService,RotationEnabled:RotationEnabled,ReplicationStatus:ReplicationStatus,Tags:Tags}'))
+
+
+          def bucket_inventory(bucket):
+              owner = ['--bucket', bucket, '--expected-bucket-owner', ACCOUNT]
+              location = aws('s3api', 'get-bucket-location', owner, 'LocationConstraint')
+              if location != REGION:
+                  return {'location': location, 'presence': 'absent' if isinstance(location, dict) and location.get('presence') == 'absent' else 'unverified',
+                          'observation_error_code': 'OhioBucketLocationNotProven'}
+              value = {'bucket': bucket, 'location': location,
+                  'tags': aws('s3api', 'get-bucket-tagging', owner, 'TagSet'),
+                  'versioning': aws('s3api', 'get-bucket-versioning', owner),
+                  'object_lock': aws('s3api', 'get-object-lock-configuration', owner, 'ObjectLockConfiguration'),
+                  'encryption': aws('s3api', 'get-bucket-encryption', owner, 'ServerSideEncryptionConfiguration'),
+                  'public_access_block': aws('s3api', 'get-public-access-block', owner, 'PublicAccessBlockConfiguration')}
+              versions, markers, key_marker, version_marker, complete = [], [], None, None, False
+              for _ in range(4):
+                  result = aws('s3api', 'list-object-versions', [*owner, '--max-keys', '1000',
+                      *(['--key-marker', key_marker] if key_marker else []), *(['--version-id-marker', version_marker] if version_marker else [])],
+                      '{Versions:Versions[].{Key:Key,VersionId:VersionId,Size:Size,StorageClass:StorageClass,IsLatest:IsLatest},DeleteMarkers:DeleteMarkers[].{Key:Key,VersionId:VersionId},IsTruncated:IsTruncated,NextKeyMarker:NextKeyMarker,NextVersionIdMarker:NextVersionIdMarker}')
+                  if not isinstance(result, dict) or 'IsTruncated' not in result:
+                      value['version_scan_error'] = result
                       break
-                  for raw in response['PriceList']:
-                      product = json.loads(raw)
-                      dimensions = [dimension for term in product.get('terms', {}).get('OnDemand', {}).values()
-                                    for dimension in term.get('priceDimensions', {}).values()]
-                      attributes = product.get('product', {}).get('attributes', {})
-                      observed['products'].append({'sku': product.get('product', {}).get('sku'),
-                          'publicationDate': product.get('publicationDate'), 'productFamily': product.get('product', {}).get('productFamily'),
-                          'attributes': {key: attributes.get(key) for key in ('regionCode', 'location', 'usagetype', 'databaseEngine', 'operation')},
-                          'priceDimensions': [{key: dimension.get(key) for key in
-                              ('rateCode', 'unit', 'beginRange', 'endRange', 'pricePerUnit')} for dimension in dimensions]})
-                  token = response.get('NextToken')
-                  if not token:
-                      observed['complete'] = True
+                  versions.extend(result.get('Versions') or [])
+                  markers.extend(result.get('DeleteMarkers') or [])
+                  if result['IsTruncated'] is False:
+                      complete = True
                       break
-              if token and not observed['complete']:
-                  observed['observation_error_code'] = 'PaginationBoundExceeded'
-              snapshot['pricing'].append(observed)
-              persist()
-              print(json.dumps({'selected_official_price_query': observed}, sort_keys=True), flush=True)
+                  key_marker, version_marker = result.get('NextKeyMarker'), result.get('NextVersionIdMarker')
+                  if not isinstance(key_marker, str) or not isinstance(version_marker, str):
+                      value['version_scan_error'] = {'observation_error_code': 'InvalidPaginationToken'}
+                      break
+              by_key = {}
+              by_storage_class = {}
+              for version in versions:
+                  digest = hashlib.sha256(version['Key'].encode()).hexdigest()
+                  by_key[digest] = by_key.get(digest, 0) + 1
+                  storage = version.get('StorageClass') or 'UNVERIFIED'
+                  item = by_storage_class.setdefault(storage, {'version_count': 0, 'version_bytes': 0})
+                  item['version_count'] += 1
+                  item['version_bytes'] += version.get('Size', 0)
+              value.update({'version_scan_complete': complete, 'version_count': len(versions), 'delete_marker_count': len(markers),
+                  'version_bytes': sum(v.get('Size', 0) for v in versions), 'latest_version_count': sum(v.get('IsLatest') is True for v in versions),
+                  'key_sha256_version_counts': by_key, 'storage_class_summary': by_storage_class, 'object_keys_and_version_ids_exported': False})
+              protections = []
+              for version in versions[:40]:
+                  options = [*owner, '--key', version['Key'], '--version-id', version['VersionId']]
+                  metadata = aws('s3api', 'head-object', options,
+                      '{ContentLength:ContentLength,ServerSideEncryption:ServerSideEncryption,SSEKMSKeyId:SSEKMSKeyId,ObjectLockMode:ObjectLockMode,ObjectLockRetainUntilDate:ObjectLockRetainUntilDate,ObjectLockLegalHoldStatus:ObjectLockLegalHoldStatus}')
+                  proof = {'key_sha256': hashlib.sha256(version['Key'].encode()).hexdigest(),
+                      'opaque_version_sha256': hashlib.sha256((version['Key'] + '\0' + version['VersionId']).encode()).hexdigest(), 'metadata': metadata}
+                  if isinstance(value.get('object_lock'), dict) and value['object_lock'].get('ObjectLockEnabled') == 'Enabled':
+                      proof['retention'] = aws('s3api', 'get-object-retention', options, 'Retention')
+                      proof['legal_hold'] = aws('s3api', 'get-object-legal-hold', options, 'LegalHold')
+                  protections.append(proof)
+              value['version_protection_metadata'] = protections
+              lock = value.get('object_lock')
+              lock_known = isinstance(lock, dict) and (lock.get('ObjectLockEnabled') == 'Enabled'
+                  or lock.get('observation_error_code') == 'ObjectLockConfigurationNotFoundError')
+              value['object_lock_configuration_known'] = lock_known
+              value['protection_scan_complete'] = lock_known and complete and len(versions) <= 40 and all(
+                  isinstance(p['metadata'], dict) and 'observation_error_code' not in p['metadata']
+                  and all(not isinstance(p.get(k), dict) or 'observation_error_code' not in p[k] for k in ('retention', 'legal_hold')) for p in protections)
+              multipart = aws('s3api', 'list-multipart-uploads', [*owner, '--max-uploads', '1000'],
+                  '{Count:length(Uploads || `[]`),IsTruncated:IsTruncated}')
+              value['incomplete_multipart_uploads'] = multipart
+              return value
+
+
+          bucket_names = {PREFIX + '-' + ACCOUNT + '-' + REGION + '-' + suffix for suffix in ('journal', 'exports', 'web', 'deployments', 'artifacts')}
+          for row in registry.get('rows', []):
+              if row.get('ResourceType') == 'AWS::S3::Bucket' and isinstance(row.get('PhysicalResourceId'), str) and row['PhysicalResourceId'].startswith(PREFIX + '-' + ACCOUNT + '-' + REGION + '-'):
+                  bucket_names.add(row['PhysicalResourceId'])
+          for bucket in sorted(bucket_names):
+              record('bucket_' + bucket, bucket_inventory(bucket))
+
+          repository = record('ecr_repository', aws('ecr', 'describe-repositories', ['--repository-names', PREFIX],
+              'repositories[].{repositoryArn:repositoryArn,registryId:registryId,repositoryName:repositoryName,createdAt:createdAt,imageTagMutability:imageTagMutability,encryptionConfiguration:encryptionConfiguration}'))
+          images = record('ecr_images', pages('ecr', 'describe-images', ['--repository-name', PREFIX, '--max-results', '100'],
+              '{Rows:imageDetails[].{imageDigest:imageDigest,imageTags:imageTags,imageSizeInBytes:imageSizeInBytes,imagePushedAt:imagePushedAt},NextToken:nextToken}', 'Rows'))
+          if isinstance(repository, list) and len(repository) == 1:
+              record('ecr_tags', aws('ecr', 'list-tags-for-resource', ['--resource-arn', repository[0]['repositoryArn']], 'tags'))
+          for duty in ('api', 'worker', 'dispatcher', 'maintenance', 'control'):
+              name = '/' + PREFIX + '/' + duty
+              record('log_' + duty, {'metadata': pages('logs', 'describe-log-groups', ['--log-group-name-prefix', name, '--limit', '50'],
+                  "{Rows:logGroups[?logGroupName=='" + name + "'].{logGroupName:logGroupName,arn:arn,creationTime:creationTime,retentionInDays:retentionInDays,storedBytes:storedBytes,kmsKeyId:kmsKeyId,logGroupClass:logGroupClass},NextToken:nextToken}", 'Rows'),
+                  'tags': aws('logs', 'list-tags-log-group', ['--log-group-name', name], 'tags')})
+              record('lambda_' + duty, aws('lambda', 'get-function-configuration', ['--function-name', PREFIX + '-' + duty],
+                  '{FunctionName:FunctionName,FunctionArn:FunctionArn,State:State,LastUpdateStatus:LastUpdateStatus,RevisionId:RevisionId,LastModified:LastModified}'))
+          table = PREFIX + '-control'
+          table_arn = 'arn:aws:dynamodb:' + REGION + ':' + ACCOUNT + ':table/' + table
+          record('dynamodb_table', aws('dynamodb', 'describe-table', ['--table-name', table],
+              'Table.{TableName:TableName,TableId:TableId,TableArn:TableArn,TableStatus:TableStatus,CreationDateTime:CreationDateTime,TableSizeBytes:TableSizeBytes,ItemCount:ItemCount,BillingModeSummary:BillingModeSummary,ProvisionedThroughput:ProvisionedThroughput,GlobalSecondaryIndexes:GlobalSecondaryIndexes[].{IndexName:IndexName,IndexStatus:IndexStatus,IndexSizeBytes:IndexSizeBytes,ItemCount:ItemCount,ProvisionedThroughput:ProvisionedThroughput},GlobalTableVersion:GlobalTableVersion,Replicas:Replicas,DeletionProtectionEnabled:DeletionProtectionEnabled,SSEDescription:SSEDescription}'))
+          record('dynamodb_tags', aws('dynamodb', 'list-tags-of-resource', ['--resource-arn', table_arn], 'Tags'))
+          record('dynamodb_continuous_backups', aws('dynamodb', 'describe-continuous-backups', ['--table-name', table], 'ContinuousBackupsDescription'))
+          record('dynamodb_backups', pages('dynamodb', 'list-backups', ['--table-name', table, '--limit', '100'],
+              '{Rows:BackupSummaries[].{BackupArn:BackupArn,BackupName:BackupName,BackupStatus:BackupStatus,BackupType:BackupType,BackupCreationDateTime:BackupCreationDateTime,BackupExpiryDateTime:BackupExpiryDateTime,BackupSizeBytes:BackupSizeBytes,TableId:TableId},NextToken:LastEvaluatedBackupArn}', 'Rows', argument='--exclusive-start-backup-arn'))
+          pool = 'us-east-2_d5tqQ5fVy'
+          record('cognito_pool', aws('cognito-idp', 'describe-user-pool', ['--user-pool-id', pool],
+              'UserPool.{Id:Id,Name:Name,Arn:Arn,CreationDate:CreationDate,LastModifiedDate:LastModifiedDate,DeletionProtection:DeletionProtection,EstimatedNumberOfUsers:EstimatedNumberOfUsers,Domain:Domain,CustomDomain:CustomDomain,UserPoolTags:UserPoolTags}'))
+          record('cognito_clients', pages('cognito-idp', 'list-user-pool-clients', ['--user-pool-id', pool, '--max-results', '60'],
+              '{Rows:UserPoolClients[].{ClientId:ClientId,ClientName:ClientName,UserPoolId:UserPoolId},NextToken:NextToken}', 'Rows'))
+          record('queues', pages('sqs', 'list-queues', ['--queue-name-prefix', PREFIX + '-', '--max-results', '100'],
+              '{Rows:QueueUrls,NextToken:NextToken}', 'Rows'))
+          for url in snapshot['observations']['queues'].get('rows', []):
+              if isinstance(url, str) and url.startswith('https://sqs.' + REGION + '.amazonaws.com/' + ACCOUNT + '/' + PREFIX + '-'):
+                  record('queue_' + url.rsplit('/', 1)[-1], {'metadata': aws('sqs', 'get-queue-attributes', ['--queue-url', url,
+                      '--attribute-names', 'QueueArn', 'CreatedTimestamp', 'ApproximateNumberOfMessages', 'MessageRetentionPeriod', 'KmsMasterKeyId'], 'Attributes'),
+                      'tags': aws('sqs', 'list-queue-tags', ['--queue-url', url], 'Tags')})
+          alarms = record('alarms', pages('cloudwatch', 'describe-alarms', ['--alarm-name-prefix', PREFIX, '--alarm-types', 'MetricAlarm', 'CompositeAlarm', '--max-records', '100'],
+              '{Rows:[MetricAlarms,CompositeAlarms][].{AlarmName:AlarmName,AlarmArn:AlarmArn,StateValue:StateValue,ActionsEnabled:ActionsEnabled},NextToken:NextToken}', 'Rows'))
+          for alarm in alarms.get('rows', []):
+              arn = alarm.get('AlarmArn', '')
+              if isinstance(arn, str) and arn.startswith('arn:aws:cloudwatch:' + REGION + ':' + ACCOUNT + ':alarm:' + PREFIX):
+                  record('alarm_tags_' + alarm['AlarmName'], aws('cloudwatch', 'list-tags-for-resource', ['--resource-arn', arn], 'Tags'))
+          record('dashboards', pages('cloudwatch', 'list-dashboards', ['--dashboard-name-prefix', PREFIX],
+              '{Rows:DashboardEntries[].{DashboardName:DashboardName,DashboardArn:DashboardArn,LastModified:LastModified,Size:Size},NextToken:NextToken}', 'Rows'))
+
+          project_rows = list(registry.get('rows', []))
+          seen_projects = {row.get('PhysicalResourceId') for row in project_rows if row.get('ResourceType') == 'AWS::CodeBuild::Project'}
+          for row in tagged.get('rows', []):
+              arn = row.get('ARN', '')
+              if isinstance(arn, str) and arn.startswith('arn:aws:codebuild:' + REGION + ':' + ACCOUNT + ':project/'):
+                  project_name = arn.rsplit('/', 1)[-1]
+                  if project_name not in seen_projects:
+                      seen_projects.add(project_name)
+                      project_rows.append({'PhysicalResourceId': project_name, 'ResourceType': 'AWS::CodeBuild::Project', 'binding': 'ExactOwnedDeploymentTags'})
+          record('codebuild_scope', {'scoped_project_count': len(seen_projects), 'account_wide_absence_proven': False,
+              'known_historical_project_without_exact_current_identity': 'UNVERIFIED_NOT_ABSENCE'})
+          for row in project_rows:
+              physical, kind = row.get('PhysicalResourceId'), row.get('ResourceType')
+              if not isinstance(physical, str):
+                  continue
+              if kind == 'AWS::CodeBuild::Project' and re.fullmatch(r'[A-Za-z0-9_-]{1,255}', physical):
+                  project = record('registry_build_project_' + physical, aws('codebuild', 'batch-get-projects', ['--names', physical],
+                      '{Projects:projects[].{name:name,arn:arn,created:created,lastModified:lastModified,timeoutInMinutes:timeoutInMinutes,queuedTimeoutInMinutes:queuedTimeoutInMinutes,tags:tags,logGroup:logsConfig.cloudWatchLogs.groupName,cloudWatchLogsStatus:logsConfig.cloudWatchLogs.status,artifactType:artifacts.type,artifactLocation:artifacts.location,fleetArn:environment.fleet.fleetArn,dockerServer:{computeType:environment.dockerServer.computeType,securityGroupIds:environment.dockerServer.securityGroupIds,status:environment.dockerServer.status.status}},NotFound:projectsNotFound}'))
+                  for item in project.get('Projects', []) if isinstance(project, dict) else []:
+                      group = item.get('logGroup')
+                      if isinstance(group, str) and re.fullmatch(r'[A-Za-z0-9./#_-]{1,512}', group):
+                          record('registry_build_linked_logs_' + physical, pages('logs', 'describe-log-groups', ['--log-group-name-prefix', group, '--limit', '50'],
+                              "{Rows:logGroups[?logGroupName=='" + group + "'].{logGroupName:logGroupName,arn:arn,creationTime:creationTime,retentionInDays:retentionInDays,storedBytes:storedBytes,kmsKeyId:kmsKeyId},NextToken:nextToken}", 'Rows'))
+                      location = item.get('artifactLocation')
+                      if item.get('artifactType') == 'S3' and isinstance(location, str):
+                          bucket = location.split('/', 1)[0]
+                          if bucket not in bucket_names and bucket.startswith(PREFIX + '-' + ACCOUNT + '-' + REGION + '-'):
+                              bucket_names.add(bucket)
+                              record('bucket_' + bucket, bucket_inventory(bucket))
+                      fleet = item.get('fleetArn')
+                      if isinstance(fleet, str) and fleet.startswith('arn:aws:codebuild:' + REGION + ':' + ACCOUNT + ':fleet/'):
+                          record('registry_build_fleet_' + hashlib.sha256(fleet.encode()).hexdigest()[:16],
+                              aws('codebuild', 'batch-get-fleets', ['--names', fleet],
+                                  '{Fleets:fleets[].{name:name,arn:arn,baseCapacity:baseCapacity,computeType:computeType,environmentType:environmentType,status:{statusCode:status.statusCode,context:status.context},proxyConfigured:proxyConfiguration != `null`,proxyDefaultBehavior:proxyConfiguration.defaultBehavior,proxyRuleCount:length(proxyConfiguration.orderedProxyRules || `[]`),tags:tags,created:created,lastModified:lastModified},NotFound:fleetsNotFound}'))
+                  builds = pages('codebuild', 'list-builds-for-project', ['--project-name', physical, '--sort-order', 'DESCENDING'],
+                      '{Rows:ids,NextToken:nextToken}', 'Rows')
+                  statuses = {'build_id_scan': builds, 'batches': []}
+                  for offset in range(0, len(builds.get('rows', [])), 100):
+                      statuses['batches'].append(aws('codebuild', 'batch-get-builds', ['--ids', *builds['rows'][offset:offset + 100]],
+                          '{Builds:builds[].{id:id,arn:arn,projectName:projectName,buildStatus:buildStatus,currentPhase:currentPhase,startTime:startTime,endTime:endTime},NotFound:buildsNotFound}'))
+                  record('registry_build_status_' + physical, statuses)
+              elif kind == 'AWS::IAM::Role' and re.fullmatch(r'otgd-qa-registry-[A-Za-z0-9_-]+', physical):
+                  record('registry_iam_role_' + physical, aws('iam', 'get-role', ['--role-name', physical],
+                      'Role.{RoleName:RoleName,RoleId:RoleId,Arn:Arn,CreateDate:CreateDate,Tags:Tags,RoleLastUsed:RoleLastUsed}'))
+          for row in tagged.get('rows', []):
+              arn = row.get('ARN', '')
+              if arn.startswith('arn:aws:ecs:' + REGION + ':' + ACCOUNT + ':cluster/'):
+                  record('owned_ecs_cluster_' + arn.rsplit('/', 1)[-1], aws('ecs', 'describe-clusters', ['--clusters', arn, '--include', 'TAGS'],
+                      '{Clusters:clusters[].{clusterArn:clusterArn,clusterName:clusterName,status:status,runningTasksCount:runningTasksCount,pendingTasksCount:pendingTasksCount,activeServicesCount:activeServicesCount,tags:tags},Failures:failures[].{arn:arn,reason:reason}}'))
+              elif arn.startswith('arn:aws:elasticloadbalancing:' + REGION + ':' + ACCOUNT + ':loadbalancer/'):
+                  record('owned_load_balancer_' + hashlib.sha256(arn.encode()).hexdigest()[:16], aws('elasticloadbalancing', 'describe-load-balancers', ['--load-balancer-arns', arn],
+                      'LoadBalancers[].{LoadBalancerArn:LoadBalancerArn,LoadBalancerName:LoadBalancerName,CreatedTime:CreatedTime,State:State,Type:Type,Scheme:Scheme,VpcId:VpcId,AvailabilityZones:AvailabilityZones}'))
+          budget = PREFIX + '-monthly'
+          record('old_global_budget', aws('budgets', 'describe-budget', ['--account-id', ACCOUNT, '--budget-name', budget],
+              'Budget.{BudgetName:BudgetName,BudgetType:BudgetType,TimeUnit:TimeUnit,BudgetLimit:BudgetLimit,CostFilters:CostFilters,CalculatedSpend:CalculatedSpend,LastUpdatedTime:LastUpdatedTime}'))
+          record('old_global_budget_actions', pages('budgets', 'describe-budget-actions-for-budget', ['--account-id', ACCOUNT, '--budget-name', budget, '--max-results', '100'],
+              '{Rows:Actions[].{ActionId:ActionId,BudgetName:BudgetName,ActionType:ActionType,ExecutionType:ExecutionType,Status:Status},NextToken:NextToken}', 'Rows'))
+          record('old_global_budget_tags', aws('budgets', 'list-tags-for-resource', ['--resource-arn', 'arn:aws:budgets::' + ACCOUNT + ':budget/' + budget], 'ResourceTags'))
+          snapshot['aws_call_count'] = CALLS
           snapshot['completed_utc'] = datetime.now(timezone.utc).isoformat()
           persist()
-          print(json.dumps({'snapshot_path': 'regional-preflight.json', 'snapshot_sha256': hashlib.sha256(
-              (DESTINATION / 'regional-preflight.json').read_bytes()).hexdigest(), 'aws_mutations': []}), flush=True)
+          print(json.dumps({'artifact': 'ohio-inventory.json', 'artifact_sha256': hashlib.sha256((DESTINATION / 'ohio-inventory.json').read_bytes()).hexdigest(),
+              'aws_call_count': CALLS, 'aws_mutations': []}, sort_keys=True), flush=True)
           PYCODE
 
-      - name: Preserve bounded credential-free regional preflight
+      - name: Preserve bounded credential-free Ohio inventory
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: readonly-regional-preflight-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/regional-preflight/
+          name: readonly-ohio-inventory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ohio-inventory/
           if-no-files-found: warn
           retention-days: 7
