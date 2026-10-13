@@ -6,6 +6,8 @@
 
 ## 1. First objective and two parallel tracks
 
+The selected product milestone is the [integrated device, app, and model research MVP](../docs/product/MVP_SCOPE.md). The following sequence develops the physical measurements and independent model evidence needed to reach that milestone. P0/P1 measurement-only behavior and P2 study/model authority remain required. The [marketing plan](../docs/business/MARKETING_PLAN.md) runs consumer discovery alongside engineering and research. Read [implementation status](../IMPLEMENTATION_STATUS.md) for current supplied software; the original starting-point description above records the roadmap's initial baseline.
+
 Start with an **Arduino Nano ESP32**. The first objective is a reliable, clearly synthetic measurement path from the board to a receiving computer. Advance to phone communication, then to qualified signal acquisition. Keep the phone responsible for the reaction game and guided pupil capture.
 
 Run two tracks concurrently:
