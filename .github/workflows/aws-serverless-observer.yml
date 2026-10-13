@@ -1,426 +1,461 @@
-name: Read-only AWS serverless recovery snapshot
-
+name: Materialize retained West recovery storage only
 on:
-  push:
-    branches: [work-aws-serverless-observer]
-
+  workflow_dispatch:
+    inputs:
+      confirm_storage_only:
+        description: Create or verify only the reviewed cold West storage; never deploy or activate the application
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: read
   actions: read
-
+concurrency:
+  group: otgd-fargate-development-738470137867
+  cancel-in-progress: false
 jobs:
-  snapshot:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/work-aws-serverless-observer' && github.event.repository.default_branch == 'main'
+  storage:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/work-aws-cold-storage-only' && github.event.repository.default_branch == 'main' && inputs.confirm_storage_only == true
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 25
     env:
       GH_TOKEN: ${{ github.token }}
-      GH_REPO: R3fresh-dev/One-The-Go-Detection
-      AWS_REGION: us-east-2
-      AWS_DEFAULT_REGION: us-east-2
+      GH_REPO: ${{ github.repository }}
+      AWS_REGION: us-west-2
+      AWS_DEFAULT_REGION: us-west-2
       AWS_EC2_METADATA_DISABLED: 'true'
       AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
-      AWS_MAX_ATTEMPTS: '3'
+      AWS_MAX_ATTEMPTS: '1'
       AWS_PAGER: ''
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: f91674be10db91ededa853fad205868e717f668f
+          ref: 0844868aa543af4ab75ac5065ad48cf807b86bb3
           persist-credentials: false
-
-      - name: Admit clean current main and exact successful all-13 gate evidence
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: '0.13.0'
+          python-version: '3.12'
+      - run: uv sync --project services/api --locked
+      - name: Admit exact current qualified main before AWS credentials
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PYCODE'
-          import json
-          import os
-          from pathlib import Path
-          import subprocess
-          import tempfile
-
-          revision = 'f91674be10db91ededa853fad205868e717f668f'
-          repository = 'R3fresh-dev/One-The-Go-Detection'
-          run_id = 38293021726
-          workflow_path = '.github/workflows/merge-gate.yml'
-          required_jobs = {'unit-coverage', 'components', 'atdd', 'preview / ios',
-              'platform / postgres-integration', 'native / android', 'native / protected-reader',
-              'native / ios', 'platform / localstack-integration', 'native / shared-and-firmware',
-              'platform / contracts-and-synthesis', 'preview / android', 'merge-gate'}
-          required_labels = {'unit-coverage', 'atdd', 'components', 'performance', 'live-dependencies',
-              'docker-health', 'localstack-api', 'specifications', 'native-android', 'native-ios',
-              'firmware', 'hosted-android', 'hosted-ios'}
-
-          def command(args, timeout=30):
-              result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
-              if result.returncode or len(result.stdout.encode()) > 2097152:
-                  raise SystemExit('Read-only snapshot admission blocked: command unavailable (' + ' '.join(args[:2]) + ')')
+          printf 'COLD_STORAGE_DIR=%s/cold-storage-only\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          cat > "$RUNNER_TEMP/cold-storage-admission.py" <<'PYADMIT'
+          import hashlib, io, json, os, re, subprocess, zipfile
+          SOURCE = '0844868aa543af4ab75ac5065ad48cf807b86bb3'
+          TREE = '1afe65b4d2a6ba3a4c541c9ecf7bc61f287ee908'
+          RUN = 38350430258
+          ARTIFACT = 11790454913
+          RAW_SHA256 = '9338903893d1bb1d82097cca4ea7a59cd81579d1f85cb853310c981592a2d165'
+          REPOSITORY = 'R3fresh-dev/One-The-Go-Detection'
+          WORKFLOW = '.github/workflows/merge-gate.yml'
+          JOBS = {'unit-coverage', 'components', 'atdd', 'preview / ios', 'platform / postgres-integration',
+              'native / android', 'native / protected-reader', 'native / ios', 'platform / localstack-integration',
+              'native / shared-and-firmware', 'platform / contracts-and-synthesis', 'platform / fargate-container-runtime',
+              'preview / android', 'merge-gate'}
+          LABELS = {'unit-coverage', 'atdd', 'components', 'performance', 'live-dependencies', 'docker-health',
+              'localstack-api', 'specifications', 'native-android', 'native-ios', 'firmware', 'hosted-android', 'hosted-ios'}
+          
+          def require(condition, reason):
+              if not condition:
+                  raise SystemExit('Regional read-only admission blocked: ' + reason)
+          
+          def command(args, binary=False):
+              result = subprocess.run(args, capture_output=True, text=not binary, timeout=30)
+              require(result.returncode == 0 and len(result.stdout if binary else result.stdout.encode()) <= 1048576,
+                  'bounded authenticated command unavailable')
               return result.stdout
-
+          
           def api(path):
-              return json.loads(command(['gh', 'api', ('repos/' + repository + '/' + path).rstrip('/')]))
-
-          if (os.environ['GH_REPO'] != repository or os.environ['GITHUB_EVENT_NAME'] != 'push'
-                  or os.environ['GITHUB_REF'] != 'refs/heads/work-aws-serverless-observer'
-                  or command(['git', 'rev-parse', 'HEAD']).strip() != revision
-                  or command(['git', 'status', '--porcelain']).strip()):
-              raise SystemExit('Read-only snapshot admission blocked: source or trigger differs')
-          if (api('')['default_branch'] != 'main'
-                  or api('git/ref/heads/main')['object']['sha'] != revision):
-              raise SystemExit('Read-only snapshot admission blocked: current main differs')
-          run = api('actions/runs/' + str(run_id))
-          if (run.get('head_sha') != revision or run.get('status') != 'completed'
-                  or run.get('conclusion') != 'success' or run.get('path') != workflow_path
-                  or run.get('head_branch') != 'main' or run.get('event') not in {'push', 'workflow_dispatch'}
-                  or run.get('repository', {}).get('full_name') != repository
-                  or run.get('head_repository', {}).get('full_name') != repository):
-              raise SystemExit('Read-only snapshot admission blocked: gate run differs')
-          workflow = api('actions/workflows/' + str(run['workflow_id']))
-          if workflow.get('path') != workflow_path or workflow.get('state') != 'active':
-              raise SystemExit('Read-only snapshot admission blocked: gate workflow differs')
-          latest = api('actions/workflows/merge-gate.yml/runs?head_sha=' + revision + '&per_page=100')
-          trusted = [r for r in latest['workflow_runs'] if r.get('head_sha') == revision
-              and r.get('path') == workflow_path and r.get('head_branch') == 'main'
-              and r.get('event') in {'push', 'workflow_dispatch'}]
-          if not trusted or max(r['id'] for r in trusted) != run_id:
-              raise SystemExit('Read-only snapshot admission blocked: latest gate differs')
-          inventory = api(f"actions/runs/{run_id}/attempts/{run['run_attempt']}/jobs?per_page=100")
-          jobs = inventory['jobs']
-          if (inventory['total_count'] != 13 or len(jobs) != 13
-                  or {job['name'] for job in jobs} != required_jobs
-                  or len({job['id'] for job in jobs}) != 13
-                  or any(job.get('status') != 'completed' or job.get('conclusion') != 'success'
-                      or job.get('head_sha') != revision or job.get('run_id') != run_id
-                      or job.get('run_attempt') != run['run_attempt'] for job in jobs)):
-              raise SystemExit('Read-only snapshot admission blocked: all-13 jobs differ')
-          with tempfile.TemporaryDirectory(prefix='observer-gates-') as destination:
-              command(['gh', 'run', 'download', str(run_id), '--repo', repository,
-                  '--name', 'exact-revision-merge-evidence', '--dir', destination], timeout=60)
-              path = Path(destination) / 'gates.json'
-              if not path.is_file() or path.stat().st_size > 262144:
-                  raise SystemExit('Read-only snapshot admission blocked: aggregate evidence unavailable')
-              evidence = json.loads(path.read_text())
-              labels = evidence.get('passed')
-              if (evidence.get('revision') != revision
-                      or evidence.get('run_url') != f'https://github.com/{repository}/actions/runs/{run_id}'
-                      or not isinstance(labels, list) or len(labels) != 13 or set(labels) != required_labels):
-                  raise SystemExit('Read-only snapshot admission blocked: aggregate evidence differs')
-          current = api('actions/runs/' + str(run_id))
-          if any(current.get(k) != run.get(k) for k in ('id', 'head_sha', 'run_attempt', 'status', 'conclusion', 'workflow_id')):
-              raise SystemExit('Read-only snapshot admission blocked: gate changed')
-          if (api('git/ref/heads/main')['object']['sha'] != revision
-                  or command(['git', 'status', '--porcelain']).strip()):
-              raise SystemExit('Read-only snapshot admission blocked: source changed')
-          print(json.dumps({'admitted_revision': revision, 'gate_run': run_id, 'successful_jobs': 13}))
-          PYCODE
-
-      - name: Configure existing repository AWS secrets after source admission
+              return json.loads(command(['gh', 'api', (f'repos/{REPOSITORY}/' + path).rstrip('/')]))
+          
+          def latest():
+              response = api('actions/workflows/merge-gate.yml/runs?head_sha=' + SOURCE + '&per_page=100')
+              require(response.get('total_count', 101) <= 100, 'gate inventory exceeds bound')
+              candidates = [r for r in response['workflow_runs'] if r.get('head_sha') == SOURCE
+                  and r.get('path') == WORKFLOW and r.get('head_branch') == 'main' and r.get('event') == 'push']
+              require(candidates and max(r['id'] for r in candidates) == RUN, 'latest trusted main gate differs')
+          
+          require(ARTIFACT > 0 and re.fullmatch(r'[0-9a-f]{64}', RAW_SHA256), 'root gate/artifact bindings pending')
+          require(os.environ['GITHUB_REPOSITORY'] == REPOSITORY and os.environ['GH_REPO'] == REPOSITORY and os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch'
+              and os.environ['GITHUB_REF'] == 'refs/heads/work-aws-cold-storage-only', 'repository/trigger differs')
+          require(command(['git', 'rev-parse', 'HEAD']).strip() == SOURCE
+              and command(['git', 'rev-parse', 'HEAD^{tree}']).strip() == TREE
+              and not command(['git', 'status', '--porcelain']).strip(), 'immutable source/tree differs')
+          require(api('')['default_branch'] == 'main' and api('git/ref/heads/main')['object']['sha'] == SOURCE,
+              'current default main differs')
+          run = api(f'actions/runs/{RUN}')
+          require(run.get('id') == RUN and run.get('head_sha') == SOURCE and run.get('path') == WORKFLOW
+              and run.get('head_branch') == 'main' and run.get('event') == 'push'
+              and run.get('status') == 'completed' and run.get('conclusion') == 'success'
+              and run.get('run_attempt') == 1
+              and run.get('repository', {}).get('full_name') == REPOSITORY
+              and run.get('head_repository', {}).get('full_name') == REPOSITORY, 'trusted main gate differs')
+          workflow = api(f"actions/workflows/{run['workflow_id']}")
+          require(workflow.get('path') == WORKFLOW and workflow.get('state') == 'active', 'gate workflow differs')
+          latest()
+          response = api(f"actions/runs/{RUN}/attempts/{run['run_attempt']}/jobs?per_page=100")
+          jobs = response.get('jobs', [])
+          require(response.get('total_count') == 14 and len(jobs) == 14 and {j['name'] for j in jobs} == JOBS
+              and len({j['id'] for j in jobs}) == 14
+              and all(j.get('head_sha') == SOURCE and j.get('run_id') == RUN and j.get('run_attempt') == run['run_attempt']
+                  and j.get('status') == 'completed' and j.get('conclusion') == 'success' for j in jobs), 'all14 jobs differ')
+          response = api(f'actions/runs/{RUN}/artifacts?per_page=100')
+          rows = [a for a in response.get('artifacts', []) if a.get('name') == 'exact-revision-merge-evidence']
+          require(response.get('total_count', 101) <= 100 and len(rows) == 1, 'aggregate artifact is ambiguous')
+          artifact = rows[0]
+          job = next(j for j in jobs if j['name'] == 'merge-gate')
+          require(artifact.get('id') == ARTIFACT and artifact.get('expired') is False
+              and artifact.get('digest') == 'sha256:' + RAW_SHA256 and artifact.get('size_in_bytes') == 393
+              and artifact.get('workflow_run', {}).get('id') == RUN and artifact.get('workflow_run', {}).get('head_sha') == SOURCE
+              and job['started_at'] <= artifact.get('created_at', '') <= job['completed_at'], 'raw artifact binding differs')
+          raw = command(['gh', 'api', f'repos/{REPOSITORY}/actions/artifacts/{ARTIFACT}/zip'], binary=True)
+          require(len(raw) == artifact['size_in_bytes'] and hashlib.sha256(raw).hexdigest() == RAW_SHA256,
+              'raw aggregate ZIP digest differs')
+          with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+              members = [m for m in archive.infolist() if not m.is_dir()]
+              require(len(members) == 1 and members[0].filename == 'gates.json' and members[0].file_size <= 262144
+                  and (members[0].external_attr >> 16) & 0o170000 != 0o120000, 'aggregate member differs')
+              evidence = json.loads(archive.read(members[0]))
+          require(evidence.get('revision') == SOURCE and evidence.get('run_url') == f'https://github.com/{REPOSITORY}/actions/runs/{RUN}'
+              and isinstance(evidence.get('passed'), list) and len(evidence['passed']) == 13 and set(evidence['passed']) == LABELS,
+              'aggregate exact revision/jobs differ')
+          after = api(f'actions/artifacts/{ARTIFACT}')
+          require(all(after.get(k) == artifact.get(k) for k in ['id','name','expired','digest','size_in_bytes','created_at','workflow_run']),
+              'aggregate changed after download')
+          current = api(f'actions/runs/{RUN}')
+          require(all(current.get(k) == run.get(k) for k in ['id','head_sha','run_attempt','status','conclusion','workflow_id']),
+              'gate changed after download')
+          latest()
+          require(api('git/ref/heads/main')['object']['sha'] == SOURCE and not command(['git','status','--porcelain']).strip(),
+              'current main/source changed')
+          print(json.dumps({'admitted_revision': SOURCE, 'admitted_tree': TREE, 'gate_run_id': RUN,
+              'gate_attempt': run['run_attempt'], 'successful_jobs': 14, 'raw_aggregate_sha256': RAW_SHA256,
+              'admission_scope': 'QUALIFIED_WEST_STORAGE_ONLY_NO_APPLICATION_ACTIVATION'}))
+          PYADMIT
+          chmod 600 "$RUNNER_TEMP/cold-storage-admission.py"
+          python3 "$RUNNER_TEMP/cold-storage-admission.py"
+      - name: Admit unchanged regional scope and current reviewed 100 dollar budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --project services/api --no-sync python - <<'PYBUDGET'
+          from pathlib import Path
+          from deploy.fargate import read_config, budget
+          c = read_config(Path('infra/config/fargate.example.json'))
+          assert c['environment'] == 'fargate-development' and c['account'] == '738470137867'
+          assert c['region'] == 'us-east-1' and c['backupRegion'] == 'us-west-2'
+          assert c['monthlyBudgetUsd'] == 100 and c['plannedMonthlyUsers'] == 10
+          c['releaseId'] = '0844868aa543af4ab75ac5065ad48cf807b86bb3'
+          budget(c)
+          PYBUDGET
+      - name: Configure only reviewed West account after source and budget admission
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-2
+          aws-region: us-west-2
           allowed-account-ids: '738470137867'
           unset-current-credentials: true
           force-skip-oidc: true
           output-credentials: false
-          retry-max-attempts: 3
+          retry-max-attempts: 1
           action-timeout-s: 90
-
-      - name: Read bounded CloudFormation and application status metadata only
+      - name: Execute only the exact retained cold storage graph
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PYCODE'
-          from collections import Counter
+          cat > "$RUNNER_TEMP/cold-storage-runner.py" <<'PYRUNNER'
+          """Held operations wrapper: exact qualified West storage only; no application deployment."""
           from datetime import datetime, timezone
-          import json
           import hashlib
-          import base64
+          import json
           import os
           from pathlib import Path
           import re
           import subprocess
-
-          stack = 'otgd-serverless-development'
-          allowed = {('sts', 'get-caller-identity'), ('cloudformation', 'describe-stacks'),
-              ('cloudformation', 'describe-stack-events'), ('cloudformation', 'list-stack-resources'),
-              ('cloudformation', 'list-change-sets'), ('cloudformation', 'describe-change-set'),
-              ('cloudformation', 'get-template'), ('cloudformation', 'get-template-summary'),
-              ('cloudformation', 'describe-stack-resource'),
-              ('rds', 'describe-db-clusters'), ('rds', 'describe-db-instances'),
-              ('rds', 'describe-db-subnet-groups'),
-              ('ec2', 'describe-subnets'), ('ec2', 'describe-vpcs'), ('ec2', 'describe-security-groups'),
-              ('lambda', 'get-function-configuration'),
-              ('ecr', 'describe-images')}
-
-          def aws(service, operation, options=(), query=None):
-              if (service, operation) not in allowed:
-                  raise SystemExit('Observer operation is outside its read-only allowlist')
-              args = ['aws', service, operation, '--region', 'us-east-2', '--output', 'json',
-                  '--cli-connect-timeout', '10', '--cli-read-timeout', '20', *options]
-              if query:
-                  args.extend(['--query', query])
-              try:
-                  result = subprocess.run(args, capture_output=True, text=True, timeout=40)
-              except subprocess.TimeoutExpired:
-                  return {'observation_error_code': 'BoundedTimeout'}
-              if result.returncode:
-                  match = re.search(r'An error occurred \(([A-Za-z0-9_.-]+)\)', result.stderr)
-                  return {'observation_error_code': match.group(1) if match else 'CommandUnavailable'}
-              if len(result.stdout.encode()) > 1048576:
-                  return {'observation_error_code': 'ResponseBoundExceeded'}
-              return json.loads(result.stdout)
-
-          identity = aws('sts', 'get-caller-identity', query='Account')
-          if identity != '738470137867':
-              raise SystemExit('Read-only snapshot blocked: actual account differs')
-          print(json.dumps({'snapshot_utc': datetime.now(timezone.utc).isoformat(),
-              'account': identity, 'region': 'us-east-2'}))
-          retained_types = {'AWS::KMS::Key', 'AWS::SecretsManager::Secret', 'AWS::S3::Bucket',
-              'AWS::DynamoDB::Table', 'AWS::Cognito::UserPool', 'AWS::Logs::LogGroup'}
-          snapshot = aws('cloudformation', 'describe-stacks', ['--stack-name', stack],
-              'Stacks[0].{StackId:StackId,StackStatus:StackStatus,CreationTime:CreationTime,LastUpdatedTime:LastUpdatedTime,EnableTerminationProtection:EnableTerminationProtection,Tags:Tags}')
-          if isinstance(snapshot, dict) and isinstance(snapshot.get('Tags'), list):
-              snapshot['Tags'] = [tag for tag in snapshot['Tags'] if tag.get('Key') in {'deployment', 'environment', 'purpose', 'source_revision'}]
-          print(json.dumps({'application_stack': snapshot}, sort_keys=True))
-          events = aws('cloudformation', 'describe-stack-events', ['--stack-name', stack, '--max-items', '10'],
-              'StackEvents[].{LogicalResourceId:LogicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus,ResourceStatusReason:ResourceStatusReason}')
-          if isinstance(events, list):
-              for event in events:
-                  if isinstance(event.get('ResourceStatusReason'), str):
-                      event['ResourceStatusReason'] = event['ResourceStatusReason'][:1000]
-          print(json.dumps({'recent_application_events': events}, sort_keys=True))
-          history = aws('cloudformation', 'describe-stack-events', ['--stack-name', stack, '--max-items', '2000'],
-              '{Events:StackEvents[].{Timestamp:Timestamp,LogicalResourceId:LogicalResourceId,PhysicalResourceId:PhysicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus,ResourceStatusReason:ResourceStatusReason},NextToken:NextToken}')
-          if isinstance(history, dict) and isinstance(history.get('Events'), list):
-              event_rows = history['Events']
-              starts = [row['Timestamp'] for row in event_rows
-                  if row.get('LogicalResourceId') == stack and row.get('ResourceType') == 'AWS::CloudFormation::Stack'
-                  and row.get('ResourceStatus') == 'UPDATE_IN_PROGRESS']
-              update_started = max(starts) if starts else snapshot.get('LastUpdatedTime')
-              failed = sorted([row for row in event_rows if row.get('Timestamp', '') >= (update_started or '')
-                  and row.get('ResourceStatus') in {'CREATE_FAILED', 'UPDATE_FAILED', 'DELETE_FAILED'}],
-                  key=lambda row: row.get('Timestamp', ''))
-              for row in failed:
-                  if isinstance(row.get('ResourceStatusReason'), str):
-                      row['ResourceStatusReason'] = row['ResourceStatusReason'][:1000]
-              initiating = [row for row in failed if row.get('ResourceStatus') in {'CREATE_FAILED', 'UPDATE_FAILED'}]
-              meaningful = [row for row in initiating if not re.search(r'cancelled|canceled', row.get('ResourceStatusReason') or '', re.I)]
-              print(json.dumps({'current_update_failure_history': {'update_started': update_started,
-                  'observed_event_count': len(event_rows), 'history_complete': not bool(history.get('NextToken')),
-                  'failure_count': len(failed), 'first_create_or_update_failure': initiating[:1],
-                  'first_non_cancelled_create_or_update_failure': meaningful[:1],
-                  'failed_events': failed[:20]}}, sort_keys=True))
-              writer_events = [row for row in event_rows if row.get('LogicalResourceId') == 'DatabaseWriter'
-                  and row.get('Timestamp', '') >= (update_started or '')]
-              for row in writer_events:
-                  if isinstance(row.get('ResourceStatusReason'), str):
-                      row['ResourceStatusReason'] = row['ResourceStatusReason'][:1000]
-              print(json.dumps({'writer_cloudformation_history': writer_events[:20]}, sort_keys=True))
-          else:
-              print(json.dumps({'current_update_failure_history': history}, sort_keys=True))
-          resources = aws('cloudformation', 'list-stack-resources', ['--stack-name', stack, '--max-items', '200'])
-          rows = []
-          if isinstance(resources, dict) and isinstance(resources.get('StackResourceSummaries'), list):
-              rows = resources['StackResourceSummaries']
-              print(json.dumps({'resource_status_counts': dict(Counter(row['ResourceStatus'] for row in rows)),
-                  'resource_count': len(rows), 'inventory_complete': not bool(resources.get('NextToken'))}, sort_keys=True))
-              print(json.dumps({'retained_resources': [{key: row.get(key) for key in
-                  ('LogicalResourceId', 'ResourceType', 'PhysicalResourceId', 'ResourceStatus')}
-                  for row in rows if row.get('ResourceType') in retained_types]}, sort_keys=True))
-              print(json.dumps({'remaining_application_resource_identities': [{key: row.get(key) for key in
-                  ('LogicalResourceId', 'ResourceType', 'PhysicalResourceId', 'ResourceStatus')}
-                  for row in rows if row.get('ResourceType') not in retained_types]}, sort_keys=True))
-          else:
-              print(json.dumps({'resource_inventory': resources}, sort_keys=True))
-          registry = aws('cloudformation', 'describe-stacks', ['--stack-name', stack + '-registry'],
-              'Stacks[0].{StackId:StackId,StackStatus:StackStatus,LastUpdatedTime:LastUpdatedTime}')
-          print(json.dumps({'registry_stack': registry}, sort_keys=True))
-          database = aws('rds', 'describe-db-clusters', ['--db-cluster-identifier', stack],
-              'DBClusters[].{DBClusterIdentifier:DBClusterIdentifier,DBClusterArn:DBClusterArn,DbClusterResourceId:DbClusterResourceId,Status:Status,ClusterCreateTime:ClusterCreateTime,Engine:Engine,EngineVersion:EngineVersion,DatabaseName:DatabaseName,MasterUsername:MasterUsername,KmsKeyId:KmsKeyId,StorageEncrypted:StorageEncrypted,DeletionProtection:DeletionProtection,DBSubnetGroup:DBSubnetGroup,DBClusterParameterGroup:DBClusterParameterGroup,VpcSecurityGroups:VpcSecurityGroups,DBClusterMembers:DBClusterMembers,ServerlessV2ScalingConfiguration:ServerlessV2ScalingConfiguration,MasterUserSecret:MasterUserSecret,TagList:TagList}')
-          ownership_keys = {'deployment', 'environment', 'purpose', 'project', 'owner_role', 'cost_center', 'source_revision'}
-          def ownership_tags(items):
-              return [tag for tag in (items or []) if tag.get('Key') in ownership_keys]
-          if isinstance(database, list):
-              for cluster in database:
-                  cluster['TagList'] = ownership_tags(cluster.get('TagList'))
-          print(json.dumps({'database_cluster_metadata': database}, sort_keys=True))
-          writer = aws('rds', 'describe-db-instances', ['--db-instance-identifier', stack + '-writer'],
-              'DBInstances[].{DBInstanceIdentifier:DBInstanceIdentifier,DBInstanceArn:DBInstanceArn,DbiResourceId:DbiResourceId,DBClusterIdentifier:DBClusterIdentifier,DBInstanceStatus:DBInstanceStatus,InstanceCreateTime:InstanceCreateTime,Engine:Engine,EngineVersion:EngineVersion,DBInstanceClass:DBInstanceClass,KmsKeyId:KmsKeyId,StorageEncrypted:StorageEncrypted,PubliclyAccessible:PubliclyAccessible,DBSubnetGroup:DBSubnetGroup,DBParameterGroups:DBParameterGroups,TagList:TagList}')
-          if isinstance(writer, list):
-              for instance in writer:
-                  instance['TagList'] = ownership_tags(instance.get('TagList'))
-          print(json.dumps({'database_writer_metadata': writer}, sort_keys=True))
-          writer_cf = aws('cloudformation', 'describe-stack-resource', ['--stack-name', stack, '--logical-resource-id', 'DatabaseWriter'],
-              'StackResourceDetail.{StackId:StackId,LogicalResourceId:LogicalResourceId,PhysicalResourceId:PhysicalResourceId,ResourceType:ResourceType,ResourceStatus:ResourceStatus}')
-          print(json.dumps({'writer_current_cloudformation_metadata': writer_cf}, sort_keys=True))
-          subnet_group_names = sorted({cluster['DBSubnetGroup'] for cluster in database
-              if isinstance(cluster, dict) and isinstance(cluster.get('DBSubnetGroup'), str)}) if isinstance(database, list) else []
-          subnet_ids = set()
-          vpc_ids = set()
-          for group_name in subnet_group_names[:2]:
-              group = aws('rds', 'describe-db-subnet-groups', ['--db-subnet-group-name', group_name],
-                  'DBSubnetGroups[].{DBSubnetGroupName:DBSubnetGroupName,DBSubnetGroupArn:DBSubnetGroupArn,VpcId:VpcId,SubnetGroupStatus:SubnetGroupStatus,Subnets:Subnets,SupportedNetworkTypes:SupportedNetworkTypes}')
-              print(json.dumps({'live_database_subnet_group': group}, sort_keys=True))
-              if isinstance(group, list):
-                  for entry in group:
-                      if isinstance(entry.get('VpcId'), str):
-                          vpc_ids.add(entry['VpcId'])
-                      subnet_ids.update(row['SubnetIdentifier'] for row in entry.get('Subnets', [])
-                          if isinstance(row.get('SubnetIdentifier'), str))
-          for subnet_id in sorted(subnet_ids)[:10]:
-              subnets = aws('ec2', 'describe-subnets', ['--subnet-ids', subnet_id],
-                  'Subnets[].{SubnetId:SubnetId,VpcId:VpcId,State:State,AvailabilityZone:AvailabilityZone,CidrBlock:CidrBlock,Ipv6CidrBlockAssociationSet:Ipv6CidrBlockAssociationSet,Tags:Tags}')
-              if isinstance(subnets, list):
-                  for subnet in subnets:
-                      subnet['Tags'] = ownership_tags(subnet.get('Tags'))
-              print(json.dumps({'observed_subnet_id': subnet_id, 'live_database_subnet_ownership': subnets}, sort_keys=True))
-          if vpc_ids:
-              vpcs = aws('ec2', 'describe-vpcs', ['--vpc-ids', *sorted(vpc_ids)[:2]],
-                  'Vpcs[].{VpcId:VpcId,State:State,CidrBlock:CidrBlock,IsDefault:IsDefault,Ipv6CidrBlockAssociationSet:Ipv6CidrBlockAssociationSet,Tags:Tags}')
-              if isinstance(vpcs, list):
-                  for vpc in vpcs:
-                      vpc['Tags'] = ownership_tags(vpc.get('Tags'))
-              print(json.dumps({'live_database_vpc_ownership': vpcs}, sort_keys=True))
-          sg_ids = set()
-          if isinstance(database, list):
-              sg_ids.update(group['VpcSecurityGroupId'] for cluster in database
-                  for group in cluster.get('VpcSecurityGroups', []) if isinstance(group.get('VpcSecurityGroupId'), str))
-          sg_ids.update(row['PhysicalResourceId'] for row in rows
-              if row.get('ResourceType') == 'AWS::EC2::SecurityGroup' and isinstance(row.get('PhysicalResourceId'), str))
-          for security_group_id in sorted(sg_ids)[:10]:
-              security_groups = aws('ec2', 'describe-security-groups', ['--group-ids', security_group_id],
-                  'SecurityGroups[].{GroupId:GroupId,GroupName:GroupName,VpcId:VpcId,OwnerId:OwnerId,Tags:Tags}')
-              if isinstance(security_groups, list):
-                  for group in security_groups:
-                      group['Tags'] = ownership_tags(group.get('Tags'))
-              print(json.dumps({'observed_security_group_id': security_group_id, 'live_database_security_group_ownership': security_groups}, sort_keys=True))
-          for role in ('api', 'worker', 'dispatcher', 'maintenance', 'control'):
-              function = aws('lambda', 'get-function-configuration', ['--function-name', stack + '-' + role],
-                  '{State:State,LastUpdateStatus:LastUpdateStatus,StateReasonCode:StateReasonCode,LastUpdateStatusReasonCode:LastUpdateStatusReasonCode,source_revision:Environment.Variables.OTGD_SOURCE_REVISION}')
-              print(json.dumps({'function_role': role, 'configuration_status': function}, sort_keys=True))
-          changes = aws('cloudformation', 'list-change-sets', ['--stack-name', stack, '--max-items', '5'],
-              'Summaries[].{ChangeSetId:ChangeSetId,ChangeSetName:ChangeSetName,Status:Status,ExecutionStatus:ExecutionStatus,StatusReason:StatusReason}')
-          if isinstance(changes, list):
-              for change in changes:
-                  if isinstance(change.get('StatusReason'), str):
-                      change['StatusReason'] = change['StatusReason'][:1000]
-          print(json.dumps({'latest_change_sets': changes}, sort_keys=True))
-          revision = 'f91674be10db91ededa853fad205868e717f668f'
-          for role in ('api', 'worker'):
-              image_tag = role + '-' + revision
-              image = aws('ecr', 'describe-images',
-                  ['--repository-name', stack, '--image-ids', 'imageTag=' + image_tag],
-                  'imageDetails[].imageDigest')
-              print(json.dumps({'image_tag': image_tag, 'image_digests': image,
-                  'digest_present': isinstance(image, list) and len(image) == 1}, sort_keys=True))
-          expected_retained_physical_ids = {
-              'Accounts': 'us-east-2_d5tqQ5fVy',
-              'ApiLogs': '/otgd-serverless-development/api',
-              'ApplicationSecret': 'arn:aws:secretsmanager:us-east-2:738470137867:secret:otgd-serverless-development-database-app-2AaejZ',
-              'CaptureSigningKey': 'f58b580f-dad8-4b42-b4e4-b8bbffa5260b',
-              'ControlLogs': '/otgd-serverless-development/control',
-              'DataKey': 'ff17e353-38bf-43df-a08c-85bd60b77aff',
-              'DeletionJournal': 'otgd-serverless-development-738470137867-us-east-2-journal',
-              'DispatcherLogs': '/otgd-serverless-development/dispatcher',
-              'Exports': 'otgd-serverless-development-738470137867-us-east-2-exports',
-              'JournalKey': 'a3bac0e3-0a4e-49bc-9122-6822efaedb3e',
-              'MaintenanceLogs': '/otgd-serverless-development/maintenance',
-              'RuntimeControl': 'otgd-serverless-development-control',
-              'TombstoneSecret': 'arn:aws:secretsmanager:us-east-2:738470137867:secret:otgd-serverless-development-tombstone-gkIe6Q',
-              'WebAssets': 'otgd-serverless-development-738470137867-us-east-2-web',
-              'WorkerLogs': '/otgd-serverless-development/worker'}
-          destination = Path(os.environ['RUNNER_TEMP']) / 'observer-template'
-          destination.mkdir()
-          template_response = aws('cloudformation', 'get-template',
-              ['--stack-name', stack, '--template-stage', 'Original'])
-          if not isinstance(template_response, dict) or 'TemplateBody' not in template_response:
-              raise SystemExit('Read-only template observation unavailable')
-          template_body = template_response['TemplateBody']
-          if isinstance(template_body, str):
-              if len(template_body.encode()) > 1048576:
-                  raise SystemExit('Read-only template observation exceeds bound')
-              template_body = json.loads(template_body)
-          raw = json.dumps(template_body, separators=(',', ':'), sort_keys=True).encode()
-          if len(raw) > 1048576 or not isinstance(template_body, dict):
-              raise SystemExit('Read-only template observation exceeds bound')
-          digest = hashlib.sha256(raw).hexdigest()
-          expected_digest = '6081b2fb2aed05c2891715d45f114661637960bba3caee780f937cebdc4b4099'
-          proof = {'actual_canonical_sha256': digest, 'protected_original_canonical_sha256': expected_digest,
-              'canonical_template_equal': digest == expected_digest, 'actual_template_bytes': len(raw),
-              'raw_template_export': 'omitted; selector-only structural summary'}
-          (destination / 'template-observation.json').write_text(json.dumps(proof, indent=2) + '\n')
-          print(json.dumps({'template_observation': proof}, sort_keys=True))
-          property_selectors = {
-              'AWS::RDS::DBCluster': {'DBClusterIdentifier', 'Engine', 'EngineVersion', 'EngineMode', 'DBSubnetGroupName',
-                  'DBClusterParameterGroupName', 'VpcSecurityGroupIds', 'StorageEncrypted', 'KmsKeyId', 'DeletionProtection',
-                  'ServerlessV2ScalingConfiguration'},
-              'AWS::RDS::DBInstance': {'DBInstanceIdentifier', 'DBClusterIdentifier', 'DBInstanceClass', 'Engine',
-                  'PubliclyAccessible', 'AutoMinorVersionUpgrade'},
-              'AWS::RDS::DBSubnetGroup': {'SubnetIds'},
-              'AWS::RDS::DBClusterParameterGroup': {'Family', 'Parameters'},
-              'AWS::EC2::SecurityGroup': {'VpcId'},
-              'AWS::EC2::Subnet': {'VpcId', 'AvailabilityZone', 'CidrBlock', 'Ipv6CidrBlock', 'AssignIpv6AddressOnCreation'},
-              'AWS::EC2::VPC': {'CidrBlock', 'EnableDnsHostnames', 'EnableDnsSupport'}}
-          summary = []
-          for logical, resource in template_body.get('Resources', {}).items():
-              row = {'LogicalResourceId': logical, 'ResourceType': resource.get('Type'),
-                  'DeletionPolicy': resource.get('DeletionPolicy'), 'UpdateReplacePolicy': resource.get('UpdateReplacePolicy')}
-              selectors = property_selectors.get(resource.get('Type'), set())
-              if selectors:
-                  row['SelectedProperties'] = {key: value for key, value in resource.get('Properties', {}).items() if key in selectors}
-              summary.append(row)
-          relation = {'template_resource_count': len(summary), 'inventory_resource_count': len(rows),
-              'template_only_logical_ids': sorted(set(template_body.get('Resources', {})) - {row.get('LogicalResourceId') for row in rows}),
-              'inventory_only_logical_ids': sorted({row.get('LogicalResourceId') for row in rows} - set(template_body.get('Resources', {}))),
-              'writer_in_template': 'DatabaseWriter' in template_body.get('Resources', {}),
-              'writer_in_current_inventory': any(row.get('LogicalResourceId') == 'DatabaseWriter' for row in rows)}
-          (destination / 'template-structural-summary.json').write_text(json.dumps({'resources': summary, 'managed_relation': relation}, indent=2, sort_keys=True) + '\n')
-          print(json.dumps({'template_structural_summary': summary, 'managed_relation': relation}, sort_keys=True))
-          candidate_raw = base64.b64decode('eyJBV1NUZW1wbGF0ZUZvcm1hdFZlcnNpb24iOiIyMDEwLTA5LTA5IiwiRGVzY3JpcHRpb24iOiJSZXRhaW5lZCByZXNvdXJjZXMgZnJvbSB0aGUgdW5pbml0aWFsaXplZCBmaXJzdCBzZXJ2ZXJsZXNzIGRlcGxveW1lbnQiLCJSZXNvdXJjZXMiOnsiQWNjb3VudHMiOnsiRGVsZXRpb25Qb2xpY3kiOiJSZXRhaW4iLCJQcm9wZXJ0aWVzIjp7IkFjY291bnRSZWNvdmVyeVNldHRpbmciOnsiUmVjb3ZlcnlNZWNoYW5pc21zIjpbeyJOYW1lIjoidmVyaWZpZWRfZW1haWwiLCJQcmlvcml0eSI6MX1dfSwiQXV0b1ZlcmlmaWVkQXR0cmlidXRlcyI6WyJlbWFpbCJdLCJEZWxldGlvblByb3RlY3Rpb24iOiJBQ1RJVkUiLCJFbmFibGVkTWZhcyI6WyJTT0ZUV0FSRV9UT0tFTl9NRkEiXSwiTWZhQ29uZmlndXJhdGlvbiI6Ik9QVElPTkFMIiwiUG9saWNpZXMiOnsiUGFzc3dvcmRQb2xpY3kiOnsiTWluaW11bUxlbmd0aCI6MTIsIlJlcXVpcmVMb3dlcmNhc2UiOnRydWUsIlJlcXVpcmVOdW1iZXJzIjp0cnVlLCJSZXF1aXJlU3ltYm9scyI6dHJ1ZSwiUmVxdWlyZVVwcGVyY2FzZSI6dHJ1ZX19LCJVc2VyUG9vbE5hbWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQiLCJVc2VyUG9vbFRhZ3MiOnsiY29zdF9jZW50ZXIiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50IiwiZGVwbG95bWVudCI6Im90Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudCIsImVudmlyb25tZW50Ijoic2VydmVybGVzcy1kZXZlbG9wbWVudCIsIm93bmVyX3JvbGUiOiJwbGF0Zm9ybS1vcGVyYXRvciIsInByb2plY3QiOiJvbmUtdGhlLWdvLWRldGVjdGlvbiJ9LCJVc2VyUG9vbFRpZXIiOiJMSVRFIiwiVXNlcm5hbWVBdHRyaWJ1dGVzIjpbImVtYWlsIl19LCJUeXBlIjoiQVdTOjpDb2duaXRvOjpVc2VyUG9vbCIsIlVwZGF0ZVJlcGxhY2VQb2xpY3kiOiJSZXRhaW4ifSwiQXBpTG9ncyI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiS21zS2V5SWQiOnsiRm46OkdldEF0dCI6WyJEYXRhS2V5IiwiQXJuIl19LCJMb2dHcm91cE5hbWUiOiIvb3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50L2FwaSIsIlJldGVudGlvbkluRGF5cyI6NywiVGFncyI6W3siS2V5IjoicHJvamVjdCIsIlZhbHVlIjoib25lLXRoZS1nby1kZXRlY3Rpb24ifSx7IktleSI6ImVudmlyb25tZW50IiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJkZXBsb3ltZW50IiwiVmFsdWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6Im93bmVyX3JvbGUiLCJWYWx1ZSI6InBsYXRmb3JtLW9wZXJhdG9yIn0seyJLZXkiOiJjb3N0X2NlbnRlciIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9XX0sIlR5cGUiOiJBV1M6OkxvZ3M6OkxvZ0dyb3VwIiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9LCJBcHBsaWNhdGlvblNlY3JldCI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiR2VuZXJhdGVTZWNyZXRTdHJpbmciOnsiRXhjbHVkZVB1bmN0dWF0aW9uIjp0cnVlLCJHZW5lcmF0ZVN0cmluZ0tleSI6InBhc3N3b3JkIiwiUGFzc3dvcmRMZW5ndGgiOjQwLCJTZWNyZXRTdHJpbmdUZW1wbGF0ZSI6IntcInVzZXJuYW1lXCI6IFwib3RnZF9hcHBcIn0ifSwiS21zS2V5SWQiOnsiRm46OkdldEF0dCI6WyJEYXRhS2V5IiwiQXJuIl19LCJOYW1lIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50LWRhdGFiYXNlLWFwcCIsIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV19LCJUeXBlIjoiQVdTOjpTZWNyZXRzTWFuYWdlcjo6U2VjcmV0IiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9LCJDYXB0dXJlU2lnbmluZ0tleSI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiRGVzY3JpcHRpb24iOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQgQ2FwdHVyZVNpZ25pbmdLZXkiLCJFbmFibGVLZXlSb3RhdGlvbiI6ZmFsc2UsIktleVBvbGljeSI6eyJTdGF0ZW1lbnQiOlt7IkFjdGlvbiI6ImttczoqIiwiRWZmZWN0IjoiQWxsb3ciLCJQcmluY2lwYWwiOnsiQVdTIjp7IkZuOjpTdWIiOiJhcm46JHtBV1M6OlBhcnRpdGlvbn06aWFtOjoke0FXUzo6QWNjb3VudElkfTpyb290In19LCJSZXNvdXJjZSI6IioifV0sIlZlcnNpb24iOiIyMDEyLTEwLTE3In0sIktleVNwZWMiOiJFQ0NfTklTVF9QMjU2IiwiS2V5VXNhZ2UiOiJTSUdOX1ZFUklGWSIsIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV19LCJUeXBlIjoiQVdTOjpLTVM6OktleSIsIlVwZGF0ZVJlcGxhY2VQb2xpY3kiOiJSZXRhaW4ifSwiQ29udHJvbExvZ3MiOnsiRGVsZXRpb25Qb2xpY3kiOiJSZXRhaW4iLCJQcm9wZXJ0aWVzIjp7Ikttc0tleUlkIjp7IkZuOjpHZXRBdHQiOlsiRGF0YUtleSIsIkFybiJdfSwiTG9nR3JvdXBOYW1lIjoiL290Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudC9jb250cm9sIiwiUmV0ZW50aW9uSW5EYXlzIjo3LCJUYWdzIjpbeyJLZXkiOiJwcm9qZWN0IiwiVmFsdWUiOiJvbmUtdGhlLWdvLWRldGVjdGlvbiJ9LHsiS2V5IjoiZW52aXJvbm1lbnQiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6ImRlcGxveW1lbnQiLCJWYWx1ZSI6Im90Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5Ijoib3duZXJfcm9sZSIsIlZhbHVlIjoicGxhdGZvcm0tb3BlcmF0b3IifSx7IktleSI6ImNvc3RfY2VudGVyIiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In1dfSwiVHlwZSI6IkFXUzo6TG9nczo6TG9nR3JvdXAiLCJVcGRhdGVSZXBsYWNlUG9saWN5IjoiUmV0YWluIn0sIkRhdGFLZXkiOnsiRGVsZXRpb25Qb2xpY3kiOiJSZXRhaW4iLCJQcm9wZXJ0aWVzIjp7IkRlc2NyaXB0aW9uIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50IERhdGFLZXkiLCJFbmFibGVLZXlSb3RhdGlvbiI6dHJ1ZSwiS2V5UG9saWN5Ijp7IlN0YXRlbWVudCI6W3siQWN0aW9uIjoia21zOioiLCJFZmZlY3QiOiJBbGxvdyIsIlByaW5jaXBhbCI6eyJBV1MiOnsiRm46OlN1YiI6ImFybjoke0FXUzo6UGFydGl0aW9ufTppYW06OiR7QVdTOjpBY2NvdW50SWR9OnJvb3QifX0sIlJlc291cmNlIjoiKiJ9LHsiQWN0aW9uIjpbImttczpFbmNyeXB0Iiwia21zOkRlY3J5cHQiLCJrbXM6UmVFbmNyeXB0KiIsImttczpHZW5lcmF0ZURhdGFLZXkqIiwia21zOkRlc2NyaWJlS2V5Il0sIkNvbmRpdGlvbiI6eyJBcm5MaWtlIjp7ImttczpFbmNyeXB0aW9uQ29udGV4dDphd3M6bG9nczphcm4iOiJhcm46YXdzOmxvZ3M6dXMtZWFzdC0yOjczODQ3MDEzNzg2Nzpsb2ctZ3JvdXA6L290Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudC8qIn19LCJFZmZlY3QiOiJBbGxvdyIsIlByaW5jaXBhbCI6eyJTZXJ2aWNlIjoibG9ncy51cy1lYXN0LTIuYW1hem9uYXdzLmNvbSJ9LCJSZXNvdXJjZSI6IioifSx7IkFjdGlvbiI6WyJrbXM6RGVjcnlwdCIsImttczpHZW5lcmF0ZURhdGFLZXkqIl0sIkNvbmRpdGlvbiI6eyJBcm5MaWtlIjp7ImF3czpTb3VyY2VBcm4iOiJhcm46YXdzOmNsb3Vkd2F0Y2g6dXMtZWFzdC0yOjczODQ3MDEzNzg2NzphbGFybToqIn0sIlN0cmluZ0VxdWFscyI6eyJhd3M6U291cmNlQWNjb3VudCI6IjczODQ3MDEzNzg2NyJ9fSwiRWZmZWN0IjoiQWxsb3ciLCJQcmluY2lwYWwiOnsiU2VydmljZSI6ImNsb3Vkd2F0Y2guYW1hem9uYXdzLmNvbSJ9LCJSZXNvdXJjZSI6IioifV0sIlZlcnNpb24iOiIyMDEyLTEwLTE3In0sIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV19LCJUeXBlIjoiQVdTOjpLTVM6OktleSIsIlVwZGF0ZVJlcGxhY2VQb2xpY3kiOiJSZXRhaW4ifSwiRGF0YWJhc2UiOnsiRGVsZXRpb25Qb2xpY3kiOiJSZXRhaW4iLCJQcm9wZXJ0aWVzIjp7IkJhY2t1cFJldGVudGlvblBlcmlvZCI6NywiQ29weVRhZ3NUb1NuYXBzaG90Ijp0cnVlLCJEQkNsdXN0ZXJJZGVudGlmaWVyIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50IiwiREJDbHVzdGVyUGFyYW1ldGVyR3JvdXBOYW1lIjp7IlJlZiI6IkRhdGFiYXNlUGFyYW1ldGVycyJ9LCJEQlN1Ym5ldEdyb3VwTmFtZSI6eyJSZWYiOiJEYXRhYmFzZVN1Ym5ldHMifSwiRGF0YWJhc2VOYW1lIjoib3RnZCIsIkRlbGV0aW9uUHJvdGVjdGlvbiI6dHJ1ZSwiRW5naW5lIjoiYXVyb3JhLXBvc3RncmVzcWwiLCJFbmdpbmVNb2RlIjoicHJvdmlzaW9uZWQiLCJFbmdpbmVWZXJzaW9uIjoiMTYuMTUiLCJLbXNLZXlJZCI6eyJGbjo6R2V0QXR0IjpbIkRhdGFLZXkiLCJBcm4iXX0sIk1hbmFnZU1hc3RlclVzZXJQYXNzd29yZCI6dHJ1ZSwiTWFzdGVyVXNlclNlY3JldCI6eyJLbXNLZXlJZCI6eyJGbjo6R2V0QXR0IjpbIkRhdGFLZXkiLCJBcm4iXX19LCJNYXN0ZXJVc2VybmFtZSI6Im90Z2RfbWlncmF0b3IiLCJTZXJ2ZXJsZXNzVjJTY2FsaW5nQ29uZmlndXJhdGlvbiI6eyJNYXhDYXBhY2l0eSI6MSwiTWluQ2FwYWNpdHkiOjAsIlNlY29uZHNVbnRpbEF1dG9QYXVzZSI6MzAwfSwiU3RvcmFnZUVuY3J5cHRlZCI6dHJ1ZSwiVGFncyI6W3siS2V5IjoicHJvamVjdCIsIlZhbHVlIjoib25lLXRoZS1nby1kZXRlY3Rpb24ifSx7IktleSI6ImVudmlyb25tZW50IiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJkZXBsb3ltZW50IiwiVmFsdWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6Im93bmVyX3JvbGUiLCJWYWx1ZSI6InBsYXRmb3JtLW9wZXJhdG9yIn0seyJLZXkiOiJjb3N0X2NlbnRlciIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9XSwiVnBjU2VjdXJpdHlHcm91cElkcyI6W3siUmVmIjoiRGF0YWJhc2VTZWN1cml0eUdyb3VwIn1dfSwiVHlwZSI6IkFXUzo6UkRTOjpEQkNsdXN0ZXIiLCJVcGRhdGVSZXBsYWNlUG9saWN5IjoiUmV0YWluIn0sIkRhdGFiYXNlUGFyYW1ldGVycyI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiRGVzY3JpcHRpb24iOiJWZXJpZmllZCBQb3N0Z3JlU1FMIFRMUyByZXF1aXJlZCIsIkZhbWlseSI6ImF1cm9yYS1wb3N0Z3Jlc3FsMTYiLCJQYXJhbWV0ZXJzIjp7InJkcy5mb3JjZV9zc2wiOiIxIn0sIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV19LCJUeXBlIjoiQVdTOjpSRFM6OkRCQ2x1c3RlclBhcmFtZXRlckdyb3VwIiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9LCJEYXRhYmFzZVNlY3VyaXR5R3JvdXAiOnsiRGVsZXRpb25Qb2xpY3kiOiJSZXRhaW4iLCJQcm9wZXJ0aWVzIjp7Ikdyb3VwRGVzY3JpcHRpb24iOiJPbmx5IExhbWJkYSBjbGllbnRzIHJlYWNoIHByaXZhdGUgUG9zdGdyZVNRTCIsIlNlY3VyaXR5R3JvdXBFZ3Jlc3MiOlt7IkNpZHJJcCI6IjEyNy4wLjAuMS8zMiIsIkZyb21Qb3J0Ijo1NDMyLCJJcFByb3RvY29sIjoidGNwIiwiVG9Qb3J0Ijo1NDMyfV0sIlNlY3VyaXR5R3JvdXBJbmdyZXNzIjpbeyJGcm9tUG9ydCI6NTQzMiwiSXBQcm90b2NvbCI6InRjcCIsIlNvdXJjZVNlY3VyaXR5R3JvdXBJZCI6eyJSZWYiOiJMYW1iZGFTZWN1cml0eUdyb3VwIn0sIlRvUG9ydCI6NTQzMn1dLCJUYWdzIjpbeyJLZXkiOiJwcm9qZWN0IiwiVmFsdWUiOiJvbmUtdGhlLWdvLWRldGVjdGlvbiJ9LHsiS2V5IjoiZW52aXJvbm1lbnQiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6ImRlcGxveW1lbnQiLCJWYWx1ZSI6Im90Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5Ijoib3duZXJfcm9sZSIsIlZhbHVlIjoicGxhdGZvcm0tb3BlcmF0b3IifSx7IktleSI6ImNvc3RfY2VudGVyIiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In1dLCJWcGNJZCI6eyJSZWYiOiJOZXR3b3JrIn19LCJUeXBlIjoiQVdTOjpFQzI6OlNlY3VyaXR5R3JvdXAiLCJVcGRhdGVSZXBsYWNlUG9saWN5IjoiUmV0YWluIn0sIkRhdGFiYXNlU3VibmV0cyI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiREJTdWJuZXRHcm91cERlc2NyaXB0aW9uIjoiVHdvIHByaXZhdGUgZGF0YWJhc2Ugem9uZXMiLCJTdWJuZXRJZHMiOlsic3VibmV0LTBjODZkYjNkODZlNGY3MjlkIiwic3VibmV0LTBlZGQ2NzlmNzkyZjYxNGE1Il0sIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV19LCJUeXBlIjoiQVdTOjpSRFM6OkRCU3VibmV0R3JvdXAiLCJVcGRhdGVSZXBsYWNlUG9saWN5IjoiUmV0YWluIn0sIkRhdGFiYXNlV3JpdGVyIjp7IkRlbGV0aW9uUG9saWN5IjoiUmV0YWluIiwiUHJvcGVydGllcyI6eyJBdXRvTWlub3JWZXJzaW9uVXBncmFkZSI6ZmFsc2UsIkRCQ2x1c3RlcklkZW50aWZpZXIiOnsiUmVmIjoiRGF0YWJhc2UifSwiREJJbnN0YW5jZUNsYXNzIjoiZGIuc2VydmVybGVzcyIsIkRCSW5zdGFuY2VJZGVudGlmaWVyIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50LXdyaXRlciIsIkVuZ2luZSI6ImF1cm9yYS1wb3N0Z3Jlc3FsIiwiUHVibGljbHlBY2Nlc3NpYmxlIjpmYWxzZSwiVGFncyI6W3siS2V5IjoicHJvamVjdCIsIlZhbHVlIjoib25lLXRoZS1nby1kZXRlY3Rpb24ifSx7IktleSI6ImVudmlyb25tZW50IiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJkZXBsb3ltZW50IiwiVmFsdWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6Im93bmVyX3JvbGUiLCJWYWx1ZSI6InBsYXRmb3JtLW9wZXJhdG9yIn0seyJLZXkiOiJjb3N0X2NlbnRlciIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9XX0sIlR5cGUiOiJBV1M6OlJEUzo6REJJbnN0YW5jZSIsIlVwZGF0ZVJlcGxhY2VQb2xpY3kiOiJSZXRhaW4ifSwiRGVsZXRpb25Kb3VybmFsIjp7IkRlbGV0aW9uUG9saWN5IjoiUmV0YWluIiwiUHJvcGVydGllcyI6eyJCdWNrZXRFbmNyeXB0aW9uIjp7IlNlcnZlclNpZGVFbmNyeXB0aW9uQ29uZmlndXJhdGlvbiI6W3siQnVja2V0S2V5RW5hYmxlZCI6dHJ1ZSwiU2VydmVyU2lkZUVuY3J5cHRpb25CeURlZmF1bHQiOnsiS01TTWFzdGVyS2V5SUQiOnsiRm46OkdldEF0dCI6WyJKb3VybmFsS2V5IiwiQXJuIl19LCJTU0VBbGdvcml0aG0iOiJhd3M6a21zIn19XX0sIkJ1Y2tldE5hbWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQtNzM4NDcwMTM3ODY3LXVzLWVhc3QtMi1qb3VybmFsIiwiT2JqZWN0TG9ja0NvbmZpZ3VyYXRpb24iOnsiT2JqZWN0TG9ja0VuYWJsZWQiOiJFbmFibGVkIiwiUnVsZSI6eyJEZWZhdWx0UmV0ZW50aW9uIjp7IkRheXMiOjkwLCJNb2RlIjoiQ09NUExJQU5DRSJ9fX0sIk9iamVjdExvY2tFbmFibGVkIjp0cnVlLCJPd25lcnNoaXBDb250cm9scyI6eyJSdWxlcyI6W3siT2JqZWN0T3duZXJzaGlwIjoiQnVja2V0T3duZXJFbmZvcmNlZCJ9XX0sIlB1YmxpY0FjY2Vzc0Jsb2NrQ29uZmlndXJhdGlvbiI6eyJCbG9ja1B1YmxpY0FjbHMiOnRydWUsIkJsb2NrUHVibGljUG9saWN5Ijp0cnVlLCJJZ25vcmVQdWJsaWNBY2xzIjp0cnVlLCJSZXN0cmljdFB1YmxpY0J1Y2tldHMiOnRydWV9LCJUYWdzIjpbeyJLZXkiOiJwcm9qZWN0IiwiVmFsdWUiOiJvbmUtdGhlLWdvLWRldGVjdGlvbiJ9LHsiS2V5IjoiZW52aXJvbm1lbnQiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6ImRlcGxveW1lbnQiLCJWYWx1ZSI6Im90Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5Ijoib3duZXJfcm9sZSIsIlZhbHVlIjoicGxhdGZvcm0tb3BlcmF0b3IifSx7IktleSI6ImNvc3RfY2VudGVyIiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In1dLCJWZXJzaW9uaW5nQ29uZmlndXJhdGlvbiI6eyJTdGF0dXMiOiJFbmFibGVkIn19LCJUeXBlIjoiQVdTOjpTMzo6QnVja2V0IiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9LCJEaXNwYXRjaGVyTG9ncyI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiS21zS2V5SWQiOnsiRm46OkdldEF0dCI6WyJEYXRhS2V5IiwiQXJuIl19LCJMb2dHcm91cE5hbWUiOiIvb3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50L2Rpc3BhdGNoZXIiLCJSZXRlbnRpb25JbkRheXMiOjcsIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV19LCJUeXBlIjoiQVdTOjpMb2dzOjpMb2dHcm91cCIsIlVwZGF0ZVJlcGxhY2VQb2xpY3kiOiJSZXRhaW4ifSwiRXhwb3J0cyI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiQnVja2V0RW5jcnlwdGlvbiI6eyJTZXJ2ZXJTaWRlRW5jcnlwdGlvbkNvbmZpZ3VyYXRpb24iOlt7IkJ1Y2tldEtleUVuYWJsZWQiOnRydWUsIlNlcnZlclNpZGVFbmNyeXB0aW9uQnlEZWZhdWx0Ijp7IktNU01hc3RlcktleUlEIjp7IkZuOjpHZXRBdHQiOlsiRGF0YUtleSIsIkFybiJdfSwiU1NFQWxnb3JpdGhtIjoiYXdzOmttcyJ9fV19LCJCdWNrZXROYW1lIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50LTczODQ3MDEzNzg2Ny11cy1lYXN0LTItZXhwb3J0cyIsIkxpZmVjeWNsZUNvbmZpZ3VyYXRpb24iOnsiUnVsZXMiOlt7IkFib3J0SW5jb21wbGV0ZU11bHRpcGFydFVwbG9hZCI6eyJEYXlzQWZ0ZXJJbml0aWF0aW9uIjoxfSwiRXhwaXJhdGlvbkluRGF5cyI6MiwiSWQiOiJFeHBpcmVkRXhwb3J0cyIsIk5vbmN1cnJlbnRWZXJzaW9uRXhwaXJhdGlvbiI6eyJOb25jdXJyZW50RGF5cyI6MX0sIlN0YXR1cyI6IkVuYWJsZWQifV19LCJPd25lcnNoaXBDb250cm9scyI6eyJSdWxlcyI6W3siT2JqZWN0T3duZXJzaGlwIjoiQnVja2V0T3duZXJFbmZvcmNlZCJ9XX0sIlB1YmxpY0FjY2Vzc0Jsb2NrQ29uZmlndXJhdGlvbiI6eyJCbG9ja1B1YmxpY0FjbHMiOnRydWUsIkJsb2NrUHVibGljUG9saWN5Ijp0cnVlLCJJZ25vcmVQdWJsaWNBY2xzIjp0cnVlLCJSZXN0cmljdFB1YmxpY0J1Y2tldHMiOnRydWV9LCJUYWdzIjpbeyJLZXkiOiJwcm9qZWN0IiwiVmFsdWUiOiJvbmUtdGhlLWdvLWRldGVjdGlvbiJ9LHsiS2V5IjoiZW52aXJvbm1lbnQiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6ImRlcGxveW1lbnQiLCJWYWx1ZSI6Im90Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5Ijoib3duZXJfcm9sZSIsIlZhbHVlIjoicGxhdGZvcm0tb3BlcmF0b3IifSx7IktleSI6ImNvc3RfY2VudGVyIiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In1dLCJWZXJzaW9uaW5nQ29uZmlndXJhdGlvbiI6eyJTdGF0dXMiOiJFbmFibGVkIn19LCJUeXBlIjoiQVdTOjpTMzo6QnVja2V0IiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9LCJKb3VybmFsS2V5Ijp7IkRlbGV0aW9uUG9saWN5IjoiUmV0YWluIiwiUHJvcGVydGllcyI6eyJEZXNjcmlwdGlvbiI6Im90Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudCBKb3VybmFsS2V5IiwiRW5hYmxlS2V5Um90YXRpb24iOnRydWUsIktleVBvbGljeSI6eyJTdGF0ZW1lbnQiOlt7IkFjdGlvbiI6ImttczoqIiwiRWZmZWN0IjoiQWxsb3ciLCJQcmluY2lwYWwiOnsiQVdTIjp7IkZuOjpTdWIiOiJhcm46JHtBV1M6OlBhcnRpdGlvbn06aWFtOjoke0FXUzo6QWNjb3VudElkfTpyb290In19LCJSZXNvdXJjZSI6IioifV0sIlZlcnNpb24iOiIyMDEyLTEwLTE3In0sIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV19LCJUeXBlIjoiQVdTOjpLTVM6OktleSIsIlVwZGF0ZVJlcGxhY2VQb2xpY3kiOiJSZXRhaW4ifSwiTGFtYmRhU2VjdXJpdHlHcm91cCI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiR3JvdXBEZXNjcmlwdGlvbiI6IkxhbWJkYTogcHJpdmF0ZSBQb3N0Z3JlU1FMIGFuZCBIVFRQUyBJUHY2IEFXUyBzZXJ2aWNlIGFjY2VzcyIsIlNlY3VyaXR5R3JvdXBFZ3Jlc3MiOlt7IkNpZHJJcHY2IjoiOjovMCIsIkZyb21Qb3J0Ijo0NDMsIklwUHJvdG9jb2wiOiJ0Y3AiLCJUb1BvcnQiOjQ0M30seyJDaWRySXAiOiIwLjAuMC4wLzAiLCJGcm9tUG9ydCI6NDQzLCJJcFByb3RvY29sIjoidGNwIiwiVG9Qb3J0Ijo0NDN9XSwiVGFncyI6W3siS2V5IjoicHJvamVjdCIsIlZhbHVlIjoib25lLXRoZS1nby1kZXRlY3Rpb24ifSx7IktleSI6ImVudmlyb25tZW50IiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJkZXBsb3ltZW50IiwiVmFsdWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6Im93bmVyX3JvbGUiLCJWYWx1ZSI6InBsYXRmb3JtLW9wZXJhdG9yIn0seyJLZXkiOiJjb3N0X2NlbnRlciIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9XSwiVnBjSWQiOnsiUmVmIjoiTmV0d29yayJ9fSwiVHlwZSI6IkFXUzo6RUMyOjpTZWN1cml0eUdyb3VwIiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9LCJNYWludGVuYW5jZUxvZ3MiOnsiRGVsZXRpb25Qb2xpY3kiOiJSZXRhaW4iLCJQcm9wZXJ0aWVzIjp7Ikttc0tleUlkIjp7IkZuOjpHZXRBdHQiOlsiRGF0YUtleSIsIkFybiJdfSwiTG9nR3JvdXBOYW1lIjoiL290Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudC9tYWludGVuYW5jZSIsIlJldGVudGlvbkluRGF5cyI6NywiVGFncyI6W3siS2V5IjoicHJvamVjdCIsIlZhbHVlIjoib25lLXRoZS1nby1kZXRlY3Rpb24ifSx7IktleSI6ImVudmlyb25tZW50IiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJkZXBsb3ltZW50IiwiVmFsdWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6Im93bmVyX3JvbGUiLCJWYWx1ZSI6InBsYXRmb3JtLW9wZXJhdG9yIn0seyJLZXkiOiJjb3N0X2NlbnRlciIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9XX0sIlR5cGUiOiJBV1M6OkxvZ3M6OkxvZ0dyb3VwIiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9LCJOZXR3b3JrIjp7IkRlbGV0aW9uUG9saWN5IjoiUmV0YWluIiwiUHJvcGVydGllcyI6eyJDaWRyQmxvY2siOiIxMC43Ni4wLjAvMTYiLCJFbmFibGVEbnNIb3N0bmFtZXMiOnRydWUsIkVuYWJsZURuc1N1cHBvcnQiOnRydWUsIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV19LCJUeXBlIjoiQVdTOjpFQzI6OlZQQyIsIlVwZGF0ZVJlcGxhY2VQb2xpY3kiOiJSZXRhaW4ifSwiTmV0d29ya0lwdjYiOnsiRGVsZXRpb25Qb2xpY3kiOiJSZXRhaW4iLCJQcm9wZXJ0aWVzIjp7IkFtYXpvblByb3ZpZGVkSXB2NkNpZHJCbG9jayI6dHJ1ZSwiVnBjSWQiOnsiUmVmIjoiTmV0d29yayJ9fSwiVHlwZSI6IkFXUzo6RUMyOjpWUENDaWRyQmxvY2siLCJVcGRhdGVSZXBsYWNlUG9saWN5IjoiUmV0YWluIn0sIlByaXZhdGVBIjp7IkRlbGV0aW9uUG9saWN5IjoiUmV0YWluIiwiRGVwZW5kc09uIjoiTmV0d29ya0lwdjYiLCJQcm9wZXJ0aWVzIjp7IkFzc2lnbklwdjZBZGRyZXNzT25DcmVhdGlvbiI6dHJ1ZSwiQXZhaWxhYmlsaXR5Wm9uZSI6eyJGbjo6U2VsZWN0IjpbMCx7IkZuOjpHZXRBWnMiOiIifV19LCJDaWRyQmxvY2siOiIxMC43Ni4wLjAvMjQiLCJJcHY2Q2lkckJsb2NrIjp7IkZuOjpTZWxlY3QiOlswLHsiRm46OkNpZHIiOlt7IkZuOjpTZWxlY3QiOlswLHsiRm46OkdldEF0dCI6WyJOZXR3b3JrIiwiSXB2NkNpZHJCbG9ja3MiXX1dfSwyLDY0XX1dfSwiTWFwUHVibGljSXBPbkxhdW5jaCI6ZmFsc2UsIlRhZ3MiOlt7IktleSI6InByb2plY3QiLCJWYWx1ZSI6Im9uZS10aGUtZ28tZGV0ZWN0aW9uIn0seyJLZXkiOiJlbnZpcm9ubWVudCIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5IjoiZGVwbG95bWVudCIsIlZhbHVlIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJvd25lcl9yb2xlIiwiVmFsdWUiOiJwbGF0Zm9ybS1vcGVyYXRvciJ9LHsiS2V5IjoiY29zdF9jZW50ZXIiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifV0sIlZwY0lkIjp7IlJlZiI6Ik5ldHdvcmsifX0sIlR5cGUiOiJBV1M6OkVDMjo6U3VibmV0IiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9LCJSdW50aW1lQ29udHJvbCI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiQXR0cmlidXRlRGVmaW5pdGlvbnMiOlt7IkF0dHJpYnV0ZU5hbWUiOiJQSyIsIkF0dHJpYnV0ZVR5cGUiOiJTIn0seyJBdHRyaWJ1dGVOYW1lIjoiU0siLCJBdHRyaWJ1dGVUeXBlIjoiUyJ9XSwiQmlsbGluZ01vZGUiOiJQQVlfUEVSX1JFUVVFU1QiLCJLZXlTY2hlbWEiOlt7IkF0dHJpYnV0ZU5hbWUiOiJQSyIsIktleVR5cGUiOiJIQVNIIn0seyJBdHRyaWJ1dGVOYW1lIjoiU0siLCJLZXlUeXBlIjoiUkFOR0UifV0sIlBvaW50SW5UaW1lUmVjb3ZlcnlTcGVjaWZpY2F0aW9uIjp7IlBvaW50SW5UaW1lUmVjb3ZlcnlFbmFibGVkIjp0cnVlfSwiU1NFU3BlY2lmaWNhdGlvbiI6eyJTU0VFbmFibGVkIjp0cnVlfSwiVGFibGVOYW1lIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50LWNvbnRyb2wiLCJUYWdzIjpbeyJLZXkiOiJwcm9qZWN0IiwiVmFsdWUiOiJvbmUtdGhlLWdvLWRldGVjdGlvbiJ9LHsiS2V5IjoiZW52aXJvbm1lbnQiLCJWYWx1ZSI6InNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6ImRlcGxveW1lbnQiLCJWYWx1ZSI6Im90Z2Qtc2VydmVybGVzcy1kZXZlbG9wbWVudCJ9LHsiS2V5Ijoib3duZXJfcm9sZSIsIlZhbHVlIjoicGxhdGZvcm0tb3BlcmF0b3IifSx7IktleSI6ImNvc3RfY2VudGVyIiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In1dLCJUaW1lVG9MaXZlU3BlY2lmaWNhdGlvbiI6eyJBdHRyaWJ1dGVOYW1lIjoiZXhwaXJlc0F0IiwiRW5hYmxlZCI6dHJ1ZX19LCJUeXBlIjoiQVdTOjpEeW5hbW9EQjo6VGFibGUiLCJVcGRhdGVSZXBsYWNlUG9saWN5IjoiUmV0YWluIn0sIlRvbWJzdG9uZVNlY3JldCI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiR2VuZXJhdGVTZWNyZXRTdHJpbmciOnsiRXhjbHVkZUNoYXJhY3RlcnMiOiJnaGlqa2xtbm9wcXJzdHV2d3h5eiIsIkV4Y2x1ZGVQdW5jdHVhdGlvbiI6dHJ1ZSwiRXhjbHVkZVVwcGVyY2FzZSI6dHJ1ZSwiR2VuZXJhdGVTdHJpbmdLZXkiOiJrZXkiLCJQYXNzd29yZExlbmd0aCI6NjQsIlJlcXVpcmVFYWNoSW5jbHVkZWRUeXBlIjpmYWxzZSwiU2VjcmV0U3RyaW5nVGVtcGxhdGUiOiJ7XCJrZXlfaWRcIjogXCJ2MVwifSJ9LCJLbXNLZXlJZCI6eyJGbjo6R2V0QXR0IjpbIkpvdXJuYWxLZXkiLCJBcm4iXX0sIk5hbWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQtdG9tYnN0b25lIiwiVGFncyI6W3siS2V5IjoicHJvamVjdCIsIlZhbHVlIjoib25lLXRoZS1nby1kZXRlY3Rpb24ifSx7IktleSI6ImVudmlyb25tZW50IiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJkZXBsb3ltZW50IiwiVmFsdWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6Im93bmVyX3JvbGUiLCJWYWx1ZSI6InBsYXRmb3JtLW9wZXJhdG9yIn0seyJLZXkiOiJjb3N0X2NlbnRlciIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9XX0sIlR5cGUiOiJBV1M6OlNlY3JldHNNYW5hZ2VyOjpTZWNyZXQiLCJVcGRhdGVSZXBsYWNlUG9saWN5IjoiUmV0YWluIn0sIldlYkFzc2V0cyI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiQnVja2V0RW5jcnlwdGlvbiI6eyJTZXJ2ZXJTaWRlRW5jcnlwdGlvbkNvbmZpZ3VyYXRpb24iOlt7IlNlcnZlclNpZGVFbmNyeXB0aW9uQnlEZWZhdWx0Ijp7IlNTRUFsZ29yaXRobSI6IkFFUzI1NiJ9fV19LCJCdWNrZXROYW1lIjoib3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50LTczODQ3MDEzNzg2Ny11cy1lYXN0LTItd2ViIiwiT3duZXJzaGlwQ29udHJvbHMiOnsiUnVsZXMiOlt7Ik9iamVjdE93bmVyc2hpcCI6IkJ1Y2tldE93bmVyRW5mb3JjZWQifV19LCJQdWJsaWNBY2Nlc3NCbG9ja0NvbmZpZ3VyYXRpb24iOnsiQmxvY2tQdWJsaWNBY2xzIjp0cnVlLCJCbG9ja1B1YmxpY1BvbGljeSI6dHJ1ZSwiSWdub3JlUHVibGljQWNscyI6dHJ1ZSwiUmVzdHJpY3RQdWJsaWNCdWNrZXRzIjp0cnVlfSwiVGFncyI6W3siS2V5IjoicHJvamVjdCIsIlZhbHVlIjoib25lLXRoZS1nby1kZXRlY3Rpb24ifSx7IktleSI6ImVudmlyb25tZW50IiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJkZXBsb3ltZW50IiwiVmFsdWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6Im93bmVyX3JvbGUiLCJWYWx1ZSI6InBsYXRmb3JtLW9wZXJhdG9yIn0seyJLZXkiOiJjb3N0X2NlbnRlciIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9XSwiVmVyc2lvbmluZ0NvbmZpZ3VyYXRpb24iOnsiU3RhdHVzIjoiRW5hYmxlZCJ9fSwiVHlwZSI6IkFXUzo6UzM6OkJ1Y2tldCIsIlVwZGF0ZVJlcGxhY2VQb2xpY3kiOiJSZXRhaW4ifSwiV29ya2VyTG9ncyI6eyJEZWxldGlvblBvbGljeSI6IlJldGFpbiIsIlByb3BlcnRpZXMiOnsiS21zS2V5SWQiOnsiRm46OkdldEF0dCI6WyJEYXRhS2V5IiwiQXJuIl19LCJMb2dHcm91cE5hbWUiOiIvb3RnZC1zZXJ2ZXJsZXNzLWRldmVsb3BtZW50L3dvcmtlciIsIlJldGVudGlvbkluRGF5cyI6NywiVGFncyI6W3siS2V5IjoicHJvamVjdCIsIlZhbHVlIjoib25lLXRoZS1nby1kZXRlY3Rpb24ifSx7IktleSI6ImVudmlyb25tZW50IiwiVmFsdWUiOiJzZXJ2ZXJsZXNzLWRldmVsb3BtZW50In0seyJLZXkiOiJkZXBsb3ltZW50IiwiVmFsdWUiOiJvdGdkLXNlcnZlcmxlc3MtZGV2ZWxvcG1lbnQifSx7IktleSI6Im93bmVyX3JvbGUiLCJWYWx1ZSI6InBsYXRmb3JtLW9wZXJhdG9yIn0seyJLZXkiOiJjb3N0X2NlbnRlciIsIlZhbHVlIjoic2VydmVybGVzcy1kZXZlbG9wbWVudCJ9XX0sIlR5cGUiOiJBV1M6OkxvZ3M6OkxvZ0dyb3VwIiwiVXBkYXRlUmVwbGFjZVBvbGljeSI6IlJldGFpbiJ9fX0K')
-          candidate_digest = hashlib.sha256(candidate_raw).hexdigest()
-          if candidate_digest != 'c1fd5bda317db1efd1d3508f31d1c63644db917e70b59bf7327986bdb96559bd' or len(candidate_raw) > 51200:
-              raise SystemExit('Candidate schema source binding differs')
-          candidate_path = destination / 'candidate-summary-input.json'
-          candidate_path.write_bytes(candidate_raw)
-          candidate_result = aws('cloudformation', 'get-template-summary',
-              ['--template-body', 'file://' + str(candidate_path)],
-              '{ResourceIdentifierSummaries:ResourceIdentifierSummaries,ResourceTypes:ResourceTypes}')
-          candidate_path.unlink()
-          survivor_ids = {'Network', 'NetworkIpv6', 'PrivateA', 'LambdaSecurityGroup', 'DatabaseSecurityGroup',
-              'DatabaseParameters', 'DatabaseSubnets', 'Database', 'DatabaseWriter'}
-          observed_identifiers = {}
-          relevant_summaries = []
-          if isinstance(candidate_result, dict) and isinstance(candidate_result.get('ResourceIdentifierSummaries'), list):
-              for resource_summary in candidate_result['ResourceIdentifierSummaries']:
-                  relevant = sorted(set(resource_summary.get('LogicalResourceIds', [])) & survivor_ids)
-                  if relevant:
-                      keys = resource_summary.get('ResourceIdentifiers', [])
-                      relevant_summaries.append({'LogicalResourceIds': relevant,
-                          'ResourceType': resource_summary.get('ResourceType'), 'ResourceIdentifiers': keys})
-                      for logical in relevant:
-                          if logical in observed_identifiers:
-                              observed_identifiers[logical] = ['AmbiguousDuplicateSummary']
+          import sys
+          import time
+          
+          ROOT = Path.cwd()
+          sys.path.insert(0, str(ROOT))
+          SOURCE = '0844868aa543af4ab75ac5065ad48cf807b86bb3'
+          TREE = '1afe65b4d2a6ba3a4c541c9ecf7bc61f287ee908'
+          ACCOUNT = '738470137867'
+          WEST = 'us-west-2'
+          STACK = 'otgd-fargate-development-us-west-2-recovery'
+          TEMPLATE_SHA256 = '3a91906c2ddbb5ee602263275097a73fb644f4ef4a939b640a5a3b26f4fd7d81'
+          STACK_TAGS = [{'Key': 'deployment', 'Value': 'otgd-serverless-development'},
+                        {'Key': 'purpose', 'Value': 'serverless-development'}]
+          READS = {'sts': {'get_caller_identity'}, 'cloudformation': {'describe_stacks', 'get_template',
+              'list_stack_resources', 'describe_change_set'}, 'kms': {'describe_key'},
+              'backup': {'describe_backup_vault'}, 's3': {'get_bucket_location', 'get_bucket_versioning',
+              'get_public_access_block', 'get_bucket_encryption', 'get_object_lock_configuration'}}
+          WRITES = {'create_change_set', 'update_termination_protection', 'execute_change_set'}
+          
+          
+          def require(value, reason):
+              if not value:
+                  raise RuntimeError(reason)
+          
+          
+          def digest(value):
+              return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+          
+          
+          class Journal:
+              def __init__(self, path):
+                  self.fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0), 0o600)
+                  directory = os.open(Path(path).parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+                  try:
+                      os.fsync(directory)
+                  finally:
+                      os.close(directory)
+                  self.previous, self.sequence = '0' * 64, 0
+          
+              def append(self, event, **fields):
+                  row = {'event': event, 'sequence': self.sequence, 'previous_sha256': self.previous,
+                         'source_revision': SOURCE, 'template_sha256': TEMPLATE_SHA256,
+                         'at': datetime.now(timezone.utc).isoformat(), **fields}
+                  raw = (json.dumps(row, sort_keys=True, separators=(',', ':')) + '\n').encode()
+                  require(len(raw) <= 1048576, 'Operation journal record exceeds bound')
+                  offset = 0
+                  while offset < len(raw):
+                      count = os.write(self.fd, raw[offset:])
+                      require(count > 0, 'Operation journal write incomplete')
+                      offset += count
+                  os.fsync(self.fd)
+                  self.previous, self.sequence = hashlib.sha256(raw).hexdigest(), self.sequence + 1
+          
+          
+          class StorageSession:
+              """Close the callable library boundary to metadata and one CREATE storage graph."""
+              def __init__(self, aws, c, template, journal, admission):
+                  require(digest(template) == TEMPLATE_SHA256, 'Qualified storage template differs')
+                  self.aws, self.c, self.template, self.journal, self.admission = aws, c, template, journal, admission
+                  self.change_id = self.stack_id = None
+                  self.started = time.monotonic()
+                  self.write_count = 0
+          
+              def client(self, service, **options):
+                  require(service in READS and options.pop('region_name', WEST) == WEST,
+                          'Storage operation is limited to reviewed West metadata services')
+                  require(not options, 'Unreviewed client option')
+                  from botocore.config import Config
+                  actual = self.aws.client(service, region_name=WEST, config=Config(
+                      ignore_configured_endpoint_urls=True, connect_timeout=5, read_timeout=15,
+                      retries={'total_max_attempts': 1, 'mode': 'standard'}))
+                  return StorageClient(self, service, actual)
+          
+              def prewrite(self):
+                  require(time.monotonic() - self.started < 900 and self.write_count < 3,
+                          'Storage mutation deadline/count exceeded')
+                  proof, price = self.admission()
+                  account = self.client('sts').get_caller_identity()
+                  require(account.get('Account') == ACCOUNT, 'Storage caller account differs')
+                  self.journal.append('fresh-source-gate-budget-account-admission', gate_proof_sha256=digest(proof),
+                                      budget_sha256=digest(price), account=ACCOUNT)
+          
+              def admit_change_set(self):
+                  cf = self.client('cloudformation')
+                  result = cf.describe_change_set(StackName=STACK, ChangeSetName=self.change_id)
+                  require(result.get('ChangeSetId') == self.change_id and result.get('StackName') == STACK
+                          and self.change_id is not None and result.get('Status') == 'CREATE_COMPLETE'
+                          and result.get('ExecutionStatus') == 'AVAILABLE' and not result.get('NextToken'),
+                          'Storage change set is not one complete owned CREATE')
+                  stack_id = result.get('StackId', '')
+                  require(re.fullmatch(r'arn:aws:cloudformation:us-west-2:' + ACCOUNT + ':stack/' + STACK + r'/[0-9a-f-]{36}', stack_id),
+                          'Storage change set stack UUID differs')
+                  require(self.stack_id in (None, stack_id), 'Storage stack UUID changed')
+                  changes = result.get('Changes', [])
+                  expected = {name: row['Type'] for name, row in self.template['Resources'].items()}
+                  rows = [entry.get('ResourceChange', {}) for entry in changes]
+                  require(len(rows) == len(expected) and {row.get('LogicalResourceId'): row.get('ResourceType') for row in rows} == expected
+                          and all(row.get('Action') == 'Add' and row.get('Replacement') in (None, 'False') for row in rows),
+                          'Storage change set must contain only exact thirteen Add actions')
+                  self.stack_id = stack_id
+                  stacks = cf.describe_stacks(StackName=STACK).get('Stacks', [])
+                  require(len(stacks) == 1 and stacks[0].get('StackId') == stack_id
+                          and stacks[0].get('StackStatus') == 'REVIEW_IN_PROGRESS',
+                          'Recorded CREATE must bind the exact new review stack')
+                  self.journal.append('verified-exact-storage-change-set', stack_id=stack_id, change_set_id=self.change_id,
+                                      changes_sha256=digest(changes))
+                  return result
+          
+          
+          class StorageClient:
+              def __init__(self, owner, service, client):
+                  self.owner, self.service, self.actual = owner, service, client
+          
+              def get_waiter(self, name):
+                  require(self.service == 'cloudformation' and name in {'change_set_create_complete', 'stack_create_complete'},
+                          'Unreviewed storage waiter')
+                  actual = self.actual.get_waiter(name)
+                  class BoundedWaiter:
+                      def wait(inner, **options):
+                          require(options.get('StackName') == STACK, 'Foreign storage waiter target')
+                          if name == 'change_set_create_complete':
+                              require(options.get('ChangeSetName') == self.owner.change_id, 'Foreign storage change-set waiter')
+                          cfg = options.get('WaiterConfig', {})
+                          options['WaiterConfig'] = {'Delay': cfg.get('Delay', 15),
+                              'MaxAttempts': min(cfg.get('MaxAttempts', 60), 60)}
+                          return actual.wait(**options)
+                  return BoundedWaiter()
+          
+              def get_paginator(self, name):
+                  require(self.service == 'cloudformation' and name == 'describe_change_set', 'Unreviewed storage pagination')
+                  return self.actual.get_paginator(name)
+          
+              def __getattr__(self, method):
+                  require(method in READS[self.service] or self.service == 'cloudformation' and method in WRITES,
+                          'Operation outside storage-only allowlist')
+                  def call(**kwargs):
+                      if method in READS[self.service]:
+                          if self.service == 'cloudformation':
+                              target = kwargs.get('StackName')
+                              require(target == STACK or self.owner.stack_id is not None and target == self.owner.stack_id, 'Foreign CloudFormation metadata target')
+                          if self.service == 's3':
+                              require(kwargs.get('ExpectedBucketOwner') == ACCOUNT and kwargs.get('Bucket') in {
+                                  f'otgd-fargate-recovery-{ACCOUNT}-{WEST}-{suffix}'
+                                  for suffix in ('artifacts', 'exports', 'journal', 'web', 'deployments')}, 'Foreign bucket metadata target')
+                          try:
+                              result = getattr(self.actual, method)(**kwargs)
+                          except Exception as error:
+                              if self.service == 'cloudformation' and method == 'describe_stacks':
+                                  details = getattr(error, 'response', {}).get('Error', {})
+                                  require(details.get('Code') == 'ValidationError' and details.get('Message') ==
+                                          f'Stack with id {target} does not exist', 'Stack absence is unverified')
+                              raise
+                          if self.service == 'cloudformation' and method == 'describe_stacks':
+                              rows = result.get('Stacks', [])
+                              require(len(rows) == 1 and re.fullmatch(r'arn:aws:cloudformation:us-west-2:' + ACCOUNT +
+                                      ':stack/' + STACK + r'/[0-9a-f-]{36}', rows[0].get('StackId', '')),
+                                      'Storage stack metadata identity differs')
+                              require(self.owner.stack_id in (None, rows[0]['StackId']), 'Storage stack UUID changed')
+                              self.owner.stack_id = rows[0]['StackId']
+                          return result
+                      self.owner.prewrite()
+                      require(kwargs.get('StackName') == STACK, 'Foreign storage mutation target')
+                      if method == 'create_change_set':
+                          require(self.owner.change_id is None and set(kwargs) == {'StackName', 'ChangeSetName', 'ChangeSetType',
+                              'Capabilities', 'Tags', 'TemplateBody'} and kwargs.get('ChangeSetType') == 'CREATE'
+                              and re.fullmatch(r'serverless-[0-9a-f]{32}', kwargs.get('ChangeSetName', ''))
+                              and kwargs.get('Capabilities') == ['CAPABILITY_NAMED_IAM'] and kwargs.get('Tags') == STACK_TAGS
+                              and digest(json.loads(kwargs['TemplateBody'])) == TEMPLATE_SHA256,
+                              'Only exact new retained storage template creation is admitted')
+                          try:
+                              self.actual.describe_stacks(StackName=STACK)
+                          except Exception as error:
+                              details = getattr(error, 'response', {}).get('Error', {})
+                              require(details.get('Code') == 'ValidationError' and details.get('Message') ==
+                                      f'Stack with id {STACK} does not exist', 'Exact new-stack absence is unverified')
                           else:
-                              observed_identifiers[logical] = keys
-          candidate_proof = {'candidate_raw_sha256': candidate_digest,
-              'candidate_resource_count': 24, 'candidate_schema_api': 'GetTemplateSummary only; no change set',
-              'survivor_identifier_summaries': relevant_summaries,
-              'singleton_identifier_logical_ids': sorted(logical for logical, keys in observed_identifiers.items() if len(keys) == 1 and keys != ['AmbiguousDuplicateSummary']),
-              'unsupported_or_ambiguous_logical_ids': sorted(logical for logical in survivor_ids
-                  if logical not in observed_identifiers or len(observed_identifiers[logical]) != 1 or observed_identifiers[logical] == ['AmbiguousDuplicateSummary'])}
-          if isinstance(candidate_result, dict) and candidate_result.get('observation_error_code'):
-              candidate_proof['observation_error_code'] = candidate_result['observation_error_code']
-          (destination / 'candidate-import-identifier-summary.json').write_text(json.dumps(candidate_proof, indent=2, sort_keys=True) + '\n')
-          print(json.dumps({'candidate_import_identifier_schema': candidate_proof}, sort_keys=True))
-          PYCODE
-
-      - name: Preserve credential-free Original template source evidence
+                              raise RuntimeError('Existing storage stack cannot be changed')
+                      elif method == 'update_termination_protection':
+                          require(set(kwargs) == {'StackName', 'EnableTerminationProtection'} and kwargs['EnableTerminationProtection'] is True,
+                                  'Only enabling storage termination protection is admitted')
+                          self.owner.admit_change_set()
+                      else:
+                          require(set(kwargs) == {'StackName', 'ChangeSetName'} and kwargs['ChangeSetName'] == self.owner.change_id,
+                                  'Only the recorded storage change set can execute')
+                          self.owner.admit_change_set()
+                          rows = self.actual.describe_stacks(StackName=STACK).get('Stacks', [])
+                          require(len(rows) == 1 and rows[0].get('StackId') == self.owner.stack_id
+                                  and rows[0].get('StackStatus') == 'REVIEW_IN_PROGRESS'
+                                  and rows[0].get('EnableTerminationProtection') is True,
+                                  'New protected storage review stack differs before execution')
+                      self.owner.journal.append('mutation-intent', service=self.service, operation=method,
+                                                arguments_sha256=digest(kwargs), change_set_id=self.owner.change_id)
+                      self.owner.write_count += 1
+                      try:
+                          result = getattr(self.actual, method)(**kwargs)
+                      except Exception as error:
+                          code = getattr(error, 'response', {}).get('Error', {}).get('Code', type(error).__name__)
+                          self.owner.journal.append('unresolved-mutation', operation=method, sanitized_error_code=str(code))
+                          raise RuntimeError('Storage mutation unresolved; fresh review required') from None
+                      request = result.get('ResponseMetadata', {}).get('RequestId')
+                      require(isinstance(request, str) and request, 'Storage mutation response lacks request ID')
+                      if method == 'create_change_set':
+                          identifier = result.get('Id', '')
+                          require(re.fullmatch(r'arn:aws:cloudformation:us-west-2:' + ACCOUNT + r':changeSet/serverless-[0-9a-f]{32}/[0-9a-f-]{36}', identifier),
+                                  'Storage change set response identity differs')
+                          stack_id = result.get('StackId', '')
+                          require(re.fullmatch(r'arn:aws:cloudformation:us-west-2:' + ACCOUNT + ':stack/' + STACK +
+                                  r'/[0-9a-f-]{36}', stack_id) and self.owner.stack_id in (None, stack_id),
+                                  'Created storage stack UUID differs')
+                          self.owner.change_id, self.owner.stack_id = identifier, stack_id
+                      self.owner.journal.append('mutation-receipt', operation=method, request_id=request, change_set_id=self.owner.change_id)
+                      return result
+                  return call
+          
+          
+          def main():
+              from deploy.fargate import read_config, budget, deploy_recovery_storage
+              from deploy.fargate_backup import build_destination_template, verify_destination
+              from deploy import platform
+              root = Path(os.environ['RUNNER_TEMP'])
+              directory = root / 'cold-storage-only'
+              directory.mkdir(mode=0o700, exist_ok=False)
+              journal = Journal(directory / 'operations.jsonl')
+              config = read_config(ROOT / 'infra/config/fargate.example.json')
+              require(config['account'] == ACCOUNT and config['region'] == 'us-east-1' and config.get('backupRegion') == WEST
+                      and config['monthlyBudgetUsd'] == 100 and config['plannedMonthlyUsers'] == 10, 'Reviewed storage scope/budget differs')
+              config['releaseId'] = SOURCE
+              def admission():
+                  platform.require_clean_source(SOURCE)
+                  require(subprocess.run(['git', 'rev-parse', 'HEAD^{tree}'], capture_output=True, text=True, check=True).stdout.strip() == TREE,
+                          'Qualified storage source tree differs')
+                  result = subprocess.run([sys.executable, str(root / 'cold-storage-admission.py')],
+                                          capture_output=True, text=True, timeout=120, check=True)
+                  require(len(result.stdout.encode()) < 16384, 'Storage gate admission response exceeds bound')
+                  return json.loads(result.stdout), budget(config)
+              template = build_destination_template(config)
+              require(digest(template) == TEMPLATE_SHA256, 'Reviewed storage template differs')
+              session = StorageSession(platform.CloudSession('us-east-1', None), config, template, journal, admission)
+              # This preflight is only source/budget/caller admission for storage. It never
+              # substitutes for fargate.preflight or authorizes app/SQL/replication writes.
+              session.prewrite()
+              journal.append('qualified-storage-operation-started', account=ACCOUNT, region=WEST,
+                             runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), paid_plan_inferred=False)
+              try:
+                  outputs = deploy_recovery_storage(session, config)
+                  verified = verify_destination(session, config, outputs)
+                  cf = session.client('cloudformation')
+                  stacks = cf.describe_stacks(StackName=STACK)['Stacks']
+                  stack_id = stacks[0]['StackId']
+                  inventory = cf.list_stack_resources(StackName=stack_id)['StackResourceSummaries']
+                  receipt = {'schema_version': '1.0.0', 'operation': 'qualified-cold-storage-only',
+                      'status': 'cold_storage_configuration_verified', 'source_revision': SOURCE, 'source_tree': TREE,
+                      'account': ACCOUNT, 'region': WEST, 'stack_id': stack_id, 'template_sha256': TEMPLATE_SHA256,
+                      'physical_resources': {row['LogicalResourceId']: row['PhysicalResourceId'] for row in inventory},
+                      'outputs': outputs, 'verification': verified, 'aws_mutation_count': session.write_count,
+                      'approved_planning_budget_usd': 100, 'account_plan_admission': 'not_performed_for_storage_only',
+                      'paid_plan_inferred': False, 'app_activation_authorized': False, 'app_deployment_executed': False,
+                      'source_replication_established': False, 'backup_copy_verified': False, 'restore_executed': False,
+                      'finished_at': datetime.now(timezone.utc).isoformat()}
+                  platform.write_receipt(directory / 'storage.json', receipt)
+                  journal.append('verified-storage-only-complete', receipt_sha256=digest(receipt), stack_id=stack_id)
+                  print(json.dumps({'status': receipt['status'], 'app_deployment_executed': False}))
+              except Exception as error:
+                  journal.append('blocked-preserve-evidence', sanitized_error_type=type(error).__name__)
+                  raise
+          
+          
+          if __name__ == '__main__':
+              main()
+          PYRUNNER
+          chmod 600 "$RUNNER_TEMP/cold-storage-runner.py"
+          uv run --project services/api --no-sync python "$RUNNER_TEMP/cold-storage-runner.py"
+      - name: Preserve private credential-free storage operation proof
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: readonly-import-template-${{ github.run_id }}
-          path: ${{ runner.temp }}/observer-template/
-          if-no-files-found: error
+          name: qualified-cold-storage-only-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.COLD_STORAGE_DIR }}/operations.jsonl
+            ${{ env.COLD_STORAGE_DIR }}/storage.json
+          if-no-files-found: warn
           retention-days: 7
