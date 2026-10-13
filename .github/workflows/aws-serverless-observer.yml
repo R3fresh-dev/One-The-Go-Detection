@@ -34,6 +34,7 @@ jobs:
       OTGD_RETIREMENT_ADMISSION_SHA256: 6d5c16e6c9e8ba9e795c42fab6dc0782908d21f57288d5ba9e279e0976960a01
       OTGD_RETIREMENT_PLAN_SHA256: 564ef704204847dbafd3190b8263bb2fe7f828716dbbbc255c74ab0a2c5eeba9
       OTGD_RETIREMENT_SQL_HOOK_SHA256: '3fc878b5d24248c69c2eae51a9bdd606635ed78e9e75d312f6cb7d0641764680'
+      OTGD_RESUME_WRAPPER_SHA256: '3e419a537dd4980e8db0b2d25390bb4d43312aabebf81e59c61c3caf1312db00'
     steps:
       - name: Bind private operation paths from the current runner
         shell: bash
@@ -292,11 +293,56 @@ jobs:
               os.fsync(stream.fileno())
           STAGEPY
 
+      - name: Stage separately hash-bound exact post-delete resume wrapper
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'RESUMESTAGEPY'
+          import base64,hashlib,json,os,zlib
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP']).resolve()
+          assets=Path(os.environ['OTGD_RETIREMENT_ASSETS_DIR'])
+          evidence=Path(os.environ['OTGD_RETIREMENT_EVIDENCE_DIR'])
+          if (assets.resolve()!=root/'ohio-retirement-assets' or assets.is_symlink() or not assets.is_dir()
+                  or evidence.resolve()!=root/'ohio-retirement-evidence' or evidence.is_symlink() or not evidence.is_dir()):
+              raise SystemExit('Exact private resume asset directory differs')
+          encoded='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'
+          expected='3e419a537dd4980e8db0b2d25390bb4d43312aabebf81e59c61c3caf1312db00'
+          if os.environ.get('OTGD_RESUME_WRAPPER_SHA256')!=expected:
+              raise SystemExit('Root-reviewed resume wrapper digest differs')
+          compressed=base64.b64decode(encoded,validate=True)
+          decoder=zlib.decompressobj()
+          raw=decoder.decompress(compressed,18816+1)
+          if len(raw)!=18816 or not decoder.eof or decoder.unused_data or decoder.unconsumed_tail or hashlib.sha256(raw).hexdigest()!=expected:
+              raise SystemExit('Exact bounded resume wrapper bytes differ')
+          for name,sha in {'retire_ohio.py':'ecffe38c2bbd649979495fd1f6ff64432982ce39ebbe61a2cb9feeef3ae31d80',
+                  'retirement_admission.py':'6d5c16e6c9e8ba9e795c42fab6dc0782908d21f57288d5ba9e279e0976960a01'}.items():
+              path=assets/name
+              if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest()!=sha:
+                  raise SystemExit('Frozen resume dependency differs')
+          fd=os.open(assets/'resume_ohio.py',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+          with os.fdopen(fd,'wb') as f:
+              f.write(raw);f.flush();os.fsync(f.fileno())
+          receipt={'schema':'otgd-ohio-post-delete-wrapper-staging/v1','wrapper_sha256':expected,'bytes':len(raw),
+              'frozen_core_sha256':'ecffe38c2bbd649979495fd1f6ff64432982ce39ebbe61a2cb9feeef3ae31d80',
+              'frozen_admission_sha256':'6d5c16e6c9e8ba9e795c42fab6dc0782908d21f57288d5ba9e279e0976960a01',
+              'original_asset_manifest_unchanged':True,'native_requests':0}
+          fd=os.open(evidence/'resume-wrapper-staging.json',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+          with os.fdopen(fd,'w') as f:
+              f.write(json.dumps(receipt,sort_keys=True)+chr(10));f.flush();os.fsync(f.fileno())
+          RESUMESTAGEPY
+
       - name: Authenticate exact reviewed source and raw mandatory gates before credentials
         shell: bash
         run: |
           set -euo pipefail
           python3 "$OTGD_RETIREMENT_ASSETS_DIR/retirement_admission.py" > "$OTGD_RETIREMENT_EVIDENCE_DIR/admission-before-credentials.json"
+
+      - name: Bind protected original native deletion and archive receipts before credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$OTGD_RETIREMENT_ASSETS_DIR/resume_ohio.py" --mode verify-prior
 
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
         with:
@@ -326,17 +372,11 @@ jobs:
           set -euo pipefail
           python3 "$OTGD_RETIREMENT_ASSETS_DIR/retirement_admission.py" > "$OTGD_RETIREMENT_EVIDENCE_DIR/admission-before-execution.json"
 
-      - name: Execute one reviewed preserving plan with admission before every mutation
+      - name: Resume only original post-delete preservation with admission before every mutation
         shell: bash
         run: |
           set -euo pipefail
-          uv run --project services/api python "$OTGD_RETIREMENT_ASSETS_DIR/retire_ohio.py" \
-            --plan "$OTGD_RETIREMENT_ASSETS_DIR/reviewed-plan.json" \
-            --plan-sha256 "$OTGD_RETIREMENT_PLAN_SHA256" \
-            --inventory "$OTGD_RETIREMENT_ASSETS_DIR/inventory.json" \
-            --journal "$OTGD_RETIREMENT_EVIDENCE_DIR/journal.jsonl" \
-            --admission-script "$OTGD_RETIREMENT_ASSETS_DIR/retirement_admission.py" \
-            --admission-sha256 "$OTGD_RETIREMENT_ADMISSION_SHA256" \
+          uv run --project services/api python "$OTGD_RETIREMENT_ASSETS_DIR/resume_ohio.py" \
             --mode execute > "$OTGD_RETIREMENT_EVIDENCE_DIR/operation-result.json"
 
       - name: Capture bounded metadata evidence even on failure
@@ -354,7 +394,8 @@ jobs:
           destination = root / 'ohio-retirement-upload'
           destination.mkdir(mode=0o700, exist_ok=False)
           expected = ['journal.jsonl', 'operation-result.json', 'asset-manifest.json',
-              'admission-before-credentials.json', 'admission-before-execution.json']
+              'admission-before-credentials.json', 'admission-before-execution.json',
+              'resume-wrapper-staging.json', 'resume-prior-admission.json']
           probe_directory = root / 'ohio-retirement'
           sources = {name: directory / name for name in expected}
           if os.environ.get('OTGD_RETIREMENT_SQL_HOOK_SHA256'):
@@ -435,5 +476,7 @@ jobs:
             ${{ runner.temp }}/ohio-retirement-upload/journal.jsonl
             ${{ runner.temp }}/ohio-retirement-upload/operation-result.json
             ${{ runner.temp }}/ohio-retirement-upload/sql-table-count.json
+            ${{ runner.temp }}/ohio-retirement-upload/resume-wrapper-staging.json
+            ${{ runner.temp }}/ohio-retirement-upload/resume-prior-admission.json
           retention-days: 90
           if-no-files-found: error
