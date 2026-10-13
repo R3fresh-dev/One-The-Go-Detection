@@ -12,6 +12,7 @@ The [required merge checks](docs/CI_GATES.md) describe the strict coverage, brow
 
 | What you want | Start here |
 |---|---|
+| Find the project documents | [Document index](docs/README.md), including the [integrated device/app/model MVP](docs/product/MVP_SCOPE.md), [marketing plan](docs/business/MARKETING_PLAN.md), and [YC application draft](docs/business/YC_APPLICATION_DRAFT.md). |
 | Buy the initial bench parts | [Exact shopping list and vendor links](specs/SHOPPING_LIST.md): **$94.40**, or **$115.90 with a multimeter**, before tax/shipping. |
 | Review the product and architecture | [PRD](specs/PRD.md), [HLD](specs/HLD.md), [LLD](specs/LLD.md), [full specification](specs/FULL_SPECIFICATION.md). |
 | Implement/review one app feature | [20-feature OpenSpec index](openspec/changes/production-mobile-platform/README.md), [shared contracts](openspec/changes/production-mobile-platform/shared-contracts.md), [tasks](openspec/changes/production-mobile-platform/tasks.md). |
@@ -27,6 +28,8 @@ The [required merge checks](docs/CI_GATES.md) describe the strict coverage, brow
 The reviewed specification checkpoint is commit [`47d8ecb`](https://github.com/R3fresh-dev/One-The-Go-Detection/commit/47d8ecbfc871b5026f32d4f5f474908e9c0e1b14). It contains **20 Android feature capabilities, 140 requirements and 321 acceptance scenarios**, with iOS parity, detailed customer flows and engineering contracts. Three independent review perspectives covered product/domain, security/data and platform/operations. The ledger preserves 38 original findings, their corrections and targeted re-reviews; no critical/high specification blocker remained before implementation began.
 
 The latest AWS requirement is implemented as three separate environments. The scientific gates in the original PRD/HLD/LLD remain open. Later commercial-strategy research is preserved as proposed alternative scope, not silently substituted for this application.
+
+The selected first product milestone is an [integrated physical device, companion app, and research model MVP](docs/product/MVP_SCOPE.md). Its development includes the existing P0/P1 measurement prerequisites and P2 authorized model evaluation; it does not close the independent consumer-release gates. Customer discovery and the [consumer marketing plan](docs/business/MARKETING_PLAN.md) progress alongside that work. The repository is the source of record for project documents.
 
 ## Application and platform source
 

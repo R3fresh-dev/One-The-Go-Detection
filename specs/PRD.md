@@ -15,6 +15,8 @@ The central product hypothesis is that combining current chemical and functional
 
 This PRD specifies what to build and evaluate. [FULL_SPECIFICATION.md](FULL_SPECIFICATION.md) is the normative requirement register. [DECISIONS.md](DECISIONS.md) contains the common architectural choices; [HLD.md](HLD.md) and [LLD.md](LLD.md) describe implementation. [VALIDATION_PLAN.md](VALIDATION_PLAN.md) defines the evidence program.
 
+**October 12, 2026 milestone selection:** the first product milestone must include the physical device, companion app, and research model together. [MVP_SCOPE.md](../docs/product/MVP_SCOPE.md) defines that integrated research MVP and its remaining evidence. P0/P1 remain measurement-only prerequisites, P2 inference remains independently authorized, and P3 consumer release remains separate. Required channel and feature-contract rules are unchanged. The [marketing plan](../docs/business/MARKETING_PLAN.md) develops the consumer hypothesis in parallel; the existing finished-tests/refill service research remains an alternative route.
+
 ## 2. Problem and proposed value
 
 The user wants a compact, integrated check that uses one saliva collection and one game rather than a series of separate consumer tests. The desired result is an estimate of current cannabis-related impairment, supported by measurements that address both exposure and present function.

@@ -1,2 +1,6 @@
 # Completion and merge requirements
 User-mandated policy: do not describe a task as done or merge to main until every required gate passes for the exact revision. Unit coverage must be strictly greater than 80%. ATDD, performance, component, live dependency, Docker health and LocalStack API tests must pass. Skipped mandatory checks count as failure. Run the same gate commands locally and in GitHub Actions. Record evidence and unresolved release limitations. Never substitute mocks for live dependency checks or claim branch protection is configured merely because a workflow exists. AWS and native device release validation remain separate requirements.
+
+# Project documentation
+
+User-mandated policy: keep all authored project documents in Git. Application drafts, marketing plans, product decisions, and research reports belong in this repository, with links from [the document index](docs/README.md). Keep editable Markdown and any supplied report PDFs together. External Pages may mirror repository documents; they must not be the only copy of a project document. Keep source downloads, credentials, identifiable participant or interview data, renderer caches, and temporary verification assets outside tracked documentation. Preserve dates and distinguish historical research, selected product direction, proposals, and demonstrated implementation.

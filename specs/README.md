@@ -21,11 +21,16 @@ The product vision is a pocket cannabis-and-alcohol device with a mobile app. Th
 
 For an immediate hardware start, read the hardware guide and roadmap first, then use the other documents as implementation references.
 
+The founder has selected [device, app, and model as one integrated research MVP](../docs/product/MVP_SCOPE.md). The [document index](../docs/README.md) also links the [marketing plan](../docs/business/MARKETING_PLAN.md), [YC application draft](../docs/business/YC_APPLICATION_DRAFT.md), and [application readiness assessment](../docs/business/YC_APPLICATION_READINESS.md). Project documents are maintained in Git.
+
 ## Background research
 
 - [THC chemistry and sensing review](research/THC_CHEMISTRY_REVIEW.md) and [PDF edition](research/THC_Chemistry_and_Pocket_Device_Research.pdf): metabolite chemistry, matrix-specific evidence, breath research, and sensing limitations. Research recommendations inform future decisions; they do not supersede the current requirement register or release gates.
 - [FDA regulatory and compliance assessment](research/FDA_REGULATORY_ASSESSMENT.md): US regulatory sources, a repository gap register, and evidence needed for studies and a possible commercial device. [PDF edition](research/FDA_Regulatory_Assessment.pdf).
 - [Faster market-entry strategy](research/FAST_MARKET_STRATEGY.md): proposed initial distribution/service scope, a simpler OEM all-in-one product, supplier diligence, and subscription economics. The existing impairment research program and normative phase gates remain the baseline. [PDF edition](research/Fast_Market_Strategy.pdf).
+- [Product-classification options](research/CLASSIFICATION_OPTIONS.md) and [PDF edition](research/One_The_Go_US_Product_Classification.pdf): historical scope comparison, with the selected integrated MVP and current implementation linked explicitly.
+- [Partnership prospects](research/PARTNER_SHORTLIST.md), [unsent outreach drafts](research/PARTNER_OUTREACH.md), and [combined PDF](research/Partner_Shortlist.pdf): prospective analytical, research, and supplier relationships; no commitments are established.
+- [FDA fees and development-budget assumptions](research/FDA_510K_COST_ESTIMATE.md) and [PDF edition](research/FDA_510K_Cost_Assessment.pdf): dated fee evidence and illustrative cost scenarios, separate from supplier quotations or a validated project budget.
 
 ## Contracts and starter material
 
