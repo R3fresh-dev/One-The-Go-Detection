@@ -330,11 +330,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sql_arguments=()
-          if [[ -n "$OTGD_RETIREMENT_SQL_HOOK_SHA256" ]]; then
-            sql_arguments+=(--sql-evidence-script "$OTGD_RETIREMENT_ASSETS_DIR/ohio-table-count.py"
-              --sql-evidence-sha256 "$OTGD_RETIREMENT_SQL_HOOK_SHA256")
-          fi
           uv run --project services/api python "$OTGD_RETIREMENT_ASSETS_DIR/retire_ohio.py" \
             --plan "$OTGD_RETIREMENT_ASSETS_DIR/reviewed-plan.json" \
             --plan-sha256 "$OTGD_RETIREMENT_PLAN_SHA256" \
@@ -342,7 +337,6 @@ jobs:
             --journal "$OTGD_RETIREMENT_EVIDENCE_DIR/journal.jsonl" \
             --admission-script "$OTGD_RETIREMENT_ASSETS_DIR/retirement_admission.py" \
             --admission-sha256 "$OTGD_RETIREMENT_ADMISSION_SHA256" \
-            "${sql_arguments[@]}" \
             --mode execute > "$OTGD_RETIREMENT_EVIDENCE_DIR/operation-result.json"
 
       - name: Capture bounded metadata evidence even on failure
