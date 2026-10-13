@@ -18,6 +18,11 @@ on:
         required: false
         type: string
         default: ''
+      previous_continuation_run_id:
+        description: Failed Fargate continuation proving a prior import or subnet repair; requires the same legacy continuation source
+        required: false
+        type: string
+        default: ''
 
 # AWS access uses the two existing repository secrets. No OIDC token is issued.
 permissions:
@@ -73,7 +78,7 @@ jobs:
           import re
           import subprocess
           from deploy import platform
-          from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH, trusted_branch
+          from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH, FARGATE_REQUIRED_JOBS, trusted_branch
 
           def github_json(path):
               result = subprocess.run(['gh', 'api', path], capture_output=True, text=True, timeout=30)
@@ -139,7 +144,7 @@ jobs:
               if downloaded.returncode != 0:
                   raise Gate('Exact-source aggregate gate artifact is unavailable')
               evidence = evidence_directory / 'gates.json'
-              proof = platform.verify_gate_file(evidence, revision)
+              proof = platform.verify_gate_file(evidence, revision, required_jobs=FARGATE_REQUIRED_JOBS)
               if proof['run_id'] != run_id:
                   raise Gate('Downloaded gate evidence belongs to a different workflow run')
               (directory / 'gate-admission.json').write_text(json.dumps(proof, indent=2) + '\n')
@@ -325,6 +330,7 @@ jobs:
         shell: bash
         env:
           CONTINUE_UNINITIALIZED_RUN_ID: ${{ inputs.continue_uninitialized_run_id }}
+          PREVIOUS_CONTINUATION_RUN_ID: ${{ inputs.previous_continuation_run_id }}
           RECOVERY_RUN_ID: ${{ inputs.recovery_run_id }}
           ESTABLISH_NEW: ${{ inputs.establish_new }}
         run: |
@@ -341,12 +347,17 @@ jobs:
           import subprocess
           import zipfile
           from deploy import platform
-          from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH, bounded_file, positive_int, trusted_branch
+          from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH, REQUIRED_JOBS, bounded_file, positive_int, trusted_branch
           from otgd.canonical import strict_loads
           DEPLOY_WORKFLOW_PATH = '.github/workflows/deploy-serverless.yml'
           DEPLOY_WORKFLOW_NAME = 'Deploy serverless development to AWS'
           MANIFEST_LIMIT = 262_144
           ARCHIVE_LIMIT = 8_388_608
+          FARGATE_WORKFLOW_PATH = '.github/workflows/deploy-fargate.yml'
+          FARGATE_WORKFLOW_NAME = 'Deploy OnGo containers to AWS'
+          FARGATE_JOBS = REQUIRED_JOBS | {'platform / fargate-container-runtime'}
+          PREVIOUS_FIELDS = {'run_id', 'run_attempt', 'release_id', 'artifact_sha256',
+              'run_started_at', 'run_completed_at', 'source_bundle_raw', 'continuation_raw', 'deployment_state_raw'}
 
           def github_json(path):
               result = subprocess.run(['gh', 'api', path], capture_output=True, text=True, timeout=30)
@@ -388,12 +399,13 @@ jobs:
                   raise Gate('The latest trusted exact-source gate run must finish successfully')
               return latest['id']
 
-          def validate_resume_run(run, run_id):
+          def validate_resume_run(run, run_id, *, fargate=False):
               repository = run.get('repository')
               head_repository = run.get('head_repository')
               if (run.get('id') != run_id or not positive_int(run.get('id'))
                       or not positive_int(run.get('workflow_id')) or not positive_int(run.get('run_attempt'))
-                      or run.get('path') != DEPLOY_WORKFLOW_PATH or run.get('name') != DEPLOY_WORKFLOW_NAME
+                      or run.get('path') != (FARGATE_WORKFLOW_PATH if fargate else DEPLOY_WORKFLOW_PATH)
+                      or run.get('name') != (FARGATE_WORKFLOW_NAME if fargate else DEPLOY_WORKFLOW_NAME)
                       or run.get('event') != 'workflow_dispatch' or run.get('head_branch') != 'main'
                       or run.get('status') != 'completed' or run.get('conclusion') != 'failure'
                       or not isinstance(run.get('head_sha'), str)
@@ -403,8 +415,9 @@ jobs:
                       or not positive_int(repository.get('id')) or head_repository.get('id') != repository['id']):
                   raise Gate('Resume source must be a completed failed main dispatch of the trusted deployment workflow')
 
-          def select_resume_artifact(run):
-              name = f"serverless-deployment-{run['head_sha']}-{run['id']}"
+          def select_resume_artifact(run, *, fargate=False):
+              route = 'fargate' if fargate else 'serverless'
+              name = f"{route}-deployment-{run['head_sha']}-{run['id']}"
               inventory = github_json(
                   f"repos/{REPOSITORY}/actions/runs/{run['id']}/artifacts?name={name}&per_page=100")
               artifacts = inventory.get('artifacts')
@@ -447,6 +460,269 @@ jobs:
                       or os.environ.get('RECOVERY_RUN_ID', '') != ''):
                   raise Gate('Uninitialized continuation requires establish_new and excludes initial recovery flags')
               return int(value)
+
+          def previous_continuation_run_id(legacy_run_id):
+              value = os.environ.get('PREVIOUS_CONTINUATION_RUN_ID', '')
+              if value == '':
+                  return None
+              if not re.fullmatch(r'[1-9][0-9]{0,15}', value) or not positive_int(int(value)):
+                  raise Gate('Previous continuation source must be a positive numeric workflow run ID')
+              if legacy_run_id is None:
+                  raise Gate('Previous Fargate recovery requires the protected legacy continuation source')
+              return int(value)
+
+          def require_latest_previous_run(run_id):
+              current = os.environ.get('GITHUB_RUN_ID', '')
+              if (not re.fullmatch(r'[1-9][0-9]{0,15}', current) or not positive_int(int(current))
+                      or run_id >= int(current)):
+                  raise Gate('Previous continuation requires this authenticated dispatch identity')
+              candidates = []
+              for page in range(1, 11):
+                  inventory = github_json(f'repos/{REPOSITORY}/actions/workflows/deploy-fargate.yml/runs'
+                      f'?branch=main&event=workflow_dispatch&per_page=100&page={page}')
+                  batch = inventory.get('workflow_runs')
+                  if not isinstance(batch, list) or len(batch) > 100 or any(not isinstance(run, dict) for run in batch):
+                      raise Gate('Previous Fargate deployment inventory is malformed')
+                  for run in batch:
+                      if (run.get('path') == FARGATE_WORKFLOW_PATH and run.get('event') == 'workflow_dispatch'
+                              and run.get('head_branch') == 'main'):
+                          if not positive_int(run.get('id')):
+                              raise Gate('Previous Fargate deployment identity is malformed')
+                          if run['id'] != int(current):
+                              candidates.append(run['id'])
+                  if len(batch) < 100:
+                      break
+              else:
+                  raise Gate('Previous Fargate deployment inventory exceeds its supported bounds')
+              if not candidates or max(candidates) != run_id:
+                  raise Gate('Previous recovery must select the latest prior main Fargate dispatch')
+
+          def strict_record(raw, limit):
+              try:
+                  if not isinstance(raw, str) or not 0 < len(raw.encode('utf-8')) <= limit:
+                      raise ValueError
+                  record = strict_loads(raw)
+                  if not isinstance(record, dict):
+                      raise ValueError
+                  return record
+              except (TypeError, ValueError, RecursionError):
+                  raise Gate('Previous continuation requires bounded strict JSON records') from None
+
+          def previous_files_from_archive(path, revision):
+              raw = bounded_file(path, ARCHIVE_LIMIT, private=True)
+              source = '.local/fargateconfig/continuation-source/uninitialized-continuation.json'
+              prefix = f'.local/deploy/fargate-development/{revision}/'
+              optional = {'.local/fargateconfig/gate-admission.json',
+                  '.local/fargateconfig/continuation-admission.json', 'reports/fargate-plan.json',
+                  'reports/fargate-deploy.json'}
+              try:
+                  with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+                      entries = archive.infolist()
+                      if len(entries) > 100 or sum(item.file_size for item in entries) > ARCHIVE_LIMIT:
+                          raise Gate('Previous continuation archive exceeds its supported bounds')
+                      selected, paths = {}, set()
+                      attempt_directories = set()
+                      for item in entries:
+                          name = PurePosixPath(item.filename)
+                          mode = item.external_attr >> 16
+                          if (name.is_absolute() or '..' in name.parts or '\\' in item.filename
+                                  or str(name) != item.filename.rstrip('/') or item.filename in paths
+                                  or item.flag_bits & 1 or stat.S_IFMT(mode) not in (0, stat.S_IFREG, stat.S_IFDIR)
+                                  or (item.is_dir() and stat.S_IFMT(mode) == stat.S_IFREG)
+                                  or (not item.is_dir() and stat.S_IFMT(mode) == stat.S_IFDIR)):
+                              raise Gate('Previous continuation archive requires unique safe regular paths')
+                          paths.add(item.filename)
+                          if item.is_dir():
+                              continue
+                          field, limit = None, MANIFEST_LIMIT
+                          if item.filename == source:
+                              field, limit = 'source_bundle_raw', ARCHIVE_LIMIT
+                          elif item.filename.startswith(prefix):
+                              remainder = item.filename[len(prefix):]
+                              match = re.fullmatch(r'([0-9a-f]{32})/(uninitialized-continuation|deployment-state)\.json', remainder)
+                              if not match:
+                                  raise Gate('Previous continuation contains an initialization or deployment receipt')
+                              attempt_directories.add(match[1])
+                              field = 'continuation_raw' if match[2] == 'uninitialized-continuation' else 'deployment_state_raw'
+                              limit = MANIFEST_LIMIT if field == 'continuation_raw' else 65_536
+                          elif item.filename not in optional:
+                              raise Gate('Previous continuation contains an unsupported evidence path')
+                          if item.filename == 'reports/fargate-deploy.json' and item.file_size != 0:
+                              raise Gate('Previous continuation already contains a deployment receipt')
+                          if not 0 <= item.file_size <= limit:
+                              raise Gate('Previous continuation evidence exceeds its supported bound')
+                          if field:
+                              if field in selected or item.file_size == 0:
+                                  raise Gate('Previous continuation records must be unique and nonempty')
+                              data = archive.read(item)
+                              if len(data) != item.file_size:
+                                  raise Gate('Previous continuation evidence size changed')
+                              selected[field] = data.decode('utf-8')
+                      if set(selected) != {'source_bundle_raw', 'continuation_raw', 'deployment_state_raw'} or len(attempt_directories) != 1:
+                          raise Gate('Previous continuation lacks its protected source and entered-stage journals')
+                      return selected
+              except Gate:
+                  raise
+              except (zipfile.BadZipFile, RuntimeError, OSError, ValueError):
+                  raise Gate('Previous continuation archive is unavailable or malformed') from None
+
+          def previous_chain(packet, original_bundle):
+              chain, seen = [], set()
+              while packet is not None:
+                  if not isinstance(packet, dict) or set(packet) != PREVIOUS_FIELDS or len(chain) >= 8:
+                      raise Gate('Previous continuation chain requires at most eight exact recovery packets')
+                  if (not positive_int(packet['run_id']) or not positive_int(packet['run_attempt'])
+                          or packet['run_id'] in seen or not re.fullmatch(r'[0-9a-f]{40}', str(packet['release_id']))
+                          or not re.fullmatch(r'[0-9a-f]{64}', str(packet['artifact_sha256']))):
+                      raise Gate('Previous continuation run identity is malformed or repeated')
+                  seen.add(packet['run_id'])
+                  try:
+                      times = [datetime.fromisoformat(packet[k].replace('Z', '+00:00'))
+                          for k in ('run_started_at', 'run_completed_at')]
+                      if any(t.utcoffset() is None or t.utcoffset().total_seconds() != 0 for t in times) or times[0] > times[1]:
+                          raise ValueError
+                  except (TypeError, ValueError, AttributeError):
+                      raise Gate('Previous continuation run window must use ordered UTC times') from None
+                  source = strict_record(packet['source_bundle_raw'], ARCHIVE_LIMIT)
+                  journal = strict_record(packet['continuation_raw'], MANIFEST_LIMIT)
+                  state = strict_record(packet['deployment_state_raw'], 65_536)
+                  base = {key: value for key, value in source.items() if key != 'previous_recovery'}
+                  if base != original_bundle:
+                      raise Gate('Previous continuation does not preserve the authenticated original source')
+                  if (state.get('schema_version') != '1.0.0' or state.get('environment') != 'fargate-development'
+                          or state.get('account') != '738470137867' or state.get('region') != 'us-east-2'
+                          or state.get('release_id') != packet['release_id'] or state.get('status') != 'failed'
+                          or state.get('current_stage') != 'continue-uninitialized-retained-resources'
+                          or state.get('failed_stage') != 'continue-uninitialized-retained-resources'
+                          or state.get('completed_stages') != [] or state.get('completed_receipts') != {}
+                          or state.get('rollback_executed') is not False
+                          or journal.get('schema_version') != '1.0.0'
+                          or journal.get('operation') != 'serverless-uninitialized-continuation'
+                          or journal.get('account') != '738470137867' or journal.get('region') != 'us-east-2'
+                          or journal.get('stack_name') != 'otgd-serverless-development'
+                          or journal.get('release_id') != packet['release_id']
+                          or journal.get('source_bundle_sha256') != hashlib.sha256(packet['source_bundle_raw'].encode()).hexdigest()
+                          or journal.get('journal_established') is not False
+                          or journal.get('actual_resources_deleted') is not False
+                          or journal.get('application_deployment_completed') is not False
+                          or journal.get('status') != 'blocked-recovery-inspect-protected-journal-before-retry'
+                          or any(journal.get(key) != original_bundle.get(key) for key in
+                              ('failed_run_id', 'failed_run_attempt', 'failed_release_id', 'artifact_sha256'))):
+                      raise Gate('Previous continuation must prove an entered failure before first initialization')
+                  chain.append(packet)
+                  packet = source.get('previous_recovery')
+                  if 'previous_recovery' in source and packet is None:
+                      raise Gate('Previous continuation recovery packet cannot be null')
+              return chain
+
+          def load_previous_packet(run_id, directory):
+              run = github_json(f'repos/{REPOSITORY}/actions/runs/{run_id}')
+              validate_resume_run(run, run_id, fargate=True)
+              workflow = github_json(f"repos/{REPOSITORY}/actions/workflows/{run['workflow_id']}")
+              if (workflow.get('id') != run['workflow_id'] or workflow.get('path') != FARGATE_WORKFLOW_PATH
+                      or workflow.get('name') != FARGATE_WORKFLOW_NAME or workflow.get('state') != 'active'):
+                  raise Gate('Previous continuation workflow differs from the active reviewed Fargate workflow')
+              artifact = select_resume_artifact(run, fargate=True)
+              digest = artifact.get('digest')
+              if not isinstance(digest, str) or not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
+                  raise Gate('Previous continuation archive requires its authenticated SHA-256')
+              directory.mkdir(parents=True, exist_ok=False)
+              path = directory / 'download.zip'
+              descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+              with os.fdopen(descriptor, 'wb') as stream:
+                  downloaded = subprocess.run(['gh', 'api', f"repos/{REPOSITORY}/actions/artifacts/{artifact['id']}/zip"],
+                      stdout=stream, stderr=subprocess.PIPE, timeout=60)
+              archive_hash = hashlib.sha256(bounded_file(path, ARCHIVE_LIMIT, private=True)).hexdigest()
+              if downloaded.returncode != 0 or digest != 'sha256:' + archive_hash:
+                  raise Gate('Previous continuation archive bytes differ from authenticated GitHub evidence')
+              files = previous_files_from_archive(path, run['head_sha'])
+              packet = {'run_id': run_id, 'run_attempt': run['run_attempt'], 'release_id': run['head_sha'],
+                  'artifact_sha256': archive_hash, 'run_started_at': run['run_started_at'],
+                  'run_completed_at': run['updated_at'], **files}
+              return packet, run
+
+          def verify_previous_gate(revision, directory):
+              gate_id = select_latest_gate(revision)
+              run = github_json(f'repos/{REPOSITORY}/actions/runs/{gate_id}')
+              if (run.get('head_sha') != revision or run.get('path') != WORKFLOW_PATH
+                      or run.get('status') != 'completed' or run.get('conclusion') != 'success'
+                      or not trusted_branch(run.get('event'), run.get('head_branch'))
+                      or not positive_int(run.get('run_attempt'))):
+                  raise Gate('Previous Fargate source lacks its latest successful exact-source gate')
+              inventory = github_json(f"repos/{REPOSITORY}/actions/runs/{gate_id}/attempts/{run['run_attempt']}/jobs?per_page=100")
+              jobs = inventory.get('jobs')
+              if (type(inventory.get('total_count')) is not int or inventory['total_count'] != 14
+                      or not isinstance(jobs, list) or len(jobs) != 14
+                      or any(not isinstance(job, dict) for job in jobs)
+                      or {job.get('name') for job in jobs} != FARGATE_JOBS
+                      or any(not positive_int(job.get('id')) or job.get('run_id') != gate_id
+                          or job.get('run_attempt') != run['run_attempt'] or job.get('head_sha') != revision
+                          or job.get('status') != 'completed' or job.get('conclusion') != 'success' for job in jobs)
+                      or len({job['id'] for job in jobs}) != 14):
+                  raise Gate('Previous Fargate source requires every mandatory latest-attempt fourteen-job gate')
+              directory.mkdir(parents=True, exist_ok=False)
+              downloaded = subprocess.run(['gh', 'run', 'download', str(gate_id), '--repo', REPOSITORY,
+                  '--name', 'exact-revision-merge-evidence', '--dir', str(directory)],
+                  capture_output=True, text=True, timeout=60)
+              if downloaded.returncode != 0:
+                  raise Gate('Previous Fargate gate artifact is unavailable')
+              proof = platform.verify_gate_file(directory / 'gates.json', revision)
+              if proof.get('run_id') != gate_id or proof.get('head_sha') != revision:
+                  raise Gate('Previous Fargate gate artifact belongs to a different source or run')
+              current = github_json(f'repos/{REPOSITORY}/actions/runs/{gate_id}')
+              if (select_latest_gate(revision) != gate_id or any(current.get(key) != run.get(key) for key in
+                      ('id', 'head_sha', 'run_attempt', 'status', 'conclusion', 'workflow_id'))):
+                  raise Gate('Previous Fargate gate changed during admission')
+              return proof
+
+          def require_unchanged_previous_gate(revision, proof):
+              gate_id = proof['run_id']
+              current = github_json(f'repos/{REPOSITORY}/actions/runs/{gate_id}')
+              if (select_latest_gate(revision) != gate_id or current.get('head_sha') != revision
+                      or current.get('status') != 'completed' or current.get('conclusion') != 'success'
+                      or current.get('run_attempt') != proof.get('run_attempt')
+                      or current.get('workflow_id') != proof.get('workflow_id')):
+                  raise Gate('Previous Fargate gate changed while its source chain was authenticated')
+
+          def admit_previous_recovery(run_id, bundle, directory):
+              require_latest_previous_run(run_id)
+              packet, run = load_previous_packet(run_id, directory / 'previous-continuation-source' / '1')
+              chain = previous_chain(packet, bundle)
+              runs, gates = [run], {}
+              for index, member in enumerate(chain, 1):
+                  if index > 1:
+                      actual, prior_run = load_previous_packet(member['run_id'],
+                          directory / 'previous-continuation-source' / str(index))
+                      if actual != member:
+                          raise Gate('Nested previous recovery differs from its authenticated latest artifact')
+                      runs.append(prior_run)
+                  revision = member['release_id']
+                  if revision not in gates:
+                      gates[revision] = verify_previous_gate(revision, directory / 'previous-continuation-gates' / revision)
+              for prior_run in runs:
+                  current = github_json(f"repos/{REPOSITORY}/actions/runs/{prior_run['id']}")
+                  validate_resume_run(current, prior_run['id'], fargate=True)
+                  if any(current.get(key) != prior_run.get(key) for key in
+                      ('id', 'workflow_id', 'run_attempt', 'head_sha', 'path', 'event', 'head_branch',
+                       'status', 'conclusion', 'run_started_at', 'updated_at')):
+                      raise Gate('Previous Fargate run changed during chain admission')
+              for revision, proof in gates.items():
+                  require_unchanged_previous_gate(revision, proof)
+              require_latest_previous_run(run_id)
+              return packet
+
+          def recheck_legacy_continuation(run, gate_run_id, historical_directory, proof):
+              if select_latest_gate(run['head_sha']) != gate_run_id:
+                  raise Gate('Legacy continuation latest source gate changed during previous recovery admission')
+              final_proof = platform.verify_gate_file(historical_directory / 'gates.json', run['head_sha'])
+              if final_proof != proof:
+                  raise Gate('Legacy continuation source gate attempt changed during previous recovery admission')
+              current = github_json(f"repos/{REPOSITORY}/actions/runs/{run['id']}")
+              validate_resume_run(current, run['id'])
+              if any(current.get(key) != run.get(key) for key in
+                     ('id', 'workflow_id', 'run_attempt', 'head_sha', 'path', 'event', 'head_branch',
+                      'status', 'conclusion', 'run_started_at', 'updated_at')):
+                  raise Gate('Legacy continuation source run changed during previous recovery admission')
 
           def continuation_files_from_archive(path):
               raw = bounded_file(path, ARCHIVE_LIMIT, private=True)
@@ -528,14 +804,16 @@ jobs:
 
           def admit_continuation():
               run_id = continuation_run_id()
+              previous_run_id = previous_continuation_run_id(run_id)
               if run_id is None:
                   return
               run = github_json(f'repos/{REPOSITORY}/actions/runs/{run_id}')
               validate_resume_run(run, run_id)
               workflow = github_json(f"repos/{REPOSITORY}/actions/workflows/{run['workflow_id']}")
               if (workflow.get('id') != run['workflow_id'] or workflow.get('path') != DEPLOY_WORKFLOW_PATH
-                      or workflow.get('name') != DEPLOY_WORKFLOW_NAME or workflow.get('state') != 'active'):
-                  raise Gate('Continuation source does not belong to the active reviewed deployment workflow')
+                      or workflow.get('name') != DEPLOY_WORKFLOW_NAME
+                      or workflow.get('state') not in {'active', 'disabled_manually'}):
+                  raise Gate('Continuation source does not belong to the reviewed historical deployment workflow')
               artifact = select_resume_artifact(run)
               digest = artifact.get('digest')
               if not isinstance(digest, str) or not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
@@ -585,6 +863,9 @@ jobs:
                         'deployment_state_raw': files['deployment-state.json'].decode('utf-8'),
                         'gate_admission_raw': files['gate-admission.json'].decode('utf-8'),
                         'serverless_plan_raw': files['serverless-plan.json'].decode('utf-8')}
+              if previous_run_id is not None:
+                  bundle['previous_recovery'] = admit_previous_recovery(previous_run_id, bundle, directory)
+                  recheck_legacy_continuation(run, gate_run_id, historical_directory, proof)
               raw = (json.dumps(bundle, indent=2) + '\n').encode()
               if len(raw) > ARCHIVE_LIMIT:
                   raise Gate('Continuation bundle exceeds its supported bound')

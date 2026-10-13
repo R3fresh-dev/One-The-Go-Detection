@@ -1,5 +1,6 @@
 """Infrastructure contracts covering ownership, transport and staged admission."""
 import importlib.util
+from copy import deepcopy
 import json
 from pathlib import Path
 import re
@@ -25,6 +26,39 @@ class FargateTemplateTest(unittest.TestCase):
 
     def properties(self, name):
         return self.resources[name]["Properties"]
+
+    def test_managed_repair_resource_is_preserved_in_every_application_render(self):
+        resource = deepcopy(self.resources['PrivateB'])
+        resource.pop('DependsOn')
+        resource['Properties'].update(VpcId='vpc-12345678', AvailabilityZone='us-east-2b',
+                                      Ipv6CidrBlock='2001:db8:1234:5601::/64')
+        original = deepcopy(resource)
+        for changes in ({'activateServices': False}, {'activateServices': False, 'uiImageUri': self.config['apiImageUri']},
+                        {'activateServices': True}, {'activateServices': False, 'releaseId': 'b' * 40}):
+            with self.subTest(changes=changes):
+                result = MODULE.build_template({**self.config, **changes}, preserved_private_b_resource=resource)
+                self.assertEqual(result['Resources']['PrivateB'], original)
+                self.assertNotIn('DependsOn', result['Resources']['PrivateB'])
+                result['Resources']['PrivateB']['Properties']['VpcId'] = 'mutated-result'
+                self.assertEqual(resource, original)
+
+    def test_repair_render_rejects_intrinsics_foreign_geometry_and_nonretained_resources(self):
+        valid = {'Type': 'AWS::EC2::Subnet', 'DeletionPolicy': 'Retain', 'UpdateReplacePolicy': 'Retain',
+                 'Properties': {'VpcId': 'vpc-12345678', 'AvailabilityZone': 'us-east-2b',
+                     'CidrBlock': '10.76.1.0/24', 'Ipv6CidrBlock': '2001:db8:1234:5601::/64',
+                     'AssignIpv6AddressOnCreation': True, 'MapPublicIpOnLaunch': False,
+                     'Tags': deepcopy(self.resources['PrivateB']['Properties']['Tags'])}}
+        invalid = []
+        for field, value in (('VpcId', {'Ref': 'Network'}), ('AvailabilityZone', 'us-west-2b'),
+                             ('CidrBlock', '10.76.2.0/24'), ('Ipv6CidrBlock', '2001:db8::/56'),
+                             ('MapPublicIpOnLaunch', True), ('AssignIpv6AddressOnCreation', False)):
+            item = deepcopy(valid); item['Properties'][field] = value; invalid.append(item)
+        invalid += [{**valid, 'DependsOn': 'NetworkIpv6'}, {**valid, 'DeletionPolicy': 'Delete'}]
+        for resource in invalid:
+            with self.subTest(resource=resource), self.assertRaises(ValueError):
+                MODULE.build_template(self.config, preserved_private_b_resource=resource)
+        with self.assertRaises(ValueError):
+            MODULE.build_template(self.config, 'registry', preserved_private_b_resource=valid)
 
     def statements(self, name):
         return self.properties(name)["Policies"][0]["PolicyDocument"]["Statement"]

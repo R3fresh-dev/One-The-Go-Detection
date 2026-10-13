@@ -11,8 +11,10 @@ sys.path.insert(0, str(ROOT))
 import argparse
 import base64
 from datetime import datetime, timezone
+from copy import deepcopy
 from decimal import Decimal, ROUND_HALF_UP
 import hashlib
+import ipaddress
 import json
 import math
 import os
@@ -30,7 +32,7 @@ import httpx
 from deploy import platform, web_artifact
 from deploy.check_access import identity_selection
 from deploy.orchestrate import StageJournal
-from deploy.provenance import Gate, bounded_json, sha256
+from deploy.provenance import FARGATE_REQUIRED_JOBS, Gate, bounded_json, sha256, strict_loads
 from deploy.serverless import STACK, pages, stable_stack, deploy_stack, verify_upload_access
 
 FIELDS = {'environment', 'account', 'region', 'alarmEmail', 'monthlyBudgetUsd', 'releaseId',
@@ -503,6 +505,151 @@ def authority_config(c):
     return {**c, 'environment': 'serverless-development', 'monthlyBudgetUsd': 50}
 
 
+def preserved_private_b(aws, c, continuation=None):
+    """Bind literal repair properties to the managed stack and live geometry."""
+    from deploy.fargate_template import validate_private_b_resource
+    cf = aws.client('cloudformation')
+    stacks = cf.describe_stacks(StackName=STACK).get('Stacks', [])
+    if len(stacks) != 1:
+        raise Gate('PrivateB preservation requires one owned managed stack')
+    stack = stacks[0]
+    stack_id = stack.get('StackId', '')
+    if (not stack_id.startswith(f"arn:aws:cloudformation:{c['region']}:{c['account']}:stack/{STACK}/")
+            or stack.get('EnableTerminationProtection') is not True
+            or stack.get('StackStatus') not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE', 'IMPORT_COMPLETE')):
+        raise Gate('PrivateB preservation requires the exact stable protected stack')
+    body = cf.get_template(StackName=stack_id, TemplateStage='Original')['TemplateBody']
+    if isinstance(body, str):
+        if len(body.encode()) > 1048576:
+            raise Gate('PrivateB template exceeded its bound')
+        body = strict_loads(body)
+    if not isinstance(body, dict) or not isinstance(body.get('Resources'), dict):
+        raise Gate('PrivateB preservation requires the current managed template')
+    resource = body['Resources'].get('PrivateB')
+    expected = continuation.get('repaired_private_b_resource') if continuation is not None else None
+    repaired_id = continuation.get('repaired_private_b_physical_id') if continuation is not None else None
+    if continuation is not None and bool(expected) != bool(repaired_id):
+        raise Gate('Adopted continuation has incomplete PrivateB repair proof')
+    if resource is None:
+        if expected is not None:
+            raise Gate('Adopted continuation lacks its repaired PrivateB')
+        return None
+    properties = resource.get('Properties', {}) if isinstance(resource, dict) else {}
+    if not isinstance(properties, dict):
+        raise Gate('PrivateB preservation requires a resource properties object')
+    if not isinstance(properties.get('VpcId'), str):
+        if expected is not None:
+            raise Gate('Adopted continuation lacks literal PrivateB properties')
+        return None
+    if continuation is not None and expected is None:
+        raise Gate('Literal PrivateB is absent from the proved continuation repair')
+    # An initial import without PrivateB needs no override. An untagged stack
+    # with a repaired subnet is admitted only by the freshly reproved core.
+    if stack.get('Tags') or continuation is None:
+        _private_subnet_tags(stack.get('Tags', []), stack=True)
+    try:
+        resource = validate_private_b_resource(resource, c['region'])
+    except ValueError as error:
+        raise Gate(str(error)) from None
+    physical = {}
+    for logical, kind in (('Network', 'AWS::EC2::VPC'), ('PrivateA', 'AWS::EC2::Subnet'), ('PrivateB', 'AWS::EC2::Subnet')):
+        row = cf.describe_stack_resource(StackName=stack_id, LogicalResourceId=logical)['StackResourceDetail']
+        identifier = row.get('PhysicalResourceId')
+        pattern = r'vpc-[0-9a-f]{8,17}' if logical == 'Network' else r'subnet-[0-9a-f]{8,17}'
+        if (row.get('StackId') != stack_id or row.get('LogicalResourceId') != logical or row.get('ResourceType') != kind
+                or row.get('ResourceStatus') not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE', 'IMPORT_COMPLETE')
+                or not isinstance(identifier, str) or not re.fullmatch(pattern, identifier)):
+            raise Gate('PrivateB preservation found a different managed network binding')
+        physical[logical] = identifier
+    if continuation is not None:
+        if (continuation.get('status') != 'retained-uninitialized-database-adopted'
+                or continuation.get('already_adopted') is not True
+                or any(continuation.get(key) != c[key] for key in ('account', 'region'))
+                or continuation.get('release_id') != c['releaseId'] or continuation.get('stack_id') != stack_id
+                or continuation.get('import_template') != body
+                or expected != resource or continuation.get('repaired_private_b_physical_id') != physical['PrivateB']
+                or any(continuation.get('retained_physical_ids', {}).get(key) != physical[key] for key in ('Network', 'PrivateA'))):
+            raise Gate('PrivateB preservation differs from the proved adopted continuation')
+    ec2 = aws.client('ec2')
+    vpcs = ec2.describe_vpcs(VpcIds=[physical['Network']]).get('Vpcs', [])
+    subnets = ec2.describe_subnets(SubnetIds=[physical['PrivateA'], physical['PrivateB']]).get('Subnets', [])
+    if len(vpcs) != 1 or len(subnets) != 2 or {row.get('SubnetId') for row in subnets} != {physical['PrivateA'], physical['PrivateB']}:
+        raise Gate('PrivateB preservation found an ambiguous live network inventory')
+    vpc = vpcs[0]
+    if (vpc.get('VpcId') != physical['Network'] or properties['VpcId'] != physical['Network']
+            or vpc.get('OwnerId') != c['account'] or vpc.get('State') != 'available'
+            or vpc.get('IsDefault') is not False or vpc.get('CidrBlock') != '10.76.0.0/16'):
+        raise Gate('PrivateB preservation differs from the owned live VPC')
+    _private_subnet_tags(vpc.get('Tags', []))
+    associations = vpc.get('Ipv6CidrBlockAssociationSet', [])
+    try:
+        network = ipaddress.IPv6Network(associations[0]['Ipv6CidrBlock'])
+        ranges = list(network.subnets(new_prefix=64)) if network.prefixlen == 56 else []
+    except (IndexError, KeyError, TypeError, ValueError):
+        raise Gate('PrivateB preservation lacks the reviewed live IPv6 range') from None
+    if (len(associations) != 1 or len(ranges) != 256
+            or associations[0].get('Ipv6CidrBlockState', {}).get('State') != 'associated'
+            or associations[0].get('Ipv6Pool') != 'Amazon' or associations[0].get('NetworkBorderGroup') != c['region']
+            or properties['Ipv6CidrBlock'] != str(ranges[1])):
+        raise Gate('PrivateB preservation differs from the owned IPv6 geometry')
+    zones = []
+    for index, logical in enumerate(('PrivateA', 'PrivateB')):
+        row = next(row for row in subnets if row['SubnetId'] == physical[logical])
+        ipv6 = row.get('Ipv6CidrBlockAssociationSet', [])
+        if (row.get('VpcId') != physical['Network'] or row.get('OwnerId') != c['account']
+                or row.get('State') != 'available' or row.get('CidrBlock') != f'10.76.{index}.0/24'
+                or row.get('MapPublicIpOnLaunch') is not False or row.get('AssignIpv6AddressOnCreation') is not True
+                or len(ipv6) != 1 or ipv6[0].get('Ipv6CidrBlock') != str(ranges[index])
+                or ipv6[0].get('Ipv6CidrBlockState', {}).get('State') != 'associated'
+                or not isinstance(row.get('AvailabilityZone'), str)
+                or not re.fullmatch(re.escape(c['region']) + r'[a-z]', row['AvailabilityZone'])
+                or (logical == 'PrivateB' and row['AvailabilityZone'] != properties['AvailabilityZone'])):
+            raise Gate('PrivateB preservation differs from the live private subnet configuration')
+        zones.append(row['AvailabilityZone'])
+        _private_subnet_tags(row.get('Tags', []))
+    if zones[0] == zones[1]:
+        raise Gate('PrivateB preservation requires the two reviewed database zones')
+    return deepcopy(resource)
+
+
+def _private_subnet_tags(rows, *, stack=False):
+    from deploy.fargate_template import PRIVATE_SUBNET_TAGS
+    expected = {'deployment': STACK, 'purpose': 'serverless-development'} if stack else PRIVATE_SUBNET_TAGS
+    if (not isinstance(rows, list) or any(not isinstance(row, dict) or set(row) != {'Key', 'Value'}
+            or not isinstance(row['Key'], str) or not isinstance(row['Value'], str) for row in rows)
+            or len({row['Key'] for row in rows}) != len(rows)):
+        raise Gate('PrivateB preservation requires the exact owned resource tags')
+    actual = {row['Key']: row['Value'] for row in rows if not row['Key'].startswith('aws:')}
+    allowed = (expected,) if stack else (expected, {**expected, 'purpose': 'serverless-development'})
+    if actual not in allowed:
+        raise Gate('PrivateB preservation requires the exact owned resource tags')
+
+
+def verify_adopted_continuation(aws, c, evidence, source_bundle, digest):
+    """Reprove the entire adopted graph before using its literal subnet."""
+    from deploy.serverless_recovery import uninitialized_continuation_plan
+    repair_fields = ('repaired_private_b_resource', 'repaired_private_b_physical_id')
+    has_repair = any(evidence.get(key) is not None for key in repair_fields)
+    if has_repair and (not all(evidence.get(key) for key in repair_fields)
+            or evidence.get('status') != 'retained-uninitialized-database-adopted'
+            or evidence.get('already_adopted') is not True
+            or any(evidence.get(key) != c[field] for key, field in (
+                ('account', 'account'), ('region', 'region'), ('release_id', 'releaseId')))
+            or evidence.get('source_bundle_sha256') != digest):
+        raise Gate('Adopted continuation lacks the exact completed repair receipt')
+    options = {'_repair_evidence': evidence} if has_repair else {}
+    current = uninitialized_continuation_plan(aws, authority_config(c), source_bundle, digest, **options)
+    fields = ('stack_id', 'retained_physical_ids', 'database_snapshot', 'canonical_import_template_sha256', 'source_bundle_sha256',
+              'artifact_sha256', 'failed_run_id', 'failed_run_attempt', 'failed_release_id', 'account', 'region', 'release_id')
+    if any(current.get(key) is not None or evidence.get(key) is not None for key in repair_fields):
+        fields += repair_fields
+    if (current.get('already_adopted') is not True or evidence.get('already_adopted') is not True
+            or any(key not in current or key not in evidence or current[key] != evidence[key] for key in fields)
+            or bool(current.get(repair_fields[0])) != bool(current.get(repair_fields[1]))):
+        raise Gate('Adopted continuation changed before binding the repaired subnet')
+    return {'retained_graph_reverified': True, 'repaired_private_b_physical_id': current.get('repaired_private_b_physical_id')}
+
+
 def _recovery_options(args, operation=None):
     continuing = getattr(args, 'continue_uninitialized', None)
     digest = getattr(args, 'continue_uninitialized_sha256', None)
@@ -523,7 +670,7 @@ def deploy(args, c, aws, price):
     if not args.gate_evidence:
         raise Gate('Passing exact-source GitHub gate evidence is required')
     platform.require_clean_source(c['releaseId'])
-    platform.verify_gate_file(args.gate_evidence, c['releaseId'])
+    platform.verify_gate_file(args.gate_evidence, c['releaseId'], required_jobs=FARGATE_REQUIRED_JOBS)
     from deploy.fargate_template import build_template
     continuing, continuation_hash, recovery = _recovery_options(args)
     continuation = None
@@ -537,10 +684,13 @@ def deploy(args, c, aws, price):
     work = ROOT / '.local/deploy/fargate-development' / c['releaseId'] / uuid.uuid4().hex
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
+        private_b = None
         if continuing:
             from deploy.serverless_recovery import continue_uninitialized
             continuation = journal.call('continue-uninitialized-retained-resources', continue_uninitialized,
                 aws, authority_config(c), work / 'uninitialized-continuation.json', continuing, continuation_hash)
+            journal.call('verify-adopted-continuation-before-render', verify_adopted_continuation,
+                aws, c, continuation, continuing, continuation_hash)
         if all(recovery):
             from deploy.serverless_recovery import resume_initial_from_artifact
             journal.call('resume-preserved-initial-import', resume_initial_from_artifact, aws,
@@ -550,19 +700,21 @@ def deploy(args, c, aws, price):
             # Only the helper can admit an already completed, still empty
             # fifteen-resource import. It refuses active or updated platforms.
             prior = stable_stack(aws, STACK)
+        if continuation is not None or prior is not None:
+            private_b = journal.call('verify-preserved-private-subnet', preserved_private_b, aws, c, continuation)
         registry = journal.call('fargate-registry', deploy_stack, aws, STACK + '-registry', build_template(c, 'registry'), c)
         source = work / 'source.tar'
         journal.call('exact-source-archive', archive_source, c, source)
         c = journal.call('build-reviewed-api-worker-images', build_images, aws, c, registry, source)
         if prior:
             journal.call('drain-existing-runtime', drain, aws, prior)
-        out = journal.call('deploy-stopped', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}), c, registry['DeploymentBucket'])
+        out = journal.call('deploy-stopped', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}, preserved_private_b_resource=private_b), c, registry['DeploymentBucket'])
         if continuation:
             from deploy.serverless_recovery import verify_continued_database
             journal.call('verify-continued-database-stopped', verify_continued_database,
                 aws, authority_config(c), out, continuation)
         c, files = journal.call('build-reviewed-ui-image', build_ui, aws, c, registry, out, source, work)
-        out = journal.call('bind-stopped-ui-image', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}), c, registry['DeploymentBucket'])
+        out = journal.call('bind-stopped-ui-image', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}, preserved_private_b_resource=private_b), c, registry['DeploymentBucket'])
         if continuation:
             journal.call('verify-continued-database-ui', verify_continued_database,
                 aws, authority_config(c), out, continuation)
@@ -571,10 +723,11 @@ def deploy(args, c, aws, price):
         journal.call('migrate', run_maintenance, aws, c, out, 'migrate', work)
         admission = journal.call('admission', run_maintenance, aws, c, out, 'admission', work)
         journal.call('source-readmission', platform.require_clean_source, c['releaseId'])
-        journal.call('gate-readmission', platform.verify_gate_file, args.gate_evidence, c['releaseId'])
+        journal.call('gate-readmission', platform.verify_gate_file, args.gate_evidence, c['releaseId'],
+            required_jobs=FARGATE_REQUIRED_JOBS)
         if (datetime.now(timezone.utc) - datetime.fromisoformat(admission['completed_at'])).total_seconds() > 900:
             raise Gate('Independent admission is stale before activation')
-        out = journal.call('activate-fargate-service', deploy_stack, aws, STACK, build_template({**c, 'activateServices': True}), c, registry['DeploymentBucket'])
+        out = journal.call('activate-fargate-service', deploy_stack, aws, STACK, build_template({**c, 'activateServices': True}, preserved_private_b_resource=private_b), c, registry['DeploymentBucket'])
         verify_origin(aws, out)
         cf = aws.client('cloudfront')
         for key in ('WebDistributionId', 'ApiDistributionId'):

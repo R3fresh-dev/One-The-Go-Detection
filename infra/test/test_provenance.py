@@ -125,6 +125,64 @@ class ProvenanceTest(unittest.TestCase):
                 with client, self.assertRaises(p.Gate):
                     p.verify_github_gates(evidence, SHA, client=client)
 
+    def test_current_fargate_requires_fourteenth_job_and_preserves_historical_proof(self):
+        evidence, run, jobs = gate_fixture()
+        runtime = {**jobs[0], "id": 88, "name": "platform / fargate-container-runtime"}
+        self.assertEqual(p.FARGATE_REQUIRED_JOBS, p.REQUIRED_JOBS | {runtime["name"]})
+        client, _ = fixture_client(run, jobs)
+        with client:
+            historical = p.verify_github_gates(evidence, SHA, client=client)
+        client, _ = fixture_client(run, jobs)
+        with client, self.assertRaises(p.Gate):
+            p.verify_github_gates(evidence, SHA, client=client, required_jobs=p.FARGATE_REQUIRED_JOBS)
+        client, _ = fixture_client(run, jobs + [runtime])
+        with client:
+            current = p.verify_github_gates(evidence, SHA, client=client,
+                                            required_jobs=p.FARGATE_REQUIRED_JOBS)
+        self.assertEqual(current, historical)
+        self.assertEqual(set(current["jobs"]), p.REQUIRED_JOBS)
+        self.assertEqual(p.validate_gate_binding(current, SHA), p.sha256(historical))
+
+    def test_fargate_job_must_be_unique_successful_and_from_the_same_latest_attempt(self):
+        evidence, run, jobs = gate_fixture()
+        runtime = {**jobs[0], "id": 88, "name": "platform / fargate-container-runtime"}
+        cases = [("duplicate", [runtime, {**runtime, "id": 89}])]
+        cases.extend((field + "=" + str(value), [{**runtime, field: value}])
+                     for field, value in (("conclusion", "skipped"), ("conclusion", "failure"),
+                                          ("status", "in_progress"), ("run_attempt", 1),
+                                          ("run_id", 22), ("head_sha", "a" * 40)))
+        for label, rows in cases:
+            client, _ = fixture_client(run, jobs + rows)
+            with self.subTest(label=label), client, self.assertRaises(p.Gate):
+                p.verify_github_gates(evidence, SHA, client=client,
+                                      required_jobs=p.FARGATE_REQUIRED_JOBS)
+
+    def test_required_jobs_cannot_weaken_historical_admission(self):
+        evidence, run, jobs = gate_fixture()
+        for required in (p.REQUIRED_JOBS - {"merge-gate"}, set(), None,
+                         p.REQUIRED_JOBS | {None}, [p.REQUIRED_JOBS]):
+            client, requests = fixture_client(run, jobs)
+            with self.subTest(required=required), client, self.assertRaises(p.Gate):
+                p.verify_github_gates(evidence, SHA, client=client, required_jobs=required)
+            self.assertEqual(requests, [])
+
+    def test_gate_file_and_owned_client_preserve_fargate_requirements(self):
+        evidence, run, jobs = gate_fixture()
+        runtime = {**jobs[0], "id": 88, "name": "platform / fargate-container-runtime"}
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "gates.json"
+            path.write_text(json.dumps(evidence))
+            for rows, succeeds in ((jobs, False), (jobs + [runtime], True)):
+                client, requests = fixture_client(run, rows)
+                with self.subTest(succeeds=succeeds), patch.object(p.httpx, "Client", return_value=client):
+                    if succeeds:
+                        proof = p.verify_gate_file(path, SHA, required_jobs=p.FARGATE_REQUIRED_JOBS)
+                        self.assertEqual(set(proof["jobs"]), p.REQUIRED_JOBS)
+                    else:
+                        with self.assertRaises(p.Gate):
+                            p.verify_gate_file(path, SHA, required_jobs=p.FARGATE_REQUIRED_JOBS)
+                self.assertTrue(any("/attempts/2/jobs" in request.url.path for request in requests))
+
     def test_trusted_repository_workflow_main_sha_and_latest_run_are_mandatory(self):
         evidence, run, jobs = gate_fixture()
         for field, value in (("head_sha", "a" * 40), ("path", ".github/workflows/platform.yml"), ("event", "workflow_dispatch"),

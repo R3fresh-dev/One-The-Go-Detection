@@ -17,7 +17,7 @@ from unittest.mock import Mock, patch
 
 import yaml
 
-from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH
+from deploy.provenance import FARGATE_REQUIRED_JOBS, Gate, REPOSITORY, WORKFLOW_PATH
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / '.github/workflows/deploy-fargate.yml'
@@ -248,7 +248,8 @@ class FargateWorkflowTest(unittest.TestCase):
             finally:
                 os.chdir(previous)
         clean.assert_called_once_with(REVISION)
-        verify.assert_called_once_with(Path('.local/fargateconfig/gates/gates.json'), REVISION)
+        verify.assert_called_once_with(Path('.local/fargateconfig/gates/gates.json'), REVISION,
+                                       required_jobs=FARGATE_REQUIRED_JOBS)
         self.assertIn('20', downloaded.call_args.args[0])
         self.assertIn('exact-revision-merge-evidence', downloaded.call_args.args[0])
 

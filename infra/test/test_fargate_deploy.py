@@ -98,6 +98,7 @@ class FargateDeployTest(unittest.TestCase):
             for override in ({"environment": "serverless-development"}, {"account": "not-account"},
                              {"region": "us-west-2"}, {"monthlyBudgetUsd": 101}, {"monthlyBudgetUsd": True},
                              {"plannedMonthlyUsers": 100}, {"releaseId": "main"},
+                             {"preserved_private_b_resource": {"VpcId": "vpc-12345678"}},
                              {"AWS_SECRET_ACCESS_KEY": "synthetic-test-value"}):
                 path.write_text(json.dumps({**self.config, **override}))
                 with self.subTest(override=override), self.assertRaises(MODULE.Gate):
@@ -111,7 +112,7 @@ class FargateDeployTest(unittest.TestCase):
             with self.assertRaises(MODULE.Gate):
                 MODULE.deploy(args, self.config, aws, {})
         source.assert_called_once_with(SOURCE)
-        gate.assert_called_once_with(args.gate_evidence, SOURCE)
+        gate.assert_called_once_with(args.gate_evidence, SOURCE, required_jobs=MODULE.FARGATE_REQUIRED_JOBS)
         aws.client.assert_not_called()
         with self.assertRaises(MODULE.Gate):
             MODULE.deploy(SimpleNamespace(gate_evidence=None), self.config, aws, {})
@@ -160,7 +161,7 @@ class FargateDeployTest(unittest.TestCase):
                     patch.object(MODULE, "preflight") as preflight, self.assertRaises(MODULE.Gate):
                 MODULE.deploy(args, self.config, aws, {})
             clean.assert_called_once_with(SOURCE)
-            gates.assert_called_once_with(args.gate_evidence, SOURCE)
+            gates.assert_called_once_with(args.gate_evidence, SOURCE, required_jobs=MODULE.FARGATE_REQUIRED_JOBS)
             plan.assert_not_called()
             preflight.assert_not_called()
             aws.client.assert_not_called()
@@ -233,31 +234,202 @@ class FargateDeployTest(unittest.TestCase):
             if capacity.paginate.called:
                 self.assertEqual(capacity.paginate.call_args.kwargs["EngineVersion"], "16.15")
 
-    def _run_continuation_lifecycle(self, root, *, fail_verification=None):
-        events, template_configs, maintenance_options = [], [], {}
+    def _literal_private_b(self):
+        return {'Type': 'AWS::EC2::Subnet', 'DeletionPolicy': 'Retain', 'UpdateReplacePolicy': 'Retain',
+            'Properties': {'VpcId': 'vpc-12345678', 'AvailabilityZone': 'us-east-2b', 'CidrBlock': '10.76.1.0/24',
+                'Ipv6CidrBlock': '2001:db8:1234:5601::/64', 'AssignIpv6AddressOnCreation': True,
+                'MapPublicIpOnLaunch': False, 'Tags': [{'Key': key, 'Value': value} for key, value in {
+                    'project': 'one-the-go-detection', 'environment': 'serverless-development',
+                    'deployment': PREFIX, 'owner_role': 'platform-operator', 'cost_center': 'serverless-development'}.items()]}}
+
+    def _adopted_proof(self, resource=None):
+        from deploy.fargate_template import RETAINED_AUTHORITY
+        ids = {name: 'original-' + name for name in RETAINED_AUTHORITY}
+        ids.update({name: 'survivor-' + name for name in ('Network', 'NetworkIpv6', 'PrivateA', 'LambdaSecurityGroup',
+                    'DatabaseSecurityGroup', 'DatabaseParameters', 'DatabaseSubnets', 'Database', 'DatabaseWriter')})
+        ids.update(Network='vpc-12345678', PrivateA='subnet-11111111')
+        assert len(ids) == 24 and 'PrivateB' not in ids
+        proof = {'database_engine_version': '16.15', 'already_adopted': True,
+            'status': 'retained-uninitialized-database-adopted', 'account': ACCOUNT, 'region': 'us-east-2',
+            'release_id': SOURCE, 'stack_id': f'arn:aws:cloudformation:us-east-2:{ACCOUNT}:stack/{PREFIX}/owned',
+            'retained_physical_ids': ids, 'database_snapshot': {'writer_resource_id': 'original-writer-id'},
+            'canonical_import_template_sha256': 'f' * 64, 'source_bundle_sha256': 'd' * 64,
+            'artifact_sha256': 'e' * 64, 'failed_run_id': 123, 'failed_run_attempt': 1, 'failed_release_id': 'b' * 40,
+            'import_template': {'Resources': {}}}
+        if resource is not None:
+            proof.update(repaired_private_b_resource=deepcopy(resource), repaired_private_b_physical_id='subnet-22222222')
+        return proof
+
+    def _preserved_subnet_cloud(self):
+        aws, cf, ec2 = Mock(), Mock(), Mock()
+        resource = self._literal_private_b()
+        proof = self._adopted_proof(resource)
+        stack_id = proof['stack_id']
+        tags = deepcopy(resource['Properties']['Tags'])
+        cf.describe_stacks.return_value = {'Stacks': [{'StackId': stack_id, 'StackStatus': 'UPDATE_COMPLETE',
+            'EnableTerminationProtection': True, 'Tags': [{'Key': 'deployment', 'Value': PREFIX},
+                {'Key': 'purpose', 'Value': 'serverless-development'}]}]}
+        body = {'Resources': {'PrivateB': deepcopy(resource)}}
+        proof['import_template'] = deepcopy(body)
+        cf.get_template.return_value = {'TemplateBody': body}
+        rows = {}
+        for logical, kind, physical in (('Network', 'AWS::EC2::VPC', 'vpc-12345678'),
+                ('PrivateA', 'AWS::EC2::Subnet', 'subnet-11111111'), ('PrivateB', 'AWS::EC2::Subnet', 'subnet-22222222')):
+            rows[logical] = {'StackResourceDetail': {'StackId': stack_id, 'LogicalResourceId': logical,
+                'ResourceType': kind, 'PhysicalResourceId': physical, 'ResourceStatus': 'UPDATE_COMPLETE'}}
+        cf.describe_stack_resource.side_effect = lambda **kwargs: deepcopy(rows[kwargs['LogicalResourceId']])
+        vpc = {'VpcId': 'vpc-12345678', 'OwnerId': ACCOUNT, 'State': 'available', 'IsDefault': False,
+            'CidrBlock': '10.76.0.0/16', 'Tags': deepcopy(tags), 'Ipv6CidrBlockAssociationSet': [{
+                'Ipv6CidrBlock': '2001:db8:1234:5600::/56', 'Ipv6CidrBlockState': {'State': 'associated'},
+                'Ipv6Pool': 'Amazon', 'NetworkBorderGroup': 'us-east-2'}]}
+        subnets = [{'SubnetId': identifier, 'VpcId': 'vpc-12345678', 'OwnerId': ACCOUNT, 'State': 'available',
+            'CidrBlock': f'10.76.{index}.0/24', 'AvailabilityZone': 'us-east-2' + ('a' if index == 0 else 'b'),
+            'MapPublicIpOnLaunch': False, 'AssignIpv6AddressOnCreation': True, 'Tags': deepcopy(tags),
+            'Ipv6CidrBlockAssociationSet': [{'Ipv6CidrBlock': f'2001:db8:1234:560{index}::/64',
+                                            'Ipv6CidrBlockState': {'State': 'associated'}}]}
+            for index, identifier in enumerate(('subnet-11111111', 'subnet-22222222'))]
+        ec2.describe_vpcs.return_value = {'Vpcs': [vpc]}
+        ec2.describe_subnets.return_value = {'Subnets': subnets}
+        aws.client.side_effect = lambda name: {'cloudformation': cf, 'ec2': ec2}[name]
+        return aws, cf, ec2, proof, rows
+
+    def test_preservation_binds_original24_and_separate_repair_id_to_live_managed_geometry(self):
+        for continuation in (False, True):
+            aws, cf, ec2, proof, rows = self._preserved_subnet_cloud()
+            if continuation:
+                cf.describe_stacks.return_value['Stacks'][0]['Tags'] = []
+                cf.describe_stacks.return_value['Stacks'][0]['StackStatus'] = 'IMPORT_COMPLETE'
+            with self.subTest(continuation=continuation):
+                self.assertEqual(MODULE.preserved_private_b(aws, self.config, proof if continuation else None),
+                                 self._literal_private_b())
+            self.assertEqual(len(proof['retained_physical_ids']), 24)
+            self.assertNotIn('PrivateB', proof['retained_physical_ids'])
+            self.assertEqual(cf.get_template.call_args.kwargs['StackName'], proof['stack_id'])
+            ec2.describe_subnets.assert_called_once_with(SubnetIds=['subnet-11111111', 'subnet-22222222'])
+
+    def test_live_tags_allow_only_the_reviewed_inherited_stack_purpose(self):
+        for extra in ({'Key': 'purpose', 'Value': 'serverless-development'},
+                {'Key': 'purpose', 'Value': 'foreign'}, {'Key': 'unreviewed', 'Value': 'extra'}):
+            aws, cf, ec2, proof, rows = self._preserved_subnet_cloud()
+            for row in ec2.describe_vpcs.return_value['Vpcs'] + ec2.describe_subnets.return_value['Subnets']:
+                row['Tags'].append(deepcopy(extra))
+            with self.subTest(extra=extra):
+                if extra['Value'] == 'serverless-development':
+                    self.assertEqual(MODULE.preserved_private_b(aws, self.config), self._literal_private_b())
+                    self.assertEqual(len(proof['repaired_private_b_resource']['Properties']['Tags']), 5)
+                else:
+                    with self.assertRaisesRegex(MODULE.Gate, 'exact owned resource tags'):
+                        MODULE.preserved_private_b(aws, self.config)
+
+    def test_preservation_rejects_wrong_bindings_ownership_geometry_tags_and_receipt(self):
+        cases = ('binding', 'vpc', 'owner', 'public', 'ipv6', 'zone', 'stack-tags', 'subnet-tags', 'receipt-id', 'receipt-template', 'partial-repair')
+        for case in cases:
+            aws, cf, ec2, proof, rows = self._preserved_subnet_cloud()
+            if case == 'binding': rows['PrivateB']['StackResourceDetail']['PhysicalResourceId'] = 'subnet-33333333'
+            elif case == 'vpc': ec2.describe_vpcs.return_value['Vpcs'][0]['VpcId'] = 'vpc-87654321'
+            elif case == 'owner': ec2.describe_vpcs.return_value['Vpcs'][0]['OwnerId'] = '999999999999'
+            elif case == 'public': ec2.describe_subnets.return_value['Subnets'][1]['MapPublicIpOnLaunch'] = True
+            elif case == 'ipv6': ec2.describe_subnets.return_value['Subnets'][1]['Ipv6CidrBlockAssociationSet'][0]['Ipv6CidrBlock'] = '2001:db8:1234:5602::/64'
+            elif case == 'zone': ec2.describe_subnets.return_value['Subnets'][1]['AvailabilityZone'] = 'us-east-2a'
+            elif case == 'stack-tags': cf.describe_stacks.return_value['Stacks'][0]['Tags'][0]['Value'] = 'foreign'
+            elif case == 'subnet-tags': ec2.describe_subnets.return_value['Subnets'][1]['Tags'][0]['Value'] = 'foreign'
+            elif case == 'receipt-id': proof['repaired_private_b_physical_id'] = 'subnet-33333333'
+            elif case == 'receipt-template': proof['import_template']['Resources']['Other'] = {}
+            elif case == 'partial-repair': proof.pop('repaired_private_b_physical_id')
+            with self.subTest(case=case), self.assertRaises(MODULE.Gate):
+                MODULE.preserved_private_b(aws, self.config, proof if case.startswith(('receipt', 'partial')) else None)
+
+    def test_nonrepair_managed_template_does_not_introduce_an_override(self):
+        aws, cf, ec2, proof, rows = self._preserved_subnet_cloud()
+        cf.get_template.return_value['TemplateBody']['Resources'] = {}
+        for field in ('repaired_private_b_resource', 'repaired_private_b_physical_id'):
+            proof.pop(field)
+        proof['import_template'] = {'Resources': {}}
+        self.assertIsNone(MODULE.preserved_private_b(aws, self.config, proof))
+        cf.describe_stacks.return_value['Stacks'][0]['Tags'] = []
+        self.assertIsNone(MODULE.preserved_private_b(aws, self.config))
+        ec2.describe_vpcs.assert_not_called(); ec2.describe_subnets.assert_not_called()
+
+    def test_core_graph_is_reverified_before_binding_a_repair(self):
+        original = self._adopted_proof(self._literal_private_b())
+        changed = deepcopy(original); changed['database_snapshot']['writer_resource_id'] = 'replaced-writer'
+        aws = Mock()
+        with patch('deploy.serverless_recovery.uninitialized_continuation_plan', return_value=changed), \
+                self.assertRaisesRegex(MODULE.Gate, 'changed before binding'):
+            MODULE.verify_adopted_continuation(aws, self.config, original, Path('protected.json'), 'd' * 64)
+        aws.client.assert_not_called()
+
+    def test_fresh_repair_is_reverified_with_its_exact_active_update_receipt(self):
+        from infra.test.test_serverless_recovery import RepairContinuationCloud, build_template, recovery
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = RepairContinuationCloud(directory)
+            source, digest = cloud.write_bundle()
+            with patch.object(recovery, '_historical_builder', return_value=build_template):
+                evidence = recovery.continue_uninitialized(cloud.aws, cloud.config,
+                    Path(directory) / 'repair.json', source, digest)
+                with self.assertRaisesRegex(MODULE.Gate, 'unproved later stack update'):
+                    recovery.uninitialized_continuation_plan(cloud.aws, cloud.config, source, digest)
+                cf, rds = cloud.clients['cloudformation'], cloud.clients['rds']
+                mutations = (cf.create_change_set.call_count, cf.execute_change_set.call_count,
+                    rds.modify_db_subnet_group.call_count)
+                config = {**cloud.config, 'environment': 'fargate-development', 'monthlyBudgetUsd': 100}
+                result = MODULE.verify_adopted_continuation(cloud.aws, config, evidence, source, digest)
+                self.assertEqual(result, {'retained_graph_reverified': True,
+                    'repaired_private_b_physical_id': cloud.repaired_subnet_id})
+                self.assertEqual((cf.create_change_set.call_count, cf.execute_change_set.call_count,
+                    rds.modify_db_subnet_group.call_count), mutations)
+
+    def test_incomplete_or_different_repair_receipt_cannot_authorize_history(self):
+        original = self._adopted_proof(self._literal_private_b())
+        for field, value in (('status', 'private-b-repair-update-executing'), ('already_adopted', False),
+                ('account', '738470137867'), ('region', 'us-west-2'), ('release_id', 'b' * 40),
+                ('source_bundle_sha256', 'e' * 64), ('repaired_private_b_physical_id', None)):
+            evidence = {**original, field: value}
+            with self.subTest(field=field), patch('deploy.serverless_recovery.uninitialized_continuation_plan') as plan:
+                with self.assertRaisesRegex(MODULE.Gate, 'exact completed repair receipt'):
+                    MODULE.verify_adopted_continuation(Mock(), self.config, evidence, Path('protected.json'), 'd' * 64)
+                plan.assert_not_called()
+
+    def _run_continuation_lifecycle(self, root, *, fail_verification=None, normal_redeploy=False, repair=True, live_preservation=False):
+        events, template_configs, maintenance_options, template_bindings = [], [], {}, []
         aws, cloudfront = Mock(), Mock()
         aws.client.return_value = cloudfront
+        live_cf = None
+        if live_preservation:
+            aws, live_cf, ec2, live_proof, rows = self._preserved_subnet_cloud()
+            for row in ec2.describe_vpcs.return_value['Vpcs'] + ec2.describe_subnets.return_value['Subnets']:
+                row['Tags'].append({'Key': 'purpose', 'Value': 'serverless-development'})
+            aws.client.side_effect = lambda name: {'cloudformation': live_cf, 'ec2': ec2, 'cloudfront': cloudfront}[name]
+        preserve_live = MODULE.preserved_private_b
         cloudfront.create_invalidation.return_value = {"Invalidation": {"Id": "owned-invalidation"}}
-        args = self._continuation_args()
+        args = self._continuation_args(**({'continue_uninitialized': None, 'continue_uninitialized_sha256': None,
+                                         'establish_new': False} if normal_redeploy else {}))
         plan = {"database_engine_version": "16.15", "already_adopted": False}
-        adopted = {**plan, "already_adopted": True}
+        repaired = self._literal_private_b() if repair else None
+        adopted = self._adopted_proof(repaired)
         out = {**self.out, "WebDistributionId": "owned-web", "ApiDistributionId": "owned-api"}
 
-        def planned(*arguments):
+        def planned(*arguments, **options):
+            self.assertEqual(options, {'_repair_evidence': adopted} if repair and 'continue' in events else {})
             events.append("plan")
-            return plan
+            return deepcopy(adopted if 'continue' in events else plan)
 
-        def preflighted(aws, current, prior, version):
+        def preflighted(aws, current, prior, version=None):
             events.append("preflight")
-            return {**current, "databaseEngineVersion": version, "cloudFrontPrefixListId": "pl-12345678"}
+            return {**current, "databaseEngineVersion": version or '16.15', "cloudFrontPrefixListId": "pl-12345678"}
 
         def continued(*arguments):
             events.append("continue")
             return adopted
 
-        def template(current, phase="platform"):
+        def template(current, phase="platform", *, preserved_private_b_resource=None):
             template_configs.append(deepcopy(current))
+            template_bindings.append((phase, deepcopy(preserved_private_b_resource)))
             return {"phase": phase, "active": current.get("activateServices", False)}
+
+        def preserved(*arguments):
+            events.append('preserve-private-b')
+            return preserve_live(*arguments) if live_preservation else deepcopy(repaired)
 
         def deployed(aws, name, current, *arguments):
             if current["phase"] == "registry":
@@ -287,18 +459,25 @@ class FargateDeployTest(unittest.TestCase):
             self.assertEqual(current["monthlyBudgetUsd"], 100)
             return {"completed_at": datetime.now(timezone.utc).isoformat()}
 
+        def admitted_gates(*arguments, **options):
+            self.assertEqual(options, {'required_jobs': MODULE.FARGATE_REQUIRED_JOBS})
+            self.assertEqual(len(options['required_jobs']), 14)
+            self.assertIn('platform / fargate-container-runtime', options['required_jobs'])
+            events.append('admit-gates')
+
         with ExitStack() as stack:
             stack.enter_context(patch.object(MODULE, "ROOT", root))
             stack.enter_context(patch.object(MODULE.platform, "require_clean_source",
                 side_effect=lambda *args: events.append("admit-source")))
             stack.enter_context(patch.object(MODULE.platform, "verify_gate_file",
-                side_effect=lambda *args: events.append("admit-gates")))
+                side_effect=admitted_gates))
             planning = stack.enter_context(patch("deploy.serverless_recovery.uninitialized_continuation_plan", side_effect=planned))
             preflight = stack.enter_context(patch.object(MODULE, "preflight", side_effect=preflighted))
             continuation = stack.enter_context(patch("deploy.serverless_recovery.continue_uninitialized", side_effect=continued))
             database = stack.enter_context(patch("deploy.serverless_recovery.verify_continued_database", side_effect=verified))
-            stable = stack.enter_context(patch.object(MODULE, "stable_stack"))
+            stable = stack.enter_context(patch.object(MODULE, "stable_stack", return_value=out))
             drain = stack.enter_context(patch.object(MODULE, "drain"))
+            preservation = stack.enter_context(patch.object(MODULE, 'preserved_private_b', side_effect=preserved))
             stack.enter_context(patch("deploy.fargate_template.build_template", side_effect=template))
             stack.enter_context(patch.object(MODULE, "deploy_stack", side_effect=deployed))
             stack.enter_context(patch.object(MODULE, "archive_source"))
@@ -323,19 +502,21 @@ class FargateDeployTest(unittest.TestCase):
         return receipt, events, maintenance_options, state, template_configs, {
             "planning": planning, "preflight": preflight, "continuation": continuation,
             "database": database, "stable": stable, "drain": drain, "network": network,
-            "aws": aws, "args": args, "adopted": adopted}
+            "aws": aws, "args": args, "adopted": adopted, 'preservation': preservation,
+            'template_bindings': template_bindings, 'live_cf': live_cf}
 
     def test_continuation_verifies_both_stopped_updates_before_bootstrap_without_changing_fargate_budget(self):
         with tempfile.TemporaryDirectory() as directory:
             receipt, events, options, state, configs, calls = self._run_continuation_lifecycle(Path(directory))
-        self.assertEqual(events[:6], ["admit-source", "admit-gates", "plan", "preflight", "continue", "registry"])
+        self.assertEqual(events[:8], ["admit-source", "admit-gates", "plan", "preflight", "continue", "plan", 'preserve-private-b', "registry"])
         self.assertLess(events.index("stopped"), events.index("verify-database-1"))
         self.assertLess(events.index("verify-database-1"), events.index("ui"))
         self.assertLess(events.index("ui"), events.index("verify-database-2"))
         self.assertLess(events.index("verify-database-2"), events.index("bootstrap"))
         self.assertLess(events.index("admission"), events.index("activate"))
-        calls["planning"].assert_called_once_with(calls["aws"], MODULE.authority_config(self.config),
-            calls["args"].continue_uninitialized, calls["args"].continue_uninitialized_sha256)
+        self.assertEqual(calls['planning'].call_count, 2)
+        self.assertEqual(calls['planning'].call_args_list[0].args, (calls["aws"], MODULE.authority_config(self.config),
+            calls["args"].continue_uninitialized, calls["args"].continue_uninitialized_sha256))
         calls["preflight"].assert_called_once_with(calls["aws"], self.config, None, "16.15")
         continued = calls["continuation"].call_args.args
         self.assertEqual(continued[1]["databaseEngineVersion"], "16.15")
@@ -364,6 +545,30 @@ class FargateDeployTest(unittest.TestCase):
         self.assertLess(stages.index("verify-continued-database-ui"), stages.index("bootstrap"))
         self.assertEqual(receipt["status"], "fargate_transport_and_health_verified")
         self.assertEqual(receipt["budget_plan"]["budget_usd"], 100)
+        self.assertEqual(calls['template_bindings'], [('registry', None)] + [('platform', self._literal_private_b())] * 3)
+        self.assertNotIn('PrivateB', calls['adopted']['retained_physical_ids'])
+
+    def test_normal_redeployment_uses_live_proof_for_all_three_renders_without_reestablishing_journal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            receipt, events, options, state, configs, calls = self._run_continuation_lifecycle(
+                Path(directory), normal_redeploy=True, live_preservation=True)
+        calls['planning'].assert_not_called(); calls['continuation'].assert_not_called()
+        calls['preservation'].assert_called_once()
+        self.assertIsNone(calls['preservation'].call_args.args[2])
+        calls['live_cf'].describe_stacks.assert_called_once_with(StackName=PREFIX)
+        self.assertEqual(calls['live_cf'].describe_stacks.return_value['Stacks'][0]['Tags'], [
+            {'Key': 'deployment', 'Value': PREFIX}, {'Key': 'purpose', 'Value': 'serverless-development'}])
+        self.assertEqual(events[:4], ['admit-source', 'admit-gates', 'preflight', 'preserve-private-b'])
+        self.assertEqual(calls['template_bindings'], [('registry', None)] + [('platform', self._literal_private_b())] * 3)
+        self.assertEqual(options['bootstrap'], {'establish_new': False})
+        self.assertEqual(receipt['status'], 'fargate_transport_and_health_verified')
+
+    def test_successful_legacy_continuation_without_repair_keeps_default_subnet_render(self):
+        with tempfile.TemporaryDirectory() as directory:
+            receipt, events, options, state, configs, calls = self._run_continuation_lifecycle(Path(directory), repair=False)
+        self.assertEqual(calls['planning'].call_count, 2)
+        self.assertEqual(calls['template_bindings'], [('registry', None)] + [('platform', None)] * 3)
+        self.assertEqual(receipt['status'], 'fargate_transport_and_health_verified')
 
     def test_either_stopped_database_verification_failure_blocks_bootstrap_migration_and_activation(self):
         for number, failed_stage in ((1, "verify-continued-database-stopped"), (2, "verify-continued-database-ui")):

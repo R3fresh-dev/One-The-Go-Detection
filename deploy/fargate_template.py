@@ -8,6 +8,7 @@ Only execution, ingress and monitoring change to ECS Fargate.
 from __future__ import annotations
 
 from copy import deepcopy
+import ipaddress
 import json
 import math
 import re
@@ -16,6 +17,8 @@ from deploy.serverless_template import att, build_template as original_template,
 
 PREFIX = "otgd-serverless-development"
 NAMESPACE = "OTGD/serverless-development"
+PRIVATE_SUBNET_TAGS = {"project": "one-the-go-detection", "environment": "serverless-development",
+                       "deployment": PREFIX, "owner_role": "platform-operator", "cost_center": "serverless-development"}
 RETAINED_AUTHORITY = frozenset({
     "Accounts", "ApiLogs", "ApplicationSecret", "CaptureSigningKey", "ControlLogs",
     "DataKey", "DeletionJournal", "DispatcherLogs", "Exports", "JournalKey",
@@ -50,7 +53,40 @@ def _dualstack_image(uri):
     return uri.replace(".dkr.ecr.us-east-2.amazonaws.com/", ".dkr-ecr.us-east-2.on.aws/")
 
 
-def build_template(config, phase="platform"):
+def validate_private_b_resource(resource, region):
+    """Validate the literal shape; live authority is proved by the deployer."""
+    fields = {"VpcId", "AvailabilityZone", "CidrBlock", "Ipv6CidrBlock",
+              "AssignIpv6AddressOnCreation", "MapPublicIpOnLaunch", "Tags"}
+    if (not isinstance(resource, dict)
+            or set(resource) != {"Type", "Properties", "DeletionPolicy", "UpdateReplacePolicy"}
+            or resource.get("Type") != "AWS::EC2::Subnet"
+            or resource.get("DeletionPolicy") != "Retain" or resource.get("UpdateReplacePolicy") != "Retain"
+            or not isinstance(resource.get("Properties"), dict) or set(resource["Properties"]) != fields):
+        raise ValueError("Preserved PrivateB must be the exact retained literal subnet resource")
+    properties = resource["Properties"]
+    tags = properties["Tags"]
+    if (not isinstance(tags, list) or len(tags) != len(PRIVATE_SUBNET_TAGS)
+            or any(not isinstance(row, dict) or set(row) != {"Key", "Value"}
+                   or not isinstance(row["Key"], str) or not isinstance(row["Value"], str) for row in tags)
+            or {row["Key"]: row["Value"] for row in tags} != PRIVATE_SUBNET_TAGS
+            or not isinstance(properties["VpcId"], str)
+            or not re.fullmatch(r"vpc-[0-9a-f]{8,17}", properties["VpcId"])
+            or not isinstance(properties["AvailabilityZone"], str)
+            or not re.fullmatch(re.escape(region) + r"[a-z]", properties["AvailabilityZone"])
+            or properties["CidrBlock"] != "10.76.1.0/24"
+            or properties["AssignIpv6AddressOnCreation"] is not True
+            or properties["MapPublicIpOnLaunch"] is not False):
+        raise ValueError("Preserved PrivateB differs from the reviewed private subnet properties")
+    try:
+        network = ipaddress.IPv6Network(properties["Ipv6CidrBlock"])
+    except (ValueError, TypeError):
+        raise ValueError("Preserved PrivateB requires its literal IPv6 /64") from None
+    if network.prefixlen != 64 or str(network) != properties["Ipv6CidrBlock"]:
+        raise ValueError("Preserved PrivateB requires its canonical literal IPv6 /64")
+    return deepcopy(resource)
+
+
+def build_template(config, phase="platform", *, preserved_private_b_resource=None):
     """Build registry, stopped platform, or admitted active platform resources."""
     _configuration(config, phase)
     # This is construction reuse, not the cost admission result: the Fargate
@@ -58,10 +94,14 @@ def build_template(config, phase="platform"):
     base = original_template({**config, "monthlyBudgetUsd": min(config["monthlyBudgetUsd"], 50)}, phase)
     base["Description"] = "On-The-Go Detection ECS Fargate development deployment"
     if phase == "registry":
+        if preserved_private_b_resource is not None:
+            raise ValueError("PrivateB preservation applies only to the application stack")
         base["Resources"]["Images"]["Properties"].pop("RepositoryPolicyText", None)
         return base
 
     resources = base["Resources"]
+    if preserved_private_b_resource is not None:
+        resources["PrivateB"] = validate_private_b_resource(preserved_private_b_resource, config["region"])
     outputs = base["Outputs"]
     account, region, revision = config["account"], config["region"], config["releaseId"]
     active = config.get("activateServices", False)
