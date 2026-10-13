@@ -1,538 +1,94 @@
-name: Read-only regional preflight and organization diagnostic
-on:
+name: Restore original Ohio HTTP state and stop exact database only
+'on':
   workflow_dispatch:
+    inputs:
+      reviewed_operation_commit:
+        description: Exact root-reviewed stabilizing operation commit
+        required: true
+        type: string
+        default: ''
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: otgd-ohio-retirement-738470137867-us-east-2
+  cancel-in-progress: false
 jobs:
-  snapshot:
+  stabilize:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/work-aws-regional-diagnostic' && github.event.repository.default_branch == 'main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 30
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: R3fresh-dev/One-The-Go-Detection
-      AWS_REGION: us-east-1
-      AWS_DEFAULT_REGION: us-east-1
+      AWS_REGION: us-east-2
+      AWS_DEFAULT_REGION: us-east-2
       AWS_EC2_METADATA_DISABLED: 'true'
       AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
       AWS_MAX_ATTEMPTS: '1'
       AWS_PAGER: ''
+      OHIO_STABILIZE_ADMISSION_SHA256: 4fd6338af3972342e682ce9fb77439b33f7c6087b857d04aecd6f48efe75074c
+      OHIO_STABILIZE_SCRIPT_SHA256: 1d412754de972d964968bab03391ab6486fd000030633df0965b48162841111e
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: 0844868aa543af4ab75ac5065ad48cf807b86bb3
-          persist-credentials: false
-      - name: Admit exact current qualified main before AWS credentials
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PYCODE'
-          import hashlib, io, json, os, re, subprocess, zipfile
-          SOURCE = '0844868aa543af4ab75ac5065ad48cf807b86bb3'
-          TREE = '1afe65b4d2a6ba3a4c541c9ecf7bc61f287ee908'
-          RUN = 38350430258
-          ARTIFACT = 11790454913
-          RAW_SHA256 = '9338903893d1bb1d82097cca4ea7a59cd81579d1f85cb853310c981592a2d165'
-          REPOSITORY = 'R3fresh-dev/One-The-Go-Detection'
-          WORKFLOW = '.github/workflows/merge-gate.yml'
-          JOBS = {'unit-coverage', 'components', 'atdd', 'preview / ios', 'platform / postgres-integration',
-              'native / android', 'native / protected-reader', 'native / ios', 'platform / localstack-integration',
-              'native / shared-and-firmware', 'platform / contracts-and-synthesis', 'platform / fargate-container-runtime',
-              'preview / android', 'merge-gate'}
-          LABELS = {'unit-coverage', 'atdd', 'components', 'performance', 'live-dependencies', 'docker-health',
-              'localstack-api', 'specifications', 'native-android', 'native-ios', 'firmware', 'hosted-android', 'hosted-ios'}
-          
-          def require(condition, reason):
-              if not condition:
-                  raise SystemExit('Regional read-only admission blocked: ' + reason)
-          
-          def command(args, binary=False):
-              result = subprocess.run(args, capture_output=True, text=not binary, timeout=30)
-              require(result.returncode == 0 and len(result.stdout if binary else result.stdout.encode()) <= 1048576,
-                  'bounded authenticated command unavailable')
-              return result.stdout
-          
-          def api(path):
-              return json.loads(command(['gh', 'api', (f'repos/{REPOSITORY}/' + path).rstrip('/')]))
-          
-          def latest():
-              response = api('actions/workflows/merge-gate.yml/runs?head_sha=' + SOURCE + '&per_page=100')
-              require(response.get('total_count', 101) <= 100, 'gate inventory exceeds bound')
-              candidates = [r for r in response['workflow_runs'] if r.get('head_sha') == SOURCE
-                  and r.get('path') == WORKFLOW and r.get('head_branch') == 'main' and r.get('event') == 'push']
-              require(candidates and max(r['id'] for r in candidates) == RUN, 'latest trusted main gate differs')
-          
-          require(ARTIFACT > 0 and re.fullmatch(r'[0-9a-f]{64}', RAW_SHA256), 'root gate/artifact bindings pending')
-          require(os.environ['GH_REPO'] == REPOSITORY and os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch'
-              and os.environ['GITHUB_REF'] == 'refs/heads/work-aws-regional-diagnostic', 'repository/trigger differs')
-          require(command(['git', 'rev-parse', 'HEAD']).strip() == SOURCE
-              and command(['git', 'rev-parse', 'HEAD^{tree}']).strip() == TREE
-              and not command(['git', 'status', '--porcelain']).strip(), 'immutable source/tree differs')
-          require(api('')['default_branch'] == 'main' and api('git/ref/heads/main')['object']['sha'] == SOURCE,
-              'current default main differs')
-          run = api(f'actions/runs/{RUN}')
-          require(run.get('id') == RUN and run.get('head_sha') == SOURCE and run.get('path') == WORKFLOW
-              and run.get('head_branch') == 'main' and run.get('event') == 'push'
-              and run.get('status') == 'completed' and run.get('conclusion') == 'success'
-              and run.get('run_attempt') == 1
-              and run.get('repository', {}).get('full_name') == REPOSITORY
-              and run.get('head_repository', {}).get('full_name') == REPOSITORY, 'trusted main gate differs')
-          workflow = api(f"actions/workflows/{run['workflow_id']}")
-          require(workflow.get('path') == WORKFLOW and workflow.get('state') == 'active', 'gate workflow differs')
-          latest()
-          response = api(f"actions/runs/{RUN}/attempts/{run['run_attempt']}/jobs?per_page=100")
-          jobs = response.get('jobs', [])
-          require(response.get('total_count') == 14 and len(jobs) == 14 and {j['name'] for j in jobs} == JOBS
-              and len({j['id'] for j in jobs}) == 14
-              and all(j.get('head_sha') == SOURCE and j.get('run_id') == RUN and j.get('run_attempt') == run['run_attempt']
-                  and j.get('status') == 'completed' and j.get('conclusion') == 'success' for j in jobs), 'all14 jobs differ')
-          response = api(f'actions/runs/{RUN}/artifacts?per_page=100')
-          rows = [a for a in response.get('artifacts', []) if a.get('name') == 'exact-revision-merge-evidence']
-          require(response.get('total_count', 101) <= 100 and len(rows) == 1, 'aggregate artifact is ambiguous')
-          artifact = rows[0]
-          job = next(j for j in jobs if j['name'] == 'merge-gate')
-          require(artifact.get('id') == ARTIFACT and artifact.get('expired') is False
-              and artifact.get('digest') == 'sha256:' + RAW_SHA256 and artifact.get('size_in_bytes') == 393
-              and artifact.get('workflow_run', {}).get('id') == RUN and artifact.get('workflow_run', {}).get('head_sha') == SOURCE
-              and job['started_at'] <= artifact.get('created_at', '') <= job['completed_at'], 'raw artifact binding differs')
-          raw = command(['gh', 'api', f'repos/{REPOSITORY}/actions/artifacts/{ARTIFACT}/zip'], binary=True)
-          require(len(raw) == artifact['size_in_bytes'] and hashlib.sha256(raw).hexdigest() == RAW_SHA256,
-              'raw aggregate ZIP digest differs')
-          with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-              members = [m for m in archive.infolist() if not m.is_dir()]
-              require(len(members) == 1 and members[0].filename == 'gates.json' and members[0].file_size <= 262144
-                  and (members[0].external_attr >> 16) & 0o170000 != 0o120000, 'aggregate member differs')
-              evidence = json.loads(archive.read(members[0]))
-          require(evidence.get('revision') == SOURCE and evidence.get('run_url') == f'https://github.com/{REPOSITORY}/actions/runs/{RUN}'
-              and isinstance(evidence.get('passed'), list) and len(evidence['passed']) == 13 and set(evidence['passed']) == LABELS,
-              'aggregate exact revision/jobs differ')
-          after = api(f'actions/artifacts/{ARTIFACT}')
-          require(all(after.get(k) == artifact.get(k) for k in ['id','name','expired','digest','size_in_bytes','created_at','workflow_run']),
-              'aggregate changed after download')
-          current = api(f'actions/runs/{RUN}')
-          require(all(current.get(k) == run.get(k) for k in ['id','head_sha','run_attempt','status','conclusion','workflow_id']),
-              'gate changed after download')
-          latest()
-          require(api('git/ref/heads/main')['object']['sha'] == SOURCE and not command(['git','status','--porcelain']).strip(),
-              'current main/source changed')
-          print(json.dumps({'admitted_revision': SOURCE, 'admitted_tree': TREE, 'gate_run_id': RUN,
-              'gate_attempt': run['run_attempt'], 'successful_jobs': 14, 'raw_aggregate_sha256': RAW_SHA256,
-              'admission_scope': 'READ_ONLY_EAST1_WEST2_PREFLIGHT_AND_OHIO_ACCOUNT_PLAN_ONLY'}))
-          PYCODE
-      - name: Install only hash-locked SDK wheels before AWS credentials
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PYCODE'
-          import os, subprocess, tomllib
-          from pathlib import Path
-          packages = {'boto3', 'botocore', 's3transfer', 'jmespath', 'python-dateutil', 'six', 'urllib3'}
-          lock = tomllib.loads(Path('services/api/uv.lock').read_text())
-          rows = [p for p in lock['package'] if p['name'] in packages]
-          if len(rows) != len(packages) or {p['name'] for p in rows} != packages:
-              raise SystemExit('SDK lock inventory differs')
-          if any(p['version'] != '1.43.111' for p in rows if p['name'] in ('boto3', 'botocore')):
-              raise SystemExit('Native diagnostic SDK model differs from qualified source')
-          root = Path(os.environ['RUNNER_TEMP'])
-          requirements = root / 'regional-diagnostic-sdk-requirements.txt'
-          requirements.write_text('\n'.join(p['name'] + '==' + p['version'] + ' ' + ' '.join(
-              '--hash=' + w['hash'] for w in p.get('wheels', [])) for p in rows) + '\n')
-          if any(not p.get('wheels') for p in rows):
-              raise SystemExit('SDK wheel hash is unavailable')
-          subprocess.run(['python3', '-m', 'pip', 'install', '--disable-pip-version-check', '--no-input',
-              '--require-hashes', '--no-deps', '--only-binary=:all:', '--target', str(root / 'regional-diagnostic-sdk'),
-              '-r', str(requirements)], check=True, timeout=90)
-          PYCODE
-      - name: Configure reviewed account only after complete source admission
-        uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
-        with:
-          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
-          allowed-account-ids: '738470137867'
-          unset-current-credentials: true
-          force-skip-oidc: true
-          output-credentials: false
-          retry-max-attempts: 1
-          action-timeout-s: 90
-      - name: Read one bounded regional metadata snapshot
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PYCODE'
-          """One bounded metadata snapshot; no application imports or cloud mutations."""
-          from datetime import datetime, timezone
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
-          import re
-          import subprocess
-          import sys
-          import time
-          
-          ACCOUNT = '738470137867'
-          SOURCE = '0844868aa543af4ab75ac5065ad48cf807b86bb3'
-          TREE = '1afe65b4d2a6ba3a4c541c9ecf7bc61f287ee908'
-          PRIMARY, RECOVERY = 'us-east-1', 'us-west-2'
-          APP = 'otgd-serverless-development'
-          COLD = 'otgd-fargate-development-us-west-2-recovery'
-          COLD_TEMPLATE_SHA256 = '3a91906c2ddbb5ee602263275097a73fb644f4ef4a939b640a5a3b26f4fd7d81'
-          ALLOWED = {
-              ('sts', 'get-caller-identity'), ('freetier', 'get-account-plan-state'), ('account', 'get-account-information'), ('organizations', 'describe-organization'), ('cloudformation', 'describe-stacks'),
-              ('cloudformation', 'list-stack-resources'), ('cloudformation', 'describe-stack-events'),
-              ('cloudformation', 'get-template'), ('kms', 'describe-key'),
-              ('rds', 'describe-db-clusters'), ('rds', 'describe-db-cluster-snapshots'),
-              ('ecs', 'describe-clusters'), ('ecs', 'describe-services'),
-              ('backup', 'list-backup-jobs'), ('backup', 'list-copy-jobs'),
-              ('backup', 'describe-recovery-point'),
-          }
-          OUTPUTS = {'ReleaseId', 'ActivateServices', 'WebOrigin', 'ApiOrigin', 'CloudWatchDashboardUrl',
-              'ClusterArn', 'ApiService', 'DbClusterIdentifier', 'DatabaseClusterIdentifier',
-              'DataKeyArn', 'RecoveryKeyArn', 'RecoveryVaultArn', 'RecoveryVaultName',
-              'RegionalBackupRoleArn', 'RegionalBackupPlanId', 'PrimaryBackupVaultName'}
-          START = time.monotonic()
-          CALLS = 0
-          DIRECTORY = Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic'
-          DIRECTORY.mkdir(mode=0o700, exist_ok=False)
-          PATH = DIRECTORY / 'regional-diagnostic.json'
-          REPORT = {'schema_version': '1.0.0', 'operation': 'read-only-regional-preflight-diagnostic',
-              'source_revision': SOURCE, 'source_tree': TREE, 'account': ACCOUNT,
-              'primary_region': PRIMARY, 'backup_region': RECOVERY,
-              'observer_run_id': os.environ['GITHUB_RUN_ID'], 'observer_run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
-              'started_at': datetime.now(timezone.utc).isoformat(), 'observations': {}, 'aws_mutations': [],
-              'limits': {'deadline_seconds': 180, 'aws_calls': 100, 'artifact_bytes': 1048576},
-              'restore_executed': False, 'health_verified': False, 'backup_restore_verified': False}
-          
-          
-          def persist():
-              REPORT['aws_call_count'] = CALLS
-              raw = (json.dumps(REPORT, sort_keys=True, indent=2) + '\n').encode()
-              if len(raw) > 1048576:
-                  raise SystemExit('Regional observer artifact bound exceeded')
-              PATH.write_bytes(raw)
-              PATH.chmod(0o600)
-          
-          
-          def aws(region, service, operation, options=(), query=None):
-              global CALLS
-              if (region not in (PRIMARY, RECOVERY, 'us-east-2') or (service, operation) not in ALLOWED
-                      or region == 'us-east-2' and (service, operation) != ('freetier', 'get-account-plan-state')
-                      or region == RECOVERY and service not in ('cloudformation', 'kms', 'rds', 'backup', 'sts')):
-                  raise SystemExit('Regional observer operation/region outside read-only allowlist')
-              left = 180 - (time.monotonic() - START)
-              if left <= 0 or CALLS >= 100:
-                  return {'observation_error_code': 'ObservationBoundExceeded', 'presence': 'unverified'}
-              CALLS += 1
-              if (service, operation) == ('freetier', 'get-account-plan-state'):
-                  return native_account_plan(region, left)
-              if (service, operation) == ('account', 'get-account-information'):
-                  return native_account_information(region, left)
-              if (service, operation) == ('organizations', 'describe-organization'):
-                  return native_organization(region, left)
-              request = ['aws', service, operation, '--region', region, '--no-paginate', '--output', 'json',
-                  '--cli-connect-timeout', '3', '--cli-read-timeout', '8', *options]
-              if query:
-                  request += ['--query', query]
-              environment = {**os.environ, 'AWS_REGION': region, 'AWS_DEFAULT_REGION': region,
-                  'AWS_MAX_ATTEMPTS': '1', 'AWS_IGNORE_CONFIGURED_ENDPOINT_URLS': 'true',
-                  'AWS_EC2_METADATA_DISABLED': 'true', 'AWS_PAGER': ''}
-              try:
-                  result = subprocess.run(request, capture_output=True, text=True, timeout=min(12, left), env=environment)
-              except subprocess.TimeoutExpired:
-                  return {'observation_error_code': 'BoundedTimeout', 'presence': 'unverified'}
-              if result.returncode:
-                  code = re.search(r'An error occurred \(([A-Za-z0-9_.-]+)\)', result.stderr)
-                  value = code.group(1) if code else 'CommandUnavailable'
-                  absent = service == 'cloudformation' and value == 'ValidationError' and re.search(
-                      r'Stack with id [^\n]+ does not exist', result.stderr)
-                  detail = {'observation_error_code': value, 'presence': 'absent' if absent else 'unverified',
-                      'service': service, 'operation': operation, 'region': region}
-                  if (service, operation) == ('cloudformation', 'describe-stacks'):
-                      detail['bounded_error_message'] = result.stderr.split('operation:', 1)[-1].strip()[:512]
-                  return detail
-              if len(result.stdout.encode()) > 1048576:
-                  return {'observation_error_code': 'ResponseBoundExceeded', 'presence': 'unverified'}
-              try:
-                  return json.loads(result.stdout)
-              except ValueError:
-                  return {'observation_error_code': 'MalformedJson', 'presence': 'unverified'}
-          
-          
-          
-          def native_account_plan(region, left):
-              # Read the same SDK operation/model as the admitted deployment, without
-              # relying on the hosted runner's independent AWS CLI service-model age.
-              sys.path.insert(0, str(Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic-sdk'))
-              import boto3
-              from botocore.config import Config
-              from botocore.exceptions import BotoCoreError, ClientError
-              client = boto3.client('freetier', region_name=region, config=Config(
-                  ignore_configured_endpoint_urls=True, retries={'total_max_attempts': 1, 'mode': 'standard'},
-                  connect_timeout=min(3, left / 2), read_timeout=min(8, left / 2)))
-              context = {'service': 'freetier', 'operation': 'get-account-plan-state', 'region': region,
-                  'native_sdk_version': boto3.__version__, 'endpoint_url': client.meta.endpoint_url}
-              try:
-                  response = client.get_account_plan_state()
-                  if response.get('accountId') != ACCOUNT:
-                      return {**context, 'observation_error_code': 'AccountMismatch', 'presence': 'unverified'}
-                  return {**context, **{field: (response[field].isoformat() if isinstance(response[field], datetime)
-                      else response[field]) for field in ('accountId', 'accountPlanType', 'accountPlanStatus',
-                      'accountPlanExpirationDate') if field in response}}
-              except ClientError as error:
-                  metadata = error.response.get('ResponseMetadata', {})
-                  details = error.response.get('Error', {})
-                  return {**context, 'observation_error_code': details.get('Code', 'UnknownServiceError'),
-                      'bounded_error_message': str(details.get('Message', ''))[:512],
-                      'http_status_code': metadata.get('HTTPStatusCode'), 'request_id': metadata.get('RequestId'),
-                      'presence': 'unverified'}
-              except BotoCoreError as error:
-                  return {**context, 'observation_error_code': type(error).__name__, 'presence': 'unverified'}
-          
-          
-          
-          def native_account_information(region, left):
-              # Optional evidence only. ACTIVE does not imply PAID and cannot upgrade an
-              # account or substitute for source deployment admission.
-              sys.path.insert(0, str(Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic-sdk'))
-              import boto3
-              from botocore.config import Config
-              from botocore.exceptions import BotoCoreError, ClientError
-              client = boto3.client('account', region_name=region, config=Config(
-                  ignore_configured_endpoint_urls=True, retries={'total_max_attempts': 1, 'mode': 'standard'},
-                  connect_timeout=min(3, left / 2), read_timeout=min(8, left / 2)))
-              context = {'service': 'account', 'operation': 'get-account-information', 'region': region,
-                  'native_sdk_version': boto3.__version__, 'endpoint_url': client.meta.endpoint_url}
-              try:
-                  response = client.get_account_information()  # Standalone own account; omit AccountId.
-                  if response.get('AccountId') != ACCOUNT:
-                      return {**context, 'observation_error_code': 'AccountMismatch', 'presence': 'unverified'}
-                  return {**context, **{field: (response[field].isoformat() if isinstance(response[field], datetime)
-                      else response[field]) for field in ('AccountId', 'AccountState', 'AccountCreatedDate') if field in response}}
-              except ClientError as error:
-                  metadata = error.response.get('ResponseMetadata', {})
-                  details = error.response.get('Error', {})
-                  return {**context, 'observation_error_code': details.get('Code', 'UnknownServiceError'),
-                      'bounded_error_message': str(details.get('Message', ''))[:512],
-                      'http_status_code': metadata.get('HTTPStatusCode'), 'request_id': metadata.get('RequestId'),
-                      'presence': 'unverified'}
-              except BotoCoreError as error:
-                  return {**context, 'observation_error_code': type(error).__name__, 'presence': 'unverified'}
-          
-          
-          def native_organization(region, left):
-              # Read membership only. New signup can create an AWS-managed organization
-              # while retaining a Free Plan; organization membership cannot infer PAID.
-              info = REPORT['observations'].get('optional_own_account_information', {})
-              context = {'service': 'organizations', 'operation': 'describe-organization', 'region': region,
-                  'caller_account_id': ACCOUNT, 'paid_eligibility_inferred': False}
-              if info.get('AccountId') != ACCOUNT or info.get('AccountState') != 'ACTIVE':
-                  return {**context, 'observation_error_code': 'ActiveCallerAccountUnverified', 'presence': 'unverified'}
-              try:
-                  created = datetime.fromisoformat(info['AccountCreatedDate'])
-                  if created.tzinfo is None:
-                      raise ValueError('Account creation timezone missing')
-              except (KeyError, TypeError, ValueError):
-                  return {**context, 'observation_error_code': 'ActiveCallerAccountUnverified', 'presence': 'unverified'}
-              context.update(caller_account_state='ACTIVE', caller_account_created_at=created.isoformat())
-              sys.path.insert(0, str(Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic-sdk'))
-              import boto3
-              from botocore.config import Config
-              from botocore.exceptions import BotoCoreError, ClientError
-              client = boto3.client('organizations', region_name=region, config=Config(
-                  ignore_configured_endpoint_urls=True, retries={'total_max_attempts': 1, 'mode': 'standard'},
-                  connect_timeout=min(3, left / 2), read_timeout=min(8, left / 2)))
-              context.update(native_sdk_version=boto3.__version__, endpoint_url=client.meta.endpoint_url)
-              try:
-                  response = client.describe_organization()  # Exact caller's organization; empty request.
-                  row = response.get('Organization', {})
-                  identifier, arn = row.get('Id'), row.get('Arn')
-                  manager, features = row.get('MasterAccountId'), row.get('FeatureSet')
-                  if (not isinstance(identifier, str) or not re.fullmatch(r'o-[a-z0-9]{10,32}', identifier)
-                          or not isinstance(manager, str) or not re.fullmatch(r'[0-9]{12}', manager)
-                          or arn != f'arn:aws:organizations::{manager}:organization/{identifier}'
-                          or features not in ('ALL', 'CONSOLIDATED_BILLING')):
-                      return {**context, 'observation_error_code': 'OrganizationIdentityUnverified', 'presence': 'unverified'}
-                  return {**context, 'OrganizationId': identifier, 'OrganizationArn': arn,
-                      'FeatureSet': features, 'ManagementAccountId': manager, 'presence': 'organization'}
-              except ClientError as error:
-                  metadata, details = error.response.get('ResponseMetadata', {}), error.response.get('Error', {})
-                  code = details.get('Code', 'UnknownServiceError')
-                  # No error message or raw organization fields: those can contain email/name data.
-                  return {**context, 'observation_error_code': code,
-                      'http_status_code': metadata.get('HTTPStatusCode'), 'request_id': metadata.get('RequestId'),
-                      'presence': 'absent' if code == 'AWSOrganizationsNotInUseException' else 'unverified'}
-              except BotoCoreError as error:
-                  return {**context, 'observation_error_code': type(error).__name__, 'presence': 'unverified'}
-          
-          
-          def record(label, value):
-              REPORT['observations'][label] = value
-              persist()
-              print(json.dumps({'observation': label, 'aws_calls': CALLS}), flush=True)
-              return value
-          
-          
-          def canonical_sha(value):
-              return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
-          
-          
-          def stack(region, name):
-              selected = ' || '.join("OutputKey=='" + key + "'" for key in sorted(OUTPUTS))
-              rows = aws(region, 'cloudformation', 'describe-stacks', ['--stack-name', name],
-                  'Stacks[].{StackName:StackName,StackId:StackId,StackStatus:StackStatus,CreationTime:CreationTime,'
-                  'LastUpdatedTime:LastUpdatedTime,EnableTerminationProtection:EnableTerminationProtection,'
-                  'Outputs:Outputs[?' + selected + ']}')
-              if not isinstance(rows, list) or len(rows) != 1:
-                  return record(region + ':' + name, {'stack': rows, 'source_revision_verified': False})
-              row = rows[0]
-              if (row.get('StackName') != name or not str(row.get('StackId', '')).startswith(
-                      f'arn:aws:cloudformation:{region}:{ACCOUNT}:stack/{name}/')):
-                  raise SystemExit('Regional observer stack UUID/account/region differs')
-              outputs = {item['OutputKey']: item['OutputValue'] for item in row.get('Outputs') or []}
-              resources, token, complete = [], None, False
-              for _ in range(2):
-                  page = aws(region, 'cloudformation', 'list-stack-resources',
-                      ['--stack-name', row['StackId'], *(['--next-token', token] if token else [])],
-                      '{Rows:StackResourceSummaries[].{LogicalResourceId:LogicalResourceId,ResourceType:ResourceType,'
-                      'PhysicalResourceId:PhysicalResourceId,ResourceStatus:ResourceStatus},NextToken:NextToken}')
-                  if not isinstance(page, dict) or not isinstance(page.get('Rows'), list):
-                      break
-                  resources += page['Rows']
-                  token = page.get('NextToken')
-                  if not token:
-                      complete = True
-                      break
-                  if not isinstance(token, str) or len(token) > 4096:
-                      break
-              body = aws(region, 'cloudformation', 'get-template',
-                  ['--stack-name', row['StackId'], '--template-stage', 'Original'], 'TemplateBody')
-              if isinstance(body, str):
-                  try:
-                      body = json.loads(body)
-                  except ValueError:
-                      body = None
-              body_hash = canonical_sha(body) if isinstance(body, dict) and isinstance(body.get('Resources'), dict) else None
-              source_verified = bool(name == APP and isinstance(body, dict)
-                  and outputs.get('ReleaseId') == SOURCE
-                  and body.get('Outputs', {}).get('ReleaseId', {}).get('Value') == SOURCE)
-              events = aws(region, 'cloudformation', 'describe-stack-events', ['--stack-name', row['StackId']],
-                  '{Rows:StackEvents[:40].{Timestamp:Timestamp,LogicalResourceId:LogicalResourceId,'
-                  'ResourceType:ResourceType,ResourceStatus:ResourceStatus},NextToken:NextToken}')
-              counts = {}
-              for resource in resources:
-                  status = resource.get('ResourceStatus')
-                  counts[status] = counts.get(status, 0) + 1
-              return record(region + ':' + name, {'stack': row, 'outputs': outputs,
-                  'inventory': resources, 'inventory_complete': complete, 'status_counts': counts,
-                  'template_canonical_sha256': body_hash, 'source_revision_verified': source_verified,
-                  'recent_events': events, 'resource_status_reasons_exported': False})
-          
-          
-          if aws(PRIMARY, 'sts', 'get-caller-identity', query='Account') != ACCOUNT:
-              raise SystemExit('Regional observer actual account differs')
-          persist()
-          east_plan = record('account_plan_' + PRIMARY, aws(PRIMARY, 'freetier', 'get-account-plan-state'))
-          ohio_plan = record('account_plan_us-east-2', aws('us-east-2', 'freetier', 'get-account-plan-state'))
-          if any(isinstance(value, dict) and value.get('observation_error_code') == 'ResourceNotFoundException'
-                  for value in (east_plan, ohio_plan)):
-              record('optional_own_account_information', aws(PRIMARY, 'account', 'get-account-information'))
-              record('optional_own_organization', aws(PRIMARY, 'organizations', 'describe-organization'))
-          record('qa_stack_presence', aws(PRIMARY, 'cloudformation', 'describe-stacks',
-              ['--stack-name', 'otgd-qa-platform'], 'Stacks[].{StackName:StackName,StackId:StackId,StackStatus:StackStatus}'))
-          recovery = stack(RECOVERY, COLD)
-          stack(PRIMARY, APP + '-registry')
-          primary = stack(PRIMARY, APP)
-          out = primary.get('outputs', {})
-          cold = recovery.get('outputs', {})
-          key = cold.get('RecoveryKeyArn')
-          key_rows = [r for r in recovery.get('inventory', []) if r.get('LogicalResourceId') == 'RecoveryKey']
-          key_bound = bool(isinstance(key, str) and re.fullmatch(
-              rf'arn:aws:kms:{RECOVERY}:{ACCOUNT}:key/[0-9a-f]{{8}}(?:-[0-9a-f]{{4}}){{3}}-[0-9a-f]{{12}}', key)
-              and recovery.get('inventory_complete') is True
-              and recovery.get('template_canonical_sha256') == COLD_TEMPLATE_SHA256
-              and len(key_rows) == 1 and key_rows[0].get('ResourceType') == 'AWS::KMS::Key'
-              and key_rows[0].get('PhysicalResourceId') == key.rsplit('/', 1)[-1]
-              and recovery.get('stack', {}).get('StackStatus') in ('CREATE_COMPLETE', 'UPDATE_COMPLETE')
-              and recovery.get('stack', {}).get('EnableTerminationProtection') is True)
-          if key_bound:
-              metadata = record('verified_recovery_key_metadata', aws(RECOVERY, 'kms', 'describe-key', ['--key-id', key],
-                  'KeyMetadata.{Arn:Arn,KeyId:KeyId,AWSAccountId:AWSAccountId,Enabled:Enabled,KeyState:KeyState,'
-                  'KeyUsage:KeyUsage,KeySpec:KeySpec,KeyManager:KeyManager,MultiRegion:MultiRegion}'))
-              REPORT['recovery_key_ready'] = bool(isinstance(metadata, dict) and metadata.get('Arn') == key
-                  and metadata.get('AWSAccountId') == ACCOUNT and metadata.get('Enabled') is True
-                  and metadata.get('KeyState') == 'Enabled' and metadata.get('KeyUsage') == 'ENCRYPT_DECRYPT'
-                  and metadata.get('KeySpec') == 'SYMMETRIC_DEFAULT' and metadata.get('KeyManager') == 'CUSTOMER'
-                  and metadata.get('MultiRegion') is False)
-          else:
-              REPORT['recovery_key_ready'] = False
-          
-          if primary.get('source_revision_verified') is True:
-              database = out.get('DbClusterIdentifier') or out.get('DatabaseClusterIdentifier')
-              if database == APP and any(r.get('LogicalResourceId') == 'Database'
-                      and r.get('ResourceType') == 'AWS::RDS::DBCluster' and r.get('PhysicalResourceId') == APP
-                      for r in primary.get('inventory', [])):
-                  cluster = record('primary_database_metadata', aws(PRIMARY, 'rds', 'describe-db-clusters',
-                      ['--db-cluster-identifier', APP], 'DBClusters[].{DBClusterArn:DBClusterArn,DbClusterResourceId:DbClusterResourceId,'
-                      'Status:Status,ClusterCreateTime:ClusterCreateTime,Engine:Engine,EngineVersion:EngineVersion,'
-                      'StorageEncrypted:StorageEncrypted,KmsKeyId:KmsKeyId,DeletionProtection:DeletionProtection,'
-                      'Ownership:TagList[?Key==`project` || Key==`deployment` || Key==`environment` || Key==`owner_role`]}'))
-                  cluster_arn = f'arn:aws:rds:{PRIMARY}:{ACCOUNT}:cluster:{APP}'
-                  tags = {t['Key']: t['Value'] for t in cluster[0].get('Ownership') or []} if isinstance(cluster, list) and len(cluster) == 1 else {}
-                  if (isinstance(cluster, list) and len(cluster) == 1 and cluster[0].get('DBClusterArn') == cluster_arn
-                          and tags == {'project': 'one-the-go-detection', 'deployment': APP,
-                              'environment': 'serverless-development', 'owner_role': 'platform-operator'}):
-                      jobs = record('primary_backup_jobs', aws(PRIMARY, 'backup', 'list-backup-jobs',
-                          ['--by-resource-arn', cluster_arn, '--max-results', '20'],
-                          '{Jobs:BackupJobs[].{BackupJobId:BackupJobId,ResourceArn:ResourceArn,State:State,'
-                          'BackupVaultArn:BackupVaultArn,RecoveryPointArn:RecoveryPointArn,CreationDate:CreationDate,'
-                          'CompletionDate:CompletionDate,ResourceType:ResourceType},NextToken:NextToken}'))
-                      vault = f'arn:aws:backup:{RECOVERY}:{ACCOUNT}:backup-vault:otgd-fargate-development-{RECOVERY}'
-                      if cold.get('RecoveryVaultArn') == vault:
-                          copies = record('regional_copy_jobs', aws(PRIMARY, 'backup', 'list-copy-jobs',
-                              ['--by-resource-arn', cluster_arn, '--by-destination-vault-arn', vault, '--max-results', '20'],
-                              '{Jobs:CopyJobs[].{CopyJobId:CopyJobId,ResourceArn:ResourceArn,State:State,'
-                              'SourceRecoveryPointArn:SourceRecoveryPointArn,DestinationRecoveryPointArn:DestinationRecoveryPointArn,'
-                              'DestinationBackupVaultArn:DestinationBackupVaultArn,CreationDate:CreationDate,CompletionDate:CompletionDate},NextToken:NextToken}'))
-                          for job in copies.get('Jobs', [])[:4] if isinstance(copies, dict) else []:
-                              point = job.get('DestinationRecoveryPointArn')
-                              if (job.get('ResourceArn') == cluster_arn and job.get('DestinationBackupVaultArn') == vault
-                                      and isinstance(point, str) and point.startswith(f'arn:aws:rds:{RECOVERY}:{ACCOUNT}:cluster-snapshot:')):
-                                  record('copy_point_' + hashlib.sha256(point.encode()).hexdigest()[:16],
-                                      aws(RECOVERY, 'rds', 'describe-db-cluster-snapshots', ['--db-cluster-snapshot-identifier', point],
-                                          'DBClusterSnapshots[].{DBClusterSnapshotArn:DBClusterSnapshotArn,Status:Status,'
-                                          'SourceDBClusterSnapshotArn:SourceDBClusterSnapshotArn,DbClusterResourceId:DbClusterResourceId,'
-                                          'ClusterCreateTime:ClusterCreateTime,SnapshotCreateTime:SnapshotCreateTime,Engine:Engine,'
-                                          'EngineVersion:EngineVersion,StorageEncrypted:StorageEncrypted,KmsKeyId:KmsKeyId}'))
-              cluster_arn = out.get('ClusterArn')
-              service = out.get('ApiService')
-              if cluster_arn == f'arn:aws:ecs:{PRIMARY}:{ACCOUNT}:cluster/{APP}':
-                  clusters = record('primary_ecs_cluster_metadata', aws(PRIMARY, 'ecs', 'describe-clusters',
-                      ['--clusters', cluster_arn, '--include', 'TAGS'], '{Clusters:clusters[].{clusterArn:clusterArn,status:status,'
-                      'runningTasksCount:runningTasksCount,pendingTasksCount:pendingTasksCount,activeServicesCount:activeServicesCount,'
-                      'Ownership:tags[?key==`project` || key==`deployment` || key==`environment` || key==`owner_role`]},Failures:failures[].reason}'))
-                  ecs_rows = clusters.get('Clusters', []) if isinstance(clusters, dict) else []
-                  tags = {t['key']: t['value'] for t in ecs_rows[0].get('Ownership') or []} if len(ecs_rows) == 1 else {}
-                  if (len(ecs_rows) == 1 and ecs_rows[0].get('clusterArn') == cluster_arn
-                          and tags == {'project': 'one-the-go-detection', 'deployment': APP,
-                              'environment': 'serverless-development', 'owner_role': 'platform-operator'}
-                          and service in (APP + '-api', f'arn:aws:ecs:{PRIMARY}:{ACCOUNT}:service/{APP}/{APP}-api')):
-                      record('primary_ecs_service_metadata', aws(PRIMARY, 'ecs', 'describe-services',
-                          ['--cluster', cluster_arn, '--services', service], '{Services:services[].{serviceArn:serviceArn,'
-                          'clusterArn:clusterArn,status:status,desiredCount:desiredCount,runningCount:runningCount,pendingCount:pendingCount,'
-                          'Deployments:deployments[].{status:status,rolloutState:rolloutState,desiredCount:desiredCount,runningCount:runningCount,pendingCount:pendingCount}},Failures:failures[].reason}'))
-          REPORT['completed_at'] = datetime.now(timezone.utc).isoformat()
-          persist()
-          print(json.dumps({'artifact': PATH.name, 'artifact_sha256': hashlib.sha256(PATH.read_bytes()).hexdigest(),
-              'recovery_key_ready': REPORT['recovery_key_ready'], 'aws_calls': CALLS, 'aws_mutations': []}), flush=True)
-          PYCODE
-      - name: Preserve credential-free regional progress
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: readonly-regional-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/regional-diagnostic/
-          if-no-files-found: warn
-          retention-days: 7
+    - name: Bind private stabilization paths and exact manual commit
+      shell: bash
+      run: "set -euo pipefail\numask 077\npython3 - <<'PATHPY'\nimport json, os, re\nfrom pathlib import Path\nassert os.environ['GITHUB_REPOSITORY'] == 'R3fresh-dev/One-The-Go-Detection'\nassert os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch' and os.environ['GITHUB_RUN_ATTEMPT'] == '1'\nassert re.fullmatch(r'[0-9a-f]{40}', os.environ['GITHUB_SHA'])\nevent=json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_bytes())\nassert event.get('inputs',{}).get('reviewed_operation_commit') == os.environ['GITHUB_SHA']\nroot=Path(os.environ['RUNNER_TEMP']).resolve()\ndirectory=root/'ohio-stabilization'\nassert not directory.is_symlink()\ndirectory.mkdir(mode=0o700,exist_ok=False)\nwith open(os.environ['GITHUB_ENV'],'a') as stream:\n stream.write('OHIO_STABILIZE_DIR='+str(directory)+'\\n')\nPATHPY\n"
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      with:
+        ref: 0844868aa543af4ab75ac5065ad48cf807b86bb3
+        persist-credentials: false
+    - name: Stage exact reviewed stabilize_ohio.py
+      shell: bash
+      run: "set -euo pipefail\numask 077\ncat > \"$OHIO_STABILIZE_DIR/stabilize_ohio.py\" <<'ASSETFILE'\n\"\"\"Exact old Ohio HTTP restoration and stop only; no start/query/archive/delete.\"\"\"\nfrom datetime import datetime, timezone\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport subprocess\nimport sys\nimport time\n\nACCOUNT = '738470137867'\nREGION = 'us-east-2'\nPREFIX = 'otgd-serverless-development'\nSTACK = 'arn:aws:cloudformation:us-east-2:738470137867:stack/otgd-serverless-development/865843c0-c654-11f1-96fa-06a08a49cfef'\nCLUSTER_ARN = 'arn:aws:rds:us-east-2:738470137867:cluster:otgd-serverless-development'\nCLUSTER_UID = 'cluster-TWBMR2BY5PK4PVSPRZ6S2O2U6E'\nWRITER_UID = 'db-JEOVXOBFSUIYXQ2F6GA6J7WZVY'\nKEY = 'arn:aws:kms:us-east-2:738470137867:key/ff17e353-38bf-43df-a08c-85bd60b77aff'\nTEMPLATE_SHA = '6081b2fb2aed05c2891715d45f114661637960bba3caee780f937cebdc4b4099'\nINVENTORY_SHA = 'bd2498b62ec53afbb62b2b2c586bb4ae2c11c0a6a8d5aa7f2e93ae499b0d6ae2'\n\n\ndef need(condition, reason):\n    if not condition:\n        raise RuntimeError(reason)\n\n\ndef digest(value):\n    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), default=str).encode()).hexdigest()\n\n\ndef owned(tags):\n    need(isinstance(tags, list) and all(isinstance(t, dict) for t in tags), 'Ownership metadata unavailable')\n    keys = [t.get('Key') for t in tags]\n    need(len(keys) == len(set(keys)), 'Duplicate ownership tags')\n    actual = {t.get('Key'): t.get('Value') for t in tags}\n    need(all(actual.get(k) == v for k, v in {'project': 'one-the-go-detection', 'deployment': PREFIX,\n        'environment': 'serverless-development', 'owner_role': 'platform-operator',\n        'aws:cloudformation:stack-id': STACK}.items()), 'Original ownership differs')\n\n\nclass Stabilization:\n    def __init__(self):\n        need(len(sys.argv) == 1 and os.environ.get('AWS_REGION') == REGION\n             and os.environ.get('AWS_DEFAULT_REGION') == REGION and os.environ.get('AWS_MAX_ATTEMPTS') == '1'\n             and os.environ.get('AWS_IGNORE_CONFIGURED_ENDPOINT_URLS') == 'true', 'Execution policy differs')\n        root = Path(os.environ['RUNNER_TEMP']).resolve()\n        self.directory = root / 'ohio-stabilization'\n        need(self.directory.is_dir() and not self.directory.is_symlink(), 'Private staging directory unavailable')\n        self.admission = self.directory / 'stabilization_admission.py'\n        need(hashlib.sha256(self.admission.read_bytes()).hexdigest() == os.environ['OHIO_STABILIZE_ADMISSION_SHA256'],\n             'Admission bytes differ')\n        need(hashlib.sha256(Path(__file__).read_bytes()).hexdigest() == os.environ['OHIO_STABILIZE_SCRIPT_SHA256'],\n             'Stabilizer bytes differ')\n        sys.path.insert(0, str(root / 'regional-diagnostic-sdk'))\n        import boto3\n        from botocore.config import Config\n        config = Config(retries={'total_max_attempts': 1, 'mode': 'standard'}, connect_timeout=5,\n            read_timeout=15, ignore_configured_endpoint_urls=True)\n        self.clients = {service: boto3.client(service, region_name=REGION, use_ssl=True, verify=True, config=config)\n                        for service in ['sts', 'cloudformation', 'kms', 'rds']}\n        self.deadline = time.monotonic() + 1500\n        self.attempted = set()\n        self.previous = '0' * 64\n        self.sequence = 0\n        self.stream = os.fdopen(os.open(self.directory / 'journal.jsonl', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600), 'wb')\n        self.proof = {'schema': 'otgd-ohio-http-restore-and-stop/v1', 'account': ACCOUNT, 'region': REGION,\n            'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],\n            'source_revision': '0844868aa543af4ab75ac5065ad48cf807b86bb3',\n            'failure_run': 38364177750, 'failure_raw_sha256': 'a792046cf0faa339d9fa40719d9cd74a716af2df46f275e100681baafd0d00ce',\n            'original_http_endpoint_enabled': False, 'status': 'pending', 'observations': [], 'receipts': []}\n\n    def event(self, event, **fields):\n        record = {'sequence': self.sequence, 'previous_sha256': self.previous, 'event': event,\n                  'utc': datetime.now(timezone.utc).isoformat(), **fields}\n        raw = (json.dumps(record, sort_keys=True, separators=(',', ':'), default=str) + '\\n').encode()\n        self.stream.write(raw); self.stream.flush(); os.fsync(self.stream.fileno())\n        self.previous = hashlib.sha256(raw).hexdigest(); self.sequence += 1\n\n    def persist(self):\n        raw = (json.dumps(self.proof, indent=2, sort_keys=True, default=str) + '\\n').encode()\n        need(len(raw) <= 262144, 'Metadata evidence bound exceeded')\n        temporary = self.directory / '.stabilization.json.tmp'\n        fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)\n        with os.fdopen(fd, 'wb') as stream:\n            stream.write(raw); stream.flush(); os.fsync(stream.fileno())\n        os.replace(temporary, self.directory / 'stabilization.json')\n        fd = os.open(self.directory, os.O_RDONLY | os.O_DIRECTORY)\n        try: os.fsync(fd)\n        finally: os.close(fd)\n\n    def provenance(self):\n        need(hashlib.sha256(self.admission.read_bytes()).hexdigest() == os.environ['OHIO_STABILIZE_ADMISSION_SHA256'], 'Admission changed')\n        result = subprocess.run([sys.executable, str(self.admission)], capture_output=True, timeout=120)\n        need(result.returncode == 0, 'Fresh qualified source admission denied')\n\n    def identity(self):\n        need(self.clients['sts'].get_caller_identity()['Account'] == ACCOUNT, 'Actual account differs')\n        cf = self.clients['cloudformation']\n        rows = cf.describe_stacks(StackName=STACK)['Stacks']\n        need(len(rows) == 1 and rows[0]['StackId'] == STACK and rows[0]['StackStatus'] == 'IMPORT_ROLLBACK_COMPLETE', 'Original CF differs')\n        body = cf.get_template(StackName=STACK, TemplateStage='Original')['TemplateBody']\n        body = json.loads(body) if isinstance(body, str) else body\n        need(digest(body) == TEMPLATE_SHA and len(body['Resources']) == 15\n             and all(r.get('DeletionPolicy') == 'Retain' and r.get('UpdateReplacePolicy') == 'Retain' for r in body['Resources'].values()), 'Retain template differs')\n        inventory = []; token = None\n        for _ in range(8):\n            response = cf.list_stack_resources(StackName=STACK, **({'NextToken': token} if token else {}))\n            inventory.extend(response['StackResourceSummaries']); token = response.get('NextToken')\n            if not token: break\n        need(not token, 'CF inventory incomplete')\n        projection = [{k: r[k] for k in ['LogicalResourceId', 'PhysicalResourceId', 'ResourceType', 'ResourceStatus']} for r in inventory]\n        need(digest(sorted(projection, key=lambda r: r['LogicalResourceId'])) == INVENTORY_SHA, 'Original CF inventory differs')\n        key = self.clients['kms'].describe_key(KeyId=KEY)['KeyMetadata']\n        need(key.get('Arn') == KEY and key.get('AWSAccountId') == ACCOUNT and key.get('KeyState') == 'Enabled'\n             and key.get('Enabled') is True and key.get('KeyManager') == 'CUSTOMER', 'Original key differs')\n        return self.database()\n\n    def database(self):\n        rds = self.clients['rds']\n        clusters = rds.describe_db_clusters(DBClusterIdentifier=PREFIX)['DBClusters']\n        writers = rds.describe_db_instances(DBInstanceIdentifier=PREFIX + '-writer')['DBInstances']\n        need(len(clusters) == 1 and len(writers) == 1, 'Original DB identities ambiguous')\n        c, w = clusters[0], writers[0]\n        need(c.get('DBClusterArn') == CLUSTER_ARN and c.get('DbClusterResourceId') == CLUSTER_UID\n             and c.get('DBClusterIdentifier') == PREFIX and c.get('ClusterCreateTime').isoformat() == '2026-10-12T19:01:06.941000+00:00'\n             and w.get('DbiResourceId') == WRITER_UID and w.get('DBInstanceIdentifier') == PREFIX + '-writer'\n             and w.get('DBInstanceArn') == 'arn:aws:rds:us-east-2:738470137867:db:' + PREFIX + '-writer'\n             and w.get('DBClusterIdentifier') == PREFIX and w.get('PubliclyAccessible') is False\n             and w.get('AvailabilityZone') == 'us-east-2a', 'Immutable original DB/private identity differs')\n        for row in [c, w]:\n            need(row.get('StorageEncrypted') is True and row.get('KmsKeyId') == KEY\n                 and row.get('Engine') == 'aurora-postgresql' and row.get('EngineVersion') == '16.15'\n                 and row.get('DeletionProtection') is False, 'Original encryption/engine/protection differs')\n            owned(row.get('TagList'))\n        members = c.get('DBClusterMembers'); groups = c.get('VpcSecurityGroups'); subnet = w.get('DBSubnetGroup', {})\n        need(isinstance(members, list) and len(members) == 1 and members[0].get('DBInstanceIdentifier') == PREFIX + '-writer'\n             and members[0].get('IsClusterWriter') is True and isinstance(groups, list) and len(groups) == 1\n             and groups[0].get('VpcSecurityGroupId') == 'sg-0b005b69464a8c622'\n             and c.get('DBSubnetGroup') == PREFIX + '-databasesubnets-6j1kyh1yaoxh'\n             and subnet.get('VpcId') == 'vpc-03d6cfa8bde278d3f' and subnet.get('DBSubnetGroupName') == c['DBSubnetGroup']\n             and type(c.get('HttpEndpointEnabled')) is bool, 'Original private network/HTTP metadata differs')\n        selected = {'cluster_uid': CLUSTER_UID, 'writer_uid': WRITER_UID, 'cluster_status': c.get('Status'),\n            'writer_status': w.get('DBInstanceStatus'), 'http_endpoint_enabled': c['HttpEndpointEnabled'],\n            'cluster_create_time': c['ClusterCreateTime'].isoformat(), 'private': True, 'key_arn': KEY}\n        return selected\n\n    def wait(self, predicate, label, timeout):\n        deadline = min(self.deadline, time.monotonic() + timeout)\n        while time.monotonic() < deadline:\n            state = self.database()\n            if predicate(state):\n                self.proof['observations'].append({'label': label, 'utc': datetime.now(timezone.utc).isoformat(), **state})\n                self.event('verified-postcondition', label=label, **state); self.persist(); return state\n            need(state['cluster_status'] in {'available', 'modifying', 'starting', 'stopping', 'stopped', 'backing-up', 'resetting-master-credentials'}\n                 and state['writer_status'] in {'available', 'modifying', 'starting', 'stopping', 'stopped', 'backing-up', 'resetting-master-credentials'}, 'Unexpected DB state')\n            time.sleep(5)\n        raise RuntimeError('Bounded readiness deadline: ' + label)\n\n    def mutate(self, operation):\n        need(operation in {'disable_http_endpoint', 'stop_db_cluster'} and operation not in self.attempted, 'Mutation outside single-transport allowlist')\n        self.provenance(); state = self.identity()\n        need(state['cluster_status'] == state['writer_status'] == 'available', 'Fresh target is not available')\n        need(state['http_endpoint_enabled'] is (operation == 'disable_http_endpoint'), 'Fresh HTTP state differs')\n        kwargs = {'ResourceArn': CLUSTER_ARN} if operation == 'disable_http_endpoint' else {'DBClusterIdentifier': PREFIX}\n        self.event('intent', operation=operation, arguments=kwargs, precondition=state, transport_attempts=1)\n        self.attempted.add(operation)\n        response = getattr(self.clients['rds'], operation)(**kwargs)\n        request = response.get('ResponseMetadata', {}).get('RequestId')\n        need(isinstance(request, str) and request, 'Native request receipt unavailable')\n        receipt = {'operation': operation, 'request_id': request, 'utc': datetime.now(timezone.utc).isoformat()}\n        self.proof['receipts'].append(receipt); self.event('mutation-receipt', **receipt); self.persist()\n        if operation == 'disable_http_endpoint':\n            need(response.get('ResourceArn') == CLUSTER_ARN and response.get('HttpEndpointEnabled') is False, 'Disable response unconfirmed')\n\n    def run(self):\n        try:\n            self.provenance(); initial = self.identity()\n            self.proof['observations'].append({'label': 'initial-fresh-metadata', **initial}); self.persist()\n            stable = self.wait(lambda s: s['cluster_status'] == s['writer_status'] and s['cluster_status'] in {'available', 'stopped'}, 'ready-for-restoration', 600)\n            if stable['http_endpoint_enabled']:\n                need(stable['cluster_status'] == 'available', 'Stopped DB HTTP restoration needs separate review; no start permitted')\n                self.mutate('disable_http_endpoint')\n            ready = self.wait(lambda s: s['http_endpoint_enabled'] is False and s['cluster_status'] == s['writer_status']\n                              and s['cluster_status'] in {'available', 'stopped'}, 'original-http-false-verified', 600)\n            if ready['cluster_status'] == 'available': self.mutate('stop_db_cluster')\n            final = self.wait(lambda s: s['http_endpoint_enabled'] is False and s['cluster_status'] == s['writer_status'] == 'stopped', 'both-stopped-http-false', 900)\n            self.proof.update(status='original_http_false_and_both_stopped_verified', final=final)\n            return 0\n        except Exception as error:\n            self.proof.update(status='blocked_preserve_no_retry', error_type=type(error).__name__, sanitized_reason=str(error) if isinstance(error, RuntimeError) else 'SDK request unavailable or unconfirmed')\n            self.event('operation-blocked', error_type=type(error).__name__)\n            return 1\n        finally:\n            self.proof['finished_utc'] = datetime.now(timezone.utc).isoformat(); self.persist()\n\n\nif __name__ == '__main__':\n    raise SystemExit(Stabilization().run())\nASSETFILE\npython3 - <<'HASHPY'\nimport hashlib, os\nfrom pathlib import Path\np=Path(os.environ['OHIO_STABILIZE_DIR']) / 'stabilize_ohio.py'\nassert not p.is_symlink() and hashlib.sha256(p.read_bytes()).hexdigest()=='1d412754de972d964968bab03391ab6486fd000030633df0965b48162841111e'\np.chmod(0o600)\nHASHPY\n"
+    - name: Stage exact reviewed sdk-install.py
+      shell: bash
+      run: "set -euo pipefail\numask 077\ncat > \"$OHIO_STABILIZE_DIR/sdk-install.py\" <<'ASSETFILE'\nimport os, subprocess, tomllib\nfrom pathlib import Path\npackages = {'boto3', 'botocore', 's3transfer', 'jmespath', 'python-dateutil', 'six', 'urllib3'}\nlock = tomllib.loads(Path('services/api/uv.lock').read_text())\nrows = [p for p in lock['package'] if p['name'] in packages]\nif len(rows) != len(packages) or {p['name'] for p in rows} != packages:\n    raise SystemExit('SDK lock inventory differs')\nif any(p['version'] != '1.43.111' for p in rows if p['name'] in ('boto3', 'botocore')):\n    raise SystemExit('Native diagnostic SDK model differs from qualified source')\nroot = Path(os.environ['RUNNER_TEMP'])\nrequirements = root / 'regional-diagnostic-sdk-requirements.txt'\nrequirements.write_text('\\n'.join(p['name'] + '==' + p['version'] + ' ' + ' '.join(\n    '--hash=' + w['hash'] for w in p.get('wheels', [])) for p in rows) + '\\n')\nif any(not p.get('wheels') for p in rows):\n    raise SystemExit('SDK wheel hash is unavailable')\nsubprocess.run(['python3', '-m', 'pip', 'install', '--disable-pip-version-check', '--no-input',\n    '--require-hashes', '--no-deps', '--only-binary=:all:', '--target', str(root / 'regional-diagnostic-sdk'),\n    '-r', str(requirements)], check=True, timeout=90)\nASSETFILE\npython3 - <<'HASHPY'\nimport hashlib, os\nfrom pathlib import Path\np=Path(os.environ['OHIO_STABILIZE_DIR']) / 'sdk-install.py'\nassert not p.is_symlink() and hashlib.sha256(p.read_bytes()).hexdigest()=='d4801e296b0b6d083018369538e7b99159c9b3e9552471a24268d128170afb3a'\np.chmod(0o600)\nHASHPY\n"
+    - name: Stage exact reviewed stabilization_admission.py
+      shell: bash
+      run: "set -euo pipefail\numask 077\ncat > \"$OHIO_STABILIZE_DIR/stabilization_admission.py\" <<'ASSETFILE'\nimport hashlib, io, json, os, re, subprocess, zipfile\nSOURCE = '0844868aa543af4ab75ac5065ad48cf807b86bb3'\nTREE = '1afe65b4d2a6ba3a4c541c9ecf7bc61f287ee908'\nRUN = 38350430258\nARTIFACT = 11790454913\nRAW_SHA256 = '9338903893d1bb1d82097cca4ea7a59cd81579d1f85cb853310c981592a2d165'\nREPOSITORY = 'R3fresh-dev/One-The-Go-Detection'\nWORKFLOW = '.github/workflows/merge-gate.yml'\nJOBS = {'unit-coverage', 'components', 'atdd', 'preview / ios', 'platform / postgres-integration',\n    'native / android', 'native / protected-reader', 'native / ios', 'platform / localstack-integration',\n    'native / shared-and-firmware', 'platform / contracts-and-synthesis', 'platform / fargate-container-runtime',\n    'preview / android', 'merge-gate'}\nLABELS = {'unit-coverage', 'atdd', 'components', 'performance', 'live-dependencies', 'docker-health',\n    'localstack-api', 'specifications', 'native-android', 'native-ios', 'firmware', 'hosted-android', 'hosted-ios'}\n\ndef require(condition, reason):\n    if not condition:\n        raise SystemExit('Regional read-only admission blocked: ' + reason)\n\ndef command(args, binary=False):\n    result = subprocess.run(args, capture_output=True, text=not binary, timeout=30)\n    require(result.returncode == 0 and len(result.stdout if binary else result.stdout.encode()) <= 1048576,\n        'bounded authenticated command unavailable')\n    return result.stdout\n\ndef api(path):\n    return json.loads(command(['gh', 'api', (f'repos/{REPOSITORY}/' + path).rstrip('/')]))\n\ndef latest():\n    response = api('actions/workflows/merge-gate.yml/runs?head_sha=' + SOURCE + '&per_page=100')\n    require(response.get('total_count', 101) <= 100, 'gate inventory exceeds bound')\n    candidates = [r for r in response['workflow_runs'] if r.get('head_sha') == SOURCE\n        and r.get('path') == WORKFLOW and r.get('head_branch') == 'main' and r.get('event') == 'push']\n    require(candidates and max(r['id'] for r in candidates) == RUN, 'latest trusted main gate differs')\n\nrequire(ARTIFACT > 0 and re.fullmatch(r'[0-9a-f]{64}', RAW_SHA256), 'root gate/artifact bindings pending')\nrequire(os.environ['GH_REPO'] == REPOSITORY and os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch'\n    and os.environ['GITHUB_REF'] == 'refs/heads/work-aws-regional-diagnostic', 'repository/trigger differs')\nrequire(command(['git', 'rev-parse', 'HEAD']).strip() == SOURCE\n    and command(['git', 'rev-parse', 'HEAD^{tree}']).strip() == TREE\n    and not command(['git', 'status', '--porcelain']).strip(), 'immutable source/tree differs')\nrequire(api('')['default_branch'] == 'main' and api('git/ref/heads/main')['object']['sha'] == SOURCE,\n    'current default main differs')\nrun = api(f'actions/runs/{RUN}')\nrequire(run.get('id') == RUN and run.get('head_sha') == SOURCE and run.get('path') == WORKFLOW\n    and run.get('head_branch') == 'main' and run.get('event') == 'push'\n    and run.get('status') == 'completed' and run.get('conclusion') == 'success'\n    and run.get('run_attempt') == 1\n    and run.get('repository', {}).get('full_name') == REPOSITORY\n    and run.get('head_repository', {}).get('full_name') == REPOSITORY, 'trusted main gate differs')\nworkflow = api(f\"actions/workflows/{run['workflow_id']}\")\nrequire(workflow.get('path') == WORKFLOW and workflow.get('state') == 'active', 'gate workflow differs')\nlatest()\nresponse = api(f\"actions/runs/{RUN}/attempts/{run['run_attempt']}/jobs?per_page=100\")\njobs = response.get('jobs', [])\nrequire(response.get('total_count') == 14 and len(jobs) == 14 and {j['name'] for j in jobs} == JOBS\n    and len({j['id'] for j in jobs}) == 14\n    and all(j.get('head_sha') == SOURCE and j.get('run_id') == RUN and j.get('run_attempt') == run['run_attempt']\n        and j.get('status') == 'completed' and j.get('conclusion') == 'success' for j in jobs), 'all14 jobs differ')\nresponse = api(f'actions/runs/{RUN}/artifacts?per_page=100')\nrows = [a for a in response.get('artifacts', []) if a.get('name') == 'exact-revision-merge-evidence']\nrequire(response.get('total_count', 101) <= 100 and len(rows) == 1, 'aggregate artifact is ambiguous')\nartifact = rows[0]\njob = next(j for j in jobs if j['name'] == 'merge-gate')\nrequire(artifact.get('id') == ARTIFACT and artifact.get('expired') is False\n    and artifact.get('digest') == 'sha256:' + RAW_SHA256 and artifact.get('size_in_bytes') == 393\n    and artifact.get('workflow_run', {}).get('id') == RUN and artifact.get('workflow_run', {}).get('head_sha') == SOURCE\n    and job['started_at'] <= artifact.get('created_at', '') <= job['completed_at'], 'raw artifact binding differs')\nraw = command(['gh', 'api', f'repos/{REPOSITORY}/actions/artifacts/{ARTIFACT}/zip'], binary=True)\nrequire(len(raw) == artifact['size_in_bytes'] and hashlib.sha256(raw).hexdigest() == RAW_SHA256,\n    'raw aggregate ZIP digest differs')\nwith zipfile.ZipFile(io.BytesIO(raw)) as archive:\n    members = [m for m in archive.infolist() if not m.is_dir()]\n    require(len(members) == 1 and members[0].filename == 'gates.json' and members[0].file_size <= 262144\n        and (members[0].external_attr >> 16) & 0o170000 != 0o120000, 'aggregate member differs')\n    evidence = json.loads(archive.read(members[0]))\nrequire(evidence.get('revision') == SOURCE and evidence.get('run_url') == f'https://github.com/{REPOSITORY}/actions/runs/{RUN}'\n    and isinstance(evidence.get('passed'), list) and len(evidence['passed']) == 13 and set(evidence['passed']) == LABELS,\n    'aggregate exact revision/jobs differ')\nafter = api(f'actions/artifacts/{ARTIFACT}')\nrequire(all(after.get(k) == artifact.get(k) for k in ['id','name','expired','digest','size_in_bytes','created_at','workflow_run']),\n    'aggregate changed after download')\ncurrent = api(f'actions/runs/{RUN}')\nrequire(all(current.get(k) == run.get(k) for k in ['id','head_sha','run_attempt','status','conclusion','workflow_id']),\n    'gate changed after download')\nlatest()\nrequire(api('git/ref/heads/main')['object']['sha'] == SOURCE and not command(['git','status','--porcelain']).strip(),\n    'current main/source changed')\nprint(json.dumps({'admitted_revision': SOURCE, 'admitted_tree': TREE, 'gate_run_id': RUN,\n    'gate_attempt': run['run_attempt'], 'successful_jobs': 14, 'raw_aggregate_sha256': RAW_SHA256,\n    'admission_scope': 'READ_ONLY_EAST1_WEST2_PREFLIGHT_AND_OHIO_ACCOUNT_PLAN_ONLY'}))\nASSETFILE\npython3 - <<'HASHPY'\nimport hashlib, os\nfrom pathlib import Path\np=Path(os.environ['OHIO_STABILIZE_DIR']) / 'stabilization_admission.py'\nassert not p.is_symlink() and hashlib.sha256(p.read_bytes()).hexdigest()=='4fd6338af3972342e682ce9fb77439b33f7c6087b857d04aecd6f48efe75074c'\np.chmod(0o600)\nHASHPY\n"
+    - name: Admit exact current qualified main before credentials
+      shell: bash
+      run: 'set -euo pipefail
+
+        python3 "$OHIO_STABILIZE_DIR/stabilization_admission.py" > "$OHIO_STABILIZE_DIR/admission-before-credentials.json"
+
+        '
+    - name: Install only existing seven hash-locked SDK wheels
+      shell: bash
+      run: 'set -euo pipefail
+
+        python3 "$OHIO_STABILIZE_DIR/sdk-install.py"
+
+        '
+    - name: Configure exact account after source admission
+      uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+      with:
+        aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: us-east-2
+        allowed-account-ids: '738470137867'
+        unset-current-credentials: true
+        force-skip-oidc: true
+        output-credentials: false
+        retry-max-attempts: 1
+        action-timeout-s: 90
+    - name: Restore original HTTP false and stop only exact Ohio database
+      shell: bash
+      run: 'set -euo pipefail
+
+        python3 "$OHIO_STABILIZE_DIR/stabilize_ohio.py"
+
+        '
+    - name: Preserve only selected stabilization metadata
+      if: always()
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+      with:
+        name: ohio-stabilization-metadata-${{ github.run_id }}-${{ github.run_attempt }}
+        path: '${{ runner.temp }}/ohio-stabilization/stabilization.json
+
+          ${{ runner.temp }}/ohio-stabilization/journal.jsonl
+
+          ${{ runner.temp }}/ohio-stabilization/admission-before-credentials.json'
+        retention-days: 90
+        if-no-files-found: error
