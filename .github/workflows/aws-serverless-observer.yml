@@ -1,149 +1,76 @@
-name: Read-only regional preflight and organization diagnostic
+name: Native desired PAID account repair
 on:
   workflow_dispatch:
+    inputs:
+      reviewed_operations_commit:
+        description: Exact root-reviewed operational commit; one dispatch only
+        required: true
+        type: string
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: otgd-account-738470137867-plan-repair
+  cancel-in-progress: false
 jobs:
-  snapshot:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/work-aws-regional-diagnostic' && github.event.repository.default_branch == 'main'
+  repair:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/work-aws-regional-diagnostic' && github.event.repository.default_branch == 'main' && github.sha == inputs.reviewed_operations_commit && github.run_attempt == 1
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 12
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: R3fresh-dev/One-The-Go-Detection
+      REVIEWED_OPERATIONAL_COMMIT: ${{ inputs.reviewed_operations_commit }}
       AWS_REGION: us-east-1
       AWS_DEFAULT_REGION: us-east-1
       AWS_EC2_METADATA_DISABLED: 'true'
       AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
       AWS_MAX_ATTEMPTS: '1'
       AWS_PAGER: ''
+      PYTHONPATH: ${{ runner.temp }}/regional-diagnostic-sdk
+      INTENT_DIRECTORY: ${{ runner.temp }}/paid-plan-account-738470137867-${{ github.run_id }}-1
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 0844868aa543af4ab75ac5065ad48cf807b86bb3
+          ref: ${{ inputs.reviewed_operations_commit }}
+          path: reviewed-operations
           persist-credentials: false
-      - name: Admit exact current qualified main before AWS credentials
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 0844868aa543af4ab75ac5065ad48cf807b86bb3
+          path: qualified-source
+          persist-credentials: false
+      - name: Verify reviewed operation bytes
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PYCODE'
-          import hashlib, io, json, os, re, subprocess, zipfile
-          SOURCE = '0844868aa543af4ab75ac5065ad48cf807b86bb3'
-          TREE = '1afe65b4d2a6ba3a4c541c9ecf7bc61f287ee908'
-          RUN = 38350430258
-          ARTIFACT = 11790454913
-          RAW_SHA256 = '9338903893d1bb1d82097cca4ea7a59cd81579d1f85cb853310c981592a2d165'
-          REPOSITORY = 'R3fresh-dev/One-The-Go-Detection'
-          WORKFLOW = '.github/workflows/merge-gate.yml'
-          JOBS = {'unit-coverage', 'components', 'atdd', 'preview / ios', 'platform / postgres-integration',
-              'native / android', 'native / protected-reader', 'native / ios', 'platform / localstack-integration',
-              'native / shared-and-firmware', 'platform / contracts-and-synthesis', 'platform / fargate-container-runtime',
-              'preview / android', 'merge-gate'}
-          LABELS = {'unit-coverage', 'atdd', 'components', 'performance', 'live-dependencies', 'docker-health',
-              'localstack-api', 'specifications', 'native-android', 'native-ios', 'firmware', 'hosted-android', 'hosted-ios'}
-          
-          def require(condition, reason):
-              if not condition:
-                  raise SystemExit('Regional read-only admission blocked: ' + reason)
-          
-          def command(args, binary=False):
-              result = subprocess.run(args, capture_output=True, text=not binary, timeout=30)
-              require(result.returncode == 0 and len(result.stdout if binary else result.stdout.encode()) <= 1048576,
-                  'bounded authenticated command unavailable')
-              return result.stdout
-          
-          def api(path):
-              return json.loads(command(['gh', 'api', (f'repos/{REPOSITORY}/' + path).rstrip('/')]))
-          
-          def latest():
-              response = api('actions/workflows/merge-gate.yml/runs?head_sha=' + SOURCE + '&per_page=100')
-              require(response.get('total_count', 101) <= 100, 'gate inventory exceeds bound')
-              candidates = [r for r in response['workflow_runs'] if r.get('head_sha') == SOURCE
-                  and r.get('path') == WORKFLOW and r.get('head_branch') == 'main' and r.get('event') == 'push']
-              require(candidates and max(r['id'] for r in candidates) == RUN, 'latest trusted main gate differs')
-          
-          require(ARTIFACT > 0 and re.fullmatch(r'[0-9a-f]{64}', RAW_SHA256), 'root gate/artifact bindings pending')
-          require(os.environ['GH_REPO'] == REPOSITORY and os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch'
-              and os.environ['GITHUB_REF'] == 'refs/heads/work-aws-regional-diagnostic', 'repository/trigger differs')
-          require(command(['git', 'rev-parse', 'HEAD']).strip() == SOURCE
-              and command(['git', 'rev-parse', 'HEAD^{tree}']).strip() == TREE
-              and not command(['git', 'status', '--porcelain']).strip(), 'immutable source/tree differs')
-          require(api('')['default_branch'] == 'main' and api('git/ref/heads/main')['object']['sha'] == SOURCE,
-              'current default main differs')
-          run = api(f'actions/runs/{RUN}')
-          require(run.get('id') == RUN and run.get('head_sha') == SOURCE and run.get('path') == WORKFLOW
-              and run.get('head_branch') == 'main' and run.get('event') == 'push'
-              and run.get('status') == 'completed' and run.get('conclusion') == 'success'
-              and run.get('run_attempt') == 1
-              and run.get('repository', {}).get('full_name') == REPOSITORY
-              and run.get('head_repository', {}).get('full_name') == REPOSITORY, 'trusted main gate differs')
-          workflow = api(f"actions/workflows/{run['workflow_id']}")
-          require(workflow.get('path') == WORKFLOW and workflow.get('state') == 'active', 'gate workflow differs')
-          latest()
-          response = api(f"actions/runs/{RUN}/attempts/{run['run_attempt']}/jobs?per_page=100")
-          jobs = response.get('jobs', [])
-          require(response.get('total_count') == 14 and len(jobs) == 14 and {j['name'] for j in jobs} == JOBS
-              and len({j['id'] for j in jobs}) == 14
-              and all(j.get('head_sha') == SOURCE and j.get('run_id') == RUN and j.get('run_attempt') == run['run_attempt']
-                  and j.get('status') == 'completed' and j.get('conclusion') == 'success' for j in jobs), 'all14 jobs differ')
-          response = api(f'actions/runs/{RUN}/artifacts?per_page=100')
-          rows = [a for a in response.get('artifacts', []) if a.get('name') == 'exact-revision-merge-evidence']
-          require(response.get('total_count', 101) <= 100 and len(rows) == 1, 'aggregate artifact is ambiguous')
-          artifact = rows[0]
-          job = next(j for j in jobs if j['name'] == 'merge-gate')
-          require(artifact.get('id') == ARTIFACT and artifact.get('expired') is False
-              and artifact.get('digest') == 'sha256:' + RAW_SHA256 and artifact.get('size_in_bytes') == 393
-              and artifact.get('workflow_run', {}).get('id') == RUN and artifact.get('workflow_run', {}).get('head_sha') == SOURCE
-              and job['started_at'] <= artifact.get('created_at', '') <= job['completed_at'], 'raw artifact binding differs')
-          raw = command(['gh', 'api', f'repos/{REPOSITORY}/actions/artifacts/{ARTIFACT}/zip'], binary=True)
-          require(len(raw) == artifact['size_in_bytes'] and hashlib.sha256(raw).hexdigest() == RAW_SHA256,
-              'raw aggregate ZIP digest differs')
-          with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-              members = [m for m in archive.infolist() if not m.is_dir()]
-              require(len(members) == 1 and members[0].filename == 'gates.json' and members[0].file_size <= 262144
-                  and (members[0].external_attr >> 16) & 0o170000 != 0o120000, 'aggregate member differs')
-              evidence = json.loads(archive.read(members[0]))
-          require(evidence.get('revision') == SOURCE and evidence.get('run_url') == f'https://github.com/{REPOSITORY}/actions/runs/{RUN}'
-              and isinstance(evidence.get('passed'), list) and len(evidence['passed']) == 13 and set(evidence['passed']) == LABELS,
-              'aggregate exact revision/jobs differ')
-          after = api(f'actions/artifacts/{ARTIFACT}')
-          require(all(after.get(k) == artifact.get(k) for k in ['id','name','expired','digest','size_in_bytes','created_at','workflow_run']),
-              'aggregate changed after download')
-          current = api(f'actions/runs/{RUN}')
-          require(all(current.get(k) == run.get(k) for k in ['id','head_sha','run_attempt','status','conclusion','workflow_id']),
-              'gate changed after download')
-          latest()
-          require(api('git/ref/heads/main')['object']['sha'] == SOURCE and not command(['git','status','--porcelain']).strip(),
-              'current main/source changed')
-          print(json.dumps({'admitted_revision': SOURCE, 'admitted_tree': TREE, 'gate_run_id': RUN,
-              'gate_attempt': run['run_attempt'], 'successful_jobs': 14, 'raw_aggregate_sha256': RAW_SHA256,
-              'admission_scope': 'READ_ONLY_EAST1_WEST2_PREFLIGHT_AND_OHIO_ACCOUNT_PLAN_ONLY'}))
-          PYCODE
-      - name: Install only hash-locked SDK wheels before AWS credentials
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PYCODE'
-          import os, subprocess, tomllib
+          python3 - <<'PY'
+          import hashlib, os, re
           from pathlib import Path
-          packages = {'boto3', 'botocore', 's3transfer', 'jmespath', 'python-dateutil', 'six', 'urllib3'}
-          lock = tomllib.loads(Path('services/api/uv.lock').read_text())
-          rows = [p for p in lock['package'] if p['name'] in packages]
-          if len(rows) != len(packages) or {p['name'] for p in rows} != packages:
-              raise SystemExit('SDK lock inventory differs')
-          if any(p['version'] != '1.43.111' for p in rows if p['name'] in ('boto3', 'botocore')):
-              raise SystemExit('Native diagnostic SDK model differs from qualified source')
-          root = Path(os.environ['RUNNER_TEMP'])
-          requirements = root / 'regional-diagnostic-sdk-requirements.txt'
-          requirements.write_text('\n'.join(p['name'] + '==' + p['version'] + ' ' + ' '.join(
-              '--hash=' + w['hash'] for w in p.get('wheels', [])) for p in rows) + '\n')
-          if any(not p.get('wheels') for p in rows):
-              raise SystemExit('SDK wheel hash is unavailable')
-          subprocess.run(['python3', '-m', 'pip', 'install', '--disable-pip-version-check', '--no-input',
-              '--require-hashes', '--no-deps', '--only-binary=:all:', '--target', str(root / 'regional-diagnostic-sdk'),
-              '-r', str(requirements)], check=True, timeout=90)
-          PYCODE
+          expected = {
+              'native_paid_plan_repair.py': 'aea8a623545b35f2d7c948038221ab9757f027a61f081981774f17cbbc70fd0f',
+              'paid_plan_source_admission.py': '4fd6338af3972342e682ce9fb77439b33f7c6087b857d04aecd6f48efe75074c',
+              'locked_diagnostic_sdk_installer.py': 'd4801e296b0b6d083018369538e7b99159c9b3e9552471a24268d128170afb3a',
+          }
+          if not re.fullmatch(r'[0-9a-f]{40}', os.environ['REVIEWED_OPERATIONAL_COMMIT']):
+              raise SystemExit('Reviewed operation commit is invalid')
+          for name, digest in expected.items():
+              raw = (Path('reviewed-operations/.github/scripts') / name).read_bytes()
+              if hashlib.sha256(raw).hexdigest() != digest:
+                  raise SystemExit('Reviewed operational bytes differ')
+          PY
+      - name: Admit exact current qualified main before AWS credentials
+        working-directory: qualified-source
+        shell: bash
+        run: python3 ../reviewed-operations/.github/scripts/paid_plan_source_admission.py
+      - name: Reject any prior repair run or account intent before credentials
+        working-directory: qualified-source
+        shell: bash
+        run: python3 ../reviewed-operations/.github/scripts/native_paid_plan_repair.py admit-operation
+      - name: Install only hash-locked SDK wheels before AWS credentials
+        working-directory: qualified-source
+        shell: bash
+        run: python3 ../reviewed-operations/.github/scripts/locked_diagnostic_sdk_installer.py
       - name: Configure reviewed account only after complete source admission
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
         with:
@@ -157,382 +84,38 @@ jobs:
           output-credentials: false
           retry-max-attempts: 1
           action-timeout-s: 90
-      - name: Read one bounded regional metadata snapshot
+      - name: Prepare exact account intent
+        id: prepare
+        working-directory: qualified-source
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PYCODE'
-          """One bounded metadata snapshot; no application imports or cloud mutations."""
-          from datetime import datetime, timezone
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
-          import re
-          import subprocess
-          import sys
-          import time
-          
-          ACCOUNT = '738470137867'
-          SOURCE = '0844868aa543af4ab75ac5065ad48cf807b86bb3'
-          TREE = '1afe65b4d2a6ba3a4c541c9ecf7bc61f287ee908'
-          PRIMARY, RECOVERY = 'us-east-1', 'us-west-2'
-          APP = 'otgd-serverless-development'
-          COLD = 'otgd-fargate-development-us-west-2-recovery'
-          COLD_TEMPLATE_SHA256 = '3a91906c2ddbb5ee602263275097a73fb644f4ef4a939b640a5a3b26f4fd7d81'
-          ALLOWED = {
-              ('sts', 'get-caller-identity'), ('freetier', 'get-account-plan-state'), ('account', 'get-account-information'), ('organizations', 'describe-organization'), ('cloudformation', 'describe-stacks'),
-              ('cloudformation', 'list-stack-resources'), ('cloudformation', 'describe-stack-events'),
-              ('cloudformation', 'get-template'), ('kms', 'describe-key'),
-              ('rds', 'describe-db-clusters'), ('rds', 'describe-db-cluster-snapshots'),
-              ('ecs', 'describe-clusters'), ('ecs', 'describe-services'),
-              ('backup', 'list-backup-jobs'), ('backup', 'list-copy-jobs'),
-              ('backup', 'describe-recovery-point'),
-          }
-          OUTPUTS = {'ReleaseId', 'ActivateServices', 'WebOrigin', 'ApiOrigin', 'CloudWatchDashboardUrl',
-              'ClusterArn', 'ApiService', 'DbClusterIdentifier', 'DatabaseClusterIdentifier',
-              'DataKeyArn', 'RecoveryKeyArn', 'RecoveryVaultArn', 'RecoveryVaultName',
-              'RegionalBackupRoleArn', 'RegionalBackupPlanId', 'PrimaryBackupVaultName'}
-          START = time.monotonic()
-          CALLS = 0
-          DIRECTORY = Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic'
-          DIRECTORY.mkdir(mode=0o700, exist_ok=False)
-          PATH = DIRECTORY / 'regional-diagnostic.json'
-          REPORT = {'schema_version': '1.0.0', 'operation': 'read-only-regional-preflight-diagnostic',
-              'source_revision': SOURCE, 'source_tree': TREE, 'account': ACCOUNT,
-              'primary_region': PRIMARY, 'backup_region': RECOVERY,
-              'observer_run_id': os.environ['GITHUB_RUN_ID'], 'observer_run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
-              'started_at': datetime.now(timezone.utc).isoformat(), 'observations': {}, 'aws_mutations': [],
-              'limits': {'deadline_seconds': 180, 'aws_calls': 100, 'artifact_bytes': 1048576},
-              'restore_executed': False, 'health_verified': False, 'backup_restore_verified': False}
-          
-          
-          def persist():
-              REPORT['aws_call_count'] = CALLS
-              raw = (json.dumps(REPORT, sort_keys=True, indent=2) + '\n').encode()
-              if len(raw) > 1048576:
-                  raise SystemExit('Regional observer artifact bound exceeded')
-              PATH.write_bytes(raw)
-              PATH.chmod(0o600)
-          
-          
-          def aws(region, service, operation, options=(), query=None):
-              global CALLS
-              if (region not in (PRIMARY, RECOVERY, 'us-east-2') or (service, operation) not in ALLOWED
-                      or region == 'us-east-2' and (service, operation) != ('freetier', 'get-account-plan-state')
-                      or region == RECOVERY and service not in ('cloudformation', 'kms', 'rds', 'backup', 'sts')):
-                  raise SystemExit('Regional observer operation/region outside read-only allowlist')
-              left = 180 - (time.monotonic() - START)
-              if left <= 0 or CALLS >= 100:
-                  return {'observation_error_code': 'ObservationBoundExceeded', 'presence': 'unverified'}
-              CALLS += 1
-              if (service, operation) == ('freetier', 'get-account-plan-state'):
-                  return native_account_plan(region, left)
-              if (service, operation) == ('account', 'get-account-information'):
-                  return native_account_information(region, left)
-              if (service, operation) == ('organizations', 'describe-organization'):
-                  return native_organization(region, left)
-              request = ['aws', service, operation, '--region', region, '--no-paginate', '--output', 'json',
-                  '--cli-connect-timeout', '3', '--cli-read-timeout', '8', *options]
-              if query:
-                  request += ['--query', query]
-              environment = {**os.environ, 'AWS_REGION': region, 'AWS_DEFAULT_REGION': region,
-                  'AWS_MAX_ATTEMPTS': '1', 'AWS_IGNORE_CONFIGURED_ENDPOINT_URLS': 'true',
-                  'AWS_EC2_METADATA_DISABLED': 'true', 'AWS_PAGER': ''}
-              try:
-                  result = subprocess.run(request, capture_output=True, text=True, timeout=min(12, left), env=environment)
-              except subprocess.TimeoutExpired:
-                  return {'observation_error_code': 'BoundedTimeout', 'presence': 'unverified'}
-              if result.returncode:
-                  code = re.search(r'An error occurred \(([A-Za-z0-9_.-]+)\)', result.stderr)
-                  value = code.group(1) if code else 'CommandUnavailable'
-                  absent = service == 'cloudformation' and value == 'ValidationError' and re.search(
-                      r'Stack with id [^\n]+ does not exist', result.stderr)
-                  detail = {'observation_error_code': value, 'presence': 'absent' if absent else 'unverified',
-                      'service': service, 'operation': operation, 'region': region}
-                  if (service, operation) == ('cloudformation', 'describe-stacks'):
-                      detail['bounded_error_message'] = result.stderr.split('operation:', 1)[-1].strip()[:512]
-                  return detail
-              if len(result.stdout.encode()) > 1048576:
-                  return {'observation_error_code': 'ResponseBoundExceeded', 'presence': 'unverified'}
-              try:
-                  return json.loads(result.stdout)
-              except ValueError:
-                  return {'observation_error_code': 'MalformedJson', 'presence': 'unverified'}
-          
-          
-          
-          def native_account_plan(region, left):
-              # Read the same SDK operation/model as the admitted deployment, without
-              # relying on the hosted runner's independent AWS CLI service-model age.
-              sys.path.insert(0, str(Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic-sdk'))
-              import boto3
-              from botocore.config import Config
-              from botocore.exceptions import BotoCoreError, ClientError
-              client = boto3.client('freetier', region_name=region, config=Config(
-                  ignore_configured_endpoint_urls=True, retries={'total_max_attempts': 1, 'mode': 'standard'},
-                  connect_timeout=min(3, left / 2), read_timeout=min(8, left / 2)))
-              context = {'service': 'freetier', 'operation': 'get-account-plan-state', 'region': region,
-                  'native_sdk_version': boto3.__version__, 'endpoint_url': client.meta.endpoint_url}
-              try:
-                  response = client.get_account_plan_state()
-                  if response.get('accountId') != ACCOUNT:
-                      return {**context, 'observation_error_code': 'AccountMismatch', 'presence': 'unverified'}
-                  return {**context, **{field: (response[field].isoformat() if isinstance(response[field], datetime)
-                      else response[field]) for field in ('accountId', 'accountPlanType', 'accountPlanStatus',
-                      'accountPlanExpirationDate') if field in response}}
-              except ClientError as error:
-                  metadata = error.response.get('ResponseMetadata', {})
-                  details = error.response.get('Error', {})
-                  return {**context, 'observation_error_code': details.get('Code', 'UnknownServiceError'),
-                      'bounded_error_message': str(details.get('Message', ''))[:512],
-                      'http_status_code': metadata.get('HTTPStatusCode'), 'request_id': metadata.get('RequestId'),
-                      'presence': 'unverified'}
-              except BotoCoreError as error:
-                  return {**context, 'observation_error_code': type(error).__name__, 'presence': 'unverified'}
-          
-          
-          
-          def native_account_information(region, left):
-              # Optional evidence only. ACTIVE does not imply PAID and cannot upgrade an
-              # account or substitute for source deployment admission.
-              sys.path.insert(0, str(Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic-sdk'))
-              import boto3
-              from botocore.config import Config
-              from botocore.exceptions import BotoCoreError, ClientError
-              client = boto3.client('account', region_name=region, config=Config(
-                  ignore_configured_endpoint_urls=True, retries={'total_max_attempts': 1, 'mode': 'standard'},
-                  connect_timeout=min(3, left / 2), read_timeout=min(8, left / 2)))
-              context = {'service': 'account', 'operation': 'get-account-information', 'region': region,
-                  'native_sdk_version': boto3.__version__, 'endpoint_url': client.meta.endpoint_url}
-              try:
-                  response = client.get_account_information()  # Standalone own account; omit AccountId.
-                  if response.get('AccountId') != ACCOUNT:
-                      return {**context, 'observation_error_code': 'AccountMismatch', 'presence': 'unverified'}
-                  return {**context, **{field: (response[field].isoformat() if isinstance(response[field], datetime)
-                      else response[field]) for field in ('AccountId', 'AccountState', 'AccountCreatedDate') if field in response}}
-              except ClientError as error:
-                  metadata = error.response.get('ResponseMetadata', {})
-                  details = error.response.get('Error', {})
-                  return {**context, 'observation_error_code': details.get('Code', 'UnknownServiceError'),
-                      'bounded_error_message': str(details.get('Message', ''))[:512],
-                      'http_status_code': metadata.get('HTTPStatusCode'), 'request_id': metadata.get('RequestId'),
-                      'presence': 'unverified'}
-              except BotoCoreError as error:
-                  return {**context, 'observation_error_code': type(error).__name__, 'presence': 'unverified'}
-          
-          
-          def native_organization(region, left):
-              # Read membership only. New signup can create an AWS-managed organization
-              # while retaining a Free Plan; organization membership cannot infer PAID.
-              info = REPORT['observations'].get('optional_own_account_information', {})
-              context = {'service': 'organizations', 'operation': 'describe-organization', 'region': region,
-                  'caller_account_id': ACCOUNT, 'paid_eligibility_inferred': False}
-              if info.get('AccountId') != ACCOUNT or info.get('AccountState') != 'ACTIVE':
-                  return {**context, 'observation_error_code': 'ActiveCallerAccountUnverified', 'presence': 'unverified'}
-              try:
-                  created = datetime.fromisoformat(info['AccountCreatedDate'])
-                  if created.tzinfo is None:
-                      raise ValueError('Account creation timezone missing')
-              except (KeyError, TypeError, ValueError):
-                  return {**context, 'observation_error_code': 'ActiveCallerAccountUnverified', 'presence': 'unverified'}
-              context.update(caller_account_state='ACTIVE', caller_account_created_at=created.isoformat())
-              sys.path.insert(0, str(Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic-sdk'))
-              import boto3
-              from botocore.config import Config
-              from botocore.exceptions import BotoCoreError, ClientError
-              client = boto3.client('organizations', region_name=region, config=Config(
-                  ignore_configured_endpoint_urls=True, retries={'total_max_attempts': 1, 'mode': 'standard'},
-                  connect_timeout=min(3, left / 2), read_timeout=min(8, left / 2)))
-              context.update(native_sdk_version=boto3.__version__, endpoint_url=client.meta.endpoint_url)
-              try:
-                  response = client.describe_organization()  # Exact caller's organization; empty request.
-                  row = response.get('Organization', {})
-                  identifier, arn = row.get('Id'), row.get('Arn')
-                  manager, features = row.get('MasterAccountId'), row.get('FeatureSet')
-                  if (not isinstance(identifier, str) or not re.fullmatch(r'o-[a-z0-9]{10,32}', identifier)
-                          or not isinstance(manager, str) or not re.fullmatch(r'[0-9]{12}', manager)
-                          or arn != f'arn:aws:organizations::{manager}:organization/{identifier}'
-                          or features not in ('ALL', 'CONSOLIDATED_BILLING')):
-                      return {**context, 'observation_error_code': 'OrganizationIdentityUnverified', 'presence': 'unverified'}
-                  return {**context, 'OrganizationId': identifier, 'OrganizationArn': arn,
-                      'FeatureSet': features, 'ManagementAccountId': manager, 'presence': 'organization'}
-              except ClientError as error:
-                  metadata, details = error.response.get('ResponseMetadata', {}), error.response.get('Error', {})
-                  code = details.get('Code', 'UnknownServiceError')
-                  # No error message or raw organization fields: those can contain email/name data.
-                  return {**context, 'observation_error_code': code,
-                      'http_status_code': metadata.get('HTTPStatusCode'), 'request_id': metadata.get('RequestId'),
-                      'presence': 'absent' if code == 'AWSOrganizationsNotInUseException' else 'unverified'}
-              except BotoCoreError as error:
-                  return {**context, 'observation_error_code': type(error).__name__, 'presence': 'unverified'}
-          
-          
-          def record(label, value):
-              REPORT['observations'][label] = value
-              persist()
-              print(json.dumps({'observation': label, 'aws_calls': CALLS}), flush=True)
-              return value
-          
-          
-          def canonical_sha(value):
-              return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
-          
-          
-          def stack(region, name):
-              selected = ' || '.join("OutputKey=='" + key + "'" for key in sorted(OUTPUTS))
-              rows = aws(region, 'cloudformation', 'describe-stacks', ['--stack-name', name],
-                  'Stacks[].{StackName:StackName,StackId:StackId,StackStatus:StackStatus,CreationTime:CreationTime,'
-                  'LastUpdatedTime:LastUpdatedTime,EnableTerminationProtection:EnableTerminationProtection,'
-                  'Outputs:Outputs[?' + selected + ']}')
-              if not isinstance(rows, list) or len(rows) != 1:
-                  return record(region + ':' + name, {'stack': rows, 'source_revision_verified': False})
-              row = rows[0]
-              if (row.get('StackName') != name or not str(row.get('StackId', '')).startswith(
-                      f'arn:aws:cloudformation:{region}:{ACCOUNT}:stack/{name}/')):
-                  raise SystemExit('Regional observer stack UUID/account/region differs')
-              outputs = {item['OutputKey']: item['OutputValue'] for item in row.get('Outputs') or []}
-              resources, token, complete = [], None, False
-              for _ in range(2):
-                  page = aws(region, 'cloudformation', 'list-stack-resources',
-                      ['--stack-name', row['StackId'], *(['--next-token', token] if token else [])],
-                      '{Rows:StackResourceSummaries[].{LogicalResourceId:LogicalResourceId,ResourceType:ResourceType,'
-                      'PhysicalResourceId:PhysicalResourceId,ResourceStatus:ResourceStatus},NextToken:NextToken}')
-                  if not isinstance(page, dict) or not isinstance(page.get('Rows'), list):
-                      break
-                  resources += page['Rows']
-                  token = page.get('NextToken')
-                  if not token:
-                      complete = True
-                      break
-                  if not isinstance(token, str) or len(token) > 4096:
-                      break
-              body = aws(region, 'cloudformation', 'get-template',
-                  ['--stack-name', row['StackId'], '--template-stage', 'Original'], 'TemplateBody')
-              if isinstance(body, str):
-                  try:
-                      body = json.loads(body)
-                  except ValueError:
-                      body = None
-              body_hash = canonical_sha(body) if isinstance(body, dict) and isinstance(body.get('Resources'), dict) else None
-              source_verified = bool(name == APP and isinstance(body, dict)
-                  and outputs.get('ReleaseId') == SOURCE
-                  and body.get('Outputs', {}).get('ReleaseId', {}).get('Value') == SOURCE)
-              events = aws(region, 'cloudformation', 'describe-stack-events', ['--stack-name', row['StackId']],
-                  '{Rows:StackEvents[:40].{Timestamp:Timestamp,LogicalResourceId:LogicalResourceId,'
-                  'ResourceType:ResourceType,ResourceStatus:ResourceStatus},NextToken:NextToken}')
-              counts = {}
-              for resource in resources:
-                  status = resource.get('ResourceStatus')
-                  counts[status] = counts.get(status, 0) + 1
-              return record(region + ':' + name, {'stack': row, 'outputs': outputs,
-                  'inventory': resources, 'inventory_complete': complete, 'status_counts': counts,
-                  'template_canonical_sha256': body_hash, 'source_revision_verified': source_verified,
-                  'recent_events': events, 'resource_status_reasons_exported': False})
-          
-          
-          if aws(PRIMARY, 'sts', 'get-caller-identity', query='Account') != ACCOUNT:
-              raise SystemExit('Regional observer actual account differs')
-          persist()
-          east_plan = record('account_plan_' + PRIMARY, aws(PRIMARY, 'freetier', 'get-account-plan-state'))
-          ohio_plan = record('account_plan_us-east-2', aws('us-east-2', 'freetier', 'get-account-plan-state'))
-          if any(isinstance(value, dict) and value.get('observation_error_code') == 'ResourceNotFoundException'
-                  for value in (east_plan, ohio_plan)):
-              record('optional_own_account_information', aws(PRIMARY, 'account', 'get-account-information'))
-              record('optional_own_organization', aws(PRIMARY, 'organizations', 'describe-organization'))
-          record('qa_stack_presence', aws(PRIMARY, 'cloudformation', 'describe-stacks',
-              ['--stack-name', 'otgd-qa-platform'], 'Stacks[].{StackName:StackName,StackId:StackId,StackStatus:StackStatus}'))
-          recovery = stack(RECOVERY, COLD)
-          stack(PRIMARY, APP + '-registry')
-          primary = stack(PRIMARY, APP)
-          out = primary.get('outputs', {})
-          cold = recovery.get('outputs', {})
-          key = cold.get('RecoveryKeyArn')
-          key_rows = [r for r in recovery.get('inventory', []) if r.get('LogicalResourceId') == 'RecoveryKey']
-          key_bound = bool(isinstance(key, str) and re.fullmatch(
-              rf'arn:aws:kms:{RECOVERY}:{ACCOUNT}:key/[0-9a-f]{{8}}(?:-[0-9a-f]{{4}}){{3}}-[0-9a-f]{{12}}', key)
-              and recovery.get('inventory_complete') is True
-              and recovery.get('template_canonical_sha256') == COLD_TEMPLATE_SHA256
-              and len(key_rows) == 1 and key_rows[0].get('ResourceType') == 'AWS::KMS::Key'
-              and key_rows[0].get('PhysicalResourceId') == key.rsplit('/', 1)[-1]
-              and recovery.get('stack', {}).get('StackStatus') in ('CREATE_COMPLETE', 'UPDATE_COMPLETE')
-              and recovery.get('stack', {}).get('EnableTerminationProtection') is True)
-          if key_bound:
-              metadata = record('verified_recovery_key_metadata', aws(RECOVERY, 'kms', 'describe-key', ['--key-id', key],
-                  'KeyMetadata.{Arn:Arn,KeyId:KeyId,AWSAccountId:AWSAccountId,Enabled:Enabled,KeyState:KeyState,'
-                  'KeyUsage:KeyUsage,KeySpec:KeySpec,KeyManager:KeyManager,MultiRegion:MultiRegion}'))
-              REPORT['recovery_key_ready'] = bool(isinstance(metadata, dict) and metadata.get('Arn') == key
-                  and metadata.get('AWSAccountId') == ACCOUNT and metadata.get('Enabled') is True
-                  and metadata.get('KeyState') == 'Enabled' and metadata.get('KeyUsage') == 'ENCRYPT_DECRYPT'
-                  and metadata.get('KeySpec') == 'SYMMETRIC_DEFAULT' and metadata.get('KeyManager') == 'CUSTOMER'
-                  and metadata.get('MultiRegion') is False)
-          else:
-              REPORT['recovery_key_ready'] = False
-          
-          if primary.get('source_revision_verified') is True:
-              database = out.get('DbClusterIdentifier') or out.get('DatabaseClusterIdentifier')
-              if database == APP and any(r.get('LogicalResourceId') == 'Database'
-                      and r.get('ResourceType') == 'AWS::RDS::DBCluster' and r.get('PhysicalResourceId') == APP
-                      for r in primary.get('inventory', [])):
-                  cluster = record('primary_database_metadata', aws(PRIMARY, 'rds', 'describe-db-clusters',
-                      ['--db-cluster-identifier', APP], 'DBClusters[].{DBClusterArn:DBClusterArn,DbClusterResourceId:DbClusterResourceId,'
-                      'Status:Status,ClusterCreateTime:ClusterCreateTime,Engine:Engine,EngineVersion:EngineVersion,'
-                      'StorageEncrypted:StorageEncrypted,KmsKeyId:KmsKeyId,DeletionProtection:DeletionProtection,'
-                      'Ownership:TagList[?Key==`project` || Key==`deployment` || Key==`environment` || Key==`owner_role`]}'))
-                  cluster_arn = f'arn:aws:rds:{PRIMARY}:{ACCOUNT}:cluster:{APP}'
-                  tags = {t['Key']: t['Value'] for t in cluster[0].get('Ownership') or []} if isinstance(cluster, list) and len(cluster) == 1 else {}
-                  if (isinstance(cluster, list) and len(cluster) == 1 and cluster[0].get('DBClusterArn') == cluster_arn
-                          and tags == {'project': 'one-the-go-detection', 'deployment': APP,
-                              'environment': 'serverless-development', 'owner_role': 'platform-operator'}):
-                      jobs = record('primary_backup_jobs', aws(PRIMARY, 'backup', 'list-backup-jobs',
-                          ['--by-resource-arn', cluster_arn, '--max-results', '20'],
-                          '{Jobs:BackupJobs[].{BackupJobId:BackupJobId,ResourceArn:ResourceArn,State:State,'
-                          'BackupVaultArn:BackupVaultArn,RecoveryPointArn:RecoveryPointArn,CreationDate:CreationDate,'
-                          'CompletionDate:CompletionDate,ResourceType:ResourceType},NextToken:NextToken}'))
-                      vault = f'arn:aws:backup:{RECOVERY}:{ACCOUNT}:backup-vault:otgd-fargate-development-{RECOVERY}'
-                      if cold.get('RecoveryVaultArn') == vault:
-                          copies = record('regional_copy_jobs', aws(PRIMARY, 'backup', 'list-copy-jobs',
-                              ['--by-resource-arn', cluster_arn, '--by-destination-vault-arn', vault, '--max-results', '20'],
-                              '{Jobs:CopyJobs[].{CopyJobId:CopyJobId,ResourceArn:ResourceArn,State:State,'
-                              'SourceRecoveryPointArn:SourceRecoveryPointArn,DestinationRecoveryPointArn:DestinationRecoveryPointArn,'
-                              'DestinationBackupVaultArn:DestinationBackupVaultArn,CreationDate:CreationDate,CompletionDate:CompletionDate},NextToken:NextToken}'))
-                          for job in copies.get('Jobs', [])[:4] if isinstance(copies, dict) else []:
-                              point = job.get('DestinationRecoveryPointArn')
-                              if (job.get('ResourceArn') == cluster_arn and job.get('DestinationBackupVaultArn') == vault
-                                      and isinstance(point, str) and point.startswith(f'arn:aws:rds:{RECOVERY}:{ACCOUNT}:cluster-snapshot:')):
-                                  record('copy_point_' + hashlib.sha256(point.encode()).hexdigest()[:16],
-                                      aws(RECOVERY, 'rds', 'describe-db-cluster-snapshots', ['--db-cluster-snapshot-identifier', point],
-                                          'DBClusterSnapshots[].{DBClusterSnapshotArn:DBClusterSnapshotArn,Status:Status,'
-                                          'SourceDBClusterSnapshotArn:SourceDBClusterSnapshotArn,DbClusterResourceId:DbClusterResourceId,'
-                                          'ClusterCreateTime:ClusterCreateTime,SnapshotCreateTime:SnapshotCreateTime,Engine:Engine,'
-                                          'EngineVersion:EngineVersion,StorageEncrypted:StorageEncrypted,KmsKeyId:KmsKeyId}'))
-              cluster_arn = out.get('ClusterArn')
-              service = out.get('ApiService')
-              if cluster_arn == f'arn:aws:ecs:{PRIMARY}:{ACCOUNT}:cluster/{APP}':
-                  clusters = record('primary_ecs_cluster_metadata', aws(PRIMARY, 'ecs', 'describe-clusters',
-                      ['--clusters', cluster_arn, '--include', 'TAGS'], '{Clusters:clusters[].{clusterArn:clusterArn,status:status,'
-                      'runningTasksCount:runningTasksCount,pendingTasksCount:pendingTasksCount,activeServicesCount:activeServicesCount,'
-                      'Ownership:tags[?key==`project` || key==`deployment` || key==`environment` || key==`owner_role`]},Failures:failures[].reason}'))
-                  ecs_rows = clusters.get('Clusters', []) if isinstance(clusters, dict) else []
-                  tags = {t['key']: t['value'] for t in ecs_rows[0].get('Ownership') or []} if len(ecs_rows) == 1 else {}
-                  if (len(ecs_rows) == 1 and ecs_rows[0].get('clusterArn') == cluster_arn
-                          and tags == {'project': 'one-the-go-detection', 'deployment': APP,
-                              'environment': 'serverless-development', 'owner_role': 'platform-operator'}
-                          and service in (APP + '-api', f'arn:aws:ecs:{PRIMARY}:{ACCOUNT}:service/{APP}/{APP}-api')):
-                      record('primary_ecs_service_metadata', aws(PRIMARY, 'ecs', 'describe-services',
-                          ['--cluster', cluster_arn, '--services', service], '{Services:services[].{serviceArn:serviceArn,'
-                          'clusterArn:clusterArn,status:status,desiredCount:desiredCount,runningCount:runningCount,pendingCount:pendingCount,'
-                          'Deployments:deployments[].{status:status,rolloutState:rolloutState,desiredCount:desiredCount,runningCount:runningCount,pendingCount:pendingCount}},Failures:failures[].reason}'))
-          REPORT['completed_at'] = datetime.now(timezone.utc).isoformat()
-          persist()
-          print(json.dumps({'artifact': PATH.name, 'artifact_sha256': hashlib.sha256(PATH.read_bytes()).hexdigest(),
-              'recovery_key_ready': REPORT['recovery_key_ready'], 'aws_calls': CALLS, 'aws_mutations': []}), flush=True)
-          PYCODE
-      - name: Preserve credential-free regional progress
+          mkdir -m 700 "${INTENT_DIRECTORY}"
+          python3 ../reviewed-operations/.github/scripts/native_paid_plan_repair.py prepare \
+            --directory "${INTENT_DIRECTORY}" \
+            --source-admission ../reviewed-operations/.github/scripts/paid_plan_source_admission.py
+      - name: Publish protected request intent before any native Upgrade
+        if: steps.prepare.outputs.upgrade_needed == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paid-plan-request-intent-738470137867-${{ github.run_id }}-1
+          path: ${{ env.INTENT_DIRECTORY }}/intent.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Execute one guarded native desired PAID request and fresh reads
+        if: success() && steps.prepare.outputs.upgrade_needed == 'true'
+        working-directory: qualified-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../reviewed-operations/.github/scripts/native_paid_plan_repair.py execute \
+            --directory "${INTENT_DIRECTORY}" \
+            --source-admission ../reviewed-operations/.github/scripts/paid_plan_source_admission.py
+      - name: Preserve credential-free intent and native verification outcome
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: readonly-regional-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/regional-diagnostic/
+          name: paid-plan-verification-738470137867-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.INTENT_DIRECTORY }}/
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 90
