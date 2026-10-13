@@ -54,7 +54,7 @@ jobs:
               return result.stdout
           
           def api(path):
-              return json.loads(command(['gh', 'api', f'repos/{REPOSITORY}/' + path]))
+              return json.loads(command(['gh', 'api', (f'repos/{REPOSITORY}/' + path).rstrip('/')]))
           
           def latest():
               response = api('actions/workflows/merge-gate.yml/runs?head_sha=' + SOURCE + '&per_page=100')
