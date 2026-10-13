@@ -571,21 +571,22 @@ def test_baseline_bounds_and_bias_are_applied_to_frozen_features(model):
         m.validate_registry_model(body)
     body["quality_policy"]["max_baseline_age_ms"] = 1000
     baseline = deepcopy(model["snapshot"])
+    current = now()
     baseline.update(
-        created_at=iso(now() - 1000),
-        target_at=iso(now() - 1000),
-        capture_completed_at=iso(now() - 880),
+        created_at=iso(current - 1000),
+        target_at=iso(current - 1000),
+        capture_completed_at=iso(current - 880),
     )
-    baseline["profile"]["recorded_at"] = iso(now() - 1100)
-    baseline["sample"]["collected_at"] = iso(now() - 990)
+    baseline["profile"]["recorded_at"] = iso(current - 1100)
+    baseline["sample"]["collected_at"] = iso(current - 990)
     for component in ("eyes", "cardiac", "task"):
         baseline[component].update(
-            started_at=iso(now() - 1000), ended_at=iso(now() - 880)
+            started_at=iso(current - 1000), ended_at=iso(current - 880)
         )
     for row in baseline["saliva"]:
         row.update(
             collected_at=baseline["sample"]["collected_at"],
-            measured_at=iso(now() - 900)
+            measured_at=iso(current - 900)
             if row["qualifier"] != "not_measured"
             else None,
         )
