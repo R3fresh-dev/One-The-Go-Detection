@@ -1,4 +1,4 @@
-name: Read-only regional preflight diagnostic
+name: Read-only regional preflight and organization diagnostic
 on:
   workflow_dispatch:
 permissions:
@@ -181,7 +181,7 @@ jobs:
           COLD = 'otgd-fargate-development-us-west-2-recovery'
           COLD_TEMPLATE_SHA256 = '3a91906c2ddbb5ee602263275097a73fb644f4ef4a939b640a5a3b26f4fd7d81'
           ALLOWED = {
-              ('sts', 'get-caller-identity'), ('freetier', 'get-account-plan-state'), ('account', 'get-account-information'), ('cloudformation', 'describe-stacks'),
+              ('sts', 'get-caller-identity'), ('freetier', 'get-account-plan-state'), ('account', 'get-account-information'), ('organizations', 'describe-organization'), ('cloudformation', 'describe-stacks'),
               ('cloudformation', 'list-stack-resources'), ('cloudformation', 'describe-stack-events'),
               ('cloudformation', 'get-template'), ('kms', 'describe-key'),
               ('rds', 'describe-db-clusters'), ('rds', 'describe-db-cluster-snapshots'),
@@ -230,6 +230,8 @@ jobs:
                   return native_account_plan(region, left)
               if (service, operation) == ('account', 'get-account-information'):
                   return native_account_information(region, left)
+              if (service, operation) == ('organizations', 'describe-organization'):
+                  return native_organization(region, left)
               request = ['aws', service, operation, '--region', region, '--no-paginate', '--output', 'json',
                   '--cli-connect-timeout', '3', '--cli-read-timeout', '8', *options]
               if query:
@@ -320,6 +322,52 @@ jobs:
                   return {**context, 'observation_error_code': type(error).__name__, 'presence': 'unverified'}
           
           
+          def native_organization(region, left):
+              # Read membership only. New signup can create an AWS-managed organization
+              # while retaining a Free Plan; organization membership cannot infer PAID.
+              info = REPORT['observations'].get('optional_own_account_information', {})
+              context = {'service': 'organizations', 'operation': 'describe-organization', 'region': region,
+                  'caller_account_id': ACCOUNT, 'paid_eligibility_inferred': False}
+              if info.get('AccountId') != ACCOUNT or info.get('AccountState') != 'ACTIVE':
+                  return {**context, 'observation_error_code': 'ActiveCallerAccountUnverified', 'presence': 'unverified'}
+              try:
+                  created = datetime.fromisoformat(info['AccountCreatedDate'])
+                  if created.tzinfo is None:
+                      raise ValueError('Account creation timezone missing')
+              except (KeyError, TypeError, ValueError):
+                  return {**context, 'observation_error_code': 'ActiveCallerAccountUnverified', 'presence': 'unverified'}
+              context.update(caller_account_state='ACTIVE', caller_account_created_at=created.isoformat())
+              sys.path.insert(0, str(Path(os.environ['RUNNER_TEMP']) / 'regional-diagnostic-sdk'))
+              import boto3
+              from botocore.config import Config
+              from botocore.exceptions import BotoCoreError, ClientError
+              client = boto3.client('organizations', region_name=region, config=Config(
+                  ignore_configured_endpoint_urls=True, retries={'total_max_attempts': 1, 'mode': 'standard'},
+                  connect_timeout=min(3, left / 2), read_timeout=min(8, left / 2)))
+              context.update(native_sdk_version=boto3.__version__, endpoint_url=client.meta.endpoint_url)
+              try:
+                  response = client.describe_organization()  # Exact caller's organization; empty request.
+                  row = response.get('Organization', {})
+                  identifier, arn = row.get('Id'), row.get('Arn')
+                  manager, features = row.get('MasterAccountId'), row.get('FeatureSet')
+                  if (not isinstance(identifier, str) or not re.fullmatch(r'o-[a-z0-9]{10,32}', identifier)
+                          or not isinstance(manager, str) or not re.fullmatch(r'[0-9]{12}', manager)
+                          or arn != f'arn:aws:organizations::{manager}:organization/{identifier}'
+                          or features not in ('ALL', 'CONSOLIDATED_BILLING')):
+                      return {**context, 'observation_error_code': 'OrganizationIdentityUnverified', 'presence': 'unverified'}
+                  return {**context, 'OrganizationId': identifier, 'OrganizationArn': arn,
+                      'FeatureSet': features, 'ManagementAccountId': manager, 'presence': 'organization'}
+              except ClientError as error:
+                  metadata, details = error.response.get('ResponseMetadata', {}), error.response.get('Error', {})
+                  code = details.get('Code', 'UnknownServiceError')
+                  # No error message or raw organization fields: those can contain email/name data.
+                  return {**context, 'observation_error_code': code,
+                      'http_status_code': metadata.get('HTTPStatusCode'), 'request_id': metadata.get('RequestId'),
+                      'presence': 'absent' if code == 'AWSOrganizationsNotInUseException' else 'unverified'}
+              except BotoCoreError as error:
+                  return {**context, 'observation_error_code': type(error).__name__, 'presence': 'unverified'}
+          
+          
           def record(label, value):
               REPORT['observations'][label] = value
               persist()
@@ -391,6 +439,7 @@ jobs:
           if any(isinstance(value, dict) and value.get('observation_error_code') == 'ResourceNotFoundException'
                   for value in (east_plan, ohio_plan)):
               record('optional_own_account_information', aws(PRIMARY, 'account', 'get-account-information'))
+              record('optional_own_organization', aws(PRIMARY, 'organizations', 'describe-organization'))
           record('qa_stack_presence', aws(PRIMARY, 'cloudformation', 'describe-stacks',
               ['--stack-name', 'otgd-qa-platform'], 'Stacks[].{StackName:StackName,StackId:StackId,StackStatus:StackStatus}'))
           recovery = stack(RECOVERY, COLD)
