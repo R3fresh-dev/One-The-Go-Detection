@@ -28,6 +28,7 @@ REQUIRED_JOBS = frozenset({
     "preview / android", "preview / ios",
     "native / android", "native / ios",
 })
+FARGATE_REQUIRED_JOBS = REQUIRED_JOBS | {"platform / fargate-container-runtime"}
 REQUIRED_GATE_LABELS = frozenset({
     "unit-coverage", "atdd", "components", "performance", "live-dependencies",
     "docker-health", "localstack-api", "specifications", "native-android",
@@ -122,8 +123,15 @@ def _github_json(client, path, **params):
         raise Gate("GitHub evidence cannot be verified") from None
 
 
-def verify_github_gates(evidence, revision, *, client=None):
+def verify_github_gates(evidence, revision, *, client=None, required_jobs=REQUIRED_JOBS):
     """Verify the run and every job from its latest attempt, without redirects."""
+    try:
+        required_jobs = frozenset(required_jobs)
+    except TypeError:
+        raise Gate("Required GitHub jobs must include every historical merge-gate job") from None
+    if (not REQUIRED_JOBS.issubset(required_jobs) or len(required_jobs) > 1000 or
+            any(not isinstance(name, str) or not name for name in required_jobs)):
+        raise Gate("Required GitHub jobs must include every historical merge-gate job")
     labels = evidence.get("passed") if isinstance(evidence, dict) else None
     url = evidence.get("run_url") if isinstance(evidence, dict) else None
     if not isinstance(url,str):
@@ -142,7 +150,7 @@ def verify_github_gates(evidence, revision, *, client=None):
         if token:
             headers["Authorization"] = "Bearer " + token
         with httpx.Client(headers=headers, timeout=15, follow_redirects=False) as owned:
-            return verify_github_gates(evidence, revision, client=owned)
+            return verify_github_gates(evidence, revision, client=owned, required_jobs=required_jobs)
     run_id = int(match.group(1))
     run = _github_json(client, f"actions/runs/{run_id}")
     attempt = run.get("run_attempt")
@@ -184,15 +192,18 @@ def verify_github_gates(evidence, revision, *, client=None):
             raise Gate("A GitHub job failed, was skipped, or does not belong to the latest attempt")
         seen_ids.add(job["id"])
         name = job.get("name")
-        if name in REQUIRED_JOBS:
+        if isinstance(name, str) and name in required_jobs:
             if name in job_ids:
                 raise Gate("Required GitHub job names are ambiguous")
             job_ids[name] = job["id"]
+    if set(job_ids) != required_jobs:
+        raise Gate("Complete latest-attempt required GitHub job evidence is required")
     proof = {"provider": "github_actions", "repository": REPOSITORY,
              "workflow_path": WORKFLOW_PATH, "workflow_id": workflow_id,
              "run_id": run_id, "run_attempt": attempt, "head_sha": revision,
              "run_url": evidence["run_url"], "event": run["event"],
-             "head_branch": run["head_branch"], "jobs": job_ids}
+             "head_branch": run["head_branch"],
+             "jobs": {name: job_id for name, job_id in job_ids.items() if name in REQUIRED_JOBS}}
     validate_gate_binding(proof, revision)
     # Close the normal rerun window while evidence is fetched. Activation also
     # performs this verification immediately before its mutation.
@@ -202,10 +213,10 @@ def verify_github_gates(evidence, revision, *, client=None):
     return proof
 
 
-def verify_gate_file(path, revision, *, client=None):
+def verify_gate_file(path, revision, *, client=None, required_jobs=REQUIRED_JOBS):
     if not path:
         raise Gate("Supply --gate-evidence from the exact-revision merge-gate run")
-    return verify_github_gates(bounded_json(path), revision, client=client)
+    return verify_github_gates(bounded_json(path), revision, client=client, required_jobs=required_jobs)
 
 
 def verify_signed_record(path, public_path):

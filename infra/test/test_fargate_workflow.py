@@ -4,6 +4,7 @@ These checks validate the credential boundary without contacting AWS or GitHub.
 Live release evidence remains the responsibility of deploy.provenance.
 """
 import ast
+from contextlib import contextmanager
 import hashlib
 import io
 import json
@@ -17,7 +18,7 @@ from unittest.mock import Mock, patch
 
 import yaml
 
-from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH
+from deploy.provenance import FARGATE_REQUIRED_JOBS, Gate, REPOSITORY, WORKFLOW_PATH
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / '.github/workflows/deploy-fargate.yml'
@@ -41,6 +42,34 @@ def workflow_program(step_id='admission'):
 
 def workflow_admission():
     return workflow_program()
+
+
+def reviewed_config(region='us-east-1'):
+    config = {'environment': 'fargate-development', 'account': '738470137867',
+              'region': region, 'alarmEmail': 'operator@otgd.test', 'monthlyBudgetUsd': 100,
+              'releaseId': 'b' * 40, 'plannedMonthlyUsers': 10,
+              'costEstimatePath': ('infra/costs/regional-fargate-estimate.json' if region == 'us-east-1'
+                                   else 'infra/costs/fargate-estimate.json')}
+    if region == 'us-east-1':
+        config['backupRegion'] = 'us-west-2'
+    return config
+
+
+@contextmanager
+def configuration_fixture(config, environment=None):
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        with patch.dict(os.environ, {'GITHUB_SHA': REVISION, 'GITHUB_OUTPUT': str(root / 'output'),
+                                    'GITHUB_ENV': str(root / 'environment'), **(environment or {})}, clear=True):
+            previous = Path.cwd()
+            try:
+                os.chdir(root)
+                Path('infra/config').mkdir(parents=True)
+                Path('.local/fargateconfig').mkdir(parents=True)
+                Path('infra/config/fargate.example.json').write_text(json.dumps(config))
+                yield root
+            finally:
+                os.chdir(previous)
 
 
 def gate_run(run_id, *, conclusion='success', status='completed', **changes):
@@ -248,7 +277,8 @@ class FargateWorkflowTest(unittest.TestCase):
             finally:
                 os.chdir(previous)
         clean.assert_called_once_with(REVISION)
-        verify.assert_called_once_with(Path('.local/fargateconfig/gates/gates.json'), REVISION)
+        verify.assert_called_once_with(Path('.local/fargateconfig/gates/gates.json'), REVISION,
+                                       required_jobs=FARGATE_REQUIRED_JOBS)
         self.assertIn('20', downloaded.call_args.args[0])
         self.assertIn('exact-revision-merge-evidence', downloaded.call_args.args[0])
 
@@ -288,6 +318,9 @@ class FargateWorkflowTest(unittest.TestCase):
         self.assertEqual(self.workflow['permissions'], {'contents': 'read', 'actions': 'read'})
         self.assertIn("github.ref == 'refs/heads/main'", self.workflow['jobs']['deploy']['if'])
         self.assertFalse(self.workflow['concurrency']['cancel-in-progress'])
+        self.assertEqual(self.workflow['concurrency']['group'], 'otgd-fargate-development-738470137867')
+        self.assertNotIn('AWS_REGION', self.workflow['jobs']['deploy']['env'])
+        self.assertNotIn('AWS_DEFAULT_REGION', self.workflow['jobs']['deploy']['env'])
         self.assertEqual(self.workflow['jobs']['deploy']['timeout-minutes'], 150)
         trigger = self.workflow.get('on', self.workflow.get(True))
         self.assertEqual(set(trigger), {'workflow_dispatch'})
@@ -300,6 +333,12 @@ class FargateWorkflowTest(unittest.TestCase):
         self.assertEqual(credentials['aws-access-key-id'], '${{ secrets.ACCESS_KEY_ID }}')
         self.assertEqual(credentials['aws-secret-access-key'], '${{ secrets.SECRET_ACCESS_KEY }}')
         self.assertEqual(credentials['allowed-account-ids'], '738470137867')
+        self.assertEqual(credentials['aws-region'], '${{ steps.configuration.outputs.region }}')
+        target = next(step for step in steps if 'deploy/check_access.py' in step.get('run', ''))
+        self.assertEqual(target['env']['PRIMARY_REGION'], '${{ steps.configuration.outputs.region }}')
+        self.assertIn('--region "$PRIMARY_REGION"', target['run'])
+        configuration = next(step for step in steps if step.get('id') == 'configuration')
+        self.assertIn("uv run --project services/api python - <<'PYCODE'", configuration['run'])
         self.assertFalse(credentials['output-credentials'])
         self.assertTrue(credentials['force-skip-oidc'])
         for step in steps:
@@ -308,29 +347,39 @@ class FargateWorkflowTest(unittest.TestCase):
 
     def test_configuration_stamps_exact_source_and_rejects_another_account_or_budget(self):
         _, source = workflow_source('configuration')
-        base = {'environment': 'fargate-development', 'account': '738470137867',
-                'region': 'us-east-2', 'monthlyBudgetUsd': 100, 'releaseId': 'b' * 40}
-        for changes in ({}, {'account': '111111111111'}, {'monthlyBudgetUsd': 50},
-                        {'monthlyBudgetUsd': 100.01}, {'environment': 'serverless-development'}):
-            with self.subTest(changes=changes), tempfile.TemporaryDirectory() as directory, \
-                    patch.dict(os.environ, {'GITHUB_SHA': REVISION}, clear=True):
-                previous = Path.cwd()
-                try:
-                    os.chdir(directory)
-                    Path('infra/config').mkdir(parents=True)
-                    Path('.local/fargateconfig').mkdir(parents=True)
-                    Path('infra/config/fargate.example.json').write_text(json.dumps({**base, **changes}))
+        for region in ('us-east-1', 'us-east-2'):
+            for changes in ({}, {'account': '111111111111'}, {'monthlyBudgetUsd': 50},
+                            {'monthlyBudgetUsd': 100.01}, {'environment': 'serverless-development'}):
+                with self.subTest(region=region, changes=changes), \
+                        configuration_fixture({**reviewed_config(region), **changes}) as directory:
                     if changes:
-                        with self.assertRaises(SystemExit):
+                        with self.assertRaises((SystemExit, Gate)):
                             exec(compile(ast.parse(source), str(WORKFLOW), 'exec'), {'__name__': 'configuration_fixture'})
                         self.assertFalse(Path('.local/fargateconfig/fargate.json').exists())
+                        self.assertFalse((directory / 'output').exists())
+                        self.assertFalse((directory / 'environment').exists())
                     else:
                         exec(compile(ast.parse(source), str(WORKFLOW), 'exec'), {'__name__': 'configuration_fixture'})
                         actual = json.loads(Path('.local/fargateconfig/fargate.json').read_text())
-                        self.assertEqual(actual['releaseId'], REVISION)
-                        self.assertEqual(actual['monthlyBudgetUsd'], 100)
-                finally:
-                    os.chdir(previous)
+                        self.assertEqual(actual, {**reviewed_config(region), 'releaseId': REVISION})
+                        self.assertEqual((directory / 'output').read_text(), f'region={region}\n')
+                        self.assertEqual((directory / 'environment').read_text(),
+                                         f'AWS_REGION={region}\nAWS_DEFAULT_REGION={region}\n')
+
+    def test_configuration_rejects_unsupported_regional_layout_before_credential_exports(self):
+        _, source = workflow_source('configuration')
+        base = reviewed_config()
+        invalid = [{key: value for key, value in base.items() if key != 'backupRegion'},
+                   {**base, 'backupRegion': 'us-east-2'}, {**base, 'region': 'us-west-2'},
+                   {**base, 'region': 'us-east-2'}, {**base, 'region': 'eu-west-1'},
+                   {**base, 'awsSecretAccessKey': 'fictional-sensitive-key'}]
+        for config in invalid:
+            with self.subTest(region=config['region']), configuration_fixture(config) as directory:
+                with self.assertRaises(Gate):
+                    exec(compile(ast.parse(source), str(WORKFLOW), 'exec'), {'__name__': 'configuration_fixture'})
+                self.assertFalse(Path('.local/fargateconfig/fargate.json').exists())
+                self.assertFalse((directory / 'output').exists())
+                self.assertFalse((directory / 'environment').exists())
 
     def test_recovery_identifiers_and_paths_are_separate_cli_arguments_without_credentials(self):
         _, source = workflow_source('deployment')
@@ -368,6 +417,9 @@ class FargateWorkflowTest(unittest.TestCase):
             'reports/fargate-plan.json', 'reports/fargate-deploy.json',
             '.local/deploy/fargate-development/**/deployment.json',
             '.local/deploy/fargate-development/**/deployment-state.json',
+            '.local/deploy/fargate-development/**/regional-backup.json',
+            '.local/deploy/fargate-development/**/regional-backup-configuration.json',
+            '.local/deploy/fargate-development/**/regional-backup-initial-copy.json',
             '.local/deploy/fargate-development/**/initial-recovery.json',
             '.local/deploy/fargate-development/**/initial-resume.json',
             '.local/deploy/fargate-development/**/uninitialized-continuation.json',

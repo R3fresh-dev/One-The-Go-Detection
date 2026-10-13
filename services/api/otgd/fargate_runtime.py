@@ -58,8 +58,8 @@ def _uuid(value):
 def _metadata_identity():
     account = os.environ.get("OTGD_DEPLOYMENT_ACCOUNT", "")
     region = os.environ.get("OTGD_AWS_REGION", os.environ.get("AWS_REGION", ""))
-    if not re.fullmatch(r"[0-9]{12}", account) or region != "us-east-2":
-        raise ValueError("The reviewed Ohio deployment identity is required")
+    if not re.fullmatch(r"[0-9]{12}", account) or region not in ("us-east-1", "us-east-2"):
+        raise ValueError("The reviewed application deployment identity is required")
     return account, region
 
 
@@ -408,13 +408,13 @@ def _task_arn():
 
 
 def _receipt_configuration():
-    account, _ = _metadata_identity()
+    account, region = _metadata_identity()
     source = os.environ.get("OTGD_SOURCE_REVISION", "")
     bucket = os.environ.get("OTGD_FARGATE_RECEIPT_BUCKET", "")
     key = os.environ.get("OTGD_FARGATE_RECEIPT_KEY", "")
     if not re.fullmatch(r"[0-9a-f]{40}", source):
         raise ValueError("An immutable task source revision is required")
-    if bucket != f"{PREFIX}-{account}-us-east-2-deployments":
+    if bucket != f"{PREFIX}-{account}-{region}-deployments":
         raise ValueError("The owned private deployment receipt bucket is required")
     if not re.fullmatch(re.escape("receipts/" + source + "/")
             + r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.json", key):

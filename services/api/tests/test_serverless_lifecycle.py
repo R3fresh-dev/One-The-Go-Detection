@@ -135,12 +135,13 @@ def test_dispose_database_never_instantiates_a_missing_engine(monkeypatch):
     engine.return_value.dispose.assert_called_once_with()
 
 
-def secret_environment(monkeypatch, *, maintenance=False):
+def secret_environment(monkeypatch, *, maintenance=False, region='us-east-2', executor='lambda'):
     monkeypatch.setattr(lifecycle, '_secret_binding', None)
     monkeypatch.setenv('OTGD_SERVERLESS_MODE', 'true')
-    monkeypatch.setenv('OTGD_AWS_REGION', 'us-east-2')
+    monkeypatch.setenv('OTGD_AWS_REGION', region)
+    monkeypatch.setenv('OTGD_SERVERLESS_EXECUTOR', executor)
     monkeypatch.setenv('OTGD_DEPLOYMENT_ACCOUNT', '123456789012')
-    prefix = 'arn:aws:secretsmanager:us-east-2:123456789012:secret:'
+    prefix = f'arn:aws:secretsmanager:{region}:123456789012:secret:'
     monkeypatch.setenv('OTGD_DATABASE_SECRET_ARN', prefix + ('admin' if maintenance else 'app'))
     monkeypatch.setenv('OTGD_TOMBSTONE_SECRET_ARN', prefix + 'tombstone')
     monkeypatch.setenv('OTGD_DATABASE_USER', 'otgd_migrator' if maintenance else 'otgd_app')
@@ -157,8 +158,9 @@ def secret_environment(monkeypatch, *, maintenance=False):
 
 
 @pytest.mark.parametrize('maintenance', [False, True])
-def test_secret_references_load_atomically_before_settings_and_are_role_separated(monkeypatch, maintenance, capsys):
-    prefix = secret_environment(monkeypatch, maintenance=maintenance)
+@pytest.mark.parametrize('region,executor', [('us-east-2','lambda'),('us-east-2','ecs'),('us-east-1','ecs')])
+def test_secret_references_load_atomically_before_settings_and_are_role_separated(monkeypatch, maintenance, capsys, region, executor):
+    prefix = secret_environment(monkeypatch, maintenance=maintenance, region=region, executor=executor)
     client = Mock()
     values = {
         prefix + 'app': {'username': 'otgd_app', 'password': 'app-fictional-password'},
@@ -177,13 +179,23 @@ def test_secret_references_load_atomically_before_settings_and_are_role_separate
     else:
         assert 'OTGD_APP_DATABASE_PASSWORD' not in os.environ
     call = create.call_args
-    assert call.kwargs['endpoint_url'] == 'https://secretsmanager.us-east-2.amazonaws.com'
+    assert call.kwargs['endpoint_url'] == f'https://secretsmanager.{region}.amazonaws.com'
     assert call.kwargs['config'].use_dualstack_endpoint is False
     assert call.kwargs['config'].ignore_configured_endpoint_urls is True
     assert capsys.readouterr() == ('', '')
     count = client.get_secret_value.call_count
     lifecycle.load_runtime_secrets()
     assert client.get_secret_value.call_count == count
+
+
+@pytest.mark.parametrize('region,executor', [('us-east-1','lambda'),('us-west-2','ecs'),('us-east-1','other')])
+def test_secret_loader_rejects_unreviewed_region_executor_before_provider_access(monkeypatch, region, executor):
+    secret_environment(monkeypatch,region=region,executor=executor)
+    create=Mock()
+    monkeypatch.setattr(lifecycle.boto3,'client',create)
+    with pytest.raises(RuntimeError,match='secret initialization'):
+        lifecycle.load_runtime_secrets()
+    create.assert_not_called()
 
 
 @pytest.mark.parametrize('failure', ['foreign-account', 'malformed', 'wrong-user', 'bad-key', 'provider'])

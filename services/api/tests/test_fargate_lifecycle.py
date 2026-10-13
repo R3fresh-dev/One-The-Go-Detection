@@ -13,9 +13,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 
 
-def cloud_values():
+def cloud_values(region='us-east-2'):
     account='123456789012'
-    return {'environment':'qa','deployment_account':account,'source_revision':'a'*40,
+    values = {'environment':'qa','deployment_account':account,'source_revision':'a'*40,
         'serverless_mode':True,'serverless_executor':'ecs','serverless_control_table':'otgd-serverless-development-control',
         'serverless_queue_visibility':1200,'database_sslmode':'verify-full','database_sslrootcert':'/approved/rds-ca.pem',
         'issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','jwks_url':'https://cognito-idp.us-east-2.amazonaws.com/pool/keys',
@@ -27,6 +27,14 @@ def cloud_values():
         'ecs_worker_task_definition_arn':'arn:aws:ecs:us-east-2:'+account+':task-definition/otgd-serverless-development-worker:7',
         'ecs_subnet_ids':['subnet-0123456789abcdef0','subnet-1123456789abcdef0'],
         'ecs_security_group_ids':['sg-0123456789abcdef0']}
+    values['aws_region'] = region
+    if region == 'us-east-1':
+        values.update(backup_region='us-west-2',
+            backup_artifact_bucket=f'otgd-fargate-recovery-{account}-us-west-2-artifacts',
+            backup_export_bucket=f'otgd-fargate-recovery-{account}-us-west-2-exports',
+            backup_kms_key_id=f'arn:aws:kms:us-west-2:{account}:key/00000000-0000-4000-8000-000000000001')
+    return {key: value.replace('us-east-2', region) if isinstance(value, str) else value
+            for key, value in values.items()}
 
 
 def request(path='/v1/export', method='GET'):
@@ -50,6 +58,20 @@ def test_ecs_configuration_reads_json_network_and_needs_no_lambda_target(monkeyp
     # self-referencing task definition and unnecessary launch authority.
     minimal={key:value for key,value in values.items() if not key.startswith('ecs_')}
     assert config.Settings(**minimal).ecs_worker_task_definition_arn is None
+
+
+def test_east1_ecs_settings_bind_only_same_region_targets_and_do_not_expand_lambda():
+    values=cloud_values('us-east-1')
+    assert config.Settings(**values).aws_region=='us-east-1'
+    for changes in ({'aws_region':'us-west-2'}, {'ecs_cluster_arn':cloud_values()['ecs_cluster_arn']},
+            {'ecs_worker_task_definition_arn':cloud_values()['ecs_worker_task_definition_arn']},
+            {'serverless_executor':'lambda'}, {'backup_region':'us-east-2'},
+            {'backup_artifact_bucket':'unowned'}, {'backup_export_bucket':None},
+            {'backup_kms_key_id':'arn:aws:kms:us-west-2:987654321098:key/00000000-0000-4000-8000-000000000001'}):
+        with pytest.raises(ValueError):
+            config.Settings(**{**values,**changes})
+    with pytest.raises(ValueError):
+        config.Settings(**{**cloud_values(),'backup_region':'us-west-2'})
 
 
 @pytest.mark.parametrize('field,value',[

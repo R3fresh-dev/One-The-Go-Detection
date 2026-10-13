@@ -668,7 +668,6 @@ def cleanup_once():
                 .where(
                     Job.kind == "export",
                     Job.expires < tick,
-                    Job.state != "expired",
                     Job.cleanup_next_at <= tick,
                 )
                 .order_by(Job.cleanup_next_at, Job.id)

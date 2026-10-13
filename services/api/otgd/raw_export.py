@@ -355,15 +355,20 @@ def delete_versions_for_prefix(s3, prefix):
     """Storage helper uses a passed client so cleanup tests prove exact calls."""
     from .config import settings
     bucket = settings().export_bucket
+    from .replica_cleanup import prepare_delete
     versions = []
+    replica_rows = []
     for page in s3.get_paginator("list_object_versions").paginate(Bucket=bucket, Prefix=prefix):
         for item in page.get("Versions", [])+page.get("DeleteMarkers", []):
             version = item.get("VersionId")
             if not item["Key"].startswith(prefix) or not version or version == "null":
                 raise Problem(503, "RAW_EXPORT_CLEANUP_INVALID")
             versions.append((item["Key"], version))
+            replica_rows.append({"Key": item["Key"], "VersionId": version,
+                "DeleteMarker": item in page.get("DeleteMarkers", [])})
             if len(versions) > 10000:
                 raise Problem(503, "RAW_EXPORT_CLEANUP_LIMIT")
+    prepare_delete(s3, bucket, prefix, replica_rows)
     for key, version in versions:
         s3.delete_object(Bucket=bucket, Key=key, VersionId=version)
     for page in s3.get_paginator("list_object_versions").paginate(Bucket=bucket, Prefix=prefix):

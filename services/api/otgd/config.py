@@ -51,6 +51,10 @@ class Settings(BaseSettings):
     artifact_bucket: str = "otgd-local-artifacts"
     export_bucket: str = "otgd-local-exports"
     journal_bucket: str = "otgd-local-deletion-journal"
+    backup_region: str | None = None
+    backup_artifact_bucket: str | None = None
+    backup_export_bucket: str | None = None
+    backup_kms_key_id: str | None = None
     queue_url: str = ""
     dlq_url: str = ""
     tombstone_key: str = ""
@@ -87,9 +91,20 @@ class Settings(BaseSettings):
             )
         if not 1 <= self.database_pool_size <= 5:
             raise ValueError("Database pool outside reviewed capacity")
+        backup = (self.backup_region, self.backup_artifact_bucket, self.backup_export_bucket, self.backup_kms_key_id)
+        east1 = self.serverless_mode and self.serverless_executor == 'ecs' and self.aws_region == 'us-east-1'
+        if east1 or any(value is not None for value in backup):
+            prefix = f'otgd-fargate-recovery-{self.deployment_account}-us-west-2-'
+            key = r'arn:aws:kms:us-west-2:' + re.escape(self.deployment_account or '') + r':key/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}'
+            if (not east1 or self.backup_region != 'us-west-2'
+                    or self.backup_artifact_bucket != prefix + 'artifacts'
+                    or self.backup_export_bucket != prefix + 'exports'
+                    or not isinstance(self.backup_kms_key_id, str) or not re.fullmatch(key, self.backup_kms_key_id)):
+                raise ValueError('The East1 ECS runtime requires its exact same-account West2 replica-erasure targets')
         if self.serverless_mode:
-            if self.environment not in ("qa", "prod") or self.aws_region != "us-east-2":
-                raise ValueError("Serverless cloud runtime requires its reviewed Ohio environment")
+            regions = ("us-east-1", "us-east-2") if self.serverless_executor == "ecs" else ("us-east-2",)
+            if self.environment not in ("qa", "prod") or self.aws_region not in regions:
+                raise ValueError("Cloud runtime requires its reviewed application region and executor")
             if not re.fullmatch(r"[A-Za-z0-9_.-]{3,255}", self.serverless_control_table or ""):
                 raise ValueError("Serverless runtime requires its actual control table")
             if not 120 <= self.serverless_queue_visibility <= 43200:
@@ -102,11 +117,11 @@ class Settings(BaseSettings):
                 # Launch targets are absent from worker/migration roles; a
                 # task definition cannot reference itself in its environment.
                 # The metadata-only launcher requires the complete tuple.
-                target = r"arn:aws:ecs:us-east-2:" + re.escape(self.deployment_account or "")
+                target = r"arn:aws:ecs:" + re.escape(self.aws_region) + ":" + re.escape(self.deployment_account or "")
                 if self.ecs_cluster_arn is not None and not re.fullmatch(
                     target + r":cluster/otgd-serverless-development", self.ecs_cluster_arn
                 ):
-                    raise ValueError("ECS cluster must target the owned Ohio account")
+                    raise ValueError("ECS cluster must target the owned application account and region")
                 if self.ecs_worker_task_definition_arn is not None and not re.fullmatch(
                     target + r":task-definition/otgd-serverless-development-worker:[1-9][0-9]{0,9}",
                     self.ecs_worker_task_definition_arn

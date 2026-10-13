@@ -1,7 +1,7 @@
 """First-stack recovery contracts; these fixtures are not AWS acceptance proof."""
 from collections import OrderedDict
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -174,7 +174,8 @@ class FakeCloud:
         for client in self.clients.values():
             for forbidden in ('get_secret_value', 'delete_bucket', 'delete_user_pool', 'delete_table',
                               'delete_secret', 'schedule_key_deletion', 'delete_log_group', 'get_object',
-                              'create_key', 'create_secret', 'create_bucket', 'create_table', 'create_user_pool'):
+                              'create_key', 'create_secret', 'create_bucket', 'create_table', 'create_user_pool',
+                              'modify_db_subnet_group', 'delete_db_cluster', 'delete_db_instance'):
                 getattr(client, forbidden).assert_not_called()
 
     def detached_manifest(self, directory):
@@ -953,7 +954,8 @@ class ContinuationCloud(FakeCloud):
         resources = json.loads(kwargs['TemplateBody'])['Resources']
         old = {'AWS::KMS::Key': 'KeyId', 'AWS::SecretsManager::Secret': 'Id',
             'AWS::S3::Bucket': 'BucketName', 'AWS::DynamoDB::Table': 'TableName',
-            'AWS::Cognito::UserPool': 'UserPoolId', 'AWS::Logs::LogGroup': 'LogGroupName'}
+            'AWS::Cognito::UserPool': 'UserPoolId', 'AWS::Logs::LogGroup': 'LogGroupName',
+            'AWS::EC2::Subnet': 'SubnetId'}
         return {'ResourceIdentifierSummaries': [{'ResourceType': resource['Type'],
             'LogicalResourceIds': [name], 'ResourceIdentifiers': [','.join(recovery.DATABASE_IMPORT_IDS[name][1])
                 if name in recovery.DATABASE_IMPORT_IDS else old[resource['Type']]]}
@@ -1013,12 +1015,16 @@ class ContinuationCloud(FakeCloud):
             'DBClusterParameterGroup': p['DatabaseParameters'], 'DBSubnetGroup': p['DatabaseSubnets'],
             'DbClusterResourceId': 'cluster-unique-fixture', 'ClusterCreateTime': '2020-01-01T00:02:00Z',
             'VpcSecurityGroups': [{'VpcSecurityGroupId': p['DatabaseSecurityGroup'], 'Status': 'active'}], 'TagList': self.tags}
-        group = {'DBSubnetGroupName': p['DatabaseSubnets'], 'DBSubnetGroupArn': 'group-arn',
+        group = {'DBSubnetGroupName': p['DatabaseSubnets'],
+            'DBSubnetGroupArn': f'arn:aws:rds:{REGION}:{ACCOUNT}:subgrp:{p["DatabaseSubnets"]}',
             'SubnetGroupStatus': 'Complete', 'VpcId': p['Network'], 'Subnets': [
-                {'SubnetIdentifier': item, 'SubnetStatus': 'Active'} for item in (p['PrivateA'], self.deleted_subnet)]}
+                {'SubnetIdentifier': item, 'SubnetStatus': 'Active', 'SubnetAvailabilityZone': {'Name': REGION + zone}}
+                for item, zone in ((p['PrivateA'], 'a'), (self.deleted_subnet, 'b'))]}
+        self.subnet_group = group
         self.writer = {'DBInstanceIdentifier': p['DatabaseWriter'], 'DBInstanceArn': f'arn:aws:rds:{REGION}:{ACCOUNT}:db:{p["DatabaseWriter"]}',
             'DBInstanceStatus': 'available', 'Engine': 'aurora-postgresql', 'EngineVersion': '16.15',
             'DBInstanceClass': 'db.serverless', 'DBClusterIdentifier': p['Database'], 'PubliclyAccessible': False,
+            'AvailabilityZone': REGION + 'a',
             'AutoMinorVersionUpgrade': False, 'StorageEncrypted': True, 'KmsKeyId': key,
             'DbiResourceId': 'db-unique-fixture', 'InstanceCreateTime': '2020-01-01T00:05:00Z',
             'DBSubnetGroup': group, 'TagList': self.tags}
@@ -1040,10 +1046,16 @@ class ContinuationCloud(FakeCloud):
             'AvailabilityZone': REGION + 'a', 'Tags': self.tags, 'Ipv6CidrBlockAssociationSet': [
                 {'Ipv6CidrBlock': '2600:1f16:1d94:dd00::/64', 'Ipv6CidrBlockState': {'State': 'associated'}}]}
         ec2.describe_vpcs.side_effect = lambda **kwargs: {'Vpcs': [self.vpc]}
+        self.live_subnets = [self.subnet]
         def subnets(**kwargs):
-            if kwargs['SubnetIds'] == [self.deleted_subnet]:
+            if kwargs.get('SubnetIds') == [self.deleted_subnet]:
                 raise absent('InvalidSubnetID.NotFound')
-            return {'Subnets': [self.subnet]}
+            if 'SubnetIds' in kwargs:
+                found = [row for row in self.live_subnets if row['SubnetId'] in kwargs['SubnetIds']]
+                if len(found) != len(kwargs['SubnetIds']):
+                    raise absent('InvalidSubnetID.NotFound')
+                return {'Subnets': found}
+            return {'Subnets': self.live_subnets}
         ec2.describe_subnets.side_effect = subnets
         ec2.describe_vpc_attribute.side_effect = lambda **kwargs: {'VpcId': p['Network'],
             kwargs['Attribute'][0].upper() + kwargs['Attribute'][1:]: {'Value': True}}
@@ -1056,6 +1068,479 @@ class ContinuationCloud(FakeCloud):
             {'GroupId': p['LambdaSecurityGroup'], 'VpcId': p['Network'], 'OwnerId': ACCOUNT, 'Tags': self.tags,
              'IpPermissions': [], 'IpPermissionsEgress': [rule(443, 'IpRanges', '0.0.0.0/0'), rule(443, 'Ipv6Ranges', '::/0')]}]
         ec2.describe_security_groups.side_effect = lambda **kwargs: {'SecurityGroups': self.groups}
+
+
+class RepairContinuationCloud(ContinuationCloud):
+    """An authenticated failed import with its original database still intact."""
+    def __init__(self, directory):
+        super().__init__(directory)
+        self.current_rows = [row for row in self.current_rows if row['LogicalResourceId'] in self.physical]
+        source, digest = self.write_bundle()
+        raw = source.read_text()
+        with patch.object(recovery, '_historical_builder', return_value=build_template):
+            previous = recovery.uninitialized_continuation_plan(self.aws, self.config, source, digest)
+        self.previous_release = self.config['releaseId']
+        previous.update(status='blocked-recovery-inspect-protected-journal-before-retry',
+            failed_phase='surviving-database-import-executing',
+            failure_type='WaiterError', import_change_set_id=
+                f'arn:aws:cloudformation:{REGION}:{ACCOUNT}:changeSet/uninitialized-import-previous/failed-fixture')
+        self.bundle['previous_recovery'] = {
+            'run_id': 456, 'run_attempt': 1, 'release_id': self.previous_release, 'artifact_sha256': 'f' * 64,
+            'run_started_at': '2020-01-01T01:10:00Z', 'run_completed_at': '2020-01-01T01:20:00Z',
+            'source_bundle_raw': raw, 'continuation_raw': json.dumps(previous),
+            'deployment_state_raw': json.dumps({'schema_version': '1.0.0',
+                'environment': 'fargate-development', 'account': ACCOUNT, 'region': REGION,
+                'release_id': self.previous_release, 'status': 'failed',
+                'current_stage': 'continue-uninitialized-retained-resources',
+                'failed_stage': 'continue-uninitialized-retained-resources',
+                'completed_stages': [], 'completed_receipts': {}, 'rollback_executed': False})}
+        self.config['releaseId'] = 'e' * 40
+        self.status = 'IMPORT_ROLLBACK_COMPLETE'
+        self.current_rows = [row for row in self.current_rows if row['LogicalResourceId'] in self.physical]
+        self.current_events += [{'LogicalResourceId': recovery.STACK, 'ResourceType': 'AWS::CloudFormation::Stack',
+            'PhysicalResourceId': NEW_STACK, 'ResourceStatus': status, 'Timestamp': timestamp}
+            for status, timestamp in (('IMPORT_IN_PROGRESS', '2020-01-01T01:11:00Z'),
+                                       ('IMPORT_ROLLBACK_COMPLETE', '2020-01-01T01:19:00Z'))]
+        self.repaired_subnet_id = 'subnet-b-repaired'
+        self.update_changes = [{'ResourceChange': {'Action': 'Add', 'LogicalResourceId': 'PrivateB',
+            'ResourceType': 'AWS::EC2::Subnet'}}]
+        cf = self.clients['cloudformation']
+        cf.create_change_set.side_effect = lambda **kwargs: {'Id':
+            f'arn:aws:cloudformation:{REGION}:{ACCOUNT}:changeSet/{kwargs["ChangeSetType"].lower()}/fixture'}
+        self.clients['rds'].modify_db_subnet_group.side_effect = self.modify_membership
+
+    def write_bundle(self):
+        # Source packets may include previous source packets; their separate
+        # bounded input size is larger than the individual phase receipt limit.
+        self.bundle_path.write_text(json.dumps(self.bundle, indent=2, sort_keys=True) + '\n')
+        self.bundle_path.chmod(0o600)
+        return self.bundle_path, hashlib.sha256(self.bundle_path.read_bytes()).hexdigest()
+
+    def seal_failed_attempt(self, journal, started_at, completed_at):
+        self.bundle['previous_recovery'] = {
+            'run_id': 789, 'run_attempt': 1, 'release_id': self.config['releaseId'], 'artifact_sha256': 'a' * 64,
+            'run_started_at': started_at.isoformat(), 'run_completed_at': completed_at.isoformat(),
+            'source_bundle_raw': self.bundle_path.read_text(), 'continuation_raw': json.dumps(journal),
+            'deployment_state_raw': json.dumps({'schema_version': '1.0.0',
+                'environment': 'fargate-development', 'account': ACCOUNT, 'region': REGION,
+                'release_id': self.config['releaseId'], 'status': 'failed',
+                'current_stage': 'continue-uninitialized-retained-resources',
+                'failed_stage': 'continue-uninitialized-retained-resources',
+                'completed_stages': [], 'completed_receipts': {}, 'rollback_executed': False})}
+        self.config['releaseId'] = 'f' * 40
+
+    def continuation_paginator(self, operation):
+        if operation == 'describe_change_set':
+            def paginate(**kwargs):
+                request = self.clients['cloudformation'].create_change_set.call_args.kwargs
+                return [{'Changes': self.update_changes if request['ChangeSetType'] == 'UPDATE' else self.changes}]
+            return SimpleNamespace(paginate=paginate)
+        return super().continuation_paginator(operation)
+
+    def continuation_waiter(self, name):
+        if name == 'stack_import_complete':
+            actual = super().continuation_waiter(name)
+            def imported(**kwargs):
+                request = self.clients['cloudformation'].execute_change_set.call_args.kwargs
+                assert request['ChangeSetName'] == f'arn:aws:cloudformation:{REGION}:{ACCOUNT}:changeSet/import/fixture'
+                actual.wait(**kwargs)
+            return SimpleNamespace(wait=imported)
+        if name != 'stack_update_complete':
+            return super().continuation_waiter(name)
+        def wait(**kwargs):
+            cf = self.clients['cloudformation']
+            request = cf.create_change_set.call_args.kwargs
+            assert cf.execute_change_set.call_args.kwargs['ChangeSetName'] == (
+                f'arn:aws:cloudformation:{REGION}:{ACCOUNT}:changeSet/update/fixture')
+            template = json.loads(request['TemplateBody'])
+            resource = template['Resources']['PrivateB']
+            props = resource['Properties']
+            self.current_template = deepcopy(template)
+            self.status = 'UPDATE_COMPLETE'
+            self.graph['PrivateB'] = self.repaired_subnet_id
+            self.current_rows.append({'LogicalResourceId': 'PrivateB', 'ResourceType': 'AWS::EC2::Subnet',
+                'PhysicalResourceId': self.repaired_subnet_id, 'ResourceStatus': 'CREATE_COMPLETE'})
+            self.live_subnets.append({'SubnetId': self.repaired_subnet_id, 'VpcId': props['VpcId'],
+                'OwnerId': ACCOUNT,
+                'State': 'available', 'CidrBlock': props['CidrBlock'], 'MapPublicIpOnLaunch': props['MapPublicIpOnLaunch'],
+                'AssignIpv6AddressOnCreation': props['AssignIpv6AddressOnCreation'],
+                'AvailabilityZone': props['AvailabilityZone'], 'Tags': deepcopy(props['Tags']) + [
+                    {'Key': 'aws:cloudformation:stack-id', 'Value': NEW_STACK},
+                    {'Key': 'aws:cloudformation:logical-id', 'Value': 'PrivateB'}],
+                'Ipv6CidrBlockAssociationSet': [{'Ipv6CidrBlock': props['Ipv6CidrBlock'],
+                    'Ipv6CidrBlockState': {'State': 'associated'}}]})
+            token = cf.execute_change_set.call_args.kwargs['ClientRequestToken']
+            timestamp = datetime.now(timezone.utc)
+            self.current_events += [{'LogicalResourceId': logical, 'ResourceType': kind, 'PhysicalResourceId': physical,
+                'ResourceStatus': status, 'Timestamp': timestamp, 'ClientRequestToken': token}
+                for logical, kind, physical, status in ((recovery.STACK, 'AWS::CloudFormation::Stack', NEW_STACK, 'UPDATE_IN_PROGRESS'),
+                    ('PrivateB', 'AWS::EC2::Subnet', self.repaired_subnet_id, 'CREATE_COMPLETE'))]
+        return SimpleNamespace(wait=wait)
+
+    def adopt(self, template):
+        previous = {row['LogicalResourceId']: deepcopy(row) for row in self.current_rows}
+        super().adopt(template)
+        for row in self.current_rows:
+            logical = row['LogicalResourceId']
+            if logical in recovery.DATABASE_IMPORT_IDS:
+                row['ResourceStatus'] = 'IMPORT_COMPLETE'
+            else:
+                row['ResourceStatus'] = previous[logical]['ResourceStatus']
+
+    def modify_membership(self, **kwargs):
+        self.subnet_group['Subnets'] = [{'SubnetIdentifier': identifier, 'SubnetStatus': 'Active',
+            'SubnetAvailabilityZone': {'Name': next(row['AvailabilityZone'] for row in self.live_subnets
+                                                   if row['SubnetId'] == identifier)}}
+            for identifier in kwargs['SubnetIds']]
+        return {'DBSubnetGroup': self.subnet_group}
+
+
+class SubnetRepairContinuationTest(unittest.TestCase):
+    def plan(self, cloud):
+        source, digest = cloud.write_bundle()
+        with patch.object(recovery, '_historical_builder', return_value=build_template):
+            return recovery.uninitialized_continuation_plan(cloud.aws, cloud.config, source, digest)
+
+    def run_repair(self, cloud, directory):
+        source, digest = cloud.write_bundle()
+        journal = Path(directory) / 'repaired.json'
+        with patch.object(recovery, '_historical_builder', return_value=build_template):
+            result = recovery.continue_uninitialized(cloud.aws, cloud.config, journal, source, digest)
+        return result, json.loads(journal.read_text())
+
+    def expected_subnet(self, cloud):
+        return {'Type': 'AWS::EC2::Subnet', 'DeletionPolicy': 'Retain', 'UpdateReplacePolicy': 'Retain',
+            'Properties': {'VpcId': cloud.graph['Network'], 'AvailabilityZone': REGION + 'b',
+                'CidrBlock': '10.76.1.0/24', 'Ipv6CidrBlock': '2600:1f16:1d94:dd01::/64',
+                'AssignIpv6AddressOnCreation': True, 'MapPublicIpOnLaunch': False,
+                'Tags': cloud.template['Resources']['PrivateB']['Properties']['Tags']}}
+
+    def test_authenticated_repair_adds_only_missing_private_subnet_then_preserves_database_and_imports_nine(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = RepairContinuationCloud(directory)
+            original_ids = deepcopy(cloud.graph)
+            original_template = deepcopy(cloud.current_template)
+            original_group_arn = cloud.subnet_group['DBSubnetGroupArn']
+            original_cluster = deepcopy(cloud.cluster)
+            original_writer = deepcopy(cloud.writer)
+            self.plan(cloud)
+            cloud.no_mutations(self)
+            result, journal = self.run_repair(cloud, directory)
+            cf, rds = cloud.clients['cloudformation'], cloud.clients['rds']
+            requests = [call.kwargs for call in cf.create_change_set.call_args_list]
+            self.assertEqual([request['ChangeSetType'] for request in requests], ['UPDATE', 'IMPORT'])
+            update = json.loads(requests[0]['TemplateBody'])
+            self.assertEqual(set(update['Resources']), set(original_template['Resources']) | {'PrivateB'})
+            self.assertEqual({name: update['Resources'][name] for name in original_template['Resources']},
+                             original_template['Resources'])
+            self.assertEqual(update['Resources']['PrivateB'], self.expected_subnet(cloud))
+            self.assertTrue(all('Tags' not in request for request in requests))
+            self.assertEqual({item['LogicalResourceId'] for item in requests[1]['ResourcesToImport']},
+                             recovery.DATABASE_IMPORT_IDS.keys())
+            self.assertEqual(len(cloud.current_rows), 25)
+            actual = {row['LogicalResourceId']: row['PhysicalResourceId'] for row in cloud.current_rows}
+            self.assertEqual({name: actual[name] for name in original_ids}, original_ids)
+            self.assertEqual(actual['PrivateB'], cloud.repaired_subnet_id)
+            rds.modify_db_subnet_group.assert_called_once_with(DBSubnetGroupName=original_ids['DatabaseSubnets'],
+                SubnetIds=[original_ids['PrivateA'], cloud.repaired_subnet_id])
+            self.assertEqual(cloud.subnet_group['DBSubnetGroupArn'], original_group_arn)
+            for key in ('DBClusterArn', 'DbClusterResourceId', 'EngineVersion', 'KmsKeyId', 'MasterUserSecret',
+                        'StorageEncrypted', 'DeletionProtection', 'Status', 'DBSubnetGroup'):
+                self.assertEqual(cloud.cluster[key], original_cluster[key])
+            for key in ('DBInstanceArn', 'DbiResourceId', 'EngineVersion', 'KmsKeyId', 'PubliclyAccessible',
+                        'DBInstanceStatus', 'AvailabilityZone', 'DBClusterIdentifier'):
+                self.assertEqual(cloud.writer[key], original_writer[key])
+            self.assertEqual(result['repaired_private_b_resource'], self.expected_subnet(cloud))
+            self.assertEqual(result['repaired_private_b_physical_id'], cloud.repaired_subnet_id)
+            self.assertEqual(journal['repaired_private_b_physical_id'], cloud.repaired_subnet_id)
+            self.assertTrue(journal['private_b_change_set_id'].startswith(f'arn:aws:cloudformation:{REGION}:{ACCOUNT}:changeSet/'))
+            self.assertTrue(journal['private_b_client_request_token'])
+            self.assertTrue(journal['private_b_requested_at'])
+            self.assertEqual(cf.execute_change_set.call_args_list[0].kwargs['ClientRequestToken'],
+                             journal['private_b_client_request_token'])
+            self.assertEqual([call.kwargs['ChangeSetName'] for call in cf.execute_change_set.call_args_list],
+                             [journal['private_b_change_set_id'], journal['import_change_set_id']])
+            self.assertTrue(result['already_adopted'])
+            self.assertFalse(result['journal_established'])
+            self.assertFalse(result['actual_resources_deleted'])
+            cf.delete_stack.assert_not_called()
+            rds.delete_db_cluster.assert_not_called()
+            rds.delete_db_instance.assert_not_called()
+            cloud.clients['secretsmanager'].get_secret_value.assert_not_called()
+
+    def test_completed_import_accepts_only_preexisting_private_b_create_complete_and_preserves_strict_guards(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cloud = RepairContinuationCloud(directory)
+            evidence, journal = self.run_repair(cloud, directory)
+            source, digest = cloud.write_bundle()
+            rows = {row['LogicalResourceId']: row for row in cloud.current_rows}
+            self.assertEqual(len(rows), 25)
+            self.assertEqual(rows['PrivateB']['ResourceStatus'], 'CREATE_COMPLETE')
+            self.assertTrue(all(rows[name]['ResourceStatus'] == 'IMPORT_COMPLETE'
+                                for name in recovery.DATABASE_IMPORT_IDS))
+            self.assertTrue(all(rows[name]['ResourceStatus'] == 'UPDATE_COMPLETE' for name in cloud.physical))
+            with patch.object(recovery, '_historical_builder', return_value=build_template):
+                final = recovery._repair_plan_refresh(cloud.aws, cloud.config, source, digest, evidence)
+                self.assertTrue(final['already_adopted'])
+                self.assertEqual(final['repair_state'], 'adopted')
+                self.assertEqual(final['repaired_private_b_physical_id'], cloud.repaired_subnet_id)
+                for logical in evidence['retained_physical_ids']:
+                    original = rows[logical]['ResourceStatus']
+                    rows[logical]['ResourceStatus'] = 'CREATE_COMPLETE'
+                    with self.subTest(logical=logical), self.assertRaises(Gate):
+                        recovery._repair_plan_refresh(cloud.aws, cloud.config, source, digest, evidence)
+                    rows[logical]['ResourceStatus'] = original
+                for status in ('CREATE_IN_PROGRESS', 'CREATE_FAILED', 'DELETE_SKIPPED', 'UPDATE_IN_PROGRESS',
+                               'IMPORT_IN_PROGRESS', 'DELETE_COMPLETE'):
+                    rows['PrivateB']['ResourceStatus'] = status
+                    with self.subTest(private_b_status=status), self.assertRaises(Gate):
+                        recovery._repair_plan_refresh(cloud.aws, cloud.config, source, digest, evidence)
+                rows['PrivateB']['ResourceStatus'] = 'CREATE_COMPLETE'
+                rows['PrivateB']['PhysicalResourceId'] = 'different-managed-subnet'
+                with self.assertRaises(Gate):
+                    recovery._repair_plan_refresh(cloud.aws, cloud.config, source, digest, evidence)
+                rows['PrivateB']['PhysicalResourceId'] = cloud.repaired_subnet_id
+                event = next(event for event in cloud.current_events if event.get('LogicalResourceId') == 'PrivateB'
+                             and event.get('ResourceStatus') == 'CREATE_COMPLETE')
+                event['ClientRequestToken'] = 'different-request'
+                with self.assertRaises(Gate):
+                    recovery._repair_plan_refresh(cloud.aws, cloud.config, source, digest, evidence)
+            self.assertEqual(cloud.clients['cloudformation'].create_change_set.call_count, 2)
+            self.assertEqual(cloud.clients['cloudformation'].execute_change_set.call_count, 2)
+            cloud.clients['rds'].modify_db_subnet_group.assert_called_once()
+
+    def test_import_rollback_requires_authenticated_previous_packet_and_zero_completed_stages(self):
+        for mode in ('missing-packet', 'unknown-packet-field', 'source-sha', 'prior-phase',
+                     'completed-stage', 'completed-receipt', 'rollback-inferred', 'different-authority'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = RepairContinuationCloud(directory)
+                packet = cloud.bundle['previous_recovery']
+                if mode == 'missing-packet':
+                    del cloud.bundle['previous_recovery']
+                elif mode == 'unknown-packet-field':
+                    packet['unexpected'] = 'field'
+                elif mode in ('source-sha', 'prior-phase', 'different-authority'):
+                    record = json.loads(packet['continuation_raw'])
+                    if mode == 'source-sha':
+                        record['source_bundle_sha256'] = '0' * 64
+                    elif mode == 'prior-phase':
+                        record['failed_phase'] = 'private-b-add-executing'
+                    else:
+                        record['database_snapshot']['cluster_resource_id'] = 'cluster-other-authority'
+                    packet['continuation_raw'] = json.dumps(record)
+                else:
+                    state = json.loads(packet['deployment_state_raw'])
+                    if mode == 'completed-stage':
+                        state['completed_stages'] = ['bootstrap']
+                    elif mode == 'completed-receipt':
+                        state['completed_receipts'] = {'bootstrap.json': {'sha256': 'a' * 64}}
+                    else:
+                        state['rollback_executed'] = True
+                    packet['deployment_state_raw'] = json.dumps(state)
+                with self.assertRaises(Gate):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+
+    def test_private_subnet_update_rejects_any_other_change_before_execution_or_rds_membership_change(self):
+        for mode in ('Modify', 'Remove', 'replacement', 'wrong-type', 'extra-resource', 'duplicate'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = RepairContinuationCloud(directory)
+                change = cloud.update_changes[0]['ResourceChange']
+                if mode in ('Modify', 'Remove'):
+                    change['Action'] = mode
+                elif mode == 'replacement':
+                    change['Replacement'] = 'True'
+                elif mode == 'wrong-type':
+                    change['ResourceType'] = 'AWS::RDS::DBCluster'
+                elif mode == 'extra-resource':
+                    cloud.update_changes.append({'ResourceChange': {'Action': 'Add',
+                        'LogicalResourceId': 'Other', 'ResourceType': 'AWS::EC2::Subnet'}})
+                else:
+                    cloud.update_changes.append(deepcopy(cloud.update_changes[0]))
+                with self.assertRaises(Gate):
+                    self.run_repair(cloud, directory)
+                cloud.clients['cloudformation'].execute_change_set.assert_not_called()
+                cloud.clients['rds'].modify_db_subnet_group.assert_not_called()
+
+    def test_ambiguous_or_foreign_subnet_geometry_and_wrong_database_zone_block_before_update(self):
+        for mode in ('existing-ipv4', 'existing-ipv6', 'wrong-old-zone', 'writer-zone', 'group-arn'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = RepairContinuationCloud(directory)
+                if mode in ('existing-ipv4', 'existing-ipv6'):
+                    other = deepcopy(cloud.subnet)
+                    other['SubnetId'] = 'subnet-unclaimed'
+                    other['CidrBlock'] = '10.76.1.0/24' if mode == 'existing-ipv4' else '10.76.9.0/24'
+                    if mode == 'existing-ipv6':
+                        other['Ipv6CidrBlockAssociationSet'][0]['Ipv6CidrBlock'] = '2600:1f16:1d94:dd01::/64'
+                    cloud.live_subnets.append(other)
+                elif mode == 'wrong-old-zone':
+                    cloud.subnet_group['Subnets'][1]['SubnetAvailabilityZone']['Name'] = REGION + 'a'
+                elif mode == 'writer-zone':
+                    cloud.writer['AvailabilityZone'] = REGION + 'b'
+                else:
+                    cloud.subnet_group['DBSubnetGroupArn'] = f'arn:aws:rds:{REGION}:000000000000:subgrp:foreign'
+                with self.assertRaises(Gate):
+                    self.plan(cloud)
+                cloud.no_mutations(self)
+
+    def test_preserved_subnet_update_requires_token_bound_history_and_exact_private_geometry(self):
+        for mode in ('missing-token', 'wrong-token', 'public-subnet', 'wrong-zone', 'wrong-ipv6',
+                     'changed-authority', 'journal-written', 'owner-id', 'stack-tag', 'logical-tag', 'duplicate-update'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = RepairContinuationCloud(directory)
+                original = cloud.continuation_waiter
+                def waiter(name):
+                    actual = original(name)
+                    def wait(**kwargs):
+                        actual.wait(**kwargs)
+                        if name != 'stack_update_complete':
+                            return
+                        if mode in ('missing-token', 'wrong-token'):
+                            for event in cloud.current_events:
+                                if event.get('PhysicalResourceId') == cloud.repaired_subnet_id:
+                                    if mode == 'missing-token':
+                                        event.pop('ClientRequestToken')
+                                    else:
+                                        event['ClientRequestToken'] = 'different-request'
+                        elif mode == 'changed-authority':
+                            cloud.cluster['DbClusterResourceId'] = 'cluster-other-authority'
+                        elif mode == 'journal-written':
+                            cloud.clients['s3'].list_object_versions.return_value = {
+                                'Versions': [{'Key': 'unexpected-first-anchor'}]}
+                        elif mode == 'duplicate-update':
+                            cloud.current_events.append(deepcopy(next(event for event in cloud.current_events
+                                if event.get('ResourceStatus') == 'UPDATE_IN_PROGRESS' and event.get('ClientRequestToken'))))
+                        else:
+                            subnet = next(row for row in cloud.live_subnets if row['SubnetId'] == cloud.repaired_subnet_id)
+                            if mode == 'public-subnet':
+                                subnet['MapPublicIpOnLaunch'] = True
+                            elif mode == 'wrong-zone':
+                                subnet['AvailabilityZone'] = REGION + 'a'
+                            elif mode == 'owner-id':
+                                subnet['OwnerId'] = '000000000000'
+                            elif mode in ('stack-tag', 'logical-tag'):
+                                key = 'aws:cloudformation:stack-id' if mode == 'stack-tag' else 'aws:cloudformation:logical-id'
+                                next(tag for tag in subnet['Tags'] if tag['Key'] == key)['Value'] = 'different-owner'
+                            else:
+                                subnet['Ipv6CidrBlockAssociationSet'][0]['Ipv6CidrBlock'] = '2600:1f16:1d94:dd02::/64'
+                    return SimpleNamespace(wait=wait)
+                cloud.clients['cloudformation'].get_waiter.side_effect = waiter
+                with self.assertRaises(Gate):
+                    self.run_repair(cloud, directory)
+                cloud.clients['rds'].modify_db_subnet_group.assert_not_called()
+                self.assertEqual(cloud.clients['cloudformation'].execute_change_set.call_count, 1)
+
+    def test_membership_change_cannot_change_group_or_database_authority_before_import(self):
+        for mode in ('group-arn', 'cluster-id', 'writer-id', 'master-secret', 'encryption-key', 'engine'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                cloud = RepairContinuationCloud(directory)
+                original = cloud.modify_membership
+                def modify(**kwargs):
+                    response = original(**kwargs)
+                    if mode == 'group-arn':
+                        cloud.subnet_group['DBSubnetGroupArn'] = 'different-group-arn'
+                    elif mode == 'cluster-id':
+                        cloud.cluster['DbClusterResourceId'] = 'cluster-other-authority'
+                    elif mode == 'writer-id':
+                        cloud.writer['DbiResourceId'] = 'db-other-authority'
+                    elif mode == 'master-secret':
+                        cloud.cluster['MasterUserSecret']['SecretArn'] = f'arn:aws:secretsmanager:{REGION}:{ACCOUNT}:secret:rds!cluster-other'
+                    elif mode == 'encryption-key':
+                        cloud.cluster['KmsKeyId'] = 'different-key'
+                    else:
+                        cloud.cluster['EngineVersion'] = '16.16'
+                    return response
+                cloud.clients['rds'].modify_db_subnet_group.side_effect = modify
+                with self.assertRaises(Gate):
+                    self.run_repair(cloud, directory)
+                requests = [call.kwargs for call in cloud.clients['cloudformation'].create_change_set.call_args_list]
+                self.assertEqual([request['ChangeSetType'] for request in requests], ['UPDATE'])
+                cloud.clients['cloudformation'].delete_stack.assert_not_called()
+
+    def test_authenticated_restart_uses_existing_subnet_binding_or_completed_import_without_duplicate_add(self):
+        for boundary in ('T16', 'group-converged', 'T25'):
+            with self.subTest(boundary=boundary), tempfile.TemporaryDirectory() as directory:
+                cloud = RepairContinuationCloud(directory)
+                started = datetime.now(timezone.utc)
+                cf, rds = cloud.clients['cloudformation'], cloud.clients['rds']
+                create_change_set = cf.create_change_set.side_effect
+                if boundary == 'T16':
+                    rds.modify_db_subnet_group.side_effect = absent('AccessDenied')
+                elif boundary == 'group-converged':
+                    def create(**kwargs):
+                        if kwargs['ChangeSetType'] == 'IMPORT':
+                            raise absent('AccessDenied')
+                        return create_change_set(**kwargs)
+                    cf.create_change_set.side_effect = create
+                else:
+                    original = cloud.continuation_waiter
+                    def waiter(name):
+                        actual = original(name)
+                        def wait(**kwargs):
+                            actual.wait(**kwargs)
+                            if name == 'stack_import_complete':
+                                raise RuntimeError('Unit-test wait lost completion response')
+                        return SimpleNamespace(wait=wait)
+                    cf.get_waiter.side_effect = waiter
+                with self.assertRaises((ClientError, RuntimeError)):
+                    self.run_repair(cloud, directory)
+                completed = datetime.now(timezone.utc)
+                failed = json.loads((Path(directory) / 'repaired.json').read_text())
+                self.assertFalse(failed['journal_established'])
+                self.assertEqual(len(cloud.current_rows), 25 if boundary == 'T25' else 16)
+                if boundary == 'group-converged':
+                    self.assertEqual(failed['failed_phase'], 'surviving-database-import-requesting')
+                    self.assertEqual({row['SubnetIdentifier'] for row in cloud.subnet_group['Subnets']},
+                                     {cloud.graph['PrivateA'], cloud.repaired_subnet_id})
+                cloud.seal_failed_attempt(failed, started, completed)
+                rds.modify_db_subnet_group.side_effect = cloud.modify_membership
+                cf.get_waiter.side_effect = cloud.continuation_waiter
+                cf.create_change_set.side_effect = create_change_set
+                update_count = sum(call.kwargs['ChangeSetType'] == 'UPDATE' for call in cf.create_change_set.call_args_list)
+                imports_before = sum(call.kwargs['ChangeSetType'] == 'IMPORT' for call in cf.create_change_set.call_args_list)
+                membership_before = rds.modify_db_subnet_group.call_count
+                source, digest = cloud.write_bundle()
+                with patch.object(recovery, '_historical_builder', return_value=build_template):
+                    result = recovery.continue_uninitialized(cloud.aws, cloud.config,
+                        Path(directory) / 'restarted.json', source, digest)
+                self.assertEqual(sum(call.kwargs['ChangeSetType'] == 'UPDATE' for call in cf.create_change_set.call_args_list),
+                                 update_count)
+                self.assertEqual(sum(call.kwargs['ChangeSetType'] == 'IMPORT' for call in cf.create_change_set.call_args_list),
+                                 imports_before + (0 if boundary == 'T25' else 1))
+                self.assertEqual(rds.modify_db_subnet_group.call_count, membership_before + (1 if boundary == 'T16' else 0))
+                self.assertEqual(len(cloud.current_rows), 25)
+                self.assertEqual({item['LogicalResourceId'] for item in cf.create_change_set.call_args.kwargs['ResourcesToImport']},
+                                 recovery.DATABASE_IMPORT_IDS.keys())
+                self.assertEqual(result['repaired_private_b_physical_id'], cloud.repaired_subnet_id)
+                self.assertTrue(result['already_adopted'])
+                self.assertFalse(result['journal_established'])
+
+    def test_sealed_resume_cannot_extend_old_request_window_during_current_refresh(self):
+        for status in ('UPDATE_IN_PROGRESS', 'CREATE_COMPLETE'):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as directory:
+                cloud = RepairContinuationCloud(directory)
+                started = datetime.now(timezone.utc)
+                cloud.clients['rds'].modify_db_subnet_group.side_effect = absent('AccessDenied')
+                with self.assertRaises(ClientError):
+                    self.run_repair(cloud, directory)
+                completed = datetime.now(timezone.utc)
+                failed = json.loads((Path(directory) / 'repaired.json').read_text())
+                cloud.seal_failed_attempt(failed, started, completed)
+                source, digest = cloud.write_bundle()
+                with patch.object(recovery, '_historical_builder', return_value=build_template):
+                    resumed = recovery.uninitialized_continuation_plan(cloud.aws, cloud.config, source, digest)
+                    self.assertEqual(resumed['private_b_requested_at'], failed['private_b_requested_at'])
+                    token = failed['private_b_client_request_token']
+                    event = next(event for event in cloud.current_events if event.get('ClientRequestToken') == token
+                                 and event.get('ResourceStatus') == status)
+                    event['Timestamp'] = completed + timedelta(microseconds=1)
+                    self.assertLess(event['Timestamp'], datetime.now(timezone.utc))
+                    with self.assertRaises(Gate):
+                        recovery._repair_plan_refresh(cloud.aws, cloud.config, source, digest, resumed)
+                    with self.assertRaises(Gate):
+                        recovery.uninitialized_continuation_plan(cloud.aws, cloud.config, source, digest)
+                self.assertEqual(cloud.clients['cloudformation'].execute_change_set.call_count, 1)
+                self.assertEqual(cloud.clients['rds'].modify_db_subnet_group.call_count, 1)
 
 
 class UninitializedContinuationTest(unittest.TestCase):

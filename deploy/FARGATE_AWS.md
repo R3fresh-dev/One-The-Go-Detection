@@ -3,17 +3,22 @@
 This is the preferred OnGo deployment process. The frontend, API, workers and
 scheduling run as containers on AWS Fargate. AWS provides the private database,
 identity, queues, encryption and storage. The target is account
-**738470137867**, **us-east-2**, environment **fargate-development**, and a
+**738470137867**, primary **us-east-1**, backup/recovery **us-west-2**,
+environment **fargate-development**, and a
 **$100 monthly budget** with notifications to **jacobtyrawa@mail.com**.
 Resource selection is scoped to OnGo ownership and this account/region.
 Company Generation is outside this deployment's target.
 
-The reviewed low-volume estimate is approximately **$62–$66/month** before
-credits; the published larger-capacity stress cases are approximately
-**$84–$87/month**. These are planning cases, not measured bills or throughput
-claims. Database activity, storage and traffic can change the actual cost.
+Ohio's previous single-region estimate does not qualify this regional layout.
+The deployment cost admission must include East 1 application resources,
+West 2 backup resources and retained Ohio resources within the **$100/month**
+planning budget. Database activity, retained versions, copy traffic and storage
+can change the actual cost. Cost plans do not establish measured bills or throughput.
 The $100 AWS Budget provides alerts; it is not a spending cap. The account must
 have an active AWS Paid Plan to use the retained Aurora configuration.
+The regional budget uses the `project=one-the-go-detection` cost-allocation tag
+across regions. Its configured filter does not prove the billing tag is active
+or that earlier charges are already covered; verify those billing prerequisites.
 
 ## Credentials already configured
 
@@ -34,10 +39,13 @@ identity, encryption, monitoring and budget notifications. Restrict
 `iam:PassRole` to the deployment's task and execution roles. Application tasks
 receive their own runtime role and do not receive the deployment keys.
 An account identity check alone does not establish every deployment permission.
+The credentials action and target check use the primary region from the
+authenticated source configuration. There is no dispatch input that overrides
+the region independently of the reviewed source.
 
 ## Run the preferred deployment workflow
 
-1. Review the change and wait for all mandatory application gates to pass for its
+1. Review the change and wait for all 14 mandatory application jobs to pass for its
    exact revision before merging. Then wait for **Required application gates**
    to pass on the exact resulting `main` commit. A pull-request-only success does
    not admit a cloud deployment.
@@ -47,9 +55,10 @@ An account identity check alone does not establish every deployment permission.
    evidence, or an over-budget plan before configuring AWS credentials.
 3. Set `establish_new=true` only for the first empty OnGo deletion journal.
    Routine deployments leave it false. It is not a journal reset option.
-4. For the current adoption of the interrupted initial deployment, retain
-   `recovery_run_id=38272959415` and explicitly enable `establish_new`.
-   After successful adoption, clear `recovery_run_id` for routine deployments.
+4. For the first East 1 deployment, explicitly set `establish_new=true` and leave
+   `recovery_run_id`, `continue_uninitialized_run_id` and
+   `previous_continuation_run_id` empty. Ohio's historical receipts cannot
+   authorize an import or journal initialization in another region.
 5. Wait for the deployment and health verification to finish. Use the frontend,
    API and CloudWatch dashboard URLs recorded in the successful receipt and
    workflow summary. Confirm the SNS subscription through its email link.
@@ -59,16 +68,83 @@ reviewed example, with `releaseId` bound to its actual full source commit. It
 calls `deploy/fargate.py plan` and then `deploy/fargate.py deploy`; the CLI owns
 the image builds, resource adoption, stopped runtime maintenance, frontend image
 publication, activation and actual health checks. Deployments for the same
-account and region are serialized, and an in-progress attempt is not cancelled
+development account are serialized across regions, and an in-progress attempt
+is not cancelled
 by a second dispatch.
 
 The old **Deploy serverless development to AWS** workflow is a legacy deployment
 record. Use the OnGo Fargate workflow for new work. The legacy run is referenced
-only as verified recovery evidence.
+only as verified historical Ohio recovery evidence. Keep that route disabled.
+
+The example configuration requires `region=us-east-1` and
+`backupRegion=us-west-2`. West 2 is not admitted as an application deployment
+target. The legacy eight-field configuration remains valid only for Ohio and
+has no `backupRegion`; legacy recovery and continuation inputs are rejected
+before credentials for the East 1 configuration.
+
+## Regional continuity and retained Ohio resources
+
+East 1 establishes new regional resources and a new empty journal. Existing
+Ohio resource ARNs, encryption keys, Cognito users, journal versions and SQL
+continuity records keep their original identities. Changing a region string
+does not migrate those identities. Ohio remains stopped and retained for the
+current regional move; this workflow does not start its database or repair its
+detached network resources.
+
+Stopping Aurora is temporary: AWS automatically restarts a stopped cluster
+after seven days. Storage, backups, keys, secrets, images and other retained
+resources remain billable while compute is stopped. The regional cost plan
+must include these charges and the automatic restart exposure until a
+separately authorized maintenance or decommission action removes it.
+See [Aurora stop/start behavior](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-cluster-stop-start.html).
+
+West 2 is a backup/recovery destination without running application or database
+compute or a standby network. The regional backup stack
+`otgd-fargate-development-us-west-2-recovery` contains a dedicated symmetric KMS
+key and alias, an encrypted backup vault and five private versioned S3 replica
+buckets. Full-version replication covers the primary artifacts, exports,
+deletion journal, web authority and deployment archive. The journal replica
+retains at least 90 days of Object Lock protection. Daily Aurora AWS Backup
+snapshots retain two days in East 1 and seven days of copied snapshots in West 2.
+The deployment also creates and verifies one initial release-bound database
+backup and West 2 copy, without waiting for the next daily schedule. Its
+protected journal binds the actual job IDs, recovery points, database identity,
+encryption keys and retention lifecycle; retries reconcile the admitted intent.
+Aurora copies use warm snapshot storage; "cold recovery" describes the absence
+of running compute. Ohio is excluded from this new backup selection.
+Health-data and journal objects replicate under the verified West 2 KMS key.
+Web assets and deployment archives preserve their source SSE-S3 (`AES256`)
+encryption during replication, independently of the replica bucket's KMS
+default. See [replication encryption behavior](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-config-for-kms-objects.html).
+The primary tombstone secret uses an encrypted West 2 replica; its actual
+replication status must be in sync without exposing the secret value.
+
+S3 replication does not propagate deletion of a specific source object version.
+Artifact and export erasure therefore includes permanent deletion of the
+corresponding West 2 versions and verified completion. Replicated delete markers
+alone do not establish erasure. Journal copies keep their independent retention.
+See [S3 replication behavior](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-what-is-isnot-replicated.html).
+
+Copying backup data does not establish a working standby, a recovery
+time objective or a successful restore. Regional activation requires a
+separately reviewed manual recovery contract and live verification of keys,
+journal continuity, deletion replay and the restored application. Keep the
+original journal bytes and Ohio authority unchanged. Automated West 2
+activation and journal rebinding are unsupported. A configured backup plan or
+replication rule does not prove that its first copy or a restore has completed.
+The credential-free `regional-backup-configuration.json` records configuration
+before journal initialization, and `regional-backup-initial-copy.json` records
+the bounded initial database-copy intent and outcome. The final
+`regional-backup.json` distinguishes copies pending from observed completed
+Aurora copies, exact S3 replica versions, the established journal control
+version's replica and synchronized secret replication. These receipts do not
+prove a restore or authorize regional activation.
 
 ## Preserve the interrupted deployment's resources
 
-Recovery uses the protected `initial-recovery.json` from the failed trusted
+The following recovery route is retained for the Ohio target only; it is not
+used by the fresh East 1 deployment. Recovery uses the protected
+`initial-recovery.json` from the failed trusted
 legacy main deployment. Its source ZIP must remain intact: the workflow checks
 the run's repository, workflow, event, branch and failure state; identifies one
 exact-source, non-expired artifact; downloads the original ZIP; and verifies its
@@ -98,7 +174,7 @@ uv sync --project services/api --locked
 uv run --project services/api python deploy/fargate.py plan \
   --config infra/config/fargate.example.json
 uv run --project services/api python deploy/check_access.py \
-  --account 738470137867 --region us-east-2 --profile YOUR_EXISTING_PROFILE
+  --account 738470137867 --region us-east-1 --profile YOUR_EXISTING_PROFILE
 uv run --project services/api python deploy/fargate.py deploy \
   --config .local/fargateconfig/fargate.json \
   --gate-evidence .local/fargateconfig/gates/gates.json \
@@ -109,8 +185,10 @@ uv run --project services/api python deploy/fargate.py health \
 ```
 
 Prepare the ignored configuration with the exact full reviewed commit, and
-download its eligible aggregate `gates.json` first. For the initial verified
-adoption, add `--establish-new` and the separately validated
+download its eligible aggregate `gates.json` first. For the fresh East 1
+deployment, add only `--establish-new`; leave all recovery arguments absent.
+For the separate historical Ohio verified adoption route, add `--establish-new`
+and the separately validated
 `--recovery-manifest`, `--recovery-archive`, `--recovery-run-id` and
 `--recovery-artifact-id` arguments. Keep the original ZIP; do not rebuild it after
 extraction. Authorized GitHub read access is required for live gate and artifact

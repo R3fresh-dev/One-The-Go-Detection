@@ -23,17 +23,19 @@ def load_runtime_secrets(*, force=False):
     if not _enabled():
         return
     region = os.environ.get("OTGD_AWS_REGION", "us-east-2")
+    executor = os.environ.get("OTGD_SERVERLESS_EXECUTOR", "lambda")
     account = os.environ.get("OTGD_DEPLOYMENT_ACCOUNT", "")
     database = os.environ.get("OTGD_DATABASE_SECRET_ARN", "")
     application = os.environ.get("OTGD_APP_DATABASE_SECRET_ARN")
     tombstone = os.environ.get("OTGD_TOMBSTONE_SECRET_ARN", "")
-    binding = (region, account, database, application, tombstone,
+    binding = (region, executor, account, database, application, tombstone,
                os.environ.get("OTGD_DATABASE_USER", "otgd_app"),
                os.environ.get("OTGD_APP_DATABASE_USER", "otgd_app"))
     if binding == _secret_binding and not force:
         return
     try:
-        if region != "us-east-2" or not re.fullmatch(r"[0-9]{12}", account):
+        regions = ("us-east-1", "us-east-2") if executor == "ecs" else ("us-east-2",)
+        if executor not in ("lambda", "ecs") or region not in regions or not re.fullmatch(r"[0-9]{12}", account):
             raise ValueError()
         prefix = f"arn:aws:secretsmanager:{region}:{account}:secret:"
         if any(not isinstance(arn, str) or not arn.startswith(prefix) or len(arn) > 2048

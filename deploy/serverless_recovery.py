@@ -19,6 +19,7 @@ from pathlib import Path
 import re
 import stat
 import subprocess
+import time
 import uuid
 from zipfile import BadZipFile, ZipFile
 import httpx
@@ -568,6 +569,10 @@ CONTINUATION_FIELDS = {
     'failed_run_completed_at', 'original_recovery_raw', 'adoption_raw',
     'deployment_state_raw', 'gate_admission_raw', 'serverless_plan_raw',
 }
+PREVIOUS_RECOVERY_FIELDS = {
+    'run_id', 'run_attempt', 'release_id', 'artifact_sha256', 'run_started_at',
+    'run_completed_at', 'source_bundle_raw', 'continuation_raw', 'deployment_state_raw',
+}
 
 
 def _utc_time(value):
@@ -590,7 +595,7 @@ def _continuation_bundle(path, expected_hash, config):
         raise Gate('Uninitialized continuation bundle differs from its authenticated SHA-256')
     try:
         bundle = strict_loads(raw)
-        if not isinstance(bundle, dict) or set(bundle) != CONTINUATION_FIELDS:
+        if not isinstance(bundle, dict) or set(bundle) not in (CONTINUATION_FIELDS, CONTINUATION_FIELDS | {'previous_recovery'}):
             raise ValueError
         records = {}
         for field in ('original_recovery_raw', 'adoption_raw', 'deployment_state_raw',
@@ -649,6 +654,60 @@ def _continuation_bundle(path, expected_hash, config):
         if adoption.get(field) != original.get(field):
             raise Gate('Uninitialized continuation original authority evidence changed')
     return bundle, original, adoption
+
+
+def _previous_recoveries(bundle):
+    """Consume only the caller's authenticated, bounded failed-run chain."""
+    base = {key: bundle[key] for key in CONTINUATION_FIELDS}
+    packet = bundle.get('previous_recovery')
+    result = []
+    while packet is not None:
+        if (len(result) >= 8 or not isinstance(packet, dict) or set(packet) != PREVIOUS_RECOVERY_FIELDS
+                or any(type(packet.get(key)) is not int or packet[key] <= 0 for key in ('run_id', 'run_attempt'))
+                or not isinstance(packet.get('release_id'), str)
+                or not re.fullmatch(r'[0-9a-f]{40}', packet['release_id'])
+                or not isinstance(packet.get('artifact_sha256'), str)
+                or not re.fullmatch(r'[0-9a-f]{64}', packet['artifact_sha256'])):
+            raise Gate('Private subnet repair requires bounded authenticated previous recovery metadata')
+        start, end = _utc_time(packet['run_started_at']), _utc_time(packet['run_completed_at'])
+        if start > end or end > datetime.now(timezone.utc):
+            raise Gate('Previous recovery run interval differs')
+        records = {}
+        for field, limit in (('source_bundle_raw', 8 * 1024 * 1024), ('continuation_raw', 262144),
+                             ('deployment_state_raw', 65536)):
+            raw = packet[field]
+            if not isinstance(raw, str) or not 0 < len(raw.encode()) <= limit:
+                raise Gate('Previous recovery records exceed their bounds')
+            try:
+                records[field] = strict_loads(raw)
+            except (TypeError, ValueError):
+                raise Gate('Previous recovery records require strict JSON') from None
+            if not isinstance(records[field], dict):
+                raise Gate('Previous recovery records require objects')
+        source, journal, state = (records[field] for field in (
+            'source_bundle_raw', 'continuation_raw', 'deployment_state_raw'))
+        if (set(source) not in (CONTINUATION_FIELDS, CONTINUATION_FIELDS | {'previous_recovery'})
+                or {key: source[key] for key in CONTINUATION_FIELDS} != base
+                or journal.get('source_bundle_sha256') != hashlib.sha256(packet['source_bundle_raw'].encode()).hexdigest()
+                or journal.get('schema_version') != '1.0.0'
+                or journal.get('operation') != 'serverless-uninitialized-continuation'
+                or journal.get('release_id') != packet['release_id']
+                or journal.get('status') != 'blocked-recovery-inspect-protected-journal-before-retry'
+                or journal.get('actual_resources_deleted') is not False
+                or journal.get('journal_established') is not False
+                or journal.get('application_deployment_completed') is not False
+                or state.get('schema_version') != '1.0.0' or state.get('environment') != 'fargate-development'
+                or state.get('release_id') != packet['release_id'] or state.get('status') != 'failed'
+                or state.get('current_stage') != 'continue-uninitialized-retained-resources'
+                or state.get('failed_stage') != 'continue-uninitialized-retained-resources'
+                or state.get('completed_stages') != [] or state.get('completed_receipts') != {}
+                or state.get('rollback_executed') is not False
+                or any(record.get(key) != base[key] for record in (journal, state) for key in ('account', 'region'))
+                or journal.get('stack_name') != STACK):
+            raise Gate('Previous recovery does not prove the exact uninitialized failed Fargate continuation')
+        result.append({'packet': packet, 'journal': journal})
+        packet = source.get('previous_recovery')
+    return result
 
 
 def _historical_builder(revision):
@@ -712,7 +771,7 @@ def _resource_tags(client, arn):
     _require_tags(client.list_tags_for_resource(ResourceName=arn).get('TagList', []))
 
 
-def _history_for_continuation(cf, bundle, stack_id, failed_template):
+def _history_for_continuation(cf, bundle, stack_id, failed_template, repair_updates=None):
     events = [event for page in _pages(cf, 'describe_stack_events', StackName=stack_id)
               for event in page.get('StackEvents', [])]
     if len(events) > 2000:
@@ -720,8 +779,19 @@ def _history_for_continuation(cf, bundle, stack_id, failed_template):
     start, end = _utc_time(bundle['failed_run_started_at']), _utc_time(bundle['failed_run_completed_at'])
     updates = [event for event in events if event.get('ResourceType') == 'AWS::CloudFormation::Stack'
                and event.get('PhysicalResourceId') == stack_id and event.get('ResourceStatus') == 'UPDATE_IN_PROGRESS']
-    if len(updates) != 1 or not start <= _utc_time(updates[0].get('Timestamp')) <= end:
+    original_updates = [event for event in updates if start <= _utc_time(event.get('Timestamp')) <= end]
+    if len(original_updates) != 1:
         raise Gate('Uninitialized continuation stack update does not bind the failed run interval')
+    seen_repair_tokens = set()
+    for event in updates:
+        if event in original_updates:
+            continue
+        token = event.get('ClientRequestToken')
+        interval = (repair_updates or {}).get(token)
+        if (not interval or token in seen_repair_tokens
+                or not interval[0] <= _utc_time(event.get('Timestamp')) <= interval[1]):
+            raise Gate('Uninitialized continuation includes an unproved later stack update')
+        seen_repair_tokens.add(token)
     if any(event.get('LogicalResourceId') in APPLICATION_IDS - {'Database', 'DatabaseWriter', 'ControlFunction'}
            and event.get('ResourceStatus') == 'CREATE_COMPLETE' for event in events):
         raise Gate('Uninitialized continuation cannot adopt a previously created application function')
@@ -793,7 +863,7 @@ def _security_rules(rows):
     return result
 
 
-def _database_snapshot(aws, config, bundle, physical, deleted_subnet):
+def _database_snapshot(aws, config, bundle, physical, deleted_subnet, replacement_subnet=None):
     """Read only metadata and configuration, never credentials or SQL contents."""
     rds, ec2 = aws.client('rds'), aws.client('ec2')
     cluster = _one(rds.describe_db_clusters(DBClusterIdentifier=STACK), 'DBClusters')
@@ -845,13 +915,18 @@ def _database_snapshot(aws, config, bundle, physical, deleted_subnet):
     subnet_ids = [row.get('SubnetIdentifier') for row in subnets]
     if (group.get('DBSubnetGroupName') != physical['DatabaseSubnets'] or group.get('SubnetGroupStatus') != 'Complete'
             or group.get('VpcId') != physical['Network'] or len(subnets) != 2
-            or set(subnet_ids) != {physical['PrivateA'], deleted_subnet}
+            or set(subnet_ids) != {physical['PrivateA'], replacement_subnet or deleted_subnet}
             or any(row.get('SubnetStatus') != 'Active' for row in subnets)
             or writer_group.get('DBSubnetGroupName') != physical['DatabaseSubnets']
             or writer_group.get('VpcId') != physical['Network']
             or {row.get('SubnetIdentifier') for row in writer_group.get('Subnets', [])} != set(subnet_ids)
             or cluster.get('VpcSecurityGroups') != [{'VpcSecurityGroupId': physical['DatabaseSecurityGroup'], 'Status': 'active'}]):
         raise Gate('Uninitialized continuation database dependency identities differ')
+    expected_group_arn = f"arn:aws:rds:{config['region']}:{config['account']}:subgrp:{physical['DatabaseSubnets']}"
+    if group.get('DBSubnetGroupArn') != expected_group_arn or writer.get('AvailabilityZone') != next(
+            (row.get('SubnetAvailabilityZone', {}).get('Name') for row in subnets
+             if row.get('SubnetIdentifier') == physical['PrivateA']), None):
+        raise Gate('Uninitialized continuation subnet group ARN or writer placement differs')
     _resource_tags(rds, group['DBSubnetGroupArn'])
     parameters = _one(rds.describe_db_cluster_parameter_groups(
         DBClusterParameterGroupName=physical['DatabaseParameters']), 'DBClusterParameterGroups')
@@ -974,9 +1049,155 @@ def _failed_images(aws, config, revision):
     return result
 
 
-def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sha256):
+def _repair_updates(previous, active=None):
+    updates = {}
+    requested = {}
+    for record in reversed(previous):
+        token = record['journal'].get('private_b_client_request_token')
+        if token:
+            if not isinstance(token, str) or not re.fullmatch(r'private-b-repair-[0-9a-f]{32}', token):
+                raise Gate('Private subnet repair update token is malformed')
+            interval = (_utc_time(record['packet']['run_started_at']), _utc_time(record['packet']['run_completed_at']))
+            request_time = _utc_time(record['journal'].get('private_b_requested_at'))
+            if token in updates:
+                if request_time != requested[token]:
+                    raise Gate('Private subnet repair carried update request time differs')
+            else:
+                if not interval[0] <= request_time <= interval[1]:
+                    raise Gate('Private subnet repair request is outside its originating failed run')
+                updates[token] = interval
+                requested[token] = request_time
+    if active and active.get('private_b_client_request_token'):
+        token = active['private_b_client_request_token']
+        request_time = _utc_time(active.get('private_b_requested_at'))
+        if token in updates:
+            if request_time != requested[token]:
+                raise Gate('Private subnet repair active carried request time differs')
+        else:
+            if (not isinstance(token, str) or not re.fullmatch(r'private-b-repair-[0-9a-f]{32}', token)
+                    or request_time > datetime.now(timezone.utc)):
+                raise Gate('Private subnet repair active update request is malformed')
+            updates[token] = (request_time, datetime.now(timezone.utc))
+    return updates
+
+
+def _repair_source_proof(cf, previous, stack_id, physical, old_candidate):
+    if not previous:
+        raise Gate('Private subnet repair requires the authenticated failed import evidence')
+    first = previous[-1]
+    initial = first['journal']
+    if (initial.get('failed_phase') != 'surviving-database-import-executing'
+            or initial.get('retained_physical_ids') != physical
+            or initial.get('managed_import_bindings') != {}
+            or not isinstance(initial.get('import_change_set_id'), str)
+            or not initial['import_change_set_id'].startswith(
+                f'arn:aws:cloudformation:{initial["region"]}:{initial["account"]}:changeSet/uninitialized-import-')
+            or _body_hash(initial.get('import_template')) != _body_hash(old_candidate)
+            or initial.get('canonical_import_template_sha256') != _body_hash(old_candidate)):
+        raise Gate('Private subnet repair does not bind the original failed nine-resource import')
+    phases = {'surviving-database-import-requesting', 'surviving-database-import-created',
+        'surviving-database-import-executing', 'private-b-add-requesting', 'private-b-add-created',
+        'private-b-add-executing', 'private-b-bound', 'database-membership-changing', 'database-membership-converged'}
+    for record in previous:
+        journal = record['journal']
+        if (journal.get('stack_id') != stack_id or journal.get('retained_physical_ids') != physical
+                or journal.get('failed_phase') not in phases):
+            raise Gate('Private subnet repair previous physical closure or phase differs')
+        baseline = journal.get('source_database_snapshot', journal.get('database_snapshot'))
+        if _body_hash(baseline) != _body_hash(initial.get('database_snapshot')):
+            raise Gate('Private subnet repair previous immutable database baseline differs')
+    start, end = _utc_time(first['packet']['run_started_at']), _utc_time(first['packet']['run_completed_at'])
+    events = [event for page in _pages(cf, 'describe_stack_events', StackName=stack_id)
+              for event in page.get('StackEvents', [])]
+    for status in ('IMPORT_IN_PROGRESS', 'IMPORT_ROLLBACK_COMPLETE'):
+        matches = [event for event in events if event.get('ResourceType') == 'AWS::CloudFormation::Stack'
+            and event.get('PhysicalResourceId') == stack_id and event.get('ResourceStatus') == status
+            and start <= _utc_time(event.get('Timestamp')) <= end]
+        if len(matches) != 1:
+            raise Gate('Private subnet repair lacks exact failed-import stack history')
+    return initial['database_snapshot']
+
+
+def _same_database(before, after, *, membership_change=False):
+    if not isinstance(before, dict) or not isinstance(after, dict):
+        raise Gate('Private subnet repair database baseline is malformed')
+    keys = before.keys() | after.keys()
+    if membership_change:
+        keys = keys - {'subnet_ids'}
+    if any(_body_hash(before.get(key)) != _body_hash(after.get(key)) for key in keys):
+        raise Gate('Private subnet repair changed retained database authority or configuration')
+
+
+def _private_b_resource(aws, config, physical, deleted, snapshot, failed_template, recorded=None):
+    group = _one(aws.client('rds').describe_db_subnet_groups(
+        DBSubnetGroupName=physical['DatabaseSubnets']), 'DBSubnetGroups')
+    old_rows = [row for row in group.get('Subnets', []) if row.get('SubnetIdentifier') == deleted]
+    zone = old_rows[0].get('SubnetAvailabilityZone', {}).get('Name') if len(old_rows) == 1 else None
+    if zone is None and recorded:
+        zone = recorded.get('Properties', {}).get('AvailabilityZone')
+    if (not isinstance(zone, str) or not re.fullmatch(re.escape(config['region']) + r'[a-z]', zone)
+            or zone == snapshot['subnet_availability_zone']):
+        raise Gate('Private subnet repair lacks the exact historical second availability zone')
+    original = failed_template['Resources']['PrivateB']
+    if (original.get('Type') != 'AWS::EC2::Subnet'
+            or original['Properties'].get('CidrBlock') != '10.76.1.0/24'
+            or original['Properties'].get('MapPublicIpOnLaunch') is not False
+            or original['Properties'].get('AssignIpv6AddressOnCreation') is not True):
+        raise Gate('Private subnet repair historical private geometry differs')
+    blocks = list(ipaddress.IPv6Network(snapshot['vpc_ipv6_range']).subnets(new_prefix=64))
+    props = deepcopy(original['Properties'])
+    props.update(VpcId=physical['Network'], AvailabilityZone=zone, Ipv6CidrBlock=str(blocks[1]))
+    resource = {'Type': 'AWS::EC2::Subnet', 'Properties': props,
+        'DeletionPolicy': 'Retain', 'UpdateReplacePolicy': 'Retain'}
+    if recorded and _body_hash(recorded) != _body_hash(resource):
+        raise Gate('Private subnet repair recorded geometry or retention differs')
+    return resource
+
+
+def _verify_private_b(aws, config, physical, resource, new_id, stack_id):
+    subnet = _one(aws.client('ec2').describe_subnets(SubnetIds=[new_id]), 'Subnets')
+    props = resource['Properties']
+    if (subnet.get('SubnetId') != new_id or subnet.get('State') != 'available'
+            or subnet.get('OwnerId') != config['account']
+            or any(subnet.get(field) != props[field] for field in (
+                'VpcId', 'AvailabilityZone', 'CidrBlock', 'MapPublicIpOnLaunch', 'AssignIpv6AddressOnCreation'))
+            or subnet.get('VpcId') != physical['Network']
+            or subnet.get('Ipv6CidrBlockAssociationSet') is None):
+        raise Gate('Private subnet repair new managed subnet geometry differs')
+    ipv6 = subnet['Ipv6CidrBlockAssociationSet']
+    if (len(ipv6) != 1 or ipv6[0].get('Ipv6CidrBlock') != props['Ipv6CidrBlock']
+            or ipv6[0].get('Ipv6CidrBlockState', {}).get('State') != 'associated'):
+        raise Gate('Private subnet repair new IPv6 association differs')
+    _require_tags(subnet.get('Tags', []))
+    tags = {row['Key']: row['Value'] for row in subnet.get('Tags', [])}
+    if (tags.get('aws:cloudformation:stack-id') != stack_id
+            or tags.get('aws:cloudformation:logical-id') != 'PrivateB'):
+        raise Gate('Private subnet repair new subnet lacks exact CloudFormation ownership')
+
+
+def _private_b_inventory(aws, physical, resource, new_id=None):
+    rows = aws.client('ec2').describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [physical['Network']]}]).get('Subnets', [])
+    if not isinstance(rows, list) or len(rows) > 200:
+        raise Gate('Private subnet repair VPC inventory is excessive or ambiguous')
+    expected = {physical['PrivateA']} | ({new_id} if new_id else set())
+    if len(rows) != len(expected) or {row.get('SubnetId') for row in rows} != expected:
+        raise Gate('Private subnet repair refuses unaccounted or orphan VPC subnets')
+    props = resource['Properties']
+    for row in rows:
+        if row['SubnetId'] == new_id:
+            continue
+        if ipaddress.IPv4Network(row['CidrBlock']).overlaps(ipaddress.IPv4Network(props['CidrBlock'])):
+            raise Gate('Private subnet repair IPv4 range overlaps a live subnet')
+        if any(ipaddress.IPv6Network(item['Ipv6CidrBlock']).overlaps(ipaddress.IPv6Network(props['Ipv6CidrBlock']))
+               for item in row.get('Ipv6CidrBlockAssociationSet', [])):
+            raise Gate('Private subnet repair IPv6 range overlaps a live subnet')
+
+
+def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sha256, *, _repair_evidence=None):
     """Prove a specific failed first stopped deployment without mutating AWS."""
     bundle, original, adoption = _continuation_bundle(source_bundle, source_bundle_sha256, config)
+    previous = _previous_recoveries(bundle)
+    repairing = bool(previous)
     builder = _historical_builder(bundle['failed_release_id'])
     # Historical main source preserves the exact full old template admission;
     # current queue/retention fixes must not be mistaken for historic drift.
@@ -985,7 +1206,8 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
     stack = _one(cf.describe_stacks(StackName=STACK), 'Stacks')
     tags = {row['Key']: row['Value'] for row in stack.get('Tags', [])}
     if (stack.get('StackId') != adoption['recovered_stack_id']
-            or stack.get('StackStatus') not in ('UPDATE_ROLLBACK_COMPLETE', 'IMPORT_COMPLETE')
+            or stack.get('StackStatus') not in (('IMPORT_ROLLBACK_COMPLETE', 'UPDATE_COMPLETE', 'IMPORT_COMPLETE')
+                if repairing else ('UPDATE_ROLLBACK_COMPLETE', 'IMPORT_COMPLETE'))
             or stack.get('EnableTerminationProtection') is not True
             or (tags and (tags.get('deployment') != STACK or tags.get('purpose') != 'serverless-development'))):
         raise Gate('Uninitialized continuation requires the exact stable protected failed application stack')
@@ -995,16 +1217,27 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
     original_ids = old['retained_physical_ids'].keys()
     allowed_ids = original_ids | (DATABASE_IMPORT_IDS.keys() if imported
                   else DATABASE_IMPORT_IDS.keys() - {'DatabaseWriter'})
+    if repairing:
+        allowed_ids = original_ids | DATABASE_IMPORT_IDS.keys() | {'PrivateB'}
     actual_ids = {row.get('LogicalResourceId') for row in rows}
     statuses = ('IMPORT_COMPLETE', 'UPDATE_COMPLETE') if imported else ('CREATE_COMPLETE', 'UPDATE_COMPLETE')
+    # Import does not act on the already managed replacement subnet. Its
+    # creation token, physical identity and ownership are revalidated below.
     if (len(rows) != len(actual_ids) or not original_ids <= actual_ids or not actual_ids <= allowed_ids
             or (imported and actual_ids != allowed_ids)
-            or any(row.get('ResourceStatus') not in statuses for row in rows)):
+            or (repairing and not imported and actual_ids not in (set(original_ids), set(original_ids) | {'PrivateB'}))
+            or (repairing and not imported and ((actual_ids == set(original_ids)
+                 and stack['StackStatus'] != 'IMPORT_ROLLBACK_COMPLETE')
+                 or ('PrivateB' in actual_ids and stack['StackStatus'] not in ('UPDATE_COMPLETE', 'IMPORT_ROLLBACK_COMPLETE'))))
+            or any(row.get('ResourceStatus') not in statuses
+                   and not (repairing and imported and row.get('LogicalResourceId') == 'PrivateB'
+                            and row.get('ResourceStatus') == 'CREATE_COMPLETE') for row in rows)):
         raise Gate('Uninitialized continuation surviving inventory differs from the exact reviewed graph')
     bindings = {row['LogicalResourceId']: row.get('PhysicalResourceId') for row in rows}
     for row in rows:
         logical = row['LogicalResourceId']
-        kind = old['import_template']['Resources'][logical]['Type'] if logical in old['retained_physical_ids'] else DATABASE_IMPORT_IDS[logical][0]
+        kind = (old['import_template']['Resources'][logical]['Type'] if logical in old['retained_physical_ids']
+                else 'AWS::EC2::Subnet' if logical == 'PrivateB' else DATABASE_IMPORT_IDS[logical][0])
         if (row.get('ResourceType') != kind or not isinstance(bindings[logical], str) or not bindings[logical]
                 or (logical in original_ids and bindings[logical] != old['retained_physical_ids'][logical])):
             raise Gate('Uninitialized continuation changed a surviving resource type or physical identity')
@@ -1017,18 +1250,16 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
     # not retroactively change that historical template.
     failed_template = builder({**historical_config, **images, 'releaseId': bundle['failed_release_id'],
         'databaseEngineVersion': cluster_preview.get('EngineVersion'), 'activateServices': False})
-    source_physical, deleted_subnet = _history_for_continuation(cf, bundle, stack['StackId'], failed_template)
+    repair_updates = _repair_updates(previous, _repair_evidence)
+    source_physical, deleted_subnet = _history_for_continuation(cf, bundle, stack['StackId'], failed_template, repair_updates)
     physical = {**old['retained_physical_ids'], **source_physical}
-    managed_import_bindings = {logical: bindings[logical] for logical in sorted(actual_ids - original_ids)}
-    if any(physical[logical] != bindings[logical] for logical in actual_ids):
+    managed_import_bindings = {logical: bindings[logical] for logical in sorted(actual_ids & DATABASE_IMPORT_IDS.keys())}
+    if any(physical[logical] != bindings[logical] for logical in actual_ids - {'PrivateB'}):
         raise Gate('Uninitialized continuation current bindings differ from their exact source creation identities')
     if not imported:
         for logical in sorted(DATABASE_IMPORT_IDS.keys() - actual_ids):
             _absent_stack_binding(cf, stack['StackId'], logical)
-    snapshot = _database_snapshot(aws, config, bundle, physical, deleted_subnet)
-    if snapshot['engine_version'] != cluster_preview.get('EngineVersion'):
-        raise Gate('Uninitialized continuation database version changed during inventory')
-    candidate = deepcopy(old['import_template'])
+    old_candidate = deepcopy(old['import_template'])
     for logical, (kind, _) in DATABASE_IMPORT_IDS.items():
         resource = deepcopy(failed_template['Resources'][logical])
         if resource['Type'] != kind:
@@ -1036,14 +1267,75 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
         resource.update(DeletionPolicy='Retain', UpdateReplacePolicy='Retain')
         if logical == 'DatabaseSubnets':
             resource['Properties']['SubnetIds'] = [physical['PrivateA'], deleted_subnet]
-        candidate['Resources'][logical] = resource
+        old_candidate['Resources'][logical] = resource
+    candidate = deepcopy(old_candidate)
+    repair_fields = {}
+    if repairing:
+        baseline = _repair_source_proof(cf, previous, stack['StackId'], physical, old_candidate)
+        recorded = next((record['journal'].get('repaired_private_b_resource') for record in previous
+                         if record['journal'].get('repaired_private_b_resource')), None)
+        if _repair_evidence and _repair_evidence.get('repaired_private_b_resource'):
+            recorded = _repair_evidence['repaired_private_b_resource']
+        repair_resource = _private_b_resource(aws, config, physical, deleted_subnet, baseline, failed_template, recorded)
+        if any(record['journal'].get('repaired_private_b_resource')
+               and _body_hash(record['journal']['repaired_private_b_resource']) != _body_hash(repair_resource)
+               for record in previous):
+            raise Gate('Private subnet repair changed its sealed literal resource across attempts')
+        new_id = bindings.get('PrivateB')
+        if new_id:
+            if new_id == deleted_subnet or any(record['journal'].get('repaired_private_b_physical_id') not in (None, new_id)
+                    for record in previous):
+                raise Gate('Private subnet repair changed its already recorded physical binding')
+            events = [event for page in _pages(cf, 'describe_stack_events', StackName=stack['StackId'])
+                      for event in page.get('StackEvents', [])]
+            creations = [event for event in events if event.get('LogicalResourceId') == 'PrivateB'
+                and event.get('ResourceStatus') == 'CREATE_COMPLETE'
+                and event.get('PhysicalResourceId') != deleted_subnet]
+            if (len(creations) != 1 or creations[0].get('PhysicalResourceId') != new_id
+                    or creations[0].get('ResourceType') != 'AWS::EC2::Subnet'
+                    or creations[0].get('ClientRequestToken') not in repair_updates
+                    or not repair_updates[creations[0]['ClientRequestToken']][0]
+                        <= _utc_time(creations[0].get('Timestamp'))
+                        <= repair_updates[creations[0]['ClientRequestToken']][1]):
+                raise Gate('Private subnet repair lacks exact token-bound new subnet creation history')
+            _verify_private_b(aws, config, physical, repair_resource, new_id, stack['StackId'])
+            candidate['Resources']['PrivateB'] = deepcopy(repair_resource)
+            candidate['Resources']['DatabaseSubnets']['Properties']['SubnetIds'] = [physical['PrivateA'], new_id]
+        _private_b_inventory(aws, physical, repair_resource, new_id)
+        group = _one(aws.client('rds').describe_db_subnet_groups(DBSubnetGroupName=physical['DatabaseSubnets']), 'DBSubnetGroups')
+        members = {row.get('SubnetIdentifier') for row in group.get('Subnets', [])}
+        old_members, new_members = {physical['PrivateA'], deleted_subnet}, {physical['PrivateA'], new_id}
+        if members != old_members and (not new_id or members != new_members):
+            raise Gate('Private subnet repair subnet-group membership is outside the exact old/new states')
+        snapshot = _database_snapshot(aws, config, bundle, physical, deleted_subnet,
+            new_id if new_id and members == new_members else None)
+        _same_database(baseline, snapshot, membership_change=True)
+        if imported and (not new_id or members != new_members):
+            raise Gate('Private subnet repair imported closure lacks repaired group membership')
+        expected_current = candidate if imported else deepcopy(old['import_template'])
+        if not imported and new_id:
+            expected_current['Resources']['PrivateB'] = deepcopy(repair_resource)
+        repair_fields = {'repair_state': 'adopted' if imported else 'group-converged' if new_id and members == new_members
+            else 'new-private-b' if new_id else 'needed', 'source_database_snapshot': baseline,
+            'repaired_private_b_resource': repair_resource, 'repaired_private_b_physical_id': new_id}
+        # Carry the authorized request token through later failures/reruns.
+        token_record = _repair_evidence or next((record['journal'] for record in previous
+            if record['journal'].get('private_b_client_request_token')), {})
+        for key in ('private_b_client_request_token', 'private_b_requested_at', 'private_b_change_set_id'):
+            if token_record.get(key):
+                repair_fields[key] = token_record[key]
+    else:
+        snapshot = _database_snapshot(aws, config, bundle, physical, deleted_subnet)
+        expected_current = candidate if imported else old['import_template']
+    if snapshot['engine_version'] != cluster_preview.get('EngineVersion'):
+        raise Gate('Uninitialized continuation database version changed during inventory')
     if any(_references(resource) - candidate['Resources'].keys() for resource in candidate['Resources'].values()):
         raise Gate('Uninitialized continuation import graph has an unresolved dependency')
     body = json.dumps(candidate, separators=(',', ':'))
     if len(body.encode()) > 51200:
         raise Gate('Uninitialized continuation candidate exceeds the direct template limit')
     actual = _template_body(cf, stack['StackId'])
-    if _body_hash(actual) != _body_hash(candidate if imported else old['import_template']):
+    if _body_hash(actual) != _body_hash(expected_current):
         raise Gate('Uninitialized continuation current stack template differs from the exact admitted phase')
     requests = _continuation_imports(cf, candidate, physical)
     return {'schema_version': '1.0.0', 'operation': 'serverless-uninitialized-continuation',
@@ -1058,7 +1350,7 @@ def uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sh
         'database_engine_version': snapshot['engine_version'], 'already_adopted': imported,
         'import_template': candidate, 'canonical_import_template_sha256': _body_hash(candidate),
         'resources_to_import': requests, 'actual_resources_deleted': False,
-        'journal_established': False, 'application_deployment_completed': False}
+        'journal_established': False, 'application_deployment_completed': False, **repair_fields}
 
 
 def _same_continuation(before, after, *, check_bindings=False):
@@ -1067,6 +1359,87 @@ def _same_continuation(before, after, *, check_bindings=False):
             raise Gate('Uninitialized continuation authority or configuration changed before execution')
     if check_bindings and before['managed_import_bindings'] != after['managed_import_bindings']:
         raise Gate('Uninitialized continuation resource bindings changed before execution')
+
+
+def _repair_plan_refresh(aws, config, source_bundle, source_hash, evidence):
+    return uninitialized_continuation_plan(aws, config, source_bundle, source_hash, _repair_evidence=evidence)
+
+
+def _run_private_b_repair(aws, config, source_bundle, source_hash, evidence, phase):
+    cf, rds = aws.client('cloudformation'), aws.client('rds')
+    if evidence['repair_state'] == 'needed':
+        before = _repair_plan_refresh(aws, config, source_bundle, source_hash, evidence)
+        _same_continuation(evidence, before, check_bindings=True)
+        current = _template_body(cf, evidence['stack_id'])
+        add_template = deepcopy(current)
+        add_template['Resources']['PrivateB'] = deepcopy(evidence['repaired_private_b_resource'])
+        evidence.update(private_b_client_request_token='private-b-repair-' + uuid.uuid4().hex,
+                        private_b_requested_at=datetime.now(timezone.utc).isoformat())
+        phase('private-b-add-requesting')
+        change = cf.create_change_set(StackName=evidence['stack_id'],
+            ChangeSetName='private-b-repair-' + uuid.uuid4().hex, ChangeSetType='UPDATE',
+            TemplateBody=json.dumps(add_template, separators=(',', ':')))['Id']
+        evidence['private_b_change_set_id'] = change
+        phase('private-b-add-created')
+        cf.get_waiter('change_set_create_complete').wait(StackName=evidence['stack_id'], ChangeSetName=change,
+            WaiterConfig={'Delay': 3, 'MaxAttempts': 120})
+        changes = [row.get('ResourceChange', {}) for page in _pages(cf, 'describe_change_set',
+            StackName=evidence['stack_id'], ChangeSetName=change) for row in page.get('Changes', [])]
+        if (len(changes) != 1 or changes[0].get('LogicalResourceId') != 'PrivateB'
+                or changes[0].get('ResourceType') != 'AWS::EC2::Subnet' or changes[0].get('Action') != 'Add'
+                or changes[0].get('Replacement') in ('True', 'Conditional') or changes[0].get('PhysicalResourceId')):
+            raise Gate('Private subnet repair change set must add only the exact missing subnet')
+        _same_continuation(evidence, _repair_plan_refresh(
+            aws, config, source_bundle, source_hash, evidence), check_bindings=True)
+        phase('private-b-add-executing')
+        cf.execute_change_set(StackName=evidence['stack_id'], ChangeSetName=change,
+            ClientRequestToken=evidence['private_b_client_request_token'])
+        cf.get_waiter('stack_update_complete').wait(StackName=evidence['stack_id'],
+            WaiterConfig={'Delay': 5, 'MaxAttempts': 180})
+        after = _repair_plan_refresh(aws, config, source_bundle, source_hash, evidence)
+        if (after['repair_state'] != 'new-private-b'
+                or after['retained_physical_ids'] != evidence['retained_physical_ids']):
+            raise Gate('Private subnet repair did not prove the exact new managed binding')
+        _same_database(evidence['database_snapshot'], after['database_snapshot'])
+        evidence.update(after)
+        phase('private-b-bound')
+    if evidence['repair_state'] == 'new-private-b':
+        before = _repair_plan_refresh(aws, config, source_bundle, source_hash, evidence)
+        _same_continuation(evidence, before, check_bindings=True)
+        physical = evidence['retained_physical_ids']
+        new_id = evidence['repaired_private_b_physical_id']
+        target = {physical['PrivateA'], new_id}
+        old = {physical['PrivateA'], evidence['deleted_subnet_id']}
+        phase('database-membership-changing')
+        # Modify only the membership of the existing named group. Keep A (the
+        # writer's live subnet); the deleted B has no network interfaces.
+        rds.modify_db_subnet_group(DBSubnetGroupName=physical['DatabaseSubnets'],
+            SubnetIds=[physical['PrivateA'], new_id])
+        for attempt in range(30):
+            group = _one(rds.describe_db_subnet_groups(DBSubnetGroupName=physical['DatabaseSubnets']), 'DBSubnetGroups')
+            writer = _one(rds.describe_db_instances(DBInstanceIdentifier=physical['DatabaseWriter']), 'DBInstances')
+            members = {row.get('SubnetIdentifier') for row in group.get('Subnets', [])}
+            writer_group = writer.get('DBSubnetGroup', {})
+            writer_members = {row.get('SubnetIdentifier') for row in writer_group.get('Subnets', [])}
+            if (group.get('DBSubnetGroupName') != physical['DatabaseSubnets']
+                    or writer_group.get('DBSubnetGroupName') != physical['DatabaseSubnets']
+                    or members not in (old, target) or writer_members not in (old, target)):
+                raise Gate('Private subnet repair group convergence changed its name or expected membership')
+            if (members == writer_members == target and group.get('SubnetGroupStatus') == 'Complete'
+                    and all(row.get('SubnetStatus') == 'Active' for row in group.get('Subnets', []))):
+                break
+            if attempt != 29:
+                time.sleep(2)
+        else:
+            raise Gate('Private subnet repair group membership did not converge')
+        after = _repair_plan_refresh(aws, config, source_bundle, source_hash, evidence)
+        if (after['repair_state'] != 'group-converged'
+                or after['retained_physical_ids'] != evidence['retained_physical_ids']
+                or after['repaired_private_b_physical_id'] != new_id):
+            raise Gate('Private subnet repair group update changed the protected physical closure')
+        _same_database(evidence['database_snapshot'], after['database_snapshot'], membership_change=True)
+        evidence.update(after)
+        phase('database-membership-converged')
 
 
 def continue_uninitialized(aws, config, evidence_path, source_bundle, source_bundle_sha256):
@@ -1082,6 +1455,8 @@ def continue_uninitialized(aws, config, evidence_path, source_bundle, source_bun
         _write(path, evidence)
 
     try:
+        if evidence.get('repair_state') not in (None, 'adopted'):
+            _run_private_b_repair(aws, config, source_bundle, source_bundle_sha256, evidence, phase)
         if not evidence['already_adopted']:
             cf = aws.client('cloudformation')
             phase('surviving-database-import-requesting')
@@ -1103,17 +1478,19 @@ def continue_uninitialized(aws, config, evidence_path, source_bundle, source_bun
                            or (row.get('PhysicalResourceId') and row['PhysicalResourceId']
                                != evidence['retained_physical_ids'][row['LogicalResourceId']]) for row in changes)):
                 raise Gate('Uninitialized continuation change set is not exactly nine preserved-resource imports')
-            _same_continuation(evidence, uninitialized_continuation_plan(
-                aws, config, source_bundle, source_bundle_sha256), check_bindings=True)
+            _same_continuation(evidence, _repair_plan_refresh(
+                aws, config, source_bundle, source_bundle_sha256, evidence), check_bindings=True)
             phase('surviving-database-import-executing')
             cf.execute_change_set(StackName=evidence['stack_id'], ChangeSetName=change)
             cf.get_waiter('stack_import_complete').wait(StackName=evidence['stack_id'],
                 WaiterConfig={'Delay': 5, 'MaxAttempts': 180})
-        after = uninitialized_continuation_plan(aws, config, source_bundle, source_bundle_sha256)
+        after = _repair_plan_refresh(aws, config, source_bundle, source_bundle_sha256, evidence)
         _same_continuation(evidence, after)
         if not after['already_adopted']:
             raise Gate('Uninitialized continuation did not prove complete survivor adoption')
         evidence['already_adopted'] = True
+        if after.get('repair_state'):
+            evidence['repair_state'] = after['repair_state']
         evidence['managed_import_bindings'] = after['managed_import_bindings']
         phase('retained-uninitialized-database-adopted')
         return evidence
@@ -1137,6 +1514,12 @@ def verify_continued_database(aws, config, outputs, evidence):
                    for row in rows if row['LogicalResourceId'] in evidence['retained_physical_ids'])
             or outputs.get('ReleaseId') != config['releaseId'] or outputs.get('ActivateServices') != 'false'):
         raise Gate('Stopped continuation replaced a survivor or differs from the selected source')
+    if evidence.get('repaired_private_b_physical_id'):
+        repaired = next((row for row in rows if row.get('LogicalResourceId') == 'PrivateB'), {})
+        if (repaired.get('ResourceType') != 'AWS::EC2::Subnet'
+                or repaired.get('PhysicalResourceId') != evidence['repaired_private_b_physical_id']
+                or repaired.get('ResourceStatus') not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE', 'IMPORT_COMPLETE')):
+            raise Gate('Stopped continuation replaced the repaired managed subnet')
     cluster = _one(aws.client('rds').describe_db_clusters(DBClusterIdentifier=STACK), 'DBClusters')
     writer = _one(aws.client('rds').describe_db_instances(DBInstanceIdentifier=STACK + '-writer'), 'DBInstances')
     prior = evidence['database_snapshot']
