@@ -104,6 +104,285 @@ class FargateDeployTest(unittest.TestCase):
                 with self.subTest(override=override), self.assertRaises(MODULE.Gate):
                     MODULE.read_config(path)
 
+    def test_east1_configuration_requires_only_the_exact_west2_backup_pair(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'config.json'
+            east = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2'}
+            path.write_text(json.dumps(east))
+            self.assertEqual(MODULE.read_config(path), east)
+            path.write_text(json.dumps(self.config))
+            self.assertEqual(MODULE.read_config(path), self.config)
+            cases = ({**east, 'backupRegion': 'us-east-2'}, {**east, 'region': 'us-west-2'},
+                {**self.config, 'backupRegion': 'us-west-2'}, {**east, 'availabilityZones': ['us-east-1a', 'us-east-1b']},
+                {key: value for key, value in east.items() if key != 'backupRegion'})
+            for config in cases:
+                path.write_text(json.dumps(config))
+                with self.subTest(config=config), self.assertRaises(MODULE.Gate):
+                    MODULE.read_config(path)
+
+    def test_east1_legacy_inputs_fail_before_budget_or_aws_session(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'config.json'
+            path.write_text(json.dumps({**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2'}))
+            with patch.object(MODULE, 'budget') as budget, patch.object(MODULE.platform, 'CloudSession') as session, \
+                    patch('sys.stderr', io.StringIO()):
+                code = MODULE.main(['deploy', '--config', str(path), '--establish-new',
+                    '--continue-uninitialized', 'protected.json', '--continue-uninitialized-sha256', 'd' * 64])
+            self.assertEqual(code, 2)
+            budget.assert_not_called(); session.assert_not_called()
+
+    def test_east1_fresh_target_requires_explicit_establishment_before_preflight(self):
+        config = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2'}
+        args = self._continuation_args(continue_uninitialized=None, continue_uninitialized_sha256=None,
+            establish_new=False)
+        aws = Mock()
+        with patch.object(MODULE.platform, 'require_clean_source'), patch.object(MODULE.platform, 'verify_gate_file'), \
+                patch.object(MODULE, 'stable_stack', return_value=None), patch.object(MODULE, 'preflight') as preflight:
+            with self.assertRaisesRegex(MODULE.Gate, 'explicit first-empty establishment'):
+                MODULE.deploy(args, config, aws, {})
+        preflight.assert_not_called(); aws.client.assert_not_called()
+
+    def test_regional_plan_binds_all_three_cost_components_without_credentials(self):
+        c = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2',
+             'costEstimatePath': 'infra/costs/regional-fargate-estimate.json'}
+        plan = MODULE.budget(c)
+        self.assertEqual(plan['estimated_monthly_usd'], 76.62)
+        self.assertEqual(plan['maximum_capacity_stress_monthly_usd'], 97.91)
+        self.assertEqual(plan['regional_scope'], {'primary': 'us-east-1', 'backup': 'us-west-2',
+                                                'retained_legacy': ['us-east-2']})
+        self.assertEqual(set(plan['component_monthly_usd']), {'primary', 'backup', 'retained_legacy'})
+        self.assertFalse(plan['budget_is_a_spending_cap'])
+
+    @staticmethod
+    def _east_zone_rows():
+        # Account-specific AZ letters differ from physical zone ordering.
+        return [{'RegionName': 'us-east-1', 'State': 'available', 'ZoneType': 'availability-zone',
+                 'ZoneName': name, 'ZoneId': identifier} for name, identifier in
+                [('us-east-1a', 'use1-az3'), ('us-east-1f', 'use1-az1'), ('us-east-1b', 'use1-az2')]]
+
+    def test_actual_zone_selection_excludes_unsupported_physical_zone_and_preserves_existing_pair(self):
+        c = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2'}
+        ec2, aws = Mock(), Mock()
+        aws.client.return_value = ec2
+        ec2.describe_availability_zones.return_value = {'AvailabilityZones': self._east_zone_rows()}
+        pair = MODULE.application_availability_zones(aws, c)
+        self.assertEqual(pair, [{'name': 'us-east-1f', 'id': 'use1-az1'}, {'name': 'us-east-1b', 'id': 'use1-az2'}])
+        prior = {'AvailabilityZones': json.dumps(pair[::-1])}
+        self.assertEqual(MODULE.application_availability_zones(aws, c, prior), pair[::-1])
+        for invalid in ({}, {'AvailabilityZones': json.dumps([{'name': 'us-east-1a', 'id': 'use1-az3'}, pair[1]])},
+                        {'AvailabilityZones': json.dumps([pair[0], pair[0]])}):
+            with self.subTest(prior=invalid), self.assertRaises(MODULE.Gate):
+                MODULE.application_availability_zones(aws, c, invalid)
+        ec2.describe_availability_zones.return_value = {'AvailabilityZones': self._east_zone_rows()[:2]}
+        with self.assertRaises(MODULE.Gate):
+            MODULE.application_availability_zones(aws, c)
+
+    def test_east1_preflight_requires_actual_engine_capacity_and_zone_metadata(self):
+        c = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2'}
+        version = {'Status': 'available', 'EngineVersion': '16.15', 'ServerlessV2FeaturesSupport': {'MinCapacity': 0}}
+        aws, rds, capacity = self._retained_engine_cloud([version,
+            {'Status': 'available', 'EngineVersion': '16.16', 'ServerlessV2FeaturesSupport': None}])
+        aws.client('ec2').describe_availability_zones.return_value = {'AvailabilityZones': self._east_zone_rows()}
+        with patch.object(MODULE, 'stable_stack', return_value=None):
+            result = MODULE.preflight(aws, c, None)
+        self.assertEqual(result['databaseEngineVersion'], '16.15')
+        self.assertEqual([r['id'] for r in result['availabilityZones']], ['use1-az1', 'use1-az2'])
+        prior = {'DatabaseClusterIdentifier': PREFIX, 'AvailabilityZones': json.dumps(result['availabilityZones'])}
+        rds.describe_db_clusters.return_value = {'DBClusters': [{'EngineVersion': '16.15'}]}
+        with patch.object(MODULE, 'stable_stack', return_value=None):
+            self.assertEqual(MODULE.preflight(aws, c, prior)['availabilityZones'], result['availabilityZones'])
+        engines = rds.get_paginator('describe_db_engine_versions')
+        engines.paginate.return_value = [{'DBEngineVersions': [
+            {'Status': 'available', 'EngineVersion': '16.15', 'ServerlessV2FeaturesSupport': None}]}]
+        with patch.object(MODULE, 'stable_stack', return_value=None), self.assertRaises(MODULE.Gate):
+            MODULE.preflight(aws, c, prior)
+
+    def test_recovery_session_uses_same_credentials_and_never_selects_another_region(self):
+        aws = Mock()
+        recovery = MODULE._RecoverySession(aws)
+        self.assertIs(recovery.client('cloudformation'), aws.client.return_value)
+        aws.client.assert_called_once_with('cloudformation', region_name='us-west-2')
+        with self.assertRaises(MODULE.Gate):
+            recovery.client('rds', region_name='us-east-2')
+
+    def test_existing_recovery_storage_cannot_be_adopted_with_different_template_or_authority(self):
+        from deploy.fargate_backup import RECOVERY_STACK, build_destination_template
+        c = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2'}
+        aws, cf = Mock(), Mock()
+        aws.client.return_value = cf
+        stack = {'StackId': f'arn:aws:cloudformation:us-west-2:{ACCOUNT}:stack/{RECOVERY_STACK}/owned',
+                 'EnableTerminationProtection': True,
+                 'Tags': [{'Key': 'purpose', 'Value': 'serverless-development'}, {'Key': 'deployment', 'Value': PREFIX}]}
+        cf.describe_stacks.return_value = {'Stacks': [stack]}
+        template = build_destination_template(c)
+        cf.get_template.return_value = {'TemplateBody': template}
+        with patch.object(MODULE, 'stable_stack', return_value={'RecoveryKeyArn': 'owned'}), \
+                patch.object(MODULE, 'deploy_stack') as deployed, \
+                patch('deploy.fargate_backup.verify_destination', return_value={'verified': True}) as verified:
+            self.assertEqual(MODULE.deploy_recovery_storage(aws, c), {'RecoveryKeyArn': 'owned'})
+            verified.assert_called_once(); deployed.assert_not_called()
+            cf.get_template.return_value = {'TemplateBody': {**template, 'Description': 'foreign graph'}}
+            with self.assertRaises(MODULE.Gate):
+                MODULE.deploy_recovery_storage(aws, c)
+            verified.assert_called_once(); deployed.assert_not_called()
+            cf.get_template.return_value = {'TemplateBody': template}
+            cf.describe_stacks.return_value = {'Stacks': [{**stack, 'EnableTerminationProtection': False}]}
+            with self.assertRaises(MODULE.Gate):
+                MODULE.deploy_recovery_storage(aws, c)
+
+    def _east_lifecycle(self, *, existing=False):
+        from deploy.fargate_template import build_template as actual_template
+        c = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2'}
+        args = self._continuation_args(continue_uninitialized=None, continue_uninitialized_sha256=None,
+            establish_new=not existing)
+        events, renders = [], []
+        key = f'arn:aws:kms:us-west-2:{ACCOUNT}:key/12345678-1234-1234-1234-123456789abc'
+        cold = {'RecoveryKeyArn': key}
+        proof = {'status': 'configured_copies_pending', 'primary_region': 'us-east-1',
+                 'backup_region': 'us-west-2', 'restore_executed': False}
+        initial = {'status': 'initial-database-copy-verified', 'account': ACCOUNT, 'release_id': SOURCE,
+                   'database_resource_id': 'cluster-owned', 'backup_job_id': 'own-backup', 'copy_job_id': 'own-copy',
+                   'source_recovery_point_arn': 'own-east-snapshot', 'destination_recovery_point_arn': 'own-west-snapshot',
+                   'backup_copy_verified': True}
+        images = {name: value.replace('us-east-2', 'us-east-1') for name, value in self.images.items()}
+        out = {**self.out, 'DeploymentBucket': self.out['DeploymentBucket'].replace('us-east-2', 'us-east-1'),
+               'WebDistributionId': 'owned-web', 'ApiDistributionId': 'owned-api'}
+        aws, cf = Mock(), Mock()
+        aws.client.return_value = cf
+        cf.create_invalidation.return_value = {'Invalidation': {'Id': 'owned-invalidation'}}
+
+        def cold_storage(*arguments):
+            events.append('verified-west')
+            return cold
+
+        def template(config, phase='platform', **options):
+            self.assertIn('verified-west', events)
+            self.assertEqual(options.get('recovery_key_arn'), key)
+            result = actual_template(config, phase, **options)
+            renders.append((phase, deepcopy(config), result))
+            return result
+
+        def deploy_stack(*arguments):
+            phase = 'registry' if arguments[1].endswith('-registry') else 'platform'
+            events.append(phase)
+            return {'DeploymentBucket': out['DeploymentBucket']} if phase == 'registry' else out
+
+        def copy_proof(*arguments):
+            events.append('backup-configuration')
+            return proof
+
+        def maintenance(aws, config, outputs, operation, work, **options):
+            self.assertIn('backup-configuration', events)
+            events.append(operation)
+            return {'completed_at': datetime.now(timezone.utc).isoformat()}
+
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            stack.enter_context(patch.object(MODULE, 'ROOT', Path(directory)))
+            stack.enter_context(patch.object(MODULE.platform, 'require_clean_source'))
+            stack.enter_context(patch.object(MODULE.platform, 'verify_gate_file'))
+            stack.enter_context(patch.object(MODULE, 'stable_stack', return_value=out if existing else None))
+            preflight = stack.enter_context(patch.object(MODULE, 'preflight', return_value={**c,
+                'databaseEngineVersion': '16.15', 'cloudFrontPrefixListId': 'pl-12345678',
+                'availabilityZones': [{'name': 'us-east-1f', 'id': 'use1-az1'}, {'name': 'us-east-1b', 'id': 'use1-az2'}]}))
+            stack.enter_context(patch.object(MODULE, 'deploy_recovery_storage', side_effect=cold_storage))
+            preservation = stack.enter_context(patch.object(MODULE, 'preserved_private_b'))
+            drain = stack.enter_context(patch.object(MODULE, 'drain', side_effect=lambda *args: events.append('drain')))
+            stack.enter_context(patch('deploy.fargate_template.build_template', side_effect=template))
+            stack.enter_context(patch.object(MODULE, 'deploy_stack', side_effect=deploy_stack))
+            stack.enter_context(patch.object(MODULE, 'archive_source', side_effect=lambda *args: events.append('source-write')))
+            stack.enter_context(patch.object(MODULE, 'build_images', side_effect=lambda aws, config, *args: {**config, **images}))
+            stack.enter_context(patch.object(MODULE, 'build_ui', side_effect=lambda aws, config, *args:
+                ({**config, 'uiArtifactBinding': 'e' * 64}, {'index.html': b'actual-export-binding'})))
+            stack.enter_context(patch.object(MODULE, 'database_network'))
+            stack.enter_context(patch('deploy.fargate_backup.verify_configuration_and_copies', side_effect=copy_proof, create=True))
+            stack.enter_context(patch('deploy.fargate_backup.verify_registry_configuration',
+                side_effect=lambda *args: events.append('registry-configuration'), create=True))
+            stack.enter_context(patch('deploy.fargate_backup.ensure_initial_database_copy',
+                side_effect=lambda *args: events.append('initial-copy') or initial, create=True))
+            stack.enter_context(patch.object(MODULE, 'run_maintenance', side_effect=maintenance))
+            stack.enter_context(patch.object(MODULE, 'verify_origin'))
+            stack.enter_context(patch.object(MODULE.web_artifact, 'verify_access', return_value={}))
+            stack.enter_context(patch.object(MODULE, 'verify_upload_access', return_value={}))
+            stack.enter_context(patch.object(MODULE, 'observe', return_value={'status': 'healthy'}))
+            stack.enter_context(patch.object(MODULE, 'container_logs', return_value={}))
+            receipt = MODULE.deploy(args, c, aws, {})
+            saved = next(Path(directory).glob('.local/deploy/fargate-development/**/regional-backup.json'))
+            self.assertEqual(json.loads(saved.read_text()), {**proof, 'initial_database_copy': initial})
+            self.assertEqual(receipt['regional_backup']['initial_database_copy'], initial)
+            preservation.assert_not_called()
+            preflight.assert_called_once_with(aws, c, out if existing else None)
+            self.assertEqual(drain.call_count, 1 if existing else 0)
+        return receipt, events, renders
+
+    def test_fresh_east_lifecycle_binds_verified_cold_storage_before_every_source_render_and_bootstrap(self):
+        receipt, events, renders = self._east_lifecycle()
+        self.assertEqual([row[0] for row in renders], ['registry', 'platform', 'platform', 'platform'])
+        self.assertEqual(events[:4], ['verified-west', 'registry', 'registry-configuration', 'source-write'])
+        self.assertEqual(receipt['regional_backup']['status'], 'configured_copies_pending')
+        self.assertFalse(receipt['regional_backup']['restore_executed'])
+        self.assertEqual(events.count('bootstrap'), 1)
+        self.assertEqual(events.count('backup-configuration'), 2)
+        self.assertLess(events.index('bootstrap'), events.index('initial-copy'))
+        for phase, config, template in renders[1:]:
+            self.assertEqual(template['Resources']['PrivateA']['Properties']['AvailabilityZone'], 'us-east-1f')
+            self.assertEqual(template['Resources']['PrivateB']['Properties']['AvailabilityZone'], 'us-east-1b')
+
+    def test_existing_east_redeploy_preserves_physical_zone_pair_without_ohio_repair_or_new_journal(self):
+        receipt, events, renders = self._east_lifecycle(existing=True)
+        self.assertIn('drain', events)
+        self.assertEqual(receipt['region'], 'us-east-1')
+        for phase, config, template in renders[1:]:
+            self.assertEqual(json.loads(template['Outputs']['AvailabilityZones']['Value']), config['availabilityZones'])
+            self.assertEqual(template['Resources']['PrivateB']['Properties']['VpcId'], {'Ref': 'Network'})
+
+    def test_regional_budget_filter_is_required_and_actual_billing_tag_activation_stays_separate(self):
+        from botocore.exceptions import ClientError
+        c = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2'}
+        cw, budgets, ce = Mock(), Mock(), Mock()
+        aws = SimpleNamespace(client=lambda name, **options: {'cloudwatch': cw, 'budgets': budgets, 'ce': ce,
+                                                             'cloudformation': Mock(), 'sns': Mock()}[name])
+        out = {**self.out, 'AlertTopicArn': 'owned-topic', 'CloudWatchDashboardName': PREFIX + '-health-us-east-1',
+               'MonthlyBudgetName': PREFIX + '-monthly-us-east-1'}
+        alarms = [{'AlarmName': 'alarm-' + str(i), 'ActionsEnabled': True, 'AlarmActions': ['owned-topic'],
+                   'StateValue': 'OK'} for i in range(10)]
+        cw.describe_alarms.return_value = {'MetricAlarms': alarms}
+        cw.get_dashboard.return_value = {'DashboardBody': json.dumps({'widgets': [{'type': 'text'}]})}
+        budget = {'TimeUnit': 'MONTHLY', 'BudgetLimit': {'Unit': 'USD', 'Amount': '100'},
+                  'CostFilters': {'TagKeyValue': ['user:project$one-the-go-detection']}}
+        budgets.describe_budget.return_value = {'Budget': budget}
+        def pages(client, operation, **options):
+            rows = {'list_stack_resources': {'StackResourceSummaries': [
+                {'PhysicalResourceId': a['AlarmName'], 'ResourceType': 'AWS::CloudWatch::Alarm'} for a in alarms]
+                + [{'PhysicalResourceId': 'dashboard', 'ResourceType': 'AWS::CloudWatch::Dashboard'}]},
+                'describe_notifications_for_budget': {'Notifications': [{'Threshold': i} for i in range(4)]},
+                'describe_subscribers_for_notification': {'Subscribers': [{'SubscriptionType': 'EMAIL', 'Address': c['alarmEmail']}]},
+                'list_subscriptions_by_topic': {'Subscriptions': [{'Protocol': 'email', 'Endpoint': c['alarmEmail'],
+                                                                  'SubscriptionArn': 'PendingConfirmation'}]}}
+            return [rows[operation]]
+        with patch.object(MODULE, 'pages', side_effect=pages):
+            ce.list_cost_allocation_tags.return_value = {'CostAllocationTags': [
+                {'TagKey': 'project', 'Type': 'UserDefined', 'Status': 'Active'}]}
+            result = MODULE.alarm_and_budget_metadata(aws, c, out)
+            self.assertTrue(result['project_all_regions_cost_filter_verified'])
+            self.assertEqual(result['project_billing_tag_activation'], 'active')
+            self.assertEqual(result['alarm_email_subscription'], 'pending_confirmation')
+            ce.list_cost_allocation_tags.side_effect = ClientError({'Error': {'Code': 'AccessDeniedException'}},
+                                                                 'ListCostAllocationTags')
+            self.assertEqual(MODULE.alarm_and_budget_metadata(aws, c, out)['project_billing_tag_activation'], 'not_verified')
+            budgets.describe_budget.return_value = {'Budget': {**budget, 'CostFilters': {'Region': ['us-east-1']}}}
+            with self.assertRaises(MODULE.Gate):
+                MODULE.alarm_and_budget_metadata(aws, c, out)
+
+    def test_dualstack_images_bind_only_supported_application_regions_and_digests(self):
+        for region in ('us-east-1', 'us-east-2'):
+            uri = f'{ACCOUNT}.dkr.ecr.{region}.amazonaws.com/{PREFIX}@sha256:' + 'a' * 64
+            self.assertEqual(MODULE.dualstack_image(uri),
+                f'{ACCOUNT}.dkr-ecr.{region}.on.aws/{PREFIX}@sha256:' + 'a' * 64)
+        for uri in (f'{ACCOUNT}.dkr.ecr.us-west-2.amazonaws.com/{PREFIX}@sha256:' + 'a' * 64,
+                f'{ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/{PREFIX}:latest'):
+            with self.subTest(uri=uri), self.assertRaises(MODULE.Gate):
+                MODULE.dualstack_image(uri)
+
     def test_exact_source_and_gate_failure_precede_any_aws_client_access(self):
         args = SimpleNamespace(gate_evidence=Path("reviewed.json"))
         aws = Mock()

@@ -38,18 +38,25 @@ from deploy.serverless import STACK, pages, stable_stack, deploy_stack, verify_u
 FIELDS = {'environment', 'account', 'region', 'alarmEmail', 'monthlyBudgetUsd', 'releaseId',
           'plannedMonthlyUsers', 'costEstimatePath'}
 PROFILE = 'fargate-development'
+PRIMARY_REGION = 'us-east-1'
+BACKUP_REGION = 'us-west-2'
+LEGACY_REGION = 'us-east-2'
 
 
 def read_config(path):
     c = bounded_json(path)
-    if (set(c) != FIELDS or c.get('environment') != PROFILE
-            or not re.fullmatch(r'\d{12}', c.get('account', '')) or c.get('region') != 'us-east-2'
+    regional = c.get('region') == PRIMARY_REGION
+    expected = FIELDS | {'backupRegion'} if regional else FIELDS
+    if (set(c) != expected or c.get('environment') != PROFILE
+            or not re.fullmatch(r'\d{12}', c.get('account', ''))
+            or c.get('region') not in (PRIMARY_REGION, LEGACY_REGION)
+            or (regional and c.get('backupRegion') != BACKUP_REGION)
             or not re.fullmatch(r'[0-9a-f]{40}', c.get('releaseId', ''))
             or not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', c.get('alarmEmail', ''))
             or type(c.get('monthlyBudgetUsd')) not in (int, float)
             or not math.isfinite(c['monthlyBudgetUsd']) or not 0 < c['monthlyBudgetUsd'] <= 100
             or type(c.get('plannedMonthlyUsers')) is not int or c['plannedMonthlyUsers'] not in (0, 10)):
-        raise Gate('Supply the reviewed Fargate development account, Ohio region, source, email and budget')
+        raise Gate('Supply the reviewed East1 application/West2 backup or unchanged Ohio legacy scope, source, email and budget')
     return c
 
 
@@ -99,10 +106,14 @@ def budget(c):
     if (total > Decimal(str(c['monthlyBudgetUsd'])) or len(stress) != 1
             or reconcile(stress[0]) > Decimal(str(c['monthlyBudgetUsd']))):
         raise Gate('The reviewed Fargate workload or supported-capacity stress case exceeds the approved budget')
+    regional = {}
+    if c['region'] == PRIMARY_REGION:
+        from deploy.regional_budget import verify_regional_budget
+        regional = verify_regional_budget(c, evidence, cases[0], stress[0])
     return {'estimated_monthly_usd': float(total), 'maximum_capacity_stress_monthly_usd': stress[0]['total_monthly_usd'],
             'budget_usd': c['monthlyBudgetUsd'], 'planned_monthly_users': c['plannedMonthlyUsers'],
             'planning_assumptions': assumptions, 'price_evidence_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
-            'budget_is_a_spending_cap': False}
+            'budget_is_a_spending_cap': False, **regional}
 
 
 def preflight(aws, c, prior, retained_engine_version=None):
@@ -124,7 +135,7 @@ def preflight(aws, c, prior, retained_engine_version=None):
         versions = [r for page in pages(rds, 'describe_db_engine_versions', Engine='aurora-postgresql')
                     for r in page['DBEngineVersions'] if r.get('Status') == 'available'
                     and re.fullmatch(r'16\.\d+', r.get('EngineVersion', ''))
-                    and r.get('ServerlessV2FeaturesSupport', {}).get('MinCapacity') == 0]
+                    and (r.get('ServerlessV2FeaturesSupport') or {}).get('MinCapacity') == 0]
         if not versions:
             raise Gate('Aurora PostgreSQL 16 with zero-capacity auto-pause is unavailable')
         if retained_engine_version is not None:
@@ -136,6 +147,13 @@ def preflight(aws, c, prior, retained_engine_version=None):
             version = max(versions, key=lambda r: int(r['EngineVersion'].split('.')[1]))['EngineVersion']
     if retained_engine_version is not None and version != retained_engine_version:
         raise Gate('The retained Aurora engine version differs from the continuation proof')
+    if c['region'] == PRIMARY_REGION and prior:
+        supported = [r for page in pages(rds, 'describe_db_engine_versions', Engine='aurora-postgresql',
+            EngineVersion=version) for r in page['DBEngineVersions'] if r.get('Status') == 'available'
+            and r.get('EngineVersion') == version and re.fullmatch(r'16\.\d+', version)
+            and (r.get('ServerlessV2FeaturesSupport') or {}).get('MinCapacity') == 0]
+        if len(supported) != 1:
+            raise Gate('The existing East1 database version no longer supports reviewed zero-capacity Aurora 16')
     options = [r for page in pages(rds, 'describe_orderable_db_instance_options', Engine='aurora-postgresql',
                EngineVersion=version, DBInstanceClass='db.serverless') for r in page['OrderableDBInstanceOptions']]
     if not options or not any('DUAL' in r.get('SupportedNetworkTypes', []) for r in options):
@@ -144,7 +162,86 @@ def preflight(aws, c, prior, retained_engine_version=None):
         'Name': 'prefix-list-name', 'Values': ['com.amazonaws.global.cloudfront.origin-facing']}])['PrefixLists']
     if len(prefix_lists) != 1 or not re.fullmatch(r'pl-[0-9a-f]{8,17}', prefix_lists[0]['PrefixListId']):
         raise Gate('The actual regional CloudFront origin-facing prefix list is unavailable')
-    return {**c, 'databaseEngineVersion': version, 'cloudFrontPrefixListId': prefix_lists[0]['PrefixListId']}
+    result = {**c, 'databaseEngineVersion': version, 'cloudFrontPrefixListId': prefix_lists[0]['PrefixListId']}
+    if c['region'] == PRIMARY_REGION:
+        result['availabilityZones'] = application_availability_zones(aws, c, prior)
+    return result
+
+
+def application_availability_zones(aws, c, prior=None):
+    """Bind account-specific AZ names to supported physical CloudFront zones."""
+    if c['region'] != PRIMARY_REGION:
+        raise Gate('Explicit application AZ selection is for the reviewed East1 primary only')
+    rows = aws.client('ec2').describe_availability_zones(Filters=[
+        {'Name': 'state', 'Values': ['available']},
+        {'Name': 'zone-type', 'Values': ['availability-zone']}])['AvailabilityZones']
+    if not isinstance(rows, list) or len(rows) > 20:
+        raise Gate('The regional availability-zone inventory is excessive or unavailable')
+    valid = []
+    for row in rows:
+        if (not isinstance(row, dict) or row.get('State') != 'available'
+                or row.get('ZoneType') != 'availability-zone' or row.get('RegionName') != PRIMARY_REGION
+                or not re.fullmatch(r'us-east-1[a-z]', row.get('ZoneName', ''))
+                or not re.fullmatch(r'use1-az[1-9][0-9]?', row.get('ZoneId', ''))):
+            raise Gate('The regional standard availability-zone metadata differs')
+        if row['ZoneId'] != 'use1-az3':
+            valid.append({'name': row['ZoneName'], 'id': row['ZoneId']})
+    if (len(valid) < 2 or len({row['name'] for row in valid}) != len(valid)
+            or len({row['id'] for row in valid}) != len(valid)):
+        raise Gate('Two distinct CloudFront-supported East1 physical zones are required')
+    if prior is None:
+        return sorted(valid, key=lambda row: int(row['id'].removeprefix('use1-az')))[:2]
+    raw = prior.get('AvailabilityZones')
+    if not isinstance(raw, str) or len(raw) > 1024:
+        raise Gate('An existing East1 application must preserve its recorded physical zone pair')
+    selected = strict_loads(raw)
+    if (not isinstance(selected, list) or len(selected) != 2 or selected[0] == selected[1]
+            or any(row not in valid for row in selected)):
+        raise Gate('The recorded East1 zone pair differs from available supported physical zones')
+    return deepcopy(selected)
+
+
+class _RecoverySession:
+    """Use the same credential provider only in the reviewed storage region."""
+    def __init__(self, aws):
+        self.aws = aws
+
+    def client(self, service, **options):
+        if options.get('region_name', BACKUP_REGION) != BACKUP_REGION:
+            raise Gate('Recovery storage clients must remain in the reviewed West2 region')
+        return self.aws.client(service, **{**options, 'region_name': BACKUP_REGION})
+
+
+def deploy_recovery_storage(aws, c):
+    from deploy.fargate_backup import RECOVERY_STACK, build_destination_template, verify_destination
+    if c['region'] != PRIMARY_REGION or c.get('backupRegion') != BACKUP_REGION:
+        raise Gate('Cold storage deployment requires the reviewed East1/West2 pair')
+    recovery = _RecoverySession(aws)
+    template = build_destination_template(c)
+    prior = stable_stack(recovery, RECOVERY_STACK, absent_ok=True)
+    if prior is not None:
+        cf = recovery.client('cloudformation')
+        stacks = cf.describe_stacks(StackName=RECOVERY_STACK).get('Stacks', [])
+        tags = stacks[0].get('Tags', []) if len(stacks) == 1 else []
+        if (len(stacks) != 1 or stacks[0].get('EnableTerminationProtection') is not True
+                or not stacks[0].get('StackId', '').startswith(
+                    f"arn:aws:cloudformation:{BACKUP_REGION}:{c['account']}:stack/{RECOVERY_STACK}/")
+                or len(tags) != 2 or any(set(row) != {'Key', 'Value'} for row in tags)
+                or {row['Key']: row['Value'] for row in tags} !=
+                    {'deployment': STACK, 'purpose': 'serverless-development'}):
+            raise Gate('Existing recovery storage must be the exact protected owned West2 stack')
+        body = cf.get_template(StackName=stacks[0]['StackId'], TemplateStage='Original')['TemplateBody']
+        if isinstance(body, str):
+            if len(body.encode()) > 1048576:
+                raise Gate('Existing recovery template exceeded its bound')
+            body = strict_loads(body)
+        if body != template:
+            raise Gate('Existing recovery storage differs from the reviewed retained template')
+        verify_destination(aws, c, prior)
+        return prior
+    outputs = deploy_stack(recovery, RECOVERY_STACK, template, {**c, 'region': BACKUP_REGION})
+    verify_destination(aws, c, outputs)
+    return outputs
 
 
 def archive_source(c, path):
@@ -274,7 +371,11 @@ def drain(aws, out):
 
 
 def dualstack_image(uri):
-    return uri.replace('.dkr.ecr.us-east-2.amazonaws.com/', '.dkr-ecr.us-east-2.on.aws/')
+    match = re.fullmatch(r'([0-9]{12})\.dkr\.ecr\.(us-east-1|us-east-2)\.amazonaws\.com/'
+        + re.escape(STACK) + r'@sha256:([0-9a-f]{64})', uri)
+    if not match:
+        raise Gate('A reviewed same-region immutable ECR image is required')
+    return f'{match[1]}.dkr-ecr.{match[2]}.on.aws/{STACK}@sha256:{match[3]}'
 
 
 def task_definition(aws, c, arn, expected_images):
@@ -411,6 +512,30 @@ def alarm_and_budget_metadata(aws, c, out):
     if (row.get('TimeUnit') != 'MONTHLY' or row.get('BudgetLimit', {}).get('Unit') != 'USD'
             or Decimal(row['BudgetLimit']['Amount']) != Decimal(str(c['monthlyBudgetUsd']))):
         raise Gate('The actual monthly budget differs from the approved amount')
+    project_budget = {}
+    if c['region'] == PRIMARY_REGION:
+        if row.get('CostFilters') != {'TagKeyValue': ['user:project$one-the-go-detection']}:
+            raise Gate('The actual regional budget must include the owned project across all regions')
+        tag_status = 'not_verified'
+        try:
+            response = aws.client('ce', region_name=PRIMARY_REGION).list_cost_allocation_tags(
+                TagKeys=['project'], Type='UserDefined', MaxResults=10)
+            tags = response.get('CostAllocationTags', [])
+            if response.get('NextToken') or len(tags) > 1:
+                raise Gate('The project billing tag activation inventory is ambiguous')
+            if tags:
+                if (tags[0].get('TagKey') != 'project' or tags[0].get('Type') != 'UserDefined'
+                        or tags[0].get('Status') not in ('Active', 'Inactive')):
+                    raise Gate('The project billing tag activation metadata differs')
+                tag_status = tags[0]['Status'].lower()
+            else:
+                tag_status = 'not_registered'
+        except ClientError as error:
+            if error.response.get('Error', {}).get('Code') not in ('AccessDenied', 'AccessDeniedException'):
+                raise
+        project_budget = {'project_all_regions_cost_filter_verified': True,
+                          'project_billing_tag_activation': tag_status,
+                          'budget_is_a_spending_cap': False}
     notifications = [r for page in pages(budgets, 'describe_notifications_for_budget', AccountId=c['account'],
                                         BudgetName=out['MonthlyBudgetName']) for r in page.get('Notifications', [])]
     if len(notifications) != 4:
@@ -428,7 +553,7 @@ def alarm_and_budget_metadata(aws, c, out):
             'dashboard_verified': True, 'monthly_budget_usd': c['monthlyBudgetUsd'],
             'budget_email_configured': True,
             'alarm_email_subscription': 'pending_confirmation' if subscriptions[0]['SubscriptionArn'] == 'PendingConfirmation' else 'confirmed',
-            'alarm_delivery': 'not_executed'}
+            'alarm_delivery': 'not_executed', **project_budget}
 
 
 def container_logs(aws, out):
@@ -650,11 +775,13 @@ def verify_adopted_continuation(aws, c, evidence, source_bundle, digest):
     return {'retained_graph_reverified': True, 'repaired_private_b_physical_id': current.get('repaired_private_b_physical_id')}
 
 
-def _recovery_options(args, operation=None):
+def _recovery_options(args, operation=None, *, region=None):
     continuing = getattr(args, 'continue_uninitialized', None)
     digest = getattr(args, 'continue_uninitialized_sha256', None)
     recovery = [getattr(args, name, None) for name in (
         'recovery_manifest', 'recovery_archive', 'recovery_run_id', 'recovery_artifact_id')]
+    if region == PRIMARY_REGION and any((continuing, digest, *recovery)):
+        raise Gate('The fresh East1 application cannot import or continue Ohio authority')
     if (bool(continuing) != bool(digest)
             or (continuing and (not args.establish_new or any(recovery)
                 or (operation is not None and operation != 'deploy')
@@ -672,12 +799,14 @@ def deploy(args, c, aws, price):
     platform.require_clean_source(c['releaseId'])
     platform.verify_gate_file(args.gate_evidence, c['releaseId'], required_jobs=FARGATE_REQUIRED_JOBS)
     from deploy.fargate_template import build_template
-    continuing, continuation_hash, recovery = _recovery_options(args)
+    continuing, continuation_hash, recovery = _recovery_options(args, region=c['region'])
     continuation = None
     if continuing:
         from deploy.serverless_recovery import uninitialized_continuation_plan
         continuation = uninitialized_continuation_plan(aws, authority_config(c), continuing, continuation_hash)
     prior = None if continuing else stable_stack(aws, STACK, absent_ok=True)
+    if c['region'] == PRIMARY_REGION and prior is None and not args.establish_new:
+        raise Gate('The fresh East1 application requires explicit first-empty establishment')
     c = preflight(aws, c, prior, continuation['database_engine_version']) if continuation else preflight(aws, c, prior)
     if prior is not None and args.establish_new and not all(recovery):
         raise Gate('An existing deployment cannot establish a new empty deletion journal')
@@ -685,6 +814,12 @@ def deploy(args, c, aws, price):
     work.mkdir(parents=True, mode=0o700)
     with StageJournal(work, c) as journal:
         private_b = None
+        recovery_outputs = None
+        recovery_key = None
+        regional_backup = None
+        if c['region'] == PRIMARY_REGION:
+            recovery_outputs = journal.call('deploy-and-verify-cold-recovery-storage', deploy_recovery_storage, aws, c)
+            recovery_key = recovery_outputs['RecoveryKeyArn']
         if continuing:
             from deploy.serverless_recovery import continue_uninitialized
             continuation = journal.call('continue-uninitialized-retained-resources', continue_uninitialized,
@@ -700,25 +835,39 @@ def deploy(args, c, aws, price):
             # Only the helper can admit an already completed, still empty
             # fifteen-resource import. It refuses active or updated platforms.
             prior = stable_stack(aws, STACK)
-        if continuation is not None or prior is not None:
+        if c['region'] == LEGACY_REGION and (continuation is not None or prior is not None):
             private_b = journal.call('verify-preserved-private-subnet', preserved_private_b, aws, c, continuation)
-        registry = journal.call('fargate-registry', deploy_stack, aws, STACK + '-registry', build_template(c, 'registry'), c)
+        render_options = {'preserved_private_b_resource': private_b}
+        if recovery_key is not None:
+            render_options['recovery_key_arn'] = recovery_key
+        registry_options = {'recovery_key_arn': recovery_key} if recovery_key is not None else {}
+        registry = journal.call('fargate-registry', deploy_stack, aws, STACK + '-registry', build_template(c, 'registry', **registry_options), c)
+        if recovery_outputs is not None:
+            from deploy.fargate_backup import verify_registry_configuration
+            journal.call('verify-source-registry-replication', verify_registry_configuration,
+                aws, c, registry, recovery_outputs)
         source = work / 'source.tar'
         journal.call('exact-source-archive', archive_source, c, source)
         c = journal.call('build-reviewed-api-worker-images', build_images, aws, c, registry, source)
         if prior:
             journal.call('drain-existing-runtime', drain, aws, prior)
-        out = journal.call('deploy-stopped', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}, preserved_private_b_resource=private_b), c, registry['DeploymentBucket'])
+        out = journal.call('deploy-stopped', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}, **render_options), c, registry['DeploymentBucket'])
         if continuation:
             from deploy.serverless_recovery import verify_continued_database
             journal.call('verify-continued-database-stopped', verify_continued_database,
                 aws, authority_config(c), out, continuation)
         c, files = journal.call('build-reviewed-ui-image', build_ui, aws, c, registry, out, source, work)
-        out = journal.call('bind-stopped-ui-image', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}, preserved_private_b_resource=private_b), c, registry['DeploymentBucket'])
+        out = journal.call('bind-stopped-ui-image', deploy_stack, aws, STACK, build_template({**c, 'activateServices': False}, **render_options), c, registry['DeploymentBucket'])
         if continuation:
             journal.call('verify-continued-database-ui', verify_continued_database,
                 aws, authority_config(c), out, continuation)
         journal.call('verify-private-database-network', database_network, aws, out)
+        if recovery_outputs is not None:
+            from deploy.fargate_backup import verify_configuration_and_copies
+            regional_backup = journal.call('verify-regional-backup-before-bootstrap', verify_configuration_and_copies,
+                aws, c, out, recovery_outputs)
+            journal.call('write-regional-backup-receipt', platform.write_receipt,
+                work / 'regional-backup-configuration.json', regional_backup)
         journal.call('bootstrap', run_maintenance, aws, c, out, 'bootstrap', work, establish_new=args.establish_new)
         journal.call('migrate', run_maintenance, aws, c, out, 'migrate', work)
         admission = journal.call('admission', run_maintenance, aws, c, out, 'admission', work)
@@ -727,7 +876,7 @@ def deploy(args, c, aws, price):
             required_jobs=FARGATE_REQUIRED_JOBS)
         if (datetime.now(timezone.utc) - datetime.fromisoformat(admission['completed_at'])).total_seconds() > 900:
             raise Gate('Independent admission is stale before activation')
-        out = journal.call('activate-fargate-service', deploy_stack, aws, STACK, build_template({**c, 'activateServices': True}, preserved_private_b_resource=private_b), c, registry['DeploymentBucket'])
+        out = journal.call('activate-fargate-service', deploy_stack, aws, STACK, build_template({**c, 'activateServices': True}, **render_options), c, registry['DeploymentBucket'])
         verify_origin(aws, out)
         cf = aws.client('cloudfront')
         for key in ('WebDistributionId', 'ApiDistributionId'):
@@ -747,6 +896,19 @@ def deploy(args, c, aws, price):
         if not snapshot or snapshot['status'] != 'healthy':
             raise Gate('Actual Fargate health did not stabilize; inspect protected stage evidence')
         snapshot.update(journal.call('verify-actual-container-logging', container_logs, aws, out))
+        if recovery_outputs is not None:
+            from deploy.fargate_backup import ensure_initial_database_copy
+            journal.call('source-readmission-before-initial-copy', platform.require_clean_source, c['releaseId'])
+            journal.call('gate-readmission-before-initial-copy', platform.verify_gate_file,
+                args.gate_evidence, c['releaseId'], required_jobs=FARGATE_REQUIRED_JOBS)
+            initial_copy = journal.call('establish-and-verify-initial-database-copy', ensure_initial_database_copy,
+                aws, c, out, recovery_outputs, work / 'regional-backup-initial-copy.json')
+            regional_backup = journal.call('observe-actual-regional-copies', verify_configuration_and_copies,
+                aws, c, out, recovery_outputs)
+            regional_backup = {**regional_backup, 'initial_database_copy': {key: initial_copy[key] for key in (
+                'status', 'account', 'release_id', 'database_resource_id', 'backup_job_id', 'copy_job_id',
+                'source_recovery_point_arn', 'destination_recovery_point_arn', 'backup_copy_verified')}}
+            journal.call('write-final-regional-backup-receipt', platform.write_receipt, work / 'regional-backup.json', regional_backup)
         receipt = {'schema_version': '1.0.0', 'operation': 'fargate-deploy', 'status': 'fargate_transport_and_health_verified',
             'environment': PROFILE, 'account': c['account'], 'region': c['region'], 'release_id': c['releaseId'],
             'web_origin': out['WebOrigin'], 'api_origin': out['ApiOrigin'], 'cloudwatch_dashboard_url': out['CloudWatchDashboardUrl'],
@@ -755,6 +917,8 @@ def deploy(args, c, aws, price):
             'public_checks': {**public, **upload}, 'health': snapshot, 'budget_plan': price,
             'production_promotion_eligible': False, 'authenticated_customer_acceptance': 'not_executed',
             'alarm_delivery': 'not_executed', 'backup_restore': 'not_executed'}
+        if regional_backup is not None:
+            receipt['regional_backup'] = regional_backup
         journal.call('write-deployment-receipt', platform.write_receipt, work / 'deployment.json', receipt)
         journal.finish()
         return receipt
@@ -782,6 +946,7 @@ def main(argv=None):
             raise Gate('Choose one existing AWS profile or configured identity')
         _recovery_options(args, args.operation)
         c = read_config(args.config)
+        _recovery_options(args, args.operation, region=c['region'])
         price = budget(c)
         if args.operation == 'plan':
             result = {'environment': PROFILE, 'account': c['account'], 'region': c['region'],

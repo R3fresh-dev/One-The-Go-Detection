@@ -223,12 +223,15 @@ def verify_security_headers(headers,out):
         # Keep the trailing slash: without it CSP could admit a neighboring
         # bucket prefix. Never treat an arbitrary output URL as authority.
         bucket=out.get('ArtifactBucket')
-        if (not isinstance(bucket,str) or
-            not re.fullmatch(r'otgd-serverless-development-[0-9]{12}-us-east-2-artifacts',bucket)):
+        match = (re.fullmatch(r'otgd-serverless-development-[0-9]{12}-(us-east-[12])-artifacts', bucket)
+                 if isinstance(bucket, str) else None)
+        if not match:
             raise Gate('Browser upload policy requires the exact serverless artifact bucket')
-        upload='https://s3.dualstack.us-east-2.amazonaws.com/'+bucket+'/'
-        if out['ArtifactUploadOrigin']!=upload:
-            raise Gate('Browser upload policy must bind the exact Ohio artifact bucket path')
+        region = match.group(1)
+        upload='https://s3.dualstack.'+region+'.amazonaws.com/'+bucket+'/'
+        if (out['ArtifactUploadOrigin']!=upload
+                or urlsplit(out['Issuer']).hostname != 'cognito-idp.'+region+'.amazonaws.com'):
+            raise Gate('Browser upload policy must bind the exact owned regional artifact bucket path')
         origins.append(upload)
     expected={
         'default-src':{"'self'"}, 'script-src':{"'self'"},

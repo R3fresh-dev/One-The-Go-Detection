@@ -1,4 +1,5 @@
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -26,6 +27,51 @@ class ServerlessTemplateTest(unittest.TestCase):
 
     def statements(self, role):
         return self.properties(role + "Role")["Policies"][0]["PolicyDocument"]["Statement"]
+
+    def test_historical_ohio_templates_keep_exact_reviewed_bytes(self):
+        # Frozen from the independently qualified e847683 historical builder.
+        expected = {("registry", False): "84ed070642270698352ab7180d9820cce3eabe989a09e4a9c7042648751a98e7",
+                    ("platform", False): "e4379105c84df0ec5bd758d207060b83673d44782978e50bc1d066d4f18c949d",
+                    ("platform", True): "8756dbc2c9e0ae970f92ebbed4a7ec32b1aca7246e76187f139c7369a19f7843"}
+        for (phase, active), digest in expected.items():
+            with self.subTest(phase=phase, active=active):
+                result = MODULE.build_template({**self.config, "activateServices": active}, phase)
+                raw = json.dumps(result, sort_keys=True, separators=(",", ":")).encode()
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), digest)
+
+    def test_east1_fargate_base_scopes_global_names_and_operator_references(self):
+        config = {**self.config, "environment": "fargate-development", "region": "us-east-1",
+                  "backupRegion": "us-west-2"}
+        for key in ("apiImageUri", "workerImageUri"):
+            config[key] = config[key].replace("us-east-2", "us-east-1")
+        result = MODULE.build_template(config, regional_fargate=True)
+        resources = result["Resources"]
+        names = {f"otgd-qa-registry-{duty}-us-east-1" for duty in ("submitter", "reviewer", "releaser")}
+        for duty in ("Submitter", "Reviewer", "Releaser"):
+            self.assertIn(resources["Registry" + duty]["Properties"]["RoleName"], names)
+        for resource in resources.values():
+            if resource["Type"] != "AWS::IAM::Role":
+                continue
+            for policy in resource["Properties"].get("Policies", []):
+                for statement in policy["PolicyDocument"]["Statement"]:
+                    if statement.get("Action") == ["iam:GetRole"]:
+                        self.assertEqual(set(statement["Resource"]),
+                                         {"arn:aws:iam::123456789012:role/" + name for name in names})
+        for name, suffix in (("ApiHeaders", "api"), ("WebHeaders", "web")):
+            self.assertEqual(resources[name]["Properties"]["ResponseHeadersPolicyConfig"]["Name"],
+                             "otgd-serverless-development-" + suffix + "-us-east-1")
+        self.assertEqual(resources["HealthDashboard"]["Properties"]["DashboardName"],
+                         "otgd-serverless-development-health-us-east-1")
+        budget = resources["MonthlyBudget"]["Properties"]["Budget"]
+        self.assertEqual(budget["BudgetName"], "otgd-serverless-development-monthly-us-east-1")
+        self.assertEqual(budget["CostFilters"], {"TagKeyValue": ["user:project$one-the-go-detection"]})
+        self.assertIn("us-east-1-artifacts", resources["Artifacts"]["Properties"]["BucketName"])
+        self.assertEqual(config["backupRegion"], "us-west-2")
+        for change, selected in (({}, False), ({"region": "us-east-2"}, True),
+                                 ({"backupRegion": "us-east-2"}, True),
+                                 ({"environment": "qa"}, True)):
+            with self.subTest(change=change, selected=selected), self.assertRaises(ValueError):
+                MODULE.build_template({**config, **change}, regional_fargate=selected)
 
     def test_registry_is_retained_immutable_and_supplies_private_large_template_storage(self):
         registry = MODULE.build_template({key: value for key, value in self.config.items() if "ImageUri" not in key}, "registry")

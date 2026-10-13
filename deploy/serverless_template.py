@@ -23,14 +23,31 @@ def sub(value, variables=None):
     return {"Fn::Sub": [value, variables]} if variables else {"Fn::Sub": value}
 
 
-def build_template(config, phase="platform"):
+def regional_global_name(name, region):
+    """Account-global names cannot collide with retained Ohio resources."""
+    if region not in ("us-east-1", "us-east-2"):
+        raise ValueError("Global names require a reviewed primary region")
+    return name + ("-us-east-1" if region == "us-east-1" else "")
+
+
+def build_template(config, phase="platform", *, regional_fargate=False):
     """Return CloudFormation JSON for registry or stopped/active platform phases."""
+    if type(regional_fargate) is not bool:
+        raise ValueError("Regional Fargate construction must be explicitly selected")
+    if regional_fargate:
+        if (config.get("environment") != "fargate-development"
+                or config.get("region") != "us-east-1" or config.get("backupRegion") != "us-west-2"
+                or config.get("prefix", "otgd-serverless-development") != "otgd-serverless-development"):
+            raise ValueError("Regional Fargate construction requires East 1 with West 2 backups")
+        config = {key: value for key, value in config.items() if key != "backupRegion"}
+    elif "backupRegion" in config:
+        raise ValueError("Backup settings require explicit regional Fargate construction")
     account, region = config["account"], config["region"]
     revision, email = config["releaseId"], config["alarmEmail"]
     budget = config["monthlyBudgetUsd"]
     prefix = config.get("prefix", "otgd-serverless-development")
     active = config.get("activateServices", False)
-    if not re.fullmatch(r"[0-9]{12}", account) or region != "us-east-2":
+    if not re.fullmatch(r"[0-9]{12}", account) or region != ("us-east-1" if regional_fargate else "us-east-2"):
         raise ValueError("Set the actual account and reviewed us-east-2 region")
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("releaseId must be an immutable full source SHA")
@@ -47,6 +64,9 @@ def build_template(config, phase="platform"):
         "deployment": prefix, "owner_role": config.get("ownerRole", "platform-operator"),
         "cost_center": config.get("costCenter", "serverless-development"),
     }.items()]
+    dashboard_name = regional_global_name(prefix + "-health", region)
+    registry_names = {duty: regional_global_name("otgd-qa-registry-" + duty, region)
+                      for duty in ("submitter", "reviewer", "releaser")}
     resources = {}
 
     def resource(name, kind, properties, **options):
@@ -156,13 +176,13 @@ def build_template(config, phase="platform"):
             if role in ["Worker", "Maintenance"]:
                 statements += [{"Effect": "Allow", "Action": ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion", "s3:DeleteObject", "s3:DeleteObjectVersion", "s3:PutObjectTagging", "s3:PutObjectVersionTagging", "s3:AbortMultipartUpload"], "Resource": [artifact_objects, export_objects]}, {"Effect": "Allow", "Action": ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:ChangeMessageVisibility"], "Resource": att("JobsQueue", "Arn")}, {"Effect": "Allow", "Action": ["cognito-idp:AdminDeleteUser", "cognito-idp:AdminUserGlobalSignOut"], "Resource": att("Accounts", "Arn")}]
             if role == "Maintenance":
-                statements += [{"Effect": "Allow", "Action": ["kms:GetPublicKey"], "Resource": att("CaptureSigningKey", "Arn")}, {"Effect": "Allow", "Action": ["iam:GetRole"], "Resource": [f"arn:aws:iam::{account}:role/otgd-qa-registry-{duty}" for duty in ["submitter", "reviewer", "releaser"]]}]
+                statements += [{"Effect": "Allow", "Action": ["kms:GetPublicKey"], "Resource": att("CaptureSigningKey", "Arn")}, {"Effect": "Allow", "Action": ["iam:GetRole"], "Resource": [f"arn:aws:iam::{account}:role/{registry_names[duty]}" for duty in ["submitter", "reviewer", "releaser"]]}]
         resource(role + "Role", "AWS::IAM::Role", {"AssumeRolePolicyDocument": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}, "Policies": [{"PolicyName": "ScopedServerlessExecution", "PolicyDocument": {"Version": "2012-10-17", "Statement": statements}}], "Tags": tags})
     for duty in ["submitter", "reviewer", "releaser"]:
-        statements = [{"Effect": "Allow", "Action": ["iam:GetRole"], "Resource": [f"arn:aws:iam::{account}:role/otgd-qa-registry-{name}" for name in ["submitter", "reviewer", "releaser"]]}]
+        statements = [{"Effect": "Allow", "Action": ["iam:GetRole"], "Resource": [f"arn:aws:iam::{account}:role/{registry_names[name]}" for name in ["submitter", "reviewer", "releaser"]]}]
         if duty == "releaser":
             statements += [{"Effect": "Allow", "Action": ["s3:PutObject"], "Resource": sub("${Arn}/scope-resumptions/*", {"Arn": att("DeletionJournal", "Arn")})}, {"Effect": "Allow", "Action": ["s3:GetObject", "s3:GetObjectVersion", "s3:GetObjectRetention"], "Resource": journal_objects}, {"Effect": "Allow", "Action": ["s3:ListBucket", "s3:ListBucketVersions", "s3:GetBucketVersioning", "s3:GetBucketObjectLockConfiguration"], "Resource": att("DeletionJournal", "Arn")}, {"Effect": "Allow", "Action": ["kms:GenerateDataKey", "kms:Encrypt", "kms:Decrypt"], "Resource": att("JournalKey", "Arn")}]
-        resource("Registry" + duty.title(), "AWS::IAM::Role", {"RoleName": "otgd-qa-registry-" + duty, "MaxSessionDuration": 3600, "AssumeRolePolicyDocument": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Principal": {"AWS": f"arn:aws:iam::{account}:root"}, "Action": "sts:AssumeRole", "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}}]}, "Policies": [{"PolicyName": "IndependentRegistryOperator", "PolicyDocument": {"Version": "2012-10-17", "Statement": statements}}], "Tags": tags})
+        resource("Registry" + duty.title(), "AWS::IAM::Role", {"RoleName": registry_names[duty], "MaxSessionDuration": 3600, "AssumeRolePolicyDocument": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Principal": {"AWS": f"arn:aws:iam::{account}:root"}, "Action": "sts:AssumeRole", "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}}]}, "Policies": [{"PolicyName": "IndependentRegistryOperator", "PolicyDocument": {"Version": "2012-10-17", "Statement": statements}}], "Tags": tags})
     common = {
         "OTGD_ENVIRONMENT": "qa", "OTGD_SERVERLESS_MODE": "true", "OTGD_SERVERLESS_CONTROL_TABLE": ref("RuntimeControl"), "OTGD_SERVERLESS_DISPATCH_FUNCTION_ARN": dispatcher_arn, "OTGD_SERVERLESS_QUEUE_VISIBILITY": "1200",
         "OTGD_DATABASE_HOST": att("Database", "Endpoint.Address"), "OTGD_DATABASE_PORT": "5432", "OTGD_DATABASE_NAME": "otgd", "OTGD_DATABASE_USER": "otgd_app",
@@ -191,14 +211,14 @@ def build_template(config, phase="platform"):
     resource("ApiProxyMethod", "AWS::ApiGateway::Method", {"RestApiId": ref("RestApi"), "ResourceId": ref("ApiProxy"), "HttpMethod": "ANY", "AuthorizationType": "NONE", "Integration": integration}, DependsOn="ApiFunction")
     resource("ApiDeployment", "AWS::ApiGateway::Deployment", {"RestApiId": ref("RestApi"), "Description": revision}, DependsOn=["ApiRootMethod", "ApiProxyMethod"])
     resource("ApiStage", "AWS::ApiGateway::Stage", {"RestApiId": ref("RestApi"), "DeploymentId": ref("ApiDeployment"), "StageName": "serverless", "MethodSettings": [{"ResourcePath": "/*", "HttpMethod": "*", "ThrottlingRateLimit": 5, "ThrottlingBurstLimit": 10, "DataTraceEnabled": False}], "Tags": tags})
-    resource("ApiHeaders", "AWS::CloudFront::ResponseHeadersPolicy", {"ResponseHeadersPolicyConfig": {"Name": prefix + "-api", "SecurityHeadersConfig": {"ContentTypeOptions": {"Override": True}, "FrameOptions": {"FrameOption": "DENY", "Override": True}, "ReferrerPolicy": {"ReferrerPolicy": "no-referrer", "Override": True}, "StrictTransportSecurity": {"AccessControlMaxAgeSec": 31536000, "IncludeSubdomains": True, "Override": True}}, "CustomHeadersConfig": {"Items": [{"Header": "Cache-Control", "Value": "private, no-store", "Override": True}]}}})
+    resource("ApiHeaders", "AWS::CloudFront::ResponseHeadersPolicy", {"ResponseHeadersPolicyConfig": {"Name": regional_global_name(prefix + "-api", region), "SecurityHeadersConfig": {"ContentTypeOptions": {"Override": True}, "FrameOptions": {"FrameOption": "DENY", "Override": True}, "ReferrerPolicy": {"ReferrerPolicy": "no-referrer", "Override": True}, "StrictTransportSecurity": {"AccessControlMaxAgeSec": 31536000, "IncludeSubdomains": True, "Override": True}}, "CustomHeadersConfig": {"Items": [{"Header": "Cache-Control", "Value": "private, no-store", "Override": True}]}}})
     resource("ApiDelivery", "AWS::CloudFront::Distribution", {"DistributionConfig": {"Enabled": True, "HttpVersion": "http2", "IPV6Enabled": True, "PriceClass": "PriceClass_100", "ViewerCertificate": {"CloudFrontDefaultCertificate": True}, "Origins": [{"Id": "api", "DomainName": sub("${RestApi}.execute-api.${AWS::Region}.amazonaws.com"), "OriginPath": "/serverless", "CustomOriginConfig": {"OriginProtocolPolicy": "https-only", "HTTPSPort": 443, "OriginSSLProtocols": ["TLSv1.2"], "OriginReadTimeout": 60, "OriginKeepaliveTimeout": 5}}], "DefaultCacheBehavior": {"TargetOriginId": "api", "ViewerProtocolPolicy": "redirect-to-https", "AllowedMethods": ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"], "CachedMethods": ["GET", "HEAD"], "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad", "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac", "ResponseHeadersPolicyId": ref("ApiHeaders"), "Compress": False}}, "Tags": tags})
-    resource("WebOriginAccess", "AWS::CloudFront::OriginAccessControl", {"OriginAccessControlConfig": {"Name": prefix + "-web", "OriginAccessControlOriginType": "s3", "SigningBehavior": "always", "SigningProtocol": "sigv4"}})
-    resource("WebNavigation", "AWS::CloudFront::Function", {"Name": prefix + "-navigation", "AutoPublish": True, "FunctionConfig": {"Comment": "Extensionless web navigation only", "Runtime": "cloudfront-js-2.0"}, "FunctionCode": "function handler(event) { var request = event.request; if ((request.method === 'GET' || request.method === 'HEAD') && /^\\/[a-zA-Z0-9_\\/-]*$/.test(request.uri)) request.uri = '/index.html'; return request; }"})
+    resource("WebOriginAccess", "AWS::CloudFront::OriginAccessControl", {"OriginAccessControlConfig": {"Name": regional_global_name(prefix + "-web", region), "OriginAccessControlOriginType": "s3", "SigningBehavior": "always", "SigningProtocol": "sigv4"}})
+    resource("WebNavigation", "AWS::CloudFront::Function", {"Name": regional_global_name(prefix + "-navigation", region), "AutoPublish": True, "FunctionConfig": {"Comment": "Extensionless web navigation only", "Runtime": "cloudfront-js-2.0"}, "FunctionCode": "function handler(event) { var request = event.request; if ((request.method === 'GET' || request.method === 'HEAD') && /^\\/[a-zA-Z0-9_\\/-]*$/.test(request.uri)) request.uri = '/index.html'; return request; }"})
     # Use the deterministic bucket path here: referencing Artifacts would cycle
     # WebDelivery -> WebHeaders -> Artifacts CORS -> WebDelivery.
     csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://${ApiDelivery.DomainName} https://" + login_prefix + ".auth." + region + ".amazoncognito.com https://cognito-idp." + region + ".amazonaws.com " + artifact_upload_origin + "; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
-    resource("WebHeaders", "AWS::CloudFront::ResponseHeadersPolicy", {"ResponseHeadersPolicyConfig": {"Name": prefix + "-web", "SecurityHeadersConfig": {"ContentTypeOptions": {"Override": True}, "FrameOptions": {"FrameOption": "DENY", "Override": True}, "ReferrerPolicy": {"ReferrerPolicy": "no-referrer", "Override": True}, "StrictTransportSecurity": {"AccessControlMaxAgeSec": 31536000, "IncludeSubdomains": True, "Override": True}, "ContentSecurityPolicy": {"ContentSecurityPolicy": sub(csp), "Override": True}}, "CustomHeadersConfig": {"Items": [{"Header": "Permissions-Policy", "Value": "camera=(self), microphone=(), geolocation=()", "Override": True}]}}})
+    resource("WebHeaders", "AWS::CloudFront::ResponseHeadersPolicy", {"ResponseHeadersPolicyConfig": {"Name": regional_global_name(prefix + "-web", region), "SecurityHeadersConfig": {"ContentTypeOptions": {"Override": True}, "FrameOptions": {"FrameOption": "DENY", "Override": True}, "ReferrerPolicy": {"ReferrerPolicy": "no-referrer", "Override": True}, "StrictTransportSecurity": {"AccessControlMaxAgeSec": 31536000, "IncludeSubdomains": True, "Override": True}, "ContentSecurityPolicy": {"ContentSecurityPolicy": sub(csp), "Override": True}}, "CustomHeadersConfig": {"Items": [{"Header": "Permissions-Policy", "Value": "camera=(self), microphone=(), geolocation=()", "Override": True}]}}})
     resource("WebDelivery", "AWS::CloudFront::Distribution", {"DistributionConfig": {"Enabled": True, "DefaultRootObject": "index.html", "HttpVersion": "http2", "IPV6Enabled": True, "PriceClass": "PriceClass_100", "ViewerCertificate": {"CloudFrontDefaultCertificate": True}, "Origins": [{"Id": "web", "DomainName": att("WebAssets", "RegionalDomainName"), "OriginPath": "/releases/" + revision, "OriginAccessControlId": ref("WebOriginAccess"), "S3OriginConfig": {"OriginAccessIdentity": ""}}], "DefaultCacheBehavior": {"TargetOriginId": "web", "ViewerProtocolPolicy": "redirect-to-https", "AllowedMethods": ["GET", "HEAD", "OPTIONS"], "CachedMethods": ["GET", "HEAD"], "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad", "ResponseHeadersPolicyId": ref("WebHeaders"), "Compress": True, "FunctionAssociations": [{"EventType": "viewer-request", "FunctionARN": att("WebNavigation", "FunctionARN")}] }}, "Tags": tags})
     resource("MobileClient", "AWS::Cognito::UserPoolClient", {"UserPoolId": ref("Accounts"), "GenerateSecret": False, "EnableTokenRevocation": True, "PreventUserExistenceErrors": "ENABLED", "ExplicitAuthFlows": ["ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"], "AllowedOAuthFlowsUserPoolClient": True, "AllowedOAuthFlows": ["code"], "AllowedOAuthScopes": ["openid", "email", "profile"], "SupportedIdentityProviders": ["COGNITO"], "CallbackURLs": ["otgd-qa://oauth/callback", sub("https://${WebDelivery.DomainName}/")], "LogoutURLs": ["otgd-qa://oauth/callback", sub("https://${WebDelivery.DomainName}/")], "AccessTokenValidity": 15, "IdTokenValidity": 15, "RefreshTokenValidity": 30, "TokenValidityUnits": {"AccessToken": "minutes", "IdToken": "minutes", "RefreshToken": "days"}})
     for role, memory, timeout, concurrency in [("Api", 1024, 900, 2), ("Worker", 2048, 180, 2), ("Dispatcher", 512, 180, 1), ("Maintenance", 512, 900, 1), ("Control", 128, 30, 1)]:
@@ -284,8 +304,11 @@ def build_template(config, phase="platform"):
         return value
 
     body = json.dumps(dashboard_values({"start": "-PT6H", "periodOverride": "inherit", "widgets": widgets}), separators=(",", ":"))
-    resource("HealthDashboard", "AWS::CloudWatch::Dashboard", {"DashboardName": prefix + "-health", "DashboardBody": sub(body, bindings)})
-    resource("MonthlyBudget", "AWS::Budgets::Budget", {"Budget": {"BudgetName": prefix + "-monthly", "BudgetType": "COST", "TimeUnit": "MONTHLY", "BudgetLimit": {"Amount": budget, "Unit": "USD"}}, "NotificationsWithSubscribers": [{"Notification": {"ComparisonOperator": "GREATER_THAN", "NotificationType": kind, "Threshold": threshold, "ThresholdType": "PERCENTAGE"}, "Subscribers": [{"Address": email, "SubscriptionType": "EMAIL"}]} for kind, threshold in [("ACTUAL", 50), ("ACTUAL", 80), ("ACTUAL", 100), ("FORECASTED", 100)]]})
+    resource("HealthDashboard", "AWS::CloudWatch::Dashboard", {"DashboardName": dashboard_name, "DashboardBody": sub(body, bindings)})
+    resource("MonthlyBudget", "AWS::Budgets::Budget", {"Budget": {"BudgetName": regional_global_name(prefix + "-monthly", region), "BudgetType": "COST", "TimeUnit": "MONTHLY", "BudgetLimit": {"Amount": budget, "Unit": "USD"}}, "NotificationsWithSubscribers": [{"Notification": {"ComparisonOperator": "GREATER_THAN", "NotificationType": kind, "Threshold": threshold, "ThresholdType": "PERCENTAGE"}, "Subscribers": [{"Address": email, "SubscriptionType": "EMAIL"}]} for kind, threshold in [("ACTUAL", 50), ("ACTUAL", 80), ("ACTUAL", 100), ("FORECASTED", 100)]]})
+    if regional_fargate:
+        resources["MonthlyBudget"]["Properties"]["Budget"]["CostFilters"] = {
+            "TagKeyValue": ["user:project$one-the-go-detection"]}
     values = {
         "ApiOrigin": sub("https://${ApiDelivery.DomainName}"), "WebOrigin": sub("https://${WebDelivery.DomainName}"), "WebCallbackUri": sub("https://${WebDelivery.DomainName}/"),
         "WebBucket": ref("WebAssets"), "WebDistributionId": ref("WebDelivery"), "WebDistributionDomain": att("WebDelivery", "DomainName"), "WebReleasePrefix": "releases/" + revision,
@@ -297,7 +320,7 @@ def build_template(config, phase="platform"):
         "ArtifactBucket": ref("Artifacts"), "ArtifactUploadOrigin": artifact_upload_origin, "ExportBucket": ref("Exports"), "JournalBucket": ref("DeletionJournal"), "QueueUrl": ref("JobsQueue"), "DeadLetterQueueUrl": ref("DeadLetterQueue"),
         "DataKeyArn": att("DataKey", "Arn"), "JournalKeyArn": att("JournalKey", "Arn"), "CaptureSigningKeyArn": att("CaptureSigningKey", "Arn"),
         "AppDbSecret": ref("ApplicationSecret"), "TombstoneSecret": ref("TombstoneSecret"), "AdminDbSecret": master_secret,
-        "CloudWatchDashboardName": prefix + "-health", "CloudWatchDashboardUrl": f"https://{region}.console.aws.amazon.com/cloudwatch/home?region={region}#dashboards/dashboard/{prefix}-health",
+        "CloudWatchDashboardName": dashboard_name, "CloudWatchDashboardUrl": f"https://{region}.console.aws.amazon.com/cloudwatch/home?region={region}#dashboards/dashboard/{dashboard_name}",
         "ReleaseId": revision, "DatabaseIdentifier": prefix + "-writer", "ActivateServices": str(active).lower(),
     }
     for role in ["Api", "Worker", "Dispatcher", "Maintenance", "Control"]:

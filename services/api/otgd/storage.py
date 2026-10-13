@@ -135,25 +135,31 @@ def verify_artifact(artifact):
 
 def delete_versions(bucket, prefix):
     """Every version and marker, retaining durable DB references until successful."""
+    from .replica_cleanup import prepare_delete
+
     removed = 0
-    for page in (
-        client("s3")
-        .get_paginator("list_object_versions")
-        .paginate(Bucket=bucket, Prefix=prefix)
-    ):
-        keys = [
-            {"Key": v["Key"], "VersionId": v["VersionId"]}
+    source = client("s3")
+    versions = []
+    for number, page in enumerate(source.get_paginator("list_object_versions").paginate(Bucket=bucket, Prefix=prefix)):
+        if number >= 20:
+            raise Problem(503, "OBJECT_CLEANUP_LIMIT", retryable=True)
+        versions += [
+            {"Key": v["Key"], "VersionId": v["VersionId"], "DeleteMarker": field == "DeleteMarkers"}
             for field in ("Versions", "DeleteMarkers")
             for v in page.get(field, [])
             if v["Key"].startswith(prefix)
         ]
-        for i in range(0, len(keys), 1000):
-            result = client("s3").delete_objects(
-                Bucket=bucket, Delete={"Objects": keys[i : i + 1000], "Quiet": True}
-            )
-            if result.get("Errors"):
-                raise Problem(503, "OBJECT_CLEANUP_INCOMPLETE", retryable=True)
-            removed += len(keys[i : i + 1000])
+        if len(versions) > 10000:
+            raise Problem(503, "OBJECT_CLEANUP_LIMIT", retryable=True)
+    # Pending replication keeps the revoked source version intact. Completed
+    # replicas are erased first; durable references continue to sweep arrivals.
+    prepare_delete(source, bucket, prefix, versions)
+    keys = [{"Key": row["Key"], "VersionId": row["VersionId"]} for row in versions]
+    for i in range(0, len(keys), 1000):
+        result = source.delete_objects(Bucket=bucket, Delete={"Objects": keys[i : i + 1000], "Quiet": True})
+        if result.get("Errors"):
+            raise Problem(503, "OBJECT_CLEANUP_INCOMPLETE", retryable=True)
+        removed += len(keys[i : i + 1000])
     return removed
 
 

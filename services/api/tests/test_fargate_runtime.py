@@ -478,6 +478,26 @@ def test_metadata_sdk_uses_actual_dualstack_endpoints_and_no_application_setting
         runtime.metadata_client("secretsmanager")
 
 
+def test_east1_metadata_and_receipts_bind_actual_region_without_allowing_backup_as_primary(cloud,monkeypatch):
+    import boto3
+    monkeypatch.setenv('OTGD_AWS_REGION','us-east-1')
+    monkeypatch.setenv('OTGD_ECS_CLUSTER_ARN',f'arn:aws:ecs:us-east-1:{ACCOUNT}:cluster/{runtime.PREFIX}')
+    monkeypatch.setenv('OTGD_ECS_WORKER_TASK_DEFINITION_ARN',f'arn:aws:ecs:us-east-1:{ACCOUNT}:task-definition/{runtime.PREFIX}-worker:7')
+    assert runtime.launch_configuration()[0].startswith('arn:aws:ecs:us-east-1:')
+    constructor=boto3.client
+    monkeypatch.setattr(runtime.boto3,'client',lambda service,**kwargs:constructor(service,
+        aws_access_key_id='fictional',aws_secret_access_key='fictional',**kwargs))
+    assert runtime.metadata_client('ecs').meta.endpoint_url=='https://ecs.us-east-1.api.aws'
+    key=f'receipts/{SOURCE}/00000000-0000-4000-8000-000000000001.json'
+    monkeypatch.setenv('OTGD_FARGATE_RECEIPT_KEY',key)
+    monkeypatch.setenv('OTGD_FARGATE_RECEIPT_BUCKET',f'{runtime.PREFIX}-{ACCOUNT}-us-east-1-deployments')
+    assert runtime._receipt_configuration()==(SOURCE,f'{runtime.PREFIX}-{ACCOUNT}-us-east-1-deployments',key)
+    monkeypatch.setenv('OTGD_FARGATE_RECEIPT_BUCKET',f'{runtime.PREFIX}-{ACCOUNT}-us-east-2-deployments')
+    with pytest.raises(ValueError):runtime._receipt_configuration()
+    monkeypatch.setenv('OTGD_AWS_REGION','us-west-2')
+    with pytest.raises(ValueError):runtime._metadata_identity()
+
+
 def test_successful_task_metadata_is_link_local_bounded_and_matches_owned_task(cloud, monkeypatch):
     monkeypatch.setenv("ECS_CONTAINER_METADATA_URI_V4", "http://169.254.170.2/v4/fictional-container")
     requests = []

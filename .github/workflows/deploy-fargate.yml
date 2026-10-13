@@ -9,17 +9,17 @@ on:
         type: boolean
         default: false
       recovery_run_id:
-        description: Failed legacy deployment run containing the protected initial recovery journal; leave empty after adoption
+        description: Ohio only — failed legacy run containing the protected initial recovery journal; leave empty for East 1
         required: false
         type: string
         default: ''
       continue_uninitialized_run_id:
-        description: Failed stopped legacy run proving no first initialization; requires establish_new and an empty recovery_run_id
+        description: Ohio only — stopped legacy run proving no first initialization; requires establish_new and no recovery_run_id
         required: false
         type: string
         default: ''
       previous_continuation_run_id:
-        description: Failed Fargate continuation proving a prior import or subnet repair; requires the same legacy continuation source
+        description: Ohio only — failed Fargate continuation proving prior import or repair; requires the same legacy source
         required: false
         type: string
         default: ''
@@ -29,9 +29,9 @@ permissions:
   contents: read
   actions: read
 
-# Serialize all attempts for this actual account/region, including manual retries.
+# Serialize this account's development attempts across regional targets.
 concurrency:
-  group: otgd-fargate-development-738470137867-us-east-2
+  group: otgd-fargate-development-738470137867
   cancel-in-progress: false
 
 jobs:
@@ -42,8 +42,6 @@ jobs:
     env:
       CI: '1'
       EXPO_NO_TELEMETRY: '1'
-      AWS_REGION: us-east-2
-      AWS_DEFAULT_REGION: us-east-2
       AWS_EC2_METADATA_DISABLED: 'true'
       AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
       GH_TOKEN: ${{ github.token }}
@@ -160,19 +158,31 @@ jobs:
       - name: Bind reviewed configuration to this exact source and verify the budget
         id: configuration
         shell: bash
+        env:
+          RECOVERY_RUN_ID: ${{ inputs.recovery_run_id }}
+          CONTINUE_UNINITIALIZED_RUN_ID: ${{ inputs.continue_uninitialized_run_id }}
+          PREVIOUS_CONTINUATION_RUN_ID: ${{ inputs.previous_continuation_run_id }}
         run: |
           set -euo pipefail
           mkdir -p reports
-          python3 - <<'PYCODE'
+          uv run --project services/api python - <<'PYCODE'
           import json
           import os
           from pathlib import Path
-          config = json.loads(Path('infra/config/fargate.example.json').read_text())
-          if (config['environment'] != 'fargate-development' or config['account'] != '738470137867'
-                  or config['region'] != 'us-east-2' or config['monthlyBudgetUsd'] != 100):
+          from deploy.fargate import read_config
+
+          config = read_config(Path('infra/config/fargate.example.json'))
+          if config['account'] != '738470137867' or config['monthlyBudgetUsd'] != 100:
               raise SystemExit('Fargate target differs from the reviewed account, region or budget')
+          if config['region'] != 'us-east-2' and any(os.environ.get(field, '') != '' for field in (
+                  'RECOVERY_RUN_ID', 'CONTINUE_UNINITIALIZED_RUN_ID', 'PREVIOUS_CONTINUATION_RUN_ID')):
+              raise SystemExit('Ohio recovery evidence cannot authorize a different regional target')
           config['releaseId'] = os.environ['GITHUB_SHA']
           Path('.local/fargateconfig/fargate.json').write_text(json.dumps(config, indent=2) + '\n')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f"region={config['region']}\n")
+          with open(os.environ['GITHUB_ENV'], 'a') as environment:
+              environment.write(f"AWS_REGION={config['region']}\nAWS_DEFAULT_REGION={config['region']}\n")
           PYCODE
           uv run --project services/api python deploy/fargate.py plan \
             --config .local/fargateconfig/fargate.json > reports/fargate-plan.json
@@ -908,7 +918,7 @@ jobs:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-2
+          aws-region: ${{ steps.configuration.outputs.region }}
           allowed-account-ids: '738470137867'
           unset-current-credentials: true
           force-skip-oidc: true
@@ -917,7 +927,9 @@ jobs:
           action-timeout-s: 90
 
       - name: Verify the actual AWS target without printing credentials
-        run: uv run --project services/api python deploy/check_access.py --account 738470137867 --region us-east-2
+        env:
+          PRIMARY_REGION: ${{ steps.configuration.outputs.region }}
+        run: uv run --project services/api python deploy/check_access.py --account 738470137867 --region "$PRIMARY_REGION"
 
       - name: Deploy the OnGo container system and verify actual health
         id: deployment
@@ -964,6 +976,9 @@ jobs:
             reports/fargate-deploy.json
             .local/deploy/fargate-development/**/deployment.json
             .local/deploy/fargate-development/**/deployment-state.json
+            .local/deploy/fargate-development/**/regional-backup.json
+            .local/deploy/fargate-development/**/regional-backup-configuration.json
+            .local/deploy/fargate-development/**/regional-backup-initial-copy.json
             .local/deploy/fargate-development/**/initial-recovery.json
             .local/deploy/fargate-development/**/initial-resume.json
             .local/deploy/fargate-development/**/uninitialized-continuation.json

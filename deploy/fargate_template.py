@@ -13,7 +13,7 @@ import json
 import math
 import re
 
-from deploy.serverless_template import att, build_template as original_template, ref, sub
+from deploy.serverless_template import att, build_template as original_template, ref, sub, regional_global_name
 
 PREFIX = "otgd-serverless-development"
 NAMESPACE = "OTGD/serverless-development"
@@ -36,11 +36,22 @@ def _configuration(config, phase):
     if phase not in ("registry", "platform"):
         raise ValueError("Unknown Fargate deployment phase")
     account, region = config.get("account", ""), config.get("region", "")
-    if not re.fullmatch(r"[0-9]{12}", account) or region != "us-east-2":
-        raise ValueError("Fargate development requires its actual Ohio account")
+    if (not re.fullmatch(r"[0-9]{12}", account) or region not in ("us-east-1", "us-east-2")
+            or (region == 'us-east-1' and config.get('backupRegion') != 'us-west-2')
+            or (region == 'us-east-2' and config.get('backupRegion') is not None)):
+        raise ValueError("Fargate requires the reviewed East1/West2 pair or unchanged Ohio legacy account")
     if not re.fullmatch(r"[0-9a-f]{40}", config.get("releaseId", "")):
         raise ValueError("Fargate deployment requires an immutable full source SHA")
     if phase == "platform":
+        if region == 'us-east-1':
+            zones = config.get('availabilityZones')
+            if (not isinstance(zones, list) or len(zones) != 2
+                    or any(not isinstance(row, dict) or set(row) != {'name', 'id'}
+                           or not isinstance(row['name'], str) or not re.fullmatch(r'us-east-1[a-z]', row['name'])
+                           or not isinstance(row['id'], str) or not re.fullmatch(r'use1-az[1-9][0-9]?', row['id'])
+                           or row['id'] == 'use1-az3' for row in zones)
+                    or len({row['name'] for row in zones}) != 2 or len({row['id'] for row in zones}) != 2):
+                raise ValueError('East1 requires its live verified CloudFront-supported physical zone pair')
         if not re.fullmatch(r"pl-[0-9a-f]{8,17}", config.get("cloudFrontPrefixListId", "")):
             raise ValueError("Set the actual regional CloudFront origin-facing managed prefix list")
         for key in ("apiImageUri", "workerImageUri", "uiImageUri"):
@@ -50,7 +61,7 @@ def _configuration(config, phase):
 
 
 def _dualstack_image(uri):
-    return uri.replace(".dkr.ecr.us-east-2.amazonaws.com/", ".dkr-ecr.us-east-2.on.aws/")
+    return re.sub(r'\.dkr\.ecr\.(us-east-1|us-east-2)\.amazonaws\.com/', r'.dkr-ecr.\1.on.aws/', uri)
 
 
 def validate_private_b_resource(resource, region):
@@ -86,27 +97,44 @@ def validate_private_b_resource(resource, region):
     return deepcopy(resource)
 
 
-def build_template(config, phase="platform", *, preserved_private_b_resource=None):
+def build_template(config, phase="platform", *, preserved_private_b_resource=None, recovery_key_arn=None):
     """Build registry, stopped platform, or admitted active platform resources."""
     _configuration(config, phase)
     # This is construction reuse, not the cost admission result: the Fargate
     # CLI independently admits the actual approved budget and workload model.
-    base = original_template({**config, "monthlyBudgetUsd": min(config["monthlyBudgetUsd"], 50)}, phase)
+    regional = config['region'] == 'us-east-1'
+    base = original_template({**config, "monthlyBudgetUsd": min(config["monthlyBudgetUsd"], 50)}, phase,
+        **({'regional_fargate': True} if regional else {}))
     base["Description"] = "On-The-Go Detection ECS Fargate development deployment"
     if phase == "registry":
         if preserved_private_b_resource is not None:
             raise ValueError("PrivateB preservation applies only to the application stack")
+        if not regional and recovery_key_arn is not None:
+            raise ValueError('Ohio legacy authority cannot select the new regional recovery key')
         base["Resources"]["Images"]["Properties"].pop("RepositoryPolicyText", None)
+        if regional:
+            from deploy.fargate_backup import extend_source_template
+            base = extend_source_template(base, config, recovery_key_arn=recovery_key_arn)
         return base
 
     resources = base["Resources"]
+    if not regional and recovery_key_arn is not None:
+        raise ValueError('Ohio legacy authority cannot select the new regional recovery key')
     if preserved_private_b_resource is not None:
+        if regional:
+            raise ValueError('The fresh East1 application cannot bind an Ohio subnet repair')
         resources["PrivateB"] = validate_private_b_resource(preserved_private_b_resource, config["region"])
     outputs = base["Outputs"]
     account, region, revision = config["account"], config["region"], config["releaseId"]
+    if regional:
+        outputs['AvailabilityZones'] = {'Value': json.dumps(config['availabilityZones'], separators=(',', ':'))}
     active = config.get("activateServices", False)
     tags = deepcopy(resources["Network"]["Properties"]["Tags"])
     original_common = deepcopy(resources["ApiFunction"]["Properties"]["Environment"]["Variables"])
+    if regional:
+        for index, name in enumerate(('PrivateA', 'PrivateB')):
+            resources[name]['Properties']['AvailabilityZone'] = config['availabilityZones'][index]['name']
+        resources['DatabaseWriter']['Properties']['AvailabilityZone'] = config['availabilityZones'][0]['name']
 
     def resource(name, kind, properties, **options):
         resources[name] = {"Type": kind, "Properties": properties, **options}
@@ -136,6 +164,8 @@ def build_template(config, phase="platform", *, preserved_private_b_resource=Non
             "VpcId": ref("Network"), "AvailabilityZone": {"Fn::Select": [index - 2, {"Fn::GetAZs": ""}]},
             "Ipv6Native": True, "Ipv6CidrBlock": cidr, "AssignIpv6AddressOnCreation": True,
             "MapPublicIpOnLaunch": False, "Tags": tags}, DependsOn="NetworkIpv6")
+        if regional:
+            resources[name]['Properties']['AvailabilityZone'] = config['availabilityZones'][index - 2]['name']
         resource(name + "Routes", "AWS::EC2::RouteTable", {"VpcId": ref("Network"), "Tags": tags})
         resource(name + "Association", "AWS::EC2::SubnetRouteTableAssociation", {
             "SubnetId": ref(name), "RouteTableId": ref(name + "Routes")})
@@ -182,7 +212,7 @@ def build_template(config, phase="platform", *, preserved_private_b_resource=Non
         "LoadBalancerArn": ref("Ingress"), "Protocol": "HTTP", "Port": 8080,
         "DefaultActions": [{"Type": "forward", "TargetGroupArn": ref("IngressTargets")}]})
     resource("VpcOrigin", "AWS::CloudFront::VpcOrigin", {"VpcOriginEndpointConfig": {
-        "Name": PREFIX + "-ingress", "Arn": ref("Ingress"), "HTTPPort": 8080,
+        "Name": regional_global_name(PREFIX + "-ingress", region), "Arn": ref("Ingress"), "HTTPPort": 8080,
         "HTTPSPort": 443, "OriginProtocolPolicy": "http-only", "OriginSSLProtocols": ["TLSv1.2"]}},
         DependsOn=["InternetGatewayAttachment", "IngressListener"])
     for name, target, compress in (("ApiDelivery", "api", False), ("WebDelivery", "web", True)):
@@ -249,6 +279,12 @@ def build_template(config, phase="platform", *, preserved_private_b_resource=Non
     original_common.update(OTGD_SERVERLESS_EXECUTOR="ecs", OTGD_ECS_CLUSTER_ARN=att("Cluster", "Arn"),
                           OTGD_ECS_SUBNET_IDS=task_subnets, OTGD_ECS_SECURITY_GROUP_IDS=task_groups)
     original_common["OTGD_CAPTURE_SIGNING_KEY_ID"] = att("CaptureSigningKey", "Arn")
+    if regional:
+        from deploy.fargate_backup import replica_bucket
+        original_common.update(OTGD_BACKUP_REGION=config['backupRegion'],
+            OTGD_BACKUP_ARTIFACT_BUCKET=replica_bucket(config, 'Artifacts'),
+            OTGD_BACKUP_EXPORT_BUCKET=replica_bucket(config, 'Exports'),
+            OTGD_BACKUP_KMS_KEY_ID=recovery_key_arn or ref('RecoveryKeyArn'))
 
     def container(name, image, command, environment, group, *, port=None):
         value = {"Name": name, "Image": _dualstack_image(image), "Essential": True,
@@ -366,7 +402,7 @@ def build_template(config, phase="platform", *, preserved_private_b_resource=Non
             return [bind(item) for item in value]
         return value
 
-    resource("HealthDashboard", "AWS::CloudWatch::Dashboard", {"DashboardName": PREFIX + "-health",
+    resource("HealthDashboard", "AWS::CloudWatch::Dashboard", {"DashboardName": regional_global_name(PREFIX + "-health", region),
         "DashboardBody": sub(json.dumps(bind({"start": "-PT6H", "widgets": widgets}), separators=(",", ":")), bindings)})
     resources["MonthlyBudget"]["Properties"]["Budget"]["BudgetLimit"]["Amount"] = config["monthlyBudgetUsd"]
     for name, value in {
@@ -379,9 +415,12 @@ def build_template(config, phase="platform", *, preserved_private_b_resource=Non
         "VpcOriginId": ref("VpcOrigin"), "LoadBalancerArn": ref("Ingress"),
         "LoadBalancerDns": att("Ingress", "DNSName"), "TargetGroupArn": ref("IngressTargets"),
         "ApiImageUri": config["apiImageUri"], "WorkerImageUri": config["workerImageUri"], "UiImageUri": config["uiImageUri"],
-        "UiLogGroup": ref("UiLogs"), "MonthlyBudgetName": PREFIX + "-monthly", "AlertTopicArn": ref("Notifications"),
+        "UiLogGroup": ref("UiLogs"), "MonthlyBudgetName": regional_global_name(PREFIX + "-monthly", region), "AlertTopicArn": ref("Notifications"),
         "DeploymentBucket": deployment_bucket,
         "ActivateServices": str(active).lower(),
     }.items():
         output(name, value)
+    if regional:
+        from deploy.fargate_backup import extend_source_template
+        base = extend_source_template(base, config, recovery_key_arn=recovery_key_arn)
     return base

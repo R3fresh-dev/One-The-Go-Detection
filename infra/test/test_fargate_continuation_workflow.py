@@ -1,5 +1,6 @@
 """Credential boundary checks for the Fargate continuation of a failed Lambda stop."""
 from contextlib import contextmanager
+import ast
 import hashlib
 import json
 import os
@@ -8,7 +9,7 @@ import stat
 import unittest
 from unittest.mock import Mock, patch
 from infra.test import test_serverless_workflow as legacy
-from infra.test.test_fargate_workflow import workflow_program
+from infra.test.test_fargate_workflow import configuration_fixture, reviewed_config, workflow_program, workflow_source
 from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH
 REVISION = legacy.REVISION
 PREVIOUS_REVISION = legacy.PREVIOUS_REVISION
@@ -93,6 +94,40 @@ class FargateContinuationWorkflowTest(unittest.TestCase):
     def setUp(self):
         self.workflow, self.program = workflow_program('continuation')
 
+    def test_fresh_east_primary_uses_no_ohio_recovery_authority(self):
+        _, configuration = workflow_source('configuration')
+        _, recovery = workflow_program('recovery')
+        recovery['github_json'] = Mock()
+        self.program['github_json'] = Mock()
+        environment = {'RECOVERY_RUN_ID': '', 'CONTINUE_UNINITIALIZED_RUN_ID': '',
+                       'PREVIOUS_CONTINUATION_RUN_ID': '', 'ESTABLISH_NEW': 'true'}
+        with configuration_fixture(reviewed_config(), environment) as directory:
+            exec(compile(ast.parse(configuration), 'regional-configuration', 'exec'), {'__name__': 'fixture'})
+            self.assertEqual((directory / 'output').read_text(), 'region=us-east-1\n')
+            self.assertIsNone(recovery['prepare_recovery']())
+            self.assertIsNone(self.program['admit_continuation']())
+            self.assertFalse(Path('.local/fargateconfig/recovery').exists())
+            self.assertFalse(Path('.local/fargateconfig/continuation-source').exists())
+        recovery['github_json'].assert_not_called()
+        self.program['github_json'].assert_not_called()
+
+    def test_east_primary_rejects_each_ohio_recovery_route_before_region_export(self):
+        _, configuration = workflow_source('configuration')
+        for field in ('RECOVERY_RUN_ID', 'CONTINUE_UNINITIALIZED_RUN_ID', 'PREVIOUS_CONTINUATION_RUN_ID'):
+            for value in ('38318133975', ' '):
+                with self.subTest(field=field, value=value), configuration_fixture(
+                        reviewed_config(), {field: value, 'ESTABLISH_NEW': 'true'}) as directory:
+                    with self.assertRaisesRegex(SystemExit, 'Ohio recovery evidence'):
+                        exec(compile(ast.parse(configuration), 'regional-configuration', 'exec'), {'__name__': 'fixture'})
+                    self.assertFalse(Path('.local/fargateconfig/fargate.json').exists())
+                    self.assertFalse((directory / 'output').exists())
+                    self.assertFalse((directory / 'environment').exists())
+        for field in ('RECOVERY_RUN_ID', 'CONTINUE_UNINITIALIZED_RUN_ID', 'PREVIOUS_CONTINUATION_RUN_ID'):
+            with self.subTest(legacy_field=field), configuration_fixture(
+                    reviewed_config('us-east-2'), {field: '38318133975'}) as directory:
+                exec(compile(ast.parse(configuration), 'regional-configuration', 'exec'), {'__name__': 'fixture'})
+                self.assertEqual((directory / 'output').read_text(), 'region=us-east-2\n')
+
     def test_continuation_admission_and_upload_are_before_aws_and_keep_retired_route(self):
         steps = self.workflow['jobs']['deploy']['steps']
         position = {step.get('id'): index for index, step in enumerate(steps) if step.get('id')}
@@ -174,13 +209,16 @@ class FargateContinuationWorkflowTest(unittest.TestCase):
         self.program['validate_continuation_files'](files, deployment_run())
         for changes in ({'failed_stage': 'bootstrap'}, {'status': 'running'},
                         {'completed_stages': ['bootstrap']}, {'completed_receipts': {'bootstrap.json': {}}},
-                        {'rollback_executed': True}, {'account': '123456789012'}, {'release_id': REVISION}):
+                        {'rollback_executed': True}, {'account': '123456789012'}, {'region': 'us-east-1'},
+                        {'release_id': REVISION}):
             with self.subTest(changes=changes), self.assertRaises(Gate):
                 self.program['validate_continuation_files'](continuation_files(**changes), deployment_run())
         for name, changes in (
                 ('initial-recovery.json', {'source_manifest_sha256': 'f' * 64}),
                 ('initial-recovery.json', {'status': 'blocked-recovery-inspect-protected-journal-before-retry'}),
+                ('initial-recovery.json', {'region': 'us-east-1'}),
                 ('original-initial-recovery.json', {'actual_resources_deleted': True}),
+                ('original-initial-recovery.json', {'region': 'us-east-1'}),
                 ('gate-admission.json', {'head_sha': REVISION}),
                 ('gate-admission.json', {'event': 'pull_request'}),
                 ('serverless-plan.json', {'deployment_executed': True})):

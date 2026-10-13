@@ -821,7 +821,7 @@ def assert_artifact_admitted(db, account, artifact):
     return row
 
 
-def exact_versions(s3, bucket, key):
+def _exact_version_rows(s3, bucket, key):
     rows = []
     for page in s3.get_paginator("list_object_versions").paginate(
         Bucket=bucket, Prefix=key
@@ -832,7 +832,8 @@ def exact_versions(s3, bucket, key):
             version = item.get("VersionId")
             if not isinstance(version, str) or not version or version == "null":
                 raise RuntimeError("Raw cleanup requires exact versioned storage")
-            rows.append(version)
+            rows.append({"Key": key, "VersionId": version,
+                         "DeleteMarker": item in page.get("DeleteMarkers", [])})
             if len(rows) > 10000:
                 raise RuntimeError(
                     "Raw version inventory exceeds its bounded cleanup contract"
@@ -840,9 +841,16 @@ def exact_versions(s3, bucket, key):
     return rows
 
 
+def exact_versions(s3, bucket, key):
+    return [row["VersionId"] for row in _exact_version_rows(s3, bucket, key)]
+
+
 def purge_exact_key(s3, bucket, key):
-    for version in exact_versions(s3, bucket, key):
-        s3.delete_object(Bucket=bucket, Key=key, VersionId=version)
+    from .replica_cleanup import prepare_delete
+    rows = _exact_version_rows(s3, bucket, key)
+    prepare_delete(s3, bucket, key, rows, exact_key=True)
+    for row in rows:
+        s3.delete_object(Bucket=bucket, Key=key, VersionId=row['VersionId'])
     if exact_versions(s3, bucket, key):
         raise RuntimeError("Raw versions remain after cleanup; retry required")
 

@@ -27,6 +27,74 @@ class FargateTemplateTest(unittest.TestCase):
     def properties(self, name):
         return self.resources[name]["Properties"]
 
+    def east_configuration(self):
+        config = {**self.config, 'region': 'us-east-1', 'backupRegion': 'us-west-2',
+            'availabilityZones': [{'name': 'us-east-1f', 'id': 'use1-az1'},
+                                  {'name': 'us-east-1b', 'id': 'use1-az2'}]}
+        for name in ('apiImageUri', 'workerImageUri', 'uiImageUri'):
+            config[name] = config[name].replace('us-east-2', 'us-east-1')
+        return config
+
+    def test_east1_preserves_verified_physical_zones_and_backup_binding_across_all_renders(self):
+        config = self.east_configuration()
+        key = 'arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789abc'
+        for changes in ({'activateServices': False}, {'activateServices': False, 'uiImageUri': config['apiImageUri']},
+                        {'activateServices': True}, {'releaseId': 'b' * 40}):
+            with self.subTest(changes=changes):
+                template = MODULE.build_template({**config, **changes}, recovery_key_arn=key)
+                resources = template['Resources']
+                for name, zone in (('PrivateA', 'us-east-1f'), ('TaskA', 'us-east-1f'),
+                                   ('PrivateB', 'us-east-1b'), ('TaskB', 'us-east-1b'),
+                                   ('DatabaseWriter', 'us-east-1f')):
+                    self.assertEqual(resources[name]['Properties']['AvailabilityZone'], zone)
+                self.assertEqual(json.loads(template['Outputs']['AvailabilityZones']['Value']), config['availabilityZones'])
+                self.assertNotIn('RecoveryKeyArn', template.get('Parameters', {}))
+                for task, container in (('ApiTaskDefinition', 'api'), ('WorkerTaskDefinition', 'worker'),
+                                        ('MaintenanceTaskDefinition', 'maintenance')):
+                    row = next(row for row in resources[task]['Properties']['ContainerDefinitions'] if row['Name'] == container)
+                    env = self.environment(row)
+                    self.assertEqual(env['OTGD_AWS_REGION'], 'us-east-1')
+                    self.assertEqual(env['OTGD_BACKUP_REGION'], 'us-west-2')
+                    self.assertEqual(env['OTGD_BACKUP_KMS_KEY_ID'], key)
+                    self.assertEqual(env['OTGD_BACKUP_ARTIFACT_BUCKET'], 'otgd-fargate-recovery-123456789012-us-west-2-artifacts')
+                    self.assertEqual(env['OTGD_BACKUP_EXPORT_BUCKET'], 'otgd-fargate-recovery-123456789012-us-west-2-exports')
+                    self.assertIn('.dkr-ecr.us-east-1.on.aws/', row['Image'])
+                controller = next(row for row in resources['ApiTaskDefinition']['Properties']['ContainerDefinitions']
+                                  if row['Name'] == 'controller')
+                self.assertFalse(any(name.startswith('OTGD_BACKUP_') for name in self.environment(controller)))
+                for role in ('WorkerRole', 'MaintenanceRole'):
+                    policy = next(p for p in resources[role]['Properties']['Policies'] if p['PolicyName'] == 'ReplicaPrivacyErasure')
+                    self.assertNotIn('journal', json.dumps(policy))
+                    self.assertNotIn('kms:Decrypt', json.dumps(policy))
+
+    def test_east1_registry_replication_precedes_application_and_plans_bind_an_explicit_key_parameter(self):
+        config = self.east_configuration()
+        key = 'arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789abc'
+        registry = MODULE.build_template(config, 'registry', recovery_key_arn=key)
+        self.assertIn('RegionalReplicationRole', registry['Resources'])
+        self.assertEqual(registry['Resources']['DeploymentAssets']['Properties']['ReplicationConfiguration']['Rules'][0]
+                         ['Destination']['EncryptionConfiguration']['ReplicaKmsKeyID'], key)
+        platform = MODULE.build_template(config)
+        self.assertIn('RecoveryKeyArn', platform['Parameters'])
+        for name in ('Artifacts', 'Exports', 'DeletionJournal', 'WebAssets'):
+            self.assertIn('ReplicationConfiguration', platform['Resources'][name]['Properties'])
+        self.assertNotIn('RegionalReplicationRole', platform['Resources'])
+        self.assertNotIn('RegionalBackupPlan', registry['Resources'])
+
+    def test_east1_cannot_use_unsupported_physical_zone_or_ohio_authority_overrides(self):
+        config = self.east_configuration()
+        for zones in (None, ['us-east-1a', 'us-east-1b'],
+                      [{'name': 'us-east-1f', 'id': 'use1-az3'}, config['availabilityZones'][1]],
+                      [config['availabilityZones'][0]] * 2):
+            with self.subTest(zones=zones), self.assertRaises(ValueError):
+                MODULE.build_template({**config, 'availabilityZones': zones})
+        with self.assertRaises(ValueError):
+            MODULE.build_template(config, preserved_private_b_resource=self.resources['PrivateB'])
+        with self.assertRaises(ValueError):
+            MODULE.build_template({**config, 'region': 'us-west-2'})
+        with self.assertRaises(ValueError):
+            MODULE.build_template(self.config, recovery_key_arn='arn:aws:kms:us-west-2:123456789012:key/' + 'a' * 36)
+
     def test_managed_repair_resource_is_preserved_in_every_application_render(self):
         resource = deepcopy(self.resources['PrivateB'])
         resource.pop('DependsOn')

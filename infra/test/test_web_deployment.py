@@ -255,6 +255,19 @@ class WebArtifactTest(unittest.TestCase):
         with self.assertRaises(Gate):
             web.verify_security_headers(httpx.Headers(headers),managed)
 
+    def test_east1_browser_upload_policy_binds_the_matching_identity_and_bucket(self):
+        legacy, legacy_headers = self.serverless_policy()
+        out = {key: value.replace('us-east-2', 'us-east-1') for key, value in legacy.items()}
+        headers = {key: value.replace('us-east-2', 'us-east-1') for key, value in legacy_headers.items()}
+        web.verify_security_headers(httpx.Headers(headers), out)
+        web.verify_security_headers(httpx.Headers(legacy_headers), legacy)
+        for changed in ({**out, 'Issuer': legacy['Issuer']},
+                        {key: value.replace('us-east-1', 'us-west-2') for key, value in out.items()},
+                        {**out, 'ArtifactUploadOrigin': out['ArtifactUploadOrigin'].rstrip('/')},
+                        {**out, 'ArtifactBucket': out['ArtifactBucket'].replace('-artifacts', '-artifacts-extra')}):
+            with self.subTest(changed=changed), self.assertRaises(Gate):
+                web.verify_security_headers(httpx.Headers(headers), changed)
+
     def test_serverless_upload_output_rejects_foreign_or_broadened_destinations(self):
         out,headers=self.serverless_policy()
         upload=out['ArtifactUploadOrigin']
