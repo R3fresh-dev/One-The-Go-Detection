@@ -4906,63 +4906,70 @@ export class AppController {
       token = this.auth.logoutReceiptToken(),
       providerLogout = this.auth.providerLogoutUrl();
     // Clear memory and serialize OS credential removal before a late login can commit.
-    const providerRevoke = this.auth.revokeProvider().catch(() => {});
-    const credentialRemoval = this.auth.clear();
-    await this.stopActive("WORKSPACE_CHANGED");
-    await credentialRemoval;
-    if (flow !== this.authFlow) return;
-    if (removeLocal && this.store) await this.store.clear();
-    if (flow !== this.authFlow) return;
-    this.workspaceEpoch = newId();
-    await this.writes.catch(() => {});
-    if (flow !== this.authFlow) return;
-    if (this.store) await this.store.close();
-    if (flow !== this.authFlow) return;
-    this.store = null;
-    this.patch({
-      state: null,
-      identity: null,
-      locked: false,
-      sheet: null,
-      diagnosticError: null,
-      route: "welcome",
-      selectedCheck: null,
-      rawStudyId: null,
-      historyRows: [],
-      historyCursor: null,
-    });
-    await this.openGuest();
-    if (flow !== this.authFlow) return;
-    this.patch({
-      route: "welcome",
-      message:
-        "Signed out. The retained account cache requires the same account to sign in again.",
-    });
-    if (token && generation) {
-      try {
-        await this.api.request("/v1/auth/logout", {
-          method: "POST",
-          body: {},
-          token,
-          generation,
-          key: newId(),
-        });
-        if (flow !== this.authFlow) return;
-        await providerRevoke;
-        if (flow !== this.authFlow) return;
-        if (providerLogout) await this.auth.openProviderLogout(providerLogout);
-      } catch {
-        if (flow === this.authFlow)
-          this.patch({
-            message:
-              "Signed out on this device. Remote token or provider-session revocation was not confirmed.",
-          });
-      }
-    } else
+    const revokeProvider = this.auth.captureProviderRevocation();
+    let providerRevocation: Promise<void> | null = null;
+    const revokeCaptured = () => (providerRevocation ??= revokeProvider());
+    try {
+      const credentialRemoval = this.auth.clear();
+      await this.stopActive("WORKSPACE_CHANGED");
+      await credentialRemoval;
+      if (flow !== this.authFlow) return;
+      if (removeLocal && this.store) await this.store.clear();
+      if (flow !== this.authFlow) return;
+      this.workspaceEpoch = newId();
+      await this.writes.catch(() => {});
+      if (flow !== this.authFlow) return;
+      if (this.store) await this.store.close();
+      if (flow !== this.authFlow) return;
+      this.store = null;
       this.patch({
-        message:
-          "Signed out on this device. Remote token revocation was not confirmed.",
+        state: null,
+        identity: null,
+        locked: false,
+        sheet: null,
+        diagnosticError: null,
+        route: "welcome",
+        selectedCheck: null,
+        rawStudyId: null,
+        historyRows: [],
+        historyCursor: null,
       });
+      await this.openGuest();
+      if (flow !== this.authFlow) return;
+      this.patch({
+        route: "welcome",
+        message:
+          "Signed out. The retained account cache requires the same account to sign in again.",
+      });
+      if (token && generation) {
+        try {
+          await this.api.request("/v1/auth/logout", {
+            method: "POST",
+            body: {},
+            token,
+            generation,
+            key: newId(),
+          });
+          if (flow !== this.authFlow) return;
+          await revokeCaptured();
+          if (flow !== this.authFlow) return;
+          if (providerLogout)
+            await this.auth.openProviderLogout(providerLogout);
+        } catch {
+          if (flow === this.authFlow)
+            this.patch({
+              message:
+                "Signed out on this device. Remote token or provider-session revocation was not confirmed.",
+            });
+        }
+      } else
+        this.patch({
+          message:
+            "Signed out on this device. Remote token revocation was not confirmed.",
+        });
+    } finally {
+      await revokeCaptured().catch(() => {});
+    }
   }
   async background(): Promise<void> {
     this.foreground = false;

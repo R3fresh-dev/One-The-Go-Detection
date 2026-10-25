@@ -1,6 +1,6 @@
 # Local source image refresh — otgd-20261025-0555
 
-**ROUND C ARCHIVE READY, current copied-source equality verified; Docker load/adoption not executed by this worker.** Source-only local refresh was prepared, then PM reviewed and authorized immutable snapshot/rootfs/archive generation under /tmp. RoundC contains219 frozen COPY entries and passes source/base/config/platform/hash verification. At 2026-10-25T06:58:23.668891+00:00, all219 included source entries matched the current workspace with zero differences, including final scripts/ci_gate.py. Runtime quality gates remain separate and unexecuted by this packaging proof.
+**ROUND D ARCHIVE READY, current copied-source equality verified; Docker load/adoption not executed by this worker.** Source-only local refresh was prepared, then PM reviewed and authorized immutable snapshot/rootfs/archive generation under /tmp. RoundD contains219 frozen COPY entries and passes source/base/config/platform/hash verification. At 2026-10-25T07:22:49.747355+00:00, all219 included source entries matched the current workspace with zero differences, including final scripts/ci_gate.py and the D-007 CSP fix/direct tests. Runtime quality gates remain separate and unexecuted by this packaging proof.
 
 Role: /root/firmware_validation, assigned OpenAI gpt-6.1-sol/high. D-006 v3 acknowledged via actual PM message. PM separately authorized /tmp snapshot/build/package, while holding Docker load/retag/restart/deletion. Current assignment performed no Docker mutations, source/gate edits, cleanup, image deletion, service changes, Git operations, deployment or new spend. Sole PM ownership and correction_round=0/recovery_attempts=0 preserved. Earlier firmware/image-proof reports and their artifacts were not modified.
 
@@ -8,17 +8,17 @@ Role: /root/firmware_validation, assigned OpenAI gpt-6.1-sol/high. D-006 v3 ackn
 
 | Artifact | Identity/hash | Bytes |
 |---|---|---:|
-| Current canonical base image | sha256:1af98b2872a49d3be4f8e6468507e9bc56468b1554252dcdf19293c21850d57b | Docker255,895,545 |
+| Preserved serialized dependency-base config ID | sha256:1af98b2872a49d3be4f8e6468507e9bc56468b1554252dcdf19293c21850d57b | Docker255,895,545 |
 | Retained normalized base tar | SHA2569eb7ae54a33c8a183824112d1ab367bf9a2709e051536e20fe7ed01d2ef7c7e3 | 268,462,080 |
-| RoundC content-frozen plan | SHA2560b44a7466abfafd016acdc6e76e1cf038d0122bdf9a5577350b7296fc61763f2 | 81,601 |
-| Refreshed rootfs-c.tar | SHA25656cb9aba0d4a517c9b03bc7df02a4af37a86ce0efd36fd18ca7ba80178aa5b44 | 268,769,280 |
-| source-refresh-image-c.tar | SHA256c873125292bbf247ebb0467f5c4db1af750a0dfdc9e7a66eb1f232528b1b25fe | 268,779,520 |
-| Planned image config ID, not yet loaded | sha256:561bf306fb4ac684b3783a532b7129287c362987ed8083212912c1bd0e1f5a83 | — |
-| Planned candidate-only tag | otgd-api:factory-source-0b44a7466abf | — |
+| RoundD content-frozen plan | SHA2565e44bbed7d6a947e41e0ddaffee8584413fe306d5d67c20509088dfe94a2d903 | 81,599 |
+| Refreshed rootfs-d.tar | SHA256a5b5cf95fc230c53c75d4afaba7a390441488cd9d5352cccda0793c5ef733965 | 268,769,280 |
+| source-refresh-image-d.tar | SHA256585b961d89a2b633e734b99efdb2e1ace0b616e5025fff8fa655b6db571b5df6 | 268,779,520 |
+| Planned image config ID, not yet loaded | sha256:a266628e1e2d87d83b0152684298e003dd2e44ce0c145ef6985ea690b8263b06 | — |
+| Planned candidate-only tag | otgd-api:factory-source-5e44bbed7d6a | — |
 
 Files are under /tmp/otgd-image-proof/source-refresh. The archive preserves complete serialized runtime Config including ArgsEscaped=true and linux/amd64, while binding its sole layer to the new rootfs tar SHA256. OCI config/manifest/index and Docker manifest descriptor references, blob digests and sizes were regenerated and independently checked. New top-level history/comment/created metadata disclose reconstructed LOCAL source refresh and bind the frozen plan; original/cloud image identity is not claimed.
 
-RoundA was successfully built but became stale when browser_fixture.py changed afterwards; its source snapshot/rootfs/archive and receipts remain preserved. RoundB captured the final browser fixture but preceded the final ci_gate.py edit; PM loaded B while canonical remained unchanged. PM reconciled an initial comparison of raw serialized Config against Docker-inspect defaults: serialized-to-serialized and inspected-to-inspected both match exactly. Worker read-only B reconciliation is recorded in pm-loaded-b-readback.json. RoundC was captured after the final gate integrator release; nothing was omitted. All earlier archives are retained. Current-source comparison is below.
+RoundA was successfully built but became stale when browser_fixture.py changed afterwards; its source snapshot/rootfs/archive and receipts remain preserved. RoundB captured the final browser fixture but preceded the final ci_gate.py edit; PM loaded B while canonical remained unchanged. PM reconciled an initial comparison of raw serialized Config against Docker-inspect defaults: serialized-to-serialized and inspected-to-inspected both match exactly. Worker read-only B reconciliation is recorded in pm-loaded-b-readback.json. RoundC was subsequently adopted by PM for preflight; D-007 then released only the local-issuer CSP source and focused tests for the real browser defect fix. PM reports canonical C with an identity-only read-only overlay for preflight. RoundD captures the released CSP fix/direct tests and final shared gate; nothing was omitted. No Docker call, including inspect, was performed by this worker during roundD. All earlier archives are retained. Current-source comparison is below.
 
 ## Why source-only refresh is justified here
 
@@ -39,7 +39,7 @@ Refresh verification compared every outside-COPY base entry (payload/hash/length
 
 ## Executed scope and current-source distinction
 
-RoundC snapshot/rootfs/archive commands ran 2026-10-25T06:58:06.388041+00:00 through2026-10-25T06:58:11.334260+00:00; all exit0. Independent verification ran06:58:21.932660–06:58:23.690571 UTC, exit0. At that check:
+RoundD snapshot/rootfs/archive commands ran 2026-10-25T07:22:21.975391+00:00 through2026-10-25T07:22:27.168525+00:00; all exit0. Independent verification ran07:22:48.039379–07:22:49.767334 UTC, exit0. At that check:
 
 ```json
 {
@@ -53,15 +53,16 @@ All copied inputs, including runtime/service source, helpers and final scripts/c
 
 | Key frozen source | SHA256 |
 |---|---|
-| `services/api/otgd/local_identity.py` | `118723bf3242154fef3d7faae9d624d5d5f1d02b458844952167ae4a07330a3d` |
+| `services/api/otgd/local_identity.py` | `1576b35868abd7a22b402f2efea4777b6d34dcfb786e8670350b915972bc1e9e` |
 | `services/api/otgd/local_oauth_state.py` | `e7456407ee43ddf4578161a7eeee2fe0bbe796fbd51a742524f283a1e20678ad` |
+| `services/api/tests/test_local_identity.py` | `1ba323cfe3b792427f8479a4e91c129a8e163ec295336e288280ba6a9459b0a1` |
 | `infra/local/participant_probe.py` | `8243f9c8da985fe7c3f4dd79a83a42d89199f64e4895f81f2b46e632d9fdd5cb` |
 | `infra/local/browser_fixture.py` | `01e70e58cec7913d7bf3b442e39158b80514c7c645cad8095f06e3b528695da7` |
 | `infra/local/worker_interrupt_probe.py` | `17f19c89fb376416aec5379cf7181822082171863e5f202cba7b90cd972d98cc` |
 | `infra/local/worker_interrupt_gate.py` | `fd0ec8fccbe344df436775bdcaf484534eb236025c2c0e63e6ffdc7e730223b1` |
 | `scripts/ci_gate.py` | `96b1daa84983ed76d99dc4a45dfa1bc387e3703778ed2828d5eb66c307e0ec1a` |
 
-RoundC changes relative to the baseline copied-source payload/modes:
+RoundD changes relative to the baseline copied-source payload/modes:
 
 ```json
 [
@@ -91,7 +92,7 @@ RoundC changes relative to the baseline copied-source payload/modes:
   },
   {
     "change": "payload/mode/owner",
-    "new_sha256": "118723bf3242154fef3d7faae9d624d5d5f1d02b458844952167ae4a07330a3d",
+    "new_sha256": "1576b35868abd7a22b402f2efea4777b6d34dcfb786e8670350b915972bc1e9e",
     "old_sha256": "c59c7e438ee855232d4bf96ce04ea7485a0967a6dbf006d8f900a109f240e49f",
     "path": "app/services/api/otgd/local_identity.py"
   },
@@ -107,7 +108,7 @@ RoundC changes relative to the baseline copied-source payload/modes:
   },
   {
     "change": "payload/mode/owner",
-    "new_sha256": "991733f845ff60d0ca13e145482497b6273425b1f293361a6d73eb874d29993f",
+    "new_sha256": "1ba323cfe3b792427f8479a4e91c129a8e163ec295336e288280ba6a9459b0a1",
     "old_sha256": "51b0675eb98628b6b6f6ab912dae1db10f8c1d30ebff60a7eec78acea58424c2",
     "path": "app/services/api/tests/test_local_identity.py"
   },
@@ -134,11 +135,11 @@ RoundC changes relative to the baseline copied-source payload/modes:
 
 ## Resources, safety bounds and next step
 
-Initial read-only state showed five canonical long-running containers healthy and resource-init/migrate exited0. Original image archives and existing data/runtime are preserved. Other PM-owned live probes may run concurrently; this assignment did not alter them. The canonical base image was reread after packaging and still equals1af98b28..., and the proposed source tag remained absent.
+Initial read-only state showed five canonical long-running containers healthy and resource-init/migrate exited0. Original image archives and existing data/runtime are preserved. Other PM-owned live probes may run concurrently; this assignment did not alter them. RoundD performs archive/source verification only and makes no Docker-state claim. PM reports canonical C with the identity-only preflight overlay; loading/adopting D and removing the need for that overlay are PM-owned subsequent steps.
 
-At final verification, root free1,674,702,848B; /tmp free1,118,912,512B. Each generation checked headroom before writing. Three source-refresh pairs are retained; no further pair is planned under current resource scope; no cleanup performed. Normal17-layer rebuild has not been shown safe: historical layer tar sum377,207,808B, cumulative uncompressed layer-size sum3,829,634,560B, exceeding measured free root before VFS/build/container overhead. This is a risk indicator, not an exact physical-space forecast. Recheck capacity before image loading and each service recreation.
+At final verification, root free1,457,197,056B; /tmp free575,393,792B. Each generation checked headroom before writing. Four source-refresh pairs are retained; no additional pair is permitted under this assignment; no cleanup performed. Normal17-layer rebuild has not been shown safe: historical layer tar sum377,207,808B, cumulative uncompressed layer-size sum3,829,634,560B, exceeding measured free root before VFS/build/container overhead. This is a risk indicator, not an exact physical-space forecast. Recheck capacity before image loading and each service recreation.
 
-**Action held:** load candidate archive, inspect exact runtime Config/platform/DiffID, adopt its tag and recreate only separately authorized application containers. **Target:** local Docker candidate/canonical images and app-only containers. **Reason/state:** pending separate PM review/assignment, as explicitly required by current task; not denied and no uncertain Docker execution. PostgreSQL/LocalStack volumes/settings/deletion journal must remain preserved. This worker ran no Docker load command. PM loaded roundB separately; C was absent at its verification timestamp and is handed to PM for a separately owned load/adoption step. Live browser/API/worker gates remain execution work outside this archive proof. No scientific, sensor, participant or cloud qualification is established.
+**Action held:** load candidate archive, inspect exact runtime Config/platform/DiffID, adopt its tag and recreate only separately authorized application containers. **Target:** local Docker candidate/canonical images and app-only containers. **Reason/state:** pending separate PM review/assignment, as explicitly required by current task; not denied and no uncertain Docker execution. PostgreSQL/LocalStack volumes/settings/deletion journal must remain preserved. This worker ran no Docker load command. PM loaded roundB separately; C was subsequently adopted by PM; D is handed to PM for separately owned load/adoption/application recreation. This worker neither loaded nor adopted D. Live browser/API/worker gates remain execution work outside this archive proof. No scientific, sensor, participant or cloud qualification is established.
 
 The prepared reusable scripts are refresh.py (pin checks, plan, exact tar reconstruction), freeze.py (reviewed source capture) and package.py (exact Config/platform archive construction). They perform no Docker calls. Plans and receipts expose intended identities before loading. AST and pinned-context classifier checks ran; archive generation and independent archive checks were then executed after PM authorization. No guessed tool/dependency versions were installed.
 
@@ -333,25 +334,95 @@ The prepared reusable scripts are refresh.py (pin checks, plan, exact tar recons
 ]
 ```
 
+**reviewed-source-plan-d**: 2026-10-25T07:22:21.975391+00:00 to 2026-10-25T07:22:23.085673+00:00; exit0; 1.110s; log `/tmp/otgd-image-proof/source-refresh/reviewed-source-plan-d.log`.
+
+```json
+[
+  "python3",
+  "/tmp/otgd-image-proof/source-refresh/refresh.py",
+  "--plan",
+  "/tmp/otgd-image-proof/source-refresh/reviewed-plan-d.json"
+]
+```
+
+**immutable-source-snapshot-d**: 2026-10-25T07:22:23.114955+00:00 to 2026-10-25T07:22:23.222811+00:00; exit0; 0.108s; log `/tmp/otgd-image-proof/source-refresh/immutable-source-snapshot-d.log`.
+
+```json
+[
+  "python3",
+  "/tmp/otgd-image-proof/source-refresh/freeze.py",
+  "--plan",
+  "/tmp/otgd-image-proof/source-refresh/reviewed-plan-d.json",
+  "--output",
+  "/tmp/otgd-image-proof/source-refresh/frozen-source-d",
+  "--execute-reviewed"
+]
+```
+
+**refreshed-rootfs-build-d**: 2026-10-25T07:22:23.251161+00:00 to 2026-10-25T07:22:26.109493+00:00; exit0; 2.858s; log `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-build-d.log`.
+
+```json
+[
+  "python3",
+  "/tmp/otgd-image-proof/source-refresh/refresh.py",
+  "--root",
+  "/tmp/otgd-image-proof/source-refresh/frozen-source-d",
+  "--plan",
+  "/tmp/otgd-image-proof/source-refresh/frozen-source-d.plan.json",
+  "--build",
+  "/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-d.tar",
+  "--execute-reviewed"
+]
+```
+
+**source-refresh-image-archive-d**: 2026-10-25T07:22:26.135453+00:00 to 2026-10-25T07:22:27.168525+00:00; exit0; 1.033s; log `/tmp/otgd-image-proof/source-refresh/source-refresh-image-archive-d.log`.
+
+```json
+[
+  "python3",
+  "/tmp/otgd-image-proof/source-refresh/package.py",
+  "--plan",
+  "/tmp/otgd-image-proof/source-refresh/frozen-source-d.plan.json",
+  "--rootfs",
+  "/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-d.tar",
+  "--output",
+  "/tmp/otgd-image-proof/source-refresh/source-refresh-image-d.tar",
+  "--execute-reviewed"
+]
+```
+
+**independent-current-source-verification-d**: 2026-10-25T07:22:48.039379+00:00 to 2026-10-25T07:22:49.767334+00:00; exit0; 1.728s; log `/tmp/otgd-image-proof/source-refresh/independent-current-source-verification-d.log`.
+
+```json
+[
+  "python3",
+  "/tmp/otgd-image-proof/source-refresh/verify_d.py"
+]
+```
+
 ## Artifact receipts
 
 | File | Bytes | SHA256 |
 |---|---:|---|
 | `/tmp/otgd-image-proof/source-refresh/action-plan.md` | 1,249 | `8e1db231ff692821906d6e03880af2f17136b58fbd27cb53787c0fe04c03b743` |
-| `/tmp/otgd-image-proof/source-refresh/commands.jsonl` | 6,772 | `cfae6a9b81330377165d1bd75bafcee43bb649d75fb305decc8aff9302017ccb` |
+| `/tmp/otgd-image-proof/source-refresh/commands.jsonl` | 9,163 | `d2b98abc750d436e930f25942c9106015adc72203404cf49e3f02c2733350914` |
 | `/tmp/otgd-image-proof/source-refresh/current-plan.json` | 80,217 | `70b6c766025190db3308fbfca4a86f5157aa90b11bf90ce74cd45c58f73317cd` |
 | `/tmp/otgd-image-proof/source-refresh/final-verification-b.json` | 2,142 | `d081fc5787fe79104b1aef2b8872908bd2fe734769ff18efa2f100b9ba0fecb7` |
 | `/tmp/otgd-image-proof/source-refresh/final-verification-c.json` | 2,105 | `0b8828ef1cb52c40c8c8d38fddb4d7debd87196bd127dfcccfddd69e5eca30c0` |
+| `/tmp/otgd-image-proof/source-refresh/final-verification-d.json` | 2,163 | `23298c9b801776024827d1d004478f97a1e08ebe4baedc1da0672c81fc232a52` |
 | `/tmp/otgd-image-proof/source-refresh/final-verification.json` | 1,286 | `df249db7b3a9830a424a66fb81700f6324d314ab4aee10e0873743dd8d387b34` |
 | `/tmp/otgd-image-proof/source-refresh/freeze.py` | 2,826 | `d8bc40999e5e941ef97542e9cc447c883d15e1610f85d9bfa104c7b1582ea3cc` |
 | `/tmp/otgd-image-proof/source-refresh/frozen-source-b.plan.json` | 81,334 | `0819cce4fc8b33f6225eb3ca72afb2a2d7a1250a4763f9e3dd2c2164ff517317` |
 | `/tmp/otgd-image-proof/source-refresh/frozen-source-c.plan.json` | 81,601 | `0b44a7466abfafd016acdc6e76e1cf038d0122bdf9a5577350b7296fc61763f2` |
+| `/tmp/otgd-image-proof/source-refresh/frozen-source-d.plan.json` | 81,599 | `5e44bbed7d6a947e41e0ddaffee8584413fe306d5d67c20509088dfe94a2d903` |
 | `/tmp/otgd-image-proof/source-refresh/frozen-source.plan.json` | 81,332 | `95267a1dc9cc65ab142f32ce9a899007089728dccb5f79d94d0086fe84c07d3e` |
 | `/tmp/otgd-image-proof/source-refresh/immutable-source-snapshot-b.log` | 573 | `10c749261e3c6a07dfa500461ae50f123502a15311d510f096200bb49880b13d` |
 | `/tmp/otgd-image-proof/source-refresh/immutable-source-snapshot-c.log` | 573 | `1da689300d3a7c2b74e39e9583cf5f90c929dd17429a2fd81dde7f30f7fc4119` |
+| `/tmp/otgd-image-proof/source-refresh/immutable-source-snapshot-d.log` | 573 | `ee52a525822f866e5a138fb08d5732ca957c7352325278ee3e330ea2a80baff7` |
 | `/tmp/otgd-image-proof/source-refresh/immutable-source-snapshot.log` | 565 | `2209e8706f589de0bd3868b176e7824d9f64bdefdb14f2b533d5436423f88ce5` |
 | `/tmp/otgd-image-proof/source-refresh/independent-current-source-verification-b.log` | 2,253 | `c6b4bbe9360aed5c9a37780d9df7d107a4cc9e278de6389281e3619854099717` |
 | `/tmp/otgd-image-proof/source-refresh/independent-current-source-verification-c.log` | 2,216 | `933f3289604b00816d26aaf51906333eba6864396ec441039ad39402ffda76ac` |
+| `/tmp/otgd-image-proof/source-refresh/independent-current-source-verification-d.log` | 2,274 | `ce655e975c7c28a6a03c3d663f1a1b104c274d0474fb3d3aa98647b51527eb7c` |
 | `/tmp/otgd-image-proof/source-refresh/package.py` | 4,825 | `a8c20f609717dd7a70e2015a873e82453c4fa60aab635f8cff60409a82ac740e` |
 | `/tmp/otgd-image-proof/source-refresh/pm-loaded-b-readback.json` | 463 | `aefb954f6a76d6650d0b9e68503260b740f6e1108ffd7ba8fa2ce42068089f30` |
 | `/tmp/otgd-image-proof/source-refresh/proposed-plan.json` | 80,217 | `9bf78df1a96bbb07800d37e2c8fe445deda15c16969cf2cdaf8f5d58f8414935` |
@@ -361,31 +432,43 @@ The prepared reusable scripts are refresh.py (pin checks, plan, exact tar recons
 | `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-b.tar` | 268,769,280 | `72be38a19106e195b9c54f0bea6089eac09cd02ee362bbd959414ce3d1dd1e2f` |
 | `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-build-b.log` | 1,060 | `2bdeb9269a93c92bc91d4977c9dd1c2fc142bf3c6936db27ff1fb8a2241c29e4` |
 | `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-build-c.log` | 1,060 | `76ec55984aa58f261bb733973149f177707cee0c789107c21f7f81af20885a4b` |
+| `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-build-d.log` | 1,060 | `e6cb68fcec9541d75763951b5b8302886cf18cd9ea0284f4f677772f198428a5` |
 | `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-build.log` | 1,052 | `ff2ce4539d858943993edc669c5fa526d7b836da691e2863048da3cbc14a4f04` |
 | `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-c.receipt.json` | 712 | `59c79932d9ecd1a7c6992c6beb0c606df3309acc0421473642ffb6c52dbadffe` |
 | `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-c.tar` | 268,769,280 | `56cb9aba0d4a517c9b03bc7df02a4af37a86ce0efd36fd18ca7ba80178aa5b44` |
+| `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-d.receipt.json` | 712 | `1fe640ce4a4333ae3cb04bb8ad787c77bc7ab0f38787b4fd2dadc90c69e48d17` |
+| `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs-d.tar` | 268,769,280 | `a5b5cf95fc230c53c75d4afaba7a390441488cd9d5352cccda0793c5ef733965` |
 | `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs.receipt.json` | 710 | `a9b307136ff81516ae98f6e3010713a00291278fbc66231608ca984d5d96d8a3` |
 | `/tmp/otgd-image-proof/source-refresh/refreshed-rootfs.tar` | 268,769,280 | `e7606ae49f6362765e366ac040c740edc1d603892f55eece44cad58afcb57b8a` |
 | `/tmp/otgd-image-proof/source-refresh/reviewed-plan-b.json` | 81,457 | `2f2572262f9a3cf0b83a002eebcc6efe36fd66a8a225808912a7701981acf976` |
 | `/tmp/otgd-image-proof/source-refresh/reviewed-plan-c.json` | 81,724 | `137895f2ae7c7c5bbaf99d377a0407594092dee7a1909654cde438d6ce0fbbb5` |
+| `/tmp/otgd-image-proof/source-refresh/reviewed-plan-d.json` | 81,722 | `429930d232fffeacb55a97732020c40f86bf76e625a86d7d4bad1b536b6c2b0f` |
 | `/tmp/otgd-image-proof/source-refresh/reviewed-plan.json` | 81,457 | `274c75b8e26ed73e36761b95fb1a1698dd6282a98be38a6cd16d45f7bd2bd68d` |
 | `/tmp/otgd-image-proof/source-refresh/reviewed-source-plan-b.log` | 2,780 | `1b5360d348dfb6b65cdd2cf63d842f69b10dd14ca2333eb1c448e762e7df88c0` |
 | `/tmp/otgd-image-proof/source-refresh/reviewed-source-plan-c.log` | 3,046 | `a8ca834ff7bfd4a67919555856bd3c827be8862c9a750f3f25dcca8b4a24f9de` |
+| `/tmp/otgd-image-proof/source-refresh/reviewed-source-plan-d.log` | 3,046 | `ab4c0ac35dcc94663dbda5e9c504becd1b23e3bd96b4728cfdb82c6bec436f48` |
 | `/tmp/otgd-image-proof/source-refresh/reviewed-source-plan.log` | 2,776 | `17e0b20429c28533f9e06e2a49ede816a2ba1a30d29b9ff22398a39c8ded46b4` |
 | `/tmp/otgd-image-proof/source-refresh/run.py` | 746 | `ab8a6aa1ee69de9b36d74829e3da0e3c22bd1dc10593a6a572e8afaf2b749b87` |
 | `/tmp/otgd-image-proof/source-refresh/runtime-source-refresh-round-b.md` | 20,978 | `a320e8ab5c4329feb263eba4432768ef0ad26761926f7b41b79f53f35edc9926` |
+| `/tmp/otgd-image-proof/source-refresh/runtime-source-refresh-round-c.md` | 26,653 | `b1cf48232df60d1caf6fb3ba940f073adf097f85419ab3340235d7552dd32028` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image-archive-b.log` | 1,069 | `99f761e91e081019b9a2b82e45aca58c446383fc9ec4b3ffae56ea44fdabdf31` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image-archive-c.log` | 1,069 | `d0a617c43e3e2ee05d941e86b8d322b79e83582fa4c12afa47a2cda8fef17390` |
+| `/tmp/otgd-image-proof/source-refresh/source-refresh-image-archive-d.log` | 1,069 | `13db7420a87f59785ba3fe99639a2e28b46256bb39241e6cfe426751771d0b7c` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image-archive.log` | 1,061 | `f592d51c262f34709e431c33c42f805308aa0843744251c4514d6f2419f49d62` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image-b.receipt.json` | 707 | `80f3792b366a0a88aef6ddd5549c0c299a4415dab5434e058dbdef9b3ee5e60c` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image-b.tar` | 268,779,520 | `b91fd5bd8e3436b44f37522437ed16979c14ec4eadd06c187fe15c22ae0ca9cc` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image-c.receipt.json` | 707 | `10192d32cf4254b5b77a7a7b6e512df5a1774fc4c96025c9c0ac7f541c6bc404` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image-c.tar` | 268,779,520 | `c873125292bbf247ebb0467f5c4db1af750a0dfdc9e7a66eb1f232528b1b25fe` |
+| `/tmp/otgd-image-proof/source-refresh/source-refresh-image-d.receipt.json` | 707 | `0e6c3fec817b285db4a730ceeeaac8005af2187934362cb91adc9b69c13c25fd` |
+| `/tmp/otgd-image-proof/source-refresh/source-refresh-image-d.tar` | 268,779,520 | `585b961d89a2b633e734b99efdb2e1ace0b616e5025fff8fa655b6db571b5df6` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image.receipt.json` | 705 | `0b961d6947e1f9aa87659e45eec23e1a13205c3c56d858b1beffc2628db0e4a0` |
 | `/tmp/otgd-image-proof/source-refresh/source-refresh-image.tar` | 268,779,520 | `f11e0802735fe214393bd429b0068ce498d716e27ee47fe5997b7b6c0b8050c4` |
 | `/tmp/otgd-image-proof/source-refresh/verify_b.py` | 3,414 | `3972ff4d34777ef1c7796250fdb7ae440bc6099085ead8ee6b211505a465abac` |
 | `/tmp/otgd-image-proof/source-refresh/verify_c.py` | 3,428 | `99977c9ec8a120819a1cee50d1c523ef0e30c694fd880b8a6580456930421b17` |
+| `/tmp/otgd-image-proof/source-refresh/verify_d.py` | 2,975 | `112237d3dd8ca1468987d32ae75896183aff4e28d9be326e021c07ff06753ae3` |
 
-## D-006 v4 handoff
+## D-007 v1 final-source handoff
 
-PM accepted and recorded D-006 v4 after independently checking roundC219 source payloads, serialized Config and platform. This worker acknowledged the decision via actual message. PM owns C image loading, canonical tagging and application-only recreation, preserving PostgreSQL/LocalStack/journal/live probe and all archives. Parent reported its load session31777 executing; completion/adoption is not asserted by this worker. No additional Docker actions performed. C archive/source proof above remains the completed scope; runtime execution evidence belongs to PM records.
+D-007 v1 was read and acknowledged via actual PM message before roundD. This source image contains the exact released local_identity.py CSP fix and focused tests. Per parent, the real browser preflight passed2/2 with an identity-only read-only source overlay on canonical C; that is parent-reported preflight evidence, not a final D runtime result observed by this worker. Prior strict source-bound worker preflight is invalidated by the identity source change, as D-007 requires. Fresh current-D worker/browser/local/CI gates and six independent reviews remain PM-owned. Software packaging does not establish cloud provenance, scientific approval, sensor qualification or participant authorization.
+
+No more archive pairs or Docker actions are authorized for this worker. All original and A/B/C/D source snapshots/archives remain retained. No cleanup occurred. All archive commands and independent verification completed exit0; no denied action or uncertain worker Docker execution exists. D loading/adoption remains pending PM action and is not claimed complete here.

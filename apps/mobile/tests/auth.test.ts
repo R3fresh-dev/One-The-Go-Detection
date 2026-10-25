@@ -352,6 +352,21 @@ test("credential writes cannot finish after a serialized sign-out removal", asyn
   }
 });
 
+test("provider revocation HTTP failure is not reported as a confirmed revocation", async () => {
+  const { auth, service, config, identity, close } = await harness();
+  try {
+    await auth.commit((await auth.authorize(config))!, identity);
+    service.overrides.set("/oauth2/revoke", () =>
+      service.result({ error: "unavailable" }, 503),
+    );
+    await assert.rejects(() => auth.revokeProvider(), {
+      code: "AUTH_REVOCATION_UNCONFIRMED",
+    });
+  } finally {
+    await close();
+  }
+});
+
 test("provider revocation and configured browser logout use the captured family without changing a replacement account", async () => {
   const { auth, service, config, identity, close } = await harness();
   try {

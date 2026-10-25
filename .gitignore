@@ -57,3 +57,12 @@ node_modules
 # Live browser artifacts are evidence, not source fingerprint inputs.
 /apps/mobile/playwright-live-report/
 /apps/mobile/test-results-live/
+
+# Explicitly reviewed fictional browser receipts and export evidence.
+!docs/factory/*/reports/browser-live/
+!docs/factory/*/reports/browser-live/summary.json
+!docs/factory/*/reports/browser-live/playwright-live.log
+!docs/factory/*/reports/browser-live/README.md
+!docs/factory/*/reports/browser-live/live-*/
+!docs/factory/*/reports/browser-live/live-*/redacted-live-receipts.json
+!docs/factory/*/reports/browser-live/live-*/fictional-structured-export.zip

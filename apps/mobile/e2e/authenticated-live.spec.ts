@@ -803,6 +803,11 @@ test("ordinary web completes owned PKCE, explicit upload, worker export, lost-ac
     await page.getByRole("tab", { name: "Settings", exact: true }).click();
     await page.getByRole("button", { name: "Sign out", exact: true }).click();
     const refreshBeforeLogout = refresh;
+    const providerRevokedEvent = page.waitForResponse(
+      (r) =>
+        r.url() === ISSUER + "/oauth2/revoke" &&
+        r.request().method() === "POST",
+    );
     const logoutEvent = page.waitForResponse(
       (r) =>
         r.url() === API + "/v1/auth/logout" && r.request().method() === "POST",
@@ -816,6 +821,7 @@ test("ordinary web completes owned PKCE, explicit upload, worker export, lost-ac
     const logout = await logoutResponse.json();
     expect(logout.remote_family_revoked).toBe(true);
     evidence.logout = logout;
+    expect((await providerRevokedEvent).status()).toBe(200);
     expect(
       (
         await request.post(ISSUER + "/oauth2/token", {

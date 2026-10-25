@@ -13,7 +13,7 @@ Baseline/candidate: 0844868aa543af4ab75ac5065ad48cf807b86bb3; Factory records on
 correction_round: 0
 max_correction_rounds: 2
 recovery_attempts: 0
-checkpoint_seq: 6
+checkpoint_seq: 7
 last_observed_confirmed_remote_commit: 33901a1ff785cd28e351d935be510d184fb7f8e2 (checkpoint 1 verified via git ls-remote).
 
 ## Scope and authority
@@ -80,3 +80,7 @@ Released bounded source: mobiletruthfulalcohol/timestamp andpermissionraceguard,
 ## Checkpoint 6
 
 The shared live gate integration and all 47 updated verification dossiers are captured. Real browser testing exposed and reproduced OAuth state-length and callback CSP defects; focused regressions pass after bounded fixes. The third observed defect is provider revocation preceding the API logout receipt; it remains open in this checkpoint. The real PostgreSQL preflight passed 1,361 tests plus actual role/migration checks, but source changed during preflight so final frozen-source evidence remains pending. Source image C and the read-only identity overlay are recorded in D-006 v4/D-007 v1 and events. No final signoff or software-completion claim is made.
+
+## Checkpoint 7 — candidate freeze
+
+All implementation sources are released. Browser acceptance is 2/2 on actual services; mobile unit274, focusedauth/controller28, and typecheck/export pass. Current source imageD is adopted; canonicalhealth passes. The earlier actual worker preflight intentionally remains FAIL for its one changed source file, with complete scenario observations preserved in evidence/worker-preflight-source-drift.json. Begin final current gates and six fresh independent reviews under D008. All journal/review writes during the fingerprint window go outside the worktree at /workspace/scratch/otgd-20261025-0555-live. No final signoff yet.

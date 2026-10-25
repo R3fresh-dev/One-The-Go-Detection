@@ -1,16 +1,16 @@
 # Factory status
 
-As of: 2026-10-25T07:15:03.737802+00:00
+As of: 2026-10-25T07:31:07.326505+00:00
 Run: otgd-20261025-0555
 Branch: factory/one-the-go-detection-20261025
 Factory revision: 4770878e18e9c587c2961b9e2bb13315da31abe9
 
-Implementation and preflight testing remain active. Product, engineering and specification audits are complete. Checkpoint 5 (8a7294db0bdf98fb2bc6c3a0a77dce62223170c0) is verified remotely; checkpoint 6 captures the shared live gates, updated dossiers and browser fixes.
+Checkpoint 7 freezes the implemented candidate for full current gates and independent review. All authors released sources. Actual authenticated browser acceptance passes both viewports; mobile unit tests pass 274 with no skips, focused auth/controller tests pass 28, and typecheck/export pass. The three real browser defects (state length, callback CSP, logout ordering) have bounded regression fixes. PostgreSQL preflight passed 1,361 cases and actual migration/role checks. These preflights do not replace the final frozen run.
 
-All five canonical services are healthy. PostgreSQL and LocalStack IDs, both volumes and the deletion journal remain preserved. Source image C is adopted; the identity service additionally has the reviewed read-only CSP source overlay under D-007. The real worker interruption preflight runs in its isolated database/queues; five export and two result crash cases have executed, and stale-output cases are progressing. Its final source check must fail after the explicitly recorded identity-source change; a fresh frozen-candidate matrix is required.
+Final local image D is adopted. All five canonical services are healthy; both initializers exited zero. PostgreSQL/LocalStack identities, retained volumes and journal remain unchanged. The identity overlay is removed. The first worker matrix executed every scenario and correctly failed its final source-binding assertion after the authorized identity fix; its raw failed evidence is preserved. A fresh final matrix is mandatory.
 
-The PostgreSQL preflight passed 1,361 tests and repeated migrations/runtime permission denials. The browser journey now reaches real PKCE, explicit upload, result, export, consent withdrawal, deletion and recovery on both viewports. Two demonstrated sign-in defects were fixed (OAuth state length and registered callback CSP). The latest run found logout revoking the provider family before the API can record its logout receipt; this newly demonstrated defect remains to repair. Test results are preflight evidence, not final acceptance.
+During the unchanged-source gate window, live PM status, events and independent review output are stored at /workspace/scratch/otgd-20261025-0555-live. This avoids invalidating the gate by writing journals into its source fingerprint; records will be imported at the next coherent checkpoint. Raw gate artifacts remain in ignored reports/.
 
-Shared local/CI gates now require the live worker and browser checks. CI still has 14 mandatory jobs, with a 50-minute localstack job budget. Full frozen-source gates, current native CI, six independent reviews and final approval are pending. Native OS/device, scientific and release prerequisites remain explicit.
+Six independent reviews and current local/CI gates are pending. No final approval or application-completion claim exists. Native OS/device, scientific, study and release prerequisites remain distinct. Root free space is about 2.04 GB; /tmp about 575 MB. No additional source-image archive pair fits the reserved headroom.
 
-Root free space is about 1.46 GB and /tmp about 1.12 GB. No resize tool is exposed. No broad cleanup or data reset is authorized. Parent owns ten-minute supervision and fifteen-minute progress. Correction rounds: 0/2; PM crash recovery attempts: 0/3.
+Last verified remote checkpoint 6: 8c679290b1bf453e3ca4c173fefbab265214d635. Checkpoint 7 is being saved. Correction rounds: 0/2. PM crash recoveries: 0/3. Parent supervision remains separate.

@@ -74,6 +74,157 @@ async function account() {
   };
 }
 
+test("sign-out records the API receipt before provider revocation and clears local identity immediately", async () => {
+  const { app, service, close } = await account();
+  const order: string[] = [];
+  const entered = deferred<void>(),
+    release = deferred<Response>();
+  try {
+    service.overrides.set("/v1/auth/logout", () => {
+      order.push("api");
+      entered.resolve();
+      return release.promise;
+    });
+    service.overrides.set("/oauth2/revoke", () => {
+      order.push("provider");
+      return service.result({});
+    });
+    const pending = app.signOut(false);
+    await entered.promise;
+    assert.equal(app.getSnapshot().identity, null);
+    assert.equal(await app.auth.accessToken(), null);
+    assert.deepEqual(order, ["api"]);
+    release.resolve(
+      service.result({ state: "accepted", remote_family_revoked: true }),
+    );
+    await pending;
+    assert.deepEqual(order, ["api", "provider"]);
+  } finally {
+    release.resolve(service.result({}));
+    await close();
+  }
+});
+
+test("a failed API logout still revokes the captured provider family and reports the unconfirmed receipt", async () => {
+  const { app, service, close } = await account();
+  const order: string[] = [];
+  const providerCalls = unit().providerCalls.length;
+  try {
+    service.overrides.set("/v1/auth/logout", () => {
+      order.push("api");
+      return service.result({ code: "UNAVAILABLE" }, 503);
+    });
+    service.overrides.set("/oauth2/revoke", (call) => {
+      order.push("provider");
+      assert.equal(call.body.token, "unit-refresh");
+      return service.result({});
+    });
+    await app.signOut(false);
+    assert.deepEqual(order, ["api", "provider"]);
+    assert.equal(app.getSnapshot().identity, null);
+    assert.match(app.getSnapshot().message!, /not confirmed/);
+    assert.equal(unit().providerCalls.length, providerCalls);
+  } finally {
+    await close();
+  }
+});
+
+test("sign-out without retained credentials sends no fabricated API or provider revocation request", async () => {
+  const { app, service, close } = await account();
+  try {
+    await app.auth.clear();
+    const before = service.calls.length;
+    await app.signOut(false);
+    assert.equal(
+      service.calls
+        .slice(before)
+        .filter((call) =>
+          ["/v1/auth/logout", "/oauth2/revoke"].includes(call.path),
+        ).length,
+      0,
+    );
+    assert.equal(app.getSnapshot().identity, null);
+    assert.match(app.getSnapshot().message!, /not confirmed/);
+  } finally {
+    await close();
+  }
+});
+
+test("a replacement login during local sign-out still revokes only the captured old family without old UI work", async () => {
+  const { app, service, close } = await account();
+  const clear = app.auth.clear.bind(app.auth),
+    entered = deferred<void>(),
+    release = deferred<void>();
+  const providerCalls = unit().providerCalls.length;
+  try {
+    app.auth.clear = async () => {
+      await clear();
+      entered.resolve();
+      await release.promise;
+    };
+    const pending = app.signOut(false);
+    await entered.promise;
+    service.overrides.set("/oauth2/token", () =>
+      service.result({
+        access_token: "new-access",
+        refresh_token: "new-refresh",
+        token_type: "Bearer",
+        expires_in: 900,
+      }),
+    );
+    service.caps.account_ref = randomUUID();
+    await app.signIn();
+    const next = app.getSnapshot();
+    release.resolve();
+    await pending;
+    assert.equal(
+      app.getSnapshot().identity?.accountRef,
+      service.caps.account_ref,
+    );
+    assert.equal(app.getSnapshot().route, next.route);
+    assert.equal(app.getSnapshot().message, next.message);
+    assert.equal(unit().providerCalls.length, providerCalls);
+    assert.equal(
+      service.calls.filter((call) => call.path === "/v1/auth/logout").length,
+      0,
+    );
+    const revocations = service.calls.filter(
+      (call) => call.path === "/oauth2/revoke",
+    );
+    assert.equal(revocations.length, 1);
+    assert.equal(revocations[0]!.body.token, "unit-refresh");
+    assert.equal(await app.auth.accessToken(), "new-access");
+  } finally {
+    release.resolve();
+    app.auth.clear = clear;
+    await close();
+  }
+});
+
+test("provider HTTP failure after an accepted API logout keeps sign-out local and its warning truthful", async () => {
+  const { app, service, close } = await account();
+  const providerCalls = unit().providerCalls.length;
+  try {
+    service.overrides.set("/oauth2/revoke", () =>
+      service.result({ error: "unavailable" }, 503),
+    );
+    await app.signOut(false);
+    assert.equal(app.getSnapshot().identity, null);
+    assert.match(app.getSnapshot().message!, /not confirmed/);
+    assert.equal(unit().providerCalls.length, providerCalls);
+    assert.deepEqual(
+      service.calls
+        .filter((call) =>
+          ["/v1/auth/logout", "/oauth2/revoke"].includes(call.path),
+        )
+        .map((call) => call.path),
+      ["/v1/auth/logout", "/oauth2/revoke"],
+    );
+  } finally {
+    await close();
+  }
+});
+
 test("a delayed old-account logout cannot open provider logout or replace the new-account screen", async () => {
   const { app, service, close } = await account();
   try {
@@ -87,6 +238,18 @@ test("a delayed old-account logout cannot open provider logout or replace the ne
     const signOut = app.signOut(false);
     await entered.promise;
     assert.equal(app.getSnapshot().identity, null);
+    assert.equal(
+      service.calls.filter((call) => call.path === "/oauth2/revoke").length,
+      0,
+    );
+    service.overrides.set("/oauth2/token", () =>
+      service.result({
+        access_token: "replacement-access",
+        refresh_token: "replacement-refresh",
+        token_type: "Bearer",
+        expires_in: 900,
+      }),
+    );
     service.caps.account_ref = randomUUID();
     await app.signIn();
     const next = app.getSnapshot();
@@ -99,6 +262,11 @@ test("a delayed old-account logout cannot open provider logout or replace the ne
     assert.equal(app.getSnapshot().route, next.route);
     assert.equal(app.getSnapshot().message, next.message);
     assert.equal(unit().providerCalls.length, providerCalls);
+    assert.equal(
+      service.calls.find((call) => call.path === "/oauth2/revoke")!.body.token,
+      "unit-refresh",
+    );
+    assert.equal(await app.auth.accessToken(), "replacement-access");
   } finally {
     await close();
   }

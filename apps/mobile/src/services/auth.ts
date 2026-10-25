@@ -341,29 +341,42 @@ export class AuthManager implements TokenProvider {
         : BUILD.redirectUri;
     await WebBrowser.openAuthSessionAsync(url, redirect);
   }
-  async revokeProvider(): Promise<void> {
+  captureProviderRevocation(): () => Promise<void> {
     const saved = this.stored;
-    if (!saved?.refreshToken || !saved.auth.revocation_endpoint) return;
+    if (!saved?.refreshToken || !saved.auth.revocation_endpoint)
+      return async () => {};
     const refreshToken = saved.refreshToken;
-    const controller = new AbortController(),
-      timeout = setTimeout(() => controller.abort(), 10_000);
-    try {
-      await withAbort(controller.signal, () =>
-        fetch(saved.auth.revocation_endpoint!, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            token: refreshToken,
-            token_type_hint: "refresh_token",
-            client_id: BUILD.clientId,
-          }).toString(),
-          signal: controller.signal,
-          redirect: "error",
-        }),
-      );
-    } finally {
-      clearTimeout(timeout);
-    }
+    return async () => {
+      const controller = new AbortController(),
+        timeout = setTimeout(() => controller.abort(), 10_000);
+      try {
+        const response = await withAbort(controller.signal, () =>
+          fetch(saved.auth.revocation_endpoint!, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              token: refreshToken,
+              token_type_hint: "refresh_token",
+              client_id: BUILD.clientId,
+            }).toString(),
+            signal: controller.signal,
+            redirect: "error",
+          }),
+        );
+        if (!response.ok)
+          throw new ApiError(
+            response.status,
+            "AUTH_REVOCATION_UNCONFIRMED",
+            "Provider token revocation was not confirmed.",
+            true,
+          );
+      } finally {
+        clearTimeout(timeout);
+      }
+    };
+  }
+  async revokeProvider(): Promise<void> {
+    await this.captureProviderRevocation()();
   }
   async browserLogout(): Promise<void> {
     const endpoint = this.stored?.auth.logout_endpoint;
