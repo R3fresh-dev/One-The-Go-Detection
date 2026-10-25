@@ -849,9 +849,7 @@ test("a monotonic regression resets approved rest and declarations until an expl
     (window as any).restTick = 3000;
   });
   await page.clock.fastForward(200);
-  await expect(
-    page.getByText(/Preparation timing changed/),
-  ).toBeVisible();
+  await expect(page.getByText(/Preparation timing changed/)).toBeVisible();
   await expect(
     page.getByRole("switch", { name: "posture_confirmed", exact: true }),
   ).not.toBeChecked();

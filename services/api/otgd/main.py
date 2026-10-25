@@ -367,7 +367,7 @@ def mutate(request, handler, escape=False, ack=False, replay_guard=None):
         return answer(entry, body, status, headers, opid)
 
 
-def detail(check, include=True):
+def detail(check, include=True, *, db=None, account=None):
     data = {
         "session_id": check.id,
         "state": check.state,
@@ -378,7 +378,7 @@ def detail(check, include=True):
         else iso(check.created),
         "snapshot_sha256": check.snapshot_sha256,
         "evidence_sha256": check.evidence_sha256,
-        "result": safe_result(check.result),
+        "result": safe_result(check.result, db=db, account=account, check=check),
     }
     if include:
         data["snapshot"] = check.snapshot
@@ -744,7 +744,7 @@ def session_list(request: Request, cursor: str | None = None, limit: int = 20):
             else None
         )
         return {
-            "items": [detail(row, False) for row in rows],
+            "items": [detail(row, False, db=db, account=a) for row in rows],
             "next_cursor": next_cursor,
         }
 
@@ -754,7 +754,7 @@ def session_get(request: Request, session_id: UUID):
     with access(request) as (db, a, c, r):
         row = owned_check(db, a, session_id)
         return JSONResponse(
-            {**detail(row), **evidence(db, a, row)},
+            {**detail(row, db=db, account=a), **evidence(db, a, row)},
             headers={"ETag": f'"{row.revision}"'},
         )
 
@@ -940,6 +940,9 @@ def finalize(request: Request, session_id: UUID, body: Finalize):
             or manifest.sha256 != body.evidence_sha256
         ):
             raise Problem(422, "DIGEST_MISMATCH")
+        from .participant_acquisition import require_abandoned_chemistry
+
+        require_abandoned_chemistry(db, a, row)
         row.evidence_sha256 = body.evidence_sha256
         row.state = "processing"
         row.revision += 1
@@ -981,7 +984,8 @@ def result_get(request: Request, session_id: UUID):
                 headers={"Retry-After": "2"},
             )
         return JSONResponse(
-            safe_result(row.result), headers={"X-Evidence-Sha256": row.evidence_sha256}
+            safe_result(row.result, db=db, account=a, check=row),
+            headers={"X-Evidence-Sha256": row.evidence_sha256}
         )
 
 
@@ -1811,7 +1815,7 @@ def export_post(request: Request, body: ExportRequest):
             check = owned_check(db, a, id)
             if check.state not in ("completed", "invalid"):
                 raise Problem(409, "FINALIZED_CHECK_REQUIRED")
-            safe_result(check.result)
+            safe_result(check.result, db=db, account=a, check=check)
             report_heads[id] = freeze_head(db, a, check)
         version_ids = set()
         current_version = None
@@ -1963,7 +1967,7 @@ def privacy_download(request: Request, job_id: UUID):
                 consent = record(db, a, "consent", check.study_id)
                 if not consent or consent.body["state"] != "active":
                     raise Problem(403, "CAPABILITY_DENIED")
-            safe_result(check.result)
+            safe_result(check.result, db=db, account=a, check=check)
         value = job.output
         if (not value.get("version_id") or value["version_id"] == "null"
             or not isinstance(value.get("size_bytes"), int)

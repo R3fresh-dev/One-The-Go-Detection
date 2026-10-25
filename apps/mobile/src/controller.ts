@@ -78,13 +78,16 @@ import {
   replaceCheck,
   settleAttempt,
   selectCardiacAttempt,
+  selectExportChecks,
   simulatedCapture,
   startAttempt,
   taskProjection,
   TASK_CONFIGURATION_ID,
   TASK_CONFIGURATION_SHA256,
   verifyCheck,
+  verifyResult,
 } from "./core/domain";
+import { requiresCurrentHrRead } from "./core/resultPresentation";
 import {
   assertBytes,
   canonicalJson,
@@ -193,6 +196,15 @@ export interface AppModel {
   profileConflict: ProfileEnvelope | null;
   pendingReplacement: string | null;
   diagnosticError: { code: string; requestId: string | null } | null;
+  // Display-only, never part of the retained WorkspaceState or its evidence.
+  hrResultAdmission: {
+    checkId: string;
+    resultSha256: string;
+    accountRef: string;
+    generation: number;
+    epoch: string;
+    viewToken: string;
+  } | null;
 }
 const now = () => new Date().toISOString();
 export class AppController {
@@ -220,6 +232,7 @@ export class AppController {
     profileConflict: null,
     pendingReplacement: null,
     diagnosticError: null,
+    hrResultAdmission: null,
   };
   private listeners = new Set<() => void>();
   private store: WorkspaceStore | null = null;
@@ -242,6 +255,9 @@ export class AppController {
   private foreground = true;
   private authenticating = false;
   private resultPolls = new Map<string, number>();
+  private hrResultView: { checkId: string; token: string } | null = null;
+  private hrAdmissionCurrent: (() => boolean) | null = null;
+  private hrReadRequest = 0;
   private disposed = false;
   get nativeView(): ReactionTaskViewRef | null {
     return this.nativeReference;
@@ -300,7 +316,134 @@ export class AppController {
   private patch(values: Partial<AppModel>): void {
     if (this.disposed) return;
     this.model = { ...this.model, ...values };
+    if (values.offline === true) ++this.hrReadRequest;
+    if (this.model.route !== "result") this.hrResultView = null;
+    const check = this.check;
+    if (
+      this.model.hrResultAdmission &&
+      (!check || !this.hasCurrentHrResultAdmission(check))
+    ) {
+      this.model = { ...this.model, hrResultAdmission: null };
+      this.hrAdmissionCurrent = null;
+    }
     this.listeners.forEach((fn) => fn());
+  }
+
+  hasCurrentHrResultAdmission(check: CheckRecord): boolean {
+    const admission = this.model.hrResultAdmission,
+      identity = this.model.identity,
+      state = this.model.state;
+    return !!(
+      admission &&
+      this.hrAdmissionCurrent?.() &&
+      this.foreground &&
+      !this.model.locked &&
+      !this.model.offline &&
+      this.model.route === "result" &&
+      this.model.selectedCheck === check.id &&
+      this.hrResultView?.checkId === check.id &&
+      this.hrResultView.token === admission.viewToken &&
+      admission.checkId === check.id &&
+      admission.epoch === this.workspaceEpoch &&
+      identity?.state === "active" &&
+      admission.accountRef === identity.accountRef &&
+      state?.capabilities?.account_state === "active" &&
+      state.capabilities.account_ref === identity.accountRef &&
+      state.capabilities.data_generation === admission.generation &&
+      identity.generation === admission.generation &&
+      state.generation === admission.generation &&
+      check.generation === admission.generation &&
+      check.snapshot.subject_ref === identity.accountRef &&
+      admission.resultSha256 === digest(check.result)
+    );
+  }
+
+  releaseHrResultView(viewToken: string): void {
+    if (this.hrResultView?.token !== viewToken) return;
+    this.hrResultView = null;
+    ++this.hrReadRequest;
+    this.hrAdmissionCurrent = null;
+    this.patch({ hrResultAdmission: null });
+  }
+
+  private assertHrReadOwner(check: CheckRecord): void {
+    const identity = this.model.identity,
+      state = this.model.state;
+    if (
+      !identity ||
+      identity.state !== "active" ||
+      state?.capabilities?.account_state !== "active" ||
+      state.capabilities.account_ref !== identity.accountRef ||
+      state.capabilities.data_generation !== state.generation ||
+      identity.generation !== state.generation ||
+      check.generation !== state.generation ||
+      check.snapshot.subject_ref !== identity.accountRef ||
+      !state.checks.some(
+        (saved) => saved.id === check.id && saved.delivery !== "quarantined",
+      )
+    )
+      throw new IntegrityError(
+        "HR_RESULT_ADMISSION_REQUIRED",
+        "The owned HR research result requires a fresh authenticated service read in its current workspace.",
+      );
+  }
+
+  private async readCurrentHrResult(check: CheckRecord): Promise<string> {
+    const scope = this.scope();
+    scope.assertCurrent();
+    this.assertHrReadOwner(check);
+    const response = await scope.wait(
+      this.api.request<unknown>(`/v1/sessions/${check.id}/result`),
+    );
+    this.assertHrReadOwner(check);
+    if (
+      response.status !== 200 ||
+      response.evidenceSha256 !== check.evidence_sha256 ||
+      digest(verifyResult(response.value, check)) !== digest(check.result)
+    )
+      throw new IntegrityError(
+        "HR_RESULT_READ_MISMATCH",
+        "The current service result did not match the immutable saved HR result. Its numeric research result remains withheld.",
+      );
+    scope.assertCurrent();
+    return digest(check.result);
+  }
+
+  async refreshHrResultAdmission(
+    checkId: string,
+    viewToken: string,
+  ): Promise<void> {
+    const check = this.check;
+    if (!check || check.id !== checkId || this.model.route !== "result") return;
+    this.hrResultView = { checkId, token: viewToken };
+    this.hrAdmissionCurrent = null;
+    this.patch({ hrResultAdmission: null });
+    if (!requiresCurrentHrRead(check.result)) return;
+    const request = ++this.hrReadRequest;
+    const scope = this.scope();
+    const resultSha256 = await scope.wait(this.readCurrentHrResult(check));
+    if (
+      request !== this.hrReadRequest ||
+      this.hrResultView?.token !== viewToken ||
+      this.hrResultView.checkId !== checkId ||
+      this.model.route !== "result" ||
+      this.check?.id !== checkId ||
+      digest(this.check.result) !== resultSha256
+    )
+      return;
+    scope.assertCurrent();
+    this.hrAdmissionCurrent = scope.current;
+    this.patch({
+      offline: false,
+      hrResultAdmission: {
+        checkId,
+        resultSha256,
+        accountRef: this.model.identity!.accountRef,
+        generation: check.generation,
+        epoch: this.workspaceEpoch,
+        viewToken,
+      },
+    });
   }
   async run(action: () => Promise<void>): Promise<void> {
     if (this.model.busy) return;
@@ -2721,6 +2864,10 @@ export class AppController {
     validate?: (check: CheckRecord) => void,
   ): Promise<void> {
     const scope = this.scope();
+    const retainedView = this.hrResultView;
+    ++this.hrReadRequest;
+    this.hrAdmissionCurrent = null;
+    this.patch({ hrResultAdmission: null });
     await scope.wait(this.stopActive("ROUTE_HIDDEN"));
     if (
       this.model.state?.checks.some(
@@ -2755,6 +2902,8 @@ export class AppController {
     if (check.frozen) verifyCheck(check);
     scope.assertCurrent();
     this.patch({ selectedCheck: id, route: check.frozen ? route : "check" });
+    if (route === "result" && retainedView?.checkId === id && this.hrResultView)
+      await scope.wait(this.refreshHrResultAdmission(id, retainedView.token));
   }
   async openLinkedCheck(
     baseId: string,
@@ -3880,11 +4029,23 @@ export class AppController {
   async refreshCurrentCheck(): Promise<void> {
     const check = this.check;
     if (!check || !this.model.identity || !check.remote_revision) return;
+    const hrView = this.hrResultView;
+    ++this.hrReadRequest;
+    this.hrAdmissionCurrent = null;
+    this.patch({ hrResultAdmission: null });
     const scope = this.scope(),
       response = await scope.wait(
         this.api.request<unknown>(`/v1/sessions/${check.id}`),
       );
     const remote = parseRemoteCheck(response.value, this.model.state!);
+    if (
+      requiresCurrentHrRead(check.result) &&
+      digest(remote.result) !== digest(check.result)
+    )
+      throw new IntegrityError(
+        "HR_RESULT_READ_MISMATCH",
+        "The refreshed HR result differs from the immutable saved result. The saved result was preserved and its numeric display remains withheld.",
+      );
     if (!sameFrozenEvidence(check, remote))
       throw new IntegrityError(
         "REMOTE_RECORD_CONFLICT",
@@ -3906,6 +4067,8 @@ export class AppController {
         });
       }),
     );
+    if (hrView && this.hrResultView?.token === hrView.token)
+      await scope.wait(this.refreshHrResultAdmission(check.id, hrView.token));
   }
   async changePreferences(
     values: Partial<WorkspaceState["preferences"]>,
@@ -4010,9 +4173,42 @@ export class AppController {
           "RAW_EXPORT_CLOUD_ONLY",
           "Authorized raw exports are prepared by the service; device exports retain their metadata-only scope.",
         );
-      const bytes = createLocalExport(state, entry.selection, now());
-      scope.assertCurrent();
-      await shareArchive(bytes, newId(), scope.assertCurrent);
+      const selected = selectExportChecks(state, entry.selection),
+        hrChecks = selected.filter((check) =>
+          requiresCurrentHrRead(check.result),
+        ),
+        admitted = new Map<string, string>();
+      const assertSelection = () => {
+        scope.assertCurrent();
+        for (const check of hrChecks) {
+          this.assertHrReadOwner(check);
+          const current = this.model.state!.checks.find(
+            (saved) => saved.id === check.id,
+          );
+          if (!current || digest(current.result) !== admitted.get(check.id))
+            throw new IntegrityError(
+              "HR_RESULT_READ_MISMATCH",
+              "A selected HR result changed before export release. No archive was disclosed.",
+            );
+        }
+      };
+      const admitSelected = async () => {
+        for (const check of hrChecks)
+          admitted.set(
+            check.id,
+            await scope.wait(this.readCurrentHrResult(check)),
+          );
+        assertSelection();
+      };
+      await admitSelected();
+      const bytes = createLocalExport(state, entry.selection, now(), admitted);
+      assertSelection();
+      await shareArchive(
+        bytes,
+        newId(),
+        assertSelection,
+        hrChecks.length ? admitSelected : undefined,
+      );
       if (scope.current())
         this.patch({
           message:

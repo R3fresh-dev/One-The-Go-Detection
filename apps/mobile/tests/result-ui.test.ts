@@ -201,6 +201,51 @@ test("actual research result renders its verified uncertainty none and supplied 
   assert.doesNotMatch(invalid, /83\.2%|Fictional band policy|40\.0%–60\.0%/);
 });
 
+test("actual cached typed HR screen withholds numeric research until a fresh current-admission read", () => {
+  const state = emptyWorkspace(
+    "fictional-cached-HR-component",
+    "2026-10-11T00:00:00Z",
+  );
+  const capabilities: any = clone(capsFixture);
+  capabilities.account_ref = cardiacFixture.owned_session.snapshot.subject_ref;
+  capabilities.data_generation = cardiacFixture.generation;
+  state.capabilities = capabilities;
+  state.generation = cardiacFixture.generation;
+  const check = parseRemoteCheck(clone(cardiacFixture.owned_session), state);
+  const retained = digest(check);
+  const identity = {
+    accountRef: capabilities.account_ref,
+    generation: check.generation,
+    state: "active",
+  };
+  for (const offline of [false, true]) {
+    const text = render(check, "result", {
+      identity,
+      capabilities,
+      offline,
+      generation: check.generation,
+    });
+    assert.doesNotMatch(
+      text,
+      /81\.8%|Probability of the named research endpoint|Endpoint classification|Uncertainty policy/,
+      "A cached proof is not a current authenticated HR result read",
+    );
+    assert.match(text, /Current research result admission required/);
+    assert.match(text, /Recorded at/);
+  }
+  assert.equal(
+    digest(check),
+    retained,
+    "Withholding must preserve immutable evidence",
+  );
+  const admitted = render(check, "result", { hrResultAdmitted: true });
+  assert.match(admitted, /Probability of the named research endpoint 81\.8%/);
+  assert.match(admitted, /Endpoint classification above threshold/);
+  assert.match(admitted, /Uncertainty policy uncertainty/);
+  assert.match(render(check, "row"), /Historical research result/);
+  assert.match(render(clone(fixture.check), "result"), /83\.2%/);
+});
+
 test("actual saved-check upload issue shows bounded validation paths and redacted codes without sensitive response values", () => {
   const check: any = clone(fixture.check);
   const fields: any = {

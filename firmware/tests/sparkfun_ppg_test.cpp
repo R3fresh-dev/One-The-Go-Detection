@@ -21,6 +21,65 @@ static std::vector<uint8_t> record(uint8_t mode) {
   if(mode==2)bytes.insert(bytes.end(),{0,10,0,0,0});
   return bytes;
 }
+static SparkFunCapture sampling(const SparkFunPlan& plan) {
+  SparkFunCapture capture;assert(capture.begin(plan,0));capture.resetReleased(10000);
+  capture.configuring();capture.configured(1010000);assert(capture.pollDue(2010000));return capture;
+}
+static SparkFunObservation received(const bioData& data,uint64_t when) {
+  SparkFunObservation value;value.receivedUs=when;value.irCount=data.irLed;value.redCount=data.redLed;
+  value.bpm=data.heartRate;value.confidence=data.confidence;value.status=data.status;value.extendedStatus=data.extStatus;return value;
+}
+static void freshFifoAcceptance(SparkFun_Bio_Sensor_Hub& hub,SparkFunPlan plan) {
+  for(uint8_t mode:{1,2}) {
+    plan.mode=mode;configure(hub,mode);auto identical=sampling(plan);
+    Wire.replies={{{0,2}},{record(mode)},{record(mode)}};
+    assert(hub.numSamplesOutFifo()==2&&hub.otgdLastIoStatus()==0);identical.backlog(2);
+    const auto first=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0);
+    const auto second=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0&&Wire.replies.empty());
+    assert(first.heartRate==73&&second.heartRate==73&&first.confidence==95&&second.confidence==95&&first.status==3&&second.status==3);
+    identical.observe(received(first,2010001),2010001);identical.observe(received(second,2010002),2010002);
+    identical.finish(2010010);assert(identical.validSignal()&&identical.observed()==2&&identical.validSamples()==2&&identical.invalidSamples()==0);
+    JsonDocument same;sparkFunResult(same,identical,plan,"fictional-identical-fifo",1767225600000ULL,true,{10,1,0},50);
+    assert(same["projection"]["heart_rate_bpm"]==73&&same["ppg_evidence"]["last_observation"]["sequence"]==1);
+    assert(same["ppg_evidence"]["last_observation"]["host_received_monotonic_us"]==2010002);
+    assert(same["ppg_evidence"]["sample_timestamp_source"]=="host_i2c_receive_unqualified_sensor_time");
+    assert(same["ppg_evidence"]["actual_sensor_cadence_hz"].isNull()&&same["ppg_evidence"]["sensor_dropped_samples"].isNull());
+
+    auto mixed=sampling(plan);auto poor=record(mode);poor[13]=0x04;poor[14]=0xb0;poor[18]=2; //120 bpm, poor contact.
+    Wire.replies={{{0,3}},{record(mode)},{record(mode)},{poor}};assert(hub.numSamplesOutFifo()==3&&hub.otgdLastIoStatus()==0);
+    const auto good=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0);mixed.observe(received(good,2010001),2010001);
+    const auto alsoGood=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0);mixed.observe(received(alsoGood,2010002),2010002);
+    const auto bad=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0&&bad.heartRate==120&&bad.status==2);mixed.observe(received(bad,2010003),2010003);
+    mixed.finish(2010010);assert(mixed.observed()==3&&mixed.validSamples()==2&&mixed.invalidSamples()==1&&mixed.observed()==mixed.validSamples()+mixed.invalidSamples());
+    JsonDocument quality;sparkFunResult(quality,mixed,plan,"fictional-mixed-fifo",1767225600000ULL,true,{10,1,0},50);
+    assert(!mixed.validSignal()&&mixed.contactLost()&&quality["projection"]["status"]=="invalid"&&quality["projection"]["heart_rate_bpm"].isNull());
+    assert(quality["ppg_evidence"]["observed_samples"]==3&&quality["ppg_evidence"]["valid_samples"]==2&&quality["ppg_evidence"]["invalid_samples"]==1);
+    assert(quality["ppg_evidence"]["last_observation"]["heart_rate_bpm"]==120); //Truthful rejected evidence, never a valid summary.
+
+    auto empty=sampling(plan);Wire.replies={{record(mode)}};const auto prior=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0);
+    empty.observe(received(prior,2010001),2010001);Wire.replies={{{0,0}}};assert(hub.numSamplesOutFifo()==0&&hub.otgdLastIoStatus()==0);empty.empty();
+    assert(empty.observed()==1&&empty.validSamples()==1&&empty.invalidSamples()==0&&empty.emptyPolls()==1&&empty.last().sequence==0&&empty.last().receivedUs==2010001);
+    auto insufficient=empty;insufficient.finish(2060000);JsonDocument shortRun;sparkFunResult(shortRun,insufficient,plan,"fictional-empty-fifo",1767225600000ULL,true,{10,1,0},50);
+    assert(!insufficient.validSignal()&&!insufficient.stale()&&shortRun["projection"]["heart_rate_bpm"].isNull());
+    // A second genuinely fresh record reaches the valid-count threshold; the
+    // following empty interval must still invalidate on the exact stale bound.
+    Wire.replies={{record(mode)}};const auto later=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0);empty.observe(received(later,2060001),2060001);
+    Wire.replies={{{0,0}}};assert(hub.numSamplesOutFifo()==0&&hub.otgdLastIoStatus()==0);empty.empty();
+    assert(empty.observed()==2&&empty.validSamples()==2&&empty.emptyPolls()==2&&!empty.staleAt(3060001)&&empty.staleAt(3060002));empty.finish(3060002);
+    JsonDocument gap;sparkFunResult(gap,empty,plan,"fictional-stale-fifo",1767225600000ULL,true,{10,1,0},50);
+    assert(empty.stale()&&empty.observed()==2&&empty.validSamples()==2&&gap["projection"]["heart_rate_bpm"].isNull());
+    assert(gap["ppg_evidence"]["last_observation"]["host_received_monotonic_us"]==2060001&&gap["ppg_evidence"]["fifo_empty_polls"]==2);
+
+    auto truncated=sampling(plan);Wire.replies={{record(mode)}};const auto beforeFailure=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0);
+    truncated.observe(received(beforeFailure,2010001),2010001);Wire.replies={{record(mode)}};const auto enough=hub.readSensorBpm();assert(hub.otgdLastIoStatus()==0);truncated.observe(received(enough,2010002),2010002);
+    Wire.replies={{{0,1}}};const auto failed=hub.readSensorBpm();
+    assert(hub.otgdLastIoStatus()==ERR_UNKNOWN&&failed.heartRate==0&&failed.confidence==0&&failed.status==0&&failed.irLed==0&&failed.redLed==0);
+    truncated.ioFailure();truncated.finish(2060000);JsonDocument failure;sparkFunResult(failure,truncated,plan,"fictional-truncated-fifo",1767225600000ULL,true,{10,1,0},50);
+    assert(truncated.ioError()&&!truncated.validSignal()&&truncated.observed()==2&&truncated.validSamples()==2&&truncated.invalidSamples()==0);
+    assert(failure["projection"]["status"]=="invalid"&&failure["projection"]["heart_rate_bpm"].isNull()&&failure["ppg_evidence"]["last_observation"]["sequence"]==1);
+    assert(Wire.replies.empty());
+  }
+}
 int main(int argc,char**argv){
   SparkFun_Bio_Sensor_Hub hub;hub.otgdAttach(Wire,5,6);
   Wire.replies={{{0,0}}};assert(hub.otgdApplicationMode()==0&&hub.otgdLastIoStatus()==0);
@@ -37,6 +96,7 @@ int main(int argc,char**argv){
   Wire.replies={{{0,0}}};assert(hub.numSamplesOutFifo()==0&&hub.otgdLastIoStatus()==0); // No fresh record; never reuse old HR.
   Wire.replies={{{0,10,1}}};version=hub.readSensorHubVersion();assert(hub.otgdLastIoStatus()==ERR_UNKNOWN&&version.major==0);
   SparkFunPlan plan;plan.durationMs=5000;plan.endGuardMs=100;plan.pollMs=50;plan.warmupMs=1000;plan.maxNoDataMs=1000;plan.minimumValid=2;plan.minimumConfidence=90;plan.minimumBpm=40;plan.maximumBpm=200;plan.mode=1;assert(plan.valid());
+  freshFifoAcceptance(hub,plan);
   SparkFunCapture capture;assert(capture.begin(plan,100));assert(!capture.stageReady(10099));assert(capture.stageReady(10100));capture.resetReleased(10100);assert(!capture.stageReady(1010099));assert(capture.stageReady(1010100));capture.configuring();capture.configured(1100100);assert(!capture.pollDue(2100099));assert(capture.pollDue(2100100));
   SparkFunObservation observation;observation.receivedUs=2100200;observation.irCount=0x12345;observation.redCount=0x654321;observation.bpm=73;observation.confidence=95;observation.status=3;capture.observe(observation,observation.receivedUs);observation.receivedUs+=50000;observation.bpm=75;capture.observe(observation,observation.receivedUs);
   capture.finish(2160100);assert(capture.validSignal()&&capture.heartRate()==75&&capture.observed()==2&&capture.validSamples()==2&&capture.last().sequence==1&&capture.last().irCount==0&&capture.last().redCount==0);

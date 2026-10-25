@@ -920,6 +920,88 @@ test("reference laboratory collection has no BLE acquisition, persists a recover
     await h.close();
   }
 });
+for (const interruption of ["withdrawal", "workspace switch"] as const) {
+  test(`late fictional collection receipt across ${interruption} cannot replace current state or restore acquisition authority`, async () => {
+    const h = await labAccount(),
+      entered = deferred<void>(),
+      release = deferred<void>();
+    try {
+      await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+      await h.app.startLabCollection(currentInstruction(h.app, "saliva"));
+      const originalId = h.app.check!.id,
+        previousOwner = h.app.getSnapshot().identity!.accountRef;
+      const transport = globalThis.fetch;
+      globalThis.fetch = async (input, init) => {
+        const response = await transport(input, init);
+        if (
+          (init?.method ?? "GET") === "POST" &&
+          new URL(String(input)).pathname.endsWith("/collections")
+        ) {
+          // The fictional transport has accepted the exact body, while its HTTP
+          // response remains unresolved. Real ApiClient cancellation/scope logic
+          // must discard its late success even when fetch ignores AbortSignal.
+          entered.resolve();
+          await release.promise;
+        }
+        return response;
+      };
+      const pending = h.app.recordLabCollection(h.specimen()).then(
+        () => ({ ok: true }),
+        (error) => ({ ok: false, code: error.code }),
+      );
+      await entered.promise;
+      const immutable = clone(h.app.check!.labCollection!);
+      const originalSnapshot = clone(h.app.check!.snapshot);
+      if (interruption === "withdrawal") {
+        h.service.overrides.set(
+          `/v1/studies/${h.study.study_id}/withdrawals`,
+          () => h.service.result({ state: "withdrawn" }),
+        );
+        await h.app.withdraw(h.study.study_id);
+        assert.equal(
+          (h.app.getSnapshot().state!.studies[0]!.consent as any).state,
+          "withdrawn",
+        );
+        assert.equal(h.app.check!.labCollection!.receipt, null);
+        assert.equal(h.app.check!.labCollection!.key, immutable.key);
+        assert.deepEqual(h.app.check!.labCollection!.body, immutable.body);
+        assert.deepEqual(h.app.check!.snapshot, originalSnapshot);
+      } else {
+        await h.app.signOut(false);
+        h.service.caps.account_ref = randomUUID();
+        await h.app.signIn();
+        await h.app.beginCheck("measurement", true);
+        assert.notEqual(
+          h.app.getSnapshot().identity!.accountRef,
+          previousOwner,
+        );
+        assert.notEqual(h.app.check!.id, originalId);
+        assert.equal(h.app.check!.snapshot.sample.status, "not_collected");
+        assert.equal(
+          h.app
+            .getSnapshot()
+            .state!.checks.some((check) => check.id === originalId),
+          false,
+        );
+      }
+      const fenced = clone(h.app.getSnapshot().state!),
+        replacement = h.app.check?.id;
+      const calls = h.service.calls.length;
+      release.resolve();
+      assert.equal((await pending).ok, false);
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      assert.deepEqual(h.app.getSnapshot().state, fenced);
+      assert.equal(h.app.check?.id, replacement);
+      assert.equal(h.service.calls.length, calls);
+      assert.equal(h.events.includes("hardware-acquire"), false);
+      assert.deepEqual(h.app.check!.snapshot.saliva, []);
+    } finally {
+      release.resolve();
+      await h.close();
+    }
+  });
+}
+
 test("unknown analysis cancellation preserves its exact body and key and never relabels the collected specimen", async () => {
   const h = await labAccount();
   try {

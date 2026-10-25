@@ -256,7 +256,7 @@ def _base(db, account, check):
     snapshot = check.snapshot
     try:
         validate_session(snapshot)
-        result = safe_result(check.result)
+        result = safe_result(check.result, db=db, account=account, check=check)
         manifest = record(db, account, "manifest", check.id)
         if (
             snapshot["session_id"] != check.id

@@ -202,8 +202,8 @@ def make_export(claim):
             row = db.get(Check, sid)
             if not row or row.account_id != a.id or row.generation != a.generation:
                 raise Problem(410, "DATA_GENERATION_RETIRED")
-            safe_result(row.result)
-            bundle = {**detail(row), **evidence(db, a, row)}
+            safe_result(row.result, db=db, account=a, check=row)
+            bundle = {**detail(row, db=db, account=a), **evidence(db, a, row)}
             if claim.body.get("include_raw"):
                 bundle["raw_artifacts_omitted_reason"] = (
                     "UNSELECTED_RAW_ARTIFACTS_OMITTED"
@@ -379,7 +379,7 @@ def commit_output(claim, output):
             from .model_engine import verify_current_execution
 
             verify_current_execution(db, a, check, output)
-            safe_result(output)
+            safe_result(output, db=db, account=a, check=check)
             check.result = output
             check.state = "invalid" if output["state"] == "invalid" else "completed"
         elif claim.kind == "export":
@@ -396,7 +396,7 @@ def commit_output(claim, output):
                     or check.generation != a.generation
                 ):
                     raise LeaseLost()
-                safe_result(check.result)
+                safe_result(check.result, db=db, account=a, check=check)
                 if check.study_id:
                     consent = db.scalar(
                         select(Record).where(

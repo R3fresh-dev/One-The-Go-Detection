@@ -68,6 +68,9 @@ test("actual signed API-to-worker HR-only fixture verifies conservative server i
     workspace,
     { kind: "single", session_ids: [owned.id] },
     cardiacFixture.result.evaluated_at,
+    // Serializer contract fixture only; fresh authenticated controller reads
+    // are covered separately and this digest does not create genuine authority.
+    new Map([[owned.id, digest(owned.result)]]),
   );
   assert.ok(inspectExportArchive(archive).fileCount > 0);
   const profile = JSON.parse(strFromU8(unzipSync(archive)["profile.json"]!));

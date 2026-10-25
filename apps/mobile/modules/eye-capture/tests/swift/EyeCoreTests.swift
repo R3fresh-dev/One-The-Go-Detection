@@ -1,4 +1,5 @@
 import XCTest
+import CryptoKit
 @testable import OTGDEyeCore
 final class EyeCoreTests:XCTestCase {
   func testDeferredCleanupRetainsOnlyItsOriginAfterViewReleasesOwner() {
@@ -55,6 +56,15 @@ final class EyeCoreTests:XCTestCase {
     let gray=((f["vectors"] as! [[String:Any]])[0]["gray"] as! [Int]).map{UInt8($0)}
     let data=try EyeCore.raw([EyeCore.RawFrame(timestamp:1000,sequence:0,gray:gray),EyeCore.RawFrame(timestamp:1100,sequence:1,gray:gray)],c)
     XCTAssertEqual(data.count,f["raw_size"] as! Int);XCTAssertEqual(data.prefix(EyeCore.magic.count),EyeCore.magic);XCTAssertEqual(Array(data[16..<24]),[16,0,16,0,2,0,0,0])
+    // Independently literal wire bytes: Float64 LE 1000/1100, UInt32 LE
+    // sequences 0/1, and every byte of both original luminance planes.
+    var expected=Data("OTGD-EYE-ROI-v1\n".utf8)
+    expected.append(contentsOf:[16,0,16,0,2,0,0,0,0,0,0,0,0,64,143,64,0,0,0,0])
+    expected.append(contentsOf:gray)
+    expected.append(contentsOf:[0,0,0,0,0,48,145,64,1,0,0,0])
+    expected.append(contentsOf:gray)
+    XCTAssertEqual(data,expected)
+    XCTAssertEqual(SHA256.hash(data:data).map{String(format:"%02x",$0)}.joined(),f["raw_sha256"] as! String)
     let samples=try EyeCore.sample(c,width:16,height:16,rotation:90){x,y in UInt8(y*16+x)};XCTAssertEqual(samples[0],240);XCTAssertEqual(samples[15],0)
     o["hidden"]=true;XCTAssertThrowsError(try config(o));o.removeValue(forKey:"hidden");o["scale_basis"]="millimeters";XCTAssertThrowsError(try config(o));XCTAssertThrowsError(try EyeCore.extract([1],c))
   }

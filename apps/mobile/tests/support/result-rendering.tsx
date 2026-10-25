@@ -34,6 +34,7 @@ export function renderResultUI(check: any, screen = "row", scope: any = {}) {
   const controller: any = {
     check,
     epoch: "fictional-render-only",
+    hasCurrentHrResultAdmission: () => scope.hrResultAdmitted === true,
     getSnapshot: () => model,
     device: {
       snapshot: () => ({

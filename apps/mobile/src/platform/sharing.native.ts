@@ -12,12 +12,14 @@ export async function shareArchive(
   bytes: Uint8Array,
   id: string,
   assertCurrent: () => void = () => {},
+  authorizeRelease?: () => Promise<void>,
 ): Promise<void> {
   if (!(await Sharing.isAvailableAsync()))
     throw new IntegrityError(
       "SHARING_UNAVAILABLE",
       "The system share sheet is unavailable on this device.",
     );
+  if (authorizeRelease) await authorizeRelease();
   assertCurrent();
   const directory = folder();
   directory.create({ intermediates: true, idempotent: true });

@@ -149,3 +149,59 @@ Finish currently identified direct acceptance assertions before the first replac
 The full semantic audit must finish and reconcile already-authored corrections. A PARTIAL evidence classification is not automatically a production bug or a missing test if shared execution already proves the clause. Generic plan labels and unreviewed criteria must not inflate software-defect counts. External OS/hardware/study/operational or release requirements remain explicit. After bounded first-round repairs, freeze and execute full gates and six independent rereviews. New consolidated review findings use correction round2 if needed; no indefinite first-round expansion or counter reset.
 
 New backend test COPY files invalidate F exact-source snapshot; preserve F unadopted, and prepare a final proof only after all backend inputs release. No Docker mutation or retained-artifact deletion is authorized by this decision. Round1/2 and recovery0/3 remain.
+
+
+## D-006 v8 — ACCEPTED: actual free-space guard after Docker load
+
+A bounded read-only attempt to list /var/lib/docker/tmp returned OS PermissionError13; no contents were read, no mutation occurred and the restricted read will not be retried or bypassed. Replace the unobservable transient-absence assertion with the stronger actual-capacity check at the next action boundary: after Docker load successfully returns, measure filesystem available bytes again and require at least one full serialized app-container allocation plus300MiB reserve before every recreation. Any retained load transient is already charged as used space by this measurement; do not claim it was absent. The planned StageA peak remains guarded before load, and StageB cannot overlap a still-running load process. Preserve the successful load identity/config readback and explicit read restriction. All archives/data/volumes/settings remain preserved; no cleanup, resize or security bypass.
+
+
+## D-009 v8 — ACCEPTED: confirmed required-chemistry abandonment boundary
+
+The assigned SALCOL00806 regression demonstrated actual HTTP finalization202 and result-job creation after genuine collected evidence was explicitly abandoned while the current independently released fictional study model required saliva chemistry. Canonical SALCOL00806/design36 require finalization to identify that missing minimum. The backend owner may add only this abandoned-collection/current-required-chemistry guard after evidence and submitted digest verification, before state/job/outbox mutation. Resolve existing current released study/model/consent/dependency policy; do not infer approvals, invoke inference or apply a blanket full-model scope gate. Ordinary measurement and unavailable/unadmitted-model measurement behavior remain, and independently permitted missing chemistry remains allowed. Preserve original specimen, attempt, receipt and immutable abandonment proof. Verify required refusal/nojob/outbox plus ordinary and permitted-missing positives. Retain the true RED and current GREEN evidence.
+
+The final semantic audit also raised a distinct HR00702 read-boundary concern: stored conditional numeric results appear to be internally hash-validated without current authority re-admission. A separate specialist is authorized to inspect precise canonical precedence and reproduce the actual authenticated read after revocation using typed fictional fixtures, with test-only ownership. No production read-boundary edit is assigned until the reproduction is reviewed. This is a concrete functional concern, not an expansion into every residual assertion. All782 baseline cases now adjudicated; no new unreviewed audit pool remains.
+
+Still correction1/2, recovery0/3; preserve F archive unadopted. Freeze follows these bounded functional checks and existing assigned assertions, then current full gates and six independent confirmations.
+
+
+## D-009 v9 — ACCEPTED: confirmed HR numeric disclosure after revocation
+
+Independent reproduction used actual authenticated HTTP, typed fictional registry lifecycle, signed acquisition and completed worker output. Model or exact cardiac-interval calibration retirement made current verify_current_execution refuse with APPROVED_REGISTRY_VERSION_REQUIRED; six combinations of result/detail/history nevertheless returned200 and unchanged numeric research results. All16 source/spec/test bindings remained unchanged across the true RED run. Canonical HR-AUTH007 expressly requires current admission for numeric execution/publication/replay/read, while legacy and unavailable-model measurement behavior remains.
+
+Assign the reproduction specialist a narrow context-required safe_result guard after existing result validation, only for a typed nonnull cardiac authority companion. Reuse existing verify_current_execution with actual db/account/check context; absent context fails closed for this HR result. Update all existing disclosure call sites: main detail/result/export admission/download, worker export build/commit and result validation, raw-export descriptor, and report-revision base validation as applicable. Preserve immutable stored result and generic non-HR historical validation; no inferred authority, altered scientific threshold, result rewriting, or change to retention scope. Verify original6 refusals, current-authority positives, contextless refusal, legacy/non-HR preservation and export boundaries with meaningful existing fixtures. Client cached HR behavior is inspected separately; no client edits without a demonstrated issue and assignment.
+
+This is the last confirmed functional concern from the now-complete baseline782-case audit. Other residual evidence classifications remain for current independent review, without unbounded assertion expansion. Finish assigned bounded repairs, freeze, execute required current gates and obtain all six confirmations. Correction1/2 and recovery0/3 persist.
+
+
+## D-009 v10 — ACCEPTED: hosted-preview fixture identity regression
+
+Checkpoint9 CI run40178844026 passed ordinary unit/ATDD/components, actual Android/iOS, firmware and platform synthesis/Fargate/PostgreSQL jobs, but both hosted preview jobs failed in their mobile unit coverage step with AUTH_ENDPOINT_INVALID. Job-level guest-only unavailable.invalid OAuth pins conflict with ordinary mocked unit build identities after the intended endpoint-pinning repair. The auth/test owner may repair only test fixture environment isolation or test harness admission data after reproducing the exact hosted workflow environment. Preserve every test, strict >80% coverage, all production endpoint guards, hostile ambient environment tests, and actual guest-only preview build pins. Do not make runtime auth permissive or skip preview jobs. Rerun exact-environment coverage and final current CI.
+
+D009v9 also authorizes the mobile owner to reproduce the precise cached HR numeric presentation path and propose a minimal current-admission design before production edits. Generic historical non-HR behavior stays unchanged, immutable local evidence is preserved, and no guessed scientific validity period is authorized. This is part of the same confirmed HR disclosure boundary, not broader product scope.
+
+Correction1/2, recovery0/3. Checkpoint9 CI failures are explicit; checkpoint8 all14 PASS remains historical. No final replacement freeze yet.
+
+
+## D-009 v11 — ACCEPTED: cached HR display and local export admission
+
+The actual pre-retirement owned HR response still renders probability/classification/uncertainty through the current client helper after server admission has been revoked; cached selectCheck opens without fetching. The mobile owner also reproduced this in the actual Result JSX (true RED) and identified local ZIP serialization of the retained result. These are the same HR007 current numeric read/disclosure boundary; backend refusal alone cannot close them.
+
+Authorize an ephemeral HR-only display admission bound to exact verified result digest, check ID, epoch, account, data generation and active Result view. Fresh authenticated result GET on opening/manual refresh must match before numeric probability/classification/uncertainty displays. Offline, denial, mismatch, leaving view, background or scope change withholds numeric data and invalidates the ephemeral admission; later callbacks cannot revive it. No scientific TTL or approval is invented. Keep immutable cached evidence and generic non-HR historical rendering unchanged. Audit current detail/raw/copy paths for the same disclosure boundary.
+
+Each explicit local export separately obtains current admission for every selected typed HR result, with exact result binding and scope guards. The low-level export service fails closed without that admission. Re-admit before final archive/share disclosure after asynchronous construction as appropriate; display admission is not export authority. Unavailable authority blocks explicitly; never silently alter/drop retained evidence. Ordinary measurement and non-HR exports remain unchanged. Test current positives, offline/refusal/mismatch/reopen and late callbacks, immutable data, direct exporter refusal and final release races. Preserve real-server versus named fixture boundaries.
+
+All scoped repairs remain in first consolidated correction1/2, recovery0/3. No final freeze, final approval, deployment or participant-use authorization follows.
+
+
+## D-006 v9 — ACCEPTED: reclaim only the obsolete D image cache
+
+G load and serialized identity/API/worker refresh are independently confirmed, all five services are healthy and both original successful initializers remain. PostgreSQL4146ac7a8043 and LocalStackbc63b3379183, their start identities/volumes, and all archives are unchanged. Root free bytes after adoption are662282240.
+
+Under existing ordinary local-engineering authority and the prior verified-unused-image cleanup pattern (D006v3/E0015), reclaim only own obsolete image sha256:a266628e1e2d87d83b0152684298e003dd2e44ce0c145ef6985ea690b8263b06 / otgd-api:factory-source-5e44bbed7d6a. Docker confirms no container references it and this is its only remaining tag. It is reproducible cache, not unique retained source/data: full source-refresh-image-d.tar remains at SHA585b961d89a2b633e734b99efdb2e1ace0b616e5025fff8fa655b6db571b5df6; its Config SHA equals the exact image ID and sole layer DiffID was reread and verified. Estimated layer allocation~293MiB; actual reclaimed bytes will be measured, not assumed.
+
+Recheck no references immediately before non-force removal. Do not remove G/base images, any container/volume, any archive or journal, or any other cache. Docker refusal must stop this action; no force/bypass. Verify G canonical image, unchanged service identities/volumes and archivedD after action. Restoration of D, if needed, is via the retained complete archive; do not automatically roll back healthy G. This bounded resource cleanup leaves final gate assertions and retained evidence intact.
+
+## D-008 v2 — replacement source freeze (2026-10-25T09:46:37.074966+00:00)
+
+All correction owners have released their source. The checkpoint 10 commit is the next immutable candidate. PM runs all seven local gates and current CI; independent reviewers and verifier write only outside the repository during the fingerprint window. Require the actual candidate commit, canonical spec hashes and evidence hashes for each disposition. Historical candidate 28 and checkpoints 8/9 remain history. Round 1/2 is preserved; any consolidated actionable review repairs start round 2/2 before editing. No science, hardware, participant-use, native OS, deployment, merge or scope waiver is implied.

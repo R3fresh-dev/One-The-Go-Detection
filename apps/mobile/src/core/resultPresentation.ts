@@ -19,11 +19,26 @@ export interface ResultPresentation {
     explanation: string;
     rationale: string | null;
   } | null;
+  currentAdmissionRequired?: boolean;
+}
+
+/** Only the explicitly typed HR companion has current-read admission rules.
+ * Other historical research envelopes retain their existing display behavior. */
+export function requiresCurrentHrRead(
+  result: MeasurementResult | null,
+): boolean {
+  return (
+    result?.schema_version === "1.1.0" &&
+    result.model_execution.authority_manifest.cardiac_authority != null
+  );
 }
 
 /** Historical display verification is not current model/study admission. The
  * authenticated service remains responsible for that independent authority. */
-export function presentCheckResult(check: CheckRecord): ResultPresentation {
+export function presentCheckResult(
+  check: CheckRecord,
+  currentHrReadAdmitted = false,
+): ResultPresentation {
   const unavailable: ResultPresentation = {
     badge: "Result unavailable",
     summary: "Result unavailable",
@@ -46,6 +61,18 @@ export function presentCheckResult(check: CheckRecord): ResultPresentation {
     return unavailable;
   }
   if (result.schema_version === "1.1.0") {
+    if (requiresCurrentHrRead(result) && !currentHrReadAdmitted)
+      return {
+        badge: "Historical research",
+        summary:
+          result.state === "research_estimate"
+            ? "Historical research result"
+            : "Historical research abstention",
+        title: "Current research result admission required",
+        result: null,
+        uncertainty: null,
+        currentAdmissionRequired: true,
+      };
     const policy = requireObject(
       result.model_execution.authority_manifest.model_manifest
         .uncertainty_policy,

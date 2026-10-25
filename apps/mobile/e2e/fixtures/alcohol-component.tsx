@@ -26,6 +26,7 @@ const root = createRoot(document.getElementById("root")!);
   const controller: any = {
     check,
     epoch: "fictional-component-only",
+    hasCurrentHrResultAdmission: () => false,
     getSnapshot: () => model,
     run: async (fn: () => Promise<void>) => fn(),
     navigate: async (next: string) => render(next),

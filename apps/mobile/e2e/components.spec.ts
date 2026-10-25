@@ -3,6 +3,128 @@ import { buildSync } from "esbuild";
 import { resolve } from "node:path";
 import { preparationConfiguration } from "./fixtures/preparation-configuration";
 
+const hrResultBundle = buildSync({
+  entryPoints: [resolve("e2e/fixtures/hr-result-component.tsx")],
+  bundle: true,
+  write: false,
+  platform: "browser",
+  format: "iife",
+  resolveExtensions: [
+    ".web.tsx",
+    ".web.ts",
+    ".web.js",
+    ".tsx",
+    ".ts",
+    ".jsx",
+    ".js",
+    ".json",
+  ],
+  alias: { "react-native": resolve("e2e/fixtures/native-web-shim.js") },
+  define: {
+    __DEV__: "false",
+    "process.env.NODE_ENV": '"test"',
+    "process.env.EXPO_PUBLIC_APP_ENV": '"local"',
+    "process.env.EXPO_PUBLIC_HOSTED_PREVIEW": '"false"',
+  },
+}).outputFiles![0]!.text;
+
+test("actual HR screen requires a fresh admitted result on open and after evidence navigation", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: hrResultBundle });
+  await expect(
+    page.getByText("Current research result admission required", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("81.8%", { exact: true })).toHaveCount(0);
+  const retained = await page.evaluate(() =>
+    (window as any).hrRetainedDigest(),
+  );
+  await page.evaluate(() => (window as any).resolveHrRead(200));
+  await expect(page.getByText("81.8%", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /About this result/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Evidence & context", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("81.8%", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await expect(
+    page.getByText("Current research result admission required", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.evaluate(() => (window as any).resolveHrRead(403));
+  await expect(page.getByRole("alert")).toContainText(
+    "current HR authority retired",
+  );
+  await expect(page.getByText("81.8%", { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByText("Probability of the named research endpoint", {
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  expect(await page.evaluate(() => (window as any).hrRetainedDigest())).toBe(
+    retained,
+  );
+});
+
+test("actual HR manual refresh and late read after leaving cannot revive cached numeric research", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: hrResultBundle });
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBe(1);
+  await page.evaluate(() => (window as any).resolveHrRead(200));
+  await expect(page.getByText("81.8%", { exact: true })).toBeVisible();
+  await page
+    .getByRole("button", {
+      name: "Refresh service result. Verify the same snapshot and evidence before displaying",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByText("Current research result admission required", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBe(2);
+  await page.evaluate(() => (window as any).resolveHrRead(403));
+  await expect(page.getByRole("alert")).toBeVisible();
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Reopen cached result", exact: true })
+    .click();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBe(3);
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await page.evaluate(() => (window as any).resolveHrRead(200));
+  await page
+    .getByRole("button", { name: "Reopen cached result", exact: true })
+    .click();
+  await expect(
+    page.getByText("Current research result admission required", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBe(4);
+  await page.evaluate(() => (window as any).resolveHrRead(422));
+  await expect(page.getByText("81.8%", { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByText("Uncertainty policy", { exact: true }),
+  ).toHaveCount(0);
+});
+
 const preparationBundle = buildSync({
   entryPoints: [resolve("e2e/fixtures/participant-component.tsx")],
   bundle: true,

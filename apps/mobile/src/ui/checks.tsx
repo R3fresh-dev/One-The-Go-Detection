@@ -43,6 +43,7 @@ import { formatSalivaMeasurement } from "./measurement-format";
 import { SignalPanel } from "../device/SignalPanel";
 import { canonicalJson } from "../core/integrity";
 import { BUILD } from "../platform/config";
+import { newId } from "../platform/storage";
 import { configurationFor, type AcquisitionChannel } from "../core/acquisition";
 import { ReplacementLinksCard, ReportRevisionsCard } from "./revisions";
 import {
@@ -1672,10 +1673,25 @@ function UploadIssueCard({
 
 export function ResultScreen({ controller, model }: ScreenProps) {
   const check = controller.check;
-  const presentation = check ? presentCheckResult(check) : null;
+  const presentation = check
+    ? presentCheckResult(check, controller.hasCurrentHrResultAdmission(check))
+    : null;
   const result = presentation?.result;
   const [rawSelection, setRawSelection] = useState<string[]>([]);
   useEffect(() => setRawSelection([]), [check?.id, controller.epoch]);
+  useEffect(() => {
+    if (!check || !presentation?.currentAdmissionRequired) return;
+    const token = newId(),
+      epoch = controller.epoch;
+    let active = true;
+    void controller.refreshHrResultAdmission(check.id, token).catch((error) => {
+      if (active && controller.epoch === epoch) controller.report(error);
+    });
+    return () => {
+      active = false;
+      controller.releaseHrResultView(token);
+    };
+  }, [check?.id, controller.epoch]);
   const pendingRaw = model.state?.queue.find(
     (q) =>
       q.kind === "check" && q.check_id === check?.id && q.state !== "synced",
@@ -1783,13 +1799,20 @@ export function ResultScreen({ controller, model }: ScreenProps) {
               </Notice>
             )}
           </>
+        ) : presentation?.currentAdmissionRequired ? (
+          <Notice tone="warning">
+            Reconnect for a fresh authenticated service read. The saved HR
+            research probability, classification and uncertainty policy remain
+            withheld until current authority is admitted. Recorded measurements
+            are preserved.
+          </Notice>
         ) : (
           <Paragraph>
             No validated impairment model is available for this check.
             Intoxication cannot be determined.
           </Paragraph>
         )}
-        {check.result && !result && (
+        {check.result && !result && !presentation?.currentAdmissionRequired && (
           <Notice tone="warning">
             Saved result could not be verified. No research score or uncertainty
             policy is displayed.

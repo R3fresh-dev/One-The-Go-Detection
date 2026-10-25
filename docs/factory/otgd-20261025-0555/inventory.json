@@ -477,7 +477,7 @@
   {
     "id": "OTGD-020",
     "path": "openspec/changes/production-mobile-platform/specs/android-app-environment/spec.md",
-    "sha256": "7cd3451fd8c13cd25bdc66403e879de3f9fe0e127e3655f2ed40017869916f76",
+    "sha256": "6cef683b7ac1b04bdf104e0b87aa36badf61e905580d32223c05a39ce8efac35",
     "criteria": [
       "AND-ENV-001 Fix environment identity in each build",
       "AND-ENV-002 Bound startup and preserve local data",

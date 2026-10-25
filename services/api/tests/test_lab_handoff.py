@@ -386,6 +386,118 @@ def http_source(client, handoff, monkeypatch):
     return store, response.json(), request_headers
 
 
+def verified_initial_http_import_request(client, handoff, monkeypatch):
+    """Reuse the existing bounded PDF transport fixture; no import is accepted."""
+    _, ticket, _ = http_source(client, handoff, monkeypatch)
+    source = ticket['artifact_id']
+    completed = client.post(f'/v1/research/lab-source-artifact-uploads/{source}/complete',
+        headers=headers('b'), json={key: handoff.request.data()[key]
+            for key in ('sha256', 'size_bytes', 'media_type')})
+    assert completed.status_code == 200, completed.text
+    with factory()() as db:
+        assert db.get(Artifact, source).state == 'verified'
+        assert db.query(Record).filter_by(kind='lab_import').count() == 0
+    return import_body(handoff, source).data()
+
+
+def assert_initial_import_left_no_analytical_side_effects(handoff):
+    with factory()() as db:
+        owner = db.get(Account, handoff.participant)
+        collection = record(db, owner, 'collection', handoff.request.sample_id)
+        assert collection.body == handoff.collection and collection.sha256 == digest(handoff.collection)
+        assert record(db, owner, 'attempt', handoff.request.collection_attempt_id).body == handoff.collection['attempt']
+        assert db.query(Record).filter_by(kind='lab_import').count() == 0
+        assert db.query(Record).filter_by(parent_id=handoff.request.session_id, kind='attempt').count() == 1
+        assert db.scalar(select(Audit.id).where(Audit.action.like('delegated_lab_import%'))) is None
+        assert db.scalar(select(Dedup.id).where(Dedup.route == '/v1/research/lab-imports')) is None
+        assert db.get(Check, handoff.request.session_id).state == 'draft'
+        assert db.get(Check, handoff.request.session_id).snapshot is None
+
+
+@pytest.mark.parametrize('boundary,expected_status,expected_code', [
+    ('study', 403, 'LAB_TARGET_SCOPE_MISMATCH'),
+    ('generation', 403, 'LAB_TARGET_UNAVAILABLE'),
+    ('participant', 404, 'NOT_FOUND'),
+])
+def test_initial_import_refuses_foreign_target_scope_not_only_source_creation(
+    client, handoff, monkeypatch, boundary, expected_status, expected_code
+):
+    from otgd.operator_governance import active_body
+
+    body = verified_initial_http_import_request(client, handoff, monkeypatch)
+    if boundary == 'study':
+        foreign_id = 'fictional-other-import-study'
+        with factory().begin() as db:
+            foreign = {**handoff.study, 'registry_id': foreign_id, 'study_id': foreign_id, 'channels': {}}
+            approve(db, 'study', foreign)
+            role = deepcopy(active_body(db, 'role', handoff.operator))
+            role.update(version='v2', study_ids=[handoff.study['study_id'], foreign_id])
+            approve(db, 'role', role)
+            assert foreign_id in active_body(db, 'role', handoff.operator)['study_ids']
+        body['study_id'] = foreign_id
+    elif boundary == 'generation':
+        body['data_generation'] = 2
+    else:
+        foreign = client.get('/v1/me/capabilities', headers=headers('c')).json()['account_ref']
+        acknowledged = client.post('/v1/me/acknowledgments', headers=headers('c'), json={
+            'version': 'v1', 'sha256': NOTICE_SHA, 'acknowledged_at': iso()})
+        assert acknowledged.status_code == 200, acknowledged.text
+        body['account_ref'] = foreign
+    response = client.post('/v1/research/lab-imports', headers=headers('b'), json=body)
+    assert response.status_code == expected_status and response.json()['code'] == expected_code, response.text
+    assert_initial_import_left_no_analytical_side_effects(handoff)
+
+
+@pytest.mark.parametrize('boundary,expected_status,expected_code', [
+    ('retired_configuration', 403, 'CAPABILITY_DENIED'),
+    ('withdrawn_consent', 403, 'CAPABILITY_DENIED'),
+    ('foreign_staff', 403, 'LAB_IMPORT_ROLE_REQUIRED'),
+    ('foreign_report', 404, 'NOT_FOUND'),
+])
+def test_initial_import_readmits_configuration_consent_staff_and_report_custody(
+    client, handoff, monkeypatch, boundary, expected_status, expected_code
+):
+    from otgd.operator_governance import transition
+
+    body = verified_initial_http_import_request(client, handoff, monkeypatch)
+    caller = 'b'
+    if boundary == 'retired_configuration':
+        with factory().begin() as db:
+            transition(db, 'configuration', CONFIG, 'v1', 'retire', 'local:fixture-releaser',
+                'Fictional retirement before initial import', 3)
+    elif boundary == 'withdrawn_consent':
+        with factory().begin() as db:
+            owner = db.get(Account, handoff.participant)
+            consent = record(db, owner, 'consent', handoff.study['study_id'])
+            consent.body = {**consent.body, 'state': 'withdrawn'}
+            consent.sha256 = digest(consent.body)
+    elif boundary == 'foreign_staff':
+        caller = 'c'
+        outsider = client.get('/v1/me/capabilities', headers=headers(caller)).json()['account_ref']
+        acknowledged = client.post('/v1/me/acknowledgments', headers=headers(caller), json={
+            'version': 'v1', 'sha256': NOTICE_SHA, 'acknowledged_at': iso()})
+        assert acknowledged.status_code == 200, acknowledged.text
+        with factory().begin() as db:
+            foreign_id = 'fictional-unrelated-staff-study'
+            approve(db, 'study', {**handoff.study, 'registry_id': foreign_id,
+                'study_id': foreign_id, 'account_refs': [outsider], 'channels': {}})
+            approve(db, 'role', common(outsider, account_ref=outsider,
+                roles=['lab_import'], study_ids=[foreign_id]))
+    else:
+        with factory().begin() as db:
+            original = db.get(Artifact, body['source_report_artifact_id'])
+            foreign = Artifact(**{column.name: deepcopy(getattr(original, column.name))
+                for column in Artifact.__table__.columns})
+            foreign.id = uid()
+            foreign.key = 'quarantine/fictional-foreign-report/' + foreign.id
+            foreign.scope = {**foreign.scope, 'operator_account_ref': handoff.participant}
+            db.add(foreign)
+            body['source_report_artifact_id'] = foreign.id
+    response = client.post('/v1/research/lab-imports', headers=headers(caller), json=body)
+    assert response.status_code == expected_status and response.json()['code'] == expected_code, response.text
+    assert_initial_import_left_no_analytical_side_effects(handoff)
+
+
 def test_actual_http_delegated_ticket_completion_import_and_minimal_dedup(client, handoff, monkeypatch):
     store, ticket, source_headers = http_source(client, handoff, monkeypatch)
     source = ticket["artifact_id"]

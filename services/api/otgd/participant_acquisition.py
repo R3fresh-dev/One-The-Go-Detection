@@ -469,6 +469,45 @@ def require_completed_collections(db, account, check):
             raise Problem(409, "LAB_ANALYSIS_PENDING")
 
 
+def require_abandoned_chemistry(db, account, check):
+    """An abandoned specimen cannot stand in for current required chemistry.
+
+    Call only after evidence and digest verification. This is a collection
+    minimum, not model execution or a gate on other channels/physical validity.
+    """
+    from sqlalchemy import select
+
+    from .db import Record
+    from .operator_governance import released_version, validate_dependencies
+
+    if check.mode != "controlled_research" or not db.scalar(
+        select(Record.id).where(
+            Record.account_id == account.id,
+            Record.generation == account.generation,
+            Record.parent_id == check.id,
+            Record.kind == "collection_abandon",
+        ).limit(1)
+    ):
+        return
+    study = released_version(db, "study", check.study_id)
+    model_id = study.body.get("model_id")
+    model = released_version(db, "model", model_id, required=False) if model_id else None
+    # Unavailable research execution must not invent a new recording minimum.
+    if model is None or check.study_id not in model.body["study_ids"]:
+        return
+    chemical = {"saliva_thc": "THC", "saliva_thc_cooh": "THC_COOH", "saliva_oh11_thc": "OH11_THC"}
+    required = {chemical[channel] for channel in model.body["manifest"]["required_channels"] if channel in chemical}
+    if not required:
+        return
+    validate_dependencies(db, "model", model.body)
+    measurements = {value["analyte"]: value for value in check.snapshot["saliva"]}
+    if check.snapshot["sample"]["status"] != "valid" or any(
+        analyte not in measurements or measurements[analyte]["qualifier"] != "quantified"
+        for analyte in required
+    ):
+        raise Problem(422, "MISSING_REQUIRED_CHANNEL")
+
+
 class CollectionAbandonment(DTO):
     confirmation: Literal[True]
     reason: Literal["USER_CANCELED", "PARTICIPANT_DECLINED", "SPECIMEN_UNAVAILABLE"]

@@ -8,13 +8,13 @@ PM: current Codex /root in parent-delegated task; OpenAI GPT-6 family per host i
 Parent source thread: 01a16636-df8f-72e1-b9e7-31c10571e0d7.
 Environment: ccarenv_b64_Y2NhcmVudl9jMWMxZjFjNWVmM2M4MTkxODZmM2NmOTVmMmY5NTAyZQ.
 Ownership generation: 1. Prior PM: no active same-repository task found by parent; see ownership.md.
-Last heartbeat: 2026-10-25T07:50:00.775438+00:00.
+Last heartbeat: 2026-10-25T09:37:51.503361+00:00.
 Baseline/candidate: 0844868aa543af4ab75ac5065ad48cf807b86bb3; Factory records only until first audit edits.
 correction_round: 1
 max_correction_rounds: 2
 recovery_attempts: 0
-checkpoint_seq: 8
-last_observed_confirmed_remote_commit: 28e07295cb37bb9dcaaac82cc8fc846eb89006a6 (checkpoint7 verified).
+checkpoint_seq: 9
+last_observed_confirmed_remote_commit: 52ffa1044e787f7fea088c82797d4525af02e9a3 (checkpoint9 non-force push and ls-remote verified).
 
 ## Scope and authority
 
@@ -25,11 +25,11 @@ Complete the existing approved Android/iOS journeys, native modules, API/workers
 - T01 takeover and ownership, attempt 1: DONE; evidence/takeover-audit.json and ownership.md.
 - T02 product audit, attempt 1: DONE; report read-back and document checks passed; PRD ownership released; product-owner owns PRD and active OpenSpec edits, report.
 - T03 engineering audit, attempt 1: DONE; engineering report and author checks complete; engineering-lead owns HLD/LLD and applicable specs.
-- T04 reconciliation, attempt 1: RUNNING; /root/spec_reconciliation; spec writer reconciles all documents/specs/contracts and per-criterion verification map.
-- T05 implementation, attempt 1: PENDING on T04; bounded builders own affected code and meaningful tests.
-- T06 verification planning/execution, attempt 1: PLANNING DONE, runtime execution PENDING after reconciliation/freeze; verification specialist owns per-spec test plans/results and command evidence. Setup may proceed independently, actual final gates after source freeze.
-- T07 six independent reviews/signoffs: PENDING on candidate and evidence; security, UX, UI design, code, product signoff, engineering signoff.
-- T08 consolidated correction rounds: PENDING only if required; persist count before repairs, all affected confirmations required.
+- T04 reconciliation, attempt 1: COMPLETE initial pass; D009v6 canonical prerequisite supplement accepted; historical owner: /root/spec_reconciliation; spec writer reconciles all documents/specs/contracts and per-criterion verification map.
+- T05 implementation, attempt 1: ACTIVE consolidated correction1; bounded builders own affected code and meaningful tests.
+- T06 verification planning/execution, attempt 1: PLANNING DONE; earlier checkpoint8 all14 CI PASS; current replacement fullgates PENDING; verification specialist owns per-spec test plans/results and command evidence. Setup may proceed independently, actual final gates after source freeze.
+- T07 six independent reviews/signoffs: initial six complete with changes/blocks; current replacement confirmations PENDING; security, UX, UI design, code, product signoff, engineering signoff.
+- T08 consolidated correction rounds: ACTIVE round1/2; persist count before repairs, all affected confirmations required.
 - T09 fresh independent approval: PENDING on all required reviews/tests passing per spec.
 
 ## Inventory and ownership
@@ -40,7 +40,7 @@ PM exclusively owns ACTIVE.md, run/status/resume/decisions/impact/events, invent
 
 ## Outcome
 
-Specification readiness unassessed; implementation unverified for this run; release/hardware/scientific qualification not granted. Current setup gaps: missing API/npm dependencies, native and firmware toolchains, no local runtime yet.
+Initial product/engineering/specification audits complete; current source acceptance remains unverified pending complete replacement gates and independent decisions. Local real dependencies are available; native/firmware software builds execute in CI. Actual OS/device/hardware/scientific/study/release prerequisites remain ungranted. No app completion or deployment claim. Earlier setup/roster entries below are historical; current roster and bounded tasks are in status.md and external live records.
 
 ## Active roster
 
@@ -89,3 +89,7 @@ All implementation sources are released. Browser acceptance is 2/2 on actual ser
 ## Checkpoint 8 — initial reviews and correction round1
 
 All six independent initial reviews complete for candidate28e07295; all47 per-spec decisions imported with current canonical hashes. D009 starts correction1/2; recovery0/3 unchanged. No final approver or completion. Local gate completed unit/ATDD/performance/components on unchanged source, intentionally stopped next disposable-PG collection to repair reviewed defects. Exact interruption and passing stages preserved; full final rerun remains required. Current CI40173151613 runs merge891e5e789e3f8ac114237dc63f21f1960cdc62d0, exact candidate tree9a62a8ae6bffd16394f68ea9147b8d7c5469f169 verified. Draft PR22 remains open. Canonical services healthy; all data preserved.
+
+## Checkpoint 10 — replacement candidate
+
+2026-10-25T09:46:37.074966+00:00: All authors released source and reports. D009 v1–v11 corrections and the complete historical baseline acceptance audit are preserved. Current mobile 385 tests / 91.14% coverage and 72 browser cases pass; backend 1529 tests plus 208 subtests / 89.92% coverage pass. G COPY proof matches current backend; all services healthy. Freeze under D008 v2 after this commit for full current gates and six independent reviews. Correction 1/2, recovery 0/3; no final approval.

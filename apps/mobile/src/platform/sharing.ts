@@ -3,7 +3,9 @@ export async function shareArchive(
   bytes: Uint8Array,
   id: string,
   assertCurrent: () => void = () => {},
+  authorizeRelease?: () => Promise<void>,
 ): Promise<void> {
+  if (authorizeRelease) await authorizeRelease();
   assertCurrent();
   const blob = new Blob([new Uint8Array(bytes).buffer], {
       type: "application/zip",
