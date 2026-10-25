@@ -4,6 +4,8 @@ The required status is **`merge-gate`**, produced by [merge-gate.yml](../.github
 
 The workflow calls [platform.yml](../.github/workflows/platform.yml), [native-build.yml](../.github/workflows/native-build.yml) and [hosted-native-preview.yml](../.github/workflows/hosted-native-preview.yml). The guarded Android and iOS guest-preview builds must also pass before the aggregate succeeds. Standalone manual runs of those workflows do not satisfy the aggregate. Source changes require fresh checks; earlier passing runs are historical evidence.
 
+The current workflow expands to 14 mandatory jobs: 3 application matrix jobs, 4 platform jobs (including `fargate-container-runtime`), 4 native jobs, 2 guest-preview jobs and the aggregate. This is an inventory of configured jobs, not passing execution evidence. Require every mandatory job from the exact committed aggregate and reusable workflows; historical eleven/thirteen-job checkpoints do not cover newly added jobs. The optional manual store workflow remains separate.
+
 | Requirement | Executed check |
 |---|---|
 | Unit coverage strictly above 80% | Every `otgd` Python module, shared scientific `spec_validation`, executable `tools/model_evaluation.py`, and the native store release/input helpers, plus every executable mobile `src/**/*.ts` business module, including unloaded native adapters. Python and mobile inventories independently exceed 80%; each store helper also independently exceeds 80% with zero excluded statements. Missing helper coverage fails even if the aggregate passes. Infrastructure operational unit tests also run. |

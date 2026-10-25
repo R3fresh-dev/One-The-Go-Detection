@@ -1,3 +1,11 @@
+## Evidence reconciliation — 2026-10-25
+
+Current raw preferences/receipts, API `raw_capture.py`/`raw_retention.py`, worker cleanup, mobile raw lifecycle/export and native storage handoff supply the checked software paths. The four unchecked backend/worker/mobile integration, independent final gates and native/hosted evidence rows remain open. ENG-009/010/011 add real execution where applicable. Guest preview remains account/network/native-disabled; ordinary web remains account-capable.
+
+Current sources and exact bounded follow-up: [engineering author audit](../../../docs/factory/otgd-20261025-0555/reports/engineering-audit.md), [spec reconciliation](../../../docs/factory/otgd-20261025-0555/reports/spec-reconciliation.md), and [implementation plan](../../../docs/factory/otgd-20261025-0555/reports/implementation-plan.md). Checked history is preserved; unchecked implementation-plus-verification rows are **implemented-unverified** where source is present, **blocked** for unavailable execution/external inputs, and never silently completed. These author dispositions are not independent signoff.
+
+---
+
 ## 1. Optional purpose and privacy lifecycle
 - [x] 1.1 AND-RAW-001/002: implement separate recording/upload controls and verify exact policy/notice metadata.
 - [x] 1.2 AND-RAW-003: persist immutable preference intent and verify actual acknowledgment receipts.

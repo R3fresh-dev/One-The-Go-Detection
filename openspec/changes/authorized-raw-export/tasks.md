@@ -1,3 +1,11 @@
+## Evidence reconciliation — 2026-10-25
+
+The checked source/fixture tasks are retained as historical author records. Current `raw_export.py`, worker/storage and mobile `core/rawExport.ts`/export service supply exact source pinning, separate purpose, whole-archive 50/64-MiB caps and current-authority checks. The six unchecked client/final-review/gate/external rows remain open until exact-candidate evidence is recorded; ENG-009/010 cover process interruption and actual authenticated browser transport.
+
+Current sources and exact bounded follow-up: [engineering author audit](../../../docs/factory/otgd-20261025-0555/reports/engineering-audit.md), [spec reconciliation](../../../docs/factory/otgd-20261025-0555/reports/spec-reconciliation.md), and [implementation plan](../../../docs/factory/otgd-20261025-0555/reports/implementation-plan.md). Checked history is preserved; unchecked implementation-plus-verification rows are **implemented-unverified** where source is present, **blocked** for unavailable execution/external inputs, and never silently completed. These author dispositions are not independent signoff.
+
+---
+
 ## Software implementation and review
 
 - [x] Add bounded independent typed raw-export registry authority and strict request scope.

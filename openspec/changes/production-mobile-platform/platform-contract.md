@@ -2,7 +2,7 @@
 
 This is a normative engineering extension to [design.md](design.md), [shared-contracts.md](shared-contracts.md), and the 20 feature specifications. It closes the implementation ambiguity identified by the independent platform review. The shared contract owns identity, revocation, data generations, HTTP/job vocabulary, evidence DTOs, and authenticated export admission; this document owns their durable infrastructure behavior. Engineering defaults below are capacity/security settings, not clinical tolerances or achieved performance measurements.
 
-The initial release has no executable impairment model and no preapproved human capture configuration. Infrastructure startup must not manufacture either. Real data-policy and deployment inputs are required where stated.
+The historical measurement-only 0.1.0 release has no executable impairment model. The later [authorized-model-execution amendment](../authorized-model-execution/proposal.md), as further scoped by [qualified-participant-acquisition](../qualified-participant-acquisition/proposal.md), defines conditional ResearchResult 1.1.0 execution under the current independent authorities in [shared-contracts.md §1](shared-contracts.md#1-release-and-workspace-policy). Legacy 0.1.0 estimate rejection is unchanged. No preapproved human capture configuration, real study or active model is provisioned by infrastructure startup; ordinary accounts and guests remain measurement-only. Real data-policy and deployment inputs are required where stated.
 
 ## 1. Environment and deployment inputs
 
@@ -77,7 +77,7 @@ All sizes below count bytes. `MiB = 1,048,576` bytes; `GiB = 1,073,741,824` byte
 | Authorized ECG waveform artifact | 16 MiB per object |
 | Authorized source laboratory report | 8 MiB per object |
 | PPG waveform if added to the supported artifact enum | 16 MiB; otherwise reject the unsupported kind |
-| Future explicitly authorized raw export | 256 MiB uncompressed / 320 MiB ZIP, and the same selection bound |
+| Governed raw-inclusive export | 50 MiB total uncompressed / 64 MiB complete ZIP, including structured data, raw sources, manifest and archive overhead; the same 500-check selection bound and lower grant limits apply |
 | Open upload tickets per account/generation | 3 |
 | Reserved unverified upload bytes per account | 128 MiB |
 | Retained raw object bytes per account | 1 GiB, subject to the lower approved data policy |
@@ -92,6 +92,8 @@ The current raw-export capability remains unavailable without actual approved sc
 Quota reservations are transactionally associated with the account generation and upload/job. Reservations are released after verification accounting, rejection, expiry, or deletion. Deleted/expired byte accounting is not released merely because cleanup was requested. Server counters must work across multiple API tasks; an in-memory-only per-process limiter cannot enforce the account limits. Privacy deletion/status and withdrawal must retain a bounded operational path even when ordinary storage/export quota is exhausted. Replays of an accepted deletion receipt are not blocked by an exhausted export quota.
 
 Reject oversized JSON/record bodies before full deserialization and before expensive work. Return 413 for size and 429 for rate/quota exhaustion with the shared error envelope. Retry-After is a nonnegative integer seconds with a client scheduling bound of 1–3600 seconds; a longer required wait is presented as a manual wait/retry state. Unknown quota configuration must not become unlimited storage.
+
+The [authorized-raw-export amendment](../authorized-raw-export/proposal.md) and [shared-contracts.md §7](shared-contracts.md#7-export-artifact-versions-and-privacy-jobs) supersede the historical proposed 256/320-MiB raw-export allowance. That allowance is not an implemented default or permission to raise the current 50/64-MiB whole-archive limits. Per-source artifact bounds above do not increase an export budget.
 
 ## 5. Artifact upload, verification, and immutable reads
 
@@ -161,7 +163,7 @@ Post-backup token-family logout and study/device revocation are not reconstructe
 
 Every subsequent protected request requires a signed access-token `auth_time` at or after the latest recovery cutoff in addition to ordinary identity/account/family checks. Token `iat` alone is insufficient: refreshing an old family cannot bypass the new authentication requirement. The client presents a fresh hosted sign-in/reauthentication path; it does not erase its encrypted cache or claim remote completion while locked. Future restores load the maximum retained cutoff from the independent journal rather than trusting the older database value.
 
-Recovered study memberships, consent-derived capture permissions, and device qualification/binding authority remain suspended until reconciled from independent current authoritative records under an audited operator procedure. Missing withdrawal/revocation/qualification evidence leaves the affected permission unavailable. A recovered database value, fresh account sign-in, old consent receipt, or available flag cannot by itself reactivate those scopes. This release has zero preapproved human configurations and no executable inference, so recovery never manufactures a qualified path. Suspension need not prevent the freshly authenticated owner's separately authorized history or privacy operations.
+Recovered study memberships, consent-derived capture permissions, and device qualification/binding authority remain suspended until reconciled from independent current authoritative records under an audited operator procedure. Missing withdrawal/revocation/qualification evidence leaves the affected permission unavailable. A recovered database value, fresh account sign-in, old consent receipt, or available flag cannot by itself reactivate those scopes. The shipped defaults contain zero preapproved human configurations or active models. Conditional ResearchResult 1.1.0 execution remains subject to the later amendments and current independently reconciled authority; neither restore nor fresh sign-in manufactures a qualified path or bypasses legacy 0.1.0 rejection. Suspension need not prevent the freshly authenticated owner's separately authorized history or privacy operations.
 
 Traffic may reopen only after the restored system has the verified watermark, the required barriers are enforced, and targeted probes confirm that deleted data cannot be read or resurrected. Operators record actual achieved recovery time and data loss interval against the initial RTO four-hour/RPO 24-hour objectives. Those objectives are not achieved claims. A journal outage leaves recovery closed rather than using the old backup alone.
 

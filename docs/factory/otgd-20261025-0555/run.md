@@ -8,12 +8,12 @@ PM: current Codex /root in parent-delegated task; OpenAI GPT-6 family per host i
 Parent source thread: 01a16636-df8f-72e1-b9e7-31c10571e0d7.
 Environment: ccarenv_b64_Y2NhcmVudl9jMWMxZjFjNWVmM2M4MTkxODZmM2NmOTVmMmY5NTAyZQ.
 Ownership generation: 1. Prior PM: no active same-repository task found by parent; see ownership.md.
-Last heartbeat: 2026-10-25T05:56:56.714750+00:00.
+Last heartbeat: 2026-10-25T06:38:09.286482+00:00.
 Baseline/candidate: 0844868aa543af4ab75ac5065ad48cf807b86bb3; Factory records only until first audit edits.
 correction_round: 0
 max_correction_rounds: 2
 recovery_attempts: 0
-checkpoint_seq: 3
+checkpoint_seq: 4
 last_observed_confirmed_remote_commit: 33901a1ff785cd28e351d935be510d184fb7f8e2 (checkpoint 1 verified via git ls-remote).
 
 ## Scope and authority
@@ -62,3 +62,13 @@ ENV-SPACE-001: root32GiB VFS Docker host exhausted while creating five app conta
 ## Checkpoint3 durability correction
 
 The repository global reports/ ignore rule excluded previously untracked specialist reports from checkpoint2. PRD and47plans/results were remote, but reports were local-only despite earlier summary. Narrow .gitignore exceptions now include only docs/factory/*/reports/*.md. Checkpoint3 stages completed product, engineering, verification and firmware reports explicitly, and records the unfinished image-proof report as WIP if present. Previous remote verified4da90f1e473329650bf2a33095ee29df362b23d9. Current spec writer owns docs and inventory after completed engineering; no production source edits yet.
+
+/root/spec_reconciliation: OpenAI gpt-6.1-sol/high explicit spawn; canonical docs/shared contracts/tasks/inventory/reconciliation report/implementation plan owner; RUNNING; D001–006 current ACKed. Last verified remote checkpoint3:8171dbffb7a38da9f7d17da08b71eccc73674057; all four completed specialist reports verified in remote tree by SHA.
+
+## Current continuation
+
+Compact image adoption confirmed by E0008/D006v3. Product, engineering, verification planning and image/firmware specialists released. Spec reconciler finishing implementation plan and integrity checks. Previous remote checkpoint3 8171dbffb7a38da9f7d17da08b71eccc73674057 verified. Current status/resume supersede historical checkpoint snapshots; no final software completion claimed.
+
+## Checkpoint4 / implementation
+
+Sequential product, engineering and specification audits completed; all47 reconciliation dispositions,42PRD mappings,411 planned requirements/782 cases. Reconciler actual checks41semantic,140structural/321scenarios, strict11changes and110links pass. Only canonicalOTGD001/047 changed; no scientific acceptance relaxed. Five bounded OpenAI builders dispatched and currentdecisions ACKed (impact-register). T04 DONE;T05 RUNNING;T06 setup appservices launched, finalgates pending freeze. Compactimage localonly, journalfirstestablished2026-10-25T06:38:17.856472+00:00; root2.63GB remains aftersevencontainers. Twoinitializers exited0; fourserviceshealthy,workerhealthstarting. No counterchange.

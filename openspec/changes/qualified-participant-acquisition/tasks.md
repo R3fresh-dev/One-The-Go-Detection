@@ -1,3 +1,11 @@
+## Evidence reconciliation — 2026-10-25
+
+Unchecked 1.1–1.3, 2.1–2.4 and 3.1–3.6 combine source delivery with independent review or current execution. Their source is present in `participant_acquisition.py`, `lab_handoff.py`, `cardiac_authority.py`, `vendor_evidence.py`, `tools/model_evaluation.py`, mobile participant/lab/preparation helpers, and pinned `SparkFunBioSensor.cpp`/protected firmware. These are not absent whole subsystems. Current gates/interoperability, ENG-005/009/010 and OS execution remain unverified. All 4.1–4.4 genuine instructions/operators, PPG reference comparison, observed ECG operating-state/electrical safety and laboratory/model qualification rows remain open. `ECG_OPERATING_STATE_VERIFIER_UNAVAILABLE` stays a truthful refusal.
+
+Current sources and exact bounded follow-up: [engineering author audit](../../../docs/factory/otgd-20261025-0555/reports/engineering-audit.md), [spec reconciliation](../../../docs/factory/otgd-20261025-0555/reports/spec-reconciliation.md), and [implementation plan](../../../docs/factory/otgd-20261025-0555/reports/implementation-plan.md). Checked history is preserved; unchecked implementation-plus-verification rows are **implemented-unverified** where source is present, **blocked** for unavailable execution/external inputs, and never silently completed. These author dispositions are not independent signoff.
+
+---
+
 ## 1. Define and review exact contracts
 - [ ] 1.1 Implement bounded immutable participant protocol, acknowledgments and generated schemas; independently review exact routes and scope fields against the design.
 - [ ] 1.2 Implement selected vendor material and immutable official SDK pin without reinterpreting the ADC adapter or historical drafts.

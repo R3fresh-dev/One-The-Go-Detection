@@ -2,7 +2,7 @@
   {
     "id": "OTGD-001",
     "path": "specs/FULL_SPECIFICATION.md",
-    "sha256": "f8c4cd46f9b3e2e7fb24b5940f3a876d2f0e16d94aa29d1bedec21e1516def7a",
+    "sha256": "c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7",
     "criteria": [
       "HW-001",
       "HW-002",
@@ -98,7 +98,51 @@
       "PRD-026\u2013028: economics and open decisions"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-001"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-001",
+    "prd_requirements": [
+      "PRD-001",
+      "PRD-002",
+      "PRD-003",
+      "PRD-004",
+      "PRD-005",
+      "PRD-006",
+      "PRD-007",
+      "PRD-008",
+      "PRD-009",
+      "PRD-010",
+      "PRD-011",
+      "PRD-012",
+      "PRD-013",
+      "PRD-014",
+      "PRD-015",
+      "PRD-016",
+      "PRD-017",
+      "PRD-018",
+      "PRD-019",
+      "PRD-020",
+      "PRD-021",
+      "PRD-022",
+      "PRD-023",
+      "PRD-024",
+      "PRD-025",
+      "PRD-026",
+      "PRD-027",
+      "PRD-028",
+      "PRD-029",
+      "PRD-030",
+      "PRD-031",
+      "PRD-032",
+      "PRD-033",
+      "PRD-034",
+      "PRD-035",
+      "PRD-036",
+      "PRD-037",
+      "PRD-038",
+      "PRD-039",
+      "PRD-040",
+      "PRD-041",
+      "PRD-042"
+    ]
   },
   {
     "id": "OTGD-002",
@@ -108,7 +152,10 @@
       "AND-DASH-001 Honest scope and provenance"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-002"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-002",
+    "prd_requirements": [
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-003",
@@ -118,7 +165,10 @@
       "AND-CHECK-007 Result navigation and claim boundaries"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-003"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-003",
+    "prd_requirements": [
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-004",
@@ -128,7 +178,11 @@
       "AND-HIST-003 Faithful state, qualifier, and time display"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-004"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-004",
+    "prd_requirements": [
+      "PRD-036",
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-005",
@@ -138,7 +192,10 @@
       "AND-ONB-001 Accurate first-run scope"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-005"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-005",
+    "prd_requirements": [
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-006",
@@ -148,7 +205,14 @@
       "AND-RES-003 Keep impairment inference closed"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-006"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-006",
+    "prd_requirements": [
+      "PRD-006",
+      "PRD-007",
+      "PRD-019",
+      "PRD-036",
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-007",
@@ -158,7 +222,10 @@
       "AND-SET-004 Capability and environment integrity"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-007"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-007",
+    "prd_requirements": [
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-008",
@@ -175,7 +242,15 @@
       "EVAL-008 Bounded file custody"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-008"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-008",
+    "prd_requirements": [
+      "PRD-005",
+      "PRD-018",
+      "PRD-022",
+      "PRD-024",
+      "PRD-027",
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-009",
@@ -190,7 +265,13 @@
       "MODEL-005 Abstention and authenticated research presentation"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-009"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-009",
+    "prd_requirements": [
+      "PRD-004",
+      "PRD-018",
+      "PRD-019",
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-010",
@@ -207,7 +288,10 @@
       "RAW-EXP-008 Bound the entire archive without partial omission"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-010"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-010",
+    "prd_requirements": [
+      "PRD-038"
+    ]
   },
   {
     "id": "OTGD-011",
@@ -225,7 +309,13 @@
       "OPERATOR-AUTHORITY-009 \u2014 Authenticated raw publication"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-011"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-011",
+    "prd_requirements": [
+      "PRD-004",
+      "PRD-018",
+      "PRD-030",
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-012",
@@ -240,7 +330,12 @@
       "AND-EYE-106 Explicit ephemeral ROI recording"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-012"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-012",
+    "prd_requirements": [
+      "PRD-014",
+      "PRD-034",
+      "PRD-037"
+    ]
   },
   {
     "id": "OTGD-013",
@@ -260,7 +355,11 @@
       "CAN-SR-011 Require authenticated encrypted BLE before human telemetry"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-013"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-013",
+    "prd_requirements": [
+      "PRD-033",
+      "PRD-037"
+    ]
   },
   {
     "id": "OTGD-014",
@@ -277,7 +376,10 @@
       "WEB-DEP-008 Keep customer access claims accurate"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-014"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-014",
+    "prd_requirements": [
+      "PRD-042"
+    ]
   },
   {
     "id": "OTGD-015",
@@ -296,7 +398,10 @@
       "CLOUD-DEP-010 Require fresh independent admission evidence"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-015"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-015",
+    "prd_requirements": [
+      "PRD-042"
+    ]
   },
   {
     "id": "OTGD-016",
@@ -307,7 +412,10 @@
       "RECOVERY-002 Scoped independent reapproval"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-016"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-016",
+    "prd_requirements": [
+      "PRD-039"
+    ]
   },
   {
     "id": "OTGD-017",
@@ -319,7 +427,10 @@
       "AND-PREV-003 Isolate guest records and explain persistence"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-017"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-017",
+    "prd_requirements": [
+      "PRD-042"
+    ]
   },
   {
     "id": "OTGD-018",
@@ -336,7 +447,11 @@
       "AND-RAW-008 Require a distinct raw export purpose and exact binary scope"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-018"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-018",
+    "prd_requirements": [
+      "PRD-037",
+      "PRD-038"
+    ]
   },
   {
     "id": "OTGD-019",
@@ -351,7 +466,13 @@
       "AND-ALC-006 Prohibit combined impairment shortcuts"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-019"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-019",
+    "prd_requirements": [
+      "PRD-006",
+      "PRD-008",
+      "PRD-017",
+      "PRD-028"
+    ]
   },
   {
     "id": "OTGD-020",
@@ -367,7 +488,14 @@
       "AND-ENV-007 Report verification honestly"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-020"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-020",
+    "prd_requirements": [
+      "PRD-023",
+      "PRD-025",
+      "PRD-029",
+      "PRD-040",
+      "PRD-042"
+    ]
   },
   {
     "id": "OTGD-021",
@@ -383,7 +511,11 @@
       "AND-DASH-007 Accessible navigation and iOS parity"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-021"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-021",
+    "prd_requirements": [
+      "PRD-003",
+      "PRD-020"
+    ]
   },
   {
     "id": "OTGD-022",
@@ -399,7 +531,10 @@
       "AND-EXP-007 Prevent archive path and memory abuse"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-022"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-022",
+    "prd_requirements": [
+      "PRD-038"
+    ]
   },
   {
     "id": "OTGD-023",
@@ -416,7 +551,11 @@
       "AND-DEV-008 Platform parity, secret handling, and verification"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-023"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-023",
+    "prd_requirements": [
+      "PRD-033",
+      "PRD-040"
+    ]
   },
   {
     "id": "OTGD-024",
@@ -432,7 +571,14 @@
       "AND-ECG-007 Privacy, offline behavior, and verification"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-024"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-024",
+    "prd_requirements": [
+      "PRD-002",
+      "PRD-015",
+      "PRD-028",
+      "PRD-034",
+      "PRD-037"
+    ]
   },
   {
     "id": "OTGD-025",
@@ -448,7 +594,15 @@
       "AND-EYE-007 Review, parity, and evidence boundaries"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-025"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-025",
+    "prd_requirements": [
+      "PRD-002",
+      "PRD-014",
+      "PRD-028",
+      "PRD-034",
+      "PRD-037",
+      "PRD-040"
+    ]
   },
   {
     "id": "OTGD-026",
@@ -465,7 +619,17 @@
       "AND-CHECK-008 Accessible parity and end-to-end evidence"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-026"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-026",
+    "prd_requirements": [
+      "PRD-001",
+      "PRD-007",
+      "PRD-009",
+      "PRD-016",
+      "PRD-023",
+      "PRD-025",
+      "PRD-031",
+      "PRD-035"
+    ]
   },
   {
     "id": "OTGD-027",
@@ -481,7 +645,13 @@
       "AND-HR-007 Platform parity and acceptance evidence"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-027"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-027",
+    "prd_requirements": [
+      "PRD-002",
+      "PRD-015",
+      "PRD-028",
+      "PRD-034"
+    ]
   },
   {
     "id": "OTGD-028",
@@ -497,7 +667,11 @@
       "AND-HIST-007 Accessible records and iOS parity"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-028"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-028",
+    "prd_requirements": [
+      "PRD-020",
+      "PRD-036"
+    ]
   },
   {
     "id": "OTGD-029",
@@ -513,7 +687,12 @@
       "AND-SYNC-007 Preserve scientific and acquisition time"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-029"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-029",
+    "prd_requirements": [
+      "PRD-009",
+      "PRD-025",
+      "PRD-035"
+    ]
   },
   {
     "id": "OTGD-030",
@@ -528,7 +707,11 @@
       "AND-ONB-006 Accessible introduction and parity"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-030"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-030",
+    "prd_requirements": [
+      "PRD-003",
+      "PRD-029"
+    ]
   },
   {
     "id": "OTGD-031",
@@ -544,7 +727,10 @@
       "AND-PRIV-007 Accessible controls and iOS parity"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-031"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-031",
+    "prd_requirements": [
+      "PRD-039"
+    ]
   },
   {
     "id": "OTGD-032",
@@ -560,7 +746,11 @@
       "AND-PRO-007 Accessible entry and iOS parity"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-032"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-032",
+    "prd_requirements": [
+      "PRD-016",
+      "PRD-031"
+    ]
   },
   {
     "id": "OTGD-033",
@@ -577,7 +767,18 @@
       "AND-TASK-008 Platform parity, accessibility, and independent verification"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-033"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-033",
+    "prd_requirements": [
+      "PRD-001",
+      "PRD-009",
+      "PRD-013",
+      "PRD-023",
+      "PRD-025",
+      "PRD-028",
+      "PRD-031",
+      "PRD-032",
+      "PRD-040"
+    ]
   },
   {
     "id": "OTGD-034",
@@ -593,7 +794,14 @@
       "AND-RES-007 Use bounded and cancelable result polling"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-034"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-034",
+    "prd_requirements": [
+      "PRD-003",
+      "PRD-006",
+      "PRD-007",
+      "PRD-020",
+      "PRD-036"
+    ]
   },
   {
     "id": "OTGD-035",
@@ -609,7 +817,16 @@
       "AND-SAL-007 Review display, API mapping, and platform evidence"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-035"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-035",
+    "prd_requirements": [
+      "PRD-001",
+      "PRD-010",
+      "PRD-011",
+      "PRD-012",
+      "PRD-021",
+      "PRD-028",
+      "PRD-034"
+    ]
   },
   {
     "id": "OTGD-036",
@@ -625,7 +842,12 @@
       "AND-SET-007 iOS parity and platform-specific behavior"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-036"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-036",
+    "prd_requirements": [
+      "PRD-023",
+      "PRD-025",
+      "PRD-040"
+    ]
   },
   {
     "id": "OTGD-037",
@@ -641,7 +863,12 @@
       "AND-AUTH-007 Accessible recovery and iOS parity"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-037"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-037",
+    "prd_requirements": [
+      "PRD-029",
+      "PRD-035",
+      "PRD-040"
+    ]
   },
   {
     "id": "OTGD-038",
@@ -656,7 +883,12 @@
       "AND-STUDY-006 Preserve truthful study absence"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-038"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-038",
+    "prd_requirements": [
+      "PRD-004",
+      "PRD-030",
+      "PRD-039"
+    ]
   },
   {
     "id": "OTGD-039",
@@ -673,7 +905,11 @@
       "PAI-008 Guide declared cardiac rest without clock shortcuts"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-039"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-039",
+    "prd_requirements": [
+      "PRD-030",
+      "PRD-034"
+    ]
   },
   {
     "id": "OTGD-040",
@@ -690,7 +926,16 @@
       "SALCOL-008 Preserve pending chronology and versioned projections"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-040"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-040",
+    "prd_requirements": [
+      "PRD-001",
+      "PRD-010",
+      "PRD-011",
+      "PRD-012",
+      "PRD-021",
+      "PRD-031",
+      "PRD-034"
+    ]
   },
   {
     "id": "OTGD-041",
@@ -700,7 +945,15 @@
       "EVAL-002 Complete matched evaluation and ablations"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-041"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-041",
+    "prd_requirements": [
+      "PRD-005",
+      "PRD-018",
+      "PRD-022",
+      "PRD-024",
+      "PRD-027",
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-042",
@@ -717,7 +970,16 @@
       "HR-AUTH-008 Prespecified interval-aware research evaluation"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-042"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-042",
+    "prd_requirements": [
+      "PRD-004",
+      "PRD-015",
+      "PRD-018",
+      "PRD-019",
+      "PRD-022",
+      "PRD-024",
+      "PRD-041"
+    ]
   },
   {
     "id": "OTGD-043",
@@ -733,7 +995,14 @@
       "VPPG-007 Verify executable software separately from physical qualification"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-043"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-043",
+    "prd_requirements": [
+      "PRD-002",
+      "PRD-015",
+      "PRD-028",
+      "PRD-033",
+      "PRD-034"
+    ]
   },
   {
     "id": "OTGD-044",
@@ -745,7 +1014,10 @@
       "WEB-DEP-010 Bound public response verification by signed bytes"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-044"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-044",
+    "prd_requirements": [
+      "PRD-042"
+    ]
   },
   {
     "id": "OTGD-045",
@@ -756,7 +1028,10 @@
       "CLOUD-DEP-011 Bound release authority and evidence inputs"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-045"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-045",
+    "prd_requirements": [
+      "PRD-042"
+    ]
   },
   {
     "id": "OTGD-046",
@@ -768,12 +1043,15 @@
       "PREVIEW-003 Document actual click-only hosting boundaries"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-046"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-046",
+    "prd_requirements": [
+      "PRD-042"
+    ]
   },
   {
     "id": "OTGD-047",
     "path": "openspec/changes/verified-release-and-browser-access/specs/mobile-store-delivery/spec.md",
-    "sha256": "8dd256054b4cc55a8fe8141b5589fa39cf9a655cf1af16cb28cde8ed0c4622ea",
+    "sha256": "b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4",
     "criteria": [
       "STORE-001 Define separate real-device release targets",
       "STORE-002 Validate actual project and backend identity",
@@ -795,6 +1073,9 @@
       "STORE-018 Transfer an operator-held pending intent without upload mutation"
     ],
     "status": "implemented-unverified",
-    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-047"
+    "dossier": "docs/factory/otgd-20261025-0555/specs/OTGD-047",
+    "prd_requirements": [
+      "PRD-042"
+    ]
   }
 ]

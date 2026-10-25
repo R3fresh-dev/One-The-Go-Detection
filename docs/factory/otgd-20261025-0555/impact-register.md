@@ -22,3 +22,8 @@ No workers dispatched at checkpoint 1. New workers must acknowledge D-001 v1 and
 | D-006 v1 | /root/firmware_validation | AFFECTED | Rootfs/Config proof before canonical mutation; stop on resource/fidelity mismatch | Assigned proof owner, canonical mutations held |
 | D-006 v2 | /root/engineering_audit | AFFECTED | Exact declared-source reconstruction acceptable for local evidence with full metadata/config proof and original-export discrepancy retained | Conditions incorporated; no source audit dependency |
 | D-006 v2 | /root/firmware_validation | AFFECTED | Exact restoration proposal prepared; full root/metadata/hardlink/config proof required before candidate import | Assigned proof owner; canonical actions held |
+| D-001–006 current | /root/spec_reconciliation | D1/3/4/5 AFFECTED, D2/6 NOT_AFFECTED to edits | Approved scope/research precedence/fictional runtime/resource limits retained; image proof separate | Reconciliation owner synchronized |
+
+## Implementation dispatch / checkpoint4
+
+Reconciler released all edits; accepted implementation-plan tasks1–8. /root/mobile_builder, /root/evaluation_builder, /root/worker_builder, /root/browser_builder, /root/provenance_builder are real OpenAI gpt-6.1-sol/high (explicit spawn) workers. Each ACKed D001v1/D002v1/D003v1/D004v1/D005v1/D006v3 before edits. Disjoint file ownership; PM retains shared gates/workflows and coordination. No self-signoff. Current/live provenance14 vs explicit historical13 must remain distinct; browser fixture accounts isolated from A/B; worker probe separate disposable DB/queues/buckets.

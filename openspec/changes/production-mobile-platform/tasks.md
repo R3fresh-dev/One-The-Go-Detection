@@ -1,3 +1,11 @@
+## Evidence reconciliation — 2026-10-25
+
+Earlier checkboxes, BR-001–006 descriptions and the `9376dba` evidence summary are historical checkpoints, not the present source disposition or a final PASS. The later conditional changes supply signed reader, optical/raw, selected PPG, participant/lab and research-model software. Each feature scenario/native matrix remains open until fully executed for the current candidate. ENG-004–008 are focused copy/assertion gaps; ENG-009/010/011 cover actual worker/browser/native execution. All 20 features and their 140 requirements / 321 scenarios remain in scope; later amendments retain their own canonical IDs. No checkbox is upgraded by this author.
+
+Current sources and exact bounded follow-up: [engineering author audit](../../../docs/factory/otgd-20261025-0555/reports/engineering-audit.md), [spec reconciliation](../../../docs/factory/otgd-20261025-0555/reports/spec-reconciliation.md), and [implementation plan](../../../docs/factory/otgd-20261025-0555/reports/implementation-plan.md). Checked history is preserved; unchecked implementation-plus-verification rows are **implemented-unverified** where source is present, **blocked** for unavailable execution/external inputs, and never silently completed. These author dispositions are not independent signoff.
+
+---
+
 # Implementation and verification tasks
 
 Execute in this order: specification/review checkpoint, shared foundations, feature implementation, integration/release verification. A checked implementation task means the code exists and its stated local checks passed; external execution is recorded independently. Do not check a native build, LocalStack test, cloud deployment, or scientific qualification without actual evidence.
@@ -52,7 +60,7 @@ Current-release demonstration, refusal and available measurement paths are suppl
 - [ ] 6.3 Verify positive, failure, cancel/restart, permission, ownership, and offline scenarios applicable to this feature; record test references for its 7 requirements.
 - [x] 6.4 Record platform evidence and any hardware, clinical configuration, credentials, or device-only verification still required; do not substitute simulated evidence.
 
-Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **BR-006: authorized raw-acquisition artifact orchestration; structured export integration is separately verified**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
+Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **historical BR-006, now supplied conditionally by raw recording/export software; actual native protection, live object/worker races and exact-candidate export acceptance remain open**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
 
 ## 7. Device Pairing — AND-DEV-001–AND-DEV-008
 
@@ -61,7 +69,7 @@ Current-release demonstration, refusal and available measurement paths are suppl
 - [ ] 7.3 Verify positive, failure, cancel/restart, permission, ownership, and offline scenarios applicable to this feature; record test references for its 8 requirements.
 - [x] 7.4 Record platform evidence and any hardware, clinical configuration, credentials, or device-only verification still required; do not substitute simulated evidence.
 
-Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **BR-001: provisioned human-reader client binding, fresh qualified starts and durable unbinding**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
+Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **historical BR-001, now supplied by signed-reader binding/start/unbinding software; real protected provisioning, native/radio execution and independent human qualification remain open**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
 
 ## 8. Ecg Capture — AND-ECG-001–AND-ECG-007
 
@@ -70,7 +78,7 @@ Current-release demonstration, refusal and available measurement paths are suppl
 - [ ] 8.3 Verify positive, failure, cancel/restart, permission, ownership, and offline scenarios applicable to this feature; record test references for its 7 requirements.
 - [x] 8.4 Record platform evidence and any hardware, clinical configuration, credentials, or device-only verification still required; do not substitute simulated evidence.
 
-Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **BR-003: qualified physical ECG adapter and calibrated waveform/feature pipeline**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
+Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **historical BR-003 ECG path: bounded signed ADC/raw software is present; actual supported front-end, observed permitted connection-state verification, safety/calibration and native execution remain blocked**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
 
 ## 9. Eye Capture — AND-EYE-001–AND-EYE-007
 
@@ -79,7 +87,7 @@ Current-release demonstration, refusal and available measurement paths are suppl
 - [ ] 9.3 Verify positive, failure, cancel/restart, permission, ownership, and offline scenarios applicable to this feature; record test references for its 7 requirements.
 - [x] 9.4 Record platform evidence and any hardware, clinical configuration, credentials, or device-only verification still required; do not substitute simulated evidence.
 
-Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **BR-002: approved frame/illumination extraction and encrypted raw optical evidence**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
+Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **historical BR-002, now supplied by conditional native extraction and encrypted raw software; actual OS execution and independently approved physical optics remain open**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
 
 ## 10. Guided Check — AND-CHECK-001–AND-CHECK-008
 
@@ -95,7 +103,7 @@ Current-release demonstration, refusal and available measurement paths are suppl
 - [ ] 11.3 Verify positive, failure, cancel/restart, permission, ownership, and offline scenarios applicable to this feature; record test references for its 7 requirements.
 - [x] 11.4 Record platform evidence and any hardware, clinical configuration, credentials, or device-only verification still required; do not substitute simulated evidence.
 
-Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **BR-003: qualified physical PPG adapter and its quality pipeline**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
+Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **historical BR-003 PPG path: selected pinned SparkFun/MAX32664 driver and freshness/quality software are present; actual sensor/reference/native qualification remains open**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
 
 ## 12. History — AND-HIST-001–AND-HIST-007
 
@@ -153,7 +161,7 @@ Current-release demonstration, refusal and available measurement paths are suppl
 - [ ] 19.3 Verify positive, failure, cancel/restart, permission, ownership, and offline scenarios applicable to this feature; record test references for its 7 requirements.
 - [x] 19.4 Record platform evidence and any hardware, clinical configuration, credentials, or device-only verification still required; do not substitute simulated evidence.
 
-Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **BR-004: approved saliva collection/handling and quantitative reader workflow**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
+Current-release demonstration, refusal and available measurement paths are supplied. The original full implementation tasks above remain open for **historical BR-004: approved-reference-lab form/handoff/import software is present; genuine collection/analytical approval and a selected portable quantitative reader remain separate unavailable inputs**. See the requirement map for exact clauses; no simulator or unavailable state is counted as that positive branch.
 
 ## 20. Settings Accessibility — AND-SET-001–AND-SET-007
 
@@ -176,7 +184,7 @@ Current-release demonstration, refusal and available measurement paths are suppl
 - [ ] 22.3 Verify positive, failure, cancel/restart, permission, ownership, and offline scenarios applicable to this feature; record test references for its 6 requirements.
 - [x] 22.4 Record platform evidence and any hardware, clinical configuration, credentials, or device-only verification still required; do not substitute simulated evidence.
 
-The enrollment, exact-version consent and withdrawal journeys are supplied. Full feature implementation remains open for **AND-STUDY-004 / BR-001–004: mobile fresh-start orchestration for approved physical channels**, consistent with the requirement map. Server authorization and the current unavailable state do not supply that positive client flow.
+The enrollment, exact-version consent and withdrawal journeys are supplied. Later participant and signed/native acquisition changes supply fresh-start orchestration in source. **AND-STUDY-004** remains open for exact-candidate positive/refusal/lifecycle execution with actual permitted hardware/configuration and genuine authority; the historical BR-001–004 labels do not establish absent software or qualified hardware.
 
 ## 23. LocalStack, AWS QA, and AWS production
 
@@ -185,7 +193,7 @@ The enrollment, exact-version consent and withdrawal journeys are supplied. Full
 - [x] 23.3 Implement separate QA/prod CDK stacks with TLS ALB, private Fargate/RDS, private encrypted objects and queues, Cognito, secrets, backups, alarms, and least-privilege roles.
 - [x] 23.4 Implement immutable image-digest promotion and one-off migration commands with deployment prerequisites and rollback/runbook instructions.
 - [x] 23.5 Verify synthesized CloudFormation assertions for networking, encryption, private storage, retention, identity isolation, and production capacity.
-- [ ] 23.6 Execute actual LocalStack integration when Docker and an activation token are available; record exact commands/results or the concrete external blocker.
+- [ ] 23.6 Execute actual LocalStack integration when Docker and the configured LocalStack release prerequisites are available (the default pinned community release requires no licensed activation token); record exact commands/results or the concrete external blocker.
 - [ ] 23.7 Execute QA deployment, restore/incident drill, and load targets with authorized AWS inputs; keep unexecuted work visible.
 - [ ] 23.8 Execute production deployment only with actual deployment inputs and the release gates satisfied; no deployment is implied by synthesis.
 
@@ -202,10 +210,10 @@ The enrollment, exact-version consent and withdrawal journeys are supplied. Full
 - [x] 24.7 Update shopping list, root quick start, API reference, environment/deployment runbooks, feature implementation ledger, and verification report.
 - [x] 24.8 Commit implemented artifacts and lockfiles; report commit IDs, local start commands, verified checks, and outstanding external release prerequisites.
 
-For 24.2, the host/API/cross-language suites and six browser journeys passed. The complete account/native application integration against actual LocalStack, including its asynchronous upload/privacy path, still requires the declared runtime and token; the combined task remains open for that execution.
+For 24.2, the host/API/cross-language suites and six browser journeys passed. The complete account/native application integration against actual LocalStack, including its asynchronous upload/privacy path, still requires the declared runtime and any prerequisites of its explicitly selected release; the combined task remains open for that execution.
 
 ## Evidence scope at the current implementation checkpoint
 
-The [requirement map](verification/implementation-map.md) links every requirement to source, named tests and remaining native/cloud/qualification evidence. Section 3–22 scenario tasks remain open until their entire applicable acceptance matrix has been executed; passing host or browser tests do not automatically execute all 321 written scenarios. The positive qualified-acquisition branches remain explicit additional software and qualification work.
+The [requirement map](verification/implementation-map.md) links every requirement to source, named tests and remaining native/cloud/qualification evidence. Section 3–22 scenario tasks remain open until their entire applicable acceptance matrix has been executed; passing host or browser tests do not automatically execute all 321 written scenarios. Later conditional software supersedes the old blanket positive-code-gap descriptions; current concrete software/assertion gaps are ENG-004–010, while actual native execution and independent qualification remain separate open work.
 
-The [CI evidence ledger](verification/ci-evidence.md) records actual Android/iOS/firmware compilation and PostgreSQL execution. At final build checkpoint `9376dba`, native and platform workflows both passed: **7/7 Android JUnit tests, 146/146 mobile host tests, the Swift test/build steps, both APKs, the iOS simulator package, actual Nano ESP32 compilation and 171 actual-PostgreSQL tests with no skips**. Two migration replays and least-privilege checks passed. Actual LocalStack, AWS QA, production, store distribution and native emulator/physical-phone interaction remain open. Source dispositions remain 121 source-present requirements, 15 conditional positive-code gaps and 4 operations-source requirements; an artifact does not close those gaps.
+The [CI evidence ledger](verification/ci-evidence.md) records actual Android/iOS/firmware compilation and PostgreSQL execution. At final build checkpoint `9376dba`, native and platform workflows both passed: **7/7 Android JUnit tests, 146/146 mobile host tests, the Swift test/build steps, both APKs, the iOS simulator package, actual Nano ESP32 compilation and 171 actual-PostgreSQL tests with no skips**. Two migration replays and least-privilege checks passed. Actual LocalStack, AWS QA, production, store distribution and native emulator/physical-phone interaction remain open. Those 121 source-present / 15 conditional positive-code-gap / 4 operations-source dispositions describe that historical checkpoint only. They are not current source counts or final acceptance; use the run inventory and current audits for present disposition.

@@ -1,3 +1,11 @@
+## Evidence reconciliation — 2026-10-25
+
+Current `operator_governance.py`, `capture_signing.py`, generated operator contracts and migrations supply typed immutable registry/release and scoped capability software. Historical checked PostgreSQL/build/test claims do not establish current candidate execution. All unchecked independent review/gate, real-operator and physical qualification rows remain open. No fictional fixture grants human authority.
+
+Current sources and exact bounded follow-up: [engineering author audit](../../../docs/factory/otgd-20261025-0555/reports/engineering-audit.md), [spec reconciliation](../../../docs/factory/otgd-20261025-0555/reports/spec-reconciliation.md), and [implementation plan](../../../docs/factory/otgd-20261025-0555/reports/implementation-plan.md). Checked history is preserved; unchecked implementation-plus-verification rows are **implemented-unverified** where source is present, **blocked** for unavailable execution/external inputs, and never silently completed. These author dispositions are not independent signoff.
+
+---
+
 ## Implementation
 
 - [x] Add strict operator submission DTOs and exported schemas without seeding evidence.
