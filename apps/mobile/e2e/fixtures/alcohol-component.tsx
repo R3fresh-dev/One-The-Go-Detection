@@ -27,6 +27,8 @@ const root = createRoot(document.getElementById("root")!);
     check,
     epoch: "fictional-component-only",
     hasCurrentHrResultAdmission: () => false,
+    refreshHrResultAdmission: async () => {},
+    releaseHrResultView: () => {},
     getSnapshot: () => model,
     run: async (fn: () => Promise<void>) => fn(),
     navigate: async (next: string) => render(next),

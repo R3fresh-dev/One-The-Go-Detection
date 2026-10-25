@@ -6,12 +6,15 @@ its database is unit-test SQLite; this supplies no scientific/device approval.
 """
 
 import json
+import hashlib
+import io
+import zipfile
 from copy import deepcopy
 
 import pytest
 
 from otgd import model_engine
-from otgd.canonical import canonical
+from otgd.canonical import canonical, strict_loads
 from otgd.db import factory
 from otgd.domain import safe_result
 from otgd.errors import Problem
@@ -21,6 +24,7 @@ from otgd.worker import claim_job, commit_output, make_export, run_job
 from .conftest import headers
 from .test_cardiac_authority import cardiac, model, resolved  # noqa: F401 -- shared fixtures
 from .test_api import store  # noqa: F401 -- explicit object-storage double
+from .test_model_admission import admitted  # noqa: F401 -- shared typed non-HR fixture
 
 
 @pytest.mark.parametrize("authority", ["model", "cardiac_interval_calibration"])
@@ -121,6 +125,99 @@ def test_non_hr_historical_result_retains_context_free_validation(model):
     assert result == original
 
 
+@pytest.mark.parametrize("kind", ["cardiac", "admitted"])
+def test_current_numeric_research_export_preserves_exact_result_and_linked_evidence(
+    client, store, request, monkeypatch, kind, record_property,
+):
+    from otgd import storage
+
+    value = request.getfixturevalue(kind)
+    sid, job = (value.sid, value.job) if kind == "cardiac" else (value["sid"], value["job"])
+    assert run_job(job) == "completed"
+    # Match the actual mobile GET transport: writes require generation, reads
+    # use the authenticated owner and current server account generation.
+    authorization_only = {"Authorization": headers()["Authorization"]}
+    current = client.get(f"/v1/sessions/{sid}/result", headers=authorization_only)
+    assert current.status_code == 200, current.text
+    original = current.json()
+    assert original["schema_version"] == "1.1.0" and original["state"] == "research_estimate"
+    assert isinstance(original["probability"], float)
+    detail = client.get(f"/v1/sessions/{sid}", headers=authorization_only)
+    assert detail.status_code == 200, detail.text
+    monkeypatch.setattr(storage, "versioned_read", store.read)
+    response = client.post("/v1/privacy/exports", headers=headers(), json={
+        "selection": {"kind": "single", "session_ids": [sid]},
+        "format": "json_zip", "include_raw": False})
+    record_property("numeric_export_acceptance", json.dumps({
+        "fixture_kind": "FICTIONAL_ENGINEERING_ONLY", "model_scope": kind,
+        "current_result_http": current.status_code, "current_result": original,
+        "export_http": response.status_code, "export_body": response.json()}, sort_keys=True))
+    assert response.status_code == 202, response.text
+    assert run_job(response.json()["job_id"]) == "completed"
+    archive_response = client.get(
+        f"/v1/privacy/jobs/{response.json()['job_id']}/download", headers=authorization_only)
+    assert archive_response.status_code == 200, archive_response.text
+    with zipfile.ZipFile(io.BytesIO(archive_response.content)) as archive:
+        path = f"checks/{sid}.json"
+        raw = archive.read(path)
+        exported = strict_loads(raw)
+        manifest = strict_loads(archive.read("manifest.json"))
+        assert exported["result"] == original
+        for field in ("snapshot", "context", "manifest", "attempts", "instruction_receipts",
+            "collections", "collection_abandons", "alcohol"):
+            assert exported[field] == detail.json()[field], field
+        assert exported["report_revision_index"]["items"] == []
+        assert exported["report_revision_index"]["session_id"] == sid
+        assert manifest["session_ids"] == [sid]
+        entry = next(item for item in manifest["files"] if item["path"] == path)
+        assert entry["sha256"] == hashlib.sha256(raw).hexdigest()
+        assert entry["size_bytes"] == len(raw)
+        assert not any(name.startswith("report-revisions/") for name in archive.namelist())
+    record_property("numeric_export_archive", json.dumps({
+        "download_http": archive_response.status_code,
+        "archive_sha256": hashlib.sha256(archive_response.content).hexdigest(),
+        "exported_result": exported["result"], "linked_record_fields": sorted(exported),
+        "revision_index": exported["report_revision_index"]}, sort_keys=True))
+
+
+def test_numeric_export_does_not_grant_administrative_revision_eligibility(cardiac):
+    from otgd.report_revisions import _base, freeze_head
+
+    assert run_job(cardiac.job) == "completed"
+    db, owner, check = resolved(cardiac)
+    with db:
+        original = deepcopy(check.result)
+        assert freeze_head(db, owner, check) == {"revision_id": None, "revision_sha256": None}
+        with pytest.raises(Problem, match="REPORT_REVISION_INTEGRITY"):
+            _base(db, owner, check)
+        assert check.result == original
+
+
+@pytest.mark.parametrize("companion_kind", ["report_revision", "result_revision"])
+def test_numeric_export_never_ignores_existing_ineligible_companions(client, cardiac, companion_kind):
+    from otgd.db import Record, uid
+
+    assert run_job(cardiac.job) == "completed"
+    with factory().begin() as db:
+        db.add(Record(id=uid(), account_id=cardiac.account, generation=1,
+            kind=companion_kind, parent_id=cardiac.sid,
+            body={"fictional_invalid_companion": True}, sha256="f" * 64))
+    response = client.post("/v1/privacy/exports", headers=headers(), json=export_body(cardiac))
+    assert response.status_code == 503, response.text
+    assert response.json()["code"] == "REPORT_REVISION_INTEGRITY"
+
+
+def test_legacy_shaped_numeric_result_remains_unexportable(client, cardiac):
+    assert run_job(cardiac.job) == "completed"
+    db, _, check = resolved(cardiac)
+    with db:
+        check.result = {**check.result, "schema_version": "0.1.0"}
+        db.commit()
+    response = client.post("/v1/privacy/exports", headers=headers(), json=export_body(cardiac))
+    assert response.status_code == 422, response.text
+    assert response.json()["code"] == "UNSUPPORTED_RESEARCH_RESULT"
+
+
 def export_body(cardiac):
     return {"selection": {"kind": "single", "session_ids": [cardiac.sid]},
         "format": "json_zip", "include_raw": False}
@@ -142,29 +239,30 @@ def test_retired_hr_export_request_rechecks_before_export_work(client, cardiac):
 
 @pytest.fixture
 def abstained_cardiac(model, request):
-    # This is an existing supported1.1 outcome accepted by report-revision base
-    # validation; ordinary numeric research results cannot be exported by that
-    # separate existing policy. Do not broaden that policy for this regression.
+    # Retain the supported uncertainty-abstention outcome alongside the numeric
+    # positive path; both preserve their original result and current HR gates.
     model["body"]["manifest"]["uncertainty_policy"].update(
         method="probability_band", lower=0.0, upper=1.0)
     return request.getfixturevalue("cardiac")
 
 
 @pytest.mark.parametrize("stage", ["build", "commit", "download"])
+@pytest.mark.parametrize("result_kind", ["numeric", "abstained"])
 def test_hr_export_rechecks_current_authority_at_each_boundary(
-    client, abstained_cardiac, store, monkeypatch, stage,
+    client, store, monkeypatch, request, stage, result_kind,
 ):
     from otgd import storage
     from otgd.db import Job
 
-    value = abstained_cardiac
+    value = request.getfixturevalue("cardiac" if result_kind == "numeric" else "abstained_cardiac")
     # The export-store fixture replaces versioned_read after the capture fixture
     # is resolved. Supply its exact bounded model bytes for the result job, then
     # switch to the versioned archive double for export work below.
     monkeypatch.setattr(storage, "versioned_read", lambda *_: canonical(value.artifact.model_dump()))
     assert run_job(value.job) == "completed"
     current = client.get(f"/v1/sessions/{value.sid}/result", headers=headers())
-    assert current.status_code == 200 and current.json()["state"] == "inconclusive"
+    assert current.status_code == 200 and current.json()["state"] == (
+        "research_estimate" if result_kind == "numeric" else "inconclusive")
     monkeypatch.setattr(storage, "versioned_read", store.read)
     response = client.post("/v1/privacy/exports", headers=headers(), json=export_body(value))
     assert response.status_code == 202, response.text

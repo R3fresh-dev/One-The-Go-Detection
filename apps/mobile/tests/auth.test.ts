@@ -22,6 +22,10 @@ async function harness() {
   unit().prompt = async (request: any) => ({
     type: "success",
     params: { state: request.state, code: "one-time-code" },
+    url:
+      request.redirectUri +
+      "?" +
+      new URLSearchParams({ state: request.state, code: "one-time-code" }),
   });
   const config = parseAppConfig(service.config, {
     environment: "test",
@@ -566,6 +570,9 @@ test("admitted metadata snapshots cannot be retargeted while authorization or ca
       return {
         type: "success",
         params: { state: request.state, code: "one-time-code" },
+        url:
+          "http://localhost:8082/?" +
+          new URLSearchParams({ state: request.state, code: "one-time-code" }),
       };
     };
     const tokens = (await auth.authorize(config))!;

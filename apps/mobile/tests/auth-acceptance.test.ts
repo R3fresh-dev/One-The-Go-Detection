@@ -17,16 +17,30 @@ test("OTGD-037-AND-AUTH-002-01: replaying an already exchanged successful callba
     previousLocation = globalThis.location,
     runtime = (globalThis as any).__otgdUnitRuntime,
     previousPrompt = runtime.prompt;
-  let callback: { type: "success"; params: { state: string; code: string } };
+  let callback: {
+    type: "success";
+    params: { state: string; code: string };
+    url: string;
+  };
   globalThis.fetch = service.fetcher;
   (globalThis as any).location = { origin: "http://localhost:8082" };
   const app = new AppController();
   try {
     await app.auth.clear();
-    runtime.prompt = async (request: { state: string }) => {
+    runtime.prompt = async (request: {
+      state: string;
+      redirectUri: string;
+    }) => {
       callback = {
         type: "success",
         params: { state: request.state, code: "fictional-exchanged-once" },
+        url:
+          request.redirectUri +
+          "?" +
+          new URLSearchParams({
+            state: request.state,
+            code: "fictional-exchanged-once",
+          }),
       };
       return callback;
     };

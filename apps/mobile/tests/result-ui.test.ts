@@ -8,6 +8,7 @@ import cardiacFixture from "../testfixtures/backend-cardiac-authority.json";
 import { clone, digest } from "../src/core/integrity";
 import { emptyWorkspace } from "../src/core/domain";
 import { parseRemoteCheck } from "../src/core/remote";
+import { readerPresentationFixture } from "./support/device-presentation-fixtures";
 const compiled = buildSync({
   entryPoints: [resolve("tests/support/result-rendering.tsx")],
   bundle: true,
@@ -44,6 +45,82 @@ const render = (check: any, screen = "row", scope: any = {}) =>
     .renderResultUI(check, screen, scope)
     .replace(/<[^>]*>/g, " ")
     .replace(/\s+/g, " ");
+
+test("actual Home and Device agree on a connected physical reader without synthetic or unconditional unavailable claims", () => {
+  const check: any = clone(fixture.check);
+  const deviceSnapshot = {
+    state: "connected_reader",
+    observedAt: "2026-10-25T10:00:00Z",
+    devices: [],
+    reason: null,
+    captureInProgress: false,
+    humanCaptureAvailable: false,
+    signalPreview: null,
+    association: {
+      source: "prototype_sensor",
+      deviceId: "fictional-device",
+      bootId: "fictional-boot",
+      verifiedBindingId: null,
+      firmwareVersion: "fictional-fw",
+      transport: "ble_unprovisioned",
+    },
+  };
+  const home = render(check, "home", { deviceSnapshot });
+  const device = render(check, "device", { deviceSnapshot });
+  for (const text of [home, device]) {
+    assert.match(
+      text,
+      /Signed-protocol reader connected · identity unverified/,
+    );
+    assert.doesNotMatch(
+      text,
+      /Reader connection unavailable|Synthetic only|Qualified human saliva/,
+    );
+    assert.match(text, /(?:capture|authorization|approval)/i);
+  }
+});
+
+test("actual Home and Device use the same conditional current, revoked, expired and mismatched channel facts", () => {
+  for (const kind of [
+    "current",
+    "bound",
+    "unbound",
+    "revoked",
+    "expired",
+    "mismatched",
+    "generation",
+    "offline",
+    "disconnected",
+    "rebooted",
+    "simulator",
+  ]) {
+    const fixtureState = readerPresentationFixture(kind);
+    const scope = { ...fixtureState, deviceSnapshot: fixtureState.snapshot };
+    for (const screen of ["home", "device"]) {
+      const text = render(clone(fixture.check), screen, scope);
+      if (["current", "disconnected", "rebooted"].includes(kind))
+        assert.match(
+          text,
+          /Cardiac \(PPG\) Conditionally available · fresh online authorization required for each Start/,
+          `${kind}/${screen}`,
+        );
+      else
+        assert.doesNotMatch(
+          text,
+          /Conditionally available/,
+          `${kind}/${screen}`,
+        );
+      if (kind === "revoked") assert.match(text, /approval revoked/);
+      if (kind === "expired")
+        assert.match(text, /approved configuration expired/);
+      assert.match(
+        text,
+        /Connection and binding do not grant capture or scientific approval/,
+      );
+      if (kind !== "simulator") assert.doesNotMatch(text, /Synthetic only/);
+    }
+  }
+});
 
 test("actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy", () => {
   const check: any = clone(fixture.check);

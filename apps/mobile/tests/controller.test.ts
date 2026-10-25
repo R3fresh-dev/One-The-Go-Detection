@@ -75,6 +75,10 @@ async function account() {
       unit().prompt = async (request: any) => ({
         type: "success",
         params: { state: request.state, code: "one-time-code" },
+        url:
+          request.redirectUri +
+          "?" +
+          new URLSearchParams({ state: request.state, code: "one-time-code" }),
       });
     },
   };

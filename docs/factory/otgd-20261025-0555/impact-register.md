@@ -53,3 +53,7 @@ Actual owner messages confirm D009 v8 SALCOL, v9 current HR server read, v10 pre
 ## Final correction round acknowledgments
 
 Actual D010v1 AFFECTED acknowledgments received from /root/browser_builder (returned callback), /root/acceptance_backend (generic numeric export, prior blanket-policy rationale withdrawn), /root/mobile_builder (mounted HR arrival and signed reader presentation), /root/firmware_validation (source-image proof/resource hold) and /root/verification (immutable historical cf74fcf evidence, final rebind later). No unresolved clarification. Auth owner reproduced matching-state wrong callback with one exchange and one capability lookup; backend reproduced two legitimate numeric export503 failures. These are author RED evidence, not fixes/signoffs. PM granted D010v2 narrow DeviceScreen list ownership to mobile owner; actual ACK remains required before dependent final signoff.
+
+## Final author release / checkpoint12
+
+Actual D010v2 AFFECTED acknowledgment received from mobile owner for the narrow DeviceScreen Facts section; firmware owner acknowledged source coordination only. Auth, backend, mobile and image-proof owners released all writes with verified hashes; each report distinguishes author tests from independent signoff. PM completed H adoption and checked current backend bytes. New/resumed reviewers must ACK D008v3 and D006v10/v11 along with D010v2 before current signoff. No unresolved author clarification.

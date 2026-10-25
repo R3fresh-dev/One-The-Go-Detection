@@ -1,0 +1,137 @@
+{
+  "time": "2026-10-25T10:16:42.442814+00:00",
+  "diffid": "sha256:6e7d41b251c62f220bfabf15761da2f43b12433396747e06078f12c6c7a929d3",
+  "rootfs_bytes": 268902400,
+  "entries": 17101,
+  "copy_entries": 224,
+  "outside_copy_entries": 16877,
+  "hardlink_entries": 3569,
+  "symlink_entries": 896,
+  "xattr_or_extended_pax_entries": 0,
+  "allocation_4k_regular_and_dirs": 293220352,
+  "outside_copy_exact": true,
+  "all_copy_entries_exact": true,
+  "editable_dependencies_and_pins_unchanged": true,
+  "resource_before": {
+    "time": "2026-10-25T10:16:39.494252+00:00",
+    "memory_limit": 17179869184,
+    "memory_current": 16105697280,
+    "memory_available": 1074171904,
+    "filesystem_available": {
+      "/workspace": 885305344,
+      "/tmp": 455843840
+    }
+  },
+  "resource_after": {
+    "time": "2026-10-25T10:16:42.472323+00:00",
+    "memory_limit": 17179869184,
+    "memory_current": 16470376448,
+    "memory_available": 709492736,
+    "filesystem_available": {
+      "/workspace": 875212800,
+      "/tmp": 455843840
+    }
+  },
+  "stage": "one archive prepared/verified only; no Docker mutation",
+  "image_id": "sha256:f6c164a1739b3470c54af0ecf8d3db548fe9b7ccc3fba9dc328949e557f240c0",
+  "candidate_tag": "otgd-api:factory-source-520a3853480b",
+  "archive": "/tmp/otgd-image-proof/source-refresh-h/source-refresh-image-h.tar.gz",
+  "archive_bytes": 97917282,
+  "archive_sha256": "e33a167902ff8157d4e726fbdf5c4dc3ce0cec962515acc12e7d1ecdbabbf011",
+  "frozen_plan_sha256": "520a3853480bec9190ca2a9d038a85cee93c386096d61d20513a749c612e3c43",
+  "origin_plan_sha256": "258f886816c6b3c9e4eb60f91898f3b1721391f22e40c361df6491f8bbc8db58",
+  "whole_serialized_config_exact": true,
+  "platform": {
+    "os": "linux",
+    "architecture": "amd64"
+  },
+  "args_escaped_exact": true,
+  "archive_full_manifest_exact": true,
+  "current_workspace_exact_before_and_after": true,
+  "compressed_archive_sha256": "e33a167902ff8157d4e726fbdf5c4dc3ce0cec962515acc12e7d1ecdbabbf011",
+  "uncompressed_docker_archive_sha256": "4827f55f27677c7e97530196cf7903160c01c8c2bc01e8cb2102bf188e1b9afc",
+  "uncompressed_docker_archive_bytes": 268912640,
+  "gzip_cap_bytes": 125829120,
+  "gzip_settings": {
+    "mtime": 0,
+    "filename": "",
+    "compression_level": 6,
+    "zlib": "1.3.2",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "future_adoption_cap_budget_before_archive": {
+    "archive_staged_on": "/tmp",
+    "compressed_archive_not_charged_to_root": 125829120,
+    "stageA": {
+      "full_uncompressed_load_transient": 268912640,
+      "new_vfs_layer": 293220352,
+      "root_reserve": 314572800,
+      "total": 876705792
+    },
+    "stageB": {
+      "new_vfs_layer": 293220352,
+      "one_serial_app_recreation": 293220352,
+      "root_reserve": 314572800,
+      "total": 901013504
+    },
+    "required_max": 901013504
+  },
+  "future_adoption_actual_budget": {
+    "archive_staged_on": "/tmp",
+    "compressed_archive_not_charged_to_root": 97917282,
+    "stageA": {
+      "full_uncompressed_load_transient": 268912640,
+      "new_vfs_layer": 293220352,
+      "root_reserve": 314572800,
+      "total": 876705792
+    },
+    "stageB": {
+      "new_vfs_layer": 293220352,
+      "one_serial_app_recreation": 293220352,
+      "root_reserve": 314572800,
+      "total": 901013504
+    },
+    "required_max": 901013504
+  },
+  "preparation_tmp_budget": {
+    "compressed_archive_cap": 125829120,
+    "proof_metadata_allowance": 16777216,
+    "tmp_safety_headroom": 33554432,
+    "required_tmp_available": 176160768
+  },
+  "adoption_before_archive": {
+    "root_available": 875212800,
+    "stageA_fits": false,
+    "stageB_fits": false,
+    "status": "BLOCKED_CAPACITY"
+  },
+  "phase_distinction_authority": "PM explicit phase-distinction delegation message permits memory/tmp preparation after COPY release while unchanged root300MiB adoption guards remain blocked if capacity fails; no Docker action permission implied",
+  "preparation_script_diff_sha256": "745aecc6587f113abe9a000c718245a1dd3e936a6b535333f531e4743137c60b",
+  "budget_resources": {
+    "time": "2026-10-25T10:16:42.482005+00:00",
+    "memory_limit": 17179869184,
+    "memory_current": 16457170944,
+    "memory_available": 722698240,
+    "filesystem_available": {
+      "/workspace": 875212800,
+      "/tmp": 455843840
+    }
+  },
+  "resource_final": {
+    "time": "2026-10-25T10:16:56.225635+00:00",
+    "memory_limit": 17179869184,
+    "memory_current": 15066681344,
+    "memory_available": 2113187840,
+    "filesystem_available": {
+      "/workspace": 891973632,
+      "/tmp": 358105088
+    }
+  },
+  "docker_mutations": false,
+  "adoption_after_proof": {
+    "root_available": 891973632,
+    "stageA_fits": true,
+    "stageB_fits": false,
+    "status": "BLOCKED_CAPACITY"
+  }
+}

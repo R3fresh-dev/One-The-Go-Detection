@@ -97,3 +97,7 @@ All six independent initial reviews complete for candidate28e07295; all47 per-sp
 ## Checkpoint 11 — correction round 2
 
 2026-10-25T10:03:31.382145+00:00: All six independent replacement reviews and282per-spec decisions preserved. Four source defects consolidated in correction-round-2.md. Local runner deliberately stopped after four passing stages with unchanged fingerprint; no crash/recovery. Correction2/2 begins, recovery0/3. Current CI12jobsPASS, LocalStackpending; no final approval.
+
+## Checkpoint12 — final corrected candidate freeze
+
+2026-10-25T10:33:04.587567+00:00: All four consolidated findings have real author RED/GREEN evidence; sources released and hash verified. H adopted and all runtime services healthy with retained data unchanged. Correction2/2, recovery0/3. Final current gates, per-case evidence and six independent confirmations begin after this commit; no final approval. Exact candidate SHA/remote verification/live process records are external during the source freeze.

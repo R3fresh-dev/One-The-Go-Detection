@@ -46,6 +46,10 @@ test("compiled Cognito hosted origin admits code, refresh, restored family, revo
     return {
       type: "success",
       params: { state: request.state, code: "fictional-code" },
+      url:
+        request.redirectUri +
+        "?" +
+        new URLSearchParams({ state: request.state, code: "fictional-code" }),
     };
   };
   globalThis.fetch = async (url) => {

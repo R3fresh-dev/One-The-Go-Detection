@@ -41,7 +41,7 @@ import { presentCheckResult } from "../core/resultPresentation";
 import { validationFields, verifyConflictReadback } from "../services/sync";
 import { formatSalivaMeasurement } from "./measurement-format";
 import { SignalPanel } from "../device/SignalPanel";
-import { canonicalJson } from "../core/integrity";
+import { canonicalJson, digest } from "../core/integrity";
 import { BUILD } from "../platform/config";
 import { newId } from "../platform/storage";
 import { configurationFor, type AcquisitionChannel } from "../core/acquisition";
@@ -1677,10 +1677,11 @@ export function ResultScreen({ controller, model }: ScreenProps) {
     ? presentCheckResult(check, controller.hasCurrentHrResultAdmission(check))
     : null;
   const result = presentation?.result;
+  const savedResultDigest = check ? digest(check.result) : null;
   const [rawSelection, setRawSelection] = useState<string[]>([]);
   useEffect(() => setRawSelection([]), [check?.id, controller.epoch]);
   useEffect(() => {
-    if (!check || !presentation?.currentAdmissionRequired) return;
+    if (!check) return;
     const token = newId(),
       epoch = controller.epoch;
     let active = true;
@@ -1691,7 +1692,7 @@ export function ResultScreen({ controller, model }: ScreenProps) {
       active = false;
       controller.releaseHrResultView(token);
     };
-  }, [check?.id, controller.epoch]);
+  }, [check?.id, controller.epoch, savedResultDigest]);
   const pendingRaw = model.state?.queue.find(
     (q) =>
       q.kind === "check" && q.check_id === check?.id && q.state !== "synced",

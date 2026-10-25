@@ -4067,8 +4067,21 @@ export class AppController {
         });
       }),
     );
-    if (hrView && this.hrResultView?.token === hrView.token)
-      await scope.wait(this.refreshHrResultAdmission(check.id, hrView.token));
+    const current = this.check;
+    if (
+      current?.id === check.id &&
+      this.model.route === "result" &&
+      requiresCurrentHrRead(current.result) &&
+      (!this.hrResultView ||
+        (hrView?.token === this.hrResultView.token &&
+          digest(current.result) === digest(check.result)))
+    )
+      await scope.wait(
+        this.refreshHrResultAdmission(
+          check.id,
+          this.hrResultView?.token ?? newId(),
+        ),
+      );
   }
   async changePreferences(
     values: Partial<WorkspaceState["preferences"]>,

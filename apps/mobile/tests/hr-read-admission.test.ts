@@ -197,6 +197,23 @@ test("actual manual service refresh revokes the display first and preserves an i
   }
 });
 
+test("explicit manual refresh can establish the active HR view when no previous token exists", async () => {
+  const { app, check, service, close } = await cachedAccount();
+  try {
+    assert.equal(app.getSnapshot().hrResultAdmission, null);
+    service.overrides.set(`/v1/sessions/${check.id}`, () =>
+      service.result(clone(fixture.owned_session)),
+    );
+    await app.refreshCurrentCheck();
+    assert.equal(app.hasCurrentHrResultAdmission(app.check!), true);
+    assert.equal(app.getSnapshot().hrResultAdmission!.checkId, check.id);
+    await app.navigate("history");
+    assert.equal(app.hasCurrentHrResultAdmission(check), false);
+  } finally {
+    await close();
+  }
+});
+
 test("same-account memory-cache reopen cannot restore an old HR view admission", async () => {
   const { app, check, close } = await cachedAccount();
   try {

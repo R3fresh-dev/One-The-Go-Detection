@@ -1,4 +1,5 @@
 import type { DeviceSnapshot } from "../device/types";
+import type { Capabilities, Identity } from "./types";
 
 export interface DevicePresentation {
   title: string;
@@ -8,6 +9,7 @@ export interface DevicePresentation {
   bootId: string | null;
   observedAt: string | null;
   connected: boolean;
+  badge: string;
 }
 
 const recovery: Record<
@@ -110,7 +112,31 @@ export function presentDevice(snapshot: DeviceSnapshot): DevicePresentation {
     typeof timestamp === "string" && Number.isFinite(Date.parse(timestamp))
       ? timestamp
       : null;
-  const common = { bootId: null, observedAt, connected: false };
+  const common = {
+    bootId: null,
+    observedAt,
+    connected: false,
+    badge: "Not connected",
+  };
+  if (
+    snapshot.state === "connected_reader" &&
+    snapshot.association?.source === "prototype_sensor" &&
+    snapshot.association.bootId &&
+    !snapshot.reason
+  )
+    return {
+      title: snapshot.association.verifiedBindingId
+        ? "Reader binding verified by service"
+        : "Signed-protocol reader connected · identity unverified",
+      badge: "Signed reader connection",
+      detail:
+        "Connection and service binding do not authorize measurement. Current study consent, configuration, calibration and fresh online capture authorization remain separate.",
+      action: "Manage reader connection",
+      tone: "accent",
+      bootId: snapshot.association.bootId,
+      observedAt,
+      connected: true,
+    };
   if (
     snapshot.state === "connected_simulator" &&
     snapshot.association?.source === "simulated" &&
@@ -127,6 +153,7 @@ export function presentDevice(snapshot: DeviceSnapshot): DevicePresentation {
       bootId: snapshot.association.bootId,
       observedAt,
       connected: true,
+      badge: "Synthetic only",
     };
   }
   if (snapshot.state === "scanning")
@@ -154,7 +181,7 @@ export function presentDevice(snapshot: DeviceSnapshot): DevicePresentation {
       ...common,
       title: "Not connected",
       detail:
-        "Find a reader and complete a new handshake to capture synthetic bench values.",
+        "Find a supported reader or choose a synthetic simulator. Connection and capture authorization are separate.",
       action: "Connect or reconnect a reader",
       tone: "neutral",
     };
@@ -166,4 +193,93 @@ export function presentDevice(snapshot: DeviceSnapshot): DevicePresentation {
     action: "Review device status",
     tone: "warning",
   };
+}
+
+export interface ChannelPresentation {
+  channel: string;
+  label: string;
+  detail: string;
+  conditional: boolean;
+  expiresAt: string | null;
+}
+
+/** Displays an already authenticated capability observation. Connection/binding
+ * is deliberately not an input and cannot create capture or scientific authority. */
+export function presentAcquisitionChannels(input: {
+  identity: Identity | null;
+  capabilities: Capabilities | null;
+  generation: number | null;
+  offline: boolean;
+  hostedPreview: boolean;
+  now?: number;
+}): ChannelPresentation[] {
+  const { identity, capabilities, generation, offline, hostedPreview } = input;
+  const current =
+    !hostedPreview &&
+    !offline &&
+    identity?.state === "active" &&
+    capabilities?.account_state === "active" &&
+    identity.accountRef === capabilities.account_ref &&
+    identity.generation === generation &&
+    capabilities.data_generation === generation;
+  const labels: Record<string, string> = {
+    saliva: "Saliva",
+    eyes: "Pupil",
+    cardiac: "Cardiac (PPG)",
+    ecg: "ECG",
+    alcohol: "Alcohol",
+    task: "Reaction task",
+  };
+  const channels = new Set([
+    ...Object.keys(labels).filter((name) => name !== "task"),
+    ...(current ? Object.keys(capabilities!.channels) : []),
+  ]);
+  const now = input.now ?? Date.now();
+  return [...channels].map((channel) => {
+    const base = {
+      channel,
+      label: labels[channel] ?? channel,
+      conditional: false,
+      expiresAt: null,
+    };
+    if (!current)
+      return {
+        ...base,
+        detail: hostedPreview
+          ? "Unavailable in fictional preview"
+          : offline
+            ? "Current authorization unavailable · offline"
+            : "Current authorization unavailable · sign in to the matching active workspace",
+      };
+    const cap = capabilities!.channels[channel];
+    if (
+      !cap?.available ||
+      cap.authorization_available === false ||
+      cap.software_available === false
+    )
+      return {
+        ...base,
+        detail: `Unavailable · ${cap?.reason_codes.length ? cap.reason_codes.map((code) => code.replaceAll("_", " ").toLowerCase()).join(" · ") : "no current approved configuration and installed adapter"}`,
+      };
+    const active = (cap.configurations ?? []).filter(
+      (configuration) => Date.parse(configuration.expires_at) > now,
+    );
+    if (!active.length)
+      return {
+        ...base,
+        detail:
+          (cap.configurations?.length ?? 0) > 0
+            ? "Unavailable · approved configuration expired"
+            : "Unavailable · no current approved configuration",
+      };
+    return {
+      ...base,
+      conditional: true,
+      detail:
+        "Conditionally available · fresh online authorization required for each Start",
+      expiresAt: active
+        .map((configuration) => configuration.expires_at)
+        .sort((a, b) => Date.parse(a) - Date.parse(b))[0]!,
+    };
+  });
 }

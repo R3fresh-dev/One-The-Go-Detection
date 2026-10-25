@@ -213,3 +213,15 @@ All six cf74fcf independent reviews are preserved. Start correction round **2/2*
 ## D-010 v2 — consistent reader capability presentation (2026-10-25T10:08:31.887442+00:00)
 
 The existing UX-R001/UI003 correction includes only the DeviceScreen acquisition Facts/list section in ui/manage.tsx so Home and Device reuse current scoped per-channel presentation. Mobile owner has sole ownership of that section; Settings/privacy/raw sections and the capability-admission engine remain outside this edit. Physical connection or verified binding cannot grant approval. This is the same consolidated round2 finding, not additional scope or a third round.
+
+## D-006 v10 — replacement H preparation and bounded reproducible cache cleanup (2026-10-25T10:20:19.679247+00:00)
+
+H preparation has independent memory/tmp guards and preserves the unchanged 300MiB Docker load/recreation reserve. The verified H proof reported a ~9MB root capacity deficit; preparation alone authorizes no Docker action. PM verified 204 exact ignored pure Python bytecode / pytest collection-nodeids files, original source presence, no active pytest, and a complete byte-verified cache backup under /tmp before removing only those reproducible caches. The exact manifest/receipt is external under source-refresh-h; lastfailed, raw evidence, source, archives, builds, containers and data volumes are excluded. Measure actual free bytes after cleanup and each H operation; stop on guard failure. No disk resize, reserve reduction or cloud-image equivalence claim.
+
+## D-006 v11 — H adoption and obsolete G cache (2026-10-25T10:31:07.688044+00:00)
+
+H was loaded and identity/API/worker serially refreshed only after actual resource guards passed; all five services are healthy and initializers succeeded. Existing PostgreSQL/LocalStack identities and volumes remain unchanged. PM verified zero references and the sole source tag for obsolete G; its complete retained gzip Docker archive SHA256 e7d1d9b7efe2225910c7abb07b4062586bb669f27dffdbd1a5d0c5dea01d26c5 was reverified. Remove only that unreferenced reproducible image cache without force, then compare every container/volume identity. Retain all source archives and data. No deployment/original cloud image claim.
+
+## D-008 v3 — final corrected candidate freeze (2026-10-25T10:33:04.587567+00:00)
+
+All D010 correction owners released exact source/test/report files; PM verified author bindings, all47 canonical hashes and image H current224COPY/runtime hashes. Checkpoint12 is the final corrected immutable candidate. Run all7 local gates and all14 CI jobs without skips or threshold changes, reconcile per-case evidence and obtain all6 actual independent confirmations. During the fingerprint window write only outside repository. Correction2/2, recovery0/3; unresolved source/evidence blockers after this round must remain explicit NEEDS_HUMAN, not reset or hidden. No scope/authority/release waiver.

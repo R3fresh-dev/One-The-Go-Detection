@@ -12,6 +12,10 @@ const runtime = {
   prompt: async (request) => ({
     type: "success",
     params: { state: request.state, code: "one-time-code" },
+    url:
+      request.redirectUri +
+      "?" +
+      new URLSearchParams({ state: request.state, code: "one-time-code" }),
   }),
   providerCalls: [],
 };

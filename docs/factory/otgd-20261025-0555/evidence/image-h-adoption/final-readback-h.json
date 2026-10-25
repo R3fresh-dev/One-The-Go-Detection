@@ -1,0 +1,15 @@
+{
+  "time": "2026-10-25T10:20:31.984579+00:00",
+  "proof_and_source_readback": "PASS",
+  "artifact_hashes": 19,
+  "copy_entries": 224,
+  "current_copy_workspace_exact": true,
+  "root_available": 888315904,
+  "tmp_available": 348487680,
+  "stageA_required": 876705792,
+  "stageB_required": 901013504,
+  "stageA_deficit": 0,
+  "stageB_deficit": 12697600,
+  "adoption_status": "BLOCKED_CAPACITY",
+  "resource_history": "Earlierproofroot891973632; reportwriteobserved821370880, causeunverified; PMalerted. No guardrelaxation. No cleanup/Dockermutations byproofowner."
+}

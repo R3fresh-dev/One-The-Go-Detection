@@ -1,0 +1,62 @@
+{
+  "time": "2026-10-25T10:31:07.688044+00:00",
+  "status": "confirmed_removed_cache_only",
+  "image": "sha256:9fa3ec8d4076bfb2d115634d32bdf61f34d160836dd29a1c19eb1a6ef5cc4707",
+  "tag": "otgd-api:factory-source-635de66c4b68",
+  "archive": "/workspace/scratch/otgd-image-proof-g/source-refresh-image-g.tar.gz",
+  "archive_sha256": "e7d1d9b7efe2225910c7abb07b4062586bb669f27dffdbd1a5d0c5dea01d26c5",
+  "all_containers_before": [
+    {
+      "name": "/otgd-local-api-1",
+      "id": "5807b521b494b1ac572f0cae29d8748d202daad7365f43f3e5695bbcec6cb8e5",
+      "image": "sha256:f6c164a1739b3470c54af0ecf8d3db548fe9b7ccc3fba9dc328949e557f240c0",
+      "volumes": []
+    },
+    {
+      "name": "/otgd-local-identity-1",
+      "id": "96989b66253a10d30f75328d21788356973bbdb3be3db7800d6efbf4db110ab1",
+      "image": "sha256:f6c164a1739b3470c54af0ecf8d3db548fe9b7ccc3fba9dc328949e557f240c0",
+      "volumes": []
+    },
+    {
+      "name": "/otgd-local-localstack-1",
+      "id": "bc63b337918365ce1c1b8de84972bf5c75b9e731aa92b70bfeedae325f0dbf50",
+      "image": "sha256:0e9f1067a26f6e32a07af9f5eaba68bfd7737c8b8ef41296e3b46094fb9e59cf",
+      "volumes": [
+        "otgd-local_localstack-data"
+      ]
+    },
+    {
+      "name": "/otgd-local-migrate-1",
+      "id": "b4f7c81094136c5caa524a8eecb6aedf5eb1e3196eaf4aff0cb1c070d277b45c",
+      "image": "sha256:1af98b2872a49d3be4f8e6468507e9bc56468b1554252dcdf19293c21850d57b",
+      "volumes": []
+    },
+    {
+      "name": "/otgd-local-postgres-1",
+      "id": "4146ac7a804333f1c0a770681d63e44c2e31647c7f88b513c1d3ac00db88225c",
+      "image": "sha256:e8538db784b854a9baac5c1be6d059dcf0db257af2d94c8c5807b5fc15f11222",
+      "volumes": [
+        "otgd-local_postgres-data"
+      ]
+    },
+    {
+      "name": "/otgd-local-resource-init-1",
+      "id": "793f701e35ed34c37eb2c26c8d8e519fc65bbe54291c6f3cb7f7050eb06a79ca",
+      "image": "sha256:1af98b2872a49d3be4f8e6468507e9bc56468b1554252dcdf19293c21850d57b",
+      "volumes": []
+    },
+    {
+      "name": "/otgd-local-worker-1",
+      "id": "e4588e5b30a5eac4bbb26de35621b0c5765c5fe2d4967ae1ef4d32495c94a98e",
+      "image": "sha256:f6c164a1739b3470c54af0ecf8d3db548fe9b7ccc3fba9dc328949e557f240c0",
+      "volumes": []
+    }
+  ],
+  "free_before": 666185728,
+  "exit_code": 0,
+  "output": "Untagged: otgd-api:factory-source-635de66c4b68\nDeleted: sha256:9fa3ec8d4076bfb2d115634d32bdf61f34d160836dd29a1c19eb1a6ef5cc4707\nDeleted: sha256:ede03722521b7581ec600d885d8bac7ba2e94c18fb4784620b82a55986446fea\n",
+  "free_after": 960909312,
+  "all_container_and_volume_identities_unchanged": true,
+  "archive_sha256_after": "e7d1d9b7efe2225910c7abb07b4062586bb669f27dffdbd1a5d0c5dea01d26c5"
+}

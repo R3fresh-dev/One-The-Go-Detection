@@ -28,6 +28,211 @@ const hrResultBundle = buildSync({
   },
 }).outputFiles![0]!.text;
 
+const readerPresentationBundle = buildSync({
+  entryPoints: [resolve("e2e/fixtures/device-presentation-component.tsx")],
+  bundle: true,
+  write: false,
+  platform: "browser",
+  format: "iife",
+  resolveExtensions: [
+    ".web.tsx",
+    ".web.ts",
+    ".web.js",
+    ".tsx",
+    ".ts",
+    ".jsx",
+    ".js",
+    ".json",
+  ],
+  alias: { "react-native": resolve("e2e/fixtures/native-web-shim.js") },
+  define: {
+    __DEV__: "false",
+    "process.env.NODE_ENV": '"test"',
+    "process.env.EXPO_PUBLIC_APP_ENV": '"local"',
+    "process.env.EXPO_PUBLIC_HOSTED_PREVIEW": '"false"',
+  },
+}).outputFiles![0]!.text;
+
+test("Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: readerPresentationBundle });
+  for (const kind of [
+    "unbound",
+    "bound",
+    "current",
+    "revoked",
+    "expired",
+    "mismatched",
+    "disconnected",
+    "rebooted",
+    "simulator",
+  ]) {
+    await page.evaluate(
+      (value) => (window as any).renderReaderPresentation(value),
+      kind,
+    );
+    const conditional = ["current", "disconnected", "rebooted"].includes(kind);
+    await expect(
+      page.getByText(
+        "Conditionally available · fresh online authorization required for each Start",
+        { exact: true },
+      ),
+    ).toHaveCount(conditional ? 1 : 0);
+    if (kind === "unbound")
+      await expect(
+        page.getByRole("heading", {
+          name: "Signed-protocol reader connected · identity unverified",
+          exact: true,
+        }),
+      ).toBeVisible();
+    else if (kind === "simulator")
+      await expect(
+        page.getByText("Synthetic only", { exact: true }),
+      ).toBeVisible();
+    else
+      await expect(
+        page.getByText("Synthetic only", { exact: true }),
+      ).toHaveCount(0);
+    if (kind === "revoked")
+      await expect(
+        page.getByText("Unavailable · approval revoked", { exact: true }),
+      ).toBeVisible();
+    if (kind === "expired")
+      await expect(
+        page.getByText("Unavailable · approved configuration expired", {
+          exact: true,
+        }),
+      ).toBeVisible();
+    await expect(
+      page.getByText("Reader connection unavailable", { exact: true }),
+    ).toHaveCount(0);
+    await page.getByTestId("home-device-connection").click();
+    await expect(
+      page.getByRole("heading", { name: "Devices & connection", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "Conditionally available · fresh online authorization required for each Start",
+        { exact: true },
+      ),
+    ).toHaveCount(conditional ? 1 : 0);
+    await expect(
+      page.getByText(
+        /Connection and binding do not grant capture or scientific approval/,
+      ),
+    ).toBeVisible();
+  }
+});
+
+test("Home expires its current channel observation while mounted and Device retains that expired status", async ({
+  page,
+}) => {
+  await page.clock.install({ time: Date.parse("2026-10-25T10:00:00Z") });
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: readerPresentationBundle });
+  await page.evaluate(() =>
+    (window as any).renderReaderPresentation(
+      "current",
+      new Date(Date.now() + 2000).toISOString(),
+    ),
+  );
+  await expect(
+    page.getByText(
+      "Conditionally available · fresh online authorization required for each Start",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.clock.runFor(2000);
+  await expect(
+    page.getByText("Unavailable · approved configuration expired", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByTestId("home-device-connection").click();
+  await expect(
+    page.getByText(
+      "Conditionally available · fresh online authorization required for each Start",
+      { exact: true },
+    ),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText("Unavailable · approved configuration expired", {
+      exact: true,
+    }),
+  ).toBeVisible();
+});
+
+test("mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion", async ({
+  page,
+}) => {
+  for (const initial of ["pending", "measurement"]) {
+    await page.goto(`/#${initial}`);
+    await page.setContent('<main id="root"></main>');
+    await page.addScriptTag({ content: hrResultBundle });
+    await expect(
+      page.getByRole("heading", { name: "Your measurements", exact: true }),
+    ).toBeVisible();
+    const before = await page.evaluate(() =>
+      (window as any).hrCurrentIdentity(),
+    );
+    expect(
+      await page.evaluate(() => (window as any).hrReadRequests.length),
+    ).toBe(0);
+    await page.evaluate(() => {
+      void (window as any).deliverHrThroughSync();
+    });
+    await expect
+      .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+      .toBe(1);
+    await page.evaluate(() => (window as any).resolveHrRead(200));
+    await expect(
+      page.getByText("Current research result admission required", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+      .toBe(2);
+    expect(
+      await page.evaluate(() => (window as any).hrCurrentIdentity()),
+    ).toMatchObject({ id: before.id, epoch: before.epoch });
+    await page.evaluate(() => (window as any).resolveHrRead(200));
+    await expect(page.getByText("81.8%", { exact: true })).toBeVisible();
+    expect(
+      await page.evaluate(() => (window as any).hrReadRequests.length),
+    ).toBe(2);
+  }
+});
+
+test("manual service refresh establishes current HR admission from a mounted pending result without a prior token", async ({
+  page,
+}) => {
+  await page.goto("/#pending");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: hrResultBundle });
+  await expect(
+    page.getByRole("heading", { name: "Your measurements", exact: true }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => (window as any).hrReadRequests.length)).toBe(
+    0,
+  );
+  await page
+    .getByRole("button", {
+      name: "Refresh service result. Verify the same snapshot and evidence before displaying",
+      exact: true,
+    })
+    .click();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBeGreaterThan(0);
+  await page.evaluate(() => (window as any).resolveHrRead(200));
+  await expect(page.getByText("81.8%", { exact: true })).toBeVisible();
+});
+
 test("actual HR screen requires a fresh admitted result on open and after evidence navigation", async ({
   page,
 }) => {

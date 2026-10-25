@@ -30,6 +30,33 @@ interface StoredSession {
   refreshToken: string | null;
   auth: AppConfig["auth"];
 }
+
+/** Code flow returns only code/state in the query of the exact selected callback. */
+function matchesAuthorizationCallback(
+  returnedUrl: unknown,
+  redirectUri: string,
+  state: string,
+  code: string,
+): boolean {
+  if (typeof returnedUrl !== "string" || returnedUrl.includes("#"))
+    return false;
+  const queryAt = returnedUrl.indexOf("?");
+  // Compare the original target bytes: URL normalization must not admit a path
+  // suffix, userinfo, default-port alias or dot-segment variant of our callback.
+  if (queryAt < 0 || returnedUrl.slice(0, queryAt) !== redirectUri)
+    return false;
+  const query = returnedUrl.slice(queryAt + 1);
+  if (query.split("&").length !== 2 || /%(?![\da-f]{2})/i.test(query))
+    return false;
+  const params = new URLSearchParams(query);
+  return (
+    [...params].length === 2 &&
+    params.getAll("code").length === 1 &&
+    params.getAll("state").length === 1 &&
+    params.get("code") === code &&
+    params.get("state") === state
+  );
+}
 export class AuthManager implements TokenProvider {
   private tokens: OAuthTokens | null = null;
   private stored: StoredSession | null = null;
@@ -109,7 +136,13 @@ export class AuthManager implements TokenProvider {
       result.type !== "success" ||
       result.params.state !== request.state ||
       !result.params.code ||
-      !request.codeVerifier
+      !request.codeVerifier ||
+      !matchesAuthorizationCallback(
+        result.url,
+        redirectUri,
+        request.state,
+        result.params.code,
+      )
     )
       throw new IntegrityError(
         "OAUTH_REJECTED",

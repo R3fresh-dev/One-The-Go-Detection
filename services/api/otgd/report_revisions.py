@@ -244,7 +244,7 @@ def _integrity():
     raise Problem(503, "REPORT_REVISION_INTEGRITY")
 
 
-def _base(db, account, check):
+def _validated_base(db, account, check):
     if (
         check.state not in ("completed", "invalid")
         or not check.snapshot
@@ -268,7 +268,6 @@ def _base(db, account, check):
             or result["session_id"] != check.id
             or result["input_sha256"] != check.snapshot_sha256
             or result["target_at"] != snapshot["target_at"]
-            or result["state"] not in ("measurement_only", "invalid", "inconclusive")
             or not manifest
             or manifest.sha256 != check.evidence_sha256
             or digest(manifest.body) != check.evidence_sha256
@@ -276,6 +275,13 @@ def _base(db, account, check):
         ):
             _integrity()
     except (KeyError, TypeError, ValueError, ValidationError, SchemaError):
+        _integrity()
+    return snapshot
+
+
+def _base(db, account, check):
+    snapshot = _validated_base(db, account, check)
+    if check.result["state"] not in ("measurement_only", "invalid", "inconclusive"):
         _integrity()
     return snapshot
 
@@ -807,6 +813,20 @@ def load_chain(db, account, check):
 
 
 def freeze_head(db, account, check):
+    # Ordinary export can include an admitted numeric result without granting
+    # administrative revision eligibility. Existing companions still require
+    # the full, narrower chain validator, including orphan result companions.
+    _validated_base(db, account, check)
+    companion = db.scalar(
+        select(Record.id).where(
+            Record.account_id == account.id,
+            Record.generation == account.generation,
+            Record.parent_id == check.id,
+            Record.kind.in_(["report_revision", "result_revision"]),
+        ).limit(1)
+    )
+    if companion is None:
+        return {"revision_id": None, "revision_sha256": None}
     chain = load_chain(db, account, check)
     return {
         "revision_id": chain[-1]["revision_id"] if chain else None,

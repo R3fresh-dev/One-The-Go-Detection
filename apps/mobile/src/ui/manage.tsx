@@ -22,6 +22,7 @@ import {
 import { useReducedMotion, useTheme } from "./theme";
 import { getEnrolledLevelAsync } from "expo-local-authentication";
 import { DevicePanel } from "../device";
+import { AcquisitionAvailability } from "./device-summary";
 import { digestText, utf8 } from "../core/integrity";
 import type { CheckRecord, JsonObject, PrivacyJob } from "../core/types";
 import { BUILD } from "../platform/config";
@@ -90,15 +91,7 @@ export function DeviceScreen({ controller, model }: ScreenProps) {
           hardware and an installed adapter for the selected approved
           configuration. Unknown proprietary reader protocols are unavailable.
         </Paragraph>
-        <Fact
-          label="Approved acquisition channels"
-          value={
-            Object.entries(model.state?.capabilities?.channels ?? {})
-              .filter(([, channel]) => channel.available)
-              .map(([name]) => friendly(name))
-              .join(", ") || "None available"
-          }
-        />
+        <AcquisitionAvailability model={model} />
         <Fact
           label="Research model execution"
           value={
