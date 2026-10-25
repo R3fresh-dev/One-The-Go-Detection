@@ -95,6 +95,24 @@ test("a stalled OAuth refresh has a bounded deadline and its late reply cannot r
   }
 });
 
+test("authorization supplies a fresh cryptographic state satisfying the issuer minimum", async () => {
+  const { auth, config, close } = await harness();
+  const states: string[] = [];
+  try {
+    unit().prompt = async (request: { state: string }) => {
+      assert.match(request.state, /^[A-Za-z0-9_-]{32,256}$/);
+      states.push(request.state);
+      return { type: "cancel" };
+    };
+    assert.equal(await auth.authorize(config), null);
+    assert.equal(await auth.authorize(config), null);
+    assert.equal(states.length, 2);
+    assert.notEqual(states[0], states[1]);
+  } finally {
+    await close();
+  }
+});
+
 test("PKCE callback binds state and verifier and credential restore uses verified API identity", async () => {
   const { auth, service, config, identity, close } = await harness();
   try {

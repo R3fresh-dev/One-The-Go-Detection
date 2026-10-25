@@ -132,15 +132,29 @@ jobs:
 
   localstack-integration:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # Production worker retry/visibility timers make its kill matrix ~29 min.
+    timeout-minutes: 50
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
         with:
           version: '0.13.0'
           python-version: '3.12'
           enable-cache: true
       - run: uv sync --project services/api --locked
+      - run: npm ci
+        working-directory: apps/mobile
+      - name: Install Chromium for mandatory authenticated browser acceptance
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/mobile
       - run: uv run --project services/api python scripts/local-platform.py prepare
       - name: Build and start real dependencies
         run: python scripts/local-platform.py up
@@ -148,18 +162,12 @@ jobs:
         run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps resource-init
       - name: Every long-running container healthy; initializers successful
         run: python scripts/ci_gate.py docker-health
-      - name: Actual versioned conditional S3 and SQS probe
-        run: python scripts/local-platform.py check
-      - name: Fictional OAuth, HTTP, worker, export and deletion flow
-        run: python scripts/local-platform.py check-app --confirm-fictional-workspace
-      - name: Real retained version erasure and late arrival reconciliation
-        run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps api uv run --no-sync python /app/infra/local/raw_version_probe.py
-      - name: Real participant collection, delegated report custody and queued result
-        run: docker compose --project-name otgd-local --env-file infra/local/.env -f infra/local/compose.yml run --rm --no-deps migrate uv run --no-sync python /app/infra/local/participant_probe.py --confirm-fictional-workspace
+      - name: Real API, worker interruption and authenticated browser acceptance
+        run: python scripts/ci_gate.py localstack-api
       - name: Actual signed concurrent API and SQS performance
         run: python scripts/ci_gate.py performance
       - name: Record limits of this evidence
-        run: echo 'Actual local S3/SQS/PostgreSQL transport checks completed. AWS IAM/KMS/private-network behavior, queue kill matrix, native-device evidence, and clinical validity require their own release evidence.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Actual local S3/SQS/PostgreSQL transport, process interruption and authenticated browser checks completed. AWS IAM/KMS/private-network behavior, native-device evidence, and clinical validity require their own release evidence.' >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

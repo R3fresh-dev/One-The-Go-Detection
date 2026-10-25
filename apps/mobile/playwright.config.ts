@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
-  testIgnore: "hosted-preview.spec.ts",
+  testIgnore: ["hosted-preview.spec.ts", "authenticated-live.spec.ts"],
   timeout: 60_000,
   retries: 0,
   workers: 1,

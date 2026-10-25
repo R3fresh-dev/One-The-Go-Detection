@@ -1,9 +1,9 @@
 # OTGD-047: verification results
 
-Canonical: `openspec/changes/verified-release-and-browser-access/specs/mobile-store-delivery/spec.md`; SHA-256 `8dd256054b4cc55a8fe8141b5589fa39cf9a655cf1af16cb28cde8ed0c4622ea`.
+Canonical: `openspec/changes/verified-release-and-browser-access/specs/mobile-store-delivery/spec.md`; SHA-256 `b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4`.
 Planning snapshot HEAD: `33901a1ff785cd28e351d935be510d184fb7f8e2`; baseline implementation: `0844868aa543af4ab75ac5065ad48cf807b86bb3`.
 
-Owner: `/root/verification`; OpenAI `gpt-6.1-sol/high` requested in PM dispatch; effective model identifier not independently exposed inside this worker. Scope: verification planning and static source inspection only. Relevant acknowledged decisions: D-001 v1 through D-004 v1. Execution candidate is not frozen.
+Owner: `/root/verification`; OpenAI `gpt-6.1-sol/high` requested in PM dispatch; effective model identifier not independently exposed inside this worker. Scope: verification planning and static source inspection only. Relevant acknowledged decisions: D-001–005 v1 and D-006 v3; superseded D-006 v1/v2 retained as history. Execution candidate is not frozen.
 
 Result: **NOT_RUN**. 18 individually identified requirements and 37 canonical acceptance cases are planned in `test-plan.md`. No current-source runtime suite, browser, native, firmware, live-dependency or performance result is claimed by this document. No historical evidence is transferred.
 
@@ -20,3 +20,13 @@ Result: **NOT_RUN**. 18 individually identified requirements and 37 canonical ac
 All stable case IDs in test-plan.md are NOT_RUN, except explicitly external-only cases which are BLOCKED on named acceptance evidence. On execution replace this aggregate with one result row per affected case, retaining command/procedure, environment, UTC time, observed outcome, exit code, evidence path/hash and exact candidate/test bindings. Do not turn expected THEN statements into observed results.
 
 No completion, engineering/product signoff or council PASS follows from this planning record.
+
+## Reactivated verification audit
+
+Observed checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active writers’ working-tree edits, 2026-10-25T06:53:56.344429+00:00. This is not source freeze. Original planning HEAD and prior no-execution record above remain historical. Canonical hash above is rebound to the reconciled current source; OTGD-001 and OTGD-047 changed. Existing411 requirements /782 case IDs are retained. No Docker/build/probe or suite execution performed by this verifier.
+
+Final-candidate acceptance remains **NOT_RUN**; actual focused author executions are preserved below separately and do not establish this whole dossier PASS. Source/content changes after a focused run require fresh admission and affected reruns.
+
+Focused provenance report: `../../reports/provenance-implementation.md` SHA-256 `8d78d5000cbb7d1f08848a3420759a5139e3abdb83eb22f87c01944bb1d4d9f2`. Actual existing /tmp logs inspected:21/58/232-case focused runs show OK, original RED4 failures and canonical infra gate FAIL preserved. Runtime source-manifest binding is incomplete in author report; final raw source-bound gate required. No current remote/native job PASS or release authority adopted.
+
+Independent source assertion audits for this dossier: Current release provenance assertion audit. Full assertion/limit details are in test-plan.md.

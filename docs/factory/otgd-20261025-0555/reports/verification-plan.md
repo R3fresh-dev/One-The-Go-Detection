@@ -937,3 +937,120 @@ python3 apps/mobile/modules/scripts/hosted_preview.py review --artifact apps/mob
 ## Checkpoint handoff
 
 Planning artifacts are coherent but intentionally provisional. After checkpoint, verification relinquishes writes until PM schedules post-reconciliation binding refresh/execution. No current app-complete, deployment, native-device, scientific, product/engineering signoff or council approval claim. Temporary full-stack capacity blocker is PM/platform-owned; unaffected audits can proceed.
+
+## Reactivation — independent assertion audit
+
+Audit timestamp 2026-10-25T06:53:56.344429+00:00; checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active builders. Reconciliation changes OTGD-001 to `c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7` and OTGD-047 to `b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4`. Earlier canonical/source appendices are the initial planning snapshot, not current evidence. All47 dossier canonical hashes refreshed;411 requirements and782 original case IDs retained. No final-source PASS or freeze claimed.
+
+D-001–005 v1 and D-006 v3 acknowledged through actual PM messaging; D-006 v1/v2 remain superseded proof-method history. Reconstructed local image1af98b2872a49d3be4f8e6468507e9bc56468b1554252dcdf19293c21850d57b has independently accepted source-filesystem/Config equivalence, not original/ECR digest identity or cloud release provenance. Resource operations remain PM-only; no Docker/build/probe/test execution by this verifier.
+
+### EVAL-007 history/reference/authenticity audit
+
+Mapped cases: OTGD-008-EVAL-007-01/02; OTGD-041-EVAL-002-03/04/05; OTGD-042-HR-AUTH-008-01/02/03/04; full MOD-004/005/012/014/015 and VAL-004/005/006 are related, not automatically closed.
+
+Independently read test_model_evaluation.py::external_history_pipeline/assert_forged_history_refused and both named test_external_history_references_remain_unverified_through_pipeline/test_self_asserted_or_extra_approval_fields_do_not_authenticate_history wrappers in full and four HR variants. Actual CLI index/freeze/train/evaluate/verify compares original dataset/analysis/split/training/report/artifact hashes, full evidence and eight-row evaluation membership. Original refs and HR custody/source/baseline/manifest remain exact. Every emitted authority/authenticity/history/clinical flag is false; strict extra fields and untyped/rehashed forged manifest refuse. Existing test_real_logistic_fitting... already asserted verified_by_tool false: the original V-SW-001 claim is narrowed accordingly.
+
+Limits/gaps: No scientific authenticity is established. Focused author-reported execution exists, but raw pytest stdout/JUnit is not linked; no final-candidate PASS adopted. These checks cover history custody; independent endpoint, genuine approvals and locked real study remain separate.
+
+### Alcohol dependency and acquisition-boundary audit
+
+Mapped cases: OTGD-019-AND-ALC-001-02, AND-ALC-004-02; related AND-DEV-004, AND-CHECK-002, AND-STUDY-003/004.
+
+Read operator-governance tests: configuration/calibration at -1ms, equality and +1ms; expiry history/body/hash/decisions immutable; calibration failure distinguished from still-current configuration. Current SOFTWARE_ADAPTERS/PHYSICAL_DRIVERS contain no alcohol entry and capability reason is HUMAN_ADAPTER_UNIMPLEMENTED. Four explicitly hypothetical HTTP grant/start cases expire before still-valid grant end, require403 APPROVED_REGISTRY_VERSION_REQUIRED, zero sign_start calls, no persisted start/alcohol and unchanged issued receipt. Mobile three new cases verify strict configuration selection before expiry, fresh absent inventory overrides stale cached availability with zero grant/nonce/hardware events, and a hypothetical returned authoritative-start refusal leaves invalid null alcohol and zero acquisition events.
+
+Limits/gaps: Client refusal transport is controlled, not an integrated real breath instrument. No qualified driver exists. Direct participant recalibration-specific start/recovery remains BLOCKED by absent instrument; generic server refusal must not be relabeled a diagnosis. Server -1ms/equality/+1ms and hypothetical grant race have reported focused execution; mobile author report/release and final gates pending.
+
+### Rendered alcohol state/copy assertion audit
+
+Mapped cases: OTGD-019-AND-ALC-002/003/005/006 cases; related APP-012/013, AND-HIST-003 and AND-RES-004.
+
+Read actual AlcoholScreen/ResultsScreen/HistoryScreen/ResultDetail fixture and assertions in raw-recordings.spec.ts. Measurement/guest/research variants retain unavailable qualified hardware, mg/L and model-specific co-use copy, replace stale unconditional classification statement. Six value/source variants (zero, low, below_loq, not_detected, invalid, simulated) traverse actual history/result/detail; assertions retain units, qualifier/source/time, dashes for null, separate alcohol meaning and no automatic BAC/impairment adjustment. Positive driving/legal-clearance/combined-score patterns absent; truthful clearance Unavailable remains visible.
+
+Limits/gaps: Controlled component inputs are hypothetical reporting records, not acquired sensor data; research fixture is not newly qualified scientific authority. Notification/OS-wide copy is not exhaustively proved by these component surfaces. Writer active; new component tests NOT_RUN in verifier final scope, author final report pending.
+
+### Permissions race and no-reprompt assertion audit
+
+Mapped cases: OTGD-036-AND-SET-003-01/02 and AND-SET-007-02; related AND-EYE-002, AND-ONB-004 and AND-AUTH-005.
+
+Read PermissionsCard implementation and actual exported Settings component harness. Status labels cover denied/canAskAgain, denied/permanent, restricted, undetermined, failed reads; zero prompts across mount/refresh/active-return; OS settings call occurs once only explicit action. Deferred reads resolved newer-first, stale controller epoch before React render, account/generation changes and unmount must not publish old state; new scoped card is Not checked until current read; listener teardown asserted. Real ordinary UI test Settings/Back preserves draft/sample with no camera prompt. Implementation uses active+sequence+captured epoch guard and scoped card identity.
+
+Limits/gaps: Adapters are controlled OS observations. Real Android/iOS settings return, OS permission policy, TalkBack/VoiceOver, key storage and native lifecycle remain Task7 BLOCKED/NOT_RUN. Writer not released; no final gate execution or independent runtime PASS.
+
+### Current release provenance assertion audit
+
+Mapped cases: OTGD-047-STORE-003-01/02; OTGD-015-CLOUD-DEP-002-01/02; related AND-ENV-005/007.
+
+Read verify_github_gates/verify_gate_file and new test_provenance actual assertion bodies. Both current defaults require CURRENT_REQUIRED_JOBS=FARGATE_REQUIRED_JOBS (14), owned HTTP-client recursion retains selected set; tests reject missing/failure/skipped/cancelled fargate-container-runtime, reject base-only gate file, and verify platform build/serverless admission do not reach signing/cloud boundary. Existing exact-run/latest-attempt/duplicate/foreign/pagination checks retained. Explicit historical13 selectors remain only documented original recovery callers; signed historical receipt projection unchanged and cannot replace live admission.
+
+Limits/gaps: HTTP response fixtures prove software refusal only. Actual current remote14 mandatory jobs/run provenance and native artifacts remain pending; baseline38347011315 is historical only and normalized PR wrapper is not trusted-main admission. Logs substantiate focused runs but run-time source manifest absent from author report; do not adopt them as exact frozen-candidate result. Canonical infra gate recorded FAIL (Docker readonly buildx setup + then-missing probe import); secure-SDK follow-up not reached.
+
+### Actual-process interruption probe source audit
+
+Mapped cases: Shared platform §§6/10; related OPS-002/003/005/006, RAW-EXP-004/006/007, RECOVERY-001, AND-SYNC-003/005/006, AND-PRIV-005, AND-RES-002.
+
+Read worker_interrupt_probe.py validate_target, child_worker, OwnedChild, kill_case, verify_output, stale_case and budget_case. Exact separate disposable local DB/namespace/queues/buckets; wrappers delegate real production claim/commit/S3/SQS/run_job; only owned spawned PID receives signals; SIGKILL exit and actual barriers verified. Five export kill stages plus result after-claim/after-commit; unchanged outbox and winning fence/attempt/output assertions; version-pinned bytes/hash. SIGSTOP lets real120s lease expire; new generation denies stale output; SIGCONT late writer must lease_lost; real expiry cleanup removes only own versions and preserves neighbor. Real malformed durable work five-claim/backoff and actual five-receive120s DLQ redrive preserve production constants.
+
+Limits/gaps: Source inspected only; probe and integration WIP, no real process/recovery execution adopted. Unit harness targeting/barrier tests do not prove actual recovery. No study withdrawal or old-backup/cloud restore inferred from generation transaction. PM must assign isolated fixture setup and run after writer release; all resource mutations PM-only. Workflow timeout must fit real production waits; integration pending.
+
+### Authenticated ordinary-web live test source audit
+
+Mapped cases: Related actual paths: AND-AUTH-001/003/005/006; AND-SYNC-002/003/004/007; AND-HIST-001/005/006; AND-EXP-001/002/003/006; AND-PRIV-003/004/005; WEB-DEP-003/008; complete full canonical scenarios remain separately assessed.
+
+Read authenticated-live.spec.ts ordinary account test and helpers. Real issuer PKCE/token responses, notice/profile/context and deliberate synthetic-account Save then Upload. route.fetch sends actual finalize and validates202 before connection-reset abort; no fake success. Actual queued measurement-only result, reload clears account memory and reauthentication retrieves server history, actual export job/ZIP manifest/hash/single-check bytes, foreign404, reauthenticated deletion/current generation barrier, explicit new empty workspace and logout refresh-family refusal. Two actual viewport projects and private bounded fixture inventory; unknown records stop all-data deletion. Network receipts redacted; live config disables OAuth/token-bearing traces/HAR/screenshots.
+
+Limits/gaps: Writer active; planned final gate NOT_RUN. Current inspected ordinary case does not establish all governed consent/withdrawal, raw, pending-lab or research UI/API journeys; later governed work is WIP. No native encrypted persistence, public CloudFront delivery or physical sensing inferred. Need actual raw JUnit/redacted receipts/archive hashes and final gate wiring after freeze.
+
+### Reported executions kept distinct
+
+Evaluation report SHA-256 `4332b81097b9dd4cc25545c46f808554439cf7d61a2425caa77cffe52ee96f0c`: all5 reported test/production source hashes matched current bytes during inspection. 185 evaluation/admission,43 actual-PG governance,1338 non-PG API reports are focused author executions, not a final aggregate.20 PG cases deselected in the SQLite-only inventory remain not passed there. Initial fixture4 failures and SQLite mandatory-PG2 failures remain visible. Raw pytest stdout/JUnit path absent: no independent execution adoption. Existing verified_by_tool=false assertion was already present: initial V-SW-001 finding is narrowed to missing precise full custody/authenticity negatives, now supplied in source.
+
+Provenance report SHA-256 `8d78d5000cbb7d1f08848a3420759a5139e3abdb83eb22f87c01944bb1d4d9f2`: source bodies inspected and focused raw logs read. Logged original4 RED failures, final21/58/232 OK and canonical infra-unit FAIL are retained; missing run-time source manifest prevents full exact-candidate carry-forward. Canonical failure was Docker readonly buildx setup plus then-missing probe import; secure SDK test not reached. PM reports separate PG-role setup mismatch using nonadmin disposable role; that setup failure is neither code-defect evidence nor a passing role gate until corrected exact role check executes.
+
+| Existing focused raw artifact | SHA-256 |
+|---|---|
+| `/tmp/otgd-provenance-red.log` | `7ffe06ab80b7c1b335ab6b8f694da8cfd4d4b3cfcac73d05d2785f876f724f01` |
+| `/tmp/otgd-provenance-green.log` | `7054a34246dcde04823527ac394de64345818a9e695abb814765fb4086401c08` |
+| `/tmp/otgd-provenance-focused-green.log` | `a7cdbabf0012d50e55df88a37c75a2157201d5b8f27b3feb900c180af4c911db` |
+| `/tmp/otgd-provenance-release-green.log` | `5533a98cf07c957db1baa04bfd2baa0a7fb62e161cdbc2ba4431b424296acdff` |
+| `/tmp/otgd-provenance-infra-unit.log` | `c3a42f4bf981e51bc3df77778281a1c52aa2d5eb806f66b0628927bfcde7452f` |
+
+### Current mutable source bindings
+
+These are inspection hashes, not a claim these exact bytes executed. Active writers may change them; refresh once all release. Final implementation source manifest must include all code/tests/contracts/workflows/locks plus dirty/untracked files and final local-image content binding.
+
+| Path | SHA-256 |
+|---|---|
+| `services/api/tests/test_model_evaluation.py` | `60013323430a0979caeffcef4b2983566a028b0f50e75938df7f053c0498fdc0` |
+| `services/api/tests/test_model_evaluation_cardiac.py` | `6ba27142296226c46ec947b7fe5e2a47168faac3baed130da00c364cc85d4ea8` |
+| `services/api/tests/test_operator_governance.py` | `4d512a3ad9f7c65b69ee09d94fb471799d1aff63a5bc4c34140526dcac280ae7` |
+| `tools/model_evaluation.py` | `80488d36507c7adb49bbf02448eec9f8ab173008f53e82f59c2d5d782194396c` |
+| `services/api/otgd/operator_governance.py` | `1e16fc9b3679b1d6abd4cc6bdad1a53d18e8e02c4b759e2c3a950b04286ce971` |
+| `deploy/provenance.py` | `81d44c50e87a7fafc200012618920eb607a8bff0d9303a3193b7829a39f87d76` |
+| `infra/test/test_provenance.py` | `996ead63b1f3ae3999aa31d81e3de893bbc50b62bfaac6e2a69f88a968d5f6a1` |
+| `infra/test/test_serverless_workflow.py` | `cdc99650c1e8a6313045b75465b54f8f2fa2c84ec853a7458cd79f699c3d4ff2` |
+| `infra/test/test_fargate_continuation_workflow.py` | `9611209bd9a30e8cae7f58a8e781d6b14ebb3a8100746b1acb6fe5c3bf242fd8` |
+| `apps/mobile/tests/acquisition.test.ts` | `797e9858167b9b80bff401e0b66c3fda1f9ae56c8f007fbe5b10c4aeb0b159be` |
+| `apps/mobile/src/ui/manage.tsx` | `df28e91c2335b54179bed5f1ad3e606a240f19d471fc735234a577e3a448ce7c` |
+| `apps/mobile/src/ui/checks.tsx` | `aa00421169fedb903393a7b778d2cd47281bf007d6ef24b2794e92fbbbc20b95` |
+| `apps/mobile/e2e/components.spec.ts` | `725effb97f2e9195340fd6370b8491065eabdf849ce5c5680974c39cc2125c53` |
+| `apps/mobile/e2e/raw-recordings.spec.ts` | `2ada98a52caf63a835d979adc71bef5542795c5edbd72fc859cdb7975cbfd3b7` |
+| `apps/mobile/e2e/authenticated-live.spec.ts` | `da57b32b6663828f90c0264b3d0b39c41c854048c99aafdc64e642936b095835` |
+| `apps/mobile/playwright.live.config.ts` | `c4952d51029987bddd14983e73c3fe27ca76581dc33c9aab05f09fa009a1605f` |
+| `infra/local/worker_interrupt_probe.py` | `17f19c89fb376416aec5379cf7181822082171863e5f202cba7b90cd972d98cc` |
+| `infra/test/test_worker_interrupt_probe.py` | `9498d5bd7939252f80d1c72edc44df49d6b9a74dddd67285f7da1960b1f828a2` |
+| `infra/local/browser_fixture.py` | `01e70e58cec7913d7bf3b442e39158b80514c7c645cad8095f06e3b528695da7` |
+| `infra/test/test_browser_fixture.py` | `7ace68aeddce4166e447474b40945196fa0afae0eaa3c98f59ceaef6bce619c1` |
+| `.github/workflows/deploy-serverless.yml` | `3f9ead2335a61833294520a12bdea378720cdd6946867e580fd15c05db658e3f` |
+| `.github/workflows/deploy-fargate.yml` | `19a92c6831fd7a9f50fb8093f28401670b3040ae377d6385afc0eefe6d609f0b` |
+| `scripts/ci_gate.py` | `c897f5b4bcf149a2aad78cf18aa996400451690554229e27b885665db4b5847d` |
+| `.github/workflows/platform.yml` | `c9aa4d52ef29aea2e82eed4255b9c912e5a4935b276738d26d32bbc0f682dfdc` |
+| `docs/CI_GATES.md` | `558d5db8e8e7d46e55c21da1c7dbb53b6cf5e715ea984876f0482dec4ebcff6e` |
+
+### Final execution handoff and remaining software gaps
+
+1. Every builder releases owned paths and reports; PM reconciles shared ci_gate/platform/docs wiring and all assertions. V-SW-001/002 have exact source assertions;003/004 source reviewed with author/browser execution pending;005/006 WIP probe/live coverage and gate integration;007 actual native/current remote prerequisites;008 full-case runtime binding still open. Do not collapse new test names into complete782-case coverage.
+2. Freeze committed implementation/tests/contracts/workflows/specs and Factory documents before combined source fingerprint. Preserve ignored raw logs/JUnit/coverage/JSON during execution and write dossier results afterward. Ensure playwright-live-report/test-results-live and all generated build/report paths are ignored; currently an untracked live HTML output exists and could invalidate the fingerprint. Do not delete evidence to hide changes.
+3. PM supplies preserved canonical image/runtime identity (disclosed reconstruction), separate disposable PG and exact scoped probe DB/queues/buckets/journal, ordinary web export and actual origins/issuer browser callbacks. Verifier performs no setup/resource mutation without handoff. Probe uses real production120s timing; 7 recovery cases+2 real-expiry stale cases+DLQ redrive may exceed old25min workflow timeout; final integration must retain a realistic bounded timeout without shortened constants.
+4. Run the exact current gates locally and matching CI, including new mandatory live-browser/actual-process probe wiring, both coverage inventories>80%, actual required14 jobs and current native/firmware/hosted-native checks. Record all failures/skips as failure; a focused185/43/232 result cannot replace canonical unit/infra/live/native/performance acceptance. No docs/source edits during combined runner.
+5. Current remote Task7 evidence pending: historical baseline38347011315 is not this candidate and normalized PR wrapper does not establish trusted-main admission. Obtain exact revision/latest attempt/full14 job inventory, logs/artifacts and trusted provenance. Android/iOS minimum/current simulator/emulator and physical-phone OS permission/storage/restart/accessibility/native lifecycle matrices remain explicit BLOCKED/NOT_RUN, even if builds/goldens pass.
+6. Physical/scientific approvals, actual instrument and ECG safety-state observer, sensor/timing/optical/assay qualification, genuine study/model authority, cloud/store publication remain separate unchanged prerequisites. Six independent per-spec reviews and fresh approver follow the same frozen candidate; no author self-signoff.

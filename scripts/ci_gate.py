@@ -1,5 +1,6 @@
 """Canonical application merge checks. Mandatory skipped/xfail tests fail closed."""
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -7,6 +8,7 @@ import subprocess
 import sys
 import unittest
 import xml.etree.ElementTree as ET
+from uuid import uuid4
 
 ROOT=Path(__file__).resolve().parents[1]
 REPORTS=ROOT/'reports'
@@ -86,6 +88,65 @@ def browser_gate(name):
         require_junit(preview)
 
 
+
+def worker_source_manifest():
+    # Match the actual probe's executed Python/contract inventory, without
+    # importing its database or cloud dependencies into the host gate.
+    files=[ROOT/'infra/local/worker_interrupt_probe.py',ROOT/'infra/local/worker_interrupt_gate.py']
+    files.extend((ROOT/'services/api/otgd').rglob('*.py'))
+    files.extend((ROOT/'contracts').rglob('*.json'))
+    return {str(path.relative_to(ROOT)):hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted(set(files)) if path.is_file()}
+
+
+def require_worker_report(path):
+    try:
+        value=json.loads(Path(path).read_text())
+    except (OSError,ValueError):
+        raise RuntimeError('Missing or invalid current worker interruption report') from None
+    current=worker_source_manifest()
+    if (not isinstance(value,dict) or value.get('status')!='passed' or value.get('fictional') is not True
+        or not current or value.get('source_manifest_before')!=current
+        or value.get('source_manifest_after')!=current):
+        raise RuntimeError('Worker interruption matrix must pass on the current Python/contract sources')
+
+
+def maintenance_probe_command(script,*args,mounts=()):
+    return ('docker','compose','--project-name','otgd-local','--env-file','infra/local/.env',
+            '-f','infra/local/compose.yml','run','--rm','--no-deps',
+            '-v',str(ROOT/'infra/local')+':/app/infra/local:ro',
+            '-v',str(ROOT/'services/api/otgd')+':/app/services/api/otgd:ro',
+            *[part for mount in mounts for part in ('-v',mount)],
+            'migrate','uv','run','--no-sync','python','/app/infra/local/'+script,*args)
+
+
+def worker_interruption_gate():
+    report=REPORTS/('worker-interrupt-'+uuid4().hex+'.json')
+    if report.exists() or report.is_symlink():
+        raise RuntimeError('Worker evidence path already exists; preserve it and stop')
+    call(*maintenance_probe_command('worker_interrupt_gate.py',
+         '--confirm-fictional-workspace','--project-name','otgd-local',
+         '--output','/app/reports/'+report.name,
+         mounts=(str(REPORTS)+':/app/reports:rw',)),local_compose=True)
+    require_worker_report(report)
+
+
+def live_browser_gate():
+    # Keep the same private ledger on retries; only the report is fresh.
+    manifest=Path(os.environ.get('OTGD_BROWSER_FIXTURE','/tmp/otgd-browser-fixture.json')).absolute()
+    call(sys.executable,'infra/local/browser_fixture.py','--confirm-fictional-workspace',
+         '--manifest',str(manifest))
+    call(*maintenance_probe_command('browser_fixture.py','--confirm-fictional-workspace',
+         '--manifest','/tmp/otgd-browser-fixture.json','--provision-governed',
+         mounts=(str(manifest)+':/tmp/otgd-browser-fixture.json:rw',)),local_compose=True)
+    report=REPORTS/'authenticated-live.xml';report.unlink(missing_ok=True)
+    call('npm','run','export:web',cwd=ROOT/'apps/mobile',env={'CI':'1'})
+    call('npm','run','test:e2e','--','--config=playwright.live.config.ts','--reporter=line,junit',
+         cwd=ROOT/'apps/mobile',env={'CI':'1','OTGD_BROWSER_FIXTURE':str(manifest),
+         'PLAYWRIGHT_JUNIT_OUTPUT_FILE':str(report)})
+    require_junit(report)
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('gate',choices=['unit-coverage','atdd','components','live-dependencies','docker-health','localstack-api','performance','verify-junit','infra-unit']);parser.add_argument('paths',nargs='*');args=parser.parse_args();REPORTS.mkdir(exist_ok=True)
     if args.gate=='unit-coverage':
@@ -108,6 +169,8 @@ def main():
         call(sys.executable,'scripts/local-platform.py','check-app','--confirm-fictional-workspace',local_compose=True)
         call('docker','compose','--project-name','otgd-local','--env-file','infra/local/.env','-f','infra/local/compose.yml','run','--rm','--no-deps','api','uv','run','--no-sync','python','/app/infra/local/raw_version_probe.py',local_compose=True)
         call('docker','compose','--project-name','otgd-local','--env-file','infra/local/.env','-f','infra/local/compose.yml','run','--rm','--no-deps','migrate','uv','run','--no-sync','python','/app/infra/local/participant_probe.py','--confirm-fictional-workspace',local_compose=True)
+        worker_interruption_gate()
+        live_browser_gate()
     elif args.gate=='performance':
         report=REPORTS/'performance.json';report.unlink(missing_ok=True)
         result=subprocess.run(['docker','compose','--project-name','otgd-local','--env-file','infra/local/.env','-f','infra/local/compose.yml','run','--rm','--no-deps','api','uv','run','--no-sync','python','/app/infra/local/performance.py'],cwd=ROOT,env=child_environment(local_compose=True),text=True,stdout=subprocess.PIPE,check=True)

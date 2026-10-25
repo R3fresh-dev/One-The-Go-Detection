@@ -124,10 +124,14 @@ def cleanup():
 @app.middleware("http")
 async def boundaries(request, call_next):
     response = await call_next(request)
+    # Chromium applies form-action to redirects too. Permit only the browser
+    # origins already registered for OAuth; exact callbacks remain checked by
+    # authorize/choose and the POST still requires this issuer's Origin.
+    form_targets = " ".join(["'self'", *web_origins(s)])
     response.headers.update(
         {
             "Cache-Control": "no-store",
-            "Content-Security-Policy": "default-src 'none'; form-action 'self'; frame-ancestors 'none'",
+            "Content-Security-Policy": f"default-src 'none'; form-action {form_targets}; frame-ancestors 'none'",
             "X-Content-Type-Options": "nosniff",
         }
     )

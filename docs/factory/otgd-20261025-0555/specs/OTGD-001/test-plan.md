@@ -1,9 +1,9 @@
 # OTGD-001: verification plan
 
-Canonical: `specs/FULL_SPECIFICATION.md`; SHA-256 `f8c4cd46f9b3e2e7fb24b5940f3a876d2f0e16d94aa29d1bedec21e1516def7a`.
+Canonical: `specs/FULL_SPECIFICATION.md`; SHA-256 `c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7`.
 Planning snapshot HEAD: `33901a1ff785cd28e351d935be510d184fb7f8e2`; approved implementation baseline: `0844868aa543af4ab75ac5065ad48cf807b86bb3`. This is a mutable audit snapshot, not a frozen execution candidate.
 
-Owner: `/root/verification`, verification specialist; OpenAI `gpt-6.1-sol/high` requested explicitly in PM dispatch; effective model identifier is not independently exposed inside this worker. Decisions: D-001 v1, D-002 v1, D-003 v1, D-004 v1 acknowledged through native messaging. See `../../decisions.md`, `../../impact-register.md` and `../../reports/verification-plan.md`.
+Owner: `/root/verification`, verification specialist; OpenAI `gpt-6.1-sol/high` requested explicitly in PM dispatch; effective model identifier is not independently exposed inside this worker. Decisions: D-001–005 v1 and D-006 v3 acknowledged through native messaging; D-006 v1/v2 retained as superseded method history. See `../../decisions.md`, `../../impact-register.md` and `../../reports/verification-plan.md`.
 
 Stage: PLANNED / NOT_RUN. Test-source symbols below are related existing checks, not a claim that every assertion is adequate or has passed. Static indexing does not establish runtime coverage. Every stated canonical scenario must execute and meet its full THEN conditions; use the source reference for complete GIVEN/WHEN context. Missing exact-case coverage remains a software verification gap until a meaningful assertion is inspected/added and executed. No historical test/CI result is adopted.
 
@@ -16,7 +16,7 @@ Acceptance: no failure/error/skip/xfail/zero-case report; Python and TypeScript 
 These SHA-256 bindings identify inspected source at planning time. Any edit requires remapping and a fresh execution binding.
 
 - `apps/mobile/e2e/mobile.spec.ts` — `b98ad26a21ad603dea26e39747ff25cb8cf7456bb586a0741bd32321cf29d24b`
-- `apps/mobile/e2e/raw-recordings.spec.ts` — `0d2a3a316e8c1b4eadadaef61e57dde071bf7a94b7a6bad8820d1e54619383af`
+- `apps/mobile/e2e/raw-recordings.spec.ts` — `2ada98a52caf63a835d979adc71bef5542795c5edbd72fc859cdb7975cbfd3b7`
 - `apps/mobile/modules/eye-capture/android/src/test/java/expo/modules/otgdeye/EyeCoreTest.kt` — `8699039fb6bd8673ba07cd7ea601c219b296ca4bf44573caab299aab3b4042c6`
 - `apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift` — `5efcf344d7a09069f312fa3e89b08cfca833293b955fb781a31b947813b38bac`
 - `apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/NativeEventSerializationTest.kt` — `55e01ae96993ce1b3071f9a8a202c4247a87b444dadaa718b783c189362e726e`
@@ -25,7 +25,7 @@ These SHA-256 bindings identify inspected source at planning time. Any edit requ
 - `apps/mobile/src/device/tests/physical.test.ts` — `23d4938d5015dc6cca7f978a44c3d823f0e9aef3f52631a87898ae5d28c82d9d`
 - `apps/mobile/src/device/tests/protocol.test.ts` — `4a919e3666e80fe6917744170312b773c88deda8f2f08d63a35d16218e5d382c`
 - `apps/mobile/src/device/tests/signal.test.ts` — `6081eb0c7c2681f0520d69962d494c2dd14bfc60cd51bceed79209c9e862fba5`
-- `apps/mobile/tests/acquisition.test.ts` — `5a87445ae4174cdf15eccd8ec0b6b67105fea10d338aec183d1362ae6f8bfb9b`
+- `apps/mobile/tests/acquisition.test.ts` — `797e9858167b9b80bff401e0b66c3fda1f9ae56c8f007fbe5b10c4aeb0b159be`
 - `apps/mobile/tests/controller.test.ts` — `e354d822120520b2336bacd98cac30b34de7921862cd4562342706358d9efa92`
 - `apps/mobile/tests/device-presentation.test.ts` — `11e79b59ead32c0a6bc4fa818784bc00347f337cfb5dff71d13534673064600a`
 - `apps/mobile/tests/domain.test.ts` — `e71b15500f0d22ff8859b950cdda014ba20ed2a5b7f836c4b880b96abb87ed1d`
@@ -48,7 +48,7 @@ These SHA-256 bindings identify inspected source at planning time. Any edit requ
 - `infra/test/test_ci_gates.py` — `82805a98da905f9704f2016c67c726ad10c679f55f548179ed8981cf177f7904`
 - `infra/test/test_document_links.py` — `6dd675024788db2819ce01a80f138a3efd5aae849430587933d80624538e4635`
 - `infra/test/test_maintenance.py` — `f7222dcd026bcbe70c73279fbb8c75a65bef166e311e93e0729f3d3570b356bf`
-- `infra/test/test_provenance.py` — `f4b05e5dc8f58d775cb7055632351b4bfdb819c9cefd74dfe48dd8bb86bff420`
+- `infra/test/test_provenance.py` — `996ead63b1f3ae3999aa31d81e3de893bbc50b62bfaac6e2a69f88a968d5f6a1`
 - `infra/test/test_recovery.py` — `598881481a5ab8561446d64b3d949c8f883f52ee4d1d9cc3120a909a383c737c`
 - `infra/test/test_regional_budget.py` — `99b8e2f2582f874d9ca2fddc92a44e69c3b0b287c6122629152ddd5a25084df7`
 - `infra/test/test_release.py` — `3013213897c8f1721e0f28a2c4610f18b48cb46ed6a5f5900ebb4495f3e3f9d5`
@@ -62,10 +62,10 @@ These SHA-256 bindings identify inspected source at planning time. Any edit requ
 - `services/api/tests/test_lab_handoff.py` — `3396acf6ae29a8d994bc37f937417b446acb1c40499b6c6a6ce81fff7e0cbeb0`
 - `services/api/tests/test_model_admission.py` — `af9e33ad937fcbe0554136ee5340806a8054fc9a80340d15484dc9480d7bd867`
 - `services/api/tests/test_model_engine.py` — `1bf4b788a6089c054bdc6a192b9c0fca8475363dd738b2ca5a69a106535a17ce`
-- `services/api/tests/test_model_evaluation.py` — `753cb94b151befc5742260804631c5e7517813c332d9c435564b25e1537a3aa7`
-- `services/api/tests/test_model_evaluation_cardiac.py` — `23efe98238052ce2b19fbbc6aa50647a384196023d912c0f05fb436b491eca65`
+- `services/api/tests/test_model_evaluation.py` — `60013323430a0979caeffcef4b2983566a028b0f50e75938df7f053c0498fdc0`
+- `services/api/tests/test_model_evaluation_cardiac.py` — `6ba27142296226c46ec947b7fe5e2a47168faac3baed130da00c364cc85d4ea8`
 - `services/api/tests/test_model_optical_authority.py` — `597f44b706a05d5d730b7b4bd28f44e9cbe9d8d02c61cce256dd3eddf5c0150b`
-- `services/api/tests/test_operator_governance.py` — `54e64aca9b9379504922ef67bca4df1f45c518d42746530fec18b97aa58466bf`
+- `services/api/tests/test_operator_governance.py` — `4d512a3ad9f7c65b69ee09d94fb471799d1aff63a5bc4c34140526dcac280ae7`
 - `services/api/tests/test_participant_acquisition.py` — `a9113ffb30c7907e12aad494ddfdf7d83afc96ef5f3d8c0668768158c2948b57`
 - `services/api/tests/test_participant_postgres.py` — `ca85c9d47be13ef424a67378116482b36d8be72225c66619edac625d1b0159c0`
 - `services/api/tests/test_raw_capture.py` — `ebedc54a2c384fb5992fb61e1959b61d767ad41afbacd8ecf7aec6729710905e`
@@ -301,7 +301,7 @@ Prerequisites and limits: NOT_RUN software acceptance on final frozen source; ac
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-ANA-010-01 | Owner acceptance evidence — An independent reviewer reconstructs a selected reported measurement. | `apps/mobile/tests/participant-acquisition.test.ts:257` — document digest, selected method, exact UUID/calendar and electrical setup boundaries are enforced<br>`apps/mobile/e2e/raw-recordings.spec.ts:480` — laboratory method review pins the actual selected method without BLE and resets acknowledgement on document replacement | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-ANA-010-01 | Owner acceptance evidence — An independent reviewer reconstructs a selected reported measurement. | `apps/mobile/tests/participant-acquisition.test.ts:257` — document digest, selected method, exact UUID/calendar and electrical setup boundaries are enforced<br>`apps/mobile/e2e/raw-recordings.spec.ts:913` — laboratory method review pins the actual selected method without BLE and resets acknowledgement on document replacement | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### ANA-011 — Failed adequacy, contamination, overflow, expired supplies, and out-of-range results MUST have distinct recorded reasons.
 
@@ -503,7 +503,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-MOD-003-01 | Owner acceptance evidence — Adversarial synthetic records produce the specified validity behavior. | `services/api/tests/test_model_engine.py:410` — test_feature_missingness_and_temporal_baseline_gates<br>`services/api/tests/test_model_evaluation.py:179` — test_same_check_observations_and_later_assay_delivery_preserve_original_target | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-MOD-003-01 | Owner acceptance evidence — Adversarial synthetic records produce the specified validity behavior. | `services/api/tests/test_model_engine.py:410` — test_feature_missingness_and_temporal_baseline_gates<br>`services/api/tests/test_model_evaluation.py:312` — test_same_check_observations_and_later_assay_delivery_preserve_original_target | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### MOD-004 — Training and results MUST be pinned to acquisition, assay, task, feature, and model versions.
 
@@ -523,7 +523,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-MOD-005-01 | Owner acceptance evidence — Split audit and leakage review pass before locked evaluation. | `services/api/tests/test_model_engine.py:437` — test_training_evaluation_policy_and_result_proof_are_bound<br>`services/api/tests/test_model_evaluation_cardiac.py:206` — test_held_out_hr_values_and_outcomes_cannot_affect_training | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-MOD-005-01 | Owner acceptance evidence — Split audit and leakage review pass before locked evaluation. | `services/api/tests/test_model_engine.py:437` — test_training_evaluation_policy_and_result_proof_are_bound<br>`services/api/tests/test_model_evaluation_cardiac.py:214` — test_held_out_hr_values_and_outcomes_cannot_affect_training | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### MOD-006 — Features MUST use only information available at the check; future measurements and independent outcome assessments MUST NOT enter predictors.
 
@@ -573,7 +573,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-MOD-010-01 | Owner acceptance evidence — Every gate has both passing and rejecting integration evidence. | `services/api/tests/test_model_engine.py:364` — test_every_acquisition_gate_has_rejection<br>`services/api/tests/test_model_evaluation.py:221` — test_later_validation_without_prior_held_out_session_and_single_class_cohort_fail | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-MOD-010-01 | Owner acceptance evidence — Every gate has both passing and rejecting integration evidence. | `services/api/tests/test_model_engine.py:364` — test_every_acquisition_gate_has_rejection<br>`services/api/tests/test_model_evaluation.py:354` — test_later_validation_without_prior_held_out_session_and_single_class_cohort_fail | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### MOD-011 — Missing channels MAY use a separately qualified model variant; automatic reuse of an incompatible full-channel model is prohibited.
 
@@ -683,7 +683,7 @@ Prerequisites and limits: NOT_RUN software acceptance on final frozen source; ac
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-SEC-001-01 | Owner acceptance evidence — Pre-commit/release review and secret/data scan of the staged changes. | `apps/mobile/e2e/raw-recordings.spec.ts:86` — eye and ECG descriptions follow the approved observation and actual provenance without claiming measured light onset<br>`services/api/tests/test_raw_export.py:205` — test_distinct_submit_review_release_required | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-SEC-001-01 | Owner acceptance evidence — Pre-commit/release review and secret/data scan of the staged changes. | `apps/mobile/e2e/raw-recordings.spec.ts:519` — eye and ECG descriptions follow the approved observation and actual provenance without claiming measured light onset<br>`services/api/tests/test_raw_export.py:205` — test_distinct_submit_review_release_required | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### SEC-002 — Research identifiers MUST be separated from direct identity; access MUST follow least privilege and a defined role matrix.
 
@@ -693,7 +693,7 @@ Prerequisites and limits: NOT_RUN software acceptance on final frozen source; ac
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-SEC-002-01 | Owner acceptance evidence — Unauthorized-role tests and identity-mapping review pass. | `apps/mobile/e2e/raw-recordings.spec.ts:820` — actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-SEC-002-01 | Owner acceptance evidence — Unauthorized-role tests and identity-mapping review pass. | `apps/mobile/e2e/raw-recordings.spec.ts:1253` — actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### SEC-003 — Upload of participant data MUST be explicit and protocol-authorized; basic local operation MUST NOT imply research enrollment.
 
@@ -703,7 +703,7 @@ Prerequisites and limits: NOT_RUN software acceptance on final frozen source; ac
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-SEC-003-01 | Owner acceptance evidence — Consent/authorization and upload traces demonstrate the boundary. | `apps/mobile/e2e/raw-recordings.spec.ts:899` — raw upload selection is explicit per file and local-only, expired or revoked recordings cannot join a check upload<br>`apps/mobile/tests/raw-export.test.ts:148` — server boundary terms remain bounded and optional sources cannot inherit recording consent or broaden selection | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-SEC-003-01 | Owner acceptance evidence — Consent/authorization and upload traces demonstrate the boundary. | `apps/mobile/e2e/raw-recordings.spec.ts:1332` — raw upload selection is explicit per file and local-only, expired or revoked recordings cannot join a check upload<br>`apps/mobile/tests/raw-export.test.ts:148` — server boundary terms remain bounded and optional sources cannot inherit recording consent or broaden selection | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### SEC-004 — Protected transport and storage MUST use approved encryption and secret management; secrets MUST NOT be embedded in app or firmware source.
 
@@ -713,7 +713,7 @@ Prerequisites and limits: NOT_RUN software acceptance on final frozen source; ac
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-SEC-004-01 | Owner acceptance evidence — Deployment configuration and access review satisfy G-12. | `apps/mobile/e2e/raw-recordings.spec.ts:820` — actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner<br>`services/api/tests/test_security.py:92` — test_binding_challenge_is_single_use_and_owner_scoped | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-SEC-004-01 | Owner acceptance evidence — Deployment configuration and access review satisfy G-12. | `apps/mobile/e2e/raw-recordings.spec.ts:1253` — actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner<br>`services/api/tests/test_security.py:92` — test_binding_challenge_is_single_use_and_owner_scoped | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### SEC-005 — Raw optical/cardiac retention MUST be justified, minimized, access-controlled, and bound to a defined retention/deletion policy.
 
@@ -733,7 +733,7 @@ Prerequisites and limits: NOT_RUN software acceptance on final frozen source; ac
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-SEC-006-01 | Owner acceptance evidence — Representative failure logs pass content review. | `apps/mobile/e2e/raw-recordings.spec.ts:820` — actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner<br>`apps/mobile/tests/raw-recordings.test.ts:37` — raw policy or notice substitution, wrong owner, unknown data and inconsistent immutable receipt fail closed | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-SEC-006-01 | Owner acceptance evidence — Representative failure logs pass content review. | `apps/mobile/e2e/raw-recordings.spec.ts:1253` — actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner<br>`apps/mobile/tests/raw-recordings.test.ts:37` — raw policy or notice substitution, wrong owner, unknown data and inconsistent immutable receipt fail closed | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### SEC-007 — Security incidents, lost devices, withdrawal, and data correction MUST have defined operational procedures before participant use.
 
@@ -845,7 +845,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-VAL-004-01 | Owner acceptance evidence — Prespecified strata and exclusions appear in the final report. | `services/api/tests/test_model_evaluation.py:281` — test_subgroups_reconcile_all_rows_and_predictive_values_are_prevalence_qualified | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-VAL-004-01 | Owner acceptance evidence — Prespecified strata and exclusions appear in the final report. | `services/api/tests/test_model_evaluation.py:414` — test_subgroups_reconcile_all_rows_and_predictive_values_are_prevalence_qualified | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### VAL-005 — Reports MUST include sensitivity/specificity when an accepted reference standard supports them, otherwise positive/negative percent agreement; include calibration, uncertainty intervals, appropriately qualified prevalence-dependent predictive values, and inconclusive/invalid rates.
 
@@ -855,7 +855,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-VAL-005-01 | Owner acceptance evidence — Independent report reconciles every enrolled check with its disposition. | `services/api/tests/test_model_evaluation.py:281` — test_subgroups_reconcile_all_rows_and_predictive_values_are_prevalence_qualified<br>`services/api/tests/test_operator_governance.py:653` — test_actual_postgresql_retirement_waits_for_current_reference_acceptance_transaction | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-VAL-005-01 | Owner acceptance evidence — Independent report reconciles every enrolled check with its disposition. | `services/api/tests/test_model_evaluation.py:414` — test_subgroups_reconcile_all_rows_and_predictive_values_are_prevalence_qualified<br>`services/api/tests/test_operator_governance.py:798` — test_actual_postgresql_retirement_waits_for_current_reference_acceptance_transaction | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### VAL-006 — Confirmatory validation MUST use a locked pipeline and independent prospective or external evaluation appropriate to the claim.
 
@@ -875,7 +875,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-VAL-007-01 | Owner acceptance evidence — Temporal audit and study report demonstrate the consumer information boundary. | `services/api/tests/test_model_evaluation.py:198` — test_report_cannot_rebind_tampered_training_plans_or_temporal_order<br>`services/api/tests/test_operator_governance.py:215` — test_real_session_start_requires_current_approved_study_and_exact_protocol | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-VAL-007-01 | Owner acceptance evidence — Temporal audit and study report demonstrate the consumer information boundary. | `services/api/tests/test_model_evaluation.py:331` — test_report_cannot_rebind_tampered_training_plans_or_temporal_order<br>`services/api/tests/test_operator_governance.py:360` — test_real_session_start_requires_current_approved_study_and_exact_protocol | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### VAL-008 — The intended use and applicable device, laboratory, privacy, and study requirements MUST be determined by the responsible experts before release.
 
@@ -967,7 +967,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-002-01 | PRD acceptance review — \| PRD-002 \| The check MUST also support guided pupil capture and resting heart-rate capture; ECG MUST remain an exploratory input until its incremental value and hardware approach are justified. \| | `services/api/tests/test_cardiac_interval_governance.py:145` — test_required_channel_scope_is_heart_rate_only<br>`apps/mobile/e2e/raw-recordings.spec.ts:820` — actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-002-01 | PRD acceptance review — \| PRD-002 \| The check MUST also support guided pupil capture and resting heart-rate capture; ECG MUST remain an exploratory input until its incremental value and hardware approach are justified. \| | `services/api/tests/test_cardiac_interval_governance.py:145` — test_required_channel_scope_is_heart_rate_only<br>`apps/mobile/e2e/raw-recordings.spec.ts:1253` — actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-003 — P0 and P1 MUST produce measurement-only outputs, never an intoxication probability.
 
@@ -987,7 +987,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-004-01 | PRD acceptance review — \| PRD-004 \| A P2 probability MUST require an authorized research session, an `active_research` model, a compatible feature contract, and all model-required valid channels. \| | `apps/mobile/e2e/raw-recordings.spec.ts:967` — actual service component labels conditional approved channels and model support, while the fictional build refuses both<br>`services/api/tests/test_cardiac_authority.py:277` — test_actual_artifact_not_just_required_channels_is_hr_only | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-004-01 | PRD acceptance review — \| PRD-004 \| A P2 probability MUST require an authorized research session, an `active_research` model, a compatible feature contract, and all model-required valid channels. \| | `apps/mobile/e2e/raw-recordings.spec.ts:1400` — actual service component labels conditional approved channels and model support, while the fictional build refuses both<br>`services/api/tests/test_cardiac_authority.py:277` — test_actual_artifact_not_just_required_channels_is_hr_only | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-005 — The future impairment endpoint, intended population, operating threshold, and acceptable error rates MUST be selected before confirmatory evaluation.
 
@@ -997,7 +997,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-005-01 | PRD acceptance review — \| PRD-005 \| The future impairment endpoint, intended population, operating threshold, and acceptable error rates MUST be selected before confirmatory evaluation. \| | `apps/mobile/tests/profile-form.test.ts:117` — known last-use rejects impossible calendar dates and future times with a field error<br>`apps/mobile/e2e/raw-recordings.spec.ts:480` — laboratory method review pins the actual selected method without BLE and resets acknowledgement on document replacement | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-005-01 | PRD acceptance review — \| PRD-005 \| The future impairment endpoint, intended population, operating threshold, and acceptable error rates MUST be selected before confirmatory evaluation. \| | `apps/mobile/tests/profile-form.test.ts:117` — known last-use rejects impossible calendar dates and future times with a field error<br>`apps/mobile/e2e/raw-recordings.spec.ts:913` — laboratory method review pins the actual selected method without BLE and resets acknowledgement on document replacement | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-006 — A model result MUST NOT be presented as proof of cannabis causation, a legal determination, or clearance to drive.
 
@@ -1047,7 +1047,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-010-01 | PRD acceptance review — \| PRD-010 \| Quantitative saliva interface \| P1 MUST establish reliable specimen handling and a reference-laboratory comparison before any portable concentration claim. \| | `apps/mobile/e2e/raw-recordings.spec.ts:532` — specimen form records actual quantities, explicit unknowns and handling while offering no participant concentration entry<br>`apps/mobile/tests/acquisition.test.ts:870` — reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-010-01 | PRD acceptance review — \| PRD-010 \| Quantitative saliva interface \| P1 MUST establish reliable specimen handling and a reference-laboratory comparison before any portable concentration claim. \| | `apps/mobile/e2e/raw-recordings.spec.ts:965` — specimen form records actual quantities, explicit unknowns and handling while offering no participant concentration entry<br>`apps/mobile/tests/acquisition.test.ts:870` — reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-011 — Parent THC channel
 
@@ -1057,7 +1057,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-011-01 | PRD acceptance review — \| PRD-011 \| Parent THC channel \| P1 MUST evaluate delta-9 THC first. Selection of additional channels requires analytical feasibility and added-value evidence. \| | `apps/mobile/e2e/raw-recordings.spec.ts:671` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice<br>`services/api/tests/test_lab_handoff.py:304` — test_import_rejects_forged_or_incompatible_analytical_evidence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-011-01 | PRD acceptance review — \| PRD-011 \| Parent THC channel \| P1 MUST evaluate delta-9 THC first. Selection of additional channels requires analytical feasibility and added-value evidence. \| | `apps/mobile/e2e/raw-recordings.spec.ts:1104` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice<br>`services/api/tests/test_lab_handoff.py:304` — test_import_rejects_forged_or_incompatible_analytical_evidence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-012 — Additional saliva metabolites
 
@@ -1089,7 +1089,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-014-01 | PRD acceptance review — \| PRD-014 \| Dynamic pupil measurements \| P1/P2 MUST establish acquisition quality, valid units, optical controls, and repeatability before features enter a model. \| | `apps/mobile/tests/cardiac-selection.test.ts:97` — interrupted ECG alternative preserves valid PPG and does not copy its physiological features<br>`services/api/tests/test_operator_governance.py:294` — test_optical_evidence_cannot_relabel_a_different_authorized_attempt_or_acquisition_clock | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-014-01 | PRD acceptance review — \| PRD-014 \| Dynamic pupil measurements \| P1/P2 MUST establish acquisition quality, valid units, optical controls, and repeatability before features enter a model. \| | `apps/mobile/tests/cardiac-selection.test.ts:97` — interrupted ECG alternative preserves valid PPG and does not copy its physiological features<br>`services/api/tests/test_operator_governance.py:439` — test_optical_evidence_cannot_relabel_a_different_authorized_attempt_or_acquisition_clock | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-015 — Heart rate and exploratory ECG
 
@@ -1099,7 +1099,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-015-01 | PRD acceptance review — \| PRD-015 \| Heart rate and exploratory ECG \| Cardiac capture MUST preserve signal quality and context; an ECG-only benefit MUST be measured by ablation. \| | `services/api/tests/test_cardiac_interval_governance.py:145` — test_required_channel_scope_is_heart_rate_only<br>`apps/mobile/e2e/raw-recordings.spec.ts:86` — eye and ECG descriptions follow the approved observation and actual provenance without claiming measured light onset | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-015-01 | PRD acceptance review — \| PRD-015 \| Heart rate and exploratory ECG \| Cardiac capture MUST preserve signal quality and context; an ECG-only benefit MUST be measured by ablation. \| | `services/api/tests/test_cardiac_interval_governance.py:145` — test_required_channel_scope_is_heart_rate_only<br>`apps/mobile/e2e/raw-recordings.spec.ts:519` — eye and ECG descriptions follow the approved observation and actual provenance without claiming measured light onset | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-016 — Profile and use history
 
@@ -1119,7 +1119,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-017-01 | PRD acceptance review — \| PRD-017 \| Separate alcohol channel \| The design SHOULD reserve integration capability; alcohol performance claims require a calibrated breath system and dedicated validation. \| | `apps/mobile/tests/export-projection.test.ts:29` — every retained simulated sample, eye, PPG and separate alcohol projection satisfies its exact typed evidence<br>`apps/mobile/e2e/raw-recordings.spec.ts:671` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-017-01 | PRD acceptance review — \| PRD-017 \| Separate alcohol channel \| The design SHOULD reserve integration capability; alcohol performance claims require a calibrated breath system and dedicated validation. \| | `apps/mobile/tests/export-projection.test.ts:29` — every retained simulated sample, eye, PPG and separate alcohol projection satisfies its exact typed evidence<br>`apps/mobile/e2e/raw-recordings.spec.ts:1104` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-018 — Versioned research dataset
 
@@ -1129,7 +1129,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-018-01 | PRD acceptance review — \| PRD-018 \| Versioned research dataset \| P2 MUST support reconstruction of the exact specimen, task, device, calibration, feature, and model versions. \| | `apps/mobile/e2e/raw-recordings.spec.ts:967` — actual service component labels conditional approved channels and model support, while the fictional build refuses both<br>`apps/mobile/tests/service-boundary.test.ts:70` — research result format advertisement supports only the versioned reader and grants no inference authority | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-018-01 | PRD acceptance review — \| PRD-018 \| Versioned research dataset \| P2 MUST support reconstruction of the exact specimen, task, device, calibration, feature, and model versions. \| | `apps/mobile/e2e/raw-recordings.spec.ts:1400` — actual service component labels conditional approved channels and model support, while the fictional build refuses both<br>`apps/mobile/tests/service-boundary.test.ts:70` — research result format advertisement supports only the versioned reader and grants no inference authority | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-019 — Quality-aware research result
 
@@ -1159,7 +1159,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-029-01 | PRD acceptance review — \| PRD-029 \| A person can enter guest practice or authenticate, recover an interrupted sign-in, refresh safely and sign out with truthful remote-revocation status. Environment/account partitions and retained signed-out data stay isolated. \| SEC-002/004/007; AND-ONB-001–006; AND-AUTH-001–007; AND-ENV-001/002 \| | `apps/mobile/tests/controller.test.ts:353` — delayed history cannot enter another account or reopen a signed-out workspace<br>`services/api/tests/test_local_identity.py:207` — test_refresh_rotation_preserves_auth_time_and_family_and_revocation_blocks_new_tokens | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-029-01 | PRD acceptance review — \| PRD-029 \| A person can enter guest practice or authenticate, recover an interrupted sign-in, refresh safely and sign out with truthful remote-revocation status. Environment/account partitions and retained signed-out data stay isolated. \| SEC-002/004/007; AND-ONB-001–006; AND-AUTH-001–007; AND-ENV-001/002 \| | `apps/mobile/tests/controller.test.ts:353` — delayed history cannot enter another account or reopen a signed-out workspace<br>`services/api/tests/test_local_identity.py:250` — test_refresh_rotation_preserves_auth_time_and_family_and_revocation_blocks_new_tokens | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `002`, `004`, `006`, `007`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
 
@@ -1183,7 +1183,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-031-01 | PRD acceptance review — \| PRD-031 \| A check freezes its confirmed optional profile/context, one-sample/one-task information boundary, original target, all attempts and selected evidence. Interruptions and linked replacements preserve original records. \| ANA-001/012; APP-001–008; OPS-002–005; AND-PRO-001–007; AND-CHECK-001–008 \| | `apps/mobile/tests/controller.test.ts:7` — guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload<br>`services/api/tests/test_model_evaluation.py:179` — test_same_check_observations_and_later_assay_delivery_preserve_original_target | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-031-01 | PRD acceptance review — \| PRD-031 \| A check freezes its confirmed optional profile/context, one-sample/one-task information boundary, original target, all attempts and selected evidence. Interruptions and linked replacements preserve original records. \| ANA-001/012; APP-001–008; OPS-002–005; AND-PRO-001–007; AND-CHECK-001–008 \| | `apps/mobile/tests/controller.test.ts:7` — guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload<br>`services/api/tests/test_model_evaluation.py:312` — test_same_check_observations_and_later_assay_delivery_preserve_original_target | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `005`, `007`, `008`, `012`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
 
@@ -1231,7 +1231,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-035-01 | PRD acceptance review — \| PRD-035 \| Protected local save precedes a separate explicit account upload; restart, lost receipts, bounded retry and conflicts preserve ownership, original times and immutable evidence. Permission failures and retired generations cannot be repaired by automatic reupload. \| SEC-003/004; OPS-002–005; AND-SYNC-001–007; AND-CHECK-006; shared contracts §§2–5 \| | `apps/mobile/tests/controller.test.ts:7` — guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload<br>`apps/mobile/e2e/raw-recordings.spec.ts:899` — raw upload selection is explicit per file and local-only, expired or revoked recordings cannot join a check upload | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-035-01 | PRD acceptance review — \| PRD-035 \| Protected local save precedes a separate explicit account upload; restart, lost receipts, bounded retry and conflicts preserve ownership, original times and immutable evidence. Permission failures and retired generations cannot be repaired by automatic reupload. \| SEC-003/004; OPS-002–005; AND-SYNC-001–007; AND-CHECK-006; shared contracts §§2–5 \| | `apps/mobile/tests/controller.test.ts:7` — guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload<br>`apps/mobile/e2e/raw-recordings.spec.ts:1332` — raw upload selection is explicit per file and local-only, expired or revoked recordings cannot join a check upload | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `004`, `005`, `007`, `2`, `5`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
 
@@ -1255,7 +1255,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-037-01 | PRD acceptance review — \| PRD-037 \| Optional eye/ECG recording and upload default off, have distinct reviewed purposes, retain exact receipts and expire under original retention deadlines. Revocation stops capture before cleanup; pending quarantine/cleanup is visible. \| SEC-003–005; AND-RAW-001–007; AND-EYE-006/106; AND-ECG-007; raw-recording-retention contract \| | `apps/mobile/e2e/raw-recordings.spec.ts:671` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice<br>`apps/mobile/tests/raw-recordings.test.ts:77` — default off, local-only opt-in, upload dependency, policy expiry and pending stop fences remain distinct | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-037-01 | PRD acceptance review — \| PRD-037 \| Optional eye/ECG recording and upload default off, have distinct reviewed purposes, retain exact receipts and expire under original retention deadlines. Revocation stops capture before cleanup; pending quarantine/cleanup is visible. \| SEC-003–005; AND-RAW-001–007; AND-EYE-006/106; AND-ECG-007; raw-recording-retention contract \| | `apps/mobile/e2e/raw-recordings.spec.ts:1104` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice<br>`apps/mobile/tests/raw-recordings.test.ts:77` — default off, local-only opt-in, upload dependency, policy expiry and pending stop fences remain distinct | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `005`, `007`, `106`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
 
@@ -1267,7 +1267,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-038-01 | PRD acceptance review — \| PRD-038 \| The owner can create a bounded exact-scope structured export, optionally include separately authorized retained raw sources, verify and deliberately share it. Downloads require current authority; expiration, revocation and temporary-file cleanup remain explicit. \| SEC-002/005/007; AND-EXP-001–007; RAW-EXP-001–008; AND-RAW-008 \| | `apps/mobile/e2e/raw-recordings.spec.ts:864` — expired or unselected raw export sources remain unavailable while structured export stays separate<br>`apps/mobile/tests/raw-export.test.ts:65` — actual authenticated Python scope, completed job and worker ZIP verify exact independent raw authority and versioned binary sources | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-038-01 | PRD acceptance review — \| PRD-038 \| The owner can create a bounded exact-scope structured export, optionally include separately authorized retained raw sources, verify and deliberately share it. Downloads require current authority; expiration, revocation and temporary-file cleanup remain explicit. \| SEC-002/005/007; AND-EXP-001–007; RAW-EXP-001–008; AND-RAW-008 \| | `apps/mobile/e2e/raw-recordings.spec.ts:1297` — expired or unselected raw export sources remain unavailable while structured export stays separate<br>`apps/mobile/tests/raw-export.test.ts:65` — actual authenticated Python scope, completed job and worker ZIP verify exact independent raw authority and versioned binary sources | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `005`, `007`, `008`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
 
@@ -1303,7 +1303,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-041-01 | PRD acceptance review — \| PRD-041 \| Independently governed operator releases can admit the exact conditional research software, including only explicitly approved model variants and baseline scope. Measurement-only remains default; the restricted HR-only evaluation mode discloses absent multimodal comparisons. \| MOD-001–015; VAL-001–007; OPERATOR-AUTHORITY-001–009; MODEL-001–006; EVAL-001–008 as modified; HR-AUTH-001–008 \| | `apps/mobile/e2e/raw-recordings.spec.ts:967` — actual service component labels conditional approved channels and model support, while the fictional build refuses both<br>`services/api/tests/test_raw_export.py:234` — test_metadata_only_request_remains_default_scope_and_cannot_carry_raw_approval | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-041-01 | PRD acceptance review — \| PRD-041 \| Independently governed operator releases can admit the exact conditional research software, including only explicitly approved model variants and baseline scope. Measurement-only remains default; the restricted HR-only evaluation mode discloses absent multimodal comparisons. \| MOD-001–015; VAL-001–007; OPERATOR-AUTHORITY-001–009; MODEL-001–006; EVAL-001–008 as modified; HR-AUTH-001–008 \| | `apps/mobile/e2e/raw-recordings.spec.ts:1400` — actual service component labels conditional approved channels and model support, while the fictional build refuses both<br>`services/api/tests/test_raw_export.py:234` — test_metadata_only_request_remains_default_scope_and_cannot_carry_raw_approval | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `006`, `007`, `008`, `009`, `015`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
 
@@ -1327,7 +1327,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-021-01 | PRD acceptance review — \| PRD-021 \| Analytical usefulness \| Compare each intended cartridge channel with a traceable reference method over a prespecified range, including censored and invalid results. Freeze acceptance limits before qualification. \| | `infra/test/test_web_deployment.py:469` — test_production_requires_results_reference_separate_from_artifact_binding<br>`apps/mobile/e2e/raw-recordings.spec.ts:480` — laboratory method review pins the actual selected method without BLE and resets acknowledgement on document replacement | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-021-01 | PRD acceptance review — \| PRD-021 \| Analytical usefulness \| Compare each intended cartridge channel with a traceable reference method over a prespecified range, including censored and invalid results. Freeze acceptance limits before qualification. \| | `infra/test/test_web_deployment.py:469` — test_production_requires_results_reference_separate_from_artifact_binding<br>`apps/mobile/e2e/raw-recordings.spec.ts:913` — laboratory method review pins the actual selected method without BLE and resets acknowledgement on document replacement | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-022 — Independent prediction value
 
@@ -1357,7 +1357,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-024-01 | PRD acceptance review — \| PRD-024 \| Generalization \| Report errors and calibration for held-out people, later sessions, supported devices, consumption routes, use-frequency strata, and first-use versus personalized modes. \| | `services/api/tests/test_model_evaluation.py:221` — test_later_validation_without_prior_held_out_session_and_single_class_cohort_fail<br>`services/api/tests/test_model_evaluation_cardiac.py:206` — test_held_out_hr_values_and_outcomes_cannot_affect_training | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-024-01 | PRD acceptance review — \| PRD-024 \| Generalization \| Report errors and calibration for held-out people, later sessions, supported devices, consumption routes, use-frequency strata, and first-use versus personalized modes. \| | `services/api/tests/test_model_evaluation.py:354` — test_later_validation_without_prior_held_out_session_and_single_class_cohort_fail<br>`services/api/tests/test_model_evaluation_cardiac.py:214` — test_held_out_hr_values_and_outcomes_cannot_affect_training | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-025 — Operational reliability
 
@@ -1367,7 +1367,7 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-025-01 | PRD acceptance review — \| PRD-025 \| Operational reliability \| Measure record completeness, upload reconciliation, recovery after interruption, and traceability of finalized results. \| | `apps/mobile/e2e/raw-recordings.spec.ts:671` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice<br>`services/api/tests/test_raw_retention.py:488` — test_upload_without_record_and_duplicate_revoke_are_invalid | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-025-01 | PRD acceptance review — \| PRD-025 \| Operational reliability \| Measure record completeness, upload reconciliation, recovery after interruption, and traceability of finalized results. \| | `apps/mobile/e2e/raw-recordings.spec.ts:1104` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice<br>`services/api/tests/test_raw_retention.py:488` — test_upload_without_record_and_duplicate_revoke_are_invalid | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### PRD-026 — Economic feasibility
 
@@ -1397,10 +1397,70 @@ Prerequisites and limits: Independent study/model/endpoint authorization and gen
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-001-PRD-028-01 | PRD acceptance review — \| PRD-028 \| Select collection/cartridge chemistry, cardiac implementation, optical protocol, supported phone list, final retention policy, and subscription allowance \| Respective analytical, hardware, optical, app, data, and commercial leads \| Respective feasibility and release gates \| | `apps/mobile/e2e/raw-recordings.spec.ts:671` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice<br>`services/api/tests/test_raw_export.py:205` — test_distinct_submit_review_release_required | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-001-PRD-028-01 | PRD acceptance review — \| PRD-028 \| Select collection/cartridge chemistry, cardiac implementation, optical protocol, supported phone list, final retention policy, and subscription allowance \| Respective analytical, hardware, optical, app, data, and commercial leads \| Respective feasibility and release gates \| | `apps/mobile/e2e/raw-recordings.spec.ts:1104` — actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice<br>`services/api/tests/test_raw_export.py:205` — test_distinct_submit_review_release_required | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ## Execution and evidence handoff
 
 Before running: PM freezes implementation/tests/contracts; capture HEAD, changed/untracked implementation hashes and tool versions, confirm canonical hash still matches, and record actual clock/environment/commands. Log each check under `reports/` or a PM-designated immutable attempt path; preserve JUnit/coverage/Playwright traces/screenshots/performance JSON and compute SHA-256 of actual artifacts. Shared passing suites can serve this dossier only when its relevant assertions and exact binding are explicit.
 
 Record each case PASS/FAIL/BLOCKED/NOT_RUN in `test-results.md`, with exit/result/timestamp and evidence path/hash. A historical file existing in reports is not a new execution. Required checks unavailable on this runner remain BLOCKED; neither design review nor npm tests substitute for native, firmware, physical or scientific evidence.
+
+## Reactivated verification audit
+
+Observed checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active writers’ working-tree edits, 2026-10-25T06:53:56.344429+00:00. This is not source freeze. Original planning HEAD and prior no-execution record above remain historical. Canonical hash above is rebound to the reconciled current source; OTGD-001 and OTGD-047 changed. Existing411 requirements /782 case IDs are retained. No Docker/build/probe or suite execution performed by this verifier.
+
+### EVAL-007 history/reference/authenticity audit
+
+Mapped existing cases: OTGD-008-EVAL-007-01/02; OTGD-041-EVAL-002-03/04/05; OTGD-042-HR-AUTH-008-01/02/03/04; full MOD-004/005/012/014/015 and VAL-004/005/006 are related, not automatically closed.
+
+Assertion adequacy inspected: Independently read test_model_evaluation.py::external_history_pipeline/assert_forged_history_refused and both named test_external_history_references_remain_unverified_through_pipeline/test_self_asserted_or_extra_approval_fields_do_not_authenticate_history wrappers in full and four HR variants. Actual CLI index/freeze/train/evaluate/verify compares original dataset/analysis/split/training/report/artifact hashes, full evidence and eight-row evaluation membership. Original refs and HR custody/source/baseline/manifest remain exact. Every emitted authority/authenticity/history/clinical flag is false; strict extra fields and untyped/rehashed forged manifest refuse. Existing test_real_logistic_fitting... already asserted verified_by_tool false: the original V-SW-001 claim is narrowed accordingly.
+
+Remaining limits: No scientific authenticity is established. Focused author-reported execution exists, but raw pytest stdout/JUnit is not linked; no final-candidate PASS adopted. These checks cover history custody; independent endpoint, genuine approvals and locked real study remain separate.
+
+### Alcohol dependency and acquisition-boundary audit
+
+Mapped existing cases: OTGD-019-AND-ALC-001-02, AND-ALC-004-02; related AND-DEV-004, AND-CHECK-002, AND-STUDY-003/004.
+
+Assertion adequacy inspected: Read operator-governance tests: configuration/calibration at -1ms, equality and +1ms; expiry history/body/hash/decisions immutable; calibration failure distinguished from still-current configuration. Current SOFTWARE_ADAPTERS/PHYSICAL_DRIVERS contain no alcohol entry and capability reason is HUMAN_ADAPTER_UNIMPLEMENTED. Four explicitly hypothetical HTTP grant/start cases expire before still-valid grant end, require403 APPROVED_REGISTRY_VERSION_REQUIRED, zero sign_start calls, no persisted start/alcohol and unchanged issued receipt. Mobile three new cases verify strict configuration selection before expiry, fresh absent inventory overrides stale cached availability with zero grant/nonce/hardware events, and a hypothetical returned authoritative-start refusal leaves invalid null alcohol and zero acquisition events.
+
+Remaining limits: Client refusal transport is controlled, not an integrated real breath instrument. No qualified driver exists. Direct participant recalibration-specific start/recovery remains BLOCKED by absent instrument; generic server refusal must not be relabeled a diagnosis. Server -1ms/equality/+1ms and hypothetical grant race have reported focused execution; mobile author report/release and final gates pending.
+
+### Rendered alcohol state/copy assertion audit
+
+Mapped existing cases: OTGD-019-AND-ALC-002/003/005/006 cases; related APP-012/013, AND-HIST-003 and AND-RES-004.
+
+Assertion adequacy inspected: Read actual AlcoholScreen/ResultsScreen/HistoryScreen/ResultDetail fixture and assertions in raw-recordings.spec.ts. Measurement/guest/research variants retain unavailable qualified hardware, mg/L and model-specific co-use copy, replace stale unconditional classification statement. Six value/source variants (zero, low, below_loq, not_detected, invalid, simulated) traverse actual history/result/detail; assertions retain units, qualifier/source/time, dashes for null, separate alcohol meaning and no automatic BAC/impairment adjustment. Positive driving/legal-clearance/combined-score patterns absent; truthful clearance Unavailable remains visible.
+
+Remaining limits: Controlled component inputs are hypothetical reporting records, not acquired sensor data; research fixture is not newly qualified scientific authority. Notification/OS-wide copy is not exhaustively proved by these component surfaces. Writer active; new component tests NOT_RUN in verifier final scope, author final report pending.
+
+### Permissions race and no-reprompt assertion audit
+
+Mapped existing cases: OTGD-036-AND-SET-003-01/02 and AND-SET-007-02; related AND-EYE-002, AND-ONB-004 and AND-AUTH-005.
+
+Assertion adequacy inspected: Read PermissionsCard implementation and actual exported Settings component harness. Status labels cover denied/canAskAgain, denied/permanent, restricted, undetermined, failed reads; zero prompts across mount/refresh/active-return; OS settings call occurs once only explicit action. Deferred reads resolved newer-first, stale controller epoch before React render, account/generation changes and unmount must not publish old state; new scoped card is Not checked until current read; listener teardown asserted. Real ordinary UI test Settings/Back preserves draft/sample with no camera prompt. Implementation uses active+sequence+captured epoch guard and scoped card identity.
+
+Remaining limits: Adapters are controlled OS observations. Real Android/iOS settings return, OS permission policy, TalkBack/VoiceOver, key storage and native lifecycle remain Task7 BLOCKED/NOT_RUN. Writer not released; no final gate execution or independent runtime PASS.
+
+### Current release provenance assertion audit
+
+Mapped existing cases: OTGD-047-STORE-003-01/02; OTGD-015-CLOUD-DEP-002-01/02; related AND-ENV-005/007.
+
+Assertion adequacy inspected: Read verify_github_gates/verify_gate_file and new test_provenance actual assertion bodies. Both current defaults require CURRENT_REQUIRED_JOBS=FARGATE_REQUIRED_JOBS (14), owned HTTP-client recursion retains selected set; tests reject missing/failure/skipped/cancelled fargate-container-runtime, reject base-only gate file, and verify platform build/serverless admission do not reach signing/cloud boundary. Existing exact-run/latest-attempt/duplicate/foreign/pagination checks retained. Explicit historical13 selectors remain only documented original recovery callers; signed historical receipt projection unchanged and cannot replace live admission.
+
+Remaining limits: HTTP response fixtures prove software refusal only. Actual current remote14 mandatory jobs/run provenance and native artifacts remain pending; baseline38347011315 is historical only and normalized PR wrapper is not trusted-main admission. Logs substantiate focused runs but run-time source manifest absent from author report; do not adopt them as exact frozen-candidate result. Canonical infra gate recorded FAIL (Docker readonly buildx setup + then-missing probe import); secure-SDK follow-up not reached.
+
+### Actual-process interruption probe source audit
+
+Mapped existing cases: Shared platform §§6/10; related OPS-002/003/005/006, RAW-EXP-004/006/007, RECOVERY-001, AND-SYNC-003/005/006, AND-PRIV-005, AND-RES-002.
+
+Assertion adequacy inspected: Read worker_interrupt_probe.py validate_target, child_worker, OwnedChild, kill_case, verify_output, stale_case and budget_case. Exact separate disposable local DB/namespace/queues/buckets; wrappers delegate real production claim/commit/S3/SQS/run_job; only owned spawned PID receives signals; SIGKILL exit and actual barriers verified. Five export kill stages plus result after-claim/after-commit; unchanged outbox and winning fence/attempt/output assertions; version-pinned bytes/hash. SIGSTOP lets real120s lease expire; new generation denies stale output; SIGCONT late writer must lease_lost; real expiry cleanup removes only own versions and preserves neighbor. Real malformed durable work five-claim/backoff and actual five-receive120s DLQ redrive preserve production constants.
+
+Remaining limits: Source inspected only; probe and integration WIP, no real process/recovery execution adopted. Unit harness targeting/barrier tests do not prove actual recovery. No study withdrawal or old-backup/cloud restore inferred from generation transaction. PM must assign isolated fixture setup and run after writer release; all resource mutations PM-only. Workflow timeout must fit real production waits; integration pending.
+
+### Authenticated ordinary-web live test source audit
+
+Mapped existing cases: Related actual paths: AND-AUTH-001/003/005/006; AND-SYNC-002/003/004/007; AND-HIST-001/005/006; AND-EXP-001/002/003/006; AND-PRIV-003/004/005; WEB-DEP-003/008; complete full canonical scenarios remain separately assessed.
+
+Assertion adequacy inspected: Read authenticated-live.spec.ts ordinary account test and helpers. Real issuer PKCE/token responses, notice/profile/context and deliberate synthetic-account Save then Upload. route.fetch sends actual finalize and validates202 before connection-reset abort; no fake success. Actual queued measurement-only result, reload clears account memory and reauthentication retrieves server history, actual export job/ZIP manifest/hash/single-check bytes, foreign404, reauthenticated deletion/current generation barrier, explicit new empty workspace and logout refresh-family refusal. Two actual viewport projects and private bounded fixture inventory; unknown records stop all-data deletion. Network receipts redacted; live config disables OAuth/token-bearing traces/HAR/screenshots.
+
+Remaining limits: Writer active; planned final gate NOT_RUN. Current inspected ordinary case does not establish all governed consent/withdrawal, raw, pending-lab or research UI/API journeys; later governed work is WIP. No native encrypted persistence, public CloudFront delivery or physical sensing inferred. Need actual raw JUnit/redacted receipts/archive hashes and final gate wiring after freeze.

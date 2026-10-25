@@ -141,6 +141,33 @@ def test_reserved_browser_staff_uses_pkce_without_a_consumer_button(issuer):
     assert claims["sub"] == "local-browser_staff"
 
 
+def test_form_redirect_policy_allows_only_registered_browser_callback_origins(issuer, monkeypatch):
+    api, module = issuer
+    page, _ = authorization(api, module)
+    assert page.headers["content-security-policy"] == (
+        "default-src 'none'; form-action 'self' http://localhost:8082; frame-ancestors 'none'"
+    )
+    monkeypatch.setattr(module, "s", module.s.model_copy(update={"oauth_redirect_uris": [
+        "otgd-local://oauth/callback", "http://localhost:8082/", "http://localhost:8082/other",
+        "https://registered.example.test/callback",
+    ]}))
+    page, _ = authorization(api, module)
+    assert page.headers["content-security-policy"] == (
+        "default-src 'none'; form-action 'self' http://localhost:8082 https://registered.example.test; frame-ancestors 'none'"
+    )
+    assert "*" not in page.headers["content-security-policy"]
+    refused, _ = authorization(api, module, redirect_uri="https://unregistered.example.test/callback")
+    assert refused.status_code == 400
+    assert refused.json()["error"] == "invalid_request"
+
+
+def test_native_only_issuer_does_not_add_browser_form_targets(issuer, monkeypatch):
+    api, module = issuer
+    monkeypatch.setattr(module, "s", module.s.model_copy(update={"oauth_redirect_uris": ["otgd-local://oauth/callback"]}))
+    page, _ = authorization(api, module)
+    assert page.headers["content-security-policy"] == "default-src 'none'; form-action 'self'; frame-ancestors 'none'"
+
+
 def test_discovery_jwks_and_issuer_bound_access_token(issuer):
     api, module = issuer
     assert api.get("/health/live").json()["fictional_identity"] is True

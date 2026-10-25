@@ -3,7 +3,7 @@
 Canonical: `openspec/changes/cloud-deployment-customer-access/specs/cloud-release-orchestration/spec.md`; SHA-256 `32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6`.
 Planning snapshot HEAD: `33901a1ff785cd28e351d935be510d184fb7f8e2`; approved implementation baseline: `0844868aa543af4ab75ac5065ad48cf807b86bb3`. This is a mutable audit snapshot, not a frozen execution candidate.
 
-Owner: `/root/verification`, verification specialist; OpenAI `gpt-6.1-sol/high` requested explicitly in PM dispatch; effective model identifier is not independently exposed inside this worker. Decisions: D-001 v1, D-002 v1, D-003 v1, D-004 v1 acknowledged through native messaging. See `../../decisions.md`, `../../impact-register.md` and `../../reports/verification-plan.md`.
+Owner: `/root/verification`, verification specialist; OpenAI `gpt-6.1-sol/high` requested explicitly in PM dispatch; effective model identifier is not independently exposed inside this worker. Decisions: D-001–005 v1 and D-006 v3 acknowledged through native messaging; D-006 v1/v2 retained as superseded method history. See `../../decisions.md`, `../../impact-register.md` and `../../reports/verification-plan.md`.
 
 Stage: PLANNED / NOT_RUN. Test-source symbols below are related existing checks, not a claim that every assertion is adequate or has passed. Static indexing does not establish runtime coverage. Every stated canonical scenario must execute and meet its full THEN conditions; use the source reference for complete GIVEN/WHEN context. Missing exact-case coverage remains a software verification gap until a meaningful assertion is inspected/added and executed. No historical test/CI result is adopted.
 
@@ -18,7 +18,7 @@ These SHA-256 bindings identify inspected source at planning time. Any edit requ
 - `infra/test/test_deployment_cli.py` — `136f38dd76a17b8d342965735bb430862c823a1fb0dadfd5dd3ecd61f121a637`
 - `infra/test/test_fargate_deploy.py` — `99970d95bab530bf235f2f53997c76b9ef96cf833c5051e3c1f6fab3707ab559`
 - `infra/test/test_maintenance.py` — `f7222dcd026bcbe70c73279fbb8c75a65bef166e311e93e0729f3d3570b356bf`
-- `infra/test/test_provenance.py` — `f4b05e5dc8f58d775cb7055632351b4bfdb819c9cefd74dfe48dd8bb86bff420`
+- `infra/test/test_provenance.py` — `996ead63b1f3ae3999aa31d81e3de893bbc50b62bfaac6e2a69f88a968d5f6a1`
 - `infra/test/test_release.py` — `3013213897c8f1721e0f28a2c4610f18b48cb46ed6a5f5900ebb4495f3e3f9d5`
 - `infra/test/test_serverless_deploy.py` — `2df73b06df3ecd0153d07b1bae18ff6636e8dcd745eb72992158404ec092a784`
 - `infra/test/test_web_deployment.py` — `e0fbb440ac1b32d67b389b1261d3f6f8360e224793c8c4ad94809ea03fabb2d1`
@@ -46,8 +46,8 @@ Prerequisites and limits: BLOCKED external release: no authorized actual QA/prod
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-015-CLOUD-DEP-002-01 | Every required exact-revision gate passes — **GIVEN** an eligible main/merge-group run and independently trusted signature **WHEN** release operations execute **THEN** source/run/attempt/job/image bindings are verified and retained. | `infra/test/test_provenance.py:114` — test_local_claims_cannot_replace_missing_failed_skipped_or_old_attempt_jobs<br>`infra/test/test_serverless_deploy.py:249` — test_missing_or_failed_gate_evidence_precedes_every_aws_operation | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
-| OTGD-015-CLOUD-DEP-002-02 | A prior or cancelled run is supplied — **GIVEN** stale or incomplete evidence **WHEN** admission executes **THEN** the operation fails before release authorization. | `infra/test/test_provenance.py:114` — test_local_claims_cannot_replace_missing_failed_skipped_or_old_attempt_jobs<br>`infra/test/test_serverless_deploy.py:249` — test_missing_or_failed_gate_evidence_precedes_every_aws_operation | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-015-CLOUD-DEP-002-01 | Every required exact-revision gate passes — **GIVEN** an eligible main/merge-group run and independently trusted signature **WHEN** release operations execute **THEN** source/run/attempt/job/image bindings are verified and retained. | `infra/test/test_provenance.py:115` — test_local_claims_cannot_replace_missing_failed_skipped_or_old_attempt_jobs<br>`infra/test/test_serverless_deploy.py:249` — test_missing_or_failed_gate_evidence_precedes_every_aws_operation | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-015-CLOUD-DEP-002-02 | A prior or cancelled run is supplied — **GIVEN** stale or incomplete evidence **WHEN** admission executes **THEN** the operation fails before release authorization. | `infra/test/test_provenance.py:115` — test_local_claims_cannot_replace_missing_failed_skipped_or_old_attempt_jobs<br>`infra/test/test_serverless_deploy.py:249` — test_missing_or_failed_gate_evidence_precedes_every_aws_operation | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### CLOUD-DEP-003 — Orchestrate infrastructure and code with actual inputs
 
@@ -91,7 +91,7 @@ Prerequisites and limits: BLOCKED external release: no authorized actual QA/prod
 
 | Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
 |---|---|---|---|
-| OTGD-015-CLOUD-DEP-006-01 | Approved QA is promoted — **GIVEN** source service/web records and actual protected QA evidence **WHEN** the authority signs and production admission runs **THEN** production preserves the image/source and binds its separately configured web artifact to the approved QA envelope. | `infra/test/test_web_deployment.py:469` — test_production_requires_results_reference_separate_from_artifact_binding<br>`infra/test/test_provenance.py:324` — test_cloud_image_manifest_and_local_config_must_bind_signed_source | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-015-CLOUD-DEP-006-01 | Approved QA is promoted — **GIVEN** source service/web records and actual protected QA evidence **WHEN** the authority signs and production admission runs **THEN** production preserves the image/source and binds its separately configured web artifact to the approved QA envelope. | `infra/test/test_web_deployment.py:469` — test_production_requires_results_reference_separate_from_artifact_binding<br>`infra/test/test_provenance.py:382` — test_cloud_image_manifest_and_local_config_must_bind_signed_source | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 | OTGD-015-CLOUD-DEP-006-02 | Web evidence refers to another artifact — **GIVEN** a foreign/missing web digest or expired QA approval **WHEN** production starts **THEN** it fails before target deployment. | `infra/test/test_web_deployment.py:469` — test_production_requires_results_reference_separate_from_artifact_binding<br>`infra/test/test_release.py:65` — test_signed_digest_bound_to_account_environment_and_source | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
 
 ### CLOUD-DEP-007 — Register only the exact deployed UI CNAME
@@ -143,3 +143,15 @@ Prerequisites and limits: BLOCKED external release: no authorized actual QA/prod
 Before running: PM freezes implementation/tests/contracts; capture HEAD, changed/untracked implementation hashes and tool versions, confirm canonical hash still matches, and record actual clock/environment/commands. Log each check under `reports/` or a PM-designated immutable attempt path; preserve JUnit/coverage/Playwright traces/screenshots/performance JSON and compute SHA-256 of actual artifacts. Shared passing suites can serve this dossier only when its relevant assertions and exact binding are explicit.
 
 Record each case PASS/FAIL/BLOCKED/NOT_RUN in `test-results.md`, with exit/result/timestamp and evidence path/hash. A historical file existing in reports is not a new execution. Required checks unavailable on this runner remain BLOCKED; neither design review nor npm tests substitute for native, firmware, physical or scientific evidence.
+
+## Reactivated verification audit
+
+Observed checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active writers’ working-tree edits, 2026-10-25T06:53:56.344429+00:00. This is not source freeze. Original planning HEAD and prior no-execution record above remain historical. Canonical hash above is rebound to the reconciled current source; OTGD-001 and OTGD-047 changed. Existing411 requirements /782 case IDs are retained. No Docker/build/probe or suite execution performed by this verifier.
+
+### Current release provenance assertion audit
+
+Mapped existing cases: OTGD-047-STORE-003-01/02; OTGD-015-CLOUD-DEP-002-01/02; related AND-ENV-005/007.
+
+Assertion adequacy inspected: Read verify_github_gates/verify_gate_file and new test_provenance actual assertion bodies. Both current defaults require CURRENT_REQUIRED_JOBS=FARGATE_REQUIRED_JOBS (14), owned HTTP-client recursion retains selected set; tests reject missing/failure/skipped/cancelled fargate-container-runtime, reject base-only gate file, and verify platform build/serverless admission do not reach signing/cloud boundary. Existing exact-run/latest-attempt/duplicate/foreign/pagination checks retained. Explicit historical13 selectors remain only documented original recovery callers; signed historical receipt projection unchanged and cannot replace live admission.
+
+Remaining limits: HTTP response fixtures prove software refusal only. Actual current remote14 mandatory jobs/run provenance and native artifacts remain pending; baseline38347011315 is historical only and normalized PR wrapper is not trusted-main admission. Logs substantiate focused runs but run-time source manifest absent from author report; do not adopt them as exact frozen-candidate result. Canonical infra gate recorded FAIL (Docker readonly buildx setup + then-missing probe import); secure-SDK follow-up not reached.

@@ -31,3 +31,7 @@ Reconciler released all edits; accepted implementation-plan tasks1–8. /root/mo
 ## Checkpoint5 author/verification routing
 
 Mobile/evaluation/provenance authorsreleased; workerprobe/wrapper frozen foractualpreflight, reportonlyupdates allowed. Browserreserved identities browser_mobile/browser_desktop plus backend-onlybrowser_staff; existingA/B/participantstaff preserved. /root/gate_integration OpenAIgpt-6.1-sol/high explicitspawn ACK D001–005v1/D006v3 and owns sharedci_gate/platformworkflow/CI docs/test only. /root/verification reactivated ACKlatestdecisions, independent percasebinding only,no Docker. Firmwareagent approved/tmp snapshot/build/package only, noDockerload until PMreceiptreview. Mandatoryliveprotocol mustkeep120s visibility/lease and50minjobbudget, current14jobinventory unchanged.
+
+## Browser preflight decisions
+
+D-006 v4 and D-007 v1 were acknowledged AFFECTED by browser builder; source refresh owner acknowledged D-006 v4. The browser owner may repair only demonstrated auth/controller defects with regression evidence. Known identity-source drift invalidates the running worker preflight final source binding; no waiver or counter reset. Fresh reviewers will receive both decisions and the complete final candidate.

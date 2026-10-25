@@ -2,7 +2,7 @@ import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { Platform } from "react-native";
 import { BUILD } from "../platform/config";
-import { vault } from "../platform/storage";
+import { newId, vault } from "../platform/storage";
 import type { AppConfig, Identity } from "../core/types";
 import {
   IntegrityError,
@@ -75,6 +75,7 @@ export class AuthManager implements TokenProvider {
         `This build’s OAuth callback is not registered. Configure ${redirectUri} for this environment.`,
       );
     const request = new AuthSession.AuthRequest({
+      state: newId(),
       clientId: BUILD.clientId,
       redirectUri,
       scopes: ["openid", "profile"],
