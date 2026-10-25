@@ -43,6 +43,151 @@ def consent(client, value):
     return response.json()
 
 
+def alcohol_contract_authority(db, account, expiry_kind):
+    """Typed fictional dependency fixture; there is no breath instrument adapter."""
+    from uuid import uuid4
+
+    end = now() + 30
+    config = configuration("alcohol", device_id=DEVICE, key_id=KEY, calibration_id=CALIBRATION,
+        approved_hardware=["fixture-hw"], approved_firmware=["fixture-fw"],
+        expires_at=end if expiry_kind == "configuration" else end + 3600)
+    calibrated = {**calibration(), "channels": ["alcohol"],
+        "expires_at": end if expiry_kind == "calibration" else end + 3600}
+    config = validate_submission("configuration", config)
+    for kind, value in (("study", study(account, {"alcohol": config["registry_id"]})),
+        ("retention", retention()), ("device", device(account)), ("calibration", calibrated),
+        ("qualification", proof("alcohol", config_body=config)), ("configuration", config)):
+        approve(db, kind, value)
+    binding_id = str(uuid4())
+    save_record(db, db.get(Account, account), "binding", binding_id, {
+        "binding_id": binding_id, "device_id": DEVICE, "key_id": KEY,
+        "hardware_revision": "fixture-hw", "firmware_version": "fixture-fw", "state": "active"})
+    return config, end, binding_id
+
+
+@pytest.mark.parametrize("kind", ["configuration", "calibration"])
+@pytest.mark.parametrize("offset,valid", [(-0.001, True), (0, False), (0.001, False)])
+def test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history(client, account, monkeypatch, kind, offset, valid):
+    with factory().begin() as db:
+        config, end, _ = alcohol_contract_authority(db, account, kind)
+        registry_id = config["registry_id"] if kind == "configuration" else CALIBRATION
+        original = deepcopy(active_body(db, kind, registry_id))
+        original_history = history(db, kind, registry_id)["items"][0]
+    monkeypatch.setattr("otgd.operator_governance.now", lambda: end + offset)
+    with factory()() as db:
+        entry = history(db, kind, registry_id)["items"][0]
+        assert entry["submitted_body"] == original
+        assert entry["submitted_sha256"] == digest(original)
+        assert entry["decisions"] == original_history["decisions"]
+        assert entry["effective_state"] == ("active" if valid else "expired")
+        assert entry["expired"] is (not valid)
+        if valid:
+            assert active_body(db, kind, registry_id) == original
+            assert validate_dependencies(db, "configuration", config) is None
+        else:
+            failure("APPROVED_REGISTRY_VERSION_REQUIRED", active_body, db, kind, registry_id)
+            assert released_version(db, kind, registry_id, required=False) is None
+            if kind == "calibration":
+                # Configuration is still current; the missing current authority
+                # is specifically the calibration dependency, not its envelope.
+                assert active_body(db, "configuration", config["registry_id"]) == config
+                failure("APPROVED_REGISTRY_VERSION_REQUIRED", validate_dependencies, db, "configuration", config)
+
+
+def test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter(client, account):
+    from otgd import operator_governance as governance
+    from otgd.db import Check
+
+    with factory().begin() as db:
+        config, _, _ = alcohol_contract_authority(db, account, "calibration")
+    consent(client, study(account))
+    assert config["material"]["modality"] == "breath_alcohol"
+    assert config["material"]["raw_unit"] == "mg/L"
+    assert not governance.SOFTWARE_ADAPTERS.get("alcohol")
+    assert not governance.PHYSICAL_DRIVERS.get("alcohol")
+    assert governance.software_supported(config) is False
+    capabilities = client.get("/v1/me/capabilities", headers=headers()).json()["channels"]["alcohol"]
+    assert capabilities == {"available": False, "authorization_available": True, "software_available": False,
+        "reason_codes": ["HUMAN_ADAPTER_UNIMPLEMENTED"], "configurations": []}
+    with factory()() as db:
+        owner = db.get(Account, account)
+        failure("HUMAN_ADAPTER_UNIMPLEMENTED", capture_configuration, db, owner,
+            Check(study_id=STUDY, protocol_id=PROTOCOL), "alcohol")
+
+
+@pytest.mark.parametrize("kind", ["configuration", "calibration"])
+@pytest.mark.parametrize("offset", [0, 0.001])
+def test_alcohol_expiry_between_contract_grant_and_start_rejects_cached_authority(client, account, monkeypatch, kind, offset):
+    """Hypothetical inventory reaches real HTTP routes; never a hardware proof."""
+    from uuid import uuid4
+    from otgd import operator_governance as governance
+
+    with factory().begin() as db:
+        config, end, binding_id = alcohol_contract_authority(db, account, kind)
+    consent(client, study(account))
+    sid, aid, rid = (str(uuid4()) for _ in range(3))
+    created = client.post("/v1/sessions", headers=headers(), json={"session_id": sid,
+        "mode": "controlled_research", "study_id": STUDY, "protocol_id": PROTOCOL})
+    assert created.status_code == 201, created.text
+    context = {"schema_version": "1.0.0", "session_id": sid, "context_confirmed_at": iso(),
+        "profile_version_id": None, "profile_snapshot_sha256": "a" * 64, "history_snapshot_sha256": "b" * 64,
+        "protocol_id": PROTOCOL, "configuration_refs": [{"id": config["registry_id"], "version": "v1",
+            "sha256": config["sha256"], "scope": "measurement_collection"}],
+        "baseline_refs": [], "device_associations": [{"binding_id": binding_id, "device_id": DEVICE,
+            "hardware_revision": "fixture-hw", "firmware_version": "fixture-fw", "boot_id": "FICTIONAL-BOOT"}],
+        "self_report_context": None}
+    assert client.put(f"/v1/sessions/{sid}/context", headers=headers(revision=0), json=context).status_code == 200
+    attempt = {"schema_version": "1.0.0", "session_id": sid, "attempt_id": aid, "component": "alcohol",
+        "record_id": rid, "supersedes_attempt_id": None, "status": "started", "source": "prototype_sensor",
+        "started_at": iso(), "ended_at": None, "configuration_id": config["registry_id"],
+        "configuration_hash": config["sha256"], "quality_flags": [], "component_metadata": {},
+        "artifact_refs": [], "attestation_refs": []}
+    assert client.put(f"/v1/sessions/{sid}/attempts/{aid}", headers=headers(revision=0), json=attempt).status_code == 200
+    request = {"attempt_id": aid, "channel": "alcohol", "binding_id": binding_id, "device_id": DEVICE,
+        "configuration_id": config["registry_id"], "configuration_hash": config["sha256"]}
+    # Only this synthetic configuration is admitted by a test-local inventory.
+    # All lifecycle, consent, context, binding, expiry and signing code stays real.
+    with monkeypatch.context() as hypothetical:
+        hypothetical.setitem(governance.SOFTWARE_ADAPTERS, "alcohol", {config["software_adapter_id"]})
+        cached = client.get("/v1/me/capabilities", headers=headers()).json()["channels"]["alcohol"]
+        assert cached["available"] and cached["authorization_available"]
+        granted = client.post(f"/v1/sessions/{sid}/capture-authorizations", headers=headers(), json=request)
+        assert granted.status_code == 201, granted.text
+    authorization = granted.json()
+    assert authorization["state"] == "issued" and "server_start" not in authorization
+    assert authorization["expires_epoch"] > end + offset
+    assert cached["configurations"][0]["configuration_hash"] == config["sha256"]
+    signed_starts = []
+    def unexpected_start(*args, **kwargs):
+        signed_starts.append((args, kwargs))
+        raise AssertionError("Expired alcohol authority must never mint a start token")
+    monkeypatch.setattr("otgd.main.sign_start", unexpected_start)
+    for module in ("otgd.operator_governance", "otgd.domain", "otgd.main"):
+        monkeypatch.setattr(module + ".now", lambda: end + offset)
+    path = f"/v1/sessions/{sid}/capture-authorizations"
+    denied = client.post(path + "/" + authorization["authorization_id"] + "/start", headers=headers(),
+        json={"attempt_id": aid, "device_boot_id": "FICTIONAL-BOOT", "device_nonce": "fictional-nonce"})
+    assert denied.status_code == 403 and denied.json()["code"] == "APPROVED_REGISTRY_VERSION_REQUIRED", denied.text
+    assert "server_start" not in denied.json()
+    assert signed_starts == []
+    fresh_grant = client.post(path, headers=headers(), json=request)
+    assert fresh_grant.status_code == 403 and fresh_grant.json()["code"] == "APPROVED_REGISTRY_VERSION_REQUIRED", fresh_grant.text
+    current = client.get("/v1/me/capabilities", headers=headers()).json()["channels"]["alcohol"]
+    assert not current["available"] and not current["authorization_available"]
+    assert current["configurations"] == [] and current["reason_codes"] == ["APPROVED_REGISTRY_VERSION_REQUIRED"]
+    with factory()() as db:
+        owner = db.get(Account, account)
+        retained = record(db, owner, "authorization", authorization["authorization_id"])
+        assert retained.body == authorization and retained.body["state"] == "issued"
+        assert "server_start" not in retained.body
+        assert record(db, owner, "alcohol", sid) is None
+        assert record(db, owner, "alcohol", rid) is None
+        registry_id = config["registry_id"] if kind == "configuration" else CALIBRATION
+        assert history(db, kind, registry_id)["items"][0]["effective_state"] == "expired"
+    assert not governance.SOFTWARE_ADAPTERS.get("alcohol")
+    assert not governance.PHYSICAL_DRIVERS.get("alcohol")
+
+
 def test_immutable_submission_three_principals_lifecycle_history_and_revision(client, account):
     value = study(account)
     with factory().begin() as db:

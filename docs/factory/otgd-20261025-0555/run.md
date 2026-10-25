@@ -13,7 +13,7 @@ Baseline/candidate: 0844868aa543af4ab75ac5065ad48cf807b86bb3; Factory records on
 correction_round: 0
 max_correction_rounds: 2
 recovery_attempts: 0
-checkpoint_seq: 4
+checkpoint_seq: 5
 last_observed_confirmed_remote_commit: 33901a1ff785cd28e351d935be510d184fb7f8e2 (checkpoint 1 verified via git ls-remote).
 
 ## Scope and authority
@@ -72,3 +72,7 @@ Compact image adoption confirmed by E0008/D006v3. Product, engineering, verifica
 ## Checkpoint4 / implementation
 
 Sequential product, engineering and specification audits completed; all47 reconciliation dispositions,42PRD mappings,411 planned requirements/782 cases. Reconciler actual checks41semantic,140structural/321scenarios, strict11changes and110links pass. Only canonicalOTGD001/047 changed; no scientific acceptance relaxed. Five bounded OpenAI builders dispatched and currentdecisions ACKed (impact-register). T04 DONE;T05 RUNNING;T06 setup appservices launched, finalgates pending freeze. Compactimage localonly, journalfirstestablished2026-10-25T06:38:17.856472+00:00; root2.63GB remains aftersevencontainers. Twoinitializers exited0; fourserviceshealthy,workerhealthstarting. No counterchange.
+
+## Checkpoint5
+
+Released bounded source: mobiletruthfulalcohol/timestamp andpermissionraceguard,21backendassertions,14jobcurrentprovenance with historical13compatibility, isolatedbrowserfixtures andworkerprobe. Authorreports retain genuine focusedresults andfailed/unexecuted gates. PMverified58release tests, typecheck+24acquisitioncases,11fixture/protocoltests; nofinalclaim. Realworkerpreflight underway sourcebound to allotgdPython/probe/wrapper/contracts, mustnoteditthose whileactive. Browser TS/live andsharedgateintegration WIP excludedfromthischeckpoint. Lastverifiedremote1891f8b7f06f6279e7f86371a0798cd373813fd4. Correction0,recovery0.

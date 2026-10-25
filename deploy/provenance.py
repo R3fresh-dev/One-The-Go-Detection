@@ -21,6 +21,8 @@ class Gate(RuntimeError):
 
 REPOSITORY = "R3fresh-dev/One-The-Go-Detection"
 WORKFLOW_PATH = ".github/workflows/merge-gate.yml"
+# Historical signed receipts retain this exact job projection and hash shape.
+# It is not the complete inventory required for current live admission.
 REQUIRED_JOBS = frozenset({
     "unit-coverage", "atdd", "components", "merge-gate",
     "platform / contracts-and-synthesis", "platform / postgres-integration",
@@ -29,6 +31,7 @@ REQUIRED_JOBS = frozenset({
     "native / android", "native / ios",
 })
 FARGATE_REQUIRED_JOBS = REQUIRED_JOBS | {"platform / fargate-container-runtime"}
+CURRENT_REQUIRED_JOBS = FARGATE_REQUIRED_JOBS
 REQUIRED_GATE_LABELS = frozenset({
     "unit-coverage", "atdd", "components", "performance", "live-dependencies",
     "docker-health", "localstack-api", "specifications", "native-android",
@@ -94,6 +97,7 @@ def trusted_branch(event, branch):
 
 
 def validate_gate_binding(proof, revision):
+    """Validate the historical receipt shape, not current live CI admission."""
     fields = {"provider", "repository", "workflow_path", "workflow_id", "run_id",
               "run_attempt", "head_sha", "run_url", "event", "head_branch", "jobs"}
     if (not isinstance(proof, dict) or set(proof) != fields or
@@ -123,8 +127,13 @@ def _github_json(client, path, **params):
         raise Gate("GitHub evidence cannot be verified") from None
 
 
-def verify_github_gates(evidence, revision, *, client=None, required_jobs=REQUIRED_JOBS):
-    """Verify the run and every job from its latest attempt, without redirects."""
+def verify_github_gates(evidence, revision, *, client=None, required_jobs=CURRENT_REQUIRED_JOBS):
+    """Require current aggregate jobs by default for every release target.
+
+    Documented historical recovery may explicitly select REQUIRED_JOBS. The
+    returned receipt keeps its historical projection; live checks above that
+    projection do not turn older receipts into current admission evidence.
+    """
     try:
         required_jobs = frozenset(required_jobs)
     except TypeError:
@@ -213,7 +222,7 @@ def verify_github_gates(evidence, revision, *, client=None, required_jobs=REQUIR
     return proof
 
 
-def verify_gate_file(path, revision, *, client=None, required_jobs=REQUIRED_JOBS):
+def verify_gate_file(path, revision, *, client=None, required_jobs=CURRENT_REQUIRED_JOBS):
     if not path:
         raise Gate("Supply --gate-evidence from the exact-revision merge-gate run")
     return verify_github_gates(bounded_json(path), revision, client=client, required_jobs=required_jobs)

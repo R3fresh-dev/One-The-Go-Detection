@@ -1,5 +1,6 @@
 """Fictional engineered cohorts qualify software, never a human-study model."""
 import math
+from copy import deepcopy
 from pathlib import Path
 import sys
 
@@ -71,6 +72,138 @@ def pipeline(cohort):
 def rebind(dataset,plan):
     plan = m.AnalysisPlan.model_validate({**plan.model_dump(),'dataset_sha256': digest(dataset.model_dump())})
     return dataset,plan,m.freeze(m.cohort_index(dataset),plan)
+
+
+def external_history_pipeline(cohort, tmp_path, monkeypatch):
+    """Exercise actual CLI reproduction with deliberately unauthenticated history."""
+    dataset, plan, _ = cohort
+    raw = dataset.model_dump()
+    raw['authorization_ref'] = 'FICTIONAL-UNVERIFIED-AUTHORIZATION-NO-HUMAN-APPROVAL'
+    analysis = plan.model_dump()
+    analysis.update(plan_lock_ref='FICTIONAL-UNVERIFIED-HISTORICAL-PLAN-LOCK',
+        independent_endpoint_evidence_ref='FICTIONAL-UNVERIFIED-INDEPENDENT-ENDPOINT-RECORD')
+    if plan.cardiac_provenance is not None:
+        analysis['cardiac_provenance'].update(
+            reviewed_source_bundle_ref='FICTIONAL-UNVERIFIED-RETAINED-HR-SOURCE-BUNDLE',
+            independent_review_ref='FICTIONAL-UNVERIFIED-HR-INDEPENDENT-REVIEW')
+        for row in raw['sessions']:
+            row['cardiac_evidence']['source_bundle_ref'] = analysis['cardiac_provenance']['reviewed_source_bundle_ref']
+    dataset, plan, split = rebind(m.Dataset.model_validate(raw), m.AnalysisPlan.model_validate(analysis))
+    # Capture originals before any freeze/train/evaluate/verify operation below.
+    originals = deepcopy({'dataset': dataset.model_dump(), 'analysis': plan.model_dump(), 'split': split})
+    row_hashes = {row['session_id']: digest(row) for row in originals['dataset']['sessions']}
+    expected_hashes = {name: digest(value) for name, value in originals.items()}
+    index = m.cohort_index(dataset)
+    artifacts, training, report, evidence = pipeline((dataset, plan, split))
+    expected_hashes.update(training=digest(training), report=digest(report))
+    artifact_hashes = {name: digest(value) for name, value in artifacts.items()}
+    data, analysis_path, index_path, split_path = [tmp_path / (name + '.json') for name in ('dataset', 'analysis', 'index', 'split')]
+    m.store(data, originals['dataset']); m.store(analysis_path, originals['analysis'])
+    indexed = m.main(['index', '--dataset', str(data), '--output', str(index_path)])
+    assert indexed == {'index_sha256': digest(index.model_dump()), 'outcomes_disclosed': False, 'authority_granted': False}
+    frozen = m.main(['freeze', '--index', str(index_path), '--analysis', str(analysis_path), '--output', str(split_path)])
+    assert frozen == {'split_sha256': expected_hashes['split'], 'historical_lock_proven': False, 'authority_granted': False}
+    common = ['--dataset', str(data), '--analysis', str(analysis_path), '--split', str(split_path)]
+    training_dir, evaluation_dir = tmp_path / 'training', tmp_path / 'evaluation'
+    times = iter(['2026-03-02T00:00:00Z', '2026-03-02T00:00:00Z', '2026-03-03T00:00:00Z'])
+    monkeypatch.setattr(m, 'execution_time', lambda: next(times))
+    trained = m.main(['train', *common, '--output', str(training_dir)])
+    assert trained == {'training_sha256': expected_hashes['training'], 'artifacts': artifact_hashes,
+        'status': 'unvalidated', 'authority_granted': False}
+    extra = ['--training-directory', str(training_dir)]
+    evaluated = m.main(['evaluate', *common, *extra, '--output', str(evaluation_dir)])
+    assert evaluated == {'evaluation_report_sha256': expected_hashes['report'], 'evidence_sha256': digest(evidence),
+        'status': 'unvalidated', 'authority_granted': False}
+    verify_args = ['verify', *common, *extra, '--evaluation-directory', str(evaluation_dir)]
+    assert m.main(verify_args) == {'evaluation_reproduced': True, 'status': 'unvalidated', 'authority_granted': False}
+    for name, path in [('dataset', data), ('analysis', analysis_path), ('split', split_path),
+        ('training', training_dir / 'training.json'), ('report', evaluation_dir / 'evaluation-report.json')]:
+        assert digest(m.load(path)) == expected_hashes[name]
+    assert m.load(data) == originals['dataset'] and m.load(analysis_path) == originals['analysis']
+    assert {name: digest(m.load(training_dir / (name + '.artifact.json'))) for name in artifacts} == artifact_hashes
+    assert m.load(evaluation_dir / 'evaluation-evidence.json') == evidence
+    assert evidence['external_assertions'] == {
+        'authorization_ref': originals['dataset']['authorization_ref'],
+        'plan_lock_ref': originals['analysis']['plan_lock_ref'],
+        'independent_endpoint_evidence_ref': originals['analysis']['independent_endpoint_evidence_ref'],
+        'verified_by_tool': False, 'historical_lock_or_blinding_proven': False}
+    assert training['authority_granted'] is evidence['authority_granted'] is evidence['clinical_success_claimed'] is False
+    assert evidence['dataset_sha256'] == training['dataset_sha256'] == report['dataset_sha256'] == expected_hashes['dataset']
+    assert evidence['analysis_plan_sha256'] == training['analysis_plan_sha256'] == report['analysis_plan_sha256'] == expected_hashes['analysis']
+    assert evidence['split_plan_sha256'] == training['split_plan_sha256'] == report['split_plan_sha256'] == expected_hashes['split']
+    assert evidence['training_sha256'] == expected_hashes['training']
+    assert evidence['evaluation_report_sha256'] == expected_hashes['report']
+    assert evidence['artifact_sha256'] == training['artifact_sha256'] == artifact_hashes
+    assert training['eligible_session_ids'] == originals['split']['session_ids']['training']
+    assert training['rejected_training_rows'] == []
+    assert all(row['endpoint']['independently_assessed'] is True for row in originals['dataset']['sessions'])
+    for partition in ('confirmatory', 'later_sessions'):
+        assert evidence['matched_evaluation_session_ids'][partition] == originals['split']['session_ids'][partition]
+        for predictions in evidence['row_predictions'][partition].values():
+            assert [row['session_id'] for row in predictions] == originals['split']['session_ids'][partition]
+            assert len(predictions) == 8
+    if plan.cardiac_provenance is not None:
+        manifest = evidence['cardiac_evidence_manifest']
+        assert manifest['provenance'] == originals['analysis']['cardiac_provenance']
+        assert manifest['signatures_registry_release_and_independent_review_authenticated'] is False
+        assert {row['session_id']: row['session_record_sha256'] for row in manifest['rows']} == row_hashes
+        by_id = {row['session_id']: row['cardiac_evidence'] for row in originals['dataset']['sessions']}
+        for row in manifest['rows']:
+            for name in ('source_bundle_ref', 'source_bundle_sha256', 'snapshot_sha256', 'authority_sha256', 'baseline_snapshot_sha256'):
+                assert row[name] == by_id[row['session_id']][name]
+        manifest_hash = digest(manifest)
+        assert evidence['cardiac_evidence_manifest_sha256'] == training['cardiac_evidence_manifest_sha256'] == report['cardiac_evidence']['evidence_manifest_sha256'] == manifest_hash
+    return dataset, plan, training_dir, evaluation_dir, verify_args
+
+
+def assert_forged_history_refused(cohort, tmp_path, monkeypatch):
+    dataset, plan, training_dir, evaluation_dir, verify_args = external_history_pipeline(cohort, tmp_path, monkeypatch)
+    # Reject extra approval claims in actual strict typed inputs, including the
+    # endpoint whose required True value is only a caller assertion.
+    for target in ('dataset', 'plan', 'endpoint'):
+        for flag in ('verified_by_tool', 'authority_granted', 'historical_lock_proven'):
+            raw = deepcopy(plan.model_dump() if target == 'plan' else dataset.model_dump())
+            (raw['sessions'][0]['endpoint'] if target == 'endpoint' else raw)[flag] = True
+            with pytest.raises(ValueError, match='Extra inputs are not permitted'):
+                (m.AnalysisPlan if target == 'plan' else m.Dataset).model_validate(raw)
+    # Untyped receipts cannot smuggle authority through deterministic verify.
+    training_path = training_dir / 'training.json'
+    evidence_path = evaluation_dir / 'evaluation-evidence.json'
+    for path, mutate in (
+        (training_path, lambda value: value.update(authority_granted=True)),
+        (training_path, lambda value: value.update(independent_review_authenticated=True)),
+        (evidence_path, lambda value: value['external_assertions'].update(verified_by_tool=True)),
+        (evidence_path, lambda value: value['external_assertions'].update(historical_lock_or_blinding_proven=True)),
+        (evidence_path, lambda value: value.update(authority_granted=True, clinical_success_claimed=True)),
+    ):
+        original = path.read_bytes()
+        forged = m.load(path); mutate(forged); path.write_bytes(canonical(forged))
+        with pytest.raises(ValueError):
+            m.main(verify_args)
+        path.write_bytes(original)
+    if plan.cardiac_provenance is not None:
+        for target in ('cardiac_provenance', 'cardiac_evidence'):
+            raw = deepcopy(plan.model_dump() if target == 'cardiac_provenance' else dataset.model_dump())
+            nested = raw[target] if target == 'cardiac_provenance' else raw['sessions'][0][target]
+            nested['signatures_registry_release_and_independent_review_authenticated'] = True
+            with pytest.raises(ValueError, match='Extra inputs are not permitted'):
+                (m.AnalysisPlan if target == 'cardiac_provenance' else m.Dataset).model_validate(raw)
+        original = evidence_path.read_bytes(); forged = m.load(evidence_path)
+        forged['cardiac_evidence_manifest']['signatures_registry_release_and_independent_review_authenticated'] = True
+        forged['cardiac_evidence_manifest_sha256'] = digest(forged['cardiac_evidence_manifest'])
+        evidence_path.write_bytes(canonical(forged))
+        with pytest.raises(ValueError, match='Evaluation bytes do not reproduce'):
+            m.main(verify_args)
+        evidence_path.write_bytes(original)
+    assert m.main(verify_args)['authority_granted'] is False
+
+
+def test_external_history_references_remain_unverified_through_pipeline(cohort, tmp_path, monkeypatch):
+    external_history_pipeline(cohort, tmp_path, monkeypatch)
+
+
+def test_self_asserted_or_extra_approval_fields_do_not_authenticate_history(cohort, tmp_path, monkeypatch):
+    assert_forged_history_refused(cohort, tmp_path, monkeypatch)
 
 
 def test_frozen_participant_and_temporal_partitions_reproduce_without_outcomes(cohort):

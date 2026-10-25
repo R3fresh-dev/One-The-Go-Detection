@@ -18,7 +18,7 @@ import zipfile
 
 import yaml
 
-from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH
+from deploy.provenance import Gate, REPOSITORY, REQUIRED_JOBS, WORKFLOW_PATH
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / '.github/workflows/deploy-serverless.yml'
@@ -398,7 +398,8 @@ class ServerlessWorkflowTest(unittest.TestCase):
             self.assertEqual(receipt['source_artifact_id'], 40)
             self.assertEqual(receipt['source_release_id'], PREVIOUS_REVISION)
             self.program['select_latest_gate'].assert_called_once_with(PREVIOUS_REVISION)
-            verify.assert_called_once_with(Path('.local/serverlessconfig/resume-gates/gates.json'), PREVIOUS_REVISION)
+            verify.assert_called_once_with(Path('.local/serverlessconfig/resume-gates/gates.json'),
+                                           PREVIOUS_REVISION, required_jobs=REQUIRED_JOBS)
             self.assertEqual(downloaded.call_args_list[0].args[0],
                              ['gh', 'api', f'repos/{REPOSITORY}/actions/artifacts/40/zip'])
             self.assertIn('50', downloaded.call_args_list[1].args[0])

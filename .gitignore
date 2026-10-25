@@ -53,3 +53,7 @@ node_modules
 # Durable Factory text reports are checkpoint evidence, not generated test output.
 !docs/factory/*/reports/
 !docs/factory/*/reports/*.md
+
+# Live browser artifacts are evidence, not source fingerprint inputs.
+/apps/mobile/playwright-live-report/
+/apps/mobile/test-results-live/

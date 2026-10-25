@@ -252,3 +252,48 @@ test("navigation and theme components expose selected state at both viewport siz
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(page.viewportSize()!.width);
 });
+
+test("Settings and Back preserve the actual draft and collected example without a camera prompt", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    (window as any).cameraRequests = 0;
+    if (navigator.mediaDevices) {
+      navigator.mediaDevices.getUserMedia = async () => {
+        (window as any).cameraRequests++;
+        throw new Error("No camera acquisition in this software journey");
+      };
+    }
+  });
+  await enterGuest(page);
+  await acknowledgeNotice(page);
+  await page.getByTestId("review-context").click();
+  await page
+    .getByRole("switch", { name: "I have reviewed this check’s context." })
+    .check();
+  await page.getByTestId("start-check").click();
+  await page.getByRole("button", { name: "3 Saliva", exact: true }).click();
+  await page.getByTestId("simulate-saliva").click();
+  const identity = await page.getByText(/Check 3 of 8 ·/).textContent();
+  await expect(page.getByTestId("simulate-saliva")).toBeDisabled();
+  await page.getByRole("tab", { name: "Settings", exact: true }).click();
+  await expect(
+    page.getByText("Browser permission is checked at eye preview", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Refresh permission status", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Check", exact: true }).click();
+  await expect(page.getByText(identity!, { exact: true })).toBeVisible();
+  await expect(page.getByTestId("simulate-saliva")).toBeDisabled();
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Keep draft and leave", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Check", exact: true }).click();
+  await expect(page.getByText(identity!, { exact: true })).toBeVisible();
+  await expect(page.getByTestId("simulate-saliva")).toBeDisabled();
+  expect(await page.evaluate(() => (window as any).cameraRequests)).toBe(0);
+});

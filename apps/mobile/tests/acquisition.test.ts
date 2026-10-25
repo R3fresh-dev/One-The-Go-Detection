@@ -1543,6 +1543,163 @@ test("scope-qualified preparation End stops the advanced capture token before a 
   }
 });
 
+test("hypothetical breath contract configuration is selectable only strictly before its expiry", async (context) => {
+  context.mock.timers.enable({
+    apis: ["Date"],
+    now: Date.parse("2026-10-11T12:00:00Z"),
+  });
+  const { app, study, config, close } = await approvedAccount();
+  try {
+    await app.beginStudyCheck(study.study_id, config.protocol_id, true);
+    // Selection contract only. This does not install a breath adapter, validate
+    // a calibration, obtain a server grant or invoke an instrument.
+    const caps = clone(app.getSnapshot().state!.capabilities)!;
+    for (const key of Object.keys(caps.channels))
+      caps.channels[key]!.available = false;
+    const breath = {
+      ...config,
+      configuration_id: "fictional-breath-contract-only",
+      software_adapter_id: "fictional-uninstalled-breath-contract",
+      expires_at: "2026-10-11T12:00:01Z",
+    };
+    caps.channels.alcohol = {
+      available: true,
+      software_available: true,
+      authorization_available: true,
+      reason_codes: [],
+      configurations: [breath],
+    };
+    const check = clone(app.check!);
+    check.context.configuration_refs = [
+      {
+        id: breath.configuration_id,
+        version: "v1",
+        sha256: breath.configuration_hash,
+        scope: "measurement_collection",
+      },
+    ];
+    for (const [offset, selectable] of [
+      [999, true],
+      [1000, false],
+      [1001, false],
+    ] as const) {
+      context.mock.timers.setTime(Date.parse("2026-10-11T12:00:00Z") + offset);
+      assert.equal(
+        configurationsFor(caps, study.study_id, config.protocol_id).length,
+        selectable ? 1 : 0,
+      );
+      if (selectable)
+        assert.equal(
+          configurationFor(check, caps, "alcohol").configuration_id,
+          "fictional-breath-contract-only",
+        );
+      else
+        assert.throws(() => configurationFor(check, caps, "alcohol"), {
+          code: "CAPTURE_CONFIGURATION_AMBIGUOUS",
+        });
+    }
+    assert.equal(app.check!.alcohol, null);
+  } finally {
+    await close();
+  }
+});
+
+test("fresh absent-breath-adapter capability overrides stale cached availability before any hardware invocation", async () => {
+  const { app, study, config, service, events, close } =
+    await approvedAccount();
+  try {
+    await app.beginStudyCheck(study.study_id, config.protocol_id, true);
+    // Deliberately stale cached input cannot override the refreshed server
+    // inventory. Real software_supported() inventory is tested by the API suite.
+    app.getSnapshot().state!.capabilities!.channels.alcohol = {
+      available: true,
+      authorization_available: true,
+      software_available: true,
+      reason_codes: [],
+      configurations: [config],
+    };
+    service.caps.channels.alcohol = {
+      available: false,
+      authorization_available: true,
+      software_available: false,
+      reason_codes: ["HUMAN_ADAPTER_UNIMPLEMENTED"],
+      configurations: [config],
+    };
+    await assert.rejects(app.captureReader("alcohol"), {
+      code: "CAPTURE_UNAVAILABLE",
+    });
+    assert.equal(
+      app.getSnapshot().state!.capabilities!.channels.alcohol!
+        .software_available,
+      false,
+    );
+    assert.deepEqual(
+      events.filter((event) =>
+        ["grant", "prepare-device-nonce", "hardware-acquire"].includes(event),
+      ),
+      [],
+    );
+    assert.equal(app.check!.attempts.length, 0);
+    assert.equal(app.check!.alcohol, null);
+  } finally {
+    await close();
+  }
+});
+
+test("a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration", async () => {
+  const { app, study, config, service, events, close } =
+    await approvedAccount();
+  try {
+    // Reuse the actual controller transport boundary with explicitly fictional
+    // eligibility. No successful breath driver or calibration is supplied.
+    service.caps.channels.alcohol = {
+      available: true,
+      authorization_available: true,
+      software_available: true,
+      reason_codes: [],
+      configurations: [
+        {
+          ...config,
+          participant_protocol: null,
+          participant_protocol_sha256: null,
+        },
+      ],
+    };
+    await app.beginStudyCheck(study.study_id, config.protocol_id, true);
+    const transport = globalThis.fetch;
+    globalThis.fetch = async (input, init) => {
+      const path = new URL(String(input)).pathname;
+      if (path.endsWith("/capture-authorizations")) {
+        const response = await transport(input, init),
+          body = await response.json();
+        body.participant_protocol_sha256 = null;
+        return service.result(body, response.status);
+      }
+      if (path.endsWith("/start")) {
+        events.push("authoritative-start-refusal");
+        return service.result(
+          { code: "APPROVED_REGISTRY_VERSION_REQUIRED", retryable: false },
+          403,
+        );
+      }
+      return transport(input, init);
+    };
+    await assert.rejects(app.captureReader("alcohol"), {
+      code: "APPROVED_REGISTRY_VERSION_REQUIRED",
+    });
+    assert.equal(events.includes("grant"), true);
+    assert.equal(events.includes("authoritative-start-refusal"), true);
+    assert.equal(events.includes("hardware-acquire"), false);
+    assert.equal(app.check!.alcohol!.value_mg_l, null);
+    assert.equal(app.check!.alcohol!.qualifier, "invalid");
+    assert.equal(app.check!.attempts[0]!.status, "invalid");
+    // The generic real server code cannot honestly be called a calibration
+    // diagnosis. Direct dependency expiry/recalibration belongs to API evidence.
+  } finally {
+    await close();
+  }
+});
+
 test("actual Python HTTP grant/start envelope binds material, frozen context and signed fresh start without simulated clinical authority", (context) => {
   const fixture = require("../testfixtures/backend-capture-authorization.json");
   const grant = fixture.authorization;

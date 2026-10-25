@@ -458,9 +458,13 @@ function PermissionsCard({ controller }: Pick<ScreenProps, "controller">) {
     [unlock, setUnlock] = useState("Not checked");
   const active = useRef(true),
     sequence = useRef(0);
+  const epoch = controller.epoch;
   const refresh = async () => {
     const run = ++sequence.current;
-    const current = () => active.current && run === sequence.current;
+    const current = () =>
+      active.current &&
+      run === sequence.current &&
+      controller.epoch === epoch;
     if (Platform.OS === "web") {
       if (current()) {
         setCamera("Browser permission is checked at eye preview");
@@ -713,7 +717,12 @@ export function SettingsScreen({ controller, model }: ScreenProps) {
           override brightness.
         </Paragraph>
       </Card>
-      {!BUILD.hostedPreview && <PermissionsCard controller={controller} />}
+      {!BUILD.hostedPreview && (
+        <PermissionsCard
+          key={`permissions:${controller.epoch}:${state.generation}`}
+          controller={controller}
+        />
+      )}
       <DiagnosticsCard
         key={`${controller.epoch}:${state.generation}`}
         controller={controller}
@@ -1619,7 +1628,7 @@ export function AlcoholScreen({ controller, model }: ScreenProps) {
         <Fact label="Driving threshold or clearance" value="Unavailable" />
         <Fact
           label="Effect on cannabis classification"
-          value="No classification exists"
+          value="No automatic combined classification; research co-use requires model-specific authority"
         />
       </Card>
       {check && !check.frozen && check.kind !== "measurement" ? (

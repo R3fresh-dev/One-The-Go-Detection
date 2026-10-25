@@ -212,9 +212,9 @@ def authorize(
         )
     token = html.escape(id, quote=True)
     response = HTMLResponse(
-        '<!doctype html><html lang="en"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fictional local sign-in</title><h1>Local engineering account</h1><p>These two named accounts contain fictional engineering data. This is not production authentication.</p><form method="post" action="/oauth2/authorize"><input type="hidden" name="authorization_id" value="'
+        '<!doctype html><html lang="en"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fictional local sign-in</title><h1>Local engineering account</h1><p>These named accounts contain fictional engineering data. This is not production authentication.</p><form method="post" action="/oauth2/authorize"><input type="hidden" name="authorization_id" value="'
         + token
-        + '"><button name="account" value="fixture_a">Use Fictional Account A</button><button name="account" value="fixture_b">Use Fictional Account B</button></form></html>'
+        + '"><button name="account" value="fixture_a">Use Fictional Account A</button><button name="account" value="fixture_b">Use Fictional Account B</button><button name="account" value="browser_mobile">Use Fictional Browser Mobile</button><button name="account" value="browser_desktop">Use Fictional Browser Desktop</button></form></html>'
     )
     response.set_cookie(
         COOKIE,

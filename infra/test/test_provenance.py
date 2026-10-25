@@ -27,13 +27,14 @@ SHA = "c" * 40
 NOW = datetime(2026, 10, 11, 12, tzinfo=timezone.utc)
 
 
-def gate_fixture():
+def gate_fixture(*, historical=False):
     evidence = {"revision": SHA, "run_url": f"https://github.com/{p.REPOSITORY}/actions/runs/23", "passed": sorted(p.REQUIRED_GATE_LABELS)}
     run = {"id": 23, "head_sha": SHA, "status": "completed", "conclusion": "success", "path": p.WORKFLOW_PATH,
            "repository": {"full_name": p.REPOSITORY}, "head_repository": {"full_name": p.REPOSITORY},
            "head_branch": "main", "event": "push", "run_attempt": 2, "workflow_id": 17}
+    names = p.REQUIRED_JOBS if historical else p.FARGATE_REQUIRED_JOBS
     jobs = [{"id": i, "name": name, "run_id": 23, "run_attempt": 2, "head_sha": SHA, "status": "completed", "conclusion": "success"}
-            for i, name in enumerate(sorted(p.REQUIRED_JOBS), 1)]
+            for i, name in enumerate(sorted(names), 1)]
     return evidence, run, jobs
 
 
@@ -126,12 +127,13 @@ class ProvenanceTest(unittest.TestCase):
                     p.verify_github_gates(evidence, SHA, client=client)
 
     def test_current_fargate_requires_fourteenth_job_and_preserves_historical_proof(self):
-        evidence, run, jobs = gate_fixture()
+        evidence, run, jobs = gate_fixture(historical=True)
         runtime = {**jobs[0], "id": 88, "name": "platform / fargate-container-runtime"}
         self.assertEqual(p.FARGATE_REQUIRED_JOBS, p.REQUIRED_JOBS | {runtime["name"]})
         client, _ = fixture_client(run, jobs)
         with client:
-            historical = p.verify_github_gates(evidence, SHA, client=client)
+            historical = p.verify_github_gates(evidence, SHA, client=client,
+                                               required_jobs=p.REQUIRED_JOBS)
         client, _ = fixture_client(run, jobs)
         with client, self.assertRaises(p.Gate):
             p.verify_github_gates(evidence, SHA, client=client, required_jobs=p.FARGATE_REQUIRED_JOBS)
@@ -144,7 +146,7 @@ class ProvenanceTest(unittest.TestCase):
         self.assertEqual(p.validate_gate_binding(current, SHA), p.sha256(historical))
 
     def test_fargate_job_must_be_unique_successful_and_from_the_same_latest_attempt(self):
-        evidence, run, jobs = gate_fixture()
+        evidence, run, jobs = gate_fixture(historical=True)
         runtime = {**jobs[0], "id": 88, "name": "platform / fargate-container-runtime"}
         cases = [("duplicate", [runtime, {**runtime, "id": 89}])]
         cases.extend((field + "=" + str(value), [{**runtime, field: value}])
@@ -166,8 +168,64 @@ class ProvenanceTest(unittest.TestCase):
                 p.verify_github_gates(evidence, SHA, client=client, required_jobs=required)
             self.assertEqual(requests, [])
 
-    def test_gate_file_and_owned_client_preserve_fargate_requirements(self):
+    def test_default_live_verification_requires_container_runtime_for_every_target(self):
         evidence, run, jobs = gate_fixture()
+        runtime = next(job for job in jobs if job['name'] == 'platform / fargate-container-runtime')
+        base = [job for job in jobs if job is not runtime]
+        cases = [('missing', base)]
+        cases.extend((status, base + [{**runtime, 'conclusion': status}])
+                     for status in ('failure', 'skipped', 'cancelled'))
+        for label, rows in cases:
+            client, _ = fixture_client(run, rows)
+            with self.subTest(label=label), client, self.assertRaises(p.Gate):
+                p.verify_github_gates(evidence, SHA, client=client)
+
+    def test_default_gate_file_and_owned_client_reject_base_only_evidence(self):
+        evidence, run, jobs = gate_fixture(historical=True)
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'gates.json'
+            path.write_text(json.dumps(evidence))
+            client, _ = fixture_client(run, jobs)
+            with patch.object(p.httpx, 'Client', return_value=client), self.assertRaises(p.Gate):
+                p.verify_gate_file(path, SHA)
+
+    def test_platform_build_rejects_base_only_evidence_before_signing_or_docker(self):
+        evidence, run, jobs = gate_fixture(historical=True)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            gates = root / 'gates.json'
+            gates.write_text(json.dumps(evidence))
+            client, _ = fixture_client(run, jobs)
+            with patch.object(sys, 'argv', ['platform.py', 'build', '--config', str(root / 'qa.json'),
+                    '--gate-evidence', str(gates), '--output', str(root / 'release.json'),
+                    '--signing-key', str(root / 'key.pem'), '--trusted-public-key', str(root / 'public.pem')]), \
+                    patch.object(d, 'read_config', return_value={'environment': 'qa', 'releaseId': SHA}), \
+                    patch.object(d, 'preflight'), patch.object(d, 'run', side_effect=['', SHA]), \
+                    patch.object(p.httpx, 'Client', return_value=client), \
+                    patch.object(d, 'require_trusted_signer', side_effect=lambda *args: self.fail('Incomplete CI reached signing')), \
+                    patch.object(d, 'login') as login, self.assertRaises(p.Gate):
+                d.main()
+            login.assert_not_called()
+
+    def test_serverless_admission_rejects_base_only_evidence_before_cloud_operations(self):
+        from deploy import serverless
+        evidence, run, jobs = gate_fixture(historical=True)
+        with tempfile.TemporaryDirectory() as temporary:
+            gates = Path(temporary) / 'gates.json'
+            gates.write_text(json.dumps(evidence))
+            client, _ = fixture_client(run, jobs)
+            aws = Mock()
+            aws.client.side_effect = lambda *args: self.fail('Incomplete CI reached cloud operations')
+            with patch.object(serverless.platform, 'require_clean_source'), \
+                    patch.object(p.httpx, 'Client', return_value=client), \
+                    patch.object(serverless, 'StageJournal', side_effect=lambda *args, **kwargs: self.fail('Incomplete CI reached deployment journal')), \
+                    self.assertRaisesRegex(p.Gate, 'required GitHub job evidence'):
+                serverless.deploy(SimpleNamespace(gate_evidence=gates, establish_new=False),
+                                  {'releaseId': SHA}, aws, {})
+            aws.client.assert_not_called()
+
+    def test_gate_file_and_owned_client_preserve_fargate_requirements(self):
+        evidence, run, jobs = gate_fixture(historical=True)
         runtime = {**jobs[0], "id": 88, "name": "platform / fargate-container-runtime"}
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "gates.json"

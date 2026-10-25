@@ -1716,6 +1716,14 @@ export function ResultScreen({ controller, model }: ScreenProps) {
             label="Qualifier / source"
             value={`${friendly(check.alcohol.qualifier)} / ${friendly(check.alcohol.source)}`}
           />
+          <Fact
+            label="Measured (UTC)"
+            value={
+              typeof check.alcohol.measured_at === "string"
+                ? check.alcohol.measured_at
+                : "Not reported"
+            }
+          />
           <Paragraph muted>
             No BAC conversion or cannabis impairment adjustment is calculated.
           </Paragraph>

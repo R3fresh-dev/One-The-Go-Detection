@@ -724,7 +724,9 @@ jobs:
           def recheck_legacy_continuation(run, gate_run_id, historical_directory, proof):
               if select_latest_gate(run['head_sha']) != gate_run_id:
                   raise Gate('Legacy continuation latest source gate changed during previous recovery admission')
-              final_proof = platform.verify_gate_file(historical_directory / 'gates.json', run['head_sha'])
+              # Recheck only the original Ohio history, never current admission.
+              final_proof = platform.verify_gate_file(historical_directory / 'gates.json', run['head_sha'],
+                                                      required_jobs=REQUIRED_JOBS)
               if final_proof != proof:
                   raise Gate('Legacy continuation source gate attempt changed during previous recovery admission')
               current = github_json(f"repos/{REPOSITORY}/actions/runs/{run['id']}")
@@ -854,7 +856,10 @@ jobs:
                   capture_output=True, text=True, timeout=60)
               if downloaded.returncode != 0:
                   raise Gate('Continuation exact-source aggregate gate artifact is unavailable')
-              proof = platform.verify_gate_file(historical_directory / 'gates.json', run['head_sha'])
+              # The original Ohio deployment predates the fourteenth job.
+              # New and previous Fargate sources require the current inventory.
+              proof = platform.verify_gate_file(historical_directory / 'gates.json', run['head_sha'],
+                                                required_jobs=REQUIRED_JOBS)
               if proof['run_id'] != gate_run_id:
                   raise Gate('Continuation gate evidence belongs to a different workflow run')
               current = github_json(f'repos/{REPOSITORY}/actions/runs/{run_id}')

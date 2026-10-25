@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { buildSync } from "esbuild";
+import { build, buildSync } from "esbuild";
 import { resolve } from "node:path";
 import fixture from "../testfixtures/backend-raw-recordings.json";
 import { clone, digest, digestText } from "../src/core/integrity";
@@ -76,6 +76,439 @@ const bundle = buildSync({
   define: { "process.env.NODE_ENV": '"test"' },
   loader: { ".tsx": "tsx" },
 }).outputFiles![0]!.text;
+
+function screenOptions(entry: string, native = false) {
+  return {
+    entryPoints: [resolve(`e2e/fixtures/${entry}.tsx`)],
+    bundle: true,
+    write: false,
+    platform: "browser" as const,
+    format: "iife" as const,
+    resolveExtensions: [
+      ".web.tsx",
+      ".web.ts",
+      ".web.js",
+      ".tsx",
+      ".ts",
+      ".jsx",
+      ".js",
+      ".json",
+    ],
+    alias: {
+      "react-native": resolve(
+        `e2e/fixtures/${native ? "permissions-native-shim.ts" : "native-web-shim.js"}`,
+      ),
+      ...(native
+        ? {
+            "expo-camera": resolve("e2e/fixtures/permission-adapters.ts"),
+            "expo-local-authentication": resolve(
+              "e2e/fixtures/permission-adapters.ts",
+            ),
+            "expo-clipboard": resolve("e2e/fixtures/permission-adapters.ts"),
+          }
+        : {}),
+    },
+    define: {
+      "process.env.NODE_ENV": '"test"',
+      "process.env.EXPO_PUBLIC_APP_ENV": '"local"',
+      "process.env.EXPO_PUBLIC_HOSTED_PREVIEW": '"false"',
+    },
+  };
+}
+const alcoholBundle = buildSync(screenOptions("alcohol-component"))
+  .outputFiles![0]!.text;
+let permissionsBundle: string;
+test.beforeAll(async () => {
+  permissionsBundle = (
+    await build({
+      ...screenOptions("permissions-component", true),
+      plugins: [
+        {
+          name: "controlled-permission-boundary",
+          setup(builder) {
+            builder.onResolve({ filter: /modules\/device-transport$/ }, () => ({
+              path: resolve("e2e/fixtures/permission-adapters.ts"),
+            }));
+          },
+        },
+      ],
+    })
+  ).outputFiles![0]!.text;
+});
+
+const screenErrors = new WeakMap<object, string[]>();
+async function screenDOM(page: any, content: string) {
+  const errors: string[] = [];
+  screenErrors.set(page, errors);
+  page.on("pageerror", (error: Error) => errors.push(error.message));
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content });
+}
+test.afterEach(async ({ page }) => {
+  expect(screenErrors.get(page) ?? []).toEqual([]);
+});
+
+test("alcohol copy remains accurate for measurement, guest and admitted research contexts", async ({
+  page,
+}) => {
+  await screenDOM(page, alcoholBundle);
+  for (const kind of ["measurement", "guest_demo", "research"]) {
+    const check = clone(researchFixture.check) as any;
+    if (kind !== "research") {
+      check.kind = kind;
+      check.result = null;
+    }
+    await page.evaluate((value) => (window as any).renderAlcohol(value), check);
+    await expect(
+      page.getByText("Qualified capture unavailable", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("mg/L breath alcohol", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "No automatic combined classification; research co-use requires model-specific authority",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByText("No classification exists", { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText("Driving threshold or clearance", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText("Unavailable", { exact: true })).toHaveCount(2);
+  }
+});
+
+test("alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail", async ({
+  page,
+}) => {
+  await screenDOM(page, alcoholBundle);
+  for (const variant of [
+    {
+      qualifier: "quantified",
+      source: "prototype_sensor",
+      value: 0,
+      text: "0.000",
+    },
+    {
+      qualifier: "quantified",
+      source: "prototype_sensor",
+      value: 0.001,
+      text: "0.001",
+    },
+    {
+      qualifier: "below_loq",
+      source: "prototype_sensor",
+      value: null,
+      text: "—",
+    },
+    {
+      qualifier: "not_detected",
+      source: "prototype_sensor",
+      value: null,
+      text: "—",
+    },
+    {
+      qualifier: "invalid",
+      source: "prototype_sensor",
+      value: null,
+      text: "—",
+    },
+    {
+      qualifier: "quantified",
+      source: "simulated",
+      value: 0.001,
+      text: "0.001",
+    },
+  ]) {
+    const check = clone(researchFixture.check) as any;
+    check.alcohol = {
+      ...check.alcohol,
+      qualifier: variant.qualifier,
+      source: variant.source,
+      value_mg_l: variant.value,
+      measured_at: "2026-10-11T07:08:09Z",
+      // Hypothetical reporting boundary only; no qualified instrument exists.
+      limits: { lod_mg_l: 0, loq_mg_l: 0, upper_mg_l: 1 },
+    };
+    await page.evaluate(
+      (value) => (window as any).renderAlcohol(value, "history"),
+      check,
+    );
+    await expect(
+      page.getByText("Your check history", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        /safe to drive|cleared to drive|legally cleared|combined score/i,
+      ),
+    ).toHaveCount(0);
+    await page.getByRole("button", { name: /Measurements only/ }).click();
+    await expect(page.getByText("83.2%", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("above threshold", { exact: true }),
+    ).toBeVisible();
+    const card = page
+      .getByText("Separate alcohol measurement", { exact: true })
+      .locator("..");
+    await expect(
+      card.getByText(`${variant.text} mg/L`, { exact: true }),
+    ).toBeVisible();
+    await expect(card.getByText("mg/L", { exact: true })).toBeVisible();
+    await expect(
+      card.getByText(
+        `${variant.qualifier.replaceAll("_", " ")} / ${variant.source.replaceAll("_", " ")}`,
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      card.getByText("2026-10-11T07:08:09Z", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      card.getByText(
+        "No BAC conversion or cannabis impairment adjustment is calculated.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        /safe to drive|cleared to drive|legally cleared|combined score/i,
+      ),
+    ).toHaveCount(0);
+    await page.getByRole("button", { name: /About this result/ }).click();
+    await expect(
+      page.getByText("Evidence & context", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        /safe to drive|cleared to drive|legally cleared|combined score/i,
+      ),
+    ).toHaveCount(0);
+  }
+});
+
+test("Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly", async ({
+  page,
+}) => {
+  await screenDOM(page, permissionsBundle);
+  for (const value of [
+    {
+      exact: "denied",
+      status: "denied",
+      canAskAgain: true,
+      label: "Denied · request only in eye preview",
+    },
+    {
+      exact: "denied",
+      status: "denied",
+      canAskAgain: false,
+      label: "Denied · review app settings",
+    },
+    {
+      exact: "restricted",
+      status: "denied",
+      canAskAgain: false,
+      label: "Restricted by device policy",
+    },
+    {
+      exact: "not_requested",
+      status: "undetermined",
+      canAskAgain: true,
+      label: "Not requested",
+    },
+    {
+      exact: "unknown",
+      status: "denied",
+      canAskAgain: false,
+      fail: true,
+      label: "Status unavailable · refresh to retry",
+    },
+  ]) {
+    await page.evaluate((value) => {
+      const c = (window as any).permissionControl;
+      c.exact = value.exact;
+      c.fail = !!value.fail;
+      c.permission = {
+        status: value.status,
+        canAskAgain: value.canAskAgain,
+        granted: false,
+        expires: "never",
+      };
+      (window as any).renderPermissions(value.label);
+    }, value);
+    const camera = page
+      .getByText("Camera · eye-positioning preview", { exact: true })
+      .locator("..");
+    // Refresh also covers retained Settings instances before the account-boundary repair.
+    await page
+      .getByRole("button", { name: "Refresh permission status", exact: true })
+      .click();
+    await expect(camera.getByText(value.label, { exact: true })).toBeVisible();
+    await page.evaluate(() => (window as any).permissionActive());
+    await expect(camera.getByText(value.label, { exact: true })).toBeVisible();
+    expect(
+      await page.evaluate(() => (window as any).permissionControl.prompts),
+    ).toBe(0);
+  }
+  expect(
+    await page.evaluate(() => (window as any).permissionControl.settings),
+  ).toBe(0);
+  await page
+    .getByRole("button", { name: "Open device settings", exact: true })
+    .click();
+  expect(
+    await page.evaluate(() => (window as any).permissionControl.settings),
+  ).toBe(1);
+  await page.evaluate(() => {
+    const c = (window as any).permissionControl;
+    c.fail = false;
+    c.exact = "granted";
+    c.permission = {
+      status: "granted",
+      granted: true,
+      canAskAgain: true,
+      expires: "never",
+    };
+    (window as any).permissionActive();
+  });
+  await expect(
+    page
+      .getByText("Camera · eye-positioning preview", { exact: true })
+      .locator("..")
+      .getByText("Granted", { exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => (window as any).permissionControl.prompts),
+  ).toBe(0);
+});
+
+test("Settings ignores out-of-order and unmounted camera reads and replaces stale account and generation observations", async ({
+  page,
+}) => {
+  await screenDOM(page, permissionsBundle);
+  await page.evaluate(() => {
+    (window as any).permissionControl.defer = true;
+    (window as any).renderPermissions();
+  });
+  const camera = page
+    .getByText("Camera · eye-positioning preview", { exact: true })
+    .locator("..");
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as any).permissionControl.pending.length),
+    )
+    .toBe(1);
+  await page
+    .getByRole("button", { name: "Refresh permission status", exact: true })
+    .click();
+  await page.evaluate(() => {
+    const c = (window as any).permissionControl;
+    c.pending[1].resolve({
+      status: "granted",
+      granted: true,
+      canAskAgain: true,
+      expires: "never",
+    });
+  });
+  await expect(camera.getByText("Granted", { exact: true })).toBeVisible();
+  await page.evaluate(() =>
+    (window as any).permissionControl.pending[0].resolve({
+      status: "denied",
+      granted: false,
+      canAskAgain: false,
+      expires: "never",
+    }),
+  );
+  await expect(camera.getByText("Granted", { exact: true })).toBeVisible();
+  // A controller can invalidate its epoch before React commits navigation.
+  // That interval must not let the old card publish its outstanding OS read.
+  await page
+    .getByRole("button", { name: "Refresh permission status", exact: true })
+    .click();
+  await page.evaluate(() => {
+    (window as any).changePermissionEpoch("fictional-between-render");
+    (window as any).permissionControl.pending.at(-1).resolve({
+      status: "denied",
+      granted: false,
+      canAskAgain: false,
+      expires: "never",
+    });
+  });
+  await page.clock.runFor(50);
+  await expect(camera.getByText("Granted", { exact: true })).toBeVisible();
+  for (const [epoch, generation] of [
+    ["fictional-account-B:g1", 1],
+    ["fictional-account-B:g1", 2],
+  ] as const) {
+    await page
+      .getByRole("button", { name: "Refresh permission status", exact: true })
+      .click();
+    const old = await page.evaluate(
+      () => (window as any).permissionControl.pending.length - 1,
+    );
+    await page.evaluate(
+      ({ epoch, generation }) =>
+        (window as any).renderPermissions(epoch, generation),
+      { epoch, generation },
+    );
+    await page.evaluate(
+      (index) =>
+        (window as any).permissionControl.pending[index].resolve({
+          status: "denied",
+          granted: false,
+          canAskAgain: false,
+          expires: "never",
+        }),
+      old,
+    );
+    await expect(
+      camera.getByText("Not checked", { exact: true }),
+    ).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() => (window as any).permissionControl.pending.length),
+      )
+      .toBe(old + 2);
+    await page.evaluate(
+      (index) =>
+        (window as any).permissionControl.pending[index + 1].resolve({
+          status: "granted",
+          granted: true,
+          canAskAgain: true,
+          expires: "never",
+        }),
+      old,
+    );
+    await expect(camera.getByText("Granted", { exact: true })).toBeVisible();
+  }
+  await page
+    .getByRole("button", { name: "Refresh permission status", exact: true })
+    .click();
+  await page.evaluate(() => (window as any).unmountPermissions());
+  await expect(
+    page.getByText("Device permissions", { exact: true }),
+  ).toHaveCount(0);
+  await page.evaluate(() => {
+    const c = (window as any).permissionControl;
+    c.pending.at(-1).resolve({
+      status: "denied",
+      granted: false,
+      canAskAgain: false,
+      expires: "never",
+    });
+  });
+  await expect(
+    page.getByText("Denied · review app settings", { exact: true }),
+  ).toHaveCount(0);
+  expect(
+    await page.evaluate(() => ({
+      prompts: (window as any).permissionControl.prompts,
+      listeners: (window as any).permissionControl.listeners.size,
+    })),
+  ).toEqual({ prompts: 0, listeners: 0 });
+});
 
 test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: Date.parse("2026-10-11T12:00:00Z") });
