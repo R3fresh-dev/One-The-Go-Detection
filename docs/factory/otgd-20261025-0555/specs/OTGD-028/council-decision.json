@@ -1,0 +1,845 @@
+{
+  "spec_id": "OTGD-028",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-history/spec.md",
+  "canonical_sha256": "eb9f89e04620ed296b248ce076e2c5447df6c5fb2c9da0eb9fa90725f2bd99a2",
+  "canonical_requirements": [
+    "AND-HIST-001 Correct ownership and provenance",
+    "AND-HIST-002 Stable pagination and deduplication",
+    "AND-HIST-003 Faithful state, qualifier, and time display",
+    "AND-HIST-004 Immutable records and linked corrections",
+    "AND-HIST-005 Offline detail and bounded retry",
+    "AND-HIST-006 Pending operations and deletion reconciliation",
+    "AND-HIST-007 Accessible records and iOS parity"
+  ],
+  "canonical_scenarios": [
+    "hist-demo-isolation",
+    "hist-cross-account-id",
+    "hist-new-record-between-pages",
+    "hist-local-server-same-check",
+    "hist-below-loq",
+    "hist-delayed-laboratory-result",
+    "hist-linked-research-estimate-is-still-unsupported",
+    "hist-profile-edited-later",
+    "hist-correction-linked",
+    "hist-offline-cached-detail",
+    "hist-offline-uncached-detail",
+    "hist-signed-out-device-unlock-is-insufficient",
+    "hist-pending-filter",
+    "hist-delete-race",
+    "hist-single-check-export-scope-survives-source-change",
+    "hist-large-text-detail",
+    "hist-ios-back-position"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 11,
+    "PASS": 2,
+    "NOT_RUN": 1,
+    "BLOCKED": 3
+  },
+  "all_current_case_ids": [
+    "OTGD-028-AND-HIST-001-01",
+    "OTGD-028-AND-HIST-001-02",
+    "OTGD-028-AND-HIST-002-01",
+    "OTGD-028-AND-HIST-002-02",
+    "OTGD-028-AND-HIST-003-01",
+    "OTGD-028-AND-HIST-003-02",
+    "OTGD-028-AND-HIST-003-03",
+    "OTGD-028-AND-HIST-004-01",
+    "OTGD-028-AND-HIST-004-02",
+    "OTGD-028-AND-HIST-005-01",
+    "OTGD-028-AND-HIST-005-02",
+    "OTGD-028-AND-HIST-005-03",
+    "OTGD-028-AND-HIST-006-01",
+    "OTGD-028-AND-HIST-006-02",
+    "OTGD-028-AND-HIST-006-03",
+    "OTGD-028-AND-HIST-007-01",
+    "OTGD-028-AND-HIST-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-028-AND-HIST-001-01",
+      "requirement_id": "AND-HIST-001",
+      "status": "PARTIAL",
+      "expected_observation": "hist-demo-isolation \u2014 - **GIVEN** both demo and account checks exist on the device - **WHEN** account History opens - **THEN** only authorized account checks are listed and demo rows require an explicit switch.",
+      "unproved_then_clauses": [
+        "Actual coexisting demo+account history list with explicit switch, exact authorized row IDs and no automatic guest inclusion is not asserted as a single history rendering context."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Workspace scope rejects delayed other-account responses; guest check never migrates/account-empty checks asserted."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+        "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "Actual coexisting demo+account history list with explicit switch, exact authorized row IDs and no automatic guest inclusion is not asserted as a single history rendering context."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-001-02",
+      "requirement_id": "AND-HIST-001",
+      "status": "PARTIAL",
+      "expected_observation": "hist-cross-account-id \u2014 - **GIVEN** an account receives a deep link to another account's session ID - **WHEN** detail is requested - **THEN** no snapshot, profile, existence-revealing title, or measurement is disclosed.",
+      "unproved_then_clauses": [
+        "Deep-link UI must not show foreign snapshot/profile/existence title/measurements; reviewed HTTP test only asserts404 status, not safe body/title and rendered absence."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual API foreign session detail returns404 and foreign list empty; delayed owner response cannot publish into other namespace."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_end_to_end_measurement_only_and_owner_isolation",
+        "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_end_to_end_measurement_only_and_owner_isolation",
+          "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account"
+        ],
+        "exact_missing_observation": [
+          "Deep-link UI must not show foreign snapshot/profile/existence title/measurements; reviewed HTTP test only asserts404 status, not safe body/title and rendered absence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-002-02",
+      "requirement_id": "AND-HIST-002",
+      "status": "PARTIAL",
+      "expected_observation": "hist-local-server-same-check \u2014 - **GIVEN** a local pending row is later returned by the server with the same UUID - **WHEN** reconciliation completes - **THEN** one row remains with updated sync status and unchanged source identity.",
+      "unproved_then_clauses": [
+        "No rendered local pending UUID returned by server test asserts one row, updated sync state and unchanged source identity. Generic pending predicate does not count merge results."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Explicit sync keeps original sessionID and marks record synced; history source merges IDs."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+        "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+          "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+        ],
+        "exact_missing_observation": [
+          "No rendered local pending UUID returned by server test asserts one row, updated sync state and unchanged source identity. Generic pending predicate does not count merge results."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-003-01",
+      "requirement_id": "AND-HIST-003",
+      "status": "PARTIAL",
+      "expected_observation": "hist-below-loq \u2014 - **GIVEN** THC-COOH has qualifier below_loq with no quantified value - **WHEN** detail is opened - **THEN** it reads \u201cBelow quantification limit\u201d with the reported limit when available, and no 0 ng/mL or inferred detection claim appears.",
+      "unproved_then_clauses": [
+        "Exact THC_COOH history detail card is not asserted; current pure formatter fixture is OH11_THC. No original test binds rendered card and absence of inferred detection claim for this analyte."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Formatter preserves null quantified value, displays exact supplied LOQ and distinct censored wording with unchanged input bytes."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/measurement-format.test.ts::below LOQ displays the supplied bound without creating a concentration or rounding it to zero"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/measurement-format.test.ts::below LOQ displays the supplied bound without creating a concentration or rounding it to zero"
+        ],
+        "exact_missing_observation": [
+          "Exact THC_COOH history detail card is not asserted; current pure formatter fixture is OH11_THC. No original test binds rendered card and absence of inferred detection claim for this analyte."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-003-02",
+      "requirement_id": "AND-HIST-003",
+      "status": "PARTIAL",
+      "expected_observation": "hist-delayed-laboratory-result \u2014 - **GIVEN** a sample collected Monday was analyzed Wednesday - **WHEN** its result is viewed Thursday - **THEN** all relevant dates are distinct and the laboratory result is not described as a Thursday physiological assessment.",
+      "unproved_then_clauses": [
+        "Monday collection/Wednesday analysis/Thursday viewed history must display distinct dates and no Thursday physiological-assessment claim; reviewed one-hour formatter and parser contexts do not assert this route/date conjunction."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Display formatter retains collected/measured UTC separately; backend delayed reanalysis retains original target."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible",
+        "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible",
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+        ],
+        "exact_missing_observation": [
+          "Monday collection/Wednesday analysis/Thursday viewed history must display distinct dates and no Thursday physiological-assessment claim; reviewed one-hour formatter and parser contexts do not assert this route/date conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-004-01",
+      "requirement_id": "AND-HIST-004",
+      "status": "PARTIAL",
+      "expected_observation": "hist-profile-edited-later \u2014 - **GIVEN** a historical check contains profile revision A - **WHEN** current profile revision B is saved - **THEN** historical detail continues to display A's values and acquisition context.",
+      "unproved_then_clauses": [
+        "Actual historical measurement with nonnull profileA shown after profileB saved is not asserted; engineering fixture overwrites profile with unknowns, and archive parsing is not rendered history values."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Snapshot/context clone is unchanged after later profile save in controller; archive preserves embedded original context."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+        "apps/mobile/tests/export-scope.test.ts::cached local export of an actual laboratory record preserves two revisions separately and contains no transient cache"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "apps/mobile/tests/export-scope.test.ts::cached local export of an actual laboratory record preserves two revisions separately and contains no transient cache"
+        ],
+        "exact_missing_observation": [
+          "Actual historical measurement with nonnull profileA shown after profileB saved is not asserted; engineering fixture overwrites profile with unknowns, and archive parsing is not rendered history values."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-004-02",
+      "requirement_id": "AND-HIST-004",
+      "status": "PARTIAL",
+      "expected_observation": "hist-correction-linked \u2014 - **GIVEN** a reviewed correction supersedes a finalized record - **WHEN** either version is opened - **THEN** the original remains readable and a labeled link identifies the other version without overwriting it.",
+      "unproved_then_clauses": [
+        "Reviewed correction/reanalysis UI needs original/current version labeled links in either opened version; replacement-check UI and correction parser alone do not establish report-version links/rendering."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Report companion chain and replacement helper retain original digest and explicit predecessor/successor IDs; browser replacement links navigate both ways."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+        "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+          "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+        ],
+        "exact_missing_observation": [
+          "Reviewed correction/reanalysis UI needs original/current version labeled links in either opened version; replacement-check UI and correction parser alone do not establish report-version links/rendering."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-005-01",
+      "requirement_id": "AND-HIST-005",
+      "status": "PARTIAL",
+      "expected_observation": "hist-offline-cached-detail \u2014 - **GIVEN** an encrypted cached snapshot and no network - **WHEN** its row is selected after local unlock - **THEN** the stored snapshot is displayed with its cached state and no remote result is invented.",
+      "unproved_then_clauses": [
+        "Installed encrypted account snapshot selection after biometric unlock offline and cached-state label are unexecuted; mock SQLCipher module is not actual native database/keystore evidence."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Controlled native store reopen returns exact workspace; ordinary local browser detail remains local and no remote result invented."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+        ],
+        "exact_missing_observation": [
+          "Installed encrypted account snapshot selection after biometric unlock offline and cached-state label are unexecuted; mock SQLCipher module is not actual native database/keystore evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-005-02",
+      "requirement_id": "AND-HIST-005",
+      "status": "NOT_RUN",
+      "expected_observation": "hist-offline-uncached-detail \u2014 - **GIVEN** only a list summary is cached - **WHEN** the user opens detail offline - **THEN** the app explains unavailability and does not fill the screen from unrelated fixtures or another check.",
+      "unproved_then_clauses": [
+        "Only-list-summary cached detail opened offline needs explicit unavailable UI and no unrelated fixture/check fallback; no current named exact journey located."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Remote-draft parser refuses to present uploaded but unfinished snapshot as a readable frozen result."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/replacements.test.ts::a remote draft with an uploaded snapshot is not treated as a frozen readable result"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/replacements.test.ts::a remote draft with an uploaded snapshot is not treated as a frozen readable result"
+        ],
+        "exact_missing_observation": [
+          "Only-list-summary cached detail opened offline needs explicit unavailable UI and no unrelated fixture/check fallback; no current named exact journey located."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-005-03",
+      "requirement_id": "AND-HIST-005",
+      "status": "BLOCKED",
+      "expected_observation": "hist-signed-out-device-unlock-is-insufficient \u2014 - **GIVEN** A retained encrypted history when signing out - **WHEN** the user opens the app offline and passes device unlock - **THEN** A's history stays locked until the same issuer and subject reauthenticate; other workspaces remain separate.",
+      "unproved_then_clauses": [
+        "Actual retained encrypted accountA cache after sign-out/offline biometric success must stay locked until sameissuer/subject reauthentication; no installed OS evidence. Biometric success cannot establish sign-in."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Credential-clear tests remove identity; controlled workspace guards reject locked scopes."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+        ],
+        "exact_missing_observation": [
+          "Actual retained encrypted accountA cache after sign-out/offline biometric success must stay locked until sameissuer/subject reauthentication; no installed OS evidence. Biometric success cannot establish sign-in."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-006-01",
+      "requirement_id": "AND-HIST-006",
+      "status": "PARTIAL",
+      "expected_observation": "hist-pending-filter \u2014 - **GIVEN** two locally queued checks and three synchronized checks - **WHEN** Pending sync is selected - **THEN** only the two queue-owned checks appear and the label states that this is this device's queue.",
+      "unproved_then_clauses": [
+        "Two queued+three synchronized history rows, exact two displayed and this-device queue wording are not directly asserted together."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "pendingSync exactly classifies queued/retry/blocked/awaiting/conflict and excludes local saves/synced/quarantine; browser filter does not expand selected export."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+        ],
+        "exact_missing_observation": [
+          "Two queued+three synchronized history rows, exact two displayed and this-device queue wording are not directly asserted together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-006-02",
+      "requirement_id": "AND-HIST-006",
+      "status": "PARTIAL",
+      "expected_observation": "hist-delete-race \u2014 - **GIVEN** a detail request is in flight when its deletion is accepted - **WHEN** the old response arrives - **THEN** it is discarded according to the deletion generation/tombstone and cannot repopulate History.",
+      "unproved_then_clauses": [
+        "A history detail HTTP response delayed across accepted deletion must be delivered then asserted absent/tombstoned; current delayed export and sign-out contexts are narrower than deletion detail."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Owner/generation/fence scope invalidation rejects late responses; actual deletion increments generation and client quarantine clears cached history."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::server generation retirement quarantines prior checks and a new empty workspace requires separate acknowledgment",
+        "apps/mobile/tests/workspace-scope.test.ts::a delayed export download never reaches sharing after generation change or local clear"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::server generation retirement quarantines prior checks and a new empty workspace requires separate acknowledgment",
+          "apps/mobile/tests/workspace-scope.test.ts::a delayed export download never reaches sharing after generation change or local clear"
+        ],
+        "exact_missing_observation": [
+          "A history detail HTTP response delayed across accepted deletion must be delivered then asserted absent/tombstoned; current delayed export and sign-out contexts are narrower than deletion detail."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-006-03",
+      "requirement_id": "AND-HIST-006",
+      "status": "PARTIAL",
+      "expected_observation": "hist-single-check-export-scope-survives-source-change \u2014 - **GIVEN** History starts Export this check for A while unrelated checks B and C exist - **WHEN** the user changes This device to Synced records or resumes after reauthentication - **THEN** the selected scope remains only A and related authorized evidence; B and C cannot enter the archive without a new expanded-scope summary and confirmation.",
+      "unproved_then_clauses": [
+        "History ExportA with B/C plus source switch or reauthentication must preserve onlyA and require expanded-scope reconfirmation. Current archive validation and hidden-filter selection do not execute this source-switch/reauth context."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Single-check archive inspector rejects rehashed unrelated profile/attempts; exact selection remains when browser filter hides row."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/export-scope.test.ts::rehashed extra profile version and unrelated current profile are rejected in a single-check archive",
+        "apps/mobile/e2e/components.spec.ts::history selection remains exact when filters hide selected records"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/export-scope.test.ts::rehashed extra profile version and unrelated current profile are rejected in a single-check archive",
+          "apps/mobile/e2e/components.spec.ts::history selection remains exact when filters hide selected records"
+        ],
+        "exact_missing_observation": [
+          "History ExportA with B/C plus source switch or reauthentication must preserve onlyA and require expanded-scope reconfirmation. Current archive validation and hidden-filter selection do not execute this source-switch/reauth context."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-007-01",
+      "requirement_id": "AND-HIST-007",
+      "status": "BLOCKED",
+      "expected_observation": "hist-large-text-detail \u2014 - **GIVEN** 200% font scaling and a narrow Android display - **WHEN** a saliva detail section contains all three analytes - **THEN** names, values, units, and qualifiers remain legible and reachable without clipped columns.",
+      "unproved_then_clauses": [
+        "Actual Android200%systemfont narrow history containing all3 analytes with no clipping and reachable controls is unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Browser component viewport checks bound horizontal width; formatter gives distinct analyte names/units/qualifiers."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes"
+        ],
+        "exact_missing_observation": [
+          "Actual Android200%systemfont narrow history containing all3 analytes with no clipping and reachable controls is unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-007-02",
+      "requirement_id": "AND-HIST-007",
+      "status": "BLOCKED",
+      "expected_observation": "hist-ios-back-position \u2014 - **GIVEN** the iOS user opens a row after loading three pages - **WHEN** they navigate back - **THEN** the same selected row and list position are restored with no duplicated page fetch.",
+      "unproved_then_clauses": [
+        "Actual iOS after three loaded pages\u2192detail\u2192Back must restore selected row/list offset without duplicate fetch. Pure memory fixture does not execute native navigation/pagination."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "HistoryViewMemory retains filter/selection/scroll within same epoch and isolates account epochs."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/support-history.test.ts::history detail round-trip keeps filters, selected IDs and scroll only in the current workspace epoch"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::history detail round-trip keeps filters, selected IDs and scroll only in the current workspace epoch"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS after three loaded pages\u2192detail\u2192Back must restore selected row/list offset without duplicate fetch. Pure memory fixture does not execute native navigation/pagination."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-028-AND-HIST-001-01",
+      "required_clause": [
+        "Actual coexisting demo+account history list with explicit switch, exact authorized row IDs and no automatic guest inclusion is not asserted as a single history rendering context."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "Actual coexisting demo+account history list with explicit switch, exact authorized row IDs and no automatic guest inclusion is not asserted as a single history rendering context."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-001-02",
+      "required_clause": [
+        "Deep-link UI must not show foreign snapshot/profile/existence title/measurements; reviewed HTTP test only asserts404 status, not safe body/title and rendered absence."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_end_to_end_measurement_only_and_owner_isolation",
+          "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account"
+        ],
+        "exact_missing_observation": [
+          "Deep-link UI must not show foreign snapshot/profile/existence title/measurements; reviewed HTTP test only asserts404 status, not safe body/title and rendered absence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-002-02",
+      "required_clause": [
+        "No rendered local pending UUID returned by server test asserts one row, updated sync state and unchanged source identity. Generic pending predicate does not count merge results."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+          "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+        ],
+        "exact_missing_observation": [
+          "No rendered local pending UUID returned by server test asserts one row, updated sync state and unchanged source identity. Generic pending predicate does not count merge results."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-003-01",
+      "required_clause": [
+        "Exact THC_COOH history detail card is not asserted; current pure formatter fixture is OH11_THC. No original test binds rendered card and absence of inferred detection claim for this analyte."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/measurement-format.test.ts::below LOQ displays the supplied bound without creating a concentration or rounding it to zero"
+        ],
+        "exact_missing_observation": [
+          "Exact THC_COOH history detail card is not asserted; current pure formatter fixture is OH11_THC. No original test binds rendered card and absence of inferred detection claim for this analyte."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-003-02",
+      "required_clause": [
+        "Monday collection/Wednesday analysis/Thursday viewed history must display distinct dates and no Thursday physiological-assessment claim; reviewed one-hour formatter and parser contexts do not assert this route/date conjunction."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible",
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+        ],
+        "exact_missing_observation": [
+          "Monday collection/Wednesday analysis/Thursday viewed history must display distinct dates and no Thursday physiological-assessment claim; reviewed one-hour formatter and parser contexts do not assert this route/date conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-004-01",
+      "required_clause": [
+        "Actual historical measurement with nonnull profileA shown after profileB saved is not asserted; engineering fixture overwrites profile with unknowns, and archive parsing is not rendered history values."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "apps/mobile/tests/export-scope.test.ts::cached local export of an actual laboratory record preserves two revisions separately and contains no transient cache"
+        ],
+        "exact_missing_observation": [
+          "Actual historical measurement with nonnull profileA shown after profileB saved is not asserted; engineering fixture overwrites profile with unknowns, and archive parsing is not rendered history values."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-004-02",
+      "required_clause": [
+        "Reviewed correction/reanalysis UI needs original/current version labeled links in either opened version; replacement-check UI and correction parser alone do not establish report-version links/rendering."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+          "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+        ],
+        "exact_missing_observation": [
+          "Reviewed correction/reanalysis UI needs original/current version labeled links in either opened version; replacement-check UI and correction parser alone do not establish report-version links/rendering."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-005-01",
+      "required_clause": [
+        "Installed encrypted account snapshot selection after biometric unlock offline and cached-state label are unexecuted; mock SQLCipher module is not actual native database/keystore evidence."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+        ],
+        "exact_missing_observation": [
+          "Installed encrypted account snapshot selection after biometric unlock offline and cached-state label are unexecuted; mock SQLCipher module is not actual native database/keystore evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-005-02",
+      "required_clause": [
+        "Only-list-summary cached detail opened offline needs explicit unavailable UI and no unrelated fixture/check fallback; no current named exact journey located."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/replacements.test.ts::a remote draft with an uploaded snapshot is not treated as a frozen readable result"
+        ],
+        "exact_missing_observation": [
+          "Only-list-summary cached detail opened offline needs explicit unavailable UI and no unrelated fixture/check fallback; no current named exact journey located."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-005-03",
+      "required_clause": [
+        "Actual retained encrypted accountA cache after sign-out/offline biometric success must stay locked until sameissuer/subject reauthentication; no installed OS evidence. Biometric success cannot establish sign-in."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+        ],
+        "exact_missing_observation": [
+          "Actual retained encrypted accountA cache after sign-out/offline biometric success must stay locked until sameissuer/subject reauthentication; no installed OS evidence. Biometric success cannot establish sign-in."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-006-01",
+      "required_clause": [
+        "Two queued+three synchronized history rows, exact two displayed and this-device queue wording are not directly asserted together."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+        ],
+        "exact_missing_observation": [
+          "Two queued+three synchronized history rows, exact two displayed and this-device queue wording are not directly asserted together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-006-02",
+      "required_clause": [
+        "A history detail HTTP response delayed across accepted deletion must be delivered then asserted absent/tombstoned; current delayed export and sign-out contexts are narrower than deletion detail."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::server generation retirement quarantines prior checks and a new empty workspace requires separate acknowledgment",
+          "apps/mobile/tests/workspace-scope.test.ts::a delayed export download never reaches sharing after generation change or local clear"
+        ],
+        "exact_missing_observation": [
+          "A history detail HTTP response delayed across accepted deletion must be delivered then asserted absent/tombstoned; current delayed export and sign-out contexts are narrower than deletion detail."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-006-03",
+      "required_clause": [
+        "History ExportA with B/C plus source switch or reauthentication must preserve onlyA and require expanded-scope reconfirmation. Current archive validation and hidden-filter selection do not execute this source-switch/reauth context."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/export-scope.test.ts::rehashed extra profile version and unrelated current profile are rejected in a single-check archive",
+          "apps/mobile/e2e/components.spec.ts::history selection remains exact when filters hide selected records"
+        ],
+        "exact_missing_observation": [
+          "History ExportA with B/C plus source switch or reauthentication must preserve onlyA and require expanded-scope reconfirmation. Current archive validation and hidden-filter selection do not execute this source-switch/reauth context."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-007-01",
+      "required_clause": [
+        "Actual Android200%systemfont narrow history containing all3 analytes with no clipping and reachable controls is unexecuted."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes"
+        ],
+        "exact_missing_observation": [
+          "Actual Android200%systemfont narrow history containing all3 analytes with no clipping and reachable controls is unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-028-AND-HIST-007-02",
+      "required_clause": [
+        "Actual iOS after three loaded pages\u2192detail\u2192Back must restore selected row/list offset without duplicate fetch. Pure memory fixture does not execute native navigation/pagination."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::history detail round-trip keeps filters, selected IDs and scroll only in the current workspace epoch"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS after three loaded pages\u2192detail\u2192Back must restore selected row/list offset without duplicate fetch. Pure memory fixture does not execute native navigation/pagination."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

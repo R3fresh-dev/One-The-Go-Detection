@@ -1,0 +1,786 @@
+{
+  "spec_id": "OTGD-024",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-ecg-capture/spec.md",
+  "canonical_sha256": "c75f24b4beeda893b780af0d924747c0cd7ca599ead627d3d265f21ec3772895",
+  "canonical_requirements": [
+    "AND-ECG-001 Optional ECG screen and explicit mode",
+    "AND-ECG-002 Whole-system electrical and authorization gates",
+    "AND-ECG-003 ECG sample and timing contract",
+    "AND-ECG-004 Native display and feature restrictions",
+    "AND-ECG-005 Contact loss, interruption, and retry",
+    "AND-ECG-006 One-modality contract and review semantics",
+    "AND-ECG-007 Privacy, offline behavior, and verification"
+  ],
+  "canonical_scenarios": [
+    "Skip optional ECG",
+    "Run the simulator",
+    "Approved configuration and verified device",
+    "Unreviewed USB-powered body connection",
+    "Cached gate after device restart",
+    "Raw ADC counts received",
+    "Sample gap inside a recording",
+    "Waveform visually smooth but inadequate for HRV",
+    "Heavy rendering load",
+    "Lead detaches during capture",
+    "Late samples after cancellation",
+    "User selects ECG after a PPG capture",
+    "Protocol demands both modalities",
+    "Optional ECG skip preserves selected PPG",
+    "Offline completed simulation",
+    "Missing raw-data retention policy"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 12,
+    "BLOCKED": 1,
+    "PASS": 2,
+    "NOT_RUN": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-024-AND-ECG-001-01",
+    "OTGD-024-AND-ECG-001-02",
+    "OTGD-024-AND-ECG-002-01",
+    "OTGD-024-AND-ECG-002-02",
+    "OTGD-024-AND-ECG-002-03",
+    "OTGD-024-AND-ECG-003-01",
+    "OTGD-024-AND-ECG-003-02",
+    "OTGD-024-AND-ECG-004-01",
+    "OTGD-024-AND-ECG-004-02",
+    "OTGD-024-AND-ECG-005-01",
+    "OTGD-024-AND-ECG-005-02",
+    "OTGD-024-AND-ECG-006-01",
+    "OTGD-024-AND-ECG-006-02",
+    "OTGD-024-AND-ECG-006-03",
+    "OTGD-024-AND-ECG-007-01",
+    "OTGD-024-AND-ECG-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-024-AND-ECG-001-01",
+      "requirement_id": "AND-ECG-001",
+      "status": "PARTIAL",
+      "expected_observation": "Skip optional ECG \u2014 - **GIVEN** a workflow in which ECG is optional - **WHEN** the user selects Skip ECG - **THEN** the check SHALL continue with an explicit not_collected ECG status and null ECG features, without fabricating a normal ECG or marking the entire app unusable.",
+      "unproved_then_clauses": [
+        "No initial optional ECG skip UI journey asserts check continuation when no PPG is present."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Cardiac skip preserves selected PPG and records skipped ECG not_collected/null features."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/cardiac-selection.test.ts::skipping an ECG alternative cannot erase valid selected PPG"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/cardiac-selection.test.ts::skipping an ECG alternative cannot erase valid selected PPG"
+        ],
+        "exact_missing_observation": [
+          "No initial optional ECG skip UI journey asserts check continuation when no PPG is present."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-001-02",
+      "requirement_id": "AND-ECG-001",
+      "status": "PARTIAL",
+      "expected_observation": "Run the simulator \u2014 - **GIVEN** synthetic mode and no ECG hardware - **WHEN** the user selects Run simulator - **THEN** a deterministic named waveform fixture SHALL exercise capture/progress/review states with simulated source and SHALL not require electrode contact or imply a measured heartbeat.",
+      "unproved_then_clauses": [
+        "Visible progress/review simulator journey and no electrode-required/measured-heartbeat language are not fully asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Synthetic ECG controller reaches complete with deterministic values, exact evidence hash and200 accepted display samples."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/signal.test.ts::local ECG stream keeps the exact ten-message complete evidence and connection observation time separate from samples"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::local ECG stream keeps the exact ten-message complete evidence and connection observation time separate from samples"
+        ],
+        "exact_missing_observation": [
+          "Visible progress/review simulator journey and no electrode-required/measured-heartbeat language are not fully asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-002-01",
+      "requirement_id": "AND-ECG-002",
+      "status": "BLOCKED",
+      "expected_observation": "Approved configuration and verified device \u2014 - **GIVEN** a valid approved whole-system configuration matching the connected device and permitted operating state - **WHEN** the authorized operator initiates capture - **THEN** the module SHALL execute only that protocol and retain the binding, approval/configuration hashes, power-state evidence, and lead configuration.",
+      "unproved_then_clauses": [
+        "No qualified whole-system human ECG/power/lead-state verification exists; approved physical protocol execution and retained power/lead evidence cannot be tested."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution",
+        "study_scientific_approval"
+      ],
+      "current_assertions_proven": [
+        "Fresh reader flow freezes configuration/binding and human ECG operating-state verifier remains explicitly unavailable."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+        "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+          "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified"
+        ],
+        "exact_missing_observation": [
+          "No qualified whole-system human ECG/power/lead-state verification exists; approved physical protocol execution and retained power/lead evidence cannot be tested."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-002-02",
+      "requirement_id": "AND-ECG-002",
+      "status": "PARTIAL",
+      "expected_observation": "Unreviewed USB-powered body connection \u2014 - **GIVEN** no matching approved power/connection configuration - **WHEN** the device or user requests hardware ECG capture - **THEN** the app SHALL reject Start hardware capture, show Electrical configuration not qualified, and SHALL not substitute a simple acknowledgment checkbox for the missing evidence.",
+      "unproved_then_clauses": [
+        "App must assert Start hardware capture rejected with exact Electrical configuration not qualified and no checkbox bypass for USB-powered connection."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Both participant_declaration_only and device_attested_v1 human ECG configurations remain software unsupported."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified"
+        ],
+        "exact_missing_observation": [
+          "App must assert Start hardware capture rejected with exact Electrical configuration not qualified and no checkbox bypass for USB-powered connection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-002-03",
+      "requirement_id": "AND-ECG-002",
+      "status": "PARTIAL",
+      "expected_observation": "Cached gate after device restart \u2014 - **GIVEN** a cached approved-looking capability and a reader with a new boot ID - **WHEN** the operator attempts a hardware start offline - **THEN** the app SHALL refuse the start pending fresh online authorization and verified association; it SHALL not reuse the prior boot clock or provide connection instructions from an unresolved configuration.",
+      "unproved_then_clauses": [
+        "Offline cached-gate journey must assert fresh association/start required, prior clock cleared and unresolved connection instructions withheld."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Changed boot is rejected before hardware and before allocating an attempt."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "Offline cached-gate journey must assert fresh association/start required, prior clock cleared and unresolved connection instructions withheld."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-003-01",
+      "requirement_id": "AND-ECG-003",
+      "status": "PARTIAL",
+      "expected_observation": "Raw ADC counts received \u2014 - **GIVEN** an otherwise well-formed stream without an approved scale calibration - **WHEN** the waveform is reviewed - **THEN** the app SHALL label values counts, retain the missing-scale reason, and SHALL not render an mV axis or supply calibrated features that require voltage units.",
+      "unproved_then_clauses": [
+        "Uncalibrated counts capture must render counts/missing-scale reason, no mV axis, and no voltage-dependent calibrated features."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Chunk validator preserves explicit units; waveform renderer does not rescale underlying values or samples."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::signed sample chunks enforce monotonic actual timestamps, explicit drops, units and payload digest",
+        "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed sample chunks enforce monotonic actual timestamps, explicit drops, units and payload digest",
+          "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+        ],
+        "exact_missing_observation": [
+          "Uncalibrated counts capture must render counts/missing-scale reason, no mV axis, and no voltage-dependent calibrated features."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-003-02",
+      "requirement_id": "AND-ECG-003",
+      "status": "PARTIAL",
+      "expected_observation": "Sample gap inside a recording \u2014 - **GIVEN** a stream with a missing block or nonconsecutive sample index - **WHEN** reassembly completes or times out - **THEN** the gap SHALL be represented explicitly and the applicable quality rule enforced; the app SHALL not draw a continuous valid trace by interpolating away lost evidence.",
+      "unproved_then_clauses": [
+        "Integrated missing-block stream completion/timeout must assert applicable final invalid quality disposition, including missing chunk semantics."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Signed chunks retain dropped_before=2; waveform omits bridging129:131 and preserves source samples."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::signed sample chunks enforce monotonic actual timestamps, explicit drops, units and payload digest",
+        "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed sample chunks enforce monotonic actual timestamps, explicit drops, units and payload digest",
+          "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+        ],
+        "exact_missing_observation": [
+          "Integrated missing-block stream completion/timeout must assert applicable final invalid quality disposition, including missing chunk semantics."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-004-01",
+      "requirement_id": "AND-ECG-004",
+      "status": "PARTIAL",
+      "expected_observation": "Waveform visually smooth but inadequate for HRV \u2014 - **GIVEN** a capture shorter than its extractor's approved duration or with too few usable beat intervals - **WHEN** the summary is generated - **THEN** the waveform MAY remain available within policy but RMSSD SHALL be null with an adequacy reason, not a guessed feature.",
+      "unproved_then_clauses": [
+        "Short-duration/too-few-interval ECG waveform must specifically retain RMSSD=null and adequacy reason, not merely generic invalid signal."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "ADC core with insufficient valid beat intervals has invalid signal and NaN HR; synthetic insufficient_samples fails null physiology."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main",
+        "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main",
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+        ],
+        "exact_missing_observation": [
+          "Short-duration/too-few-interval ECG waveform must specifically retain RMSSD=null and adequacy reason, not merely generic invalid signal."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-004-02",
+      "requirement_id": "AND-ECG-004",
+      "status": "PARTIAL",
+      "expected_observation": "Heavy rendering load \u2014 - **GIVEN** a supported synthetic or approved stream - **WHEN** the screen drops rendering frames - **THEN** raw sample acquisition SHALL remain independently bounded, display lag SHALL be reported where relevant, and lost acquisition samples SHALL not be hidden by the appearance of the graph.",
+      "unproved_then_clauses": [
+        "Heavy rendering load must be applied while acquisition runs and assert independent sample bounds plus relevant lag reporting."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Waveform display draws at most99 segments and never fills index gaps or mutates source data."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+        ],
+        "exact_missing_observation": [
+          "Heavy rendering load must be applied while acquisition runs and assert independent sample bounds plus relevant lag reporting."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-005-01",
+      "requirement_id": "AND-ECG-005",
+      "status": "PARTIAL",
+      "expected_observation": "Lead detaches during capture \u2014 - **GIVEN** an active hardware or simulator lead-off test - **WHEN** contact is lost - **THEN** the UI SHALL show Lead contact lost, retain lead-off timing, and apply the fixed protocol's stop/invalid behavior without continuing to display an unqualified live heart rate as current.",
+      "unproved_then_clauses": [
+        "UI Lead contact lost and retained lead-off timing with fixed-protocol terminal behavior need exact assertions."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Lead_off fixture clears live bpm, latches exact reason/contact absent, and rejects later completion."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+        ],
+        "exact_missing_observation": [
+          "UI Lead contact lost and retained lead-off timing with fixed-protocol terminal behavior need exact assertions."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-006-01",
+      "requirement_id": "AND-ECG-006",
+      "status": "PARTIAL",
+      "expected_observation": "User selects ECG after a PPG capture \u2014 - **GIVEN** a check with an accepted PPG cardiac component - **WHEN** the user selects the allowed ECG alternative - **THEN** the UI SHALL explain that v0.1 selects one cardiac modality, preserve the PPG attempt, and require an explicit selection of which accepted capture becomes the final cardiac component.",
+      "unproved_then_clauses": [
+        "UI explanation that v0.1 selects one modality and explicit selection interaction remain unasserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Two accepted modalities retain immutable attempts, require explicit choice and select exact final projection in client/server."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/cardiac-selection.test.ts::one PPG plus one ECG is retained and requires an explicit final choice"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/cardiac-selection.test.ts::one PPG plus one ECG is retained and requires an explicit final choice"
+        ],
+        "exact_missing_observation": [
+          "UI explanation that v0.1 selects one modality and explicit selection interaction remain unasserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-006-02",
+      "requirement_id": "AND-ECG-006",
+      "status": "NOT_RUN",
+      "expected_observation": "Protocol demands both modalities \u2014 - **GIVEN** the installed client supports only the v0.1 cardiac schema - **WHEN** a protocol requires both PPG and ECG as distinct model inputs - **THEN** capability resolution SHALL report Unsupported cardiac contract and SHALL not merge the two sources or fabricate a compatible feature vector.",
+      "unproved_then_clauses": [
+        "Resolve a protocol requiring separate PPG+ECG inputs and assert Unsupported cardiac contract with no merged/fabricated model vector."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Alternative-selection and unrelated pending-specimen tests do not request a both-modalities protocol."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Resolve a protocol requiring separate PPG+ECG inputs and assert Unsupported cardiac contract with no merged/fabricated model vector."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-007-01",
+      "requirement_id": "AND-ECG-007",
+      "status": "PARTIAL",
+      "expected_observation": "Offline completed simulation \u2014 - **GIVEN** a complete synthetic ECG capture with the network disabled - **WHEN** the user saves the check - **THEN** the app SHALL store the permitted fictional record locally, retain its simulated label, and show sync status independently from capture completion.",
+      "unproved_then_clauses": [
+        "Complete synthetic ECG with network disabled must be saved/reopened and assert simulated label plus independent sync status through UI."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Local synthetic ECG and immutable guest save tests run without participant upload."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/signal.test.ts::local ECG stream keeps the exact ten-message complete evidence and connection observation time separate from samples",
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::local ECG stream keeps the exact ten-message complete evidence and connection observation time separate from samples",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Complete synthetic ECG with network disabled must be saved/reopened and assert simulated label plus independent sync status through UI."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-007-02",
+      "requirement_id": "AND-ECG-007",
+      "status": "PARTIAL",
+      "expected_observation": "Missing raw-data retention policy \u2014 - **GIVEN** a proposed participant protocol without a resolved ECG retention policy - **WHEN** recording or upload is requested - **THEN** the app SHALL block the dependent recording/upload path and SHALL not choose indefinite retention as a fallback.",
+      "unproved_then_clauses": [
+        "Specifically unresolved ECG retention policy must drive both record/upload requests and assert no indefinite-retention fallback."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Raw permission validator rejects mismatched policy/receipt and revoked/expired purpose; raw choice requires encrypted native storage."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/raw-artifacts.test.ts::fresh acquisition authority must match exact current optional receipt and cannot bypass offline or cross-device stop",
+        "apps/mobile/tests/raw-upload.test.ts::Save and metadata-only upload never read or queue raw; explicit selection is immutable and exact"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/raw-artifacts.test.ts::fresh acquisition authority must match exact current optional receipt and cannot bypass offline or cross-device stop",
+          "apps/mobile/tests/raw-upload.test.ts::Save and metadata-only upload never read or queue raw; explicit selection is immutable and exact"
+        ],
+        "exact_missing_observation": [
+          "Specifically unresolved ECG retention policy must drive both record/upload requests and assert no indefinite-retention fallback."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-024-AND-ECG-001-01",
+      "required_clause": [
+        "No initial optional ECG skip UI journey asserts check continuation when no PPG is present."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/cardiac-selection.test.ts::skipping an ECG alternative cannot erase valid selected PPG"
+        ],
+        "exact_missing_observation": [
+          "No initial optional ECG skip UI journey asserts check continuation when no PPG is present."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-001-02",
+      "required_clause": [
+        "Visible progress/review simulator journey and no electrode-required/measured-heartbeat language are not fully asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::local ECG stream keeps the exact ten-message complete evidence and connection observation time separate from samples"
+        ],
+        "exact_missing_observation": [
+          "Visible progress/review simulator journey and no electrode-required/measured-heartbeat language are not fully asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-002-01",
+      "required_clause": [
+        "No qualified whole-system human ECG/power/lead-state verification exists; approved physical protocol execution and retained power/lead evidence cannot be tested."
+      ],
+      "types": [
+        "physical_hardware_execution",
+        "study_scientific_approval"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+          "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified"
+        ],
+        "exact_missing_observation": [
+          "No qualified whole-system human ECG/power/lead-state verification exists; approved physical protocol execution and retained power/lead evidence cannot be tested."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-002-02",
+      "required_clause": [
+        "App must assert Start hardware capture rejected with exact Electrical configuration not qualified and no checkbox bypass for USB-powered connection."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified"
+        ],
+        "exact_missing_observation": [
+          "App must assert Start hardware capture rejected with exact Electrical configuration not qualified and no checkbox bypass for USB-powered connection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-002-03",
+      "required_clause": [
+        "Offline cached-gate journey must assert fresh association/start required, prior clock cleared and unresolved connection instructions withheld."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "Offline cached-gate journey must assert fresh association/start required, prior clock cleared and unresolved connection instructions withheld."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-003-01",
+      "required_clause": [
+        "Uncalibrated counts capture must render counts/missing-scale reason, no mV axis, and no voltage-dependent calibrated features."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed sample chunks enforce monotonic actual timestamps, explicit drops, units and payload digest",
+          "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+        ],
+        "exact_missing_observation": [
+          "Uncalibrated counts capture must render counts/missing-scale reason, no mV axis, and no voltage-dependent calibrated features."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-003-02",
+      "required_clause": [
+        "Integrated missing-block stream completion/timeout must assert applicable final invalid quality disposition, including missing chunk semantics."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed sample chunks enforce monotonic actual timestamps, explicit drops, units and payload digest",
+          "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+        ],
+        "exact_missing_observation": [
+          "Integrated missing-block stream completion/timeout must assert applicable final invalid quality disposition, including missing chunk semantics."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-004-01",
+      "required_clause": [
+        "Short-duration/too-few-interval ECG waveform must specifically retain RMSSD=null and adequacy reason, not merely generic invalid signal."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main",
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+        ],
+        "exact_missing_observation": [
+          "Short-duration/too-few-interval ECG waveform must specifically retain RMSSD=null and adequacy reason, not merely generic invalid signal."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-004-02",
+      "required_clause": [
+        "Heavy rendering load must be applied while acquisition runs and assert independent sample bounds plus relevant lag reporting."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples"
+        ],
+        "exact_missing_observation": [
+          "Heavy rendering load must be applied while acquisition runs and assert independent sample bounds plus relevant lag reporting."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-005-01",
+      "required_clause": [
+        "UI Lead contact lost and retained lead-off timing with fixed-protocol terminal behavior need exact assertions."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+        ],
+        "exact_missing_observation": [
+          "UI Lead contact lost and retained lead-off timing with fixed-protocol terminal behavior need exact assertions."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-006-01",
+      "required_clause": [
+        "UI explanation that v0.1 selects one modality and explicit selection interaction remain unasserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/cardiac-selection.test.ts::one PPG plus one ECG is retained and requires an explicit final choice"
+        ],
+        "exact_missing_observation": [
+          "UI explanation that v0.1 selects one modality and explicit selection interaction remain unasserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-006-02",
+      "required_clause": [
+        "Resolve a protocol requiring separate PPG+ECG inputs and assert Unsupported cardiac contract with no merged/fabricated model vector."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Resolve a protocol requiring separate PPG+ECG inputs and assert Unsupported cardiac contract with no merged/fabricated model vector."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-007-01",
+      "required_clause": [
+        "Complete synthetic ECG with network disabled must be saved/reopened and assert simulated label plus independent sync status through UI."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::local ECG stream keeps the exact ten-message complete evidence and connection observation time separate from samples",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Complete synthetic ECG with network disabled must be saved/reopened and assert simulated label plus independent sync status through UI."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-024-AND-ECG-007-02",
+      "required_clause": [
+        "Specifically unresolved ECG retention policy must drive both record/upload requests and assert no indefinite-retention fallback."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/raw-artifacts.test.ts::fresh acquisition authority must match exact current optional receipt and cannot bypass offline or cross-device stop",
+          "apps/mobile/tests/raw-upload.test.ts::Save and metadata-only upload never read or queue raw; explicit selection is immutable and exact"
+        ],
+        "exact_missing_observation": [
+          "Specifically unresolved ECG retention policy must drive both record/upload requests and assert no indefinite-retention fallback."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

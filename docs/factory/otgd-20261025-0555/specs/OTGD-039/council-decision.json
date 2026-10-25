@@ -1,0 +1,669 @@
+{
+  "spec_id": "OTGD-039",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/participant-instruction-authority/spec.md",
+  "canonical_sha256": "238b3c329cd79edb4bd57807926311a3bed0c935cf77ef77577fcf79afda02ef",
+  "canonical_requirements": [
+    "PAI-001 Release exact bounded participant instructions",
+    "PAI-002 Bind an immutable acknowledgment to current scope",
+    "PAI-003 Re-admit instructions at every fresh start",
+    "PAI-004 Distinguish declarations from measured safety proof",
+    "PAI-005 Preserve acknowledgment retry and replacement identity",
+    "PAI-006 Stop before privacy and lifecycle transitions",
+    "PAI-007 Show capability and provenance truthfully",
+    "PAI-008 Guide declared cardiac rest without clock shortcuts"
+  ],
+  "canonical_scenarios": [
+    "Current approved pulse instructions",
+    "Same scientific material with different instruction text",
+    "Explicit participant acknowledgment",
+    "Foreign or stale acknowledgment",
+    "Exact acknowledgment-age boundary",
+    "Future or pre-attempt declaration",
+    "Exact receipt and current single-use start",
+    "Withdrawal after acknowledgment",
+    "Receipt expires before Start",
+    "Declared strict signed wire format",
+    "Declared posture with independent device admission",
+    "Checkbox substitutes for ECG power observation",
+    "Bench scope cannot become human scope",
+    "Accepted response is lost",
+    "Replacement during receipt persistence",
+    "Withdrawal while grant is pending",
+    "Keep draft after cancellation",
+    "Conditionally admitted optical or ECG evidence",
+    "Guest or missing qualification",
+    "Approved rest interval completes",
+    "Background or wall clock advances during rest",
+    "Zero-duration approved preparation"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 11,
+    "PASS": 11
+  },
+  "all_current_case_ids": [
+    "OTGD-039-PAI-001-01",
+    "OTGD-039-PAI-001-02",
+    "OTGD-039-PAI-002-01",
+    "OTGD-039-PAI-002-02",
+    "OTGD-039-PAI-002-03",
+    "OTGD-039-PAI-002-04",
+    "OTGD-039-PAI-003-01",
+    "OTGD-039-PAI-003-02",
+    "OTGD-039-PAI-003-03",
+    "OTGD-039-PAI-003-04",
+    "OTGD-039-PAI-004-01",
+    "OTGD-039-PAI-004-02",
+    "OTGD-039-PAI-004-03",
+    "OTGD-039-PAI-005-01",
+    "OTGD-039-PAI-005-02",
+    "OTGD-039-PAI-006-01",
+    "OTGD-039-PAI-006-02",
+    "OTGD-039-PAI-007-01",
+    "OTGD-039-PAI-007-02",
+    "OTGD-039-PAI-008-01",
+    "OTGD-039-PAI-008-02",
+    "OTGD-039-PAI-008-03"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-039-PAI-001-01",
+      "requirement_id": "PAI-001",
+      "status": "PARTIAL",
+      "expected_observation": "Current approved pulse instructions \u2014 - **GIVEN** an owned check with a currently released PPG configuration and protocol - **WHEN** the participant opens approved capture - **THEN** the app presents the exact approved rest/posture/contact instructions and their version without inventing a default procedure.",
+      "unproved_then_clauses": [
+        "exact approved rest/posture/contact instruction text and version are displayed without defaults: existing assertions inspect controls/protocol digest rather than all rendered text/version."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Setup must be chosen; all required declarations start unchecked; no capture before online prepare and full monotonic rest."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::approved rest begins after online preparation, uses monotonic time, and needs exact unchecked declarations before capture",
+        "apps/mobile/tests/acquisition.test.ts::online preparation persists before rest and current instructions cannot change the prepared acknowledgement"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::approved rest begins after online preparation, uses monotonic time, and needs exact unchecked declarations before capture",
+          "apps/mobile/tests/acquisition.test.ts::online preparation persists before rest and current instructions cannot change the prepared acknowledgement"
+        ],
+        "exact_missing_observation": [
+          "exact approved rest/posture/contact instruction text and version are displayed without defaults: existing assertions inspect controls/protocol digest rather than all rendered text/version."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-002-02",
+      "requirement_id": "PAI-002",
+      "status": "PARTIAL",
+      "expected_observation": "Foreign or stale acknowledgment \u2014 - **GIVEN** a receipt from another account, retired generation, attempt, study or configuration, or outside admitted freshness - **WHEN** acquisition is requested - **THEN** the service refuses without creating hardware-start authority or rewriting the receipt's scope/time.",
+      "unproved_then_clauses": [
+        "refusal for each foreign account/generation/study/config receipt at acquisition without rewriting scope/time: entire cross-product not asserted at receipt-admission boundary."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Foreign/missing attempt receipt refuses grant403; foreign account/retired generation cannot write collection; stale exact receipt replay does not restore grant."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_foreign_attempt_receipt_and_missing_receipt_do_not_create_collection_start",
+        "services/api/tests/test_participant_acquisition.py::test_foreign_account_and_retired_generation_cannot_record_or_read_collection",
+        "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_foreign_attempt_receipt_and_missing_receipt_do_not_create_collection_start",
+          "services/api/tests/test_participant_acquisition.py::test_foreign_account_and_retired_generation_cannot_record_or_read_collection",
+          "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority"
+        ],
+        "exact_missing_observation": [
+          "refusal for each foreign account/generation/study/config receipt at acquisition without rewriting scope/time: entire cross-product not asserted at receipt-admission boundary."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-003-02",
+      "requirement_id": "PAI-003",
+      "status": "PARTIAL",
+      "expected_observation": "Withdrawal after acknowledgment \u2014 - **GIVEN** instructions were acknowledged before consent withdrawal or configuration retirement - **WHEN** the participant tries the old grant or a new start - **THEN** current admission refuses, and any local pending capture remains stopped.",
+      "unproved_then_clauses": [
+        "any local pending capture remains stopped specifically after consent withdrawal/configuration retirement while trying an already-issued grant: current tests combine separate operations, not that full transition."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Withdrawal and configuration retirement deny fresh acknowledgment/grant; stopping a deferred-start capture prevents hardware."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_config_retirement_and_withdrawal_after_acknowledgment_refuse_fresh_start",
+        "apps/mobile/tests/acquisition.test.ts::scope-qualified preparation End stops the advanced capture token before a deferred server start reaches hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_config_retirement_and_withdrawal_after_acknowledgment_refuse_fresh_start",
+          "apps/mobile/tests/acquisition.test.ts::scope-qualified preparation End stops the advanced capture token before a deferred server start reaches hardware"
+        ],
+        "exact_missing_observation": [
+          "any local pending capture remains stopped specifically after consent withdrawal/configuration retirement while trying an already-issued grant: current tests combine separate operations, not that full transition."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-003-03",
+      "requirement_id": "PAI-003",
+      "status": "PARTIAL",
+      "expected_observation": "Receipt expires before Start \u2014 - **GIVEN** accepted instructions expire before grant issuance or consumption - **WHEN** the participant selects Start - **THEN** acquisition remains stopped and the app requires explicit current instruction presentation and new confirmation; historic receipt replay cannot renew its age.",
+      "unproved_then_clauses": [
+        "app requires explicit current instruction presentation and new confirmation after receipt expiration before Start: exact UI re-presentation is not asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Expired historical receipt cannot obtain grant and replay does not refresh it; reconciliation alone never starts hardware."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority",
+        "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority",
+          "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware"
+        ],
+        "exact_missing_observation": [
+          "app requires explicit current instruction presentation and new confirmation after receipt expiration before Start: exact UI re-presentation is not asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-003-04",
+      "requirement_id": "PAI-003",
+      "status": "PARTIAL",
+      "expected_observation": "Declared strict signed wire format \u2014 - **GIVEN** the immutable server authorization pins the exact instruction receipt and configuration/context digests - **WHEN** the signed authorization is verified by its matching declared wire schema - **THEN** the authorization ID resolves only that immutable scope; explicitly declared direct receipt fields must match, unknown fields remain refused and an older strict reader cannot be treated as compatible by dropping signed fields.",
+      "unproved_then_clauses": [
+        "unknown/direct instruction-receipt signed fields refuse and older strict reader cannot drop signed fields: task-envelope mutation test does not exercise the complete instruction wire compatibility scenario."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Positive signed start contains pinned receipt; strict client verifies material/context/version and mutations refuse."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_positive_collection_without_ble_is_owned_immutable_and_pending",
+        "apps/mobile/tests/acquisition.test.ts::actual Python HTTP grant/start envelope binds material, frozen context and signed fresh start without simulated clinical authority"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_positive_collection_without_ble_is_owned_immutable_and_pending",
+          "apps/mobile/tests/acquisition.test.ts::actual Python HTTP grant/start envelope binds material, frozen context and signed fresh start without simulated clinical authority"
+        ],
+        "exact_missing_observation": [
+          "unknown/direct instruction-receipt signed fields refuse and older strict reader cannot drop signed fields: task-envelope mutation test does not exercise the complete instruction wire compatibility scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-004-01",
+      "requirement_id": "PAI-004",
+      "status": "PARTIAL",
+      "expected_observation": "Declared posture with independent device admission \u2014 - **GIVEN** an approved PPG protocol and independently admitted hardware - **WHEN** the participant records its permitted posture/activity declarations - **THEN** evidence labels those values as declared context and preserves separate actual device provenance.",
+      "unproved_then_clauses": [
+        "evidence labels posture/activity as declared context while preserving separate actual provenance: exact presentation label is not directly asserted in these bodies."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Cardiac HTTP flow retains separate instruction receipt and device-signed provenance; client verifies declarations as scoped evidence."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+        "apps/mobile/tests/participant-acquisition.test.ts::actual Python protocol, immutable acknowledgement, specimen and imported report preserve separate truthful lineage"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+          "apps/mobile/tests/participant-acquisition.test.ts::actual Python protocol, immutable acknowledgement, specimen and imported report preserve separate truthful lineage"
+        ],
+        "exact_missing_observation": [
+          "evidence labels posture/activity as declared context while preserving separate actual provenance: exact presentation label is not directly asserted in these bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-004-03",
+      "requirement_id": "PAI-004",
+      "status": "PARTIAL",
+      "expected_observation": "Bench scope cannot become human scope \u2014 - **GIVEN** an explicitly permitted simulator/bench configuration - **WHEN** it is used to claim human-connected eligibility - **THEN** service and client reject the scope substitution even if all participant confirmations are true.",
+      "unproved_then_clauses": [
+        "service and client reject actual substitution from an admitted simulator/bench receipt into human scope even with all confirmations true: paired scope-substitution request is not executed."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Human ECG configuration and client screen refuse regardless of declared verifier."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified",
+        "apps/mobile/e2e/raw-recordings.spec.ts::interruption and a changed instruction envelope discard rest and checks; participant declarations cannot enable human ECG"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified",
+          "apps/mobile/e2e/raw-recordings.spec.ts::interruption and a changed instruction envelope discard rest and checks; participant declarations cannot enable human ECG"
+        ],
+        "exact_missing_observation": [
+          "service and client reject actual substitution from an admitted simulator/bench receipt into human scope even with all confirmations true: paired scope-substitution request is not executed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-005-01",
+      "requirement_id": "PAI-005",
+      "status": "PARTIAL",
+      "expected_observation": "Accepted response is lost \u2014 - **GIVEN** the server accepted acknowledgment but its response was lost - **WHEN** the client reconnects - **THEN** it retries the original body/key, verifies the matching immutable receipt and separately obtains current start authority.",
+      "unproved_then_clauses": [
+        "separately obtains current start authority after reconciliation: the named lost-response test stops the attempt rather than performing that subsequent current start."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Lost accepted acknowledgment retries unchanged retained body/key and reconciles one receipt; no hardware resumes; replay cannot renew expired age."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware",
+        "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware",
+          "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority"
+        ],
+        "exact_missing_observation": [
+          "separately obtains current start authority after reconciliation: the named lost-response test stops the attempt rather than performing that subsequent current start."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-005-02",
+      "requirement_id": "PAI-005",
+      "status": "PARTIAL",
+      "expected_observation": "Replacement during receipt persistence \u2014 - **GIVEN** an old receipt response is delayed while the owner, attempt or retained intent changes - **WHEN** that callback runs - **THEN** scope and keyed-intent guards preserve the replacement and reject old acceptance; no old timestamp is rewritten as a fresh acknowledgment.",
+      "unproved_then_clauses": [
+        "scope/keyed-intent guards preserve replacement specifically during delayed instruction receipt persistence; no old acknowledgment timestamp is refreshed: delayed acknowledgment persistence callback is not directly asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Unmount/replacement envelope discards late preparation callback and a stale stop token cannot stop newer scope."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::unmount and a replacement approval envelope stop pending preparation and cannot apply its late receipt",
+        "apps/mobile/tests/acquisition.test.ts::a changed submitted instruction envelope cannot reuse the original preparation or stop a newer scope"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::unmount and a replacement approval envelope stop pending preparation and cannot apply its late receipt",
+          "apps/mobile/tests/acquisition.test.ts::a changed submitted instruction envelope cannot reuse the original preparation or stop a newer scope"
+        ],
+        "exact_missing_observation": [
+          "scope/keyed-intent guards preserve replacement specifically during delayed instruction receipt persistence; no old acknowledgment timestamp is refreshed: delayed acknowledgment persistence callback is not directly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-006-01",
+      "requirement_id": "PAI-006",
+      "status": "PARTIAL",
+      "expected_observation": "Withdrawal while grant is pending \u2014 - **GIVEN** current instructions were confirmed and start is awaiting a network response - **WHEN** withdrawal is requested - **THEN** local acceptance stops immediately, privacy intent remains durable and the later grant cannot invoke hardware.",
+      "unproved_then_clauses": [
+        "privacy withdrawal intent remains durable and later grant cannot invoke hardware for that exact withdrawal case: test uses explicit End, not withdrawal."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Local shutdown is dispatched before delayed start reply and hardware is never invoked; attempt becomes invalid."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::scope-qualified preparation End stops the advanced capture token before a deferred server start reaches hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::scope-qualified preparation End stops the advanced capture token before a deferred server start reaches hardware"
+        ],
+        "exact_missing_observation": [
+          "privacy withdrawal intent remains durable and later grant cannot invoke hardware for that exact withdrawal case: test uses explicit End, not withdrawal."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-039-PAI-006-02",
+      "requirement_id": "PAI-006",
+      "status": "PARTIAL",
+      "expected_observation": "Keep draft after cancellation \u2014 - **GIVEN** an admitted attempt was interrupted before completion - **WHEN** the customer keeps the draft and revisits it - **THEN** prior attempt/instruction evidence remains immutable and any new collection requires a separately admitted current start.",
+      "unproved_then_clauses": [
+        "Keep draft preserves prior instruction/attempt and forces separately admitted new collection start: complete cancel/keep/revisit/new-start transition not asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Canceled instruction attempt becomes invalid; stored specimen form reopens without active capture/rest."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware",
+        "apps/mobile/tests/acquisition.test.ts::reopening the owned workspace preserves the actual collecting form without restoring rest or invoking hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware",
+          "apps/mobile/tests/acquisition.test.ts::reopening the owned workspace preserves the actual collecting form without restoring rest or invoking hardware"
+        ],
+        "exact_missing_observation": [
+          "Keep draft preserves prior instruction/attempt and forces separately admitted new collection start: complete cancel/keep/revisit/new-start transition not asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-039-PAI-001-01",
+      "required_clause": [
+        "exact approved rest/posture/contact instruction text and version are displayed without defaults: existing assertions inspect controls/protocol digest rather than all rendered text/version."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::approved rest begins after online preparation, uses monotonic time, and needs exact unchecked declarations before capture",
+          "apps/mobile/tests/acquisition.test.ts::online preparation persists before rest and current instructions cannot change the prepared acknowledgement"
+        ],
+        "exact_missing_observation": [
+          "exact approved rest/posture/contact instruction text and version are displayed without defaults: existing assertions inspect controls/protocol digest rather than all rendered text/version."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-002-02",
+      "required_clause": [
+        "refusal for each foreign account/generation/study/config receipt at acquisition without rewriting scope/time: entire cross-product not asserted at receipt-admission boundary."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_foreign_attempt_receipt_and_missing_receipt_do_not_create_collection_start",
+          "services/api/tests/test_participant_acquisition.py::test_foreign_account_and_retired_generation_cannot_record_or_read_collection",
+          "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority"
+        ],
+        "exact_missing_observation": [
+          "refusal for each foreign account/generation/study/config receipt at acquisition without rewriting scope/time: entire cross-product not asserted at receipt-admission boundary."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-003-02",
+      "required_clause": [
+        "any local pending capture remains stopped specifically after consent withdrawal/configuration retirement while trying an already-issued grant: current tests combine separate operations, not that full transition."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_config_retirement_and_withdrawal_after_acknowledgment_refuse_fresh_start",
+          "apps/mobile/tests/acquisition.test.ts::scope-qualified preparation End stops the advanced capture token before a deferred server start reaches hardware"
+        ],
+        "exact_missing_observation": [
+          "any local pending capture remains stopped specifically after consent withdrawal/configuration retirement while trying an already-issued grant: current tests combine separate operations, not that full transition."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-003-03",
+      "required_clause": [
+        "app requires explicit current instruction presentation and new confirmation after receipt expiration before Start: exact UI re-presentation is not asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority",
+          "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware"
+        ],
+        "exact_missing_observation": [
+          "app requires explicit current instruction presentation and new confirmation after receipt expiration before Start: exact UI re-presentation is not asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-003-04",
+      "required_clause": [
+        "unknown/direct instruction-receipt signed fields refuse and older strict reader cannot drop signed fields: task-envelope mutation test does not exercise the complete instruction wire compatibility scenario."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_positive_collection_without_ble_is_owned_immutable_and_pending",
+          "apps/mobile/tests/acquisition.test.ts::actual Python HTTP grant/start envelope binds material, frozen context and signed fresh start without simulated clinical authority"
+        ],
+        "exact_missing_observation": [
+          "unknown/direct instruction-receipt signed fields refuse and older strict reader cannot drop signed fields: task-envelope mutation test does not exercise the complete instruction wire compatibility scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-004-01",
+      "required_clause": [
+        "evidence labels posture/activity as declared context while preserving separate actual provenance: exact presentation label is not directly asserted in these bodies."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+          "apps/mobile/tests/participant-acquisition.test.ts::actual Python protocol, immutable acknowledgement, specimen and imported report preserve separate truthful lineage"
+        ],
+        "exact_missing_observation": [
+          "evidence labels posture/activity as declared context while preserving separate actual provenance: exact presentation label is not directly asserted in these bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-004-03",
+      "required_clause": [
+        "service and client reject actual substitution from an admitted simulator/bench receipt into human scope even with all confirmations true: paired scope-substitution request is not executed."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified",
+          "apps/mobile/e2e/raw-recordings.spec.ts::interruption and a changed instruction envelope discard rest and checks; participant declarations cannot enable human ECG"
+        ],
+        "exact_missing_observation": [
+          "service and client reject actual substitution from an admitted simulator/bench receipt into human scope even with all confirmations true: paired scope-substitution request is not executed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-005-01",
+      "required_clause": [
+        "separately obtains current start authority after reconciliation: the named lost-response test stops the attempt rather than performing that subsequent current start."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware",
+          "services/api/tests/test_participant_acquisition.py::test_instruction_receipt_expiry_uses_declared_time_and_replay_does_not_restore_authority"
+        ],
+        "exact_missing_observation": [
+          "separately obtains current start authority after reconciliation: the named lost-response test stops the attempt rather than performing that subsequent current start."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-005-02",
+      "required_clause": [
+        "scope/keyed-intent guards preserve replacement specifically during delayed instruction receipt persistence; no old acknowledgment timestamp is refreshed: delayed acknowledgment persistence callback is not directly asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::unmount and a replacement approval envelope stop pending preparation and cannot apply its late receipt",
+          "apps/mobile/tests/acquisition.test.ts::a changed submitted instruction envelope cannot reuse the original preparation or stop a newer scope"
+        ],
+        "exact_missing_observation": [
+          "scope/keyed-intent guards preserve replacement specifically during delayed instruction receipt persistence; no old acknowledgment timestamp is refreshed: delayed acknowledgment persistence callback is not directly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-006-01",
+      "required_clause": [
+        "privacy withdrawal intent remains durable and later grant cannot invoke hardware for that exact withdrawal case: test uses explicit End, not withdrawal."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::scope-qualified preparation End stops the advanced capture token before a deferred server start reaches hardware"
+        ],
+        "exact_missing_observation": [
+          "privacy withdrawal intent remains durable and later grant cannot invoke hardware for that exact withdrawal case: test uses explicit End, not withdrawal."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-039-PAI-006-02",
+      "required_clause": [
+        "Keep draft preserves prior instruction/attempt and forces separately admitted new collection start: complete cancel/keep/revisit/new-start transition not asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::lost accepted instruction reply is reconciled with its original body and key without restarting hardware",
+          "apps/mobile/tests/acquisition.test.ts::reopening the owned workspace preserves the actual collecting form without restoring rest or invoking hardware"
+        ],
+        "exact_missing_observation": [
+          "Keep draft preserves prior instruction/attempt and forces separately admitted new collection start: complete cancel/keep/revisit/new-start transition not asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

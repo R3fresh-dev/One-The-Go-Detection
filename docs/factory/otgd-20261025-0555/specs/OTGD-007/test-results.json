@@ -29,5 +29,14 @@
     "apps/mobile/tests/research-result.test.ts::personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields"
   ],
   "gates": "Current CI all14 PASS; independent local all7 gates passed.",
-  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved.",
+  "superseding_normative_inspection": {
+    "finding_id": "APR-001",
+    "observed_requirement_status": "UNMET",
+    "method": "source/control-flow inspection",
+    "runtime_test_executed": false,
+    "existing_scenario_results_unchanged": true,
+    "council_decision": "BLOCKED",
+    "evidence": "council-decision.json"
+  }
 }

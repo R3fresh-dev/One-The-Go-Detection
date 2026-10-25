@@ -1,0 +1,826 @@
+{
+  "spec_id": "OTGD-033",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md",
+  "canonical_sha256": "1c5bfceae8b4e2b5e1bd8c9edd7f19fd73908cde1fb804af4e9530700d3ea317",
+  "canonical_requirements": [
+    "AND-TASK-001 Instructions, native entry, and completion states",
+    "AND-TASK-002 Versioned deterministic schedule",
+    "AND-TASK-003 Native clocks and presentation evidence",
+    "AND-TASK-004 First-response semantics and bounded raw events",
+    "AND-TASK-005 Feature extraction and missingness",
+    "AND-TASK-006 Interruptions, timing faults, and resource lifecycle",
+    "AND-TASK-007 Native bridge, persistence, and repeat policy",
+    "AND-TASK-008 Platform parity, accessibility, and independent verification"
+  ],
+  "canonical_scenarios": [
+    "First complete task",
+    "Native module unavailable",
+    "Same seed on both native platforms",
+    "Responses influence apparent performance",
+    "Unused final interval cannot prolong the task",
+    "Accurate-looking floating-point timestamps",
+    "Wall clock changes during task",
+    "Wrong then correct tap",
+    "Omission and anticipatory input",
+    "Response dispatched within the final drain",
+    "Opposing simultaneous touches are stable",
+    "All go trials omitted",
+    "Partial run stopped after ten scored trials",
+    "Notification drawer takes focus",
+    "Cancellation races with completion",
+    "Navigation overlay cannot preserve an active scored run",
+    "Completion event received twice",
+    "Actual taps in a JavaScript preview",
+    "Mixed guest demo preserves real native evidence",
+    "Matching event fixtures across implementations",
+    "Passing native build without physical timing tests",
+    "Development threshold and terminal boundaries are exercised"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "BLOCKED": 3,
+    "PARTIAL": 10,
+    "PASS": 8,
+    "NOT_RUN": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-033-AND-TASK-001-01",
+    "OTGD-033-AND-TASK-001-02",
+    "OTGD-033-AND-TASK-002-01",
+    "OTGD-033-AND-TASK-002-02",
+    "OTGD-033-AND-TASK-002-03",
+    "OTGD-033-AND-TASK-003-01",
+    "OTGD-033-AND-TASK-003-02",
+    "OTGD-033-AND-TASK-004-01",
+    "OTGD-033-AND-TASK-004-02",
+    "OTGD-033-AND-TASK-004-03",
+    "OTGD-033-AND-TASK-004-04",
+    "OTGD-033-AND-TASK-005-01",
+    "OTGD-033-AND-TASK-005-02",
+    "OTGD-033-AND-TASK-006-01",
+    "OTGD-033-AND-TASK-006-02",
+    "OTGD-033-AND-TASK-006-03",
+    "OTGD-033-AND-TASK-007-01",
+    "OTGD-033-AND-TASK-007-02",
+    "OTGD-033-AND-TASK-007-03",
+    "OTGD-033-AND-TASK-008-01",
+    "OTGD-033-AND-TASK-008-02",
+    "OTGD-033-AND-TASK-008-03"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-033-AND-TASK-001-01",
+      "requirement_id": "AND-TASK-001",
+      "status": "BLOCKED",
+      "expected_observation": "First complete task \u2014 - **GIVEN** a supported native application with no accepted task in this check - **WHEN** the user selects Start task - **THEN** the task SHALL execute one practice-plus-scored sequence and return one bounded native completion event containing the attempt identity, timing evidence, planned trials, observations, and derived features.",
+      "unproved_then_clauses": [
+        "No full supported Android/iOS native view practice+scored run and one bounded completion event with observed native timing is executed."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Core schedules/scoring and bounded DTO tests execute; controller accepts fictional native payloads."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes",
+        "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes",
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "No full supported Android/iOS native view practice+scored run and one bounded completion event with observed native timing is executed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-001-02",
+      "requirement_id": "AND-TASK-001",
+      "status": "PARTIAL",
+      "expected_observation": "Native module unavailable \u2014 - **GIVEN** a runtime without the compiled reaction module - **WHEN** the reaction screen opens - **THEN** the UI SHALL explain that a native build is required for capture and SHALL not silently replace it with JavaScript timers or mark a preview as a valid native task.",
+      "unproved_then_clauses": [
+        "Module-unavailable screen must assert native-build explanation and no silent JavaScript fallback or valid-native labeling."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Controller rejects unsupported/stale native task terminal and invalidates unmounted arm."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Module-unavailable screen must assert native-build explanation and no silent JavaScript fallback or valid-native labeling."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-002-02",
+      "requirement_id": "AND-TASK-002",
+      "status": "PARTIAL",
+      "expected_observation": "Responses influence apparent performance \u2014 - **GIVEN** two runs with the same seed but different response streams - **WHEN** either run advances - **THEN** its next planned stimulus SHALL remain unchanged by response speed, mistakes, omission, or a desired score; the app SHALL not adapt the schedule to improve the outcome.",
+      "unproved_then_clauses": [
+        "Two native runs with contrasting response streams must directly compare subsequent planned stimuli and prove runtime cannot adapt timing/sequence to responses."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Schedule generator is deterministic and independent scoring uses precomputed literal schedules."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes",
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes",
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion"
+        ],
+        "exact_missing_observation": [
+          "Two native runs with contrasting response streams must directly compare subsequent planned stimuli and prove runtime cannot adapt timing/sequence to responses."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-002-03",
+      "requirement_id": "AND-TASK-002",
+      "status": "PARTIAL",
+      "expected_observation": "Unused final interval cannot prolong the task \u2014 - **GIVEN** the seed-1 literal schedule with all trials presented without lateness - **WHEN** the final response window closes - **THEN** the run SHALL end after its 100-ms drain at the fixture terminal cutoff, independent of the retained final interval draw.",
+      "unproved_then_clauses": [
+        "Actual run advancement/terminal commitment at that seed1 cutoff is not asserted; formula equality alone does not prove runtime end behavior."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Both schedule tests compute expected terminal cutoff from final onset+window+100ms drain, excluding last retained interval."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes"
+        ],
+        "exact_missing_observation": [
+          "Actual run advancement/terminal commitment at that seed1 cutoff is not asserted; formula equality alone does not prove runtime end behavior."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-003-01",
+      "requirement_id": "AND-TASK-003",
+      "status": "PARTIAL",
+      "expected_observation": "Accurate-looking floating-point timestamps \u2014 - **GIVEN** nanosecond or submillisecond software timestamps without physical display/touch calibration - **WHEN** the task computes or displays reaction features - **THEN** it SHALL retain uncalibrated status and report appropriate precision, without claiming that numeric resolution establishes equivalent physical timing accuracy.",
+      "unproved_then_clauses": [
+        "Rendered feature precision and absence of claims equating Android/iOS numeric timestamp resolution to physical accuracy are not fully asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Native evidence fixture is uncalibrated, physicalOnsetVerified=false/modelEligible=false and client preserves numeric values."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "Rendered feature precision and absence of claims equating Android/iOS numeric timestamp resolution to physical accuracy are not fully asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-003-02",
+      "requirement_id": "AND-TASK-003",
+      "status": "BLOCKED",
+      "expected_observation": "Wall clock changes during task \u2014 - **GIVEN** an uninterrupted native run - **WHEN** the system wall clock changes - **THEN** native reaction intervals SHALL remain based on the monotonic clock, the wall-clock discontinuity SHALL be retained in timing quality, and cross-component time eligibility SHALL be resolved separately.",
+      "unproved_then_clauses": [
+        "No native system wall-clock change during uninterrupted acquisition tests retained discontinuity flag and unchanged RT/cross-component eligibility."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Pure core reaction intervals use supplied monotonic event values."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion"
+        ],
+        "exact_missing_observation": [
+          "No native system wall-clock change during uninterrupted acquisition tests retained discontinuity flag and unchanged RT/cross-component eligibility."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-005-02",
+      "requirement_id": "AND-TASK-005",
+      "status": "PARTIAL",
+      "expected_observation": "Partial run stopped after ten scored trials \u2014 - **GIVEN** six completed practice trials and ten presented scored trials - **WHEN** the run is interrupted - **THEN** the attempt SHALL preserve those actual counts and planned remaining trials, mark invalid, and keep final-session aggregate task features null rather than pretending that a 60-trial task was completed.",
+      "unproved_then_clauses": [
+        "Tests pass only trials.take16, so they do not assert all66 planned records retained with remaining unpresented trials, six practice count and invalid terminal status together."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Both core suites assert interrupted prefix16 retains10 presented scored and final features=null."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion",
+        "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion",
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+        ],
+        "exact_missing_observation": [
+          "Tests pass only trials.take16, so they do not assert all66 planned records retained with remaining unpresented trials, six practice count and invalid terminal status together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-006-01",
+      "requirement_id": "AND-TASK-006",
+      "status": "BLOCKED",
+      "expected_observation": "Notification drawer takes focus \u2014 - **GIVEN** an active Android run - **WHEN** the system UI causes window focus loss - **THEN** the module SHALL stop the display sequence, emit one invalid completion with FOCUS_LOST, and require a newly identified attempt when the user returns.",
+      "unproved_then_clauses": [
+        "Notification drawer focus loss must stop native callbacks, emit exactly one FOCUS_LOST invalid event and require newly identified run on return."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "No Android instrumentation/system UI focus test is executed."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Notification drawer focus loss must stop native callbacks, emit exactly one FOCUS_LOST invalid event and require newly identified run on return."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-006-02",
+      "requirement_id": "AND-TASK-006",
+      "status": "PARTIAL",
+      "expected_observation": "Cancellation races with completion \u2014 - **GIVEN** a run approaching its final response window - **WHEN** cancellation and completion callbacks become runnable together - **THEN** the module SHALL commit one deterministic terminal state for that run, stop all callbacks, and SHALL not emit both a valid result and a separate canceled result.",
+      "unproved_then_clauses": [
+        "Native view callback/display teardown and one emitted terminal event under actual runnable callback race remain unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Both terminal latches deterministically let pending cancel win and suppress second commit; postcompletion cancel leaves committed latch unchanged."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::terminalDrainOverflowAndPendingCancellation",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testQuantileBudgetsDrainAndTerminalOnce"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::terminalDrainOverflowAndPendingCancellation",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testQuantileBudgetsDrainAndTerminalOnce"
+        ],
+        "exact_missing_observation": [
+          "Native view callback/display teardown and one emitted terminal event under actual runnable callback race remain unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-006-03",
+      "requirement_id": "AND-TASK-006",
+      "status": "PARTIAL",
+      "expected_observation": "Navigation overlay cannot preserve an active scored run \u2014 - **GIVEN** an active task whose tab stays mounted after navigation - **WHEN** the user selects another tab and then Keep draft in a confirmation - **THEN** the native stop acknowledgment and invalid settlement SHALL precede the overlay; returning SHALL never resume that run.",
+      "unproved_then_clauses": [
+        "Mounted-view tab change plus Keep draft must assert native acknowledgment/invalid settlement precede overlay and old run never resumes."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Parent controller dispatches native cancellation before waiting for delayed device stop."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion"
+        ],
+        "exact_missing_observation": [
+          "Mounted-view tab change plus Keep draft must assert native acknowledgment/invalid settlement precede overlay and old run never resumes."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-007-01",
+      "requirement_id": "AND-TASK-007",
+      "status": "PARTIAL",
+      "expected_observation": "Completion event received twice \u2014 - **GIVEN** an accepted native result for a run ID - **WHEN** the same payload is delivered again - **THEN** persistence SHALL deduplicate it by run identity and hash; a different payload under the same run ID SHALL produce a conflict instead of replacing the accepted result.",
+      "unproved_then_clauses": [
+        "Parent persistence must receive identical result twice then changed same-run result and assert deduplication/conflict with unchanged stored original."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Native terminal latch emits once and retained task evidence is digest-bound."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::terminalDrainOverflowAndPendingCancellation",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testQuantileBudgetsDrainAndTerminalOnce",
+        "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::terminalDrainOverflowAndPendingCancellation",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testQuantileBudgetsDrainAndTerminalOnce",
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "Parent persistence must receive identical result twice then changed same-run result and assert deduplication/conflict with unchanged stored original."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-007-02",
+      "requirement_id": "AND-TASK-007",
+      "status": "NOT_RUN",
+      "expected_observation": "Actual taps in a JavaScript preview \u2014 - **GIVEN** a user interacting with an explicitly labeled fallback/practice view - **WHEN** the preview ends - **THEN** its output SHALL retain prototype_sensor with javascript_fallback provenance and SHALL not be labeled native_task or used as a compatible task baseline.",
+      "unproved_then_clauses": [
+        "Run actual taps in labeled fallback and assert prototype_sensor/javascript_fallback, never native_task or compatible baseline."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Native DTO/golden fixtures do not execute actual user input in JavaScript fallback."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Run actual taps in labeled fallback and assert prototype_sensor/javascript_fallback, never native_task or compatible baseline."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-007-03",
+      "requirement_id": "AND-TASK-007",
+      "status": "PARTIAL",
+      "expected_observation": "Mixed guest demo preserves real native evidence \u2014 - **GIVEN** fictional saliva and an actual completed native reaction task in guest demo - **WHEN** the check is saved and later exported or the user signs in - **THEN** native taps SHALL remain prototype_sensor/uncalibrated in complete hashed companion evidence; guest upload/migration SHALL remain forbidden, while the CLI all-fictional validator stays unchanged.",
+      "unproved_then_clauses": [
+        "Mixed fictional-saliva+actual native task save/export/signin must assert complete hashed companion survives and no guest migration/upload, while CLI validator stays strict."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Guest immutable save prohibits upload; retained native golden preserves prototype/uncalibrated evidence."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "Mixed fictional-saliva+actual native task save/export/signin must assert complete hashed companion survives and no guest migration/upload, while CLI validator stays strict."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-008-01",
+      "requirement_id": "AND-TASK-008",
+      "status": "PARTIAL",
+      "expected_observation": "Matching event fixtures across implementations \u2014 - **GIVEN** identical planned trials and ordered timestamped inputs - **WHEN** Kotlin, Swift, and the reference extractor score them - **THEN** counts, nullability, error rates, and quantiles SHALL match the named tolerances, with platform presentation-evidence differences retained in metadata.",
+      "unproved_then_clauses": [
+        "Not all same event vectors are scored by independent reference extractor and compared for all counts/rates/metadata across three implementations."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Kotlin/Swift match literal scoring outcomes/nullability and aggregate quantiles; independent client reference validates retained native fixture."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::allLiteralTrialBoundaryVectors",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAllLiteralTrialBoundaryVectors",
+        "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+        "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion",
+        "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::allLiteralTrialBoundaryVectors",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAllLiteralTrialBoundaryVectors",
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion",
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "Not all same event vectors are scored by independent reference extractor and compared for all counts/rates/metadata across three implementations."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-033-AND-TASK-001-01",
+      "required_clause": [
+        "No full supported Android/iOS native view practice+scored run and one bounded completion event with observed native timing is executed."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes",
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "No full supported Android/iOS native view practice+scored run and one bounded completion event with observed native timing is executed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-001-02",
+      "required_clause": [
+        "Module-unavailable screen must assert native-build explanation and no silent JavaScript fallback or valid-native labeling."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Module-unavailable screen must assert native-build explanation and no silent JavaScript fallback or valid-native labeling."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-002-02",
+      "required_clause": [
+        "Two native runs with contrasting response streams must directly compare subsequent planned stimuli and prove runtime cannot adapt timing/sequence to responses."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes",
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion"
+        ],
+        "exact_missing_observation": [
+          "Two native runs with contrasting response streams must directly compare subsequent planned stimuli and prove runtime cannot adapt timing/sequence to responses."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-002-03",
+      "required_clause": [
+        "Actual run advancement/terminal commitment at that seed1 cutoff is not asserted; formula equality alone does not prove runtime end behavior."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::frozenLiteralSchedulesAndHashes",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testFrozenLiteralSchedulesAndHashes"
+        ],
+        "exact_missing_observation": [
+          "Actual run advancement/terminal commitment at that seed1 cutoff is not asserted; formula equality alone does not prove runtime end behavior."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-003-01",
+      "required_clause": [
+        "Rendered feature precision and absence of claims equating Android/iOS numeric timestamp resolution to physical accuracy are not fully asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "Rendered feature precision and absence of claims equating Android/iOS numeric timestamp resolution to physical accuracy are not fully asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-003-02",
+      "required_clause": [
+        "No native system wall-clock change during uninterrupted acquisition tests retained discontinuity flag and unchanged RT/cross-component eligibility."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion"
+        ],
+        "exact_missing_observation": [
+          "No native system wall-clock change during uninterrupted acquisition tests retained discontinuity flag and unchanged RT/cross-component eligibility."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-005-02",
+      "required_clause": [
+        "Tests pass only trials.take16, so they do not assert all66 planned records retained with remaining unpresented trials, six practice count and invalid terminal status together."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion",
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+        ],
+        "exact_missing_observation": [
+          "Tests pass only trials.take16, so they do not assert all66 planned records retained with remaining unpresented trials, six practice count and invalid terminal status together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-006-01",
+      "required_clause": [
+        "Notification drawer focus loss must stop native callbacks, emit exactly one FOCUS_LOST invalid event and require newly identified run on return."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Notification drawer focus loss must stop native callbacks, emit exactly one FOCUS_LOST invalid event and require newly identified run on return."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-006-02",
+      "required_clause": [
+        "Native view callback/display teardown and one emitted terminal event under actual runnable callback race remain unexecuted."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::terminalDrainOverflowAndPendingCancellation",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testQuantileBudgetsDrainAndTerminalOnce"
+        ],
+        "exact_missing_observation": [
+          "Native view callback/display teardown and one emitted terminal event under actual runnable callback race remain unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-006-03",
+      "required_clause": [
+        "Mounted-view tab change plus Keep draft must assert native acknowledgment/invalid settlement precede overlay and old run never resumes."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion"
+        ],
+        "exact_missing_observation": [
+          "Mounted-view tab change plus Keep draft must assert native acknowledgment/invalid settlement precede overlay and old run never resumes."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-007-01",
+      "required_clause": [
+        "Parent persistence must receive identical result twice then changed same-run result and assert deduplication/conflict with unchanged stored original."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::terminalDrainOverflowAndPendingCancellation",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testQuantileBudgetsDrainAndTerminalOnce",
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "Parent persistence must receive identical result twice then changed same-run result and assert deduplication/conflict with unchanged stored original."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-007-02",
+      "required_clause": [
+        "Run actual taps in labeled fallback and assert prototype_sensor/javascript_fallback, never native_task or compatible baseline."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Run actual taps in labeled fallback and assert prototype_sensor/javascript_fallback, never native_task or compatible baseline."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-007-03",
+      "required_clause": [
+        "Mixed fictional-saliva+actual native task save/export/signin must assert complete hashed companion survives and no guest migration/upload, while CLI validator stays strict."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "Mixed fictional-saliva+actual native task save/export/signin must assert complete hashed companion survives and no guest migration/upload, while CLI validator stays strict."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-033-AND-TASK-008-01",
+      "required_clause": [
+        "Not all same event vectors are scored by independent reference extractor and compared for all counts/rates/metadata across three implementations."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::allLiteralTrialBoundaryVectors",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAllLiteralTrialBoundaryVectors",
+          "apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt::aggregatesPracticeExclusionAndNullableNoResponseFeatures",
+          "apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift::testAggregatesAndPracticeExclusion",
+          "apps/mobile/tests/export-evidence.test.ts::host-generated native golden is fully checked without claiming a physical acquisition"
+        ],
+        "exact_missing_observation": [
+          "Not all same event vectors are scored by independent reference extractor and compared for all counts/rates/metadata across three implementations."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

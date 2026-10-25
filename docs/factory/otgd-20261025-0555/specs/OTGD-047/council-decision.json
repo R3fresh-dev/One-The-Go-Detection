@@ -1,0 +1,1554 @@
+{
+  "spec_id": "OTGD-047",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/mobile-store-delivery/spec.md",
+  "canonical_sha256": "b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4",
+  "canonical_requirements": [
+    "STORE-001 Define separate real-device release targets",
+    "STORE-002 Validate actual project and backend identity",
+    "STORE-003 Stage only admitted immutable source",
+    "STORE-004 Provide a mutation-free plan",
+    "STORE-005 Pin provider tooling and scope credentials",
+    "STORE-006 Bind builds to explicit provider records",
+    "STORE-007 Submit only the exact verified candidate",
+    "STORE-008 Separate submission from public availability",
+    "STORE-009 Preserve bounded operation receipts",
+    "STORE-010 Inspect the actual signed device artifact",
+    "STORE-011 Fence uncertain submission outcomes",
+    "STORE-012 Verify the complete Android upload signature",
+    "STORE-013 Verify genuine iOS device signing and provisioning",
+    "STORE-014 Execute the exact verified provider toolchain",
+    "STORE-015 Bound local provider subprocesses",
+    "STORE-016 Supply a deliberate cloud operator workflow",
+    "STORE-017 Encrypt operator handoffs in public repositories",
+    "STORE-018 Transfer an operator-held pending intent without upload mutation"
+  ],
+  "canonical_scenarios": [
+    "A real store candidate is planned",
+    "A guest archive is offered for store release",
+    "Cloud identity matches the compiled app",
+    "Production lists the wrong redirect",
+    "Exact source and genuine release evidence agree",
+    "A local JSON or stale successful run is substituted",
+    "An operator reviews the intended command",
+    "An invalid or ambiguous target is supplied",
+    "Approved credentials and exact CLI are available",
+    "Tooling or credential state is unavailable",
+    "The provider completes the selected build",
+    "Build execution merely starts",
+    "A genuine exact candidate is submitted",
+    "Another build is substituted",
+    "An upload request succeeds",
+    "Apple or Google has not approved delivery",
+    "A successful operation is retained",
+    "An external stage fails",
+    "A genuine device candidate matches authority",
+    "Metadata describes a different binary",
+    "The provider accepted a request before interruption",
+    "The operator repeats an unknown upload without identity",
+    "A complete registered-upload candidate is supplied",
+    "Unsigned payload is appended to a signed archive",
+    "A genuine store-signed device IPA is inspected",
+    "A simulator or unsupported signing path is used",
+    "Pinned verified CLI installation matches the lock",
+    "Execution selects different CLI bytes",
+    "A CLI child exceeds its deadline",
+    "Another local process is running",
+    "The operator has configured actual protected inputs",
+    "A fresh upload is requested from ephemeral Actions",
+    "The workflow exists only on an unmerged branch",
+    "A later operation consumes the same exact candidate",
+    "An artifact or ciphertext is substituted",
+    "A persistent operator transfers an uncertain existing submission",
+    "A transfer replaces or ambiguously selects evidence"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 11,
+    "PARTIAL": 20,
+    "BLOCKED": 5,
+    "NOT_RUN": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-047-STORE-001-01",
+    "OTGD-047-STORE-001-02",
+    "OTGD-047-STORE-002-01",
+    "OTGD-047-STORE-002-02",
+    "OTGD-047-STORE-003-01",
+    "OTGD-047-STORE-003-02",
+    "OTGD-047-STORE-004-01",
+    "OTGD-047-STORE-004-02",
+    "OTGD-047-STORE-005-01",
+    "OTGD-047-STORE-005-02",
+    "OTGD-047-STORE-006-01",
+    "OTGD-047-STORE-006-02",
+    "OTGD-047-STORE-007-01",
+    "OTGD-047-STORE-007-02",
+    "OTGD-047-STORE-008-01",
+    "OTGD-047-STORE-008-02",
+    "OTGD-047-STORE-009-01",
+    "OTGD-047-STORE-009-02",
+    "OTGD-047-STORE-010-01",
+    "OTGD-047-STORE-010-02",
+    "OTGD-047-STORE-011-01",
+    "OTGD-047-STORE-011-02",
+    "OTGD-047-STORE-012-01",
+    "OTGD-047-STORE-012-02",
+    "OTGD-047-STORE-013-01",
+    "OTGD-047-STORE-013-02",
+    "OTGD-047-STORE-014-01",
+    "OTGD-047-STORE-014-02",
+    "OTGD-047-STORE-015-01",
+    "OTGD-047-STORE-015-02",
+    "OTGD-047-STORE-016-01",
+    "OTGD-047-STORE-016-02",
+    "OTGD-047-STORE-016-03",
+    "OTGD-047-STORE-017-01",
+    "OTGD-047-STORE-017-02",
+    "OTGD-047-STORE-018-01",
+    "OTGD-047-STORE-018-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-047-STORE-001-02",
+      "requirement_id": "STORE-001",
+      "status": "PARTIAL",
+      "expected_observation": "A guest archive is offered for store release \u2014 - **GIVEN** a local/guest/simulator artifact or incompatible package - **WHEN** store admission runs - **THEN** it refuses rather than relabeling the artifact.",
+      "unproved_then_clauses": [
+        "A full local/guest archive through the store execute/admission path must assert refusal before provider mutation; isolated configuration/manifest throws do not prove that complete operation boundary."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Local/ambiguous configuration, hostedPreview marker, simulator build metadata and incompatible Android package are rejected by actual software admission helpers."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_release_config_rejects_local_guest_or_ambiguous_targets",
+        "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+        "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_release_config_rejects_local_guest_or_ambiguous_targets",
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+          "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal"
+        ],
+        "exact_missing_observation": [
+          "A full local/guest archive through the store execute/admission path must assert refusal before provider mutation; isolated configuration/manifest throws do not prove that complete operation boundary."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-002-01",
+      "requirement_id": "STORE-002",
+      "status": "PARTIAL",
+      "expected_observation": "Cloud identity matches the compiled app \u2014 - **GIVEN** current project metadata and admitted cloud outputs including the exact callback - **WHEN** build/submit admission runs - **THEN** the candidate uses those exact public identity values.",
+      "unproved_then_clauses": [
+        "Genuine current authenticated Expo project/backend outputs have not been observed; fixtures cannot bind a real compiled store app to a live cloud identity."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Exact public project/config/origin/callback checks execute under fictional provider/cloud responses, with mismatch rejection and preservation of explicit configured identities."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+        "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+        "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+          "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback"
+        ],
+        "exact_missing_observation": [
+          "Genuine current authenticated Expo project/backend outputs have not been observed; fixtures cannot bind a real compiled store app to a live cloud identity."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-002-02",
+      "requirement_id": "STORE-002",
+      "status": "PARTIAL",
+      "expected_observation": "Production lists the wrong redirect \u2014 - **GIVEN** otgd-prod://oauth/callback or a foreign project/backend/callback - **WHEN** admission checks the production package - **THEN** it fails before build or submission.",
+      "unproved_then_clauses": [
+        "Execute build/submit with each foreign project/backend/callback response and assert zero provider build/upload commands; standalone verify_backend tests do not observe that end-to-end ordering."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Production otgd-prod callback, wrong runtime image and incomplete rollout are rejected by backend helper before it returns admission."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback",
+        "infra/test/test_store_inputs.py::test_external_paths_and_invalid_store_config_leave_no_staging"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback",
+          "infra/test/test_store_inputs.py::test_external_paths_and_invalid_store_config_leave_no_staging"
+        ],
+        "exact_missing_observation": [
+          "Execute build/submit with each foreign project/backend/callback response and assert zero provider build/upload commands; standalone verify_backend tests do not observe that end-to-end ordering."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-003-01",
+      "requirement_id": "STORE-003",
+      "status": "PARTIAL",
+      "expected_observation": "Exact source and genuine release evidence agree \u2014 - **GIVEN** the allowed trusted GitHub release event and current signed backend/QA binding - **WHEN** source is staged outside the development checkout - **THEN** the provider receives only the admitted immutable tree.",
+      "unproved_then_clauses": [
+        "Trusted release-event/gate/QA admission and isolated staged tree must be composed with the provider call, asserting only that exact tree/locks reach upload; flow substitutes isolated_source and backend verifier."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Actual temporary Git isolation preserves committed revision, excludes untracked file and refuses dirty source; build path refuses missing backend authority."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_clean_isolated_source_preserves_exact_git_revision_and_excludes_untracked_files",
+        "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+        "infra/test/test_store_inputs.py::test_build_stages_selected_signer_and_backend_scope_without_store_credentials"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_clean_isolated_source_preserves_exact_git_revision_and_excludes_untracked_files",
+          "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+          "infra/test/test_store_inputs.py::test_build_stages_selected_signer_and_backend_scope_without_store_credentials"
+        ],
+        "exact_missing_observation": [
+          "Trusted release-event/gate/QA admission and isolated staged tree must be composed with the provider call, asserting only that exact tree/locks reach upload; flow substitutes isolated_source and backend verifier."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-003-02",
+      "requirement_id": "STORE-003",
+      "status": "PARTIAL",
+      "expected_observation": "A local JSON or stale successful run is substituted \u2014 - **GIVEN** missing jobs, wrong commit/project, unsupported release event or edited evidence - **WHEN** build/submit admission runs - **THEN** no provider mutation occurs.",
+      "unproved_then_clauses": [
+        "Store build/submit operation must integrate unsupported release-event/edited gate evidence and assert no provider mutation for all cases; gate and store tests currently exercise separate helper boundaries."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Gate validator rejects missing/failed/skipped/canceled/old-attempt/wrong-commit jobs; backend failure prevents store build command."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_provenance.py::test_local_claims_cannot_replace_missing_failed_skipped_or_old_attempt_jobs",
+        "infra/test/test_provenance.py::test_latest_attempt_requires_every_nested_job_and_aggregate",
+        "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+        "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_provenance.py::test_local_claims_cannot_replace_missing_failed_skipped_or_old_attempt_jobs",
+          "infra/test/test_provenance.py::test_latest_attempt_requires_every_nested_job_and_aggregate",
+          "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+          "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback"
+        ],
+        "exact_missing_observation": [
+          "Store build/submit operation must integrate unsupported release-event/edited gate evidence and assert no provider mutation for all cases; gate and store tests currently exercise separate helper boundaries."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-004-02",
+      "requirement_id": "STORE-004",
+      "status": "PARTIAL",
+      "expected_observation": "An invalid or ambiguous target is supplied \u2014 - **GIVEN** opposite environment, missing platform or placeholder identity - **WHEN** plan runs - **THEN** validation fails before a provider command.",
+      "unproved_then_clauses": [
+        "Direct plan action must exercise all opposite-environment/missing-platform/placeholder cases and assert provider command never launched; current checks span config parsing and wrapper-run guards."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Wrong environment, placeholder IDs, invalid selected platform and missing platform in staged command are rejected with no child command or leftover staging."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_release_config_rejects_local_guest_or_ambiguous_targets",
+        "infra/test/test_store_inputs.py::test_external_paths_and_invalid_store_config_leave_no_staging",
+        "infra/test/test_store_inputs.py::test_run_rejects_duplicate_unknown_foreign_and_unscoped_arguments"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_release_config_rejects_local_guest_or_ambiguous_targets",
+          "infra/test/test_store_inputs.py::test_external_paths_and_invalid_store_config_leave_no_staging",
+          "infra/test/test_store_inputs.py::test_run_rejects_duplicate_unknown_foreign_and_unscoped_arguments"
+        ],
+        "exact_missing_observation": [
+          "Direct plan action must exercise all opposite-environment/missing-platform/placeholder cases and assert provider command never launched; current checks span config parsing and wrapper-run guards."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-005-01",
+      "requirement_id": "STORE-005",
+      "status": "PARTIAL",
+      "expected_observation": "Approved credentials and exact CLI are available \u2014 - **GIVEN** verified pinned tooling and scoped genuine provider credentials - **WHEN** build/submission starts - **THEN** the child receives only its required authentication and transport.",
+      "unproved_then_clauses": [
+        "Actual credential-bearing child invocation must assert complete env whitelist for build versus submit, including no unrelated secrets; current separate helper tests do not inspect the complete real child environment."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Build environment excludes AWS/GitHub/database/preload/Expo secrets while preserving proxy/CA; CLI fake boundary receives token only for EAS; selected platform credential is0600 and opposite key absent."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_tool_environment_preserves_transport_but_never_builds_with_service_secrets",
+        "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+        "infra/test/test_store_inputs.py::test_submit_stages_only_selected_platform_credential",
+        "infra/test/test_store_inputs.py::test_build_stages_selected_signer_and_backend_scope_without_store_credentials"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_tool_environment_preserves_transport_but_never_builds_with_service_secrets",
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+          "infra/test/test_store_inputs.py::test_submit_stages_only_selected_platform_credential",
+          "infra/test/test_store_inputs.py::test_build_stages_selected_signer_and_backend_scope_without_store_credentials"
+        ],
+        "exact_missing_observation": [
+          "Actual credential-bearing child invocation must assert complete env whitelist for build versus submit, including no unrelated secrets; current separate helper tests do not inspect the complete real child environment."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-005-02",
+      "requirement_id": "STORE-005",
+      "status": "PARTIAL",
+      "expected_observation": "Tooling or credential state is unavailable \u2014 - **GIVEN** a different CLI, missing genuine signing/account access or a Node preload - **WHEN** the operation starts - **THEN** it refuses or excludes the unapproved setting without inventing a build.",
+      "unproved_then_clauses": [
+        "Wrong EAS version response and absent genuine signing/account access must be driven through execute with zero build receipt/provider build; current version stub always returns the expected version."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Missing EXPO_TOKEN, changed archive/tree integrity, malformed platform credentials and Node preload exclusion are tested."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+        "infra/test/test_store_inputs.py::test_platform_credentials_reject_wrong_scope_unknown_wrappers_and_bad_content",
+        "services/api/tests/test_mobile_store_release.py::test_tool_environment_preserves_transport_but_never_builds_with_service_secrets"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+          "infra/test/test_store_inputs.py::test_platform_credentials_reject_wrong_scope_unknown_wrappers_and_bad_content",
+          "services/api/tests/test_mobile_store_release.py::test_tool_environment_preserves_transport_but_never_builds_with_service_secrets"
+        ],
+        "exact_missing_observation": [
+          "Wrong EAS version response and absent genuine signing/account access must be driven through execute with zero build receipt/provider build; current version stub always returns the expected version."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-006-01",
+      "requirement_id": "STORE-006",
+      "status": "PARTIAL",
+      "expected_observation": "The provider completes the selected build \u2014 - **GIVEN** matching official finished-build metadata - **WHEN** the completion receipt is written - **THEN** it identifies the actual build UUID/version and admitted project/source.",
+      "unproved_then_clauses": [
+        "Completion receipt must explicitly assert returned buildUUID/version/project/source fields together; official provider observations and real signed output remain unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "FINISHED metadata validates expected ID, platform/source/package/version shape; flow writes a signed build-purpose receipt with not_submitted state."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+        "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+          "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts"
+        ],
+        "exact_missing_observation": [
+          "Completion receipt must explicitly assert returned buildUUID/version/project/source fields together; official provider observations and real signed output remain unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-006-02",
+      "requirement_id": "STORE-006",
+      "status": "PARTIAL",
+      "expected_observation": "Build execution merely starts \u2014 - **GIVEN** an accepted request with pending/failed/wrong-project output - **WHEN** completion is assessed - **THEN** no finished artifact or downloadable store app is claimed.",
+      "unproved_then_clauses": [
+        "Failed status and wrong projectUUID need explicit operation tests asserting no finished receipt/artifact/download claim; pending metadata throw alone does not assert report/output behavior."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "IN_PROGRESS, wrong source/distribution/simulator/package/version and foreign owner metadata are refused by verify_build."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build"
+        ],
+        "exact_missing_observation": [
+          "Failed status and wrong projectUUID need explicit operation tests asserting no finished receipt/artifact/download claim; pending metadata throw alone does not assert report/output behavior."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-007-01",
+      "requirement_id": "STORE-007",
+      "status": "BLOCKED",
+      "expected_observation": "A genuine exact candidate is submitted \u2014 - **GIVEN** the current finished-build UUID and real matching store record - **WHEN** explicit submission is requested - **THEN** that exact candidate is sent and provider observations are recorded.",
+      "unproved_then_clauses": [
+        "No genuine authorized EAS/store submission is performed: real matching store record, provider access/signing credentials and explicit external-action authorization are prerequisites outside this read-only scope."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Offline flow constructs exact --id BUILD with no latest/automaticTestFlight and queries submission metadata, then retains signed nonpublic receipt."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts",
+        "services/api/tests/test_mobile_store_release.py::test_actual_submission_receipt_never_means_public_store_availability"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts",
+          "services/api/tests/test_mobile_store_release.py::test_actual_submission_receipt_never_means_public_store_availability"
+        ],
+        "exact_missing_observation": [
+          "No genuine authorized EAS/store submission is performed: real matching store record, provider access/signing credentials and explicit external-action authorization are prerequisites outside this read-only scope."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-007-02",
+      "requirement_id": "STORE-007",
+      "status": "PARTIAL",
+      "expected_observation": "Another build is substituted \u2014 - **GIVEN** latest selection, a foreign UUID or altered receipt/metadata - **WHEN** submission admission runs - **THEN** it refuses before upload.",
+      "unproved_then_clauses": [
+        "Explicit --latest selector and altered finished official build metadata must be tested at submit operation boundary with an upload-call spy remaining zero."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Wrong buildUUID, signer/scope, byte-linked receipt, oldsource and foreign submittedBuild are rejected; normal command explicitly uses --id and never --latest."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_store_inputs.py::test_candidate_receipt_scope_signer_and_submission_reuse_are_checked",
+        "services/api/tests/test_mobile_store_release.py::test_actual_submission_receipt_never_means_public_store_availability",
+        "infra/test/test_store_inputs.py::test_signed_child_receipts_bind_original_build_bytes_and_logical_configuration"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_store_inputs.py::test_candidate_receipt_scope_signer_and_submission_reuse_are_checked",
+          "services/api/tests/test_mobile_store_release.py::test_actual_submission_receipt_never_means_public_store_availability",
+          "infra/test/test_store_inputs.py::test_signed_child_receipts_bind_original_build_bytes_and_logical_configuration"
+        ],
+        "exact_missing_observation": [
+          "Explicit --latest selector and altered finished official build metadata must be tested at submit operation boundary with an upload-call spy remaining zero."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-009-01",
+      "requirement_id": "STORE-009",
+      "status": "PARTIAL",
+      "expected_observation": "A successful operation is retained \u2014 - **GIVEN** actual matching provider observations - **WHEN** a receipt is created - **THEN** it records the performed stage and identity without overwriting earlier evidence.",
+      "unproved_then_clauses": [
+        "Assert every receipt's performed stage/platform/project/source/providerUUID/version against observed metadata and unchanged previous receipt bytes in one operation chain; current positive flow checks only a subset of fields."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Distinct signed build/submission/intent receipts and status preserve original signed bytes, intent identity and immutable output reuse rejection."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts",
+        "infra/test/test_store_inputs.py::test_status_preserves_original_receipts_without_staging_private_credentials",
+        "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+        "infra/test/test_store_inputs.py::test_signed_child_receipts_bind_original_build_bytes_and_logical_configuration"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts",
+          "infra/test/test_store_inputs.py::test_status_preserves_original_receipts_without_staging_private_credentials",
+          "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+          "infra/test/test_store_inputs.py::test_signed_child_receipts_bind_original_build_bytes_and_logical_configuration"
+        ],
+        "exact_missing_observation": [
+          "Assert every receipt's performed stage/platform/project/source/providerUUID/version against observed metadata and unchanged previous receipt bytes in one operation chain; current positive flow checks only a subset of fields."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-009-02",
+      "requirement_id": "STORE-009",
+      "status": "PARTIAL",
+      "expected_observation": "An external stage fails \u2014 - **GIVEN** denied credentials, wrong metadata or failed build/upload - **WHEN** execution stops - **THEN** failure is explicit and earlier provider work is not falsely described as rolled back.",
+      "unproved_then_clauses": [
+        "Denied credential/wrong metadata/failed upload after earlier successful provider work must assert nonzero/report text preserves unknown or completed earlier work and never claims rollback."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Lost submit response raises explicit error, preserves original durable intent and no fabricated success output; retry cannot upload again."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload",
+        "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+        "services/api/tests/test_mobile_store_release.py::test_fsync_failure_leaves_fence_and_never_launches_store_upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload",
+          "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+          "services/api/tests/test_mobile_store_release.py::test_fsync_failure_leaves_fence_and_never_launches_store_upload"
+        ],
+        "exact_missing_observation": [
+          "Denied credential/wrong metadata/failed upload after earlier successful provider work must assert nonzero/report text preserves unknown or completed earlier work and never claims rollback."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-010-01",
+      "requirement_id": "STORE-010",
+      "status": "BLOCKED",
+      "expected_observation": "A genuine device candidate matches authority \u2014 - **GIVEN** the exact provider build bytes, reviewed signer and supported verifier - **WHEN** inspection executes - **THEN** the signed receipt binds its actual digest and observed native/configuration/signing metadata.",
+      "unproved_then_clauses": [
+        "No genuine provider AAB/deviceIPA with independently reviewed platform signer is inspected; bundletool output and macOS code signing are substituted in the existing tests."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Real JDK signature verification protects a fictional JAR and mocked-native inspections create scoped fixture receipts."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+        "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple",
+        "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+          "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple",
+          "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts"
+        ],
+        "exact_missing_observation": [
+          "No genuine provider AAB/deviceIPA with independently reviewed platform signer is inspected; bundletool output and macOS code signing are substituted in the existing tests."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-010-02",
+      "requirement_id": "STORE-010",
+      "status": "PARTIAL",
+      "expected_observation": "Metadata describes a different binary \u2014 - **GIVEN** a simulator IPA, unsigned/foreign AAB, wrong package/version/backend/guest marker or different signer - **WHEN** binary inspection runs - **THEN** metadata alone cannot admit it and no submission occurs.",
+      "unproved_then_clauses": [
+        "Foreign Apple signer, simulator Mach-O/platform mismatch, backend/runtime mismatch and wrong native version need exact native archive mutations plus assertion no submit call; hosted-preview reverse-platform checks are unrelated."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Changed Android signature/signer/unsigned entries and guest/debug/cleartext/package manifest mutations reject; iOS debug/ad-hoc/unsupported host refuse."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+        "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple",
+        "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal",
+        "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+          "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple",
+          "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal",
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build"
+        ],
+        "exact_missing_observation": [
+          "Foreign Apple signer, simulator Mach-O/platform mismatch, backend/runtime mismatch and wrong native version need exact native archive mutations plus assertion no submit call; hosted-preview reverse-platform checks are unrelated."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-011-01",
+      "requirement_id": "STORE-011",
+      "status": "PARTIAL",
+      "expected_observation": "The provider accepted a request before interruption \u2014 - **GIVEN** a durable signed intent and an uncertain CLI outcome - **WHEN** the operator supplies the actual submission UUID for reconciliation - **THEN** the tool queries that exact matching provider record without another upload.",
+      "unproved_then_clauses": [
+        "FakeEas submit:view returns same metadata regardless of argument; assert queried command UUID equals supplied original submissionUUID and rejects a mismatched returned UUID, not only that no second upload occurs."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Durable signed intent survives lost response; reconciliation supplied UUID causes one original upload total and preserves exact intent bytes."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload",
+        "services/api/tests/test_mobile_store_release.py::test_submission_persists_signed_owner_only_fence_before_provider_call",
+        "infra/test/test_store_inputs.py::test_submit_reconciliation_requires_original_intent_and_exact_identifier"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload",
+          "services/api/tests/test_mobile_store_release.py::test_submission_persists_signed_owner_only_fence_before_provider_call",
+          "infra/test/test_store_inputs.py::test_submit_reconciliation_requires_original_intent_and_exact_identifier"
+        ],
+        "exact_missing_observation": [
+          "FakeEas submit:view returns same metadata regardless of argument; assert queried command UUID equals supplied original submissionUUID and rejects a mismatched returned UUID, not only that no second upload occurs."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-012-01",
+      "requirement_id": "STORE-012",
+      "status": "BLOCKED",
+      "expected_observation": "A complete registered-upload candidate is supplied \u2014 - **GIVEN** an AAB with the expected upload certificate and all payload entries signed - **WHEN** actual signature and manifest inspection runs - **THEN** the admitted digest/package/version/signer are recorded.",
+      "unproved_then_clauses": [
+        "A real Android app bundle with independently registered upload certificate and actual pinned bundletool native manifest decoding is absent; fake manifest extraction cannot establish this genuine candidate scenario."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Actual JDK signs/verifies every meaningful fictional archive entry and trusted certificate digest; manifest/runtime policy is tested separately."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+        "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+          "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal"
+        ],
+        "exact_missing_observation": [
+          "A real Android app bundle with independently registered upload certificate and actual pinned bundletool native manifest decoding is absent; fake manifest extraction cannot establish this genuine candidate scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-013-01",
+      "requirement_id": "STORE-013",
+      "status": "BLOCKED",
+      "expected_observation": "A genuine store-signed device IPA is inspected \u2014 - **GIVEN** the independently expected Apple distribution identity and matching profile - **WHEN** actual macOS signing/platform inspection runs - **THEN** the device artifact and observed signing metadata bind the receipt.",
+      "unproved_then_clauses": [
+        "Genuine Apple distribution certificate/profile and actual macOS codesign/security verification on a real deviceIPA have not executed; current subprocess outputs are mocked."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Bounded device Mach-O/plist/profile parser accepts a fictional envelope and denies debug/ad-hoc/unsupported host."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple"
+        ],
+        "exact_missing_observation": [
+          "Genuine Apple distribution certificate/profile and actual macOS codesign/security verification on a real deviceIPA have not executed; current subprocess outputs are mocked."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-013-02",
+      "requirement_id": "STORE-013",
+      "status": "PARTIAL",
+      "expected_observation": "A simulator or unsupported signing path is used \u2014 - **GIVEN** an iOS simulator ZIP, foreign/development identity or unsupported verifier - **WHEN** admission executes - **THEN** no store upload or successful Apple-signing claim occurs.",
+      "unproved_then_clauses": [
+        "Explicit simulator Mach-O/platform, foreign distribution certificate/team and development identity mutations are not all tested through store admission with zero upload."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "iOS fixture rejects get-task-allow debug, provisioned-device ad-hoc profile and unsupported Linux verifier."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple"
+        ],
+        "exact_missing_observation": [
+          "Explicit simulator Mach-O/platform, foreign distribution certificate/team and development identity mutations are not all tested through store admission with zero upload."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-014-01",
+      "requirement_id": "STORE-014",
+      "status": "PARTIAL",
+      "expected_observation": "Pinned verified CLI installation matches the lock \u2014 - **GIVEN** the reviewed exact EAS archive integrity and matching isolated toolchain tree - **WHEN** the provider CLI is executed - **THEN** that inspected installation supplies the command.",
+      "unproved_then_clauses": [
+        "Official pinned EAS package installation/real CLI execution is not established by a fictional tarball, replaced integrity constant and mocked command runner."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Toolchain unit test binds verified archive contents, lock integrity, exact installed bin/run path and token-free npm install; six selected CLI calls use that path."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope"
+        ],
+        "exact_missing_observation": [
+          "Official pinned EAS package installation/real CLI execution is not established by a fictional tarball, replaced integrity constant and mocked command runner."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-014-02",
+      "requirement_id": "STORE-014",
+      "status": "PARTIAL",
+      "expected_observation": "Execution selects different CLI bytes \u2014 - **GIVEN** changed package integrity, substituted tree or a separate unchecked fetch - **WHEN** toolchain admission runs - **THEN** no provider operation or credential-bearing CLI execution occurs.",
+      "unproved_then_clauses": [
+        "Drive substituted tree/wrong lock/unchecked-refetch through Eas construction and assert no credential-bearing CLI/provider command executes; current changed-tree case calls verifier directly."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Altered tarball integrity and installed bin/run bytes are refused by integrity/tree verifiers."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope"
+        ],
+        "exact_missing_observation": [
+          "Drive substituted tree/wrong lock/unchecked-refetch through Eas construction and assert no credential-bearing CLI/provider command executes; current changed-tree case calls verifier directly."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-015-01",
+      "requirement_id": "STORE-015",
+      "status": "PARTIAL",
+      "expected_observation": "A CLI child exceeds its deadline \u2014 - **GIVEN** an owned local process tree with scoped provider authentication - **WHEN** timeout or output overflow occurs - **THEN** the group is terminated/reaped and the unknown remote state is preserved.",
+      "unproved_then_clauses": [
+        "Actual active-child timeout plus process reaping and signed unknown-remote-state preservation must be asserted together; output-overflow absence of side effect alone does not prove all terminal/reaping clauses."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Real local spawned child stops before delayed side effect after output overflow; parent-exits-first orphan is stopped; finished-after-deadline rejects in mocked clock test."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_mobile_store_release.py::test_owned_tool_process_group_stops_spawned_child_on_bounded_failure",
+        "services/api/tests/test_mobile_store_release.py::test_owned_child_is_stopped_even_when_tool_parent_exits_before_cleanup",
+        "services/api/tests/test_mobile_store_release.py::test_completed_parent_is_still_rejected_after_original_monotonic_deadline",
+        "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_owned_tool_process_group_stops_spawned_child_on_bounded_failure",
+          "services/api/tests/test_mobile_store_release.py::test_owned_child_is_stopped_even_when_tool_parent_exits_before_cleanup",
+          "services/api/tests/test_mobile_store_release.py::test_completed_parent_is_still_rejected_after_original_monotonic_deadline",
+          "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload"
+        ],
+        "exact_missing_observation": [
+          "Actual active-child timeout plus process reaping and signed unknown-remote-state preservation must be asserted together; output-overflow absence of side effect alone does not prove all terminal/reaping clauses."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-015-02",
+      "requirement_id": "STORE-015",
+      "status": "NOT_RUN",
+      "expected_observation": "Another local process is running \u2014 - **GIVEN** an unrelated process outside the owned group - **WHEN** provider cleanup runs - **THEN** that process remains untouched.",
+      "unproved_then_clauses": [
+        "Launch unrelated process outside owned group, force timeout/overflow cleanup and assert it remains alive/untouched; this is unblocked host software work."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Existing process tests launch only owned descendants; none creates an independent unrelated process."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Launch unrelated process outside owned group, force timeout/overflow cleanup and assert it remains alive/untouched; this is unblocked host software work."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-016-01",
+      "requirement_id": "STORE-016",
+      "status": "BLOCKED",
+      "expected_observation": "The operator has configured actual protected inputs \u2014 - **GIVEN** reviewed main source, protected store environment and genuine provider/cloud/signing access - **WHEN** the deliberate browser workflow is dispatched - **THEN** it builds/inspects, reads status or reconciles the exact original intent/submission without a local Mac or clone; initial upload remains a separate persistent operator operation.",
+      "unproved_then_clauses": [
+        "Default-main registration, configured environment protection, genuine provider/cloud/signing inputs and deliberate browser dispatch remain absent and external action is outside read-only scope."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Manual workflow uses explicit main/platform/environment, protected store environment, macOS toolchain, account-bound OIDC and reconcile-only selectors; offline wrapper tests enforce original intent/UUID."
+      ],
+      "current_source_assertion_refs": [
+        ".github/workflows/mobile-store-release.yml::STATIC_manual_workflow_prerequisites",
+        "infra/test/test_store_inputs.py::test_browser_submit_cannot_stage_or_authorize_a_fresh_submission",
+        "infra/test/test_store_inputs.py::test_submit_reconciliation_requires_original_intent_and_exact_identifier"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          ".github/workflows/mobile-store-release.yml::STATIC_manual_workflow_prerequisites",
+          "infra/test/test_store_inputs.py::test_browser_submit_cannot_stage_or_authorize_a_fresh_submission",
+          "infra/test/test_store_inputs.py::test_submit_reconciliation_requires_original_intent_and_exact_identifier"
+        ],
+        "exact_missing_observation": [
+          "Default-main registration, configured environment protection, genuine provider/cloud/signing inputs and deliberate browser dispatch remain absent and external action is outside read-only scope."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-047-STORE-018-01",
+      "requirement_id": "STORE-018",
+      "status": "PARTIAL",
+      "expected_observation": "A persistent operator transfers an uncertain existing submission \u2014 - **GIVEN** the original signed build and pending intent, trusted public key and protected encryption key - **WHEN** pack completes and its ciphertext is supplied for browser reconciliation - **THEN** the exact original byte links survive; the existing provider UUID is queried without another upload.",
+      "unproved_then_clauses": [
+        "Connect that exact packaged handoff to store helper reconciliation and assert submit:view queries the existing providerUUID with zero upload; current packCLI stops after prepare, and helper test does not assert query argument."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Pack leaves input bytes/inode/mode unchanged, calls no process/network, emits only private ciphertext; CLI protected-package reconciliation preserves original build/intent bytes and original selector."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_store_inputs.py::test_pack_preserves_inputs_and_writes_only_private_scope_and_ciphertext",
+        "infra/test/test_store_inputs.py::test_cli_pack_to_protected_ciphertext_reconciliation_preserves_inner_bytes",
+        "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_store_inputs.py::test_pack_preserves_inputs_and_writes_only_private_scope_and_ciphertext",
+          "infra/test/test_store_inputs.py::test_cli_pack_to_protected_ciphertext_reconciliation_preserves_inner_bytes",
+          "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload"
+        ],
+        "exact_missing_observation": [
+          "Connect that exact packaged handoff to store helper reconciliation and assert submit:view queries the existing providerUUID with zero upload; current packCLI stops after prepare, and helper test does not assert query argument."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-047-STORE-001-02",
+      "required_clause": [
+        "A full local/guest archive through the store execute/admission path must assert refusal before provider mutation; isolated configuration/manifest throws do not prove that complete operation boundary."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_release_config_rejects_local_guest_or_ambiguous_targets",
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+          "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal"
+        ],
+        "exact_missing_observation": [
+          "A full local/guest archive through the store execute/admission path must assert refusal before provider mutation; isolated configuration/manifest throws do not prove that complete operation boundary."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-002-01",
+      "required_clause": [
+        "Genuine current authenticated Expo project/backend outputs have not been observed; fixtures cannot bind a real compiled store app to a live cloud identity."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+          "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback"
+        ],
+        "exact_missing_observation": [
+          "Genuine current authenticated Expo project/backend outputs have not been observed; fixtures cannot bind a real compiled store app to a live cloud identity."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-002-02",
+      "required_clause": [
+        "Execute build/submit with each foreign project/backend/callback response and assert zero provider build/upload commands; standalone verify_backend tests do not observe that end-to-end ordering."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback",
+          "infra/test/test_store_inputs.py::test_external_paths_and_invalid_store_config_leave_no_staging"
+        ],
+        "exact_missing_observation": [
+          "Execute build/submit with each foreign project/backend/callback response and assert zero provider build/upload commands; standalone verify_backend tests do not observe that end-to-end ordering."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-003-01",
+      "required_clause": [
+        "Trusted release-event/gate/QA admission and isolated staged tree must be composed with the provider call, asserting only that exact tree/locks reach upload; flow substitutes isolated_source and backend verifier."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_clean_isolated_source_preserves_exact_git_revision_and_excludes_untracked_files",
+          "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+          "infra/test/test_store_inputs.py::test_build_stages_selected_signer_and_backend_scope_without_store_credentials"
+        ],
+        "exact_missing_observation": [
+          "Trusted release-event/gate/QA admission and isolated staged tree must be composed with the provider call, asserting only that exact tree/locks reach upload; flow substitutes isolated_source and backend verifier."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-003-02",
+      "required_clause": [
+        "Store build/submit operation must integrate unsupported release-event/edited gate evidence and assert no provider mutation for all cases; gate and store tests currently exercise separate helper boundaries."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_provenance.py::test_local_claims_cannot_replace_missing_failed_skipped_or_old_attempt_jobs",
+          "infra/test/test_provenance.py::test_latest_attempt_requires_every_nested_job_and_aggregate",
+          "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+          "services/api/tests/test_mobile_store_release.py::test_backend_admission_rechecks_signed_release_actual_running_image_and_live_native_callback"
+        ],
+        "exact_missing_observation": [
+          "Store build/submit operation must integrate unsupported release-event/edited gate evidence and assert no provider mutation for all cases; gate and store tests currently exercise separate helper boundaries."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-004-02",
+      "required_clause": [
+        "Direct plan action must exercise all opposite-environment/missing-platform/placeholder cases and assert provider command never launched; current checks span config parsing and wrapper-run guards."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_release_config_rejects_local_guest_or_ambiguous_targets",
+          "infra/test/test_store_inputs.py::test_external_paths_and_invalid_store_config_leave_no_staging",
+          "infra/test/test_store_inputs.py::test_run_rejects_duplicate_unknown_foreign_and_unscoped_arguments"
+        ],
+        "exact_missing_observation": [
+          "Direct plan action must exercise all opposite-environment/missing-platform/placeholder cases and assert provider command never launched; current checks span config parsing and wrapper-run guards."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-005-01",
+      "required_clause": [
+        "Actual credential-bearing child invocation must assert complete env whitelist for build versus submit, including no unrelated secrets; current separate helper tests do not inspect the complete real child environment."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_tool_environment_preserves_transport_but_never_builds_with_service_secrets",
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+          "infra/test/test_store_inputs.py::test_submit_stages_only_selected_platform_credential",
+          "infra/test/test_store_inputs.py::test_build_stages_selected_signer_and_backend_scope_without_store_credentials"
+        ],
+        "exact_missing_observation": [
+          "Actual credential-bearing child invocation must assert complete env whitelist for build versus submit, including no unrelated secrets; current separate helper tests do not inspect the complete real child environment."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-005-02",
+      "required_clause": [
+        "Wrong EAS version response and absent genuine signing/account access must be driven through execute with zero build receipt/provider build; current version stub always returns the expected version."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope",
+          "infra/test/test_store_inputs.py::test_platform_credentials_reject_wrong_scope_unknown_wrappers_and_bad_content",
+          "services/api/tests/test_mobile_store_release.py::test_tool_environment_preserves_transport_but_never_builds_with_service_secrets"
+        ],
+        "exact_missing_observation": [
+          "Wrong EAS version response and absent genuine signing/account access must be driven through execute with zero build receipt/provider build; current version stub always returns the expected version."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-006-01",
+      "required_clause": [
+        "Completion receipt must explicitly assert returned buildUUID/version/project/source fields together; official provider observations and real signed output remain unexecuted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build",
+          "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts"
+        ],
+        "exact_missing_observation": [
+          "Completion receipt must explicitly assert returned buildUUID/version/project/source fields together; official provider observations and real signed output remain unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-006-02",
+      "required_clause": [
+        "Failed status and wrong projectUUID need explicit operation tests asserting no finished receipt/artifact/download claim; pending metadata throw alone does not assert report/output behavior."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build"
+        ],
+        "exact_missing_observation": [
+          "Failed status and wrong projectUUID need explicit operation tests asserting no finished receipt/artifact/download claim; pending metadata throw alone does not assert report/output behavior."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-007-01",
+      "required_clause": [
+        "No genuine authorized EAS/store submission is performed: real matching store record, provider access/signing credentials and explicit external-action authorization are prerequisites outside this read-only scope."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts",
+          "services/api/tests/test_mobile_store_release.py::test_actual_submission_receipt_never_means_public_store_availability"
+        ],
+        "exact_missing_observation": [
+          "No genuine authorized EAS/store submission is performed: real matching store record, provider access/signing credentials and explicit external-action authorization are prerequisites outside this read-only scope."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-007-02",
+      "required_clause": [
+        "Explicit --latest selector and altered finished official build metadata must be tested at submit operation boundary with an upload-call spy remaining zero."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_store_inputs.py::test_candidate_receipt_scope_signer_and_submission_reuse_are_checked",
+          "services/api/tests/test_mobile_store_release.py::test_actual_submission_receipt_never_means_public_store_availability",
+          "infra/test/test_store_inputs.py::test_signed_child_receipts_bind_original_build_bytes_and_logical_configuration"
+        ],
+        "exact_missing_observation": [
+          "Explicit --latest selector and altered finished official build metadata must be tested at submit operation boundary with an upload-call spy remaining zero."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-009-01",
+      "required_clause": [
+        "Assert every receipt's performed stage/platform/project/source/providerUUID/version against observed metadata and unchanged previous receipt bytes in one operation chain; current positive flow checks only a subset of fields."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts",
+          "infra/test/test_store_inputs.py::test_status_preserves_original_receipts_without_staging_private_credentials",
+          "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+          "infra/test/test_store_inputs.py::test_signed_child_receipts_bind_original_build_bytes_and_logical_configuration"
+        ],
+        "exact_missing_observation": [
+          "Assert every receipt's performed stage/platform/project/source/providerUUID/version against observed metadata and unchanged previous receipt bytes in one operation chain; current positive flow checks only a subset of fields."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-009-02",
+      "required_clause": [
+        "Denied credential/wrong metadata/failed upload after earlier successful provider work must assert nonzero/report text preserves unknown or completed earlier work and never claims rollback."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload",
+          "services/api/tests/test_mobile_store_release.py::test_no_backend_release_no_new_store_job_and_immutable_output_refuses_reuse",
+          "services/api/tests/test_mobile_store_release.py::test_fsync_failure_leaves_fence_and_never_launches_store_upload"
+        ],
+        "exact_missing_observation": [
+          "Denied credential/wrong metadata/failed upload after earlier successful provider work must assert nonzero/report text preserves unknown or completed earlier work and never claims rollback."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-010-01",
+      "required_clause": [
+        "No genuine provider AAB/deviceIPA with independently reviewed platform signer is inspected; bundletool output and macOS code signing are substituted in the existing tests."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+          "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple",
+          "services/api/tests/test_mobile_store_release.py::test_exact_build_inspection_then_explicit_draft_submission_and_status_have_signed_distinct_receipts"
+        ],
+        "exact_missing_observation": [
+          "No genuine provider AAB/deviceIPA with independently reviewed platform signer is inspected; bundletool output and macOS code signing are substituted in the existing tests."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-010-02",
+      "required_clause": [
+        "Foreign Apple signer, simulator Mach-O/platform mismatch, backend/runtime mismatch and wrong native version need exact native archive mutations plus assertion no submit call; hosted-preview reverse-platform checks are unrelated."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+          "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple",
+          "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal",
+          "services/api/tests/test_mobile_store_release.py::test_exact_cloud_metadata_and_embedded_public_origins_bind_store_build"
+        ],
+        "exact_missing_observation": [
+          "Foreign Apple signer, simulator Mach-O/platform mismatch, backend/runtime mismatch and wrong native version need exact native archive mutations plus assertion no submit call; hosted-preview reverse-platform checks are unrelated."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-011-01",
+      "required_clause": [
+        "FakeEas submit:view returns same metadata regardless of argument; assert queried command UUID equals supplied original submissionUUID and rejects a mismatched returned UUID, not only that no second upload occurs."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload",
+          "services/api/tests/test_mobile_store_release.py::test_submission_persists_signed_owner_only_fence_before_provider_call",
+          "infra/test/test_store_inputs.py::test_submit_reconciliation_requires_original_intent_and_exact_identifier"
+        ],
+        "exact_missing_observation": [
+          "FakeEas submit:view returns same metadata regardless of argument; assert queried command UUID equals supplied original submissionUUID and rejects a mismatched returned UUID, not only that no second upload occurs."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-012-01",
+      "required_clause": [
+        "A real Android app bundle with independently registered upload certificate and actual pinned bundletool native manifest decoding is absent; fake manifest extraction cannot establish this genuine candidate scenario."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_android_signed_jar_integrity_and_trusted_upload_certificate_reject_changed_bytes",
+          "services/api/tests/test_mobile_store_release.py::test_actual_manifest_policy_rejects_guest_debug_cleartext_sdk_and_path_traversal"
+        ],
+        "exact_missing_observation": [
+          "A real Android app bundle with independently registered upload certificate and actual pinned bundletool native manifest decoding is absent; fake manifest extraction cannot establish this genuine candidate scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-013-01",
+      "required_clause": [
+        "Genuine Apple distribution certificate/profile and actual macOS codesign/security verification on a real deviceIPA have not executed; current subprocess outputs are mocked."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple"
+        ],
+        "exact_missing_observation": [
+          "Genuine Apple distribution certificate/profile and actual macOS codesign/security verification on a real deviceIPA have not executed; current subprocess outputs are mocked."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-013-02",
+      "required_clause": [
+        "Explicit simulator Mach-O/platform, foreign distribution certificate/team and development identity mutations are not all tested through store admission with zero upload."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_ios_fixture_checks_actual_platform_identity_provisioning_and_runtime_tuple"
+        ],
+        "exact_missing_observation": [
+          "Explicit simulator Mach-O/platform, foreign distribution certificate/team and development identity mutations are not all tested through store admission with zero upload."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-014-01",
+      "required_clause": [
+        "Official pinned EAS package installation/real CLI execution is not established by a fictional tarball, replaced integrity constant and mocked command runner."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope"
+        ],
+        "exact_missing_observation": [
+          "Official pinned EAS package installation/real CLI execution is not established by a fictional tarball, replaced integrity constant and mocked command runner."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-014-02",
+      "required_clause": [
+        "Drive substituted tree/wrong lock/unchecked-refetch through Eas construction and assert no credential-bearing CLI/provider command executes; current changed-tree case calls verifier directly."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope"
+        ],
+        "exact_missing_observation": [
+          "Drive substituted tree/wrong lock/unchecked-refetch through Eas construction and assert no credential-bearing CLI/provider command executes; current changed-tree case calls verifier directly."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-015-01",
+      "required_clause": [
+        "Actual active-child timeout plus process reaping and signed unknown-remote-state preservation must be asserted together; output-overflow absence of side effect alone does not prove all terminal/reaping clauses."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_mobile_store_release.py::test_owned_tool_process_group_stops_spawned_child_on_bounded_failure",
+          "services/api/tests/test_mobile_store_release.py::test_owned_child_is_stopped_even_when_tool_parent_exits_before_cleanup",
+          "services/api/tests/test_mobile_store_release.py::test_completed_parent_is_still_rejected_after_original_monotonic_deadline",
+          "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload"
+        ],
+        "exact_missing_observation": [
+          "Actual active-child timeout plus process reaping and signed unknown-remote-state preservation must be asserted together; output-overflow absence of side effect alone does not prove all terminal/reaping clauses."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-015-02",
+      "required_clause": [
+        "Launch unrelated process outside owned group, force timeout/overflow cleanup and assert it remains alive/untouched; this is unblocked host software work."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Launch unrelated process outside owned group, force timeout/overflow cleanup and assert it remains alive/untouched; this is unblocked host software work."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-016-01",
+      "required_clause": [
+        "Default-main registration, configured environment protection, genuine provider/cloud/signing inputs and deliberate browser dispatch remain absent and external action is outside read-only scope."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          ".github/workflows/mobile-store-release.yml::STATIC_manual_workflow_prerequisites",
+          "infra/test/test_store_inputs.py::test_browser_submit_cannot_stage_or_authorize_a_fresh_submission",
+          "infra/test/test_store_inputs.py::test_submit_reconciliation_requires_original_intent_and_exact_identifier"
+        ],
+        "exact_missing_observation": [
+          "Default-main registration, configured environment protection, genuine provider/cloud/signing inputs and deliberate browser dispatch remain absent and external action is outside read-only scope."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-047-STORE-018-01",
+      "required_clause": [
+        "Connect that exact packaged handoff to store helper reconciliation and assert submit:view queries the existing providerUUID with zero upload; current packCLI stops after prepare, and helper test does not assert query argument."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_store_inputs.py::test_pack_preserves_inputs_and_writes_only_private_scope_and_ciphertext",
+          "infra/test/test_store_inputs.py::test_cli_pack_to_protected_ciphertext_reconciliation_preserves_inner_bytes",
+          "services/api/tests/test_mobile_store_release.py::test_lost_submission_response_persists_exact_intent_and_reconciles_without_second_upload"
+        ],
+        "exact_missing_observation": [
+          "Connect that exact packaged handoff to store helper reconciliation and assert submit:view queries the existing providerUUID with zero upload; current packCLI stops after prepare, and helper test does not assert query argument."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

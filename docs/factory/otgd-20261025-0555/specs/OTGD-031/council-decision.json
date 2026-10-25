@@ -1,0 +1,640 @@
+{
+  "spec_id": "OTGD-031",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-privacy-controls/spec.md",
+  "canonical_sha256": "993e7c0f65b5ee4bd9b2f470e2d4111f6329f083e7650a76ab71f78abf5e9f3f",
+  "canonical_requirements": [
+    "AND-PRIV-001 Separate storage and upload choices",
+    "AND-PRIV-002 Scoped and explicit local clearing",
+    "AND-PRIV-003 Owned, reauthenticated cloud deletion",
+    "AND-PRIV-004 Honest asynchronous completion",
+    "AND-PRIV-005 Prevent resurrection and cross-device writes",
+    "AND-PRIV-006 Clear retention and protected temporary data",
+    "AND-PRIV-007 Accessible controls and iOS parity"
+  ],
+  "canonical_scenarios": [
+    "priv-enable-queued-upload-retries",
+    "priv-disable-during-upload",
+    "priv-clear-demo-only",
+    "priv-cancel-unsynced-clear",
+    "priv-valid-data-deletion",
+    "priv-forged-owner-or-stale-auth",
+    "priv-deletion-response-lost",
+    "priv-retention-exception",
+    "priv-job-kind-state-discriminator",
+    "priv-offline-device-reconnects",
+    "priv-late-fetch-after-clear",
+    "priv-explicit-generation-reset-required",
+    "priv-deletion-replay-does-not-create-new-job",
+    "priv-unconfigured-retention",
+    "priv-redacted-deletion-log",
+    "priv-accessible-confirmation",
+    "priv-ios-account-deletion"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 9,
+    "PASS": 6,
+    "BLOCKED": 2
+  },
+  "all_current_case_ids": [
+    "OTGD-031-AND-PRIV-001-01",
+    "OTGD-031-AND-PRIV-001-02",
+    "OTGD-031-AND-PRIV-002-01",
+    "OTGD-031-AND-PRIV-002-02",
+    "OTGD-031-AND-PRIV-003-01",
+    "OTGD-031-AND-PRIV-003-02",
+    "OTGD-031-AND-PRIV-004-01",
+    "OTGD-031-AND-PRIV-004-02",
+    "OTGD-031-AND-PRIV-004-03",
+    "OTGD-031-AND-PRIV-005-01",
+    "OTGD-031-AND-PRIV-005-02",
+    "OTGD-031-AND-PRIV-005-03",
+    "OTGD-031-AND-PRIV-005-04",
+    "OTGD-031-AND-PRIV-006-01",
+    "OTGD-031-AND-PRIV-006-02",
+    "OTGD-031-AND-PRIV-007-01",
+    "OTGD-031-AND-PRIV-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-031-AND-PRIV-001-01",
+      "requirement_id": "AND-PRIV-001",
+      "status": "PARTIAL",
+      "expected_observation": "priv-enable-queued-upload-retries \u2014 - **GIVEN** a signed-in account with one explicitly queued check and another unqueued local check - **WHEN** the user confirms Enable automatic retries - **THEN** only the already queued check is eligible for automatic retry and the other check, raw media, and research data remain unqueued.",
+      "unproved_then_clauses": [
+        "One explicitly queued plus one unqueued account check/raw/research context and Enable confirmation is not asserted as a full selection-preservation conjunction."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "RetryDue operates existing queue only; preference off suppresses automatic request; Save does not queue."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off"
+        ],
+        "exact_missing_observation": [
+          "One explicitly queued plus one unqueued account check/raw/research context and Enable confirmation is not asserted as a full selection-preservation conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-001-02",
+      "requirement_id": "AND-PRIV-001",
+      "status": "PARTIAL",
+      "expected_observation": "priv-disable-during-upload \u2014 - **GIVEN** a permitted upload is in flight and more operations are queued - **WHEN** the user disables automatic retries - **THEN** no new automatic retry starts, the in-flight outcome is reconciled honestly, and the UI does not claim previously accepted data was deleted.",
+      "unproved_then_clauses": [
+        "Disabling preference during actual in-flight upload, honest reconciliation and no subsequent auto retry require direct same-context assertions."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Source cancellation message states accepted data not erased; auto-retry preference controls future retryDue."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off"
+        ],
+        "exact_missing_observation": [
+          "Disabling preference during actual in-flight upload, honest reconciliation and no subsequent auto retry require direct same-context assertions."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-002-01",
+      "requirement_id": "AND-PRIV-002",
+      "status": "PARTIAL",
+      "expected_observation": "priv-clear-demo-only \u2014 - **GIVEN** demo and account caches coexist - **WHEN** Clear demo records is confirmed - **THEN** demo records disappear, account records remain, and no cloud deletion request is made.",
+      "unproved_then_clauses": [
+        "Demo and account caches coexist, clear demo only, untouched account digest and zero cloud deletion in same test context not directly asserted. Native cache partition remains actual OS gap too."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "ClearLocal replaces only current workspace and preserves deletion/withdrawal/fences; guest/account stores partitioned."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Demo and account caches coexist, clear demo only, untouched account digest and zero cloud deletion in same test context not directly asserted. Native cache partition remains actual OS gap too."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-002-02",
+      "requirement_id": "AND-PRIV-002",
+      "status": "PARTIAL",
+      "expected_observation": "priv-cancel-unsynced-clear \u2014 - **GIVEN** three account records are unsynchronized - **WHEN** the warning shows three and the user selects Cancel - **THEN** all records and queue entries remain unchanged.",
+      "unproved_then_clauses": [
+        "Specified three unsynced records/count3 and unchanged queue+all record digests on Cancel not asserted; current browser fixture has one and checks one visible row only."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual component cancel after one-unsynced warning retains saved row and does not enable retry."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+        ],
+        "exact_missing_observation": [
+          "Specified three unsynced records/count3 and unchanged queue+all record digests on Cancel not asserted; current browser fixture has one and checks one visible row only."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-003-02",
+      "requirement_id": "AND-PRIV-003",
+      "status": "PARTIAL",
+      "expected_observation": "priv-forged-owner-or-stale-auth \u2014 - **GIVEN** a deletion body contains another owner's ID or authentication is stale - **WHEN** it is submitted - **THEN** the server rejects it and no deletion job affects another account or bypasses reauthentication.",
+      "unproved_then_clauses": [
+        "No direct deletion request body foreign-ownerID test and unchanged foreign-job/account inventory assertion is located; generic typed-body/owner-derived implementation alone is not that exact execution."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "Actual stale auth_time301s sensitive deletion request refuses401."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_reauthentication_required_for_sensitive_jobs"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_reauthentication_required_for_sensitive_jobs"
+        ],
+        "exact_missing_observation": [
+          "No direct deletion request body foreign-ownerID test and unchanged foreign-job/account inventory assertion is located; generic typed-body/owner-derived implementation alone is not that exact execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-005-02",
+      "requirement_id": "AND-PRIV-005",
+      "status": "PARTIAL",
+      "expected_observation": "priv-late-fetch-after-clear \u2014 - **GIVEN** an old-history fetch is in flight when account deletion is accepted - **WHEN** the fetch returns - **THEN** its payload cannot recreate deleted local content.",
+      "unproved_then_clauses": [
+        "Direct account-deletion accepted or ClearLocal history-fetch race is not executed in these contexts; prove old history response cannot repopulate after the actual destructive controller action."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Controller rejects delayed history after signout; workspace scope rejects delayed exports on generation/fence/epoch change."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace",
+        "apps/mobile/tests/workspace-scope.test.ts::a delayed export download never reaches sharing after generation change or local clear"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace",
+          "apps/mobile/tests/workspace-scope.test.ts::a delayed export download never reaches sharing after generation change or local clear"
+        ],
+        "exact_missing_observation": [
+          "Direct account-deletion accepted or ClearLocal history-fetch race is not executed in these contexts; prove old history response cannot repopulate after the actual destructive controller action."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-005-03",
+      "requirement_id": "AND-PRIV-005",
+      "status": "PARTIAL",
+      "expected_observation": "priv-explicit-generation-reset-required \u2014 - **GIVEN** an all_data deletion finished and the account remains usable - **WHEN** the user returns to Profile or Check before acknowledging the new generation - **THEN** old queued records remain quarantined and new protected writes stay blocked until Start a new empty workspace is explicitly confirmed.",
+      "unproved_then_clauses": [
+        "Before explicit acknowledgment in awaiting_generation_ack, current-generation protected writes must remain blocked and original queues quarantined. Current actual browser proves retired-generation refusal, retained identity, interactive generation acknowledgment and an empty fresh workspace; it does not issue a new-generation protected write before acknowledgment."
+      ],
+      "remaining_prerequisite_types": [
+        "software_authority_boundary_evidence"
+      ],
+      "current_assertions_proven": [
+        "Controller quarantines current retired check, blocks beginCheck while deleting, requires awaiting_generation_ack for action and resets profile/checks after explicit ack.",
+        "Actual ordinary production web bundle at mobile/desktop: hosted PKCE local issuer; no cloud session until explicit upload; accepted finalize reply dropped then exact key/receipt replay; persisted worker measurement result; reload memory boundary; exact selected worker ZIP hashes; foreign denial; governed consent/withdrawal; accepted all-data deletion reply dropped and exact pending intent visible; actual completion and retired-generation denial; interactive reauthentication and generation acknowledgment preserve identity and leave empty inventory."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::server generation retirement quarantines prior checks and a new empty workspace requires separate acknowledgment",
+        "apps/mobile/e2e/authenticated-live.spec.ts::ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::server generation retirement quarantines prior checks and a new empty workspace requires separate acknowledgment",
+          "apps/mobile/e2e/authenticated-live.spec.ts::ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries"
+        ],
+        "exact_missing_observation": [
+          "Before explicit acknowledgment in awaiting_generation_ack, current-generation protected writes must remain blocked and original queues quarantined. Current actual browser proves retired-generation refusal, retained identity, interactive generation acknowledgment and an empty fresh workspace; it does not issue a new-generation protected write before acknowledgment."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-006-01",
+      "requirement_id": "AND-PRIV-006",
+      "status": "PARTIAL",
+      "expected_observation": "priv-unconfigured-retention \u2014 - **GIVEN** production has no approved policy for raw eye recordings - **WHEN** the privacy and capture availability screens load - **THEN** raw recording is unavailable and no generic consent checkbox enables it.",
+      "unproved_then_clauses": [
+        "Production unconfigured-retention screen with generic consent checkbox attempted needs actual rendered unavailable/no recording assertion; default-off with approved fixture is narrower."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Missing/invalid raw-purpose terms reject; defaults record/upload off and explicit purpose receipt required."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/raw-recordings.test.ts::default off, local-only opt-in, upload dependency, policy expiry and pending stop fences remain distinct"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/raw-recordings.test.ts::default off, local-only opt-in, upload dependency, policy expiry and pending stop fences remain distinct"
+        ],
+        "exact_missing_observation": [
+          "Production unconfigured-retention screen with generic consent checkbox attempted needs actual rendered unavailable/no recording assertion; default-off with approved fixture is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-006-02",
+      "requirement_id": "AND-PRIV-006",
+      "status": "PARTIAL",
+      "expected_observation": "priv-redacted-deletion-log \u2014 - **GIVEN** a deletion request fails validation - **WHEN** the event is logged - **THEN** logs include a redacted operation/request reference and reason category without tokens, profile values, or measurements.",
+      "unproved_then_clauses": [
+        "Actual deletion-validation failure log emission/content is not captured in mapped tests; diagnostics clipboard sanitization is not server application-log evidence. Bind sanitized failure logs or add logger capture assertion, without tokens/profile/measurements."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Diagnostics helper filters health/token/error payload; API errors use request IDs/reason codes."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+        ],
+        "exact_missing_observation": [
+          "Actual deletion-validation failure log emission/content is not captured in mapped tests; diagnostics clipboard sanitization is not server application-log evidence. Bind sanitized failure logs or add logger capture assertion, without tokens/profile/measurements."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-007-01",
+      "requirement_id": "AND-PRIV-007",
+      "status": "BLOCKED",
+      "expected_observation": "priv-accessible-confirmation \u2014 - **GIVEN** TalkBack and 200% text scaling - **WHEN** the deletion review opens - **THEN** scope, retention exceptions, and both final/cancel actions are reachable before confirmation can occur.",
+      "unproved_then_clauses": [
+        "priv-accessible-confirmation \u2014 - **GIVEN** TalkBack and 200% text scaling - **WHEN** the deletion review opens - **THEN** scope, retention exceptions, and both final/cancel actions are reachable before confirmation can occur."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Actual OS/accessibility or physical prerequisite absent; controlled fixtures/builds may provide partial software support only."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/workspace-scope.test.ts::scope checks reject a stale error and a previously opened destructive confirmation",
+        "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::scope checks reject a stale error and a previously opened destructive confirmation",
+          "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+        ],
+        "exact_missing_observation": [
+          "priv-accessible-confirmation \u2014 - **GIVEN** TalkBack and 200% text scaling - **WHEN** the deletion review opens - **THEN** scope, retention exceptions, and both final/cancel actions are reachable before confirmation can occur."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-007-02",
+      "requirement_id": "AND-PRIV-007",
+      "status": "BLOCKED",
+      "expected_observation": "priv-ios-account-deletion \u2014 - **GIVEN** an authenticated iOS account - **WHEN** the user completes in-app account deletion review and reauthentication - **THEN** the same scoped asynchronous job is requested and its completion status is represented without sending the user to an unrelated website.",
+      "unproved_then_clauses": [
+        "Actual installed iOS account deletion review, reauthentication and completion presentation is not executed; browser/controlled callbacks do not establish native in-app route."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "In-app deletion controller constructs scoped asynchronous account job after reauth."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_reauthentication_required_for_sensitive_jobs"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_reauthentication_required_for_sensitive_jobs"
+        ],
+        "exact_missing_observation": [
+          "Actual installed iOS account deletion review, reauthentication and completion presentation is not executed; browser/controlled callbacks do not establish native in-app route."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-031-AND-PRIV-001-01",
+      "required_clause": [
+        "One explicitly queued plus one unqueued account check/raw/research context and Enable confirmation is not asserted as a full selection-preservation conjunction."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off"
+        ],
+        "exact_missing_observation": [
+          "One explicitly queued plus one unqueued account check/raw/research context and Enable confirmation is not asserted as a full selection-preservation conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-001-02",
+      "required_clause": [
+        "Disabling preference during actual in-flight upload, honest reconciliation and no subsequent auto retry require direct same-context assertions."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off"
+        ],
+        "exact_missing_observation": [
+          "Disabling preference during actual in-flight upload, honest reconciliation and no subsequent auto retry require direct same-context assertions."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-002-01",
+      "required_clause": [
+        "Demo and account caches coexist, clear demo only, untouched account digest and zero cloud deletion in same test context not directly asserted. Native cache partition remains actual OS gap too."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Demo and account caches coexist, clear demo only, untouched account digest and zero cloud deletion in same test context not directly asserted. Native cache partition remains actual OS gap too."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-002-02",
+      "required_clause": [
+        "Specified three unsynced records/count3 and unchanged queue+all record digests on Cancel not asserted; current browser fixture has one and checks one visible row only."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+        ],
+        "exact_missing_observation": [
+          "Specified three unsynced records/count3 and unchanged queue+all record digests on Cancel not asserted; current browser fixture has one and checks one visible row only."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-003-02",
+      "required_clause": [
+        "No direct deletion request body foreign-ownerID test and unchanged foreign-job/account inventory assertion is located; generic typed-body/owner-derived implementation alone is not that exact execution."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_reauthentication_required_for_sensitive_jobs"
+        ],
+        "exact_missing_observation": [
+          "No direct deletion request body foreign-ownerID test and unchanged foreign-job/account inventory assertion is located; generic typed-body/owner-derived implementation alone is not that exact execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-005-02",
+      "required_clause": [
+        "Direct account-deletion accepted or ClearLocal history-fetch race is not executed in these contexts; prove old history response cannot repopulate after the actual destructive controller action."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace",
+          "apps/mobile/tests/workspace-scope.test.ts::a delayed export download never reaches sharing after generation change or local clear"
+        ],
+        "exact_missing_observation": [
+          "Direct account-deletion accepted or ClearLocal history-fetch race is not executed in these contexts; prove old history response cannot repopulate after the actual destructive controller action."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-005-03",
+      "required_clause": [
+        "Before explicit acknowledgment in awaiting_generation_ack, current-generation protected writes must remain blocked and original queues quarantined. Current actual browser proves retired-generation refusal, retained identity, interactive generation acknowledgment and an empty fresh workspace; it does not issue a new-generation protected write before acknowledgment."
+      ],
+      "types": [
+        "software_authority_boundary_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::server generation retirement quarantines prior checks and a new empty workspace requires separate acknowledgment",
+          "apps/mobile/e2e/authenticated-live.spec.ts::ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries"
+        ],
+        "exact_missing_observation": [
+          "Before explicit acknowledgment in awaiting_generation_ack, current-generation protected writes must remain blocked and original queues quarantined. Current actual browser proves retired-generation refusal, retained identity, interactive generation acknowledgment and an empty fresh workspace; it does not issue a new-generation protected write before acknowledgment."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-006-01",
+      "required_clause": [
+        "Production unconfigured-retention screen with generic consent checkbox attempted needs actual rendered unavailable/no recording assertion; default-off with approved fixture is narrower."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/raw-recordings.test.ts::default off, local-only opt-in, upload dependency, policy expiry and pending stop fences remain distinct"
+        ],
+        "exact_missing_observation": [
+          "Production unconfigured-retention screen with generic consent checkbox attempted needs actual rendered unavailable/no recording assertion; default-off with approved fixture is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-006-02",
+      "required_clause": [
+        "Actual deletion-validation failure log emission/content is not captured in mapped tests; diagnostics clipboard sanitization is not server application-log evidence. Bind sanitized failure logs or add logger capture assertion, without tokens/profile/measurements."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+        ],
+        "exact_missing_observation": [
+          "Actual deletion-validation failure log emission/content is not captured in mapped tests; diagnostics clipboard sanitization is not server application-log evidence. Bind sanitized failure logs or add logger capture assertion, without tokens/profile/measurements."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-007-01",
+      "required_clause": [
+        "priv-accessible-confirmation \u2014 - **GIVEN** TalkBack and 200% text scaling - **WHEN** the deletion review opens - **THEN** scope, retention exceptions, and both final/cancel actions are reachable before confirmation can occur."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::scope checks reject a stale error and a previously opened destructive confirmation",
+          "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+        ],
+        "exact_missing_observation": [
+          "priv-accessible-confirmation \u2014 - **GIVEN** TalkBack and 200% text scaling - **WHEN** the deletion review opens - **THEN** scope, retention exceptions, and both final/cancel actions are reachable before confirmation can occur."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-031-AND-PRIV-007-02",
+      "required_clause": [
+        "Actual installed iOS account deletion review, reauthentication and completion presentation is not executed; browser/controlled callbacks do not establish native in-app route."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_reauthentication_required_for_sensitive_jobs"
+        ],
+        "exact_missing_observation": [
+          "Actual installed iOS account deletion review, reauthentication and completion presentation is not executed; browser/controlled callbacks do not establish native in-app route."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

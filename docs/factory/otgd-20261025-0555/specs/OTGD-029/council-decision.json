@@ -1,0 +1,596 @@
+{
+  "spec_id": "OTGD-029",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-offline-sync/spec.md",
+  "canonical_sha256": "388f00c1fab3eb1f905e140b7248ce8e737ae87349eb8a508068becbb51456b9",
+  "canonical_requirements": [
+    "AND-SYNC-001 Persist before announcing save",
+    "AND-SYNC-002 Require explicit authorized upload",
+    "AND-SYNC-003 Use stable idempotent operations",
+    "AND-SYNC-004 Isolate users and environments",
+    "AND-SYNC-005 Reconcile stale revisions without overwrite",
+    "AND-SYNC-006 Bound retries and preserve terminal failures",
+    "AND-SYNC-007 Preserve scientific and acquisition time"
+  ],
+  "canonical_scenarios": [
+    "Storage transaction succeeds",
+    "Disk is full",
+    "Customer cancels upload sheet",
+    "Study consent is revoked",
+    "Response is lost after server acceptance",
+    "Queue body is changed under the same key",
+    "Two accounts use one phone",
+    "Production build receives local configuration",
+    "Another device finalized the session",
+    "Correcting an accepted value",
+    "Rate limit response",
+    "Invalid snapshot",
+    "Upload occurs after a day offline",
+    "Reboot during scored game"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 10,
+    "PASS": 4
+  },
+  "all_current_case_ids": [
+    "OTGD-029-AND-SYNC-001-01",
+    "OTGD-029-AND-SYNC-001-02",
+    "OTGD-029-AND-SYNC-002-01",
+    "OTGD-029-AND-SYNC-002-02",
+    "OTGD-029-AND-SYNC-003-01",
+    "OTGD-029-AND-SYNC-003-02",
+    "OTGD-029-AND-SYNC-004-01",
+    "OTGD-029-AND-SYNC-004-02",
+    "OTGD-029-AND-SYNC-005-01",
+    "OTGD-029-AND-SYNC-005-02",
+    "OTGD-029-AND-SYNC-006-01",
+    "OTGD-029-AND-SYNC-006-02",
+    "OTGD-029-AND-SYNC-007-01",
+    "OTGD-029-AND-SYNC-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-029-AND-SYNC-001-01",
+      "requirement_id": "AND-SYNC-001",
+      "status": "PARTIAL",
+      "expected_observation": "Storage transaction succeeds \u2014 - **GIVEN** a completed permitted check - **WHEN** the finalization transaction commits - **THEN** the app shows **Saved on this device** and can reopen the same record after restart.",
+      "unproved_then_clauses": [
+        "Actual installed native encrypted database process restart, successful save message and same-record reopen are not executed; controlled storage backend is not SQLCipher/OS evidence."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Controlled native storage reopens its test-backed store and app local save keeps immutable evidence/no upload."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+        ],
+        "exact_missing_observation": [
+          "Actual installed native encrypted database process restart, successful save message and same-record reopen are not executed; controlled storage backend is not SQLCipher/OS evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-001-02",
+      "requirement_id": "AND-SYNC-001",
+      "status": "PARTIAL",
+      "expected_observation": "Disk is full \u2014 - **GIVEN** the encrypted database write fails - **WHEN** the user finishes the check - **THEN** the app reports the save failure and does not show a success state or queue a nonexistent record.",
+      "unproved_then_clauses": [
+        "No direct finished-check encrypted-write/DISK_FULL failure assertion verifies no success message, no queued nonexistent check and recoverable unchanged draft together. Native raw rollback/terminal handoff failures concern different operations."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Native terminal write failure remains retryable and transaction/raw rollback guards exist."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/lifecycle.test.ts::failed terminal storage remains retryable using the native cached receipt"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::failed terminal storage remains retryable using the native cached receipt"
+        ],
+        "exact_missing_observation": [
+          "No direct finished-check encrypted-write/DISK_FULL failure assertion verifies no success message, no queued nonexistent check and recoverable unchanged draft together. Native raw rollback/terminal handoff failures concern different operations."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-002-01",
+      "requirement_id": "AND-SYNC-002",
+      "status": "PARTIAL",
+      "expected_observation": "Customer cancels upload sheet \u2014 - **GIVEN** a local-only check - **WHEN** the upload confirmation is canceled - **THEN** no network mutation occurs and the check remains local.",
+      "unproved_then_clauses": [
+        "Actual account upload-sheet Cancel with a local check has no explicit network/queue/local-state assertion in current selected component/controller cases."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Explicit upload queues only after controller action; guest cannot upload; generic confirmation cancellation tested for retries/local clear."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+        ],
+        "exact_missing_observation": [
+          "Actual account upload-sheet Cancel with a local check has no explicit network/queue/local-state assertion in current selected component/controller cases."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-002-02",
+      "requirement_id": "AND-SYNC-002",
+      "status": "PARTIAL",
+      "expected_observation": "Study consent is revoked \u2014 - **GIVEN** a previously queued study check - **WHEN** authorization is rechecked after revocation - **THEN** upload is blocked and the app explains the permission change without retrying as another account or study.",
+      "unproved_then_clauses": [
+        "Exact previously queued ordinary study-check upload after revoked consent must retain original account/study, stop retry and present permission change; existing consent-intent/raw fences are narrower operations."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Withdrawal fences queued/inflight consent and raw preferences; server current consent revocation refuses model/acquisition."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::withdrawal fences an in-flight consent against both a late receipt and a late retryable failure",
+        "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::withdrawal fences an in-flight consent against both a late receipt and a late retryable failure",
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+        ],
+        "exact_missing_observation": [
+          "Exact previously queued ordinary study-check upload after revoked consent must retain original account/study, stop retry and present permission change; existing consent-intent/raw fences are narrower operations."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-003-02",
+      "requirement_id": "AND-SYNC-003",
+      "status": "PARTIAL",
+      "expected_observation": "Queue body is changed under the same key \u2014 - **GIVEN** an existing accepted idempotency key - **WHEN** different content is submitted under that key - **THEN** the service returns 409 and the app exposes a conflict rather than changing the frozen record.",
+      "unproved_then_clauses": [
+        "Same check-upload queued body changed under its own accepted key, conflict state and original frozen evidence preserved in one context not directly asserted; generic profile-key/client409 tests are different contexts."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Real API changed profile body under accepted key returns409; client queue409 preserves snapshot hash and conflict state."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_profile_initial_missing_stale_etag_and_replay",
+        "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_profile_initial_missing_stale_etag_and_replay",
+          "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+        ],
+        "exact_missing_observation": [
+          "Same check-upload queued body changed under its own accepted key, conflict state and original frozen evidence preserved in one context not directly asserted; generic profile-key/client409 tests are different contexts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-004-01",
+      "requirement_id": "AND-SYNC-004",
+      "status": "PARTIAL",
+      "expected_observation": "Two accounts use one phone \u2014 - **GIVEN** account A has unsynced records - **WHEN** A signs out and B signs in - **THEN** B cannot list or upload A's records.",
+      "unproved_then_clauses": [
+        "Actual same phone locked native account cache A signout/B login/list/upload isolation is not executed on installed OS; controlled epoch tests supply partial software evidence."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Epoch/account changes reject late sync and reset current workspace."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+        ],
+        "exact_missing_observation": [
+          "Actual same phone locked native account cache A signout/B login/list/upload isolation is not executed on installed OS; controlled epoch tests supply partial software evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-004-02",
+      "requirement_id": "AND-SYNC-004",
+      "status": "PARTIAL",
+      "expected_observation": "Production build receives local configuration \u2014 - **GIVEN** a production app/backend configuration - **WHEN** a local issuer or AWS-emulator endpoint is supplied - **THEN** startup fails closed; the configuration cannot silently redirect participant data.",
+      "unproved_then_clauses": [
+        "Exact startup tuple of production app AND backend with local issuer/emulator endpoint needs complete mapped config assertions; OAuth endpoint pinning independently remains a known defect in other auth cases."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Configured issuer/client mismatches and hosted-preview production rejection are tested; no current local app fallback is claimed."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior"
+        ],
+        "exact_missing_observation": [
+          "Exact startup tuple of production app AND backend with local issuer/emulator endpoint needs complete mapped config assertions; OAuth endpoint pinning independently remains a known defect in other auth cases."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-005-02",
+      "requirement_id": "AND-SYNC-005",
+      "status": "PARTIAL",
+      "expected_observation": "Correcting an accepted value \u2014 - **GIVEN** a finalized session requires correction - **WHEN** a correction is created - **THEN** reacquisition uses a new session UUID/target time and supersedes reference with no earlier physical components copied; an administrative report correction remains a distinct authorized workflow.",
+      "unproved_then_clauses": [
+        "A finalized physical prior capture reset and authorized administrative workflow are not exercised together here; retain separate physical/role integration scope rather than claim full correction journey."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Replacement controller allocates newUUID, supersedes link and zero attempts; replacement pure test verifies new target/sample and immutable old hashes; report-revision parser verifies separate correction/reanalysis identities."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+        "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+        ],
+        "exact_missing_observation": [
+          "A finalized physical prior capture reset and authorized administrative workflow are not exercised together here; retain separate physical/role integration scope rather than claim full correction journey."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-007-01",
+      "requirement_id": "AND-SYNC-007",
+      "status": "PARTIAL",
+      "expected_observation": "Upload occurs after a day offline \u2014 - **GIVEN** a previously captured record - **WHEN** it reaches the service the next day - **THEN** history retains the original check time and separately records synchronization/evaluation time.",
+      "unproved_then_clauses": [
+        "Exact record uploaded after one-day offline period lacks a combined assertion of original history time plus distinct sync/evaluation time. Old laboratory correction/row sorting contexts are narrower."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "History helper uses acquisition time/stable IDs and report revisions preserve original target."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+        ],
+        "exact_missing_observation": [
+          "Exact record uploaded after one-day offline period lacks a combined assertion of original history time plus distinct sync/evaluation time. Old laboratory correction/row sorting contexts are narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-007-02",
+      "requirement_id": "AND-SYNC-007",
+      "status": "PARTIAL",
+      "expected_observation": "Reboot during scored game \u2014 - **GIVEN** an interrupted reaction run in a restored draft - **WHEN** the application restarts - **THEN** it marks that attempt invalid and cannot submit it as a completed uninterrupted task.",
+      "unproved_then_clauses": [
+        "Actual installed-app process death/restart retaining draft and refusing uninterrupted completion remains native OS integration evidence gap."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Pure domain process interruption yields invalid task and null aggregate features."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+        ],
+        "exact_missing_observation": [
+          "Actual installed-app process death/restart retaining draft and refusing uninterrupted completion remains native OS integration evidence gap."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-029-AND-SYNC-001-01",
+      "required_clause": [
+        "Actual installed native encrypted database process restart, successful save message and same-record reopen are not executed; controlled storage backend is not SQLCipher/OS evidence."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+        ],
+        "exact_missing_observation": [
+          "Actual installed native encrypted database process restart, successful save message and same-record reopen are not executed; controlled storage backend is not SQLCipher/OS evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-001-02",
+      "required_clause": [
+        "No direct finished-check encrypted-write/DISK_FULL failure assertion verifies no success message, no queued nonexistent check and recoverable unchanged draft together. Native raw rollback/terminal handoff failures concern different operations."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::failed terminal storage remains retryable using the native cached receipt"
+        ],
+        "exact_missing_observation": [
+          "No direct finished-check encrypted-write/DISK_FULL failure assertion verifies no success message, no queued nonexistent check and recoverable unchanged draft together. Native raw rollback/terminal handoff failures concern different operations."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-002-01",
+      "required_clause": [
+        "Actual account upload-sheet Cancel with a local check has no explicit network/queue/local-state assertion in current selected component/controller cases."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+        ],
+        "exact_missing_observation": [
+          "Actual account upload-sheet Cancel with a local check has no explicit network/queue/local-state assertion in current selected component/controller cases."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-002-02",
+      "required_clause": [
+        "Exact previously queued ordinary study-check upload after revoked consent must retain original account/study, stop retry and present permission change; existing consent-intent/raw fences are narrower operations."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::withdrawal fences an in-flight consent against both a late receipt and a late retryable failure",
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+        ],
+        "exact_missing_observation": [
+          "Exact previously queued ordinary study-check upload after revoked consent must retain original account/study, stop retry and present permission change; existing consent-intent/raw fences are narrower operations."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-003-02",
+      "required_clause": [
+        "Same check-upload queued body changed under its own accepted key, conflict state and original frozen evidence preserved in one context not directly asserted; generic profile-key/client409 tests are different contexts."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_profile_initial_missing_stale_etag_and_replay",
+          "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+        ],
+        "exact_missing_observation": [
+          "Same check-upload queued body changed under its own accepted key, conflict state and original frozen evidence preserved in one context not directly asserted; generic profile-key/client409 tests are different contexts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-004-01",
+      "required_clause": [
+        "Actual same phone locked native account cache A signout/B login/list/upload isolation is not executed on installed OS; controlled epoch tests supply partial software evidence."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+        ],
+        "exact_missing_observation": [
+          "Actual same phone locked native account cache A signout/B login/list/upload isolation is not executed on installed OS; controlled epoch tests supply partial software evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-004-02",
+      "required_clause": [
+        "Exact startup tuple of production app AND backend with local issuer/emulator endpoint needs complete mapped config assertions; OAuth endpoint pinning independently remains a known defect in other auth cases."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior"
+        ],
+        "exact_missing_observation": [
+          "Exact startup tuple of production app AND backend with local issuer/emulator endpoint needs complete mapped config assertions; OAuth endpoint pinning independently remains a known defect in other auth cases."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-005-02",
+      "required_clause": [
+        "A finalized physical prior capture reset and authorized administrative workflow are not exercised together here; retain separate physical/role integration scope rather than claim full correction journey."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+        ],
+        "exact_missing_observation": [
+          "A finalized physical prior capture reset and authorized administrative workflow are not exercised together here; retain separate physical/role integration scope rather than claim full correction journey."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-007-01",
+      "required_clause": [
+        "Exact record uploaded after one-day offline period lacks a combined assertion of original history time plus distinct sync/evaluation time. Old laboratory correction/row sorting contexts are narrower."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+        ],
+        "exact_missing_observation": [
+          "Exact record uploaded after one-day offline period lacks a combined assertion of original history time plus distinct sync/evaluation time. Old laboratory correction/row sorting contexts are narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-029-AND-SYNC-007-02",
+      "required_clause": [
+        "Actual installed-app process death/restart retaining draft and refusing uninterrupted completion remains native OS integration evidence gap."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+        ],
+        "exact_missing_observation": [
+          "Actual installed-app process death/restart retaining draft and refusing uninterrupted completion remains native OS integration evidence gap."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

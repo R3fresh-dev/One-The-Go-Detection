@@ -1,0 +1,45 @@
+{
+  "spec_id": "OTGD-002",
+  "decision": "PASS",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": "SCOPED_CANONICAL_SOFTWARE_IMPLEMENTATION",
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/android-dashboard/spec.md",
+  "canonical_sha256": "c8e2d63aad6f7f973a181d917ef645e8d32b012ca41df1f2abd7d7a0b7525fe4",
+  "canonical_requirements": [
+    "AND-DASH-001 Honest scope and provenance"
+  ],
+  "canonical_scenarios": [
+    "Admitted research workspace",
+    "Legacy or unapproved claim"
+  ],
+  "rationale": "PASS for complete canonical AND-DASH-001 software amendment. Actual Home JSX and workspaceScope assertions exercise active matching account/generation/current capabilities, revocation, offline, deleting and guest refusal. Verified immutable result/proof refusal prevents legacy/local/synthetic authority. Home preserves snapshot acquisition time; shared rendering and strict typed missingness/provenance controls retain unavailable channels. No surrounding dashboard/native/study approval follows.",
+  "six_current_independent_decisions": {
+    "security": "PASS",
+    "code": "PASS",
+    "ux": "PASS",
+    "ui": "PASS",
+    "product": "PASS",
+    "engineering": "PASS"
+  },
+  "case_counts": {
+    "PASS": 2
+  },
+  "all_current_case_ids": [
+    "OTGD-002-AND-DASH-001-01",
+    "OTGD-002-AND-DASH-001-02"
+  ],
+  "exact_remaining_clauses": [],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [],
+  "escalation": null,
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

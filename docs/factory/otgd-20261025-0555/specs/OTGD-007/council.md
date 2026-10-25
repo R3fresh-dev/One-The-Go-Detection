@@ -37,3 +37,13 @@ All required current local7/CI14 gates passed. Exact current criteria and unprov
 | engineering | PASS | /root/replacement_engineering |
 
 The exact unchanged review rows are preserved in [final-reviews.json](final-reviews.json). Independent approver /root/final_approver is active; no final council decision is recorded in checkpoint13. Correction2/2, recovery0/3. Source and metadata identities are separate under D011v1.
+
+## Final independent council disposition — checkpoint14
+
+**BLOCKED — IMPLEMENTATION**, issued by `/root/final_approver`, a fresh independent OpenAI gpt-6.1-sol/high context. Source `e89897cc852a111b131eaf5c2caaf163ef201a48`; canonical SHA256 `8dc5faf4274edf798f4828bacff599c2c34c5aa6f5cb594481f2ca365ef401f6`.
+
+BLOCKED: APR-001. About does not display the account current admitted scope required by canonical AND-SET-004. The two recorded scenario PASS cases prove conditional Service presentation and legacy refusal, but omit this normative About clause. All six prior PASS votes are explicitly disagreed with on this exact source evidence.
+
+The authoritative unchanged per-spec result, precise approved scope, excluded claims and next actions are in [council-decision.json](council-decision.json); the complete [independent report](../../reports/candidate-e89897c/reviews/approver/report.md) and release manifest retain all source/evidence bindings. Overall application disposition is NEEDS_HUMAN; APP_VERIFIED and RELEASE_READY are withheld. Only narrow canonical amendment scopes002/004 pass; separate broad dashboard/history/native specs remain subject to their own decisions.
+
+All7 current local and14 CI gates passed. The original six3/44 reports and782 scenario observations remain preserved; D012v1 addenda supersede only OTGD-007 after the approver identified APR-001. Effective six-review and final council counts are2PASS/45BLOCKED. Correction2/2 is exhausted; recovery0/3 remains untested. No merge/deployment/participant permission is granted.

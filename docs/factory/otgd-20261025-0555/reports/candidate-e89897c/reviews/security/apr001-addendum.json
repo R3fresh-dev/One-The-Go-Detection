@@ -1,0 +1,62 @@
+{
+  "recorded_at": "2026-10-25T11:51:18.200016+00:00",
+  "reviewer": "/root/replacement_security",
+  "role": "SECURITY",
+  "configured_provider": "OpenAI",
+  "configured_model": "gpt-6.1-sol/high",
+  "runtime_attestation": "Exact runtime model not independently queryable",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "source_fingerprint_sha256": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "scope": "IMPLEMENTATION / narrow independent security review of APR-001",
+  "decision_acknowledgment": {
+    "D012v1": "AFFECTED; independently confirmed normative About current-scope omission",
+    "D011v1": "Unchanged: primary e898 source remains distinct from auxiliary metadata-only evidence publication"
+  },
+  "finding": {
+    "id": "APR-001",
+    "severity": "P2",
+    "spec": "OTGD-007",
+    "requirement": "AND-SET-004 normative first sentence",
+    "status": "CONFIRMED_BY_INDEPENDENT_SOURCE_CONTROL_FLOW_INSPECTION",
+    "observed": "AboutScreen1686\u20131766 displays build environment and static reader/measurement limitations. Its only model-dependent behavior is Back navigation; no current account capability/scope/generation/offline value feeds displayed scope. Shared Page/App chrome/ContextStrip do not supply current admitted scope.",
+    "impact": "Required current-scope transparency is absent from About. This is not evidence of an authorization bypass, numeric disclosure or privilege grant.",
+    "execution": "No new execution or render test; source/control-flow inspection only",
+    "verification_gap": "Existing passing conditional availability assertions target StatusScreen; About=true assertions verify static reader support text. The two recorded scenario passes remain true, but omit the additional normative About clause."
+  },
+  "supersession": {
+    "original_security_decision_file": "per-spec-decisions.json",
+    "original_sha256": "5d31f21b6ab80fb5924a45fd1c9529bc8ccaddb30a4b67296cf9e682c9289a91",
+    "spec": "OTGD-007",
+    "old_decision": "PASS",
+    "new_decision": "BLOCKED",
+    "remaining_46_decisions": "UNCHANGED",
+    "resulting_pass_specs": [
+      "OTGD-002",
+      "OTGD-004"
+    ],
+    "resulting_decision_counts": {
+      "PASS": 2,
+      "BLOCKED": 45
+    },
+    "overall": "NEEDS_HUMAN after final correction2/2; no third repair authorized",
+    "original_files_preserved_verbatim": {
+      "report.md": "b0a639460cec207eba7a7b64d3f92be274b1e2d8e4a7afb9be3e9c16d8dd00e2",
+      "per-spec-decisions.json": "5d31f21b6ab80fb5924a45fd1c9529bc8ccaddb30a4b67296cf9e682c9289a91",
+      "SHA256SUMS": "b5cdcec5799ff08284a01980d4f2dcd0d16f109e394e3d79fab57d8152ef3c76"
+    }
+  },
+  "source_evidence_sha256": {
+    "openspec/changes/authorized-model-execution/specs/android-settings-accessibility/spec.md": "8dc5faf4274edf798f4828bacff599c2c34c5aa6f5cb594481f2ca365ef401f6",
+    "apps/mobile/src/ui/manage.tsx": "023fd4fdb5819fd85be7dbd181a89d265cb24606b75ee21891b1136e66c210ac",
+    "apps/mobile/src/ui/components.tsx": "adc89118200592946e0f95cf2db81caadcbd627569a63f940f2b512ffb3a2071",
+    "apps/mobile/App.tsx": "62355551f8ab206fd0eb9efc2bec18f27256444b03a7119c660d8663d039207d",
+    "apps/mobile/e2e/fixtures/availability-component.tsx": "2c4aefe28e179bcb95016f52aaede5ffed51194074157b08edd95361bb3c966c",
+    "apps/mobile/e2e/raw-recordings.spec.ts": "889dd5531958c8b2995141698485fd3e192db80db2402e41ee3527129fab1abd"
+  },
+  "approver_report": {
+    "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/approver/report.md",
+    "sha256": "cfd31ee67e6e948bde6c1b123a77220367916e206f03345d30ad727520d19a31"
+  },
+  "constraints": "No source edits, tests, services, Git actions, third correction or new scope authority. Candidate and released782case observations unchanged."
+}

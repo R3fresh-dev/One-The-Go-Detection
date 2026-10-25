@@ -1,0 +1,799 @@
+{
+  "spec_id": "OTGD-013",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/canonical-signed-reader-acquisition/specs/signed-reader-acquisition/spec.md",
+  "canonical_sha256": "df6d046105c408da0217d264ba7d9ec83e11682c55933c65753c12c196a7fb29",
+  "canonical_requirements": [
+    "CAN-SR-001 Admit a distinct bounded physical reader dialect",
+    "CAN-SR-002 Preserve exact device binding proof and protected keys",
+    "CAN-SR-003 Verify a fresh scoped server start signature on the reader",
+    "CAN-SR-004 Enforce signed expiry without inventing device wall time",
+    "CAN-SR-005 Acquire actual bounded ADC observations from protected material",
+    "CAN-SR-006 Stop hardware independently of transport pressure",
+    "CAN-SR-007 Isolate connection-origin effects and replay privacy",
+    "CAN-SR-008 Bind raw purpose and immutable signed evidence",
+    "CAN-SR-009 Build and qualify the protected SDK branch explicitly",
+    "CAN-SR-010 Preserve external qualification and unknown-driver limits",
+    "CAN-SR-011 Require authenticated encrypted BLE before human telemetry"
+  ],
+  "canonical_scenarios": [
+    "A physical advertisement requests simulator handling",
+    "Compatible reader awaits trust",
+    "Binding receipt references another device",
+    "Stock SDK lacks protected NVS",
+    "Phone alters maximum acquisition duration",
+    "Token includes a replacement verification key",
+    "Shortened grant reaches expiry boundary",
+    "Reversed or malformed timestamp",
+    "Sensor contact is absent",
+    "Loop misses samples",
+    "Notifications are congested at cutoff",
+    "A slow ADC call crosses the bound",
+    "Link transition occurs after final origin check",
+    "Old ACK write fails late",
+    "Unsupported raw configuration receives opt-in",
+    "Normalized feature bytes change in transit",
+    "Build output omits NVS encryption",
+    "Signing key is a public-readable symlink",
+    "ADC software builds without an attached board",
+    "Vendor assay SDK is undocumented",
+    "A replacement peer receives an old authentication callback",
+    "Pairing negotiates encryption without MITM",
+    "The current protected peer completes authenticated pairing"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 13,
+    "PASS": 9,
+    "BLOCKED": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-013-CAN-SR-001-01",
+    "OTGD-013-CAN-SR-001-02",
+    "OTGD-013-CAN-SR-002-01",
+    "OTGD-013-CAN-SR-002-02",
+    "OTGD-013-CAN-SR-003-01",
+    "OTGD-013-CAN-SR-003-02",
+    "OTGD-013-CAN-SR-004-01",
+    "OTGD-013-CAN-SR-004-02",
+    "OTGD-013-CAN-SR-005-01",
+    "OTGD-013-CAN-SR-005-02",
+    "OTGD-013-CAN-SR-006-01",
+    "OTGD-013-CAN-SR-006-02",
+    "OTGD-013-CAN-SR-007-01",
+    "OTGD-013-CAN-SR-007-02",
+    "OTGD-013-CAN-SR-008-01",
+    "OTGD-013-CAN-SR-008-02",
+    "OTGD-013-CAN-SR-009-01",
+    "OTGD-013-CAN-SR-009-02",
+    "OTGD-013-CAN-SR-010-01",
+    "OTGD-013-CAN-SR-010-02",
+    "OTGD-013-CAN-SR-011-01",
+    "OTGD-013-CAN-SR-011-02",
+    "OTGD-013-CAN-SR-011-03"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-013-CAN-SR-001-01",
+      "requirement_id": "CAN-SR-001",
+      "status": "PARTIAL",
+      "expected_observation": "A physical advertisement requests simulator handling \u2014 - **GIVEN** a reader advertises prototype_sensor under an unknown protocol identifier - **WHEN** the app connects - **THEN** the association is refused before capture.",
+      "unproved_then_clauses": [
+        "Connection-level assertion that refusal occurs before any capture invocation for this malformed advertisement is absent."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Exact capability decoder rejects unknown protocol and simulated/validated physical source labels."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source"
+        ],
+        "exact_missing_observation": [
+          "Connection-level assertion that refusal occurs before any capture invocation for this malformed advertisement is absent."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-002-01",
+      "requirement_id": "CAN-SR-002",
+      "status": "PARTIAL",
+      "expected_observation": "Binding receipt references another device \u2014 - **GIVEN** successful proof from device A - **WHEN** a receipt references device B or another owner generation - **THEN** the native association remains untrusted.",
+      "unproved_then_clauses": [
+        "Complete receipt mutation matrix including verified device A proof with receipt B must assert the native association stays untrusted for every matching field."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Wrong-generation installBinding throws PHYSICAL_CAPTURE_SCOPE; delayed foreign-device receipt cannot replace newer intent."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture",
+        "apps/mobile/tests/acquisition.test.ts::late binding receipt cannot bind a foreign replacement or erase a newer same-owner intent"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture",
+          "apps/mobile/tests/acquisition.test.ts::late binding receipt cannot bind a foreign replacement or erase a newer same-owner intent"
+        ],
+        "exact_missing_observation": [
+          "Complete receipt mutation matrix including verified device A proof with receipt B must assert the native association stays untrusted for every matching field."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-002-02",
+      "requirement_id": "CAN-SR-002",
+      "status": "BLOCKED",
+      "expected_observation": "Stock SDK lacks protected NVS \u2014 - **GIVEN** a stock SDK compilation without NVS encryption - **WHEN** the reader starts - **THEN** it refuses protected-reader advertising and emits no fabricated measurement.",
+      "unproved_then_clauses": [
+        "No stock firmware boot executes to observe refused advertising and absence of telemetry when encrypted NVS is unavailable."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Stock signed-reader sketch compiles and protected SDK build succeeds separately."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_secure_reader_build.py::test_security_config_must_retain_every_enforced_security_option"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_secure_reader_build.py::test_security_config_must_retain_every_enforced_security_option"
+        ],
+        "exact_missing_observation": [
+          "No stock firmware boot executes to observe refused advertising and absence of telemetry when encrypted NVS is unavailable."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-003-01",
+      "requirement_id": "CAN-SR-003",
+      "status": "PARTIAL",
+      "expected_observation": "Phone alters maximum acquisition duration \u2014 - **GIVEN** an authentic server token binds15000ms - **WHEN** the phone requests a different channel, duration, context or configuration - **THEN** the reader refuses start before touching acquisition hardware.",
+      "unproved_then_clauses": [
+        "Exact valid-type phone option mutations against authentic unchanged 15000ms token, with a hardware-touch spy remaining zero, are not all exercised."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Host grant verifier validates real backend signature/material SHA and rejects altered signed channel/duration/context/configuration/origin fields."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_grant_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_grant_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Exact valid-type phone option mutations against authentic unchanged 15000ms token, with a hardware-touch spy remaining zero, are not all exercised."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-003-02",
+      "requirement_id": "CAN-SR-003",
+      "status": "PARTIAL",
+      "expected_observation": "Token includes a replacement verification key \u2014 - **GIVEN** the device trusts an offline provisioned server signer - **WHEN** a caller substitutes an SPKI or signer label in the token - **THEN** signature admission fails.",
+      "unproved_then_clauses": [
+        "Token-supplied replacement SPKI and signer-label changes are not directly tested against the provisioned firmware admission path."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Host verifier uses externally captured P256 SPKI and label; wrong domain and signed-field changes reject."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_grant_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_grant_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Token-supplied replacement SPKI and signer-label changes are not directly tested against the provisioned firmware admission path."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-005-02",
+      "requirement_id": "CAN-SR-005",
+      "status": "PARTIAL",
+      "expected_observation": "Loop misses samples \u2014 - **GIVEN** measured monotonic acquisition times skip scheduled observations - **WHEN** the bounded extractor processes the next actual sample - **THEN** it records explicit gaps and invalidates quality without generating missing values.",
+      "unproved_then_clauses": [
+        "The skipped-observation subcase does not directly assert validSignal=false or a specific gap quality flag after settling that same capture."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Scheduler preserves actual indices0/3 and dropped=2 without interpolating raw observations."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "The skipped-observation subcase does not directly assert validSignal=false or a specific gap quality flag after settling that same capture."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-006-01",
+      "requirement_id": "CAN-SR-006",
+      "status": "PARTIAL",
+      "expected_observation": "Notifications are congested at cutoff \u2014 - **GIVEN** the TX queue cannot publish another message - **WHEN** the acquisition cutoff arrives - **THEN** the driver stops regardless of queued acknowledgments.",
+      "unproved_then_clauses": [
+        "No integrated nonempty/backpressured TX queue is held during cutoff to prove production loop ordering independently of acknowledgments."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "ADC core stops exactly before bounded maximum and no subsequent tick invokes reads or stop again."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "No integrated nonempty/backpressured TX queue is held during cutoff to prove production loop ordering independently of acknowledgments."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-006-02",
+      "requirement_id": "CAN-SR-006",
+      "status": "PARTIAL",
+      "expected_observation": "A slow ADC call crosses the bound \u2014 - **GIVEN** an ADC call returns after the bounded stop - **WHEN** its observation arrives - **THEN** the late sample is discarded and overrun cannot become valid evidence.",
+      "unproved_then_clauses": [
+        "The slow-read subcase does not directly assert discarded raw sample queue length or no accepted sample emission."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Slow observation callback beyond stop sets ended/overran/invalid."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "The slow-read subcase does not directly assert discarded raw sample queue length or no accepted sample emission."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-007-01",
+      "requirement_id": "CAN-SR-007",
+      "status": "PARTIAL",
+      "expected_observation": "Link transition occurs after final origin check \u2014 - **GIVEN** a sensitive effect and a concurrent replacement connection - **WHEN** the final check/effect boundary executes - **THEN** the shared gate orders them and no old-origin action occurs in the replacement association.",
+      "unproved_then_clauses": [
+        "Production hardware start/sign/connection-targeted notify effects are not directly exercised in that concurrency test."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Concurrent OriginGate tests serialize check/effect against transition and reject old epoch after replacement."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Production hardware start/sign/connection-targeted notify effects are not directly exercised in that concurrency test."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-008-01",
+      "requirement_id": "CAN-SR-008",
+      "status": "PARTIAL",
+      "expected_observation": "Unsupported raw configuration receives opt-in \u2014 - **GIVEN** the protected ADC raw encoding/capacity does not support the requested operation - **WHEN** a non-null raw permission is supplied - **THEN** the driver refuses that unsupported operation without silently recording or dropping an opted-in purpose.",
+      "unproved_then_clauses": [
+        "Protected driver unsupported encoding/capacity admission with non-null permission must assert no sampling/raw queue, rather than only client encode failure."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Client raw ECG encoder refuses PPG operation, excessive chunk count and altered sample scope; API refuses missing driver/raw codec authority."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::opt-in ECG handoff preserves measured signed chunks and refuses bounds/scope changes",
+        "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::opt-in ECG handoff preserves measured signed chunks and refuses bounds/scope changes",
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+        ],
+        "exact_missing_observation": [
+          "Protected driver unsupported encoding/capacity admission with non-null permission must assert no sampling/raw queue, rather than only client encode failure."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-008-02",
+      "requirement_id": "CAN-SR-008",
+      "status": "PARTIAL",
+      "expected_observation": "Normalized feature bytes change in transit \u2014 - **GIVEN** a device-signed exact projection - **WHEN** a value or identity is modified - **THEN** client digest admission and server signature verification reject the evidence.",
+      "unproved_then_clauses": [
+        "The same changed normalized bytes must be submitted through server completion verification and reject there; client structural rejection alone is narrower."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Client rejects normalized payload changed under unchanged signed digest; unchanged signature verifies cryptographically."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+        ],
+        "exact_missing_observation": [
+          "The same changed normalized bytes must be submitted through server completion verification and reject there; client structural rejection alone is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-011-01",
+      "requirement_id": "CAN-SR-011",
+      "status": "PARTIAL",
+      "expected_observation": "A replacement peer receives an old authentication callback \u2014 - **GIVEN** a BLE connection transitions to a different peer or generation - **WHEN** authentication or a command callback from the original peer arrives - **THEN** it cannot authorize the replacement association or deliver previous health data.",
+      "unproved_then_clauses": [
+        "Actual ESP32 BLE authentication callback provenance and connection-targeted notification behavior are not executed on a device."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "AuthenticatedPeer helper rejects old authentication and disconnect callbacks after replacement peer connects."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Actual ESP32 BLE authentication callback provenance and connection-targeted notification behavior are not executed on a device."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-011-02",
+      "requirement_id": "CAN-SR-011",
+      "status": "PARTIAL",
+      "expected_observation": "Pairing negotiates encryption without MITM \u2014 - **GIVEN** a peer lacks the physical passkey and offers unauthenticated encryption - **WHEN** the peripheral evaluates completed pairing - **THEN** it refuses commands, disconnects and produces no participant telemetry.",
+      "unproved_then_clauses": [
+        "Real pairing negotiated without MITM must disconnect with no participant command/telemetry; helper returns false but does not exercise BLE stack side effects."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "AuthenticatedPeer rejects missing Secure Connections/MITM/bond flags in host helper."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Real pairing negotiated without MITM must disconnect with no participant command/telemetry; helper returns false but does not exercise BLE stack side effects."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-011-03",
+      "requirement_id": "CAN-SR-011",
+      "status": "PARTIAL",
+      "expected_observation": "The current protected peer completes authenticated pairing \u2014 - **GIVEN** the current device peer completes Secure Connections with MITM bonding using its protected provisioned passkey - **WHEN** a command and notification are admitted under the same connection origin gate - **THEN** only that authenticated connection can send commands and receive its connection-targeted frames, while physical and clinical qualification remain separate.",
+      "unproved_then_clauses": [
+        "Actual protected passkey provisioning, SC+MITM bonding, command and targeted notification are not executed on real BLE hardware."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Helper permits only matching current authenticated peer/address/connection for writes and rejects replaced peer."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Actual protected passkey provisioning, SC+MITM bonding, command and targeted notification are not executed on real BLE hardware."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-013-CAN-SR-001-01",
+      "required_clause": [
+        "Connection-level assertion that refusal occurs before any capture invocation for this malformed advertisement is absent."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source"
+        ],
+        "exact_missing_observation": [
+          "Connection-level assertion that refusal occurs before any capture invocation for this malformed advertisement is absent."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-002-01",
+      "required_clause": [
+        "Complete receipt mutation matrix including verified device A proof with receipt B must assert the native association stays untrusted for every matching field."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture",
+          "apps/mobile/tests/acquisition.test.ts::late binding receipt cannot bind a foreign replacement or erase a newer same-owner intent"
+        ],
+        "exact_missing_observation": [
+          "Complete receipt mutation matrix including verified device A proof with receipt B must assert the native association stays untrusted for every matching field."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-002-02",
+      "required_clause": [
+        "No stock firmware boot executes to observe refused advertising and absence of telemetry when encrypted NVS is unavailable."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_secure_reader_build.py::test_security_config_must_retain_every_enforced_security_option"
+        ],
+        "exact_missing_observation": [
+          "No stock firmware boot executes to observe refused advertising and absence of telemetry when encrypted NVS is unavailable."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-003-01",
+      "required_clause": [
+        "Exact valid-type phone option mutations against authentic unchanged 15000ms token, with a hardware-touch spy remaining zero, are not all exercised."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_grant_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Exact valid-type phone option mutations against authentic unchanged 15000ms token, with a hardware-touch spy remaining zero, are not all exercised."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-003-02",
+      "required_clause": [
+        "Token-supplied replacement SPKI and signer-label changes are not directly tested against the provisioned firmware admission path."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_grant_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Token-supplied replacement SPKI and signer-label changes are not directly tested against the provisioned firmware admission path."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-005-02",
+      "required_clause": [
+        "The skipped-observation subcase does not directly assert validSignal=false or a specific gap quality flag after settling that same capture."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "The skipped-observation subcase does not directly assert validSignal=false or a specific gap quality flag after settling that same capture."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-006-01",
+      "required_clause": [
+        "No integrated nonempty/backpressured TX queue is held during cutoff to prove production loop ordering independently of acknowledgments."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "No integrated nonempty/backpressured TX queue is held during cutoff to prove production loop ordering independently of acknowledgments."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-006-02",
+      "required_clause": [
+        "The slow-read subcase does not directly assert discarded raw sample queue length or no accepted sample emission."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "The slow-read subcase does not directly assert discarded raw sample queue length or no accepted sample emission."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-007-01",
+      "required_clause": [
+        "Production hardware start/sign/connection-targeted notify effects are not directly exercised in that concurrency test."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Production hardware start/sign/connection-targeted notify effects are not directly exercised in that concurrency test."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-008-01",
+      "required_clause": [
+        "Protected driver unsupported encoding/capacity admission with non-null permission must assert no sampling/raw queue, rather than only client encode failure."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::opt-in ECG handoff preserves measured signed chunks and refuses bounds/scope changes",
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+        ],
+        "exact_missing_observation": [
+          "Protected driver unsupported encoding/capacity admission with non-null permission must assert no sampling/raw queue, rather than only client encode failure."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-008-02",
+      "required_clause": [
+        "The same changed normalized bytes must be submitted through server completion verification and reject there; client structural rejection alone is narrower."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+        ],
+        "exact_missing_observation": [
+          "The same changed normalized bytes must be submitted through server completion verification and reject there; client structural rejection alone is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-011-01",
+      "required_clause": [
+        "Actual ESP32 BLE authentication callback provenance and connection-targeted notification behavior are not executed on a device."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Actual ESP32 BLE authentication callback provenance and connection-targeted notification behavior are not executed on a device."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-011-02",
+      "required_clause": [
+        "Real pairing negotiated without MITM must disconnect with no participant command/telemetry; helper returns false but does not exercise BLE stack side effects."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Real pairing negotiated without MITM must disconnect with no participant command/telemetry; helper returns false but does not exercise BLE stack side effects."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-013-CAN-SR-011-03",
+      "required_clause": [
+        "Actual protected passkey provisioning, SC+MITM bonding, command and targeted notification are not executed on real BLE hardware."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Actual protected passkey provisioning, SC+MITM bonding, command and targeted notification are not executed on real BLE hardware."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

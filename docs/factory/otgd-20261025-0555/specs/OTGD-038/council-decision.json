@@ -1,0 +1,591 @@
+{
+  "spec_id": "OTGD-038",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-study-enrollment/spec.md",
+  "canonical_sha256": "e0c8f1f81be37cbe775f274e6c2aa81d3f3eacc64da92f01bcdd1c31adfb9ee8",
+  "canonical_requirements": [
+    "AND-STUDY-001 Show only authorized memberships",
+    "AND-STUDY-002 Bind consent to complete approved content",
+    "AND-STUDY-003 Separate consent from capability qualification",
+    "AND-STUDY-004 Require fresh authorization for qualified capture",
+    "AND-STUDY-005 Make withdrawal effective for new operations",
+    "AND-STUDY-006 Preserve truthful study absence"
+  ],
+  "canonical_scenarios": [
+    "Invited customer opens research access",
+    "Customer guesses another study UUID",
+    "Current approved consent is accepted",
+    "Protocol changes while the page is open",
+    "Consent exists but optics remain unqualified",
+    "Client edits capability JSON",
+    "Cached scope cannot authorize offline capture",
+    "Authorization expires offline",
+    "Participant withdraws",
+    "Old upload ticket is used after withdrawal",
+    "Fresh production environment",
+    "Synthetic local fixture"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 10,
+    "PASS": 2
+  },
+  "all_current_case_ids": [
+    "OTGD-038-AND-STUDY-001-01",
+    "OTGD-038-AND-STUDY-001-02",
+    "OTGD-038-AND-STUDY-002-01",
+    "OTGD-038-AND-STUDY-002-02",
+    "OTGD-038-AND-STUDY-003-01",
+    "OTGD-038-AND-STUDY-003-02",
+    "OTGD-038-AND-STUDY-004-01",
+    "OTGD-038-AND-STUDY-004-02",
+    "OTGD-038-AND-STUDY-005-01",
+    "OTGD-038-AND-STUDY-005-02",
+    "OTGD-038-AND-STUDY-006-01",
+    "OTGD-038-AND-STUDY-006-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-038-AND-STUDY-001-01",
+      "requirement_id": "AND-STUDY-001",
+      "status": "PARTIAL",
+      "expected_observation": "Invited customer opens research access \u2014 - **GIVEN** one operator-provisioned invitation for the signed-in account - **WHEN** memberships are requested - **THEN** the app displays that invitation and its actual status.",
+      "unproved_then_clauses": [
+        "the app displays that invitation and its actual status: visible invitation/status rendering is not asserted by these checks."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "The service membership item retains the latest immutable consent and the client refreshes/stores that item."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_consent_versions.py::test_updated_document_has_new_immutable_receipt_and_replay_keeps_current_pointer",
+        "apps/mobile/tests/controller.test.ts::explicit study consent is durable before upload and a lost receipt retries the original timestamp and request identity"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_consent_versions.py::test_updated_document_has_new_immutable_receipt_and_replay_keeps_current_pointer",
+          "apps/mobile/tests/controller.test.ts::explicit study consent is durable before upload and a lost receipt retries the original timestamp and request identity"
+        ],
+        "exact_missing_observation": [
+          "the app displays that invitation and its actual status: visible invitation/status rendering is not asserted by these checks."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-001-02",
+      "requirement_id": "AND-STUDY-001",
+      "status": "PARTIAL",
+      "expected_observation": "Customer guesses another study UUID \u2014 - **GIVEN** no membership in the requested study - **WHEN** its consent or capability route is requested - **THEN** access is refused without disclosing another participant's data.",
+      "unproved_then_clauses": [
+        "access is refused without disclosing another participant's data: capability-route denial and response nondisclosure are not asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "A foreign account receives403 on consent for an approved document."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_consent_versions.py::test_queued_confirmation_keeps_actual_past_time_if_approved_document_remains_current"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_consent_versions.py::test_queued_confirmation_keeps_actual_past_time_if_approved_document_remains_current"
+        ],
+        "exact_missing_observation": [
+          "access is refused without disclosing another participant's data: capability-route denial and response nondisclosure are not asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-002-02",
+      "requirement_id": "AND-STUDY-002",
+      "status": "PARTIAL",
+      "expected_observation": "Protocol changes while the page is open \u2014 - **GIVEN** the displayed consent version is no longer current - **WHEN** acceptance is submitted - **THEN** the server rejects the stale version and the app loads the updated document without transferring the old acceptance.",
+      "unproved_then_clauses": [
+        "the app loads the updated document without transferring the old acceptance: no executed stale-page reload interaction is asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Old document acceptance403; immutable original remains; exact-version assessment requires fresh consent."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_consent_versions.py::test_updated_document_has_new_immutable_receipt_and_replay_keeps_current_pointer",
+        "apps/mobile/tests/study-consent.test.ts::only an active exact affirmative receipt suppresses new study consent"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_consent_versions.py::test_updated_document_has_new_immutable_receipt_and_replay_keeps_current_pointer",
+          "apps/mobile/tests/study-consent.test.ts::only an active exact affirmative receipt suppresses new study consent"
+        ],
+        "exact_missing_observation": [
+          "the app loads the updated document without transferring the old acceptance: no executed stale-page reload interaction is asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-003-01",
+      "requirement_id": "AND-STUDY-003",
+      "status": "PARTIAL",
+      "expected_observation": "Consent exists but optics remain unqualified \u2014 - **GIVEN** accepted consent and no approved optical configuration - **WHEN** the app requests eye capture - **THEN** passive guidance or an unavailable state is shown and no participant stimulus is emitted.",
+      "unproved_then_clauses": [
+        "After accepted study consent specifically without approved optical configuration, screen shows passive/unavailable and no participant stimulus is emitted: the inspected unprovisioned and visible copy checks do not execute this exact consent-plus-unqualified-optics branch."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Unprovisioned hardware and all human capture channels are unavailable; exact-version consent enables only task authority; rendered fictional eyes show unavailable and retain physical-onset limits. startEyeCapture implementation requires installed native module and admitted exact optical configuration before publishing active capture."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_unprovisioned_device_and_human_capture_unavailable",
+        "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke",
+        "apps/mobile/e2e/raw-recordings.spec.ts::eye and ECG descriptions follow the approved observation and actual provenance without claiming measured light onset"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_unprovisioned_device_and_human_capture_unavailable",
+          "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke",
+          "apps/mobile/e2e/raw-recordings.spec.ts::eye and ECG descriptions follow the approved observation and actual provenance without claiming measured light onset"
+        ],
+        "exact_missing_observation": [
+          "After accepted study consent specifically without approved optical configuration, screen shows passive/unavailable and no participant stimulus is emitted: the inspected unprovisioned and visible copy checks do not execute this exact consent-plus-unqualified-optics branch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-003-02",
+      "requirement_id": "AND-STUDY-003",
+      "status": "PARTIAL",
+      "expected_observation": "Client edits capability JSON \u2014 - **GIVEN** a locally modified available flag - **WHEN** an upload or research request reaches the backend - **THEN** server-owned qualification and membership checks still prevent unauthorized operation.",
+      "unproved_then_clauses": [
+        "server-owned qualification and membership checks still prevent unauthorized operation after specifically edited client capability JSON reaches upload/research routes: not directly exercised."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "current_assertions_proven": [
+        "Current server study/protocol gates and fresh unavailable inventory refuse; client has no hardware event on stale alcohol capability."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_real_session_start_requires_current_approved_study_and_exact_protocol",
+        "apps/mobile/tests/acquisition.test.ts::fresh absent-breath-adapter capability overrides stale cached availability before any hardware invocation"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_real_session_start_requires_current_approved_study_and_exact_protocol",
+          "apps/mobile/tests/acquisition.test.ts::fresh absent-breath-adapter capability overrides stale cached availability before any hardware invocation"
+        ],
+        "exact_missing_observation": [
+          "server-owned qualification and membership checks still prevent unauthorized operation after specifically edited client capability JSON reaches upload/research routes: not directly exercised."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-004-01",
+      "requirement_id": "AND-STUDY-004",
+      "status": "PARTIAL",
+      "expected_observation": "Cached scope cannot authorize offline capture \u2014 - **GIVEN** a cached available scope covering the device/configuration/channel - **WHEN** qualified capture is requested offline - **THEN** the app requires reconnection; local uncalibrated practice remains a separately labeled permitted path.",
+      "unproved_then_clauses": [
+        "the app requires reconnection; local uncalibrated practice remains a separately labeled permitted path when cached available scope is used offline: exact offline branch is not asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Online context is frozen before any acquisition and ordered calls require grant and online-start before hardware."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "the app requires reconnection; local uncalibrated practice remains a separately labeled permitted path when cached available scope is used offline: exact offline branch is not asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-004-02",
+      "requirement_id": "AND-STUDY-004",
+      "status": "PARTIAL",
+      "expected_observation": "Authorization expires offline \u2014 - **GIVEN** the phone was restarted or its wall clock was rolled back - **WHEN** new qualified capture is requested - **THEN** the app asks for reconnection and preserves existing records without acquiring under stale permission.",
+      "unproved_then_clauses": [
+        "the app asks for reconnection and preserves existing records after restart or wall-clock rollback: no offline restarted/rolled-back record-preservation journey is asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Reboot/reader substitution refuses before hardware and before adding attempts."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "the app asks for reconnection and preserves existing records after restart or wall-clock rollback: no offline restarted/rolled-back record-preservation journey is asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-005-02",
+      "requirement_id": "AND-STUDY-005",
+      "status": "PARTIAL",
+      "expected_observation": "Old upload ticket is used after withdrawal \u2014 - **GIVEN** an artifact ticket issued before withdrawal - **WHEN** upload completion is requested afterward - **THEN** authorization is rechecked and the object cannot become a verified research artifact through the stale ticket.",
+      "unproved_then_clauses": [
+        "A participant capture artifact ticket issued before study withdrawal cannot verify on later completion: inspected executed race is administrative-report purpose, explicitly distinct from generic participant artifact. Need captured-raw preissued-ticket withdrawal execution; administrative result must not be substituted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Administrative report completion rechecks consent after storage, refuses403/409/410 and keeps artifact unverified; generic capture route refuses administrative purpose. Inspected generic artifact_complete explicitly rechecks assert_artifact_admitted before/after external reads and qualification before commit."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_report_revisions.py::test_completion_reauthorizes_after_external_storage_and_cannot_resurrect_cleanup",
+        "services/api/tests/test_report_revisions.py::test_report_completion_and_generic_capture_purpose_are_separate"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_report_revisions.py::test_completion_reauthorizes_after_external_storage_and_cannot_resurrect_cleanup",
+          "services/api/tests/test_report_revisions.py::test_report_completion_and_generic_capture_purpose_are_separate"
+        ],
+        "exact_missing_observation": [
+          "A participant capture artifact ticket issued before study withdrawal cannot verify on later completion: inspected executed race is administrative-report purpose, explicitly distinct from generic participant artifact. Need captured-raw preissued-ticket withdrawal execution; administrative result must not be substituted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-006-01",
+      "requirement_id": "AND-STUDY-006",
+      "status": "PARTIAL",
+      "expected_observation": "Fresh production environment \u2014 - **GIVEN** no approved study records - **WHEN** research access opens - **THEN** no research capture or prediction is offered.",
+      "unproved_then_clauses": [
+        "no research capture or prediction is offered when Research access opens in a fresh production environment without study records: visible fresh-empty journey not directly asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Unconsented or inactive study/protocol denies session creation and absent model remains unavailable."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_real_session_start_requires_current_approved_study_and_exact_protocol",
+        "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_real_session_start_requires_current_approved_study_and_exact_protocol",
+          "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke"
+        ],
+        "exact_missing_observation": [
+          "no research capture or prediction is offered when Research access opens in a fresh production environment without study records: visible fresh-empty journey not directly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-006-02",
+      "requirement_id": "AND-STUDY-006",
+      "status": "PARTIAL",
+      "expected_observation": "Synthetic local fixture \u2014 - **GIVEN** a local development study fixture - **WHEN** it is displayed - **THEN** its synthetic identity and environment are explicit and its permissions cannot be reused in QA/prod.",
+      "unproved_then_clauses": [
+        "synthetic identity/environment explicit and permissions cannot be reused in QA/prod: cross-environment authority refusal is not tested by this component body."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Fictional hosted preview refuses acquisition and inference despite public available capability flags."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::actual service component labels conditional approved channels and model support, while the fictional build refuses both"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::actual service component labels conditional approved channels and model support, while the fictional build refuses both"
+        ],
+        "exact_missing_observation": [
+          "synthetic identity/environment explicit and permissions cannot be reused in QA/prod: cross-environment authority refusal is not tested by this component body."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-038-AND-STUDY-001-01",
+      "required_clause": [
+        "the app displays that invitation and its actual status: visible invitation/status rendering is not asserted by these checks."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_consent_versions.py::test_updated_document_has_new_immutable_receipt_and_replay_keeps_current_pointer",
+          "apps/mobile/tests/controller.test.ts::explicit study consent is durable before upload and a lost receipt retries the original timestamp and request identity"
+        ],
+        "exact_missing_observation": [
+          "the app displays that invitation and its actual status: visible invitation/status rendering is not asserted by these checks."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-001-02",
+      "required_clause": [
+        "access is refused without disclosing another participant's data: capability-route denial and response nondisclosure are not asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_consent_versions.py::test_queued_confirmation_keeps_actual_past_time_if_approved_document_remains_current"
+        ],
+        "exact_missing_observation": [
+          "access is refused without disclosing another participant's data: capability-route denial and response nondisclosure are not asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-002-02",
+      "required_clause": [
+        "the app loads the updated document without transferring the old acceptance: no executed stale-page reload interaction is asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_consent_versions.py::test_updated_document_has_new_immutable_receipt_and_replay_keeps_current_pointer",
+          "apps/mobile/tests/study-consent.test.ts::only an active exact affirmative receipt suppresses new study consent"
+        ],
+        "exact_missing_observation": [
+          "the app loads the updated document without transferring the old acceptance: no executed stale-page reload interaction is asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-003-01",
+      "required_clause": [
+        "After accepted study consent specifically without approved optical configuration, screen shows passive/unavailable and no participant stimulus is emitted: the inspected unprovisioned and visible copy checks do not execute this exact consent-plus-unqualified-optics branch."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_unprovisioned_device_and_human_capture_unavailable",
+          "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke",
+          "apps/mobile/e2e/raw-recordings.spec.ts::eye and ECG descriptions follow the approved observation and actual provenance without claiming measured light onset"
+        ],
+        "exact_missing_observation": [
+          "After accepted study consent specifically without approved optical configuration, screen shows passive/unavailable and no participant stimulus is emitted: the inspected unprovisioned and visible copy checks do not execute this exact consent-plus-unqualified-optics branch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-003-02",
+      "required_clause": [
+        "server-owned qualification and membership checks still prevent unauthorized operation after specifically edited client capability JSON reaches upload/research routes: not directly exercised."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_real_session_start_requires_current_approved_study_and_exact_protocol",
+          "apps/mobile/tests/acquisition.test.ts::fresh absent-breath-adapter capability overrides stale cached availability before any hardware invocation"
+        ],
+        "exact_missing_observation": [
+          "server-owned qualification and membership checks still prevent unauthorized operation after specifically edited client capability JSON reaches upload/research routes: not directly exercised."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-004-01",
+      "required_clause": [
+        "the app requires reconnection; local uncalibrated practice remains a separately labeled permitted path when cached available scope is used offline: exact offline branch is not asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "the app requires reconnection; local uncalibrated practice remains a separately labeled permitted path when cached available scope is used offline: exact offline branch is not asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-004-02",
+      "required_clause": [
+        "the app asks for reconnection and preserves existing records after restart or wall-clock rollback: no offline restarted/rolled-back record-preservation journey is asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "the app asks for reconnection and preserves existing records after restart or wall-clock rollback: no offline restarted/rolled-back record-preservation journey is asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-005-02",
+      "required_clause": [
+        "A participant capture artifact ticket issued before study withdrawal cannot verify on later completion: inspected executed race is administrative-report purpose, explicitly distinct from generic participant artifact. Need captured-raw preissued-ticket withdrawal execution; administrative result must not be substituted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_report_revisions.py::test_completion_reauthorizes_after_external_storage_and_cannot_resurrect_cleanup",
+          "services/api/tests/test_report_revisions.py::test_report_completion_and_generic_capture_purpose_are_separate"
+        ],
+        "exact_missing_observation": [
+          "A participant capture artifact ticket issued before study withdrawal cannot verify on later completion: inspected executed race is administrative-report purpose, explicitly distinct from generic participant artifact. Need captured-raw preissued-ticket withdrawal execution; administrative result must not be substituted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-006-01",
+      "required_clause": [
+        "no research capture or prediction is offered when Research access opens in a fresh production environment without study records: visible fresh-empty journey not directly asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_real_session_start_requires_current_approved_study_and_exact_protocol",
+          "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke"
+        ],
+        "exact_missing_observation": [
+          "no research capture or prediction is offered when Research access opens in a fresh production environment without study records: visible fresh-empty journey not directly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-038-AND-STUDY-006-02",
+      "required_clause": [
+        "synthetic identity/environment explicit and permissions cannot be reused in QA/prod: cross-environment authority refusal is not tested by this component body."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::actual service component labels conditional approved channels and model support, while the fictional build refuses both"
+        ],
+        "exact_missing_observation": [
+          "synthetic identity/environment explicit and permissions cannot be reused in QA/prod: cross-environment authority refusal is not tested by this component body."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

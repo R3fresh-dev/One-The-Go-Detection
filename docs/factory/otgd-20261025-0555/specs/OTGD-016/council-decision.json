@@ -1,0 +1,219 @@
+{
+  "spec_id": "OTGD-016",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/independent-recovery-admission/specs/recovery-authority/spec.md",
+  "canonical_sha256": "430fe7dfbfdb117add502c5632150690905d94b3dcb42ddc892bf1e8943f273c",
+  "canonical_requirements": [
+    "RECOVERY-001 Independent retained admission",
+    "RECOVERY-002 Scoped independent reapproval"
+  ],
+  "canonical_scenarios": [
+    "Consistent retained authority",
+    "Stale restored active row",
+    "Missing local establishment",
+    "Reapproved study",
+    "Boolean or stale approval override",
+    "Privacy cleanup during suspension"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 3,
+    "PASS": 3
+  },
+  "all_current_case_ids": [
+    "OTGD-016-RECOVERY-001-01",
+    "OTGD-016-RECOVERY-001-02",
+    "OTGD-016-RECOVERY-001-03",
+    "OTGD-016-RECOVERY-002-01",
+    "OTGD-016-RECOVERY-002-02",
+    "OTGD-016-RECOVERY-002-03"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-016-RECOVERY-001-01",
+      "requirement_id": "RECOVERY-001",
+      "status": "PARTIAL",
+      "expected_observation": "Consistent retained authority \u2014 - **WHEN** the database matches all pinned retained control, identity, generation, deletion and recovery evidence - **THEN** ordinary service admission may proceed subject to current participant and study authority",
+      "unproved_then_clauses": [
+        "\u201cordinary service admission may proceed subject to current participant and study authority\u201d: helper consistency succeeds, but no positive API/worker admission with the retained authority fixture and current participant/study together."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Consistent retained deletion DB returns cutoff 0, correct latest activation+DB returns exact cutoff; missing/corrupt states refused."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_recovery_authority.py::test_retained_deletion_blocks_restored_active_database_even_without_restore_flag",
+        "services/api/tests/test_recovery_authority.py::test_recovery_claim_requires_latest_independent_activation_and_suspension"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_recovery_authority.py::test_retained_deletion_blocks_restored_active_database_even_without_restore_flag",
+          "services/api/tests/test_recovery_authority.py::test_recovery_claim_requires_latest_independent_activation_and_suspension"
+        ],
+        "exact_missing_observation": [
+          "\u201cordinary service admission may proceed subject to current participant and study authority\u201d: helper consistency succeeds, but no positive API/worker admission with the retained authority fixture and current participant/study together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-016-RECOVERY-001-02",
+      "requirement_id": "RECOVERY-001",
+      "status": "PARTIAL",
+      "expected_observation": "Stale restored active row \u2014 - **WHEN** a retained deletion or recovery activation conflicts with an active database row or its queued job - **THEN** API and worker refuse new data work before commit, including when the database recovery row is absent",
+      "unproved_then_clauses": [
+        "\u201cAPI ... refuse new data work\u201d specifically for retained deletion/recovery-activation conflict with absent DB recovery row: worker test covers this exact conflict, API test covers a different missing-marker condition."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Retained deletion conflicts rejected by validator; retained activation absent from DB blocks claim/execute/commit, leaves pending fence0 and result null; local marker loss blocks API."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_recovery_authority.py::test_retained_deletion_blocks_restored_active_database_even_without_restore_flag",
+        "services/api/tests/test_recovery_authority.py::test_worker_claim_and_commit_refuse_retained_activation_missing_in_database",
+        "services/api/tests/test_recovery_authority.py::test_running_http_readiness_and_new_account_refuse_lost_local_marker"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_recovery_authority.py::test_retained_deletion_blocks_restored_active_database_even_without_restore_flag",
+          "services/api/tests/test_recovery_authority.py::test_worker_claim_and_commit_refuse_retained_activation_missing_in_database",
+          "services/api/tests/test_recovery_authority.py::test_running_http_readiness_and_new_account_refuse_lost_local_marker"
+        ],
+        "exact_missing_observation": [
+          "\u201cAPI ... refuse new data work\u201d specifically for retained deletion/recovery-activation conflict with absent DB recovery row: worker test covers this exact conflict, API test covers a different missing-marker condition."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-016-RECOVERY-001-03",
+      "requirement_id": "RECOVERY-001",
+      "status": "PARTIAL",
+      "expected_observation": "Missing local establishment \u2014 - **WHEN** retained PostgreSQL is paired with a missing or replacement emulator journal - **THEN** bootstrap and running service admission refuse silent establishment or account provisioning",
+      "unproved_then_clauses": [
+        "Actual retained PostgreSQL paired with a missing/replaced emulator journal must keep nonprivacy admission closed. Current LocalStack worker/recovery gates pass, but the reviewed bootstrap-specific missing/replaced-journal fixture uses SQLite and a journal double; that exact retained-PG/emulator pair is unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "live_dependency_scenario_evidence"
+      ],
+      "current_assertions_proven": [
+        "Bootstrap SQL helper refuses silent establishment with retained account, missing or changed journal binding; HTTP readiness/account provisioning denies lost marker and creates zero accounts."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_journal_continuity.py::test_retained_database_never_automatically_adopts_journal",
+        "services/api/tests/test_journal_continuity.py::test_empty_database_binds_once_then_requires_exact_version",
+        "services/api/tests/test_recovery_authority.py::test_running_http_readiness_and_new_account_refuse_lost_local_marker"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_journal_continuity.py::test_retained_database_never_automatically_adopts_journal",
+          "services/api/tests/test_journal_continuity.py::test_empty_database_binds_once_then_requires_exact_version",
+          "services/api/tests/test_recovery_authority.py::test_running_http_readiness_and_new_account_refuse_lost_local_marker"
+        ],
+        "exact_missing_observation": [
+          "Actual retained PostgreSQL paired with a missing/replaced emulator journal must keep nonprivacy admission closed. Current LocalStack worker/recovery gates pass, but the reviewed bootstrap-specific missing/replaced-journal fixture uses SQLite and a journal double; that exact retained-PG/emulator pair is unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-016-RECOVERY-001-01",
+      "required_clause": [
+        "\u201cordinary service admission may proceed subject to current participant and study authority\u201d: helper consistency succeeds, but no positive API/worker admission with the retained authority fixture and current participant/study together."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_recovery_authority.py::test_retained_deletion_blocks_restored_active_database_even_without_restore_flag",
+          "services/api/tests/test_recovery_authority.py::test_recovery_claim_requires_latest_independent_activation_and_suspension"
+        ],
+        "exact_missing_observation": [
+          "\u201cordinary service admission may proceed subject to current participant and study authority\u201d: helper consistency succeeds, but no positive API/worker admission with the retained authority fixture and current participant/study together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-016-RECOVERY-001-02",
+      "required_clause": [
+        "\u201cAPI ... refuse new data work\u201d specifically for retained deletion/recovery-activation conflict with absent DB recovery row: worker test covers this exact conflict, API test covers a different missing-marker condition."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_recovery_authority.py::test_retained_deletion_blocks_restored_active_database_even_without_restore_flag",
+          "services/api/tests/test_recovery_authority.py::test_worker_claim_and_commit_refuse_retained_activation_missing_in_database",
+          "services/api/tests/test_recovery_authority.py::test_running_http_readiness_and_new_account_refuse_lost_local_marker"
+        ],
+        "exact_missing_observation": [
+          "\u201cAPI ... refuse new data work\u201d specifically for retained deletion/recovery-activation conflict with absent DB recovery row: worker test covers this exact conflict, API test covers a different missing-marker condition."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-016-RECOVERY-001-03",
+      "required_clause": [
+        "Actual retained PostgreSQL paired with a missing/replaced emulator journal must keep nonprivacy admission closed. Current LocalStack worker/recovery gates pass, but the reviewed bootstrap-specific missing/replaced-journal fixture uses SQLite and a journal double; that exact retained-PG/emulator pair is unexecuted."
+      ],
+      "types": [
+        "live_dependency_scenario_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_journal_continuity.py::test_retained_database_never_automatically_adopts_journal",
+          "services/api/tests/test_journal_continuity.py::test_empty_database_binds_once_then_requires_exact_version",
+          "services/api/tests/test_recovery_authority.py::test_running_http_readiness_and_new_account_refuse_lost_local_marker"
+        ],
+        "exact_missing_observation": [
+          "Actual retained PostgreSQL paired with a missing/replaced emulator journal must keep nonprivacy admission closed. Current LocalStack worker/recovery gates pass, but the reviewed bootstrap-specific missing/replaced-journal fixture uses SQLite and a journal double; that exact retained-PG/emulator pair is unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

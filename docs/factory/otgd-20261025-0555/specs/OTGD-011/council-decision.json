@@ -1,0 +1,681 @@
+{
+  "spec_id": "OTGD-011",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/canonical-operator-governance/specs/operator-authority/spec.md",
+  "canonical_sha256": "a7bb7170b6fc7c119e8e93eae9783767876a8f861a71588027577172c30a80e2",
+  "canonical_requirements": [
+    "OPERATOR-AUTHORITY-001 \u2014 Typed immutable submissions",
+    "OPERATOR-AUTHORITY-002 \u2014 Independent authenticated decisions",
+    "OPERATOR-AUTHORITY-003 \u2014 Reviewable atomic lifecycle",
+    "OPERATOR-AUTHORITY-004 \u2014 Exact scientific and scope identities",
+    "OPERATOR-AUTHORITY-005 \u2014 Current customer capabilities",
+    "OPERATOR-AUTHORITY-006 \u2014 Capture approval fencing",
+    "OPERATOR-AUTHORITY-007 \u2014 Signed scoped start",
+    "OPERATOR-AUTHORITY-008 \u2014 Optical accepted-run identity",
+    "OPERATOR-AUTHORITY-009 \u2014 Authenticated raw publication"
+  ],
+  "canonical_scenarios": [
+    "Alteration of accepted submission",
+    "Normalized submission and same-version retry",
+    "Claimed role paths for one credential",
+    "Three authenticated duties release approved material",
+    "Stale release or revoked configuration",
+    "Dry-run, applied renewal and terminal history",
+    "Changed retention or duration with old proof",
+    "Exact reviewed configuration and device tuple",
+    "Current approved task collection",
+    "Authorized configuration without a shipped adapter",
+    "Approval replaced while a grant is outstanding",
+    "Current grant starts before an approval retirement",
+    "Owned reader starts under current signed authority",
+    "Signing authority fails or unsigned raw choice changes",
+    "Current optical run retains descriptive evidence",
+    "Pre-start failure or relabeled camera run",
+    "Original device samples are published under current permission",
+    "Matching file hash contains forged or relabeled samples"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 7,
+    "PARTIAL": 11
+  },
+  "all_current_case_ids": [
+    "OTGD-011-OPERATOR-AUTHORITY-001-01",
+    "OTGD-011-OPERATOR-AUTHORITY-001-02",
+    "OTGD-011-OPERATOR-AUTHORITY-002-01",
+    "OTGD-011-OPERATOR-AUTHORITY-002-02",
+    "OTGD-011-OPERATOR-AUTHORITY-003-01",
+    "OTGD-011-OPERATOR-AUTHORITY-003-02",
+    "OTGD-011-OPERATOR-AUTHORITY-004-01",
+    "OTGD-011-OPERATOR-AUTHORITY-004-02",
+    "OTGD-011-OPERATOR-AUTHORITY-005-01",
+    "OTGD-011-OPERATOR-AUTHORITY-005-02",
+    "OTGD-011-OPERATOR-AUTHORITY-006-01",
+    "OTGD-011-OPERATOR-AUTHORITY-006-02",
+    "OTGD-011-OPERATOR-AUTHORITY-007-01",
+    "OTGD-011-OPERATOR-AUTHORITY-007-02",
+    "OTGD-011-OPERATOR-AUTHORITY-008-01",
+    "OTGD-011-OPERATOR-AUTHORITY-008-02",
+    "OTGD-011-OPERATOR-AUTHORITY-009-01",
+    "OTGD-011-OPERATOR-AUTHORITY-009-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-001-02",
+      "requirement_id": "OPERATOR-AUTHORITY-001",
+      "status": "PARTIAL",
+      "expected_observation": "Normalized submission and same-version retry \u2014 - **GIVEN** a typed study body and a separately authorized submitter - **WHEN** the submitter applies its first immutable version - **THEN** the receipt exposes revision one, the exact normalized body and its canonical digest - **AND** replaying the same version fails without replacing its body or creating a second submission decision",
+      "unproved_then_clauses": [
+        "\u201creceipt exposes revision one, exact normalized body ... replay ... without ... second submission decision\u201d: no initial receipt revision/body equality or post-replay event-count assertion; actor uses fictional local identity, not actual cloud authentication."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Duplicate submission raises REGISTRY_VERSION_EXISTS; final released digest equals initial submitted digest and body; dry-run rolls back first version."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+        "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+        ],
+        "exact_missing_observation": [
+          "\u201creceipt exposes revision one, exact normalized body ... replay ... without ... second submission decision\u201d: no initial receipt revision/body equality or post-replay event-count assertion; actor uses fictional local identity, not actual cloud authentication."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-002-02",
+      "requirement_id": "OPERATOR-AUTHORITY-002",
+      "status": "PARTIAL",
+      "expected_observation": "Three authenticated duties release approved material \u2014 - **GIVEN** a submission under the named submitter role and an independent reviewer role - **WHEN** the reviewer approves revision one and the independently authenticated releaser releases revision two - **THEN** the active read validates three distinct canonical principals and the same submitted content hash - **AND** the accepted history contains the exact request identity and reason for each decision",
+      "unproved_then_clauses": [
+        "\u201caccepted history contains exact request identity and reason for each decision\u201d; no per-event identity/reason comparison. Three named authenticated cloud duties are not integrated through CLI; actual cloud credentials/role exercise is external."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Distinct local principal lifecycle validates released submitted hash; cloud principal function resolves canonical role using doubled STS/IAM."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+        "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+        ],
+        "exact_missing_observation": [
+          "\u201caccepted history contains exact request identity and reason for each decision\u201d; no per-event identity/reason comparison. Three named authenticated cloud duties are not integrated through CLI; actual cloud credentials/role exercise is external."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-003-01",
+      "requirement_id": "OPERATOR-AUTHORITY-003",
+      "status": "PARTIAL",
+      "expected_observation": "Stale release or revoked configuration \u2014 - **GIVEN** a reviewed version whose revision changed or whose approval was revoked - **WHEN** an operator releases it using an earlier revision - **THEN** the command fails and customer acquisition remains unavailable",
+      "unproved_then_clauses": [
+        "\u201coperator releases it using an earlier revision\u201d: existing stale-revision attempt is approve, not release after intervening revision/revocation, and no paired acquisition denial assertion for that stale release."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Stale revision approval rejected and unreleased version cannot release; revoked configuration closes task capability."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+        "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+          "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke"
+        ],
+        "exact_missing_observation": [
+          "\u201coperator releases it using an earlier revision\u201d: existing stale-revision attempt is approve, not release after intervening revision/revocation, and no paired acquisition denial assertion for that stale release."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-003-02",
+      "requirement_id": "OPERATOR-AUTHORITY-003",
+      "status": "PARTIAL",
+      "expected_observation": "Dry-run, applied renewal and terminal history \u2014 - **GIVEN** a valid typed renewal and its complete current dependencies - **WHEN** the CLI runs without --apply - **THEN** it displays the validated result and rolls back all registry changes - **WHEN** three authorized operators submit, approve and release the renewal with --apply - **THEN** the previous active version is atomically retired and both immutable bodies remain in history - **AND** retiring the renewal immediately removes current authority while preserving accepted decisions",
+      "unproved_then_clauses": [
+        "\u201cCLI [renewal] displays validated result\u201d; \u201cretiring renewal ... preserving accepted decisions\u201d: tests split initial CLI and direct renewal, revoke renewal rather than retire it, and do not compare immutable decision history after retirement."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "CLI dry-run rollback, applied initial lifecycle and history display; direct renewal retires old version and preserves body, later revoke closes active authority."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal",
+        "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal",
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision"
+        ],
+        "exact_missing_observation": [
+          "\u201cCLI [renewal] displays validated result\u201d; \u201cretiring renewal ... preserving accepted decisions\u201d: tests split initial CLI and direct renewal, revoke renewal rather than retire it, and do not compare immutable decision history after retirement."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-004-02",
+      "requirement_id": "OPERATOR-AUTHORITY-004",
+      "status": "PARTIAL",
+      "expected_observation": "Exact reviewed configuration and device tuple \u2014 - **GIVEN** approved study and retention versions, an exact configuration proof, and a device/calibration with matching key, hardware, firmware and channel - **WHEN** an independent releaser releases the configuration - **THEN** runtime validation resolves the exact active versions and accepts the matching configuration identity - **AND** its material hash and complete submitted hash remain separately available for acquisition fencing",
+      "unproved_then_clauses": [
+        "\u201cmatching [device] configuration identity ... material hash and complete submitted hash ... separately available for acquisition fencing\u201d: device test does not assert both hashes from that exact device configuration runtime authority."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Device tuple exact active dependencies accepted via typed fixture and binding; mismatched firmware/hardware/calibration rejected; separate task authorization exposes submitted hash and scientific hash."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+        "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+          "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal"
+        ],
+        "exact_missing_observation": [
+          "\u201cmatching [device] configuration identity ... material hash and complete submitted hash ... separately available for acquisition fencing\u201d: device test does not assert both hashes from that exact device configuration runtime authority."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-005-01",
+      "requirement_id": "OPERATOR-AUTHORITY-005",
+      "status": "PARTIAL",
+      "expected_observation": "Current approved task collection \u2014 - **GIVEN** an active account, current notice and exact consent to an independently released study with approved task configuration - **WHEN** capabilities are requested on a build containing the matching native task adapter - **THEN** task collection is available with its exact public configuration references - **AND** retirement, expiry, changed consent or account generation closes the applicable capability",
+      "unproved_then_clauses": [
+        "\u201cretirement, expiry ... or account generation closes applicable [task] capability\u201d: no task capability assertion for retirement, expiry or changed generation. Alcohol dependency expiry does not establish task path or generation behavior."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Task available with exact configuration ID after consent; stale consent, missing notice, deleting account, revoked configuration close capability; alcohol expiry boundaries checked."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke",
+        "services/api/tests/test_operator_governance.py::test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke",
+          "services/api/tests/test_operator_governance.py::test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history"
+        ],
+        "exact_missing_observation": [
+          "\u201cretirement, expiry ... or account generation closes applicable [task] capability\u201d: no task capability assertion for retirement, expiry or changed generation. Alcohol dependency expiry does not establish task path or generation behavior."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-006-02",
+      "requirement_id": "OPERATOR-AUTHORITY-006",
+      "status": "PARTIAL",
+      "expected_observation": "Current grant starts before an approval retirement \u2014 - **GIVEN** a current owned started attempt and an issued grant pinned to the active configuration envelope - **WHEN** start commits while holding the shared registry authority lock - **THEN** the server records its actual start anchor and exact pinned approval identity",
+      "unproved_then_clauses": [
+        "\u201cserver records its actual start anchor and exact pinned approval identity\u201d for start committing under that lock: PG concurrency test reads active_body only; no HTTP start transaction anchor/identity persistence assertion under concurrent retirement."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual PG observes registry shared transaction lock blocking retirement; separate HTTP start signs exact configuration submitted hash/context."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_actual_postgresql_retirement_waits_for_current_reference_acceptance_transaction",
+        "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_actual_postgresql_retirement_waits_for_current_reference_acceptance_transaction",
+          "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal"
+        ],
+        "exact_missing_observation": [
+          "\u201cserver records its actual start anchor and exact pinned approval identity\u201d for start committing under that lock: PG concurrency test reads active_body only; no HTTP start transaction anchor/identity persistence assertion under concurrent retirement."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-007-01",
+      "requirement_id": "OPERATOR-AUTHORITY-007",
+      "status": "PARTIAL",
+      "expected_observation": "Owned reader starts under current signed authority \u2014 - **GIVEN** current independent approvals and an owned signature-proven reader binding in the frozen context - **WHEN** start supplies the exact frozen boot and fresh reader nonce - **THEN** the server emits a verifiable domain-separated token for the approved channel and duration - **AND** feature-only collection has signed raw-recording permission null",
+      "unproved_then_clauses": [
+        "\u201capproved channel and duration\u201d in the owned reader start: reader-bound HTTP test asserts binding/boot/nonce/null raw but not token channel/duration against that approved device configuration; task test checks those on a separate task configuration."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Real owned device binding challenge/signature and frozen context; wrong boot/no nonce refused; emitted token verified with domain-separated P256 signature, binding/boot/nonce exact and raw permission null; task test verifies approved channel/duration; sign_start body equality independently checked. Hypothetical inventory and fictional keys qualify software only."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_bound_reader_start_token_comes_from_real_owned_proof_and_exact_frozen_boot",
+        "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal",
+        "services/api/tests/test_capture_signing.py::test_local_signed_start_is_exact_domain_bound_and_anchor_is_not_replaced"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_bound_reader_start_token_comes_from_real_owned_proof_and_exact_frozen_boot",
+          "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal",
+          "services/api/tests/test_capture_signing.py::test_local_signed_start_is_exact_domain_bound_and_anchor_is_not_replaced"
+        ],
+        "exact_missing_observation": [
+          "\u201capproved channel and duration\u201d in the owned reader start: reader-bound HTTP test asserts binding/boot/nonce/null raw but not token channel/duration against that approved device configuration; task test checks those on a separate task configuration."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-008-01",
+      "requirement_id": "OPERATOR-AUTHORITY-008",
+      "status": "PARTIAL",
+      "expected_observation": "Current optical run retains descriptive evidence \u2014 - **GIVEN** an owned started optical authorization under an independently released configuration - **WHEN** the matching actual native run settles with bounded camera/frame evidence - **THEN** the server binds its run and authorization identities and independently checks its arithmetic - **AND** callback-relative response metadata remains separate from physically qualified projection fields",
+      "unproved_then_clauses": [
+        "\u201cmatching actual native run settles ... server binds run and authorization identities\u201d: direct literal-fixture validator is not a native run settled through HTTP under independently released optical config; no native-to-server settled receipt binding."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Server validator checks literal frame arithmetic, optical identity and deliberately false physical/model qualification; descriptive callback response separate."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_optical_evidence_cannot_relabel_a_different_authorized_attempt_or_acquisition_clock",
+        "services/api/tests/test_optical_evidence.py::test_response_and_scale_reference_match_literal_vector_and_raw_codec",
+        "services/api/tests/test_optical_evidence.py::test_positive_reviewed_config_evidence_is_never_physical_or_model_qualification"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_optical_evidence_cannot_relabel_a_different_authorized_attempt_or_acquisition_clock",
+          "services/api/tests/test_optical_evidence.py::test_response_and_scale_reference_match_literal_vector_and_raw_codec",
+          "services/api/tests/test_optical_evidence.py::test_positive_reviewed_config_evidence_is_never_physical_or_model_qualification"
+        ],
+        "exact_missing_observation": [
+          "\u201cmatching actual native run settles ... server binds run and authorization identities\u201d: direct literal-fixture validator is not a native run settled through HTTP under independently released optical config; no native-to-server settled receipt binding."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-009-01",
+      "requirement_id": "OPERATOR-AUTHORITY-009",
+      "status": "PARTIAL",
+      "expected_observation": "Original device samples are published under current permission \u2014 - **GIVEN** exact released configuration, explicit current recording/upload consent and an owned started authorization - **WHEN** the original signed ECG chunks or optical ROI bytes match the accepted acquisition ledger - **THEN** completion records the exact immutable object version, codec and evidence digests before marking the artifact verified - **AND** research eligibility remains separate from raw transport verification",
+      "unproved_then_clauses": [
+        "\u201ccompletion records ... evidence digests before marking ... verified ... research eligibility remains separate\u201d: HTTP completion asserts version/codec only, not evidence digest or ordering, nor paired research eligibility on verified artifact."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "HTTP original signed ECG completes verified with immutable version+codec receipt; codec validates accepted evidence digest; ROI verifies frame ledger and false physical proof."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_raw_capture.py::test_http_raw_completion_authenticates_device_chunks_and_keeps_forgery_quarantined",
+        "services/api/tests/test_raw_capture.py::test_original_device_signatures_and_signed_clock_bounds_verify_without_creating_health_values",
+        "services/api/tests/test_optical_evidence.py::test_roi_codec_verification_binds_actual_luminance_native_ledger_and_attempt"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_raw_capture.py::test_http_raw_completion_authenticates_device_chunks_and_keeps_forgery_quarantined",
+          "services/api/tests/test_raw_capture.py::test_original_device_signatures_and_signed_clock_bounds_verify_without_creating_health_values",
+          "services/api/tests/test_optical_evidence.py::test_roi_codec_verification_binds_actual_luminance_native_ledger_and_attempt"
+        ],
+        "exact_missing_observation": [
+          "\u201ccompletion records ... evidence digests before marking ... verified ... research eligibility remains separate\u201d: HTTP completion asserts version/codec only, not evidence digest or ordering, nor paired research eligibility on verified artifact."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-009-02",
+      "requirement_id": "OPERATOR-AUTHORITY-009",
+      "status": "PARTIAL",
+      "expected_observation": "Matching file hash contains forged or relabeled samples \u2014 - **GIVEN** a raw artifact whose uploaded bytes match its declared file hash and length - **WHEN** a sample signature, signed clock, owner, capture identity, frame digest or approved sample budget is invalid - **THEN** completion fails and the artifact remains quarantined without a verification receipt - **AND** a historical verified state without an owned matching codec receipt cannot authorize raw export",
+      "unproved_then_clauses": [
+        "\u201ccompletion fails and artifact remains quarantined without verification receipt\u201d for all owner/capture/frame/budget fault variants: those variants exercise validator only, HTTP state+receipt assertion covers forged sample variant alone."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "HTTP freshly rehashed forged ECG sample remains quarantined with no receipt; validators reject scope/signature/clock/budget/ROI faults; missing/mismatched owned codec receipt blocks raw job validation."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_raw_capture.py::test_http_raw_completion_authenticates_device_chunks_and_keeps_forgery_quarantined",
+        "services/api/tests/test_raw_capture.py::test_phone_changes_do_not_authenticate_raw_device_samples",
+        "services/api/tests/test_optical_evidence.py::test_roi_codec_rejects_relabeling_or_changed_binary_content",
+        "services/api/tests/test_raw_export.py::test_verified_status_never_substitutes_for_exact_owned_accepted_codec_receipt"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_raw_capture.py::test_http_raw_completion_authenticates_device_chunks_and_keeps_forgery_quarantined",
+          "services/api/tests/test_raw_capture.py::test_phone_changes_do_not_authenticate_raw_device_samples",
+          "services/api/tests/test_optical_evidence.py::test_roi_codec_rejects_relabeling_or_changed_binary_content",
+          "services/api/tests/test_raw_export.py::test_verified_status_never_substitutes_for_exact_owned_accepted_codec_receipt"
+        ],
+        "exact_missing_observation": [
+          "\u201ccompletion fails and artifact remains quarantined without verification receipt\u201d for all owner/capture/frame/budget fault variants: those variants exercise validator only, HTTP state+receipt assertion covers forged sample variant alone."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-001-02",
+      "required_clause": [
+        "\u201creceipt exposes revision one, exact normalized body ... replay ... without ... second submission decision\u201d: no initial receipt revision/body equality or post-replay event-count assertion; actor uses fictional local identity, not actual cloud authentication."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+        ],
+        "exact_missing_observation": [
+          "\u201creceipt exposes revision one, exact normalized body ... replay ... without ... second submission decision\u201d: no initial receipt revision/body equality or post-replay event-count assertion; actor uses fictional local identity, not actual cloud authentication."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-002-02",
+      "required_clause": [
+        "\u201caccepted history contains exact request identity and reason for each decision\u201d; no per-event identity/reason comparison. Three named authenticated cloud duties are not integrated through CLI; actual cloud credentials/role exercise is external."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+        ],
+        "exact_missing_observation": [
+          "\u201caccepted history contains exact request identity and reason for each decision\u201d; no per-event identity/reason comparison. Three named authenticated cloud duties are not integrated through CLI; actual cloud credentials/role exercise is external."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-003-01",
+      "required_clause": [
+        "\u201coperator releases it using an earlier revision\u201d: existing stale-revision attempt is approve, not release after intervening revision/revocation, and no paired acquisition denial assertion for that stale release."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+          "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke"
+        ],
+        "exact_missing_observation": [
+          "\u201coperator releases it using an earlier revision\u201d: existing stale-revision attempt is approve, not release after intervening revision/revocation, and no paired acquisition denial assertion for that stale release."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-003-02",
+      "required_clause": [
+        "\u201cCLI [renewal] displays validated result\u201d; \u201cretiring renewal ... preserving accepted decisions\u201d: tests split initial CLI and direct renewal, revoke renewal rather than retire it, and do not compare immutable decision history after retirement."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal",
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision"
+        ],
+        "exact_missing_observation": [
+          "\u201cCLI [renewal] displays validated result\u201d; \u201cretiring renewal ... preserving accepted decisions\u201d: tests split initial CLI and direct renewal, revoke renewal rather than retire it, and do not compare immutable decision history after retirement."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-004-02",
+      "required_clause": [
+        "\u201cmatching [device] configuration identity ... material hash and complete submitted hash ... separately available for acquisition fencing\u201d: device test does not assert both hashes from that exact device configuration runtime authority."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+          "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal"
+        ],
+        "exact_missing_observation": [
+          "\u201cmatching [device] configuration identity ... material hash and complete submitted hash ... separately available for acquisition fencing\u201d: device test does not assert both hashes from that exact device configuration runtime authority."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-005-01",
+      "required_clause": [
+        "\u201cretirement, expiry ... or account generation closes applicable [task] capability\u201d: no task capability assertion for retirement, expiry or changed generation. Alcohol dependency expiry does not establish task path or generation behavior."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke",
+          "services/api/tests/test_operator_governance.py::test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history"
+        ],
+        "exact_missing_observation": [
+          "\u201cretirement, expiry ... or account generation closes applicable [task] capability\u201d: no task capability assertion for retirement, expiry or changed generation. Alcohol dependency expiry does not establish task path or generation behavior."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-006-02",
+      "required_clause": [
+        "\u201cserver records its actual start anchor and exact pinned approval identity\u201d for start committing under that lock: PG concurrency test reads active_body only; no HTTP start transaction anchor/identity persistence assertion under concurrent retirement."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_actual_postgresql_retirement_waits_for_current_reference_acceptance_transaction",
+          "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal"
+        ],
+        "exact_missing_observation": [
+          "\u201cserver records its actual start anchor and exact pinned approval identity\u201d for start committing under that lock: PG concurrency test reads active_body only; no HTTP start transaction anchor/identity persistence assertion under concurrent retirement."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-007-01",
+      "required_clause": [
+        "\u201capproved channel and duration\u201d in the owned reader start: reader-bound HTTP test asserts binding/boot/nonce/null raw but not token channel/duration against that approved device configuration; task test checks those on a separate task configuration."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_bound_reader_start_token_comes_from_real_owned_proof_and_exact_frozen_boot",
+          "services/api/tests/test_operator_governance.py::test_online_task_start_is_signed_and_old_grant_cannot_survive_envelope_renewal",
+          "services/api/tests/test_capture_signing.py::test_local_signed_start_is_exact_domain_bound_and_anchor_is_not_replaced"
+        ],
+        "exact_missing_observation": [
+          "\u201capproved channel and duration\u201d in the owned reader start: reader-bound HTTP test asserts binding/boot/nonce/null raw but not token channel/duration against that approved device configuration; task test checks those on a separate task configuration."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-008-01",
+      "required_clause": [
+        "\u201cmatching actual native run settles ... server binds run and authorization identities\u201d: direct literal-fixture validator is not a native run settled through HTTP under independently released optical config; no native-to-server settled receipt binding."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_optical_evidence_cannot_relabel_a_different_authorized_attempt_or_acquisition_clock",
+          "services/api/tests/test_optical_evidence.py::test_response_and_scale_reference_match_literal_vector_and_raw_codec",
+          "services/api/tests/test_optical_evidence.py::test_positive_reviewed_config_evidence_is_never_physical_or_model_qualification"
+        ],
+        "exact_missing_observation": [
+          "\u201cmatching actual native run settles ... server binds run and authorization identities\u201d: direct literal-fixture validator is not a native run settled through HTTP under independently released optical config; no native-to-server settled receipt binding."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-009-01",
+      "required_clause": [
+        "\u201ccompletion records ... evidence digests before marking ... verified ... research eligibility remains separate\u201d: HTTP completion asserts version/codec only, not evidence digest or ordering, nor paired research eligibility on verified artifact."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_raw_capture.py::test_http_raw_completion_authenticates_device_chunks_and_keeps_forgery_quarantined",
+          "services/api/tests/test_raw_capture.py::test_original_device_signatures_and_signed_clock_bounds_verify_without_creating_health_values",
+          "services/api/tests/test_optical_evidence.py::test_roi_codec_verification_binds_actual_luminance_native_ledger_and_attempt"
+        ],
+        "exact_missing_observation": [
+          "\u201ccompletion records ... evidence digests before marking ... verified ... research eligibility remains separate\u201d: HTTP completion asserts version/codec only, not evidence digest or ordering, nor paired research eligibility on verified artifact."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-011-OPERATOR-AUTHORITY-009-02",
+      "required_clause": [
+        "\u201ccompletion fails and artifact remains quarantined without verification receipt\u201d for all owner/capture/frame/budget fault variants: those variants exercise validator only, HTTP state+receipt assertion covers forged sample variant alone."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_raw_capture.py::test_http_raw_completion_authenticates_device_chunks_and_keeps_forgery_quarantined",
+          "services/api/tests/test_raw_capture.py::test_phone_changes_do_not_authenticate_raw_device_samples",
+          "services/api/tests/test_optical_evidence.py::test_roi_codec_rejects_relabeling_or_changed_binary_content",
+          "services/api/tests/test_raw_export.py::test_verified_status_never_substitutes_for_exact_owned_accepted_codec_receipt"
+        ],
+        "exact_missing_observation": [
+          "\u201ccompletion fails and artifact remains quarantined without verification receipt\u201d for all owner/capture/frame/budget fault variants: those variants exercise validator only, HTTP state+receipt assertion covers forged sample variant alone."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

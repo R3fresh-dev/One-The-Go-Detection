@@ -1,0 +1,110 @@
+{
+  "spec_id": "OTGD-003",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/android-guided-check/spec.md",
+  "canonical_sha256": "c171a3fd1d7705d710dd172ebe5d59046cc0023a2ddfedaf162092008703e648",
+  "canonical_requirements": [
+    "AND-CHECK-007 Result navigation and claim boundaries"
+  ],
+  "canonical_scenarios": [
+    "Qualified research check",
+    "Legacy or unapproved claim"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 1,
+    "PASS": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-003-AND-CHECK-007-01",
+    "OTGD-003-AND-CHECK-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-003-AND-CHECK-007-01",
+      "requirement_id": "AND-CHECK-007",
+      "status": "PARTIAL",
+      "expected_observation": "Qualified research check \u2014 - **WHEN** an explicitly uploaded authorized check completes the independently admitted research pipeline - **THEN** result navigation presents the linked research outcome and its actual acquisition time separately from synchronization status",
+      "unproved_then_clauses": [
+        "A complete independently admitted research-check upload-to-result navigation journey must directly retain actual acquisition time separately from synchronization status. The mounted first-HR transition is proved, but its controlled transport is narrower than that full journey."
+      ],
+      "remaining_prerequisite_types": [
+        "software_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Related independent review finding; this broad case still requires exact semantic body/owner review. The tag alone does not establish a software defect in this criterion. PROD-003 missing uncertainty-policy presentation",
+        "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+        "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+        "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+        "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+          "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists"
+        ],
+        "exact_missing_observation": [
+          "A complete independently admitted research-check upload-to-result navigation journey must directly retain actual acquisition time separately from synchronization status. The mounted first-HR transition is proved, but its controlled transport is narrower than that full journey."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-003-AND-CHECK-007-01",
+      "required_clause": [
+        "A complete independently admitted research-check upload-to-result navigation journey must directly retain actual acquisition time separately from synchronization status. The mounted first-HR transition is proved, but its controlled transport is narrower than that full journey."
+      ],
+      "types": [
+        "software_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+          "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists"
+        ],
+        "exact_missing_observation": [
+          "A complete independently admitted research-check upload-to-result navigation journey must directly retain actual acquisition time separately from synchronization status. The mounted first-HR transition is proved, but its controlled transport is narrower than that full journey."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

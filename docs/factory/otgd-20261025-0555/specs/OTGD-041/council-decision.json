@@ -1,0 +1,174 @@
+{
+  "spec_id": "OTGD-041",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/research-evaluation/spec.md",
+  "canonical_sha256": "f4bef2eee7577e8f57b7cd27b7463d3879dcb1d452c73540d8916f9d6bf41726",
+  "canonical_requirements": [
+    "EVAL-002 Complete matched evaluation and ablations"
+  ],
+  "canonical_scenarios": [
+    "Full report",
+    "Omitted or changed rows",
+    "Engineering fixtures",
+    "Explicit restricted HR-only report",
+    "Implicit or mismatching reduced report"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 3,
+    "PARTIAL": 2
+  },
+  "all_current_case_ids": [
+    "OTGD-041-EVAL-002-01",
+    "OTGD-041-EVAL-002-02",
+    "OTGD-041-EVAL-002-03",
+    "OTGD-041-EVAL-002-04",
+    "OTGD-041-EVAL-002-05"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-041-EVAL-002-02",
+      "requirement_id": "EVAL-002",
+      "status": "PARTIAL",
+      "expected_observation": "Omitted or changed rows \u2014 - **WHEN** invalid or abstaining rows are removed, an ablation uses different rows, or a threshold changes after locking - **THEN** the tooling refuses to attest a valid evaluation report",
+      "unproved_then_clauses": [
+        "explicit removal of invalid/abstaining output rows or different submitted ablation row membership is refused: negative report row-removal mutations are not directly asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Changed locked threshold/dataset/training receipt and corrupted output refuse; positive four-variant rows retain invalid/abstained denominators."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+        "services/api/tests/test_model_evaluation.py::test_censored_invalid_and_abstaining_rows_stay_in_every_matched_denominator",
+        "services/api/tests/test_model_evaluation.py::test_cli_private_canonical_pipeline_and_full_reproduction_detect_corruption"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+          "services/api/tests/test_model_evaluation.py::test_censored_invalid_and_abstaining_rows_stay_in_every_matched_denominator",
+          "services/api/tests/test_model_evaluation.py::test_cli_private_canonical_pipeline_and_full_reproduction_detect_corruption"
+        ],
+        "exact_missing_observation": [
+          "explicit removal of invalid/abstaining output rows or different submitted ablation row membership is refused: negative report row-removal mutations are not directly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-041-EVAL-002-03",
+      "requirement_id": "EVAL-002",
+      "status": "PARTIAL",
+      "expected_observation": "Engineering fixtures \u2014 - **WHEN** automated tests use fictional cohort rows - **THEN** their artifacts are labeled engineering evidence and never loaded as an approved study or human model by deployment",
+      "unproved_then_clauses": [
+        "CLI outputs are explicitly engineering_synthetic/unvalidated with authority flags false. Reviewed deployment maintenance dispatch invokes resource bootstrap, migration and recovery admission, not a study/model fixture seed. No executed negative attempts to admit the exact generated engineering artifact as a human-approved deployed model were located; factual absence of a configured real study is not scientific approval."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "CLI artifacts/evidence retain engineering_synthetic, status unvalidated, authority/clinical/history flags false; strict forged approval and rehashed false authority evidence refuse."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_evaluation.py::test_external_history_references_remain_unverified_through_pipeline",
+        "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history",
+        "services/api/tests/test_model_evaluation_cardiac.py::test_external_history_references_remain_unverified_through_pipeline",
+        "deploy/platform.py::main",
+        "infra/local/bootstrap_resources.py::initialize"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_external_history_references_remain_unverified_through_pipeline",
+          "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history",
+          "services/api/tests/test_model_evaluation_cardiac.py::test_external_history_references_remain_unverified_through_pipeline",
+          "deploy/platform.py::main",
+          "infra/local/bootstrap_resources.py::initialize"
+        ],
+        "exact_missing_observation": [
+          "CLI outputs are explicitly engineering_synthetic/unvalidated with authority flags false. Reviewed deployment maintenance dispatch invokes resource bootstrap, migration and recovery admission, not a study/model fixture seed. No executed negative attempts to admit the exact generated engineering artifact as a human-approved deployed model were located; factual absence of a configured real study is not scientific approval."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-041-EVAL-002-02",
+      "required_clause": [
+        "explicit removal of invalid/abstaining output rows or different submitted ablation row membership is refused: negative report row-removal mutations are not directly asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+          "services/api/tests/test_model_evaluation.py::test_censored_invalid_and_abstaining_rows_stay_in_every_matched_denominator",
+          "services/api/tests/test_model_evaluation.py::test_cli_private_canonical_pipeline_and_full_reproduction_detect_corruption"
+        ],
+        "exact_missing_observation": [
+          "explicit removal of invalid/abstaining output rows or different submitted ablation row membership is refused: negative report row-removal mutations are not directly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-041-EVAL-002-03",
+      "required_clause": [
+        "CLI outputs are explicitly engineering_synthetic/unvalidated with authority flags false. Reviewed deployment maintenance dispatch invokes resource bootstrap, migration and recovery admission, not a study/model fixture seed. No executed negative attempts to admit the exact generated engineering artifact as a human-approved deployed model were located; factual absence of a configured real study is not scientific approval."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_external_history_references_remain_unverified_through_pipeline",
+          "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history",
+          "services/api/tests/test_model_evaluation_cardiac.py::test_external_history_references_remain_unverified_through_pipeline",
+          "deploy/platform.py::main",
+          "infra/local/bootstrap_resources.py::initialize"
+        ],
+        "exact_missing_observation": [
+          "CLI outputs are explicitly engineering_synthetic/unvalidated with authority flags false. Reviewed deployment maintenance dispatch invokes resource bootstrap, migration and recovery admission, not a study/model fixture seed. No executed negative attempts to admit the exact generated engineering artifact as a human-approved deployed model were located; factual absence of a configured real study is not scientific approval."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

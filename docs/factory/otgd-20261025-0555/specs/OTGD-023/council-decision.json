@@ -1,0 +1,1020 @@
+{
+  "spec_id": "OTGD-023",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-device-pairing/spec.md",
+  "canonical_sha256": "c772a370e6d80b6568ad3d210081934ac57ecb9e7449e7e776efeb776cdd98c4",
+  "canonical_requirements": [
+    "AND-DEV-001 Device screen and association state",
+    "AND-DEV-002 Runtime permissions and radio availability",
+    "AND-DEV-003 Discovery identity and verified association",
+    "AND-DEV-004 Capability handshake and clock evidence",
+    "AND-DEV-005 Bounded transport and message integrity",
+    "AND-DEV-006 Command scoping, completion, and replay",
+    "AND-DEV-007 Disconnect, cancellation, and forgetting",
+    "AND-DEV-008 Platform parity, secret handling, and verification"
+  ],
+  "canonical_scenarios": [
+    "Connect a demonstration device",
+    "Device connected but assay unavailable",
+    "Permission denied without losing the check",
+    "Radio disabled during discovery",
+    "Spoofed device name",
+    "Known binding belongs to another context",
+    "Replayed binding challenge and substituted key",
+    "Compatible handshake",
+    "Counter restarts after device reboot",
+    "Cached capability cannot enable an offline reader",
+    "Small-MTU valid message",
+    "Malformed fragment flood",
+    "Signature valid for another measurement",
+    "Capture-complete acknowledgment is lost",
+    "Completion arrives before missing chunks",
+    "User cancels during capture",
+    "Late event after reconnect",
+    "Simulator fixture on either platform",
+    "Demo configuration copied into production"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 14,
+    "BLOCKED": 3,
+    "PASS": 1,
+    "NOT_RUN": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-023-AND-DEV-001-01",
+    "OTGD-023-AND-DEV-001-02",
+    "OTGD-023-AND-DEV-002-01",
+    "OTGD-023-AND-DEV-002-02",
+    "OTGD-023-AND-DEV-003-01",
+    "OTGD-023-AND-DEV-003-02",
+    "OTGD-023-AND-DEV-003-03",
+    "OTGD-023-AND-DEV-004-01",
+    "OTGD-023-AND-DEV-004-02",
+    "OTGD-023-AND-DEV-004-03",
+    "OTGD-023-AND-DEV-005-01",
+    "OTGD-023-AND-DEV-005-02",
+    "OTGD-023-AND-DEV-005-03",
+    "OTGD-023-AND-DEV-006-01",
+    "OTGD-023-AND-DEV-006-02",
+    "OTGD-023-AND-DEV-007-01",
+    "OTGD-023-AND-DEV-007-02",
+    "OTGD-023-AND-DEV-008-01",
+    "OTGD-023-AND-DEV-008-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-023-AND-DEV-001-01",
+      "requirement_id": "AND-DEV-001",
+      "status": "PARTIAL",
+      "expected_observation": "Connect a demonstration device \u2014 - **GIVEN** a supported phone and a discoverable synthetic peripheral - **WHEN** the user selects Find device, chooses the listed device, and its handshake succeeds - **THEN** the screen SHALL enter connected_simulator, show Simulated data, and enable only synthetic capture channels advertised by the handshake.",
+      "unproved_then_clauses": [
+        "Discoverable peripheral Find/select UI sequence and enabling only advertised channels are not exercised on Android/iOS."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Local simulator handshakes into connected_simulator with simulated source, exact channel values and no eligibility."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+        ],
+        "exact_missing_observation": [
+          "Discoverable peripheral Find/select UI sequence and enabling only advertised channels are not exercised on Android/iOS."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-001-02",
+      "requirement_id": "AND-DEV-001",
+      "status": "PARTIAL",
+      "expected_observation": "Device connected but assay unavailable \u2014 - **GIVEN** a connected reader advertising assay_ready=false - **WHEN** the user proceeds to the saliva step - **THEN** the step SHALL state that the assay is unavailable, offer its permitted sample-record or simulation workflow, and SHALL NOT report a chemical concentration or a completed assay merely because pairing succeeded.",
+      "unproved_then_clauses": [
+        "Connected assay_ready=false saliva screen must assert Assay unavailable and only permitted alternatives, without treating pairing as assay success."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Unknown assay driver remains unavailable and laboratory path performs no BLE acquisition or concentration entry."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec",
+        "apps/mobile/tests/acquisition.test.ts::reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec",
+          "apps/mobile/tests/acquisition.test.ts::reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization"
+        ],
+        "exact_missing_observation": [
+          "Connected assay_ready=false saliva screen must assert Assay unavailable and only permitted alternatives, without treating pairing as assay success."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-002-01",
+      "requirement_id": "AND-DEV-002",
+      "status": "BLOCKED",
+      "expected_observation": "Permission denied without losing the check \u2014 - **GIVEN** an existing draft check and a first discovery request - **WHEN** Android denies the required permission - **THEN** no scan SHALL begin, the draft SHALL remain intact, and the screen SHALL explain the missing permission and present an appropriate retry or settings action.",
+      "unproved_then_clauses": [
+        "Real Android permission denial with existing draft must assert no scan, preserved draft and retry/settings recovery."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Presenter maps BLUETOOTH_PERMISSION_BLOCKED to named warning/recovery action."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+        ],
+        "exact_missing_observation": [
+          "Real Android permission denial with existing draft must assert no scan, preserved draft and retry/settings recovery."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-002-02",
+      "requirement_id": "AND-DEV-002",
+      "status": "BLOCKED",
+      "expected_observation": "Radio disabled during discovery \u2014 - **GIVEN** an active scan - **WHEN** Bluetooth becomes unavailable or the app moves to the background - **THEN** scanning SHALL stop, any progress indicator SHALL settle into a named recovery state, and no stale discovery result SHALL be represented as a live connection.",
+      "unproved_then_clauses": [
+        "Native radio-off/background during discovery must stop scan, settle progress and reject stale discovery connection."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Presenter maps radio-off to recovery; unrelated consent/reboot tests do not establish scanning behavior."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+        ],
+        "exact_missing_observation": [
+          "Native radio-off/background during discovery must stop scan, settle progress and reject stale discovery connection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-003-01",
+      "requirement_id": "AND-DEV-003",
+      "status": "PARTIAL",
+      "expected_observation": "Spoofed device name \u2014 - **GIVEN** an unprovisioned peripheral advertising the expected name and service - **WHEN** it claims that it is a validated reader - **THEN** the app SHALL refuse verified association, retain an explicit unverified-device reason, and SHALL NOT ingest human measurements from that connection.",
+      "unproved_then_clauses": [
+        "Full expected-name/service spoof connection must retain explicit unverified reason and assert no human ingestion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Decoder rejects validated_sensor claim and unknown protocol from unprovisioned peripheral."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source",
+        "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source",
+          "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+        ],
+        "exact_missing_observation": [
+          "Full expected-name/service spoof connection must retain explicit unverified reason and assert no human ingestion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-003-02",
+      "requirement_id": "AND-DEV-003",
+      "status": "PARTIAL",
+      "expected_observation": "Known binding belongs to another context \u2014 - **GIVEN** a device credential that verifies cryptographically but has no permitted binding for the current account or study - **WHEN** association is requested - **THEN** the app SHALL reject participant capture and SHALL not disclose another participant's sessions or identity.",
+      "unproved_then_clauses": [
+        "Cryptographically valid foreign-account/study binding must be exercised through association with explicit no-other-owner/session disclosure assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "Wrong generation/scope binding throws; uninvited study has no available configurations."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture",
+        "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture",
+          "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition"
+        ],
+        "exact_missing_observation": [
+          "Cryptographically valid foreign-account/study binding must be exercised through association with explicit no-other-owner/session disclosure assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-003-03",
+      "requirement_id": "AND-DEV-003",
+      "status": "PARTIAL",
+      "expected_observation": "Replayed binding challenge and substituted key \u2014 - **GIVEN** a previously consumed server challenge or a client-supplied replacement trust key - **WHEN** association is retried under that challenge or key - **THEN** binding SHALL fail without a new verified state; the client SHALL retain only its permitted simulator association and reveal no other owner identity.",
+      "unproved_then_clauses": [
+        "Client-supplied replacement trust key and retained simulator-only association/no owner disclosure after retry are not all asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "Server binding challenge is single-use/owner-scoped; physical proof signs exact transcript under test key."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_security.py::test_binding_challenge_is_single_use_and_owner_scoped",
+        "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_security.py::test_binding_challenge_is_single_use_and_owner_scoped",
+          "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture"
+        ],
+        "exact_missing_observation": [
+          "Client-supplied replacement trust key and retained simulator-only association/no owner disclosure after retry are not all asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-004-02",
+      "requirement_id": "AND-DEV-004",
+      "status": "PARTIAL",
+      "expected_observation": "Counter restarts after device reboot \u2014 - **GIVEN** an accepted boot ID and an in-progress acquisition - **WHEN** a new boot ID or unexplained monotonic regression is observed - **THEN** the affected acquisition SHALL become invalid, previous clock alignment SHALL be discarded, and a new handshake and capture attempt SHALL be required.",
+      "unproved_then_clauses": [
+        "Midcapture boot/regression must invalidate attempt, clear prior alignment and require a new handshake+attempt, with those state changes asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Journal rejects foreign boot identity and explicit clock discontinuity; controller rejects rebooted association before acquisition."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+        "apps/mobile/src/device/tests/protocol.test.ts::clock evidence retains all exchanges and chooses narrowest interval with resolution padding",
+        "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+          "apps/mobile/src/device/tests/protocol.test.ts::clock evidence retains all exchanges and chooses narrowest interval with resolution padding",
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "Midcapture boot/regression must invalidate attempt, clear prior alignment and require a new handshake+attempt, with those state changes asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-004-03",
+      "requirement_id": "AND-DEV-004",
+      "status": "PARTIAL",
+      "expected_observation": "Cached capability cannot enable an offline reader \u2014 - **GIVEN** a bound reader and a cached available human capability - **WHEN** the user starts capture while offline after changing the wall clock - **THEN** the app SHALL reject the qualified start and explain that current server authorization is required.",
+      "unproved_then_clauses": [
+        "Cached available capability with network offline and modified wall clock must assert current-server-authorization explanation and zero hardware starts."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Qualified capture obtains fresh grant/start and rejects mismatched boot before hardware invocation."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+        "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "Cached available capability with network offline and modified wall clock must assert current-server-authorization explanation and zero hardware starts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-005-01",
+      "requirement_id": "AND-DEV-005",
+      "status": "PARTIAL",
+      "expected_observation": "Small-MTU valid message \u2014 - **GIVEN** ATT MTU 23 and a valid bounded message - **WHEN** its fragments arrive in the supported order, including an identical duplicate - **THEN** the receiver SHALL reconstruct the exact logical bytes once, verify CRC and envelope semantics, and acknowledge one accepted message without duplicate capture events.",
+      "unproved_then_clauses": [
+        "MTU23 identical duplicate plus envelope acceptance and exactly one accepted ACK/capture event must be exercised together."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "MTU23 exact reconstruction, CRC public vector and larger-MTU duplicate-once logic execute."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::ATT MTU 23 carries eight logical bytes after the 12-byte header",
+        "apps/mobile/src/device/tests/protocol.test.ts::larger MTU, out-of-order fragments and identical duplicate reconstruct once",
+        "firmware/tests/protocol_core_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::ATT MTU 23 carries eight logical bytes after the 12-byte header",
+          "apps/mobile/src/device/tests/protocol.test.ts::larger MTU, out-of-order fragments and identical duplicate reconstruct once",
+          "firmware/tests/protocol_core_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "MTU23 identical duplicate plus envelope acceptance and exactly one accepted ACK/capture event must be exercised together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-005-02",
+      "requirement_id": "AND-DEV-005",
+      "status": "PARTIAL",
+      "expected_observation": "Malformed fragment flood \u2014 - **GIVEN** an established connection - **WHEN** the peripheral supplies an oversized declared length, conflicting duplicate, or more than the allowed in-flight transfer - **THEN** the receiver SHALL release bounded buffers, emit a named protocol failure, and SHALL not allocate memory proportional to attacker-provided lengths or store a partial successful reading.",
+      "unproved_then_clauses": [
+        "No direct memory-allocation bound or partial-success persistence assertion covers the entire malformed flood at connection level."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Oversized counts/MTU reject before allocation; conflicting duplicate/CRC and concurrent transfer/deadline fail and receiver can recover."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::impossible counts, encodings and excess MTU are rejected before allocation",
+        "apps/mobile/src/device/tests/protocol.test.ts::corruption and conflicting duplicates fail closed and release in-progress storage",
+        "apps/mobile/src/device/tests/protocol.test.ts::one transfer at a time and the 120-second assembly deadline are enforced"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::impossible counts, encodings and excess MTU are rejected before allocation",
+          "apps/mobile/src/device/tests/protocol.test.ts::corruption and conflicting duplicates fail closed and release in-progress storage",
+          "apps/mobile/src/device/tests/protocol.test.ts::one transfer at a time and the 120-second assembly deadline are enforced"
+        ],
+        "exact_missing_observation": [
+          "No direct memory-allocation bound or partial-success persistence assertion covers the entire malformed flood at connection level."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-005-03",
+      "requirement_id": "AND-DEV-005",
+      "status": "PARTIAL",
+      "expected_observation": "Signature valid for another measurement \u2014 - **GIVEN** a valid device signature for payload A and a selected snapshot containing changed payload B values - **WHEN** upload or finalization validates evidence - **THEN** the exact normalized payload hash/mapping check SHALL reject B, retain a provenance failure, and SHALL not infer trust from source=validated_sensor.",
+      "unproved_then_clauses": [
+        "Exact A signature with selected snapshot B must be driven through upload/finalization and retain named provenance failure, not merely local decode throw."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Client altered normalized payload fails signed digest; client/server evidence tests reject projection tampering."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+        ],
+        "exact_missing_observation": [
+          "Exact A signature with selected snapshot B must be driven through upload/finalization and retain named provenance failure, not merely local decode throw."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-006-01",
+      "requirement_id": "AND-DEV-006",
+      "status": "PARTIAL",
+      "expected_observation": "Capture-complete acknowledgment is lost \u2014 - **GIVEN** one complete capture already stored locally - **WHEN** the peripheral retransmits its identical completion message after an acknowledgment timeout - **THEN** the receiver SHALL acknowledge the existing disposition and SHALL not create a second capture or a second sample.",
+      "unproved_then_clauses": [
+        "Lost completion ACK after durable local save must retransmit and assert exactly one capture/sample plus repeated accepted disposition ACK."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Message journal returns duplicate for identical ID/body and rejects conflicts/replays."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked"
+        ],
+        "exact_missing_observation": [
+          "Lost completion ACK after durable local save must retransmit and assert exactly one capture/sample plus repeated accepted disposition ACK."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-006-02",
+      "requirement_id": "AND-DEV-006",
+      "status": "NOT_RUN",
+      "expected_observation": "Completion arrives before missing chunks \u2014 - **GIVEN** an ECG or other multi-chunk capture with a missing chunk - **WHEN** capture_complete arrives - **THEN** the component SHALL remain incomplete and become invalid at its bounded timeout unless the missing bytes and final digest are verified; a notification alone SHALL not count as success.",
+      "unproved_then_clauses": [
+        "Deliver capture_complete before missing ECG chunk and assert incomplete state, bounded timeout invalidation and no success before verified bytes/digest."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Related sample validators establish bounded chunks but do not drive missing-chunk completion order."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Deliver capture_complete before missing ECG chunk and assert incomplete state, bounded timeout invalidation and no success before verified bytes/digest."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-007-01",
+      "requirement_id": "AND-DEV-007",
+      "status": "PARTIAL",
+      "expected_observation": "User cancels during capture \u2014 - **GIVEN** an active device acquisition - **WHEN** the user selects Disconnect, Cancel, or Forget before any wider-draft confirmation - **THEN** the app SHALL send a best-effort cancel command, stop accepting that attempt's later payloads, retain its canceled/invalid disposition, and return to a recoverable device state.",
+      "unproved_then_clauses": [
+        "Every Disconnect/Cancel/Forget UI action before draft confirmation plus best-effort cancel and recoverable visible state is not explicitly asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Controller cancellation invalidates before disconnect, clears association and rejects late completion by old workspace."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::cancellation invalidates before disconnect and prevents stale completion into a different workspace",
+        "apps/mobile/src/device/tests/physical.test.ts::cancellation clears trusted association immediately and drops a late signed completion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::cancellation invalidates before disconnect and prevents stale completion into a different workspace",
+          "apps/mobile/src/device/tests/physical.test.ts::cancellation clears trusted association immediately and drops a late signed completion"
+        ],
+        "exact_missing_observation": [
+          "Every Disconnect/Cancel/Forget UI action before draft confirmation plus best-effort cancel and recoverable visible state is not explicitly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-007-02",
+      "requirement_id": "AND-DEV-007",
+      "status": "PARTIAL",
+      "expected_observation": "Late event after reconnect \u2014 - **GIVEN** a new boot or capture attempt after reconnection - **WHEN** a queued event from the prior attempt arrives - **THEN** the receiver SHALL reject it by identity and SHALL not populate the new check with a stale reading.",
+      "unproved_then_clauses": [
+        "Late prior capture payload after replacement reconnect must explicitly leave the new check unchanged, not just reject old ACK failure."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Foreign boot/session journal checks and old ACK rejection protect replacement association."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+        "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association",
+        "apps/mobile/src/device/tests/physical.test.ts::cancellation clears trusted association immediately and drops a late signed completion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+          "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association",
+          "apps/mobile/src/device/tests/physical.test.ts::cancellation clears trusted association immediately and drops a late signed completion"
+        ],
+        "exact_missing_observation": [
+          "Late prior capture payload after replacement reconnect must explicitly leave the new check unchanged, not just reject old ACK failure."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-008-01",
+      "requirement_id": "AND-DEV-008",
+      "status": "BLOCKED",
+      "expected_observation": "Simulator fixture on either platform \u2014 - **GIVEN** the same synthetic message sequence on Android and iOS - **WHEN** both clients complete a check - **THEN** each SHALL preserve simulated provenance and matching semantic records even though OS peripheral handles differ.",
+      "unproved_then_clauses": [
+        "No Android/iOS native application replay of the same sequence and semantic-record comparison exists."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Shared TS simulator preserves semantic source/record and complete evidence in Node tests."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+        ],
+        "exact_missing_observation": [
+          "No Android/iOS native application replay of the same sequence and semantic-record comparison exists."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-008-02",
+      "requirement_id": "AND-DEV-008",
+      "status": "PARTIAL",
+      "expected_observation": "Demo configuration copied into production \u2014 - **GIVEN** a production build with no approved provisioned device - **WHEN** a local demo file attempts to set a verified binding or validated source - **THEN** the claim SHALL fail independent verification and SHALL never unlock human capture or inference.",
+      "unproved_then_clauses": [
+        "Production build with copied demo binding file must assert independent verification prevents human capture/inference, not just decoder rejects a payload."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Physical/synthetic capability decoders reject forged validated source and unknown protocol."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source",
+        "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source",
+          "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+        ],
+        "exact_missing_observation": [
+          "Production build with copied demo binding file must assert independent verification prevents human capture/inference, not just decoder rejects a payload."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-023-AND-DEV-001-01",
+      "required_clause": [
+        "Discoverable peripheral Find/select UI sequence and enabling only advertised channels are not exercised on Android/iOS."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+        ],
+        "exact_missing_observation": [
+          "Discoverable peripheral Find/select UI sequence and enabling only advertised channels are not exercised on Android/iOS."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-001-02",
+      "required_clause": [
+        "Connected assay_ready=false saliva screen must assert Assay unavailable and only permitted alternatives, without treating pairing as assay success."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec",
+          "apps/mobile/tests/acquisition.test.ts::reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization"
+        ],
+        "exact_missing_observation": [
+          "Connected assay_ready=false saliva screen must assert Assay unavailable and only permitted alternatives, without treating pairing as assay success."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-002-01",
+      "required_clause": [
+        "Real Android permission denial with existing draft must assert no scan, preserved draft and retry/settings recovery."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+        ],
+        "exact_missing_observation": [
+          "Real Android permission denial with existing draft must assert no scan, preserved draft and retry/settings recovery."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-002-02",
+      "required_clause": [
+        "Native radio-off/background during discovery must stop scan, settle progress and reject stale discovery connection."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+        ],
+        "exact_missing_observation": [
+          "Native radio-off/background during discovery must stop scan, settle progress and reject stale discovery connection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-003-01",
+      "required_clause": [
+        "Full expected-name/service spoof connection must retain explicit unverified reason and assert no human ingestion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source",
+          "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+        ],
+        "exact_missing_observation": [
+          "Full expected-name/service spoof connection must retain explicit unverified reason and assert no human ingestion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-003-02",
+      "required_clause": [
+        "Cryptographically valid foreign-account/study binding must be exercised through association with explicit no-other-owner/session disclosure assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture",
+          "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition"
+        ],
+        "exact_missing_observation": [
+          "Cryptographically valid foreign-account/study binding must be exercised through association with explicit no-other-owner/session disclosure assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-003-03",
+      "required_clause": [
+        "Client-supplied replacement trust key and retained simulator-only association/no owner disclosure after retry are not all asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_security.py::test_binding_challenge_is_single_use_and_owner_scoped",
+          "apps/mobile/src/device/tests/physical.test.ts::actual framed signed test peripheral requires verified binding before authorized capture"
+        ],
+        "exact_missing_observation": [
+          "Client-supplied replacement trust key and retained simulator-only association/no owner disclosure after retry are not all asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-004-02",
+      "required_clause": [
+        "Midcapture boot/regression must invalidate attempt, clear prior alignment and require a new handshake+attempt, with those state changes asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+          "apps/mobile/src/device/tests/protocol.test.ts::clock evidence retains all exchanges and chooses narrowest interval with resolution padding",
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "Midcapture boot/regression must invalidate attempt, clear prior alignment and require a new handshake+attempt, with those state changes asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-004-03",
+      "required_clause": [
+        "Cached available capability with network offline and modified wall clock must assert current-server-authorization explanation and zero hardware starts."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "Cached available capability with network offline and modified wall clock must assert current-server-authorization explanation and zero hardware starts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-005-01",
+      "required_clause": [
+        "MTU23 identical duplicate plus envelope acceptance and exactly one accepted ACK/capture event must be exercised together."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::ATT MTU 23 carries eight logical bytes after the 12-byte header",
+          "apps/mobile/src/device/tests/protocol.test.ts::larger MTU, out-of-order fragments and identical duplicate reconstruct once",
+          "firmware/tests/protocol_core_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "MTU23 identical duplicate plus envelope acceptance and exactly one accepted ACK/capture event must be exercised together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-005-02",
+      "required_clause": [
+        "No direct memory-allocation bound or partial-success persistence assertion covers the entire malformed flood at connection level."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::impossible counts, encodings and excess MTU are rejected before allocation",
+          "apps/mobile/src/device/tests/protocol.test.ts::corruption and conflicting duplicates fail closed and release in-progress storage",
+          "apps/mobile/src/device/tests/protocol.test.ts::one transfer at a time and the 120-second assembly deadline are enforced"
+        ],
+        "exact_missing_observation": [
+          "No direct memory-allocation bound or partial-success persistence assertion covers the entire malformed flood at connection level."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-005-03",
+      "required_clause": [
+        "Exact A signature with selected snapshot B must be driven through upload/finalization and retain named provenance failure, not merely local decode throw."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+        ],
+        "exact_missing_observation": [
+          "Exact A signature with selected snapshot B must be driven through upload/finalization and retain named provenance failure, not merely local decode throw."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-006-01",
+      "required_clause": [
+        "Lost completion ACK after durable local save must retransmit and assert exactly one capture/sample plus repeated accepted disposition ACK."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked"
+        ],
+        "exact_missing_observation": [
+          "Lost completion ACK after durable local save must retransmit and assert exactly one capture/sample plus repeated accepted disposition ACK."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-006-02",
+      "required_clause": [
+        "Deliver capture_complete before missing ECG chunk and assert incomplete state, bounded timeout invalidation and no success before verified bytes/digest."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Deliver capture_complete before missing ECG chunk and assert incomplete state, bounded timeout invalidation and no success before verified bytes/digest."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-007-01",
+      "required_clause": [
+        "Every Disconnect/Cancel/Forget UI action before draft confirmation plus best-effort cancel and recoverable visible state is not explicitly asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::cancellation invalidates before disconnect and prevents stale completion into a different workspace",
+          "apps/mobile/src/device/tests/physical.test.ts::cancellation clears trusted association immediately and drops a late signed completion"
+        ],
+        "exact_missing_observation": [
+          "Every Disconnect/Cancel/Forget UI action before draft confirmation plus best-effort cancel and recoverable visible state is not explicitly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-007-02",
+      "required_clause": [
+        "Late prior capture payload after replacement reconnect must explicitly leave the new check unchanged, not just reject old ACK failure."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+          "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association",
+          "apps/mobile/src/device/tests/physical.test.ts::cancellation clears trusted association immediately and drops a late signed completion"
+        ],
+        "exact_missing_observation": [
+          "Late prior capture payload after replacement reconnect must explicitly leave the new check unchanged, not just reject old ACK failure."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-008-01",
+      "required_clause": [
+        "No Android/iOS native application replay of the same sequence and semantic-record comparison exists."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+        ],
+        "exact_missing_observation": [
+          "No Android/iOS native application replay of the same sequence and semantic-record comparison exists."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-023-AND-DEV-008-02",
+      "required_clause": [
+        "Production build with copied demo binding file must assert independent verification prevents human capture/inference, not just decoder rejects a payload."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source",
+          "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+        ],
+        "exact_missing_observation": [
+          "Production build with copied demo binding file must assert independent verification prevents human capture/inference, not just decoder rejects a payload."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

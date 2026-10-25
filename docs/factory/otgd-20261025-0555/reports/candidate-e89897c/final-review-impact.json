@@ -1,0 +1,148 @@
+{
+  "decision_id": "D012",
+  "version": 1,
+  "recorded_at": "2026-10-25T11:57:08.311962+00:00",
+  "source_candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "finding": {
+    "finding_id": "APR-001",
+    "severity": "P2",
+    "status": "OPEN_AFTER_FINAL_CORRECTION_LIMIT",
+    "spec_id": "OTGD-007",
+    "requirement_id": "AND-SET-004",
+    "canonical_clause": "About SHALL show the actual environment and account's currently admitted scope.",
+    "observed_source": "apps/mobile/src/ui/manage.tsx:1686\u20131768 AboutScreen reads model only for Back navigation. Its rendered environment is correct, but scope text is static generic release support; it does not consume current identity/capabilities/generation/offline state. apps/mobile/src/ui/components.tsx:567 Page adds no scope; apps/mobile/App.tsx chrome shows ACCOUNT/environment/GUEST/OFFLINE and ContextStrip only preview/guest, not current admitted research scope.",
+    "assertion_boundary": "apps/mobile/e2e/fixtures/availability-component.tsx routes about=true to AboutScreen; raw-recordings.spec.ts conditional capability assertions use about=false StatusScreen, then about=true asserts only static format/no-bundled-model text. These meaningful passing assertions do not prove the separate normative About requirement.",
+    "impact": "About cannot distinguish an independently admitted current research account from an ordinary, revoked or mismatched account. This is a missing required status presentation, not a demonstrated grant of research/capture authority.",
+    "verification_method": "Read-only whole-function and shared-render-tree/control-flow inspection; no runtime/build/test executed.",
+    "required_correction": "After explicit human handling of exhausted correction2/2, make About render a truthful current account scope using existing validated owner/generation/offline/capability guards. Do not grant capability or infer approval from sign-in/version.",
+    "verification_criterion": "About distinguishes admitted versus ordinary/guest/offline/revoked/wrong-owner/generation states; existing shared workspaceScope assertions may be reused with direct production About call-path evidence. No duplicate test is required if current meaningful shared proof establishes the final integration.",
+    "minimum_next_action": "Human scope/budget adjudication or already-existing evidence that this exact About clause is satisfied. Do not silently waive it or perform automatic correction round3.",
+    "does_not_change_verifier_782_case_statuses": true,
+    "disagrees_with": [
+      "security",
+      "code",
+      "ux",
+      "ui",
+      "product",
+      "engineering"
+    ],
+    "actual_about_source_excerpt": "export function AboutScreen({ controller, model }: ScreenProps) {\n  return (\n    <Page\n      title=\"About this release\"\n      eyebrow=\"One The Go Detection\"\n      onBack={action(controller, () =>\n        controller.navigate(\n          model.state?.acknowledgedNotice || model.identity\n            ? \"settings\"\n            : \"welcome\",\n        ),\n      )}\n    >\n      <Card>\n        <Title small>Research measurement platform</Title>\n        <Paragraph>\n          This application organizes optional profile context, saliva\n          measurements, eye and cardiac evidence, native reaction practice, and\n          a separate alcohol channel. It preserves quality, provenance,\n          timestamps and immutable evidence links.\n        </Paragraph>\n        <Notice tone=\"warning\">\n          Ordinary and guest checks are measurement records. A separately\n          admitted qualified research result may describe only its named\n          historical endpoint; scientific approval and current evidence are\n          required. The app does not provide driving clearance.\n        </Notice>\n        <Fact label=\"App version\" value={BUILD.version} />\n        <Fact label=\"Environment\" value={BUILD.environment.toUpperCase()} />\n        <Fact label=\"Application contract\" value=\"1.0.0\" />\n        <Fact label=\"Measurement snapshot\" value=\"0.1.0\" />\n        <Fact\n          label=\"Research result reader\"\n          value={\n            BUILD.hostedPreview\n              ? \"Fictional measurement-only preview\"\n              : \"Version 1.1 proof-bound research endpoint support; no model or approval is bundled\"\n          }\n        />\n        <Fact\n          label=\"Native runtime\"\n          value={`${Platform.OS} ${String(Platform.Version)}`}\n        />\n        <Fact\n          label=\"Build number\"\n          value={Constants.nativeBuildVersion ?? \"Development / web preview\"}\n        />\n        <Fact\n          label=\"Toolchain\"\n          value=\"Expo 57 \u00b7 React Native 0.86 \u00b7 Node 22.13+\"\n        />\n        <Fact\n          label=\"Android support\"\n          value=\"Minimum API 24 \u00b7 compile/target API 36\"\n        />\n        <Fact label=\"iOS support\" value=\"Minimum iOS 16.4 \u00b7 Xcode 26.4+\" />\n        <Paragraph muted>\n          Host software checks are recorded in the repository verification\n          report. Physical Android/iPhone acquisition, OS permission\n          round-trips, screen-reader review and calibrated timing remain\n          unexecuted release checks until their evidence is recorded.\n        </Paragraph>\n      </Card>\n      <Card>\n        <Title small>What remains a qualification gate</Title>\n        <Paragraph>\n          Human assay validation, optical scale and photometric testing, ECG\n          electrical/device safety, breath-instrument validation, physical\n          reaction timing calibration, approved study authorization, regulatory\n          decisions and a clinically validated inference model require evidence\n          outside this software build.\n        </Paragraph>\n      </Card>\n      <Button\n        title=\"Read application notice\"\n        secondary\n        onPress={action(controller, () => controller.navigate(\"notice\"))}\n      />\n    </Page>\n  );\n}\n",
+    "actual_about_source_file_sha256": "023fd4fdb5819fd85be7dbd181a89d265cb24606b75ee21891b1136e66c210ac",
+    "actual_wrapper_source_sha256": "62355551f8ab206fd0eb9efc2bec18f27256444b03a7119c660d8663d039207d",
+    "actual_page_source_sha256": "adc89118200592946e0f95cf2db81caadcbd627569a63f940f2b512ffb3a2071",
+    "actual_fixture_source_sha256": "2c4aefe28e179bcb95016f52aaede5ffed51194074157b08edd95361bb3c966c"
+  },
+  "actual_addenda": [
+    {
+      "role": "security",
+      "reviewer": "/root/replacement_security",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/security/apr001-addendum.md",
+      "sha256": "6b80b8d77d88b48aa9fdda2de3846a0475075556aaa2577aeb5ad99233985cd1",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "code",
+      "reviewer": "/root/replacement_code",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/code/apr001-addendum.md",
+      "sha256": "04dca4b2f6849024c9de2121209a0dbed3529f4cc2dce347271917f1bf35023a",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "ux",
+      "reviewer": "/root/replacement_ux",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/ux/apr001-addendum.md",
+      "sha256": "52d6411595cf67e045a5e8c3d5778e8d208b3a328ee1a0e82aaf8194629ea912",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "ui",
+      "reviewer": "/root/replacement_ui",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/ui/apr001-addendum.md",
+      "sha256": "7b7c597ad336e665ecc8c3408d81a437f4208166d3cba7b069139612cf4adc9d",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "product",
+      "reviewer": "/root/replacement_product",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/product/apr001-addendum.md",
+      "sha256": "0e5a34987345df54455f8a3621a4105ee22419c89357f3a44df2b7a49400a582",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "engineering",
+      "reviewer": "/root/replacement_engineering",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/engineering/apr001-addendum.md",
+      "sha256": "d42f8db91cd71633d2bca96921bec481a5902fb310f9425ef76706a350bdb760",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    }
+  ],
+  "original_six_reviews_preserved": true,
+  "current_effective_review_counts": {
+    "PASS": 2,
+    "BLOCKED": 45
+  },
+  "original_782_scenario_observations_unchanged": true,
+  "no_third_correction_authorized": true,
+  "execution_state": "DELIBERATE_QUALITY_HOLD",
+  "recovery_attempts": 0
+}

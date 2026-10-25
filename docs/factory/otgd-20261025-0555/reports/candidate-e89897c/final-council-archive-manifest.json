@@ -1,0 +1,97 @@
+{
+  "archive": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/final-council-with-history.zip",
+  "sha256": "2f3ee90ea3bbbad65a52a7cc9635909caf0f6fe8b4a4eaf2b5c367a5389d1d69",
+  "bytes": 766762,
+  "entries": [
+    {
+      "path": "reviews/approver/SHA256SUMS",
+      "bytes": 1171,
+      "sha256": "946fecd2ee8cf6cdc75987967acb53a6f52379f42374efff4993081edb119a7b"
+    },
+    {
+      "path": "reviews/approver/assess.py",
+      "bytes": 31329,
+      "sha256": "fcbf9c9ac4351fb41935d17017ea0545c9b0628e4666063ba6d18c2f044b20d4"
+    },
+    {
+      "path": "reviews/approver/inspection-evidence.json",
+      "bytes": 666654,
+      "sha256": "00a7932e54ed70b2c2ef82c94455d008d01f501e6ff402366da389f00bb2c880"
+    },
+    {
+      "path": "reviews/approver/per-spec-decisions.json",
+      "bytes": 2208385,
+      "sha256": "ea7440a26e2d9426e686863f3d22904c62cfeee5836119268527a26dffa47b58"
+    },
+    {
+      "path": "reviews/approver/provisional-before-normative-about-review/SHA256SUMS",
+      "bytes": 421,
+      "sha256": "cc345d26cbddf7e57bd0578a793ede3a4d1570556076a0d2e6ff9773f8a2a324"
+    },
+    {
+      "path": "reviews/approver/provisional-before-normative-about-review/assess.py",
+      "bytes": 26089,
+      "sha256": "0b3c19c46eb383f7d2e6e8db7195d81b29722590146a7ac2d96dacc109784eac"
+    },
+    {
+      "path": "reviews/approver/provisional-before-normative-about-review/inspection-evidence.json",
+      "bytes": 660290,
+      "sha256": "f5e36f8f5b44dc1632e1e5d8562ecdf8ecdf4730d79e075fa0addf5b0b1a80a9"
+    },
+    {
+      "path": "reviews/approver/provisional-before-normative-about-review/per-spec-decisions.json",
+      "bytes": 2192673,
+      "sha256": "3bb77d6f80695258adcd27184d36591485f3ecb9abba9b16ab8bd173b14a1e04"
+    },
+    {
+      "path": "reviews/approver/provisional-before-normative-about-review/release-manifest.json",
+      "bytes": 1674,
+      "sha256": "28a2ed3b4640a7ad2808513bb3c05ccabed3b486036f999dc0e4fe48a6ae5fb9"
+    },
+    {
+      "path": "reviews/approver/provisional-before-normative-about-review/report.md",
+      "bytes": 23536,
+      "sha256": "cfe238f893f7ee755d44523eb53ccce2506f248df9dda1c0561316761c52d6ba"
+    },
+    {
+      "path": "reviews/approver/release-manifest.json",
+      "bytes": 2838,
+      "sha256": "b07d509e4c39227d77d067986fc137fc090dd0de49f3c521828456c90843a52a"
+    },
+    {
+      "path": "reviews/approver/report.md",
+      "bytes": 25121,
+      "sha256": "cfd31ee67e6e948bde6c1b123a77220367916e206f03345d30ad727520d19a31"
+    },
+    {
+      "path": "reviews/code/apr001-addendum.md",
+      "bytes": 6271,
+      "sha256": "04dca4b2f6849024c9de2121209a0dbed3529f4cc2dce347271917f1bf35023a"
+    },
+    {
+      "path": "reviews/engineering/apr001-addendum.md",
+      "bytes": 5149,
+      "sha256": "d42f8db91cd71633d2bca96921bec481a5902fb310f9425ef76706a350bdb760"
+    },
+    {
+      "path": "reviews/product/apr001-addendum.md",
+      "bytes": 5129,
+      "sha256": "0e5a34987345df54455f8a3621a4105ee22419c89357f3a44df2b7a49400a582"
+    },
+    {
+      "path": "reviews/security/apr001-addendum.md",
+      "bytes": 4152,
+      "sha256": "6b80b8d77d88b48aa9fdda2de3846a0475075556aaa2577aeb5ad99233985cd1"
+    },
+    {
+      "path": "reviews/ui/apr001-addendum.md",
+      "bytes": 6575,
+      "sha256": "7b7c597ad336e665ecc8c3408d81a437f4208166d3cba7b069139612cf4adc9d"
+    },
+    {
+      "path": "reviews/ux/apr001-addendum.md",
+      "bytes": 5084,
+      "sha256": "52d6411595cf67e045a5e8c3d5778e8d208b3a328ee1a0e82aaf8194629ea912"
+    }
+  ]
+}

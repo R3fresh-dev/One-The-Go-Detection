@@ -1,0 +1,828 @@
+{
+  "spec_id": "OTGD-036",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-settings-accessibility/spec.md",
+  "canonical_sha256": "2768fdfbe5ff0b1971d6aad04101ea2fa17db6f6c3012848aa3aa3f490e654c8",
+  "canonical_requirements": [
+    "AND-SET-001 Complete, functional settings navigation",
+    "AND-SET-002 Persisted appearance without measurement mutation",
+    "AND-SET-003 Permission visibility and OS round-trip",
+    "AND-SET-004 Capability and environment integrity",
+    "AND-SET-005 Redacted, user-initiated diagnostics",
+    "AND-SET-006 Accessible application shell and content",
+    "AND-SET-007 iOS parity and platform-specific behavior"
+  ],
+  "canonical_scenarios": [
+    "set-signed-out-navigation",
+    "set-active-check-switch",
+    "set-research-access-visible-empty-state",
+    "set-theme-restart",
+    "set-units-do-not-rewrite",
+    "set-camera-denied",
+    "set-permission-changed-outside-app",
+    "set-tampered-model-toggle",
+    "set-qa-build-visible",
+    "set-authorized-looking-research-output-still-disabled",
+    "set-diagnostics-copy",
+    "set-error-with-sensitive-payload",
+    "set-large-text-navigation",
+    "set-screen-reader-task-boundary",
+    "set-active-task-navigation-ends-before-dialog",
+    "set-ios-dynamic-type",
+    "set-ios-restricted-permission"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 11,
+    "BLOCKED": 3,
+    "PASS": 3
+  },
+  "all_current_case_ids": [
+    "OTGD-036-AND-SET-001-01",
+    "OTGD-036-AND-SET-001-02",
+    "OTGD-036-AND-SET-001-03",
+    "OTGD-036-AND-SET-002-01",
+    "OTGD-036-AND-SET-002-02",
+    "OTGD-036-AND-SET-003-01",
+    "OTGD-036-AND-SET-003-02",
+    "OTGD-036-AND-SET-004-01",
+    "OTGD-036-AND-SET-004-02",
+    "OTGD-036-AND-SET-004-03",
+    "OTGD-036-AND-SET-005-01",
+    "OTGD-036-AND-SET-005-02",
+    "OTGD-036-AND-SET-006-01",
+    "OTGD-036-AND-SET-006-02",
+    "OTGD-036-AND-SET-006-03",
+    "OTGD-036-AND-SET-007-01",
+    "OTGD-036-AND-SET-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-036-AND-SET-001-01",
+      "requirement_id": "AND-SET-001",
+      "status": "PARTIAL",
+      "expected_observation": "set-signed-out-navigation \u2014 - **GIVEN** demo is active and no account is authenticated - **WHEN** Settings is opened - **THEN** Sign in is available, cloud deletion is unavailable with its account requirement, and local demo clearing remains reachable.",
+      "unproved_then_clauses": [
+        "Settings itself must expose Sign in and cloud-deletion account-requirement wording while local clear remains reachable; current guest journey asserts Delete account absent, not every signed-out Settings item."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Guest browser reaches Settings/Privacy, Delete account absent and retry off; ordinary welcome Sign in available."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Settings itself must expose Sign in and cloud-deletion account-requirement wording while local clear remains reachable; current guest journey asserts Delete account absent, not every signed-out Settings item."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-001-02",
+      "requirement_id": "AND-SET-001",
+      "status": "PARTIAL",
+      "expected_observation": "set-active-check-switch \u2014 - **GIVEN** a check is active - **WHEN** Switch workspace is selected - **THEN** any active native run ends once before the decision; the UI explains that it cannot resume, the broader draft may be retained, and no record is moved between workspaces.",
+      "unproved_then_clauses": [
+        "Active native workspace switch before decision, explicit cannot-resume wording, ended once and no cross-workspace record move is not asserted end-to-end; browser draft is fictional nonactive task."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "RunStopGate deduplicates stop before persistence; controller stop asks native before awaiting radio, and browser Keep draft retains same attempt."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+        "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion",
+        "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+          "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion",
+          "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt"
+        ],
+        "exact_missing_observation": [
+          "Active native workspace switch before decision, explicit cannot-resume wording, ended once and no cross-workspace record move is not asserted end-to-end; browser draft is fictional nonactive task."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-001-03",
+      "requirement_id": "AND-SET-001",
+      "status": "PARTIAL",
+      "expected_observation": "set-research-access-visible-empty-state \u2014 - **GIVEN** a fresh account has no study memberships - **WHEN** the user selects Settings then Research access - **THEN** the feature opens its empty-state explanation and a working Back route without creating an invitation or enabling capture.",
+      "unproved_then_clauses": [
+        "Fresh authenticated empty-membership Settings\u2192Research access\u2192Back, no new invitation and capture remains unavailable is not directly asserted; guest empty-state differs from fresh account."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Guest browser opens Research access and sees No automatic enrollment; ordinary service membership parser binds items."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+        "apps/mobile/tests/service-boundary.test.ts::actual backend app-config and capabilities responses decode without removing mandatory fields"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+          "apps/mobile/tests/service-boundary.test.ts::actual backend app-config and capabilities responses decode without removing mandatory fields"
+        ],
+        "exact_missing_observation": [
+          "Fresh authenticated empty-membership Settings\u2192Research access\u2192Back, no new invitation and capture remains unavailable is not directly asserted; guest empty-state differs from fresh account."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-002-01",
+      "requirement_id": "AND-SET-002",
+      "status": "BLOCKED",
+      "expected_observation": "set-theme-restart \u2014 - **GIVEN** Dark theme was saved - **WHEN** the process is terminated and relaunched - **THEN** Dark theme is restored without a prolonged light-screen flash or record mutation.",
+      "unproved_then_clauses": [
+        "Actual process termination/relaunch restores Dark without prolonged light flash and unchanged records is unexecuted; browser theme switching is not native startup flash evidence."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Browser dark radio changes computed color; controller saves theme/reducedMotion preference."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "Actual process termination/relaunch restores Dark without prolonged light flash and unchanged records is unexecuted; browser theme switching is not native startup flash evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-002-02",
+      "requirement_id": "AND-SET-002",
+      "status": "PARTIAL",
+      "expected_observation": "set-units-do-not-rewrite \u2014 - **GIVEN** finalized checks contain canonical ng/mL and profile cm/kg values - **WHEN** US customary display is selected - **THEN** profile presentation may convert units, saliva units remain qualified as reported, and stored measurements/record hashes do not change.",
+      "unproved_then_clauses": [
+        "Finalized check hashes before/after global units preference and same rendered saliva/profile records are not compared in one test; profile draft-only conversion does not assert finalized-record nonmutation."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Profile form25unit toggles preserve canonical values and browser toggles metric/imperial without losing displayed original values; saliva formatter preserves original units and qualifier."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/profile-form.test.ts::display rounding and repeated unit toggles preserve original canonical values",
+        "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::display rounding and repeated unit toggles preserve original canonical values",
+          "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible"
+        ],
+        "exact_missing_observation": [
+          "Finalized check hashes before/after global units preference and same rendered saliva/profile records are not compared in one test; profile draft-only conversion does not assert finalized-record nonmutation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-003-02",
+      "requirement_id": "AND-SET-003",
+      "status": "PARTIAL",
+      "expected_observation": "set-permission-changed-outside-app \u2014 - **GIVEN** the user grants Bluetooth permission in OS settings - **WHEN** the app returns to foreground - **THEN** the displayed state refreshes and the reader feature decides whether a new scan is needed; an old scan is not assumed successful.",
+      "unproved_then_clauses": [
+        "Canonical Bluetooth permission change outside app, foreground refresh, scan-decision/no old scan-success assertion is not exercised by camera provider fixture; actual Bluetooth OS transition also unavailable."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Settings camera foreground event refreshes observed grant without prompting and out-of-order/unmounted/changed-owner reads discarded."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly",
+        "apps/mobile/e2e/raw-recordings.spec.ts::Settings ignores out-of-order and unmounted camera reads and replaces stale account and generation observations"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly",
+          "apps/mobile/e2e/raw-recordings.spec.ts::Settings ignores out-of-order and unmounted camera reads and replaces stale account and generation observations"
+        ],
+        "exact_missing_observation": [
+          "Canonical Bluetooth permission change outside app, foreground refresh, scan-decision/no old scan-success assertion is not exercised by camera provider fixture; actual Bluetooth OS transition also unavailable."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-004-01",
+      "requirement_id": "AND-SET-004",
+      "status": "PARTIAL",
+      "expected_observation": "set-tampered-model-toggle \u2014 - **GIVEN** a modified preference file contains `inference_enabled:true` - **WHEN** Settings and the result workflow load - **THEN** the unsupported key grants no capability and probability remains unavailable in this release.",
+      "unproved_then_clauses": [
+        "An actual modified persisted preference inference_enabledtrue loaded through Settings/results must assert no capability or probability. Current public config format test does not inject preference storage. Legacy clause is scoped by shared-contractsection1, not prohibition on admitted1.1."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Public version advertisement cannot enable inference; complete research result proof required independently."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/service-boundary.test.ts::research result format advertisement supports only the versioned reader and grants no inference authority",
+        "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/service-boundary.test.ts::research result format advertisement supports only the versioned reader and grants no inference authority",
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed"
+        ],
+        "exact_missing_observation": [
+          "An actual modified persisted preference inference_enabledtrue loaded through Settings/results must assert no capability or probability. Current public config format test does not inject preference storage. Legacy clause is scoped by shared-contractsection1, not prohibition on admitted1.1."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-004-02",
+      "requirement_id": "AND-SET-004",
+      "status": "PARTIAL",
+      "expected_observation": "set-qa-build-visible \u2014 - **GIVEN** the installed app uses QA services - **WHEN** Home or About is displayed - **THEN** QA is visible and the app cannot describe itself as a production clinical release.",
+      "unproved_then_clauses": [
+        "Actual QA installed app Home/About rendered QA and no production clinical claim is not asserted by current local/test component fixtures; native installation remains external."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Source Home/About/welcome renders nonprod environment and clinical boundary; config pins expected environment."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/service-boundary.test.ts::unsupported app version, minimum version or contract pauses synchronization; maintenance is separate"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/service-boundary.test.ts::unsupported app version, minimum version or contract pauses synchronization; maintenance is separate"
+        ],
+        "exact_missing_observation": [
+          "Actual QA installed app Home/About rendered QA and no production clinical claim is not asserted by current local/test component fixtures; native installation remains external."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-005-01",
+      "requirement_id": "AND-SET-005",
+      "status": "PARTIAL",
+      "expected_observation": "set-diagnostics-copy \u2014 - **GIVEN** a connection error has a support request ID - **WHEN** the user reviews and copies diagnostics - **THEN** only allowlisted build/environment/error-reference fields reach the clipboard.",
+      "unproved_then_clauses": [
+        "Actual user reviews and invokes copy with a clipboard spy and exact allowed text is not in current tests; generating safe string is proven but clipboard interaction is not."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Diagnostics generator copies only explicit build/environment/origin/requestID/categories, removes token/health/profile/payload and bounds arbitrary strings."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload",
+        "apps/mobile/tests/support-history.test.ts::untrusted diagnostics strings cannot become fields or copied references"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload",
+          "apps/mobile/tests/support-history.test.ts::untrusted diagnostics strings cannot become fields or copied references"
+        ],
+        "exact_missing_observation": [
+          "Actual user reviews and invokes copy with a clipboard spy and exact allowed text is not in current tests; generating safe string is proven but clipboard interaction is not."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-006-01",
+      "requirement_id": "AND-SET-006",
+      "status": "BLOCKED",
+      "expected_observation": "set-large-text-navigation \u2014 - **GIVEN** 200% system font scale on a 360 dp Android display - **WHEN** Settings and Privacy are traversed - **THEN** labels wrap, controls remain reachable by scrolling, and no essential action is hidden behind navigation or keyboard.",
+      "unproved_then_clauses": [
+        "Actual Android200%systemfont360dp Settings/Privacy/keyboard reachability and wrapping is not executed; normal-scale browser viewports do not establish native scaling."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Browser two-viewport checks minimum44x44tab bounds and no horizontal overflow.",
+        "ActualDOMroute/dialog/backfocus, renderedmodalanimation preference/system, destructive light/dark normal/pressed compositecontrast atbothviewports."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+        "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+        "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+        "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+          "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+          "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+          "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+        ],
+        "exact_missing_observation": [
+          "Actual Android200%systemfont360dp Settings/Privacy/keyboard reachability and wrapping is not executed; normal-scale browser viewports do not establish native scaling."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-006-02",
+      "requirement_id": "AND-SET-006",
+      "status": "PARTIAL",
+      "expected_observation": "set-screen-reader-task-boundary \u2014 - **GIVEN** a timing-task configuration does not support the active input/accommodation - **WHEN** the user attempts that task - **THEN** the task feature explains the unsupported configuration and records unavailability rather than claiming equivalent measured timing.",
+      "unproved_then_clauses": [
+        "Active screen-reader/input accommodation unsupported by task config needs explicit rejection/reason/no-equivalent-timing assertion; current tests toggle native availability, not accommodation compatibility. Actual accommodation qualification remains separate."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution",
+        "study_scientific_approval"
+      ],
+      "current_assertions_proven": [
+        "Native task qualification metadata and model gates refuse unsupported tuples; task unavailable state shown when native module absent."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Active screen-reader/input accommodation unsupported by task config needs explicit rejection/reason/no-equivalent-timing assertion; current tests toggle native availability, not accommodation compatibility. Actual accommodation qualification remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-006-03",
+      "requirement_id": "AND-SET-006",
+      "status": "PARTIAL",
+      "expected_observation": "set-active-task-navigation-ends-before-dialog \u2014 - **GIVEN** a native reaction run is active - **WHEN** the user initiates a Settings/workspace route or End task - **THEN** the run ends once before an overlay, retained partial evidence is marked invalid, and subsequent draft choices never resume it.",
+      "unproved_then_clauses": [
+        "Actual Settings/workspace/End action must demonstrate stop before overlay, partial invalid and draft choice never resumes it; current RunStopGate is pure and controller case stops manually, not overlay route sequencing."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Controlled route/background stop coalesces once, awaits durable terminal; unmounted task invalidates and INTERRUPTED retained."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+        "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Actual Settings/workspace/End action must demonstrate stop before overlay, partial invalid and draft choice never resumes it; current RunStopGate is pure and controller case stops manually, not overlay route sequencing."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-007-01",
+      "requirement_id": "AND-SET-007",
+      "status": "BLOCKED",
+      "expected_observation": "set-ios-dynamic-type \u2014 - **GIVEN** a large accessibility Dynamic Type size and VoiceOver - **WHEN** the user changes theme and opens privacy controls - **THEN** each label/action remains reachable with correct state announcements and preferences persist across launch.",
+      "unproved_then_clauses": [
+        "Actual iOS accessibility DynamicType+VoiceOver theme/privacy traversal, state announcements and persisted relaunch unavailable."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Browser roles/selected theme and controls tested; preference saved in controller."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS accessibility DynamicType+VoiceOver theme/privacy traversal, state announcements and persisted relaunch unavailable."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-007-02",
+      "requirement_id": "AND-SET-007",
+      "status": "PARTIAL",
+      "expected_observation": "set-ios-restricted-permission \u2014 - **GIVEN** iOS reports camera access restricted by device policy - **WHEN** the permission row is opened - **THEN** it shows Restricted, does not promise that an ordinary permission prompt will fix it, and preserves access to other permitted features.",
+      "unproved_then_clauses": [
+        "Actual iOS native restricted provider state and continued other-feature access is unexecuted. Current DOM fixture does not establish device policy bridge; no ordinary prompt promise is rendered by source."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Controlled Settings restricted by policy label and no prompt are directly asserted; unrelated settings screen remains mounted."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS native restricted provider state and continued other-feature access is unexecuted. Current DOM fixture does not establish device policy bridge; no ordinary prompt promise is rendered by source."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-036-AND-SET-001-01",
+      "required_clause": [
+        "Settings itself must expose Sign in and cloud-deletion account-requirement wording while local clear remains reachable; current guest journey asserts Delete account absent, not every signed-out Settings item."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Settings itself must expose Sign in and cloud-deletion account-requirement wording while local clear remains reachable; current guest journey asserts Delete account absent, not every signed-out Settings item."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-001-02",
+      "required_clause": [
+        "Active native workspace switch before decision, explicit cannot-resume wording, ended once and no cross-workspace record move is not asserted end-to-end; browser draft is fictional nonactive task."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+          "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion",
+          "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt"
+        ],
+        "exact_missing_observation": [
+          "Active native workspace switch before decision, explicit cannot-resume wording, ended once and no cross-workspace record move is not asserted end-to-end; browser draft is fictional nonactive task."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-001-03",
+      "required_clause": [
+        "Fresh authenticated empty-membership Settings\u2192Research access\u2192Back, no new invitation and capture remains unavailable is not directly asserted; guest empty-state differs from fresh account."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+          "apps/mobile/tests/service-boundary.test.ts::actual backend app-config and capabilities responses decode without removing mandatory fields"
+        ],
+        "exact_missing_observation": [
+          "Fresh authenticated empty-membership Settings\u2192Research access\u2192Back, no new invitation and capture remains unavailable is not directly asserted; guest empty-state differs from fresh account."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-002-01",
+      "required_clause": [
+        "Actual process termination/relaunch restores Dark without prolonged light flash and unchanged records is unexecuted; browser theme switching is not native startup flash evidence."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "Actual process termination/relaunch restores Dark without prolonged light flash and unchanged records is unexecuted; browser theme switching is not native startup flash evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-002-02",
+      "required_clause": [
+        "Finalized check hashes before/after global units preference and same rendered saliva/profile records are not compared in one test; profile draft-only conversion does not assert finalized-record nonmutation."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::display rounding and repeated unit toggles preserve original canonical values",
+          "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible"
+        ],
+        "exact_missing_observation": [
+          "Finalized check hashes before/after global units preference and same rendered saliva/profile records are not compared in one test; profile draft-only conversion does not assert finalized-record nonmutation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-003-02",
+      "required_clause": [
+        "Canonical Bluetooth permission change outside app, foreground refresh, scan-decision/no old scan-success assertion is not exercised by camera provider fixture; actual Bluetooth OS transition also unavailable."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly",
+          "apps/mobile/e2e/raw-recordings.spec.ts::Settings ignores out-of-order and unmounted camera reads and replaces stale account and generation observations"
+        ],
+        "exact_missing_observation": [
+          "Canonical Bluetooth permission change outside app, foreground refresh, scan-decision/no old scan-success assertion is not exercised by camera provider fixture; actual Bluetooth OS transition also unavailable."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-004-01",
+      "required_clause": [
+        "An actual modified persisted preference inference_enabledtrue loaded through Settings/results must assert no capability or probability. Current public config format test does not inject preference storage. Legacy clause is scoped by shared-contractsection1, not prohibition on admitted1.1."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/service-boundary.test.ts::research result format advertisement supports only the versioned reader and grants no inference authority",
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed"
+        ],
+        "exact_missing_observation": [
+          "An actual modified persisted preference inference_enabledtrue loaded through Settings/results must assert no capability or probability. Current public config format test does not inject preference storage. Legacy clause is scoped by shared-contractsection1, not prohibition on admitted1.1."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-004-02",
+      "required_clause": [
+        "Actual QA installed app Home/About rendered QA and no production clinical claim is not asserted by current local/test component fixtures; native installation remains external."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/service-boundary.test.ts::unsupported app version, minimum version or contract pauses synchronization; maintenance is separate"
+        ],
+        "exact_missing_observation": [
+          "Actual QA installed app Home/About rendered QA and no production clinical claim is not asserted by current local/test component fixtures; native installation remains external."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-005-01",
+      "required_clause": [
+        "Actual user reviews and invokes copy with a clipboard spy and exact allowed text is not in current tests; generating safe string is proven but clipboard interaction is not."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload",
+          "apps/mobile/tests/support-history.test.ts::untrusted diagnostics strings cannot become fields or copied references"
+        ],
+        "exact_missing_observation": [
+          "Actual user reviews and invokes copy with a clipboard spy and exact allowed text is not in current tests; generating safe string is proven but clipboard interaction is not."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-006-01",
+      "required_clause": [
+        "Actual Android200%systemfont360dp Settings/Privacy/keyboard reachability and wrapping is not executed; normal-scale browser viewports do not establish native scaling."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+          "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+          "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+          "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+        ],
+        "exact_missing_observation": [
+          "Actual Android200%systemfont360dp Settings/Privacy/keyboard reachability and wrapping is not executed; normal-scale browser viewports do not establish native scaling."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-006-02",
+      "required_clause": [
+        "Active screen-reader/input accommodation unsupported by task config needs explicit rejection/reason/no-equivalent-timing assertion; current tests toggle native availability, not accommodation compatibility. Actual accommodation qualification remains separate."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution",
+        "study_scientific_approval"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Active screen-reader/input accommodation unsupported by task config needs explicit rejection/reason/no-equivalent-timing assertion; current tests toggle native availability, not accommodation compatibility. Actual accommodation qualification remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-006-03",
+      "required_clause": [
+        "Actual Settings/workspace/End action must demonstrate stop before overlay, partial invalid and draft choice never resumes it; current RunStopGate is pure and controller case stops manually, not overlay route sequencing."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Actual Settings/workspace/End action must demonstrate stop before overlay, partial invalid and draft choice never resumes it; current RunStopGate is pure and controller case stops manually, not overlay route sequencing."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-007-01",
+      "required_clause": [
+        "Actual iOS accessibility DynamicType+VoiceOver theme/privacy traversal, state announcements and persisted relaunch unavailable."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS accessibility DynamicType+VoiceOver theme/privacy traversal, state announcements and persisted relaunch unavailable."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-036-AND-SET-007-02",
+      "required_clause": [
+        "Actual iOS native restricted provider state and continued other-feature access is unexecuted. Current DOM fixture does not establish device policy bridge; no ordinary prompt promise is rendered by source."
+      ],
+      "types": [
+        "native_os_execution",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS native restricted provider state and continued other-feature access is unexecuted. Current DOM fixture does not establish device policy bridge; no ordinary prompt promise is rendered by source."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

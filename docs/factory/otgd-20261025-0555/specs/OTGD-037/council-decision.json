@@ -1,0 +1,769 @@
+{
+  "spec_id": "OTGD-037",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-sign-in/spec.md",
+  "canonical_sha256": "b20292aa0a4f47fa00fa5e652eafd1dffdd75e2a710ac2b0165f5f2ae4e2a1bd",
+  "canonical_requirements": [
+    "AND-AUTH-001 Browser PKCE and environment separation",
+    "AND-AUTH-002 Callback integrity and single use",
+    "AND-AUTH-003 Account ownership and capability boundaries",
+    "AND-AUTH-004 Token lifecycle and coordinated refresh",
+    "AND-AUTH-005 Offline and interrupted authentication",
+    "AND-AUTH-006 Explicit and reliable sign-out",
+    "AND-AUTH-007 Accessible recovery and iOS parity"
+  ],
+  "canonical_scenarios": [
+    "auth-valid-hosted-login",
+    "auth-local-token-in-production",
+    "auth-replayed-callback",
+    "auth-mismatched-state",
+    "auth-two-accounts-same-device",
+    "auth-no-research-role",
+    "auth-concurrent-401",
+    "auth-revoked-refresh-token",
+    "auth-offline-existing-account",
+    "auth-browser-killed",
+    "auth-signed-out-offline-cache-remains-locked",
+    "auth-canceled-device-unlock",
+    "auth-sign-out-with-pending-check",
+    "auth-late-response-after-sign-out",
+    "auth-default-signout-retains-locked-pending-data",
+    "auth-accessible-browser-return",
+    "auth-ios-secure-storage"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 7,
+    "PASS": 4,
+    "BLOCKED": 6
+  },
+  "all_current_case_ids": [
+    "OTGD-037-AND-AUTH-001-01",
+    "OTGD-037-AND-AUTH-001-02",
+    "OTGD-037-AND-AUTH-002-01",
+    "OTGD-037-AND-AUTH-002-02",
+    "OTGD-037-AND-AUTH-003-01",
+    "OTGD-037-AND-AUTH-003-02",
+    "OTGD-037-AND-AUTH-004-01",
+    "OTGD-037-AND-AUTH-004-02",
+    "OTGD-037-AND-AUTH-005-01",
+    "OTGD-037-AND-AUTH-005-02",
+    "OTGD-037-AND-AUTH-005-03",
+    "OTGD-037-AND-AUTH-005-04",
+    "OTGD-037-AND-AUTH-006-01",
+    "OTGD-037-AND-AUTH-006-02",
+    "OTGD-037-AND-AUTH-006-03",
+    "OTGD-037-AND-AUTH-007-01",
+    "OTGD-037-AND-AUTH-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-037-AND-AUTH-001-01",
+      "requirement_id": "AND-AUTH-001",
+      "status": "PARTIAL",
+      "expected_observation": "auth-valid-hosted-login \u2014 - **GIVEN** a configured production public client and a fresh authorization attempt - **WHEN** the user signs in through the hosted browser and returns with the matching code/state - **THEN** one exchange completes, the account namespace is selected, and the account dashboard opens.",
+      "unproved_then_clauses": [
+        "The actual production public-client hosted browser and native callback account journey remains unexecuted. Current endpoint pinning, exact returned target, code/state, replay, refresh and no credential traffic on refusal are directly tested; Cognito/provider credentials and installed OS execution are separate prerequisites."
+      ],
+      "remaining_prerequisite_types": [
+        "provider_credentials",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Controlled PKCE browser response exchanges matching code/state/verifier and controller selects verified opaque account/Home; credential restore returns verified identity.",
+        "All selected authorization/token/revocation/logout endpoints are pinned before saved or fresh credentials/browser use; substitutions and pending mutations refuse without credential traffic. Actual returned callback target is separately asserted by FINAL_CALLBACK_TARGET."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/auth.test.ts::PKCE callback binds state and verifier and credential restore uses verified API identity",
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+        "apps/mobile/tests/auth.test.ts::unadmitted ${endpoint} is rejected before authorization browser or credential fetch",
+        "apps/mobile/tests/auth.test.ts::restored ${endpoint} substitution never activates saved credentials",
+        "apps/mobile/tests/auth.test.ts::commit refuses altered endpoints before activating or persisting credentials",
+        "apps/mobile/tests/auth.test.ts::refresh and captured provider operations recheck endpoint metadata before credential traffic",
+        "apps/mobile/tests/auth.test.ts::admitted metadata snapshots cannot be retargeted while authorization or captured revocation is pending"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/auth.test.ts::PKCE callback binds state and verifier and credential restore uses verified API identity",
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "apps/mobile/tests/auth.test.ts::unadmitted ${endpoint} is rejected before authorization browser or credential fetch",
+          "apps/mobile/tests/auth.test.ts::restored ${endpoint} substitution never activates saved credentials",
+          "apps/mobile/tests/auth.test.ts::commit refuses altered endpoints before activating or persisting credentials",
+          "apps/mobile/tests/auth.test.ts::refresh and captured provider operations recheck endpoint metadata before credential traffic"
+        ],
+        "exact_missing_observation": [
+          "The actual production public-client hosted browser and native callback account journey remains unexecuted. Current endpoint pinning, exact returned target, code/state, replay, refresh and no credential traffic on refusal are directly tested; Cognito/provider credentials and installed OS execution are separate prerequisites."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-001-02",
+      "requirement_id": "AND-AUTH-001",
+      "status": "PARTIAL",
+      "expected_observation": "auth-local-token-in-production \u2014 - **GIVEN** a production build and a token issued by the local development issuer - **WHEN** that token is supplied through storage tampering or a callback - **THEN** protected requests and account activation fail without changing the current account's records.",
+      "unproved_then_clauses": [
+        "Production build with local fixture token via tampered saved credentials/callback and unchanged current account inventory is not directly asserted. Arbitrary wrong issuer case differs from explicit production/local issuer namespace injection."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "API invalid access-token issuer/client/token_use/expiry/nbf matrix rejects401; AuthManager commit foreign issuer refuses."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_invalid_access_tokens",
+        "apps/mobile/tests/auth.test.ts::PKCE callback binds state and verifier and credential restore uses verified API identity"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_invalid_access_tokens",
+          "apps/mobile/tests/auth.test.ts::PKCE callback binds state and verifier and credential restore uses verified API identity"
+        ],
+        "exact_missing_observation": [
+          "Production build with local fixture token via tampered saved credentials/callback and unchanged current account inventory is not directly asserted. Arbitrary wrong issuer case differs from explicit production/local issuer namespace injection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-003-01",
+      "requirement_id": "AND-AUTH-003",
+      "status": "PARTIAL",
+      "expected_observation": "auth-two-accounts-same-device \u2014 - **GIVEN** account A has cached records and account B signs in after A signs out - **WHEN** B opens History - **THEN** neither A's records nor A's pending requests are displayed or submitted as B.",
+      "unproved_then_clauses": [
+        "Actual A cached records/pending operations retained, sign-out, B sign-in then History list/submission must verify zero A IDs/requests; stamp-only fixture and AuthManager token race do not cover persistent controller namespace journey."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Deferred A response after workspace/accountB stamp change rejects and publishes no rows; stale refresh cannot overwriteB access token/identity."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+        "apps/mobile/tests/auth.test.ts::a stale refresh response cannot clear or overwrite a newly signed-in account"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+          "apps/mobile/tests/auth.test.ts::a stale refresh response cannot clear or overwrite a newly signed-in account"
+        ],
+        "exact_missing_observation": [
+          "Actual A cached records/pending operations retained, sign-out, B sign-in then History list/submission must verify zero A IDs/requests; stamp-only fixture and AuthManager token race do not cover persistent controller namespace journey."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-003-02",
+      "requirement_id": "AND-AUTH-003",
+      "status": "PARTIAL",
+      "expected_observation": "auth-no-research-role \u2014 - **GIVEN** an ordinary authenticated account - **WHEN** it attempts a protected research operation - **THEN** the server rejects it and the app explains capability unavailability without treating the rejection as an expired login.",
+      "unproved_then_clauses": [
+        "Ordinary authenticated research operation refusal must be rendered as capability unavailable without expired-login treatment; current capability/model unit tests do not assert that exact client error classification/message."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Backend current consent/scope guard refuses unauthorized acquisition and model returns no score; revoked state differs from authentication."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score",
+        "apps/mobile/tests/service-boundary.test.ts::actual backend app-config and capabilities responses decode without removing mandatory fields"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score",
+          "apps/mobile/tests/service-boundary.test.ts::actual backend app-config and capabilities responses decode without removing mandatory fields"
+        ],
+        "exact_missing_observation": [
+          "Ordinary authenticated research operation refusal must be rendered as capability unavailable without expired-login treatment; current capability/model unit tests do not assert that exact client error classification/message."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-004-02",
+      "requirement_id": "AND-AUTH-004",
+      "status": "PARTIAL",
+      "expected_observation": "auth-revoked-refresh-token \u2014 - **GIVEN** the issuer has revoked the refresh token - **WHEN** refresh is attempted - **THEN** no retry loop occurs, sync pauses, and Sign in again is offered without discarding an unsynchronized draft silently.",
+      "unproved_then_clauses": [
+        "Client sync paused/Sign in again UI and unsynchronized draft preservation on revoked refresh are not asserted in same context. AuthManager state clearing is narrower than draft/user recovery journey."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Invalid_grant clears current identity/vault and invalidation count1, next accessTokennull; transient network retains identity."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/auth.test.ts::revoked refresh clears the current account while transient connection failure retains its protected identity"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/auth.test.ts::revoked refresh clears the current account while transient connection failure retains its protected identity"
+        ],
+        "exact_missing_observation": [
+          "Client sync paused/Sign in again UI and unsynchronized draft preservation on revoked refresh are not asserted in same context. AuthManager state clearing is narrower than draft/user recovery journey."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-005-01",
+      "requirement_id": "AND-AUTH-005",
+      "status": "BLOCKED",
+      "expected_observation": "auth-offline-existing-account \u2014 - **GIVEN** a cache belonging to the same still-signed-in account and no network - **WHEN** the app is opened and device credential/biometric authentication succeeds - **THEN** cached history is readable as cached, no token is invented, and uploads remain queued for that account.",
+      "unproved_then_clauses": [
+        "Actual same-still-signed-in cached account offline successful biometric unlock/history cachedlabel/no inventedtoken/queue owner requires actual OS credential+SQLCipher evidence."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution",
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "Auth refresh network failure retains protected identity and bounded deadline; controlled native store can reopen."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/auth.test.ts::revoked refresh clears the current account while transient connection failure retains its protected identity",
+        "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/auth.test.ts::revoked refresh clears the current account while transient connection failure retains its protected identity",
+          "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+        ],
+        "exact_missing_observation": [
+          "Actual same-still-signed-in cached account offline successful biometric unlock/history cachedlabel/no inventedtoken/queue owner requires actual OS credential+SQLCipher evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-005-02",
+      "requirement_id": "AND-AUTH-005",
+      "status": "BLOCKED",
+      "expected_observation": "auth-browser-killed \u2014 - **GIVEN** the process terminates during browser authorization - **WHEN** the app restarts after the pending attempt expires - **THEN** it returns to signed out and offers a new attempt instead of assuming browser authentication succeeded.",
+      "unproved_then_clauses": [
+        "Native process killed during hosted browser auth then expired-attempt restart signedout/new attempt is not executed. In-memory expiry is not actual process restart."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Pure PKCE guard expires at600000ms and invalidates old flow; canceled transport cannot commit."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/lifecycle.test.ts::PKCE attempts expire at ten minutes, reject repeated callbacks and invalidate on logout/new login"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::PKCE attempts expire at ten minutes, reject repeated callbacks and invalidate on logout/new login"
+        ],
+        "exact_missing_observation": [
+          "Native process killed during hosted browser auth then expired-attempt restart signedout/new attempt is not executed. In-memory expiry is not actual process restart."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-005-03",
+      "requirement_id": "AND-AUTH-005",
+      "status": "BLOCKED",
+      "expected_observation": "auth-signed-out-offline-cache-remains-locked \u2014 - **GIVEN** account A selected Keep encrypted records and sign out - **WHEN** A opens the app offline and passes device biometric authentication - **THEN** A's retained cache remains locked until same-issuer/subject reauthentication; biometric success alone does not recreate signed-in state.",
+      "unproved_then_clauses": [
+        "Actual Keep encrypted records\u2192signout\u2192offline biometric success\u2192retained account cache stays locked until sameissuer/subject reauthentication is unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Sign-out clears credentials/identity and workspace locked scopes reject data publication; biometric alone is not provider identity source."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/lifecycle.test.ts::sign-out removal finishes after an already-started OS credential write",
+        "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::sign-out removal finishes after an already-started OS credential write",
+          "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+        ],
+        "exact_missing_observation": [
+          "Actual Keep encrypted records\u2192signout\u2192offline biometric success\u2192retained account cache stays locked until sameissuer/subject reauthentication is unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-005-04",
+      "requirement_id": "AND-AUTH-005",
+      "status": "BLOCKED",
+      "expected_observation": "auth-canceled-device-unlock \u2014 - **GIVEN** the same account is still signed in with readable cached records - **WHEN** the user cancels device authentication on offline launch - **THEN** no account history or profile is displayed and the user may retry or enter isolated demo.",
+      "unproved_then_clauses": [
+        "Actual offline account unlock canceled must show zero cached history/profile and allow retry/isolated demo. No native canceled biometric journey admitted."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Controlled scope unlockedfalse refuses current publication; native store fail-closed guards exist."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+        ],
+        "exact_missing_observation": [
+          "Actual offline account unlock canceled must show zero cached history/profile and allow retry/isolated demo. No native canceled biometric journey admitted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-006-01",
+      "requirement_id": "AND-AUTH-006",
+      "status": "PARTIAL",
+      "expected_observation": "auth-sign-out-with-pending-check \u2014 - **GIVEN** one account check has not synchronized - **WHEN** the user selects sign-out - **THEN** the sheet states \u201c1 check has not synced\u201d; the default retains the locked record, and choosing local removal requires the extra count-specific confirmation.",
+      "unproved_then_clauses": [
+        "Rendered one-check count-specific signout sheet, default retention and extra local-removal confirmation are not asserted in current component/browser tests. Credential removal ordering is a different assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Controller signout clears identity immediately; source counts unsynced checks and defaults retain protected records."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::sign-out records the API receipt before provider revocation and clears local identity immediately"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::sign-out records the API receipt before provider revocation and clears local identity immediately"
+        ],
+        "exact_missing_observation": [
+          "Rendered one-check count-specific signout sheet, default retention and extra local-removal confirmation are not asserted in current component/browser tests. Credential removal ordering is a different assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-006-03",
+      "requirement_id": "AND-AUTH-006",
+      "status": "PARTIAL",
+      "expected_observation": "auth-default-signout-retains-locked-pending-data \u2014 - **GIVEN** account A owns two unsynchronized checks - **WHEN** the default sign-out action completes and account B signs in - **THEN** A's encrypted records remain locked and unuploaded; B cannot list, unlock, or queue them.",
+      "unproved_then_clauses": [
+        "Two unsynchronized A encrypted records default-retained then B login must explicitly remain locked/unuploaded and unlistable/unqueuable byB; current races do not inspect those retained record IDs or queue state. Actual native storage proof separate."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Delayed old logout and refresh cannot replace currentB identity/UI; account stamps excludeA responses."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+        "apps/mobile/tests/auth.test.ts::a stale refresh response cannot clear or overwrite a newly signed-in account"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+          "apps/mobile/tests/auth.test.ts::a stale refresh response cannot clear or overwrite a newly signed-in account"
+        ],
+        "exact_missing_observation": [
+          "Two unsynchronized A encrypted records default-retained then B login must explicitly remain locked/unuploaded and unlistable/unqueuable byB; current races do not inspect those retained record IDs or queue state. Actual native storage proof separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-007-01",
+      "requirement_id": "AND-AUTH-007",
+      "status": "BLOCKED",
+      "expected_observation": "auth-accessible-browser-return \u2014 - **GIVEN** TalkBack or VoiceOver is active - **WHEN** the browser is canceled - **THEN** focus returns to the sign-in heading and the cancellation message is announced once with Try again reachable.",
+      "unproved_then_clauses": [
+        "Actual TalkBack/VoiceOver browser cancellation focus returns heading, single announcement and Try again reachable unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Auth cancel returnsnull and no token exchange; cancellation message route exists.",
+        "Current DOM focus restoration, modal semantics, contrast and reduced-motion assertions are executed; no actual TalkBack/VoiceOver/native OS claim."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/auth.test.ts::cancelled, wrong-state, duplicate and invalidated callbacks cannot exchange a code"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/auth.test.ts::cancelled, wrong-state, duplicate and invalidated callbacks cannot exchange a code"
+        ],
+        "exact_missing_observation": [
+          "Actual TalkBack/VoiceOver browser cancellation focus returns heading, single announcement and Try again reachable unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-007-02",
+      "requirement_id": "AND-AUTH-007",
+      "status": "BLOCKED",
+      "expected_observation": "auth-ios-secure-storage \u2014 - **GIVEN** an iOS sign-in completes - **WHEN** app storage and logs are inspected - **THEN** refresh credentials are confined to the approved Keychain path and no token appears in ordinary preferences, logs, or check exports.",
+      "unproved_then_clauses": [
+        "Actual iOS Keychain path/file/preferences/log/export inspection after sign-in not executed. JavaScript vault double cannot establish Keychain confinement."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Serialized vault removes credentials in proper ordering; native source selects approved secure store; diagnostics excludes tokens."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/lifecycle.test.ts::sign-out removal finishes after an already-started OS credential write",
+        "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::sign-out removal finishes after an already-started OS credential write",
+          "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS Keychain path/file/preferences/log/export inspection after sign-in not executed. JavaScript vault double cannot establish Keychain confinement."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-037-AND-AUTH-001-01",
+      "required_clause": [
+        "The actual production public-client hosted browser and native callback account journey remains unexecuted. Current endpoint pinning, exact returned target, code/state, replay, refresh and no credential traffic on refusal are directly tested; Cognito/provider credentials and installed OS execution are separate prerequisites."
+      ],
+      "types": [
+        "provider_credentials",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/auth.test.ts::PKCE callback binds state and verifier and credential restore uses verified API identity",
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "apps/mobile/tests/auth.test.ts::unadmitted ${endpoint} is rejected before authorization browser or credential fetch",
+          "apps/mobile/tests/auth.test.ts::restored ${endpoint} substitution never activates saved credentials",
+          "apps/mobile/tests/auth.test.ts::commit refuses altered endpoints before activating or persisting credentials",
+          "apps/mobile/tests/auth.test.ts::refresh and captured provider operations recheck endpoint metadata before credential traffic"
+        ],
+        "exact_missing_observation": [
+          "The actual production public-client hosted browser and native callback account journey remains unexecuted. Current endpoint pinning, exact returned target, code/state, replay, refresh and no credential traffic on refusal are directly tested; Cognito/provider credentials and installed OS execution are separate prerequisites."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-001-02",
+      "required_clause": [
+        "Production build with local fixture token via tampered saved credentials/callback and unchanged current account inventory is not directly asserted. Arbitrary wrong issuer case differs from explicit production/local issuer namespace injection."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_invalid_access_tokens",
+          "apps/mobile/tests/auth.test.ts::PKCE callback binds state and verifier and credential restore uses verified API identity"
+        ],
+        "exact_missing_observation": [
+          "Production build with local fixture token via tampered saved credentials/callback and unchanged current account inventory is not directly asserted. Arbitrary wrong issuer case differs from explicit production/local issuer namespace injection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-003-01",
+      "required_clause": [
+        "Actual A cached records/pending operations retained, sign-out, B sign-in then History list/submission must verify zero A IDs/requests; stamp-only fixture and AuthManager token race do not cover persistent controller namespace journey."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+          "apps/mobile/tests/auth.test.ts::a stale refresh response cannot clear or overwrite a newly signed-in account"
+        ],
+        "exact_missing_observation": [
+          "Actual A cached records/pending operations retained, sign-out, B sign-in then History list/submission must verify zero A IDs/requests; stamp-only fixture and AuthManager token race do not cover persistent controller namespace journey."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-003-02",
+      "required_clause": [
+        "Ordinary authenticated research operation refusal must be rendered as capability unavailable without expired-login treatment; current capability/model unit tests do not assert that exact client error classification/message."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score",
+          "apps/mobile/tests/service-boundary.test.ts::actual backend app-config and capabilities responses decode without removing mandatory fields"
+        ],
+        "exact_missing_observation": [
+          "Ordinary authenticated research operation refusal must be rendered as capability unavailable without expired-login treatment; current capability/model unit tests do not assert that exact client error classification/message."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-004-02",
+      "required_clause": [
+        "Client sync paused/Sign in again UI and unsynchronized draft preservation on revoked refresh are not asserted in same context. AuthManager state clearing is narrower than draft/user recovery journey."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/auth.test.ts::revoked refresh clears the current account while transient connection failure retains its protected identity"
+        ],
+        "exact_missing_observation": [
+          "Client sync paused/Sign in again UI and unsynchronized draft preservation on revoked refresh are not asserted in same context. AuthManager state clearing is narrower than draft/user recovery journey."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-005-01",
+      "required_clause": [
+        "Actual same-still-signed-in cached account offline successful biometric unlock/history cachedlabel/no inventedtoken/queue owner requires actual OS credential+SQLCipher evidence."
+      ],
+      "types": [
+        "native_os_execution",
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/auth.test.ts::revoked refresh clears the current account while transient connection failure retains its protected identity",
+          "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+        ],
+        "exact_missing_observation": [
+          "Actual same-still-signed-in cached account offline successful biometric unlock/history cachedlabel/no inventedtoken/queue owner requires actual OS credential+SQLCipher evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-005-02",
+      "required_clause": [
+        "Native process killed during hosted browser auth then expired-attempt restart signedout/new attempt is not executed. In-memory expiry is not actual process restart."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::PKCE attempts expire at ten minutes, reject repeated callbacks and invalidate on logout/new login"
+        ],
+        "exact_missing_observation": [
+          "Native process killed during hosted browser auth then expired-attempt restart signedout/new attempt is not executed. In-memory expiry is not actual process restart."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-005-03",
+      "required_clause": [
+        "Actual Keep encrypted records\u2192signout\u2192offline biometric success\u2192retained account cache stays locked until sameissuer/subject reauthentication is unexecuted."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::sign-out removal finishes after an already-started OS credential write",
+          "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+        ],
+        "exact_missing_observation": [
+          "Actual Keep encrypted records\u2192signout\u2192offline biometric success\u2192retained account cache stays locked until sameissuer/subject reauthentication is unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-005-04",
+      "required_clause": [
+        "Actual offline account unlock canceled must show zero cached history/profile and allow retry/isolated demo. No native canceled biometric journey admitted."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::same-owner same-generation response succeeds; locking or backgrounding invalidates the scope"
+        ],
+        "exact_missing_observation": [
+          "Actual offline account unlock canceled must show zero cached history/profile and allow retry/isolated demo. No native canceled biometric journey admitted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-006-01",
+      "required_clause": [
+        "Rendered one-check count-specific signout sheet, default retention and extra local-removal confirmation are not asserted in current component/browser tests. Credential removal ordering is a different assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::sign-out records the API receipt before provider revocation and clears local identity immediately"
+        ],
+        "exact_missing_observation": [
+          "Rendered one-check count-specific signout sheet, default retention and extra local-removal confirmation are not asserted in current component/browser tests. Credential removal ordering is a different assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-006-03",
+      "required_clause": [
+        "Two unsynchronized A encrypted records default-retained then B login must explicitly remain locked/unuploaded and unlistable/unqueuable byB; current races do not inspect those retained record IDs or queue state. Actual native storage proof separate."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/workspace-scope.test.ts::delayed history, job or study responses cannot publish into another account",
+          "apps/mobile/tests/auth.test.ts::a stale refresh response cannot clear or overwrite a newly signed-in account"
+        ],
+        "exact_missing_observation": [
+          "Two unsynchronized A encrypted records default-retained then B login must explicitly remain locked/unuploaded and unlistable/unqueuable byB; current races do not inspect those retained record IDs or queue state. Actual native storage proof separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-007-01",
+      "required_clause": [
+        "Actual TalkBack/VoiceOver browser cancellation focus returns heading, single announcement and Try again reachable unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/auth.test.ts::cancelled, wrong-state, duplicate and invalidated callbacks cannot exchange a code"
+        ],
+        "exact_missing_observation": [
+          "Actual TalkBack/VoiceOver browser cancellation focus returns heading, single announcement and Try again reachable unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-037-AND-AUTH-007-02",
+      "required_clause": [
+        "Actual iOS Keychain path/file/preferences/log/export inspection after sign-in not executed. JavaScript vault double cannot establish Keychain confinement."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::sign-out removal finishes after an already-started OS credential write",
+          "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS Keychain path/file/preferences/log/export inspection after sign-in not executed. JavaScript vault double cannot establish Keychain confinement."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

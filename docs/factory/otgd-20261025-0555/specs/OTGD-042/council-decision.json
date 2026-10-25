@@ -1,0 +1,380 @@
+{
+  "spec_id": "OTGD-042",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/scoped-cardiac-authority/spec.md",
+  "canonical_sha256": "277f1727d50ffc6c0ee8717d1c77541bca64139ea78ffe032795ebf8a0c2b0a7",
+  "canonical_requirements": [
+    "HR-AUTH-001 Explicit restricted model policy",
+    "HR-AUTH-002 Exact independent calibration scope",
+    "HR-AUTH-003 Conservative original server interval",
+    "HR-AUTH-004 Direct model timing gates",
+    "HR-AUTH-005 Retained quality and restricted meaning",
+    "HR-AUTH-006 Independent historical baseline admission",
+    "HR-AUTH-007 Immutable proof and current publication authority",
+    "HR-AUTH-008 Prespecified interval-aware research evaluation"
+  ],
+  "canonical_scenarios": [
+    "Explicit approved heart-rate-only policy",
+    "Unsupported predictor or implicit policy",
+    "Exact released measurement and behavior scope",
+    "One changed dependency or self-asserted calibration",
+    "Original custody bounds retained",
+    "Missing, reversed or renewed endpoints",
+    "Vendor signed duration fits the conservative interval",
+    "Signed duration cannot fit the original custody window",
+    "Conservative bounds meet every limit",
+    "Original issue reveals late delivery",
+    "Exact limit and adjacent overflow",
+    "Recognized timing limitation remains visible",
+    "Fault flag or different modality",
+    "Independently admitted compatible baseline",
+    "Current proof with incompatible baseline",
+    "Bound proof through accepted job and read",
+    "Revocation after acceptance or forged companion",
+    "Legacy measurement behavior preserved",
+    "Safe measurement job without model authority",
+    "Scoped population training and evaluation",
+    "Explicit personalized baseline evidence",
+    "Forged consistency or incomplete baseline",
+    "Legacy quality and four-ablation behavior"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 18,
+    "PARTIAL": 5
+  },
+  "all_current_case_ids": [
+    "OTGD-042-HR-AUTH-001-01",
+    "OTGD-042-HR-AUTH-001-02",
+    "OTGD-042-HR-AUTH-002-01",
+    "OTGD-042-HR-AUTH-002-02",
+    "OTGD-042-HR-AUTH-003-01",
+    "OTGD-042-HR-AUTH-003-02",
+    "OTGD-042-HR-AUTH-003-03",
+    "OTGD-042-HR-AUTH-003-04",
+    "OTGD-042-HR-AUTH-004-01",
+    "OTGD-042-HR-AUTH-004-02",
+    "OTGD-042-HR-AUTH-004-03",
+    "OTGD-042-HR-AUTH-005-01",
+    "OTGD-042-HR-AUTH-005-02",
+    "OTGD-042-HR-AUTH-006-01",
+    "OTGD-042-HR-AUTH-006-02",
+    "OTGD-042-HR-AUTH-007-01",
+    "OTGD-042-HR-AUTH-007-02",
+    "OTGD-042-HR-AUTH-007-03",
+    "OTGD-042-HR-AUTH-007-04",
+    "OTGD-042-HR-AUTH-008-01",
+    "OTGD-042-HR-AUTH-008-02",
+    "OTGD-042-HR-AUTH-008-03",
+    "OTGD-042-HR-AUTH-008-04"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-042-HR-AUTH-001-02",
+      "requirement_id": "HR-AUTH-001",
+      "status": "PARTIAL",
+      "expected_observation": "Unsupported predictor or implicit policy \u2014 - **GIVEN** missing policy, an ECG/RMSSD predictor, an additional required channel or a mismatching artifact feature - **WHEN** server interval qualification is requested - **THEN** the service refuses that authority and performs no model execution - **AND** no legacy model is silently upgraded",
+      "unproved_then_clauses": [
+        "missing policy refuses server-interval request with no model execution: explicit no-execution assertion for absent-policy legacy request not present in these bodies."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "ECG/RMSSD/additional artifact feature/channel refuses; legacy registry bytes remain unchanged without policy."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_cardiac_authority.py::test_actual_artifact_not_just_required_channels_is_hr_only",
+        "services/api/tests/test_cardiac_authority_provenance.py::test_interval_exception_cannot_extend_to_another_channel_or_artifact_feature",
+        "services/api/tests/test_cardiac_interval_governance.py::test_required_channel_scope_is_heart_rate_only",
+        "services/api/tests/test_cardiac_interval_governance.py::test_legacy_released_model_remains_readable_at_original_submitted_sha"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_actual_artifact_not_just_required_channels_is_hr_only",
+          "services/api/tests/test_cardiac_authority_provenance.py::test_interval_exception_cannot_extend_to_another_channel_or_artifact_feature",
+          "services/api/tests/test_cardiac_interval_governance.py::test_required_channel_scope_is_heart_rate_only",
+          "services/api/tests/test_cardiac_interval_governance.py::test_legacy_released_model_remains_readable_at_original_submitted_sha"
+        ],
+        "exact_missing_observation": [
+          "missing policy refuses server-interval request with no model execution: explicit no-execution assertion for absent-policy legacy request not present in these bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-042-HR-AUTH-002-01",
+      "requirement_id": "HR-AUTH-002",
+      "status": "PARTIAL",
+      "expected_observation": "Exact released measurement and behavior scope \u2014 - **GIVEN** current independently released model, configuration, hardware, firmware, qualification and calibration records for the exact protected reader and HR adapter - **WHEN** their complete immutable scope matches the owned accepted measurement - **THEN** the server may derive the restricted interval proof - **AND** externally observed sensor freshness and behavior evidence remains an approval prerequisite - **AND** the approved maximum interval is 100\u2013120000 ms and server UTC error is 0\u20131000 ms - **AND** vendor signed-duration comparison requires independently reviewed monotonic rate error of 0\u201310000 ppm; ADC has no inferred signed duration or rate error",
+      "unproved_then_clauses": [
+        "externally observed sensor freshness/behavior remains genuine approval prerequisite: physical evidence absent; lower/equality/upper full100\u2013120000ms,0\u20131000ms,0\u201310000ppm release-bound matrix also not exhaustively asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Exact released fictional tuple resolves proof; mismatch scope and ambiguous/nonfinite authority refuse; ADC cannot infer signed duration and SDK needs reviewed rate bound."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+        "services/api/tests/test_cardiac_interval_governance.py::test_separate_release_checks_exact_current_configuration_tuple",
+        "services/api/tests/test_cardiac_interval_governance.py::test_interval_scope_refuses_unimplemented_or_ambiguous_authority",
+        "services/api/tests/test_cardiac_authority_provenance.py::test_unsigned_adc_or_missing_unreviewed_sdk_clock_cannot_supply_signed_duration"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+          "services/api/tests/test_cardiac_interval_governance.py::test_separate_release_checks_exact_current_configuration_tuple",
+          "services/api/tests/test_cardiac_interval_governance.py::test_interval_scope_refuses_unimplemented_or_ambiguous_authority",
+          "services/api/tests/test_cardiac_authority_provenance.py::test_unsigned_adc_or_missing_unreviewed_sdk_clock_cannot_supply_signed_duration"
+        ],
+        "exact_missing_observation": [
+          "externally observed sensor freshness/behavior remains genuine approval prerequisite: physical evidence absent; lower/equality/upper full100\u2013120000ms,0\u20131000ms,0\u201310000ppm release-bound matrix also not exhaustively asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-042-HR-AUTH-003-02",
+      "requirement_id": "HR-AUTH-003",
+      "status": "PARTIAL",
+      "expected_observation": "Missing, reversed or renewed endpoints \u2014 - **GIVEN** absent accepted attestation, negative/nonfinite/reversed times, a foreign attempt, a mismatching signature or an interval above its approved maximum - **WHEN** authority is computed - **THEN** the service refuses it - **AND** replay or a replacement receipt cannot restart its age or shorten the original interval",
+      "unproved_then_clauses": [
+        "absent accepted attestation, negative/nonfinite endpoints, and actual replay/replacement attempts cannot restart age: each exact admission branch is not directly exercised by these named bodies."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Rehashed server/device signatures, owner/scope/anchor/binding/projection changes refuse; reversed companion time and changed width refuse; durable anchors cannot renew."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_cardiac_authority.py::test_rehashed_custody_records_still_require_original_signatures_and_exact_scope",
+        "services/api/tests/test_cardiac_authority.py::test_unsigned_timing_or_channel_changes_cannot_qualify",
+        "apps/mobile/tests/research-result.test.ts::HR-only proof refuses rebased intervals, broader models, altered calibration/policy/scope, fictional predictors and unpreserved uncertainty",
+        "services/api/tests/test_participant_postgres.py::test_signed_issue_and_attestation_receipt_anchors_cannot_be_rewritten"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_rehashed_custody_records_still_require_original_signatures_and_exact_scope",
+          "services/api/tests/test_cardiac_authority.py::test_unsigned_timing_or_channel_changes_cannot_qualify",
+          "apps/mobile/tests/research-result.test.ts::HR-only proof refuses rebased intervals, broader models, altered calibration/policy/scope, fictional predictors and unpreserved uncertainty",
+          "services/api/tests/test_participant_postgres.py::test_signed_issue_and_attestation_receipt_anchors_cannot_be_rewritten"
+        ],
+        "exact_missing_observation": [
+          "absent accepted attestation, negative/nonfinite endpoints, and actual replay/replacement attempts cannot restart age: each exact admission branch is not directly exercised by these named bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-042-HR-AUTH-005-01",
+      "requirement_id": "HR-AUTH-005",
+      "status": "PARTIAL",
+      "expected_observation": "Recognized timing limitation remains visible \u2014 - **GIVEN** a valid exact adapter measurement carrying its complete known unqualified server/host timing flags and a matching interval proof - **WHEN** restricted HR-only execution succeeds - **THEN** the original evidence and authority manifest retain those flags and explain the conservative method - **AND** vendor confidence remains acquisition quality rather than a calibrated prediction probability",
+      "unproved_then_clauses": [
+        "vendor confidence remains acquisition quality rather than prediction probability in successful vendor execution: no successful vendor confidence presentation assertion in these bodies."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "ADC flags and immutable snapshot retained through server worker/client result/export with conservative proof; physical clock flags remain unqualified."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+        "apps/mobile/tests/research-result.test.ts::actual signed API-to-worker HR-only fixture verifies conservative server interval authority without rewriting its sensor flags",
+        "services/api/tests/test_cardiac_authority_provenance.py::test_epoch_precision_uses_durable_decimal_values_and_never_rewrites_device_evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+          "apps/mobile/tests/research-result.test.ts::actual signed API-to-worker HR-only fixture verifies conservative server interval authority without rewriting its sensor flags",
+          "services/api/tests/test_cardiac_authority_provenance.py::test_epoch_precision_uses_durable_decimal_values_and_never_rewrites_device_evidence"
+        ],
+        "exact_missing_observation": [
+          "vendor confidence remains acquisition quality rather than prediction probability in successful vendor execution: no successful vendor confidence presentation assertion in these bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-042-HR-AUTH-007-04",
+      "requirement_id": "HR-AUTH-007",
+      "status": "PARTIAL",
+      "expected_observation": "Safe measurement job without model authority \u2014 - **GIVEN** an otherwise admitted measurement whose current HR model or calibration authority is unavailable - **WHEN** the participant explicitly finalizes and queues its measurement job - **THEN** the service may process its measurement-only result under the ordinary current account/study rules - **AND** accepting that job supplies no numeric HR-model authority; every subsequent conditional execution or disclosure still requires complete current proof",
+      "unproved_then_clauses": [
+        "otherwise admitted cardiac measurement can finalize/queue under ordinary rules when current HR model/calibration absent, with no numeric authority: exact cardiac missing-authority finalize/worker path is not executed here."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "No-model fictional participant job completes inconclusive with null probability; losing HR authority prevents conditional execution."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_actual_http_collection_staff_report_import_refresh_and_finalize",
+        "services/api/tests/test_cardiac_authority.py::test_retired_current_authority_never_promotes_old_capture"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_actual_http_collection_staff_report_import_refresh_and_finalize",
+          "services/api/tests/test_cardiac_authority.py::test_retired_current_authority_never_promotes_old_capture"
+        ],
+        "exact_missing_observation": [
+          "otherwise admitted cardiac measurement can finalize/queue under ordinary rules when current HR model/calibration absent, with no numeric authority: exact cardiac missing-authority finalize/worker path is not executed here."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-042-HR-AUTH-001-02",
+      "required_clause": [
+        "missing policy refuses server-interval request with no model execution: explicit no-execution assertion for absent-policy legacy request not present in these bodies."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_actual_artifact_not_just_required_channels_is_hr_only",
+          "services/api/tests/test_cardiac_authority_provenance.py::test_interval_exception_cannot_extend_to_another_channel_or_artifact_feature",
+          "services/api/tests/test_cardiac_interval_governance.py::test_required_channel_scope_is_heart_rate_only",
+          "services/api/tests/test_cardiac_interval_governance.py::test_legacy_released_model_remains_readable_at_original_submitted_sha"
+        ],
+        "exact_missing_observation": [
+          "missing policy refuses server-interval request with no model execution: explicit no-execution assertion for absent-policy legacy request not present in these bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-042-HR-AUTH-002-01",
+      "required_clause": [
+        "externally observed sensor freshness/behavior remains genuine approval prerequisite: physical evidence absent; lower/equality/upper full100\u2013120000ms,0\u20131000ms,0\u201310000ppm release-bound matrix also not exhaustively asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+          "services/api/tests/test_cardiac_interval_governance.py::test_separate_release_checks_exact_current_configuration_tuple",
+          "services/api/tests/test_cardiac_interval_governance.py::test_interval_scope_refuses_unimplemented_or_ambiguous_authority",
+          "services/api/tests/test_cardiac_authority_provenance.py::test_unsigned_adc_or_missing_unreviewed_sdk_clock_cannot_supply_signed_duration"
+        ],
+        "exact_missing_observation": [
+          "externally observed sensor freshness/behavior remains genuine approval prerequisite: physical evidence absent; lower/equality/upper full100\u2013120000ms,0\u20131000ms,0\u201310000ppm release-bound matrix also not exhaustively asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-042-HR-AUTH-003-02",
+      "required_clause": [
+        "absent accepted attestation, negative/nonfinite endpoints, and actual replay/replacement attempts cannot restart age: each exact admission branch is not directly exercised by these named bodies."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_rehashed_custody_records_still_require_original_signatures_and_exact_scope",
+          "services/api/tests/test_cardiac_authority.py::test_unsigned_timing_or_channel_changes_cannot_qualify",
+          "apps/mobile/tests/research-result.test.ts::HR-only proof refuses rebased intervals, broader models, altered calibration/policy/scope, fictional predictors and unpreserved uncertainty",
+          "services/api/tests/test_participant_postgres.py::test_signed_issue_and_attestation_receipt_anchors_cannot_be_rewritten"
+        ],
+        "exact_missing_observation": [
+          "absent accepted attestation, negative/nonfinite endpoints, and actual replay/replacement attempts cannot restart age: each exact admission branch is not directly exercised by these named bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-042-HR-AUTH-005-01",
+      "required_clause": [
+        "vendor confidence remains acquisition quality rather than prediction probability in successful vendor execution: no successful vendor confidence presentation assertion in these bodies."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_cardiac_authority.py::test_http_signed_hr_only_research_worker_preserves_flags_and_snapshot",
+          "apps/mobile/tests/research-result.test.ts::actual signed API-to-worker HR-only fixture verifies conservative server interval authority without rewriting its sensor flags",
+          "services/api/tests/test_cardiac_authority_provenance.py::test_epoch_precision_uses_durable_decimal_values_and_never_rewrites_device_evidence"
+        ],
+        "exact_missing_observation": [
+          "vendor confidence remains acquisition quality rather than prediction probability in successful vendor execution: no successful vendor confidence presentation assertion in these bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-042-HR-AUTH-007-04",
+      "required_clause": [
+        "otherwise admitted cardiac measurement can finalize/queue under ordinary rules when current HR model/calibration absent, with no numeric authority: exact cardiac missing-authority finalize/worker path is not executed here."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_actual_http_collection_staff_report_import_refresh_and_finalize",
+          "services/api/tests/test_cardiac_authority.py::test_retired_current_authority_never_promotes_old_capture"
+        ],
+        "exact_missing_observation": [
+          "otherwise admitted cardiac measurement can finalize/queue under ordinary rules when current HR model/calibration absent, with no numeric authority: exact cardiac missing-authority finalize/worker path is not executed here."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

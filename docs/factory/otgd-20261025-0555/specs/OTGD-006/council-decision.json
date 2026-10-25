@@ -1,0 +1,126 @@
+{
+  "spec_id": "OTGD-006",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
+  "canonical_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+  "canonical_requirements": [
+    "AND-RES-003 Keep impairment inference closed"
+  ],
+  "canonical_scenarios": [
+    "Approved new result",
+    "Legacy or unapproved claim"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 1,
+    "PASS": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-006-AND-RES-003-01",
+    "OTGD-006-AND-RES-003-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-006-AND-RES-003-01",
+      "requirement_id": "AND-RES-003",
+      "status": "PARTIAL",
+      "expected_observation": "Approved new result \u2014 - **WHEN** an authorized account receives a fully linked 1.1.0 result from the admitted research pipeline - **THEN** the reader presents its endpoint, population, research-only status and provenance without claiming driving clearance",
+      "unproved_then_clauses": [
+        "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+      ],
+      "remaining_prerequisite_types": [
+        "software_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "current_assertions_proven": [
+        "Client verifies fully linked fictional1.1 endpoint/population/provenance and rejects altered proof; direct alcohol research context keeps no-driving-clearance copy.",
+        "ExistingHRcache exactdigest/view/epoch/account/gen ephemeralread, late/offline/denial/mismatch refusal; separateexportadmission atassembly/finalrelease, actualResultDOMwithprepopulatedHR.",
+        "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates.",
+        "Actual Result/History/row rendering preserves uncertainty policy/method/exact supplied limits/rationale, null abstention and historical scope; malformed/mismatched policy withheld. Shared current Result source supplies endpoint/population/research-only/no-driving text, not a probabilistic fitness claim."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+        "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+        "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+        "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+        "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+        "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+        "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+        "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+        "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+        "apps/mobile/tests/result-ui.test.ts::actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+        "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+        "apps/mobile/tests/result-presentation.test.ts::verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+        "apps/mobile/tests/result-presentation.test.ts::supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+        "apps/mobile/tests/research-result.test.ts::a verified uncertainty band requires null abstention rather than a probability or optimistic classification"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+          "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+          "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+          "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation"
+        ],
+        "exact_missing_observation": [
+          "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-006-AND-RES-003-01",
+      "required_clause": [
+        "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+      ],
+      "types": [
+        "software_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+          "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+          "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+          "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation"
+        ],
+        "exact_missing_observation": [
+          "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

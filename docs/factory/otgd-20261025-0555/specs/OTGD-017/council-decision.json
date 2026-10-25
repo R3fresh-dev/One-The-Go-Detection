@@ -1,0 +1,162 @@
+{
+  "spec_id": "OTGD-017",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/optional-raw-recording-lifecycle/specs/fictional-hosted-preview/spec.md",
+  "canonical_sha256": "ee9d68e204d40b0500732c19096ce4fc4a362892d09106034678baacde4e961d",
+  "canonical_requirements": [
+    "AND-PREV-001 Accept fictional hosted mode only in local builds",
+    "AND-PREV-002 Disable every account and real acquisition path",
+    "AND-PREV-003 Isolate guest records and explain persistence"
+  ],
+  "canonical_scenarios": [
+    "Production enables the preview flag",
+    "An isolated local preview is packaged",
+    "A customer saves a browser example",
+    "A credential or hardware path is invoked directly",
+    "The browser reloads after saving an example",
+    "A guest example is selected for account upload"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 4,
+    "PARTIAL": 2
+  },
+  "all_current_case_ids": [
+    "OTGD-017-AND-PREV-001-01",
+    "OTGD-017-AND-PREV-001-02",
+    "OTGD-017-AND-PREV-002-01",
+    "OTGD-017-AND-PREV-002-02",
+    "OTGD-017-AND-PREV-003-01",
+    "OTGD-017-AND-PREV-003-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-017-AND-PREV-001-02",
+      "requirement_id": "AND-PREV-001",
+      "status": "PARTIAL",
+      "expected_observation": "An isolated local preview is packaged \u2014 - **GIVEN** APP_ENV=local and the matching compiled public environment - **WHEN** the hosted flag is accepted and the reviewed workflow packages the app - **THEN** its bundle and platform metadata identify fictional hosted mode and account and real acquisition services remain disabled.",
+      "unproved_then_clauses": [
+        "The same packaged bundle and Android/iOS platform metadata are not yet independently bound to downloaded binary bytes with reviewed provenance in this case; configuration output is narrower than final artifact admission. Actual installed native acquisition refusal also remains an OS prerequisite."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Config test asserts accepted local extra.hostedPreview and iOS infoPlist metadata, controller has disabled account/native paths; current preview CI jobs succeeded."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior",
+        "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior",
+          "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service"
+        ],
+        "exact_missing_observation": [
+          "The same packaged bundle and Android/iOS platform metadata are not yet independently bound to downloaded binary bytes with reviewed provenance in this case; configuration output is narrower than final artifact admission. Actual installed native acquisition refusal also remains an OS prerequisite."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-017-AND-PREV-003-02",
+      "requirement_id": "AND-PREV-003",
+      "status": "PARTIAL",
+      "expected_observation": "A guest example is selected for account upload \u2014 - **GIVEN** a saved check in the isolated fictional guest namespace - **WHEN** a caller attempts account migration, import or upload - **THEN** the operation is refused and the account namespace receives no guest data.",
+      "unproved_then_clauses": [
+        "No same-context test presents a saved hosted-preview check to account migration/import/upload and verifies unchanged account namespace digest. General guest/domain and network refusal do not prove that entire selected-example admission."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Dedicated fictional workspace and disabled transport are asserted; normal domain guest check refuses upload/owner promotion."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service",
+        "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service",
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "No same-context test presents a saved hosted-preview check to account migration/import/upload and verifies unchanged account namespace digest. General guest/domain and network refusal do not prove that entire selected-example admission."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-017-AND-PREV-001-02",
+      "required_clause": [
+        "The same packaged bundle and Android/iOS platform metadata are not yet independently bound to downloaded binary bytes with reviewed provenance in this case; configuration output is narrower than final artifact admission. Actual installed native acquisition refusal also remains an OS prerequisite."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior",
+          "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service"
+        ],
+        "exact_missing_observation": [
+          "The same packaged bundle and Android/iOS platform metadata are not yet independently bound to downloaded binary bytes with reviewed provenance in this case; configuration output is narrower than final artifact admission. Actual installed native acquisition refusal also remains an OS prerequisite."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-017-AND-PREV-003-02",
+      "required_clause": [
+        "No same-context test presents a saved hosted-preview check to account migration/import/upload and verifies unchanged account namespace digest. General guest/domain and network refusal do not prove that entire selected-example admission."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service",
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "No same-context test presents a saved hosted-preview check to account migration/import/upload and verifies unchanged account namespace digest. General guest/domain and network refusal do not prove that entire selected-example admission."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

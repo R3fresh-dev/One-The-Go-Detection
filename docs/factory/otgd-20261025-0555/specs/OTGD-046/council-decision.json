@@ -1,0 +1,307 @@
+{
+  "spec_id": "OTGD-046",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/fictional-browser-preview/spec.md",
+  "canonical_sha256": "1a331132cf6b66413d1705dc09d0c7f885b8fe1375ea72250dcd5a451162e241",
+  "canonical_requirements": [
+    "PREVIEW-001 Build an isolated fixed-origin guest export",
+    "PREVIEW-002 Verify the correct preview before reuse",
+    "PREVIEW-003 Document actual click-only hosting boundaries"
+  ],
+  "canonical_scenarios": [
+    "Ambient production values are present",
+    "An ordinary export also exists",
+    "A correct private guest server is already running",
+    "A foreign service occupies the port",
+    "A user has the supported service account",
+    "No hosting access exists"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 4,
+    "PASS": 1,
+    "BLOCKED": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-046-PREVIEW-001-01",
+    "OTGD-046-PREVIEW-001-02",
+    "OTGD-046-PREVIEW-002-01",
+    "OTGD-046-PREVIEW-002-02",
+    "OTGD-046-PREVIEW-003-01",
+    "OTGD-046-PREVIEW-003-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-046-PREVIEW-001-01",
+      "requirement_id": "PREVIEW-001",
+      "status": "PARTIAL",
+      "expected_observation": "Ambient production values are present \u2014 - **GIVEN** a host or dotenv containing production API/OAuth configuration - **WHEN** the preview is prepared - **THEN** only explicit guest configuration enters its separate bundle.",
+      "unproved_then_clauses": [
+        "No current test injects ambient production env/dotenv then inspects every exported bundle/manifest for exclusive guest values; source override plus clean build is narrower than hostile-ambient scenario."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Build-preview source overrides API/OAuth/app environment with local unavailable.invalid guest configuration and EXPO_NO_DOTENV1; executed browser has no external calls."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+        "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+          "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service"
+        ],
+        "exact_missing_observation": [
+          "No current test injects ambient production env/dotenv then inspects every exported bundle/manifest for exclusive guest values; source override plus clean build is narrower than hostile-ambient scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-046-PREVIEW-001-02",
+      "requirement_id": "PREVIEW-001",
+      "status": "PARTIAL",
+      "expected_observation": "An ordinary export also exists \u2014 - **GIVEN** dist and dist-preview from different modes - **WHEN** the preview starts - **THEN** the guest server uses only dist-preview and its matching manifest.",
+      "unproved_then_clauses": [
+        "Current fixture has only dist-preview, not distinct ordinary dist plus guest dist-preview. Need both modes with distinct bytes and actual server response path/manifest assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Preview hook fixture uses dist-preview and matching manifest; source-only preparation hashes source/output and rejects drift."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_codespaces_preview.py::test_current_export_is_accepted_and_repeat_start_reuses_only_matching_guest",
+        "infra/test/test_codespaces_preview.py::test_changed_export_tracked_source_and_new_source_require_repreparation"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_codespaces_preview.py::test_current_export_is_accepted_and_repeat_start_reuses_only_matching_guest",
+          "infra/test/test_codespaces_preview.py::test_changed_export_tracked_source_and_new_source_require_repreparation"
+        ],
+        "exact_missing_observation": [
+          "Current fixture has only dist-preview, not distinct ordinary dist plus guest dist-preview. Need both modes with distinct bytes and actual server response path/manifest assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-046-PREVIEW-002-02",
+      "requirement_id": "PREVIEW-002",
+      "status": "PARTIAL",
+      "expected_observation": "A foreign service occupies the port \u2014 - **GIVEN** ordinary/unrelated HTTP 200 content or a missing guest export - **WHEN** post-start runs - **THEN** it refuses readiness and preserves the unrelated service.",
+      "unproved_then_clauses": [
+        "Missing guest export alternative is not directly tested by deleting dist-preview before post-start; admission source exists but this negative is not bound to an executed assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual foreign HTTP200 fixture is refused with unexpected-content exit1; original server remains queryable and no new server.pid. Non-guest manifest, drift, redirect and bounded oversized probes reject."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_codespaces_preview.py::test_generic_http_200_is_not_reused_or_stopped_by_startup",
+        "infra/test/test_codespaces_preview.py::test_non_guest_marker_cannot_be_prepared_or_admitted"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_codespaces_preview.py::test_generic_http_200_is_not_reused_or_stopped_by_startup",
+          "infra/test/test_codespaces_preview.py::test_non_guest_marker_cannot_be_prepared_or_admitted"
+        ],
+        "exact_missing_observation": [
+          "Missing guest export alternative is not directly tested by deleting dist-preview before post-start; admission source exists but this negative is not bound to an executed assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-046-PREVIEW-003-01",
+      "requirement_id": "PREVIEW-003",
+      "status": "BLOCKED",
+      "expected_observation": "A user has the supported service account \u2014 - **GIVEN** the reviewed branch and successful source-bound guest artifacts - **WHEN** the documented browser hosting steps are followed - **THEN** no local clone/build commands are needed to explore the fictional UI.",
+      "unproved_then_clauses": [
+        "Actual supported hosting account/Codespace/Appetize session and documented no-local-clone user path are unexecuted; no authorized external hosting session is inferred."
+      ],
+      "remaining_prerequisite_types": [
+        "independent_prerequisite_or_exact_scenario_evidence"
+      ],
+      "current_assertions_proven": [
+        "Reviewed setup/docs and source-bound guest build are available; local exported browser UI is exercised."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records"
+        ],
+        "exact_missing_observation": [
+          "Actual supported hosting account/Codespace/Appetize session and documented no-local-clone user path are unexecuted; no authorized external hosting session is inferred."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-046-PREVIEW-003-02",
+      "requirement_id": "PREVIEW-003",
+      "status": "PARTIAL",
+      "expected_observation": "No hosting access exists \u2014 - **GIVEN** no managed forwarding capability, existing Codespace or Appetize credentials - **WHEN** delivery is reported - **THEN** it supplies setup/artifacts and concrete account steps without claiming a launched session.",
+      "unproved_then_clauses": [
+        "This delivery-report criterion needs PM final artifact/setup report review at actual handoff; no test symbol can establish the factual absence/presence of user hosting access or launch. No launched session is claimed here."
+      ],
+      "remaining_prerequisite_types": [
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "Report already distinguishes exported local browser artifacts from absent external hosted session and documents setup steps."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "This delivery-report criterion needs PM final artifact/setup report review at actual handoff; no test symbol can establish the factual absence/presence of user hosting access or launch. No launched session is claimed here."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-046-PREVIEW-001-01",
+      "required_clause": [
+        "No current test injects ambient production env/dotenv then inspects every exported bundle/manifest for exclusive guest values; source override plus clean build is narrower than hostile-ambient scenario."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+          "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service"
+        ],
+        "exact_missing_observation": [
+          "No current test injects ambient production env/dotenv then inspects every exported bundle/manifest for exclusive guest values; source override plus clean build is narrower than hostile-ambient scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-046-PREVIEW-001-02",
+      "required_clause": [
+        "Current fixture has only dist-preview, not distinct ordinary dist plus guest dist-preview. Need both modes with distinct bytes and actual server response path/manifest assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_codespaces_preview.py::test_current_export_is_accepted_and_repeat_start_reuses_only_matching_guest",
+          "infra/test/test_codespaces_preview.py::test_changed_export_tracked_source_and_new_source_require_repreparation"
+        ],
+        "exact_missing_observation": [
+          "Current fixture has only dist-preview, not distinct ordinary dist plus guest dist-preview. Need both modes with distinct bytes and actual server response path/manifest assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-046-PREVIEW-002-02",
+      "required_clause": [
+        "Missing guest export alternative is not directly tested by deleting dist-preview before post-start; admission source exists but this negative is not bound to an executed assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_codespaces_preview.py::test_generic_http_200_is_not_reused_or_stopped_by_startup",
+          "infra/test/test_codespaces_preview.py::test_non_guest_marker_cannot_be_prepared_or_admitted"
+        ],
+        "exact_missing_observation": [
+          "Missing guest export alternative is not directly tested by deleting dist-preview before post-start; admission source exists but this negative is not bound to an executed assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-046-PREVIEW-003-01",
+      "required_clause": [
+        "Actual supported hosting account/Codespace/Appetize session and documented no-local-clone user path are unexecuted; no authorized external hosting session is inferred."
+      ],
+      "types": [
+        "independent_prerequisite_or_exact_scenario_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records"
+        ],
+        "exact_missing_observation": [
+          "Actual supported hosting account/Codespace/Appetize session and documented no-local-clone user path are unexecuted; no authorized external hosting session is inferred."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-046-PREVIEW-003-02",
+      "required_clause": [
+        "This delivery-report criterion needs PM final artifact/setup report review at actual handoff; no test symbol can establish the factual absence/presence of user hosting access or launch. No launched session is claimed here."
+      ],
+      "types": [
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "This delivery-report criterion needs PM final artifact/setup report review at actual handoff; no test symbol can establish the factual absence/presence of user hosting access or launch. No launched session is claimed here."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

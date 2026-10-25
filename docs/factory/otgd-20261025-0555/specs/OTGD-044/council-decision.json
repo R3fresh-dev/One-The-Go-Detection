@@ -1,0 +1,281 @@
+{
+  "spec_id": "OTGD-044",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/cloud-browser-delivery/spec.md",
+  "canonical_sha256": "758f7dd11a72a15750d44a61d49d986b923232ac981fcb9ab304a56526e5bb6c",
+  "canonical_requirements": [
+    "WEB-DEP-007 Enforce browser security headers",
+    "WEB-DEP-009 Verify the actual complete private release route",
+    "WEB-DEP-010 Bound public response verification by signed bytes"
+  ],
+  "canonical_scenarios": [
+    "Public transport probes execute",
+    "A policy fragment hides a weaker route",
+    "A public response exceeds the signed file",
+    "The supplied infrastructure matches the release",
+    "A secondary route escapes the admitted origin",
+    "An archive changes during verification",
+    "The public release returns its exact artifact",
+    "The public response is unexpectedly encoded or oversized"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 4,
+    "PASS": 4
+  },
+  "all_current_case_ids": [
+    "OTGD-044-WEB-DEP-007-01",
+    "OTGD-044-WEB-DEP-007-02",
+    "OTGD-044-WEB-DEP-007-03",
+    "OTGD-044-WEB-DEP-009-01",
+    "OTGD-044-WEB-DEP-009-02",
+    "OTGD-044-WEB-DEP-009-03",
+    "OTGD-044-WEB-DEP-010-01",
+    "OTGD-044-WEB-DEP-010-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-044-WEB-DEP-007-01",
+      "requirement_id": "WEB-DEP-007",
+      "status": "PARTIAL",
+      "expected_observation": "Public transport probes execute \u2014 - **GIVEN** a published admitted artifact and the full supported response policy - **WHEN** index, assets and the history route are retrieved over verified HTTPS - **THEN** exact byte digest/size and all required transport/CSP controls verify.",
+      "unproved_then_clauses": [
+        "Actual published verified-HTTPS index, every admitted asset and history route must meet exact digest/size/transport/CSP policy. Current operator HTTP fixtures now check every admitted asset and fail missing/corrupt/encoded/redirected/oversized members; actual CloudFront/S3/DNS release transport is unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Nominal MockTransport index+one JS+history verify expected bytes, strict transport/CSP helper accepts exact/reordered policy.",
+        "ActualoperatorHTTPfixture checks everyadmittedasset; secondaryscript/otherassetomission/corruption/encoding/redirect/oversize refuse before generalaccesspass."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+        "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport",
+        "infra/test/test_web_deployment.py::test_every_admitted_asset_is_read_and_checked_before_public_access_passes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+          "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport",
+          "infra/test/test_web_deployment.py::test_every_admitted_asset_is_read_and_checked_before_public_access_passes"
+        ],
+        "exact_missing_observation": [
+          "Actual published verified-HTTPS index, every admitted asset and history route must meet exact digest/size/transport/CSP policy. Current operator HTTP fixtures now check every admitted asset and fail missing/corrupt/encoded/redirected/oversized members; actual CloudFront/S3/DNS release transport is unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-044-WEB-DEP-009-01",
+      "requirement_id": "WEB-DEP-009",
+      "status": "PARTIAL",
+      "expected_observation": "The supplied infrastructure matches the release \u2014 - **GIVEN** the actual one-origin OAC distribution and unchanged signed archive - **WHEN** publication or DNS admission runs - **THEN** routing and every archive member match the admitted release before mutation.",
+      "unproved_then_clauses": [
+        "\u201cactual one-origin OAC distribution ... publication/DNS admission ... before mutation\u201d: runtime route metadata is fixture SDK responses; no actual deployed CloudFront/private-S3 route with release artifact exercised."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Real archive+signature/member verification uses one captured snapshot, mocked actual distribution/OAC checked before put and index written last."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+        "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last",
+        "infra/test/test_web_deployment.py::test_archive_bound_precedes_hashing_and_admission_uses_one_stable_snapshot"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+          "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last",
+          "infra/test/test_web_deployment.py::test_archive_bound_precedes_hashing_and_admission_uses_one_stable_snapshot"
+        ],
+        "exact_missing_observation": [
+          "\u201cactual one-origin OAC distribution ... publication/DNS admission ... before mutation\u201d: runtime route metadata is fixture SDK responses; no actual deployed CloudFront/private-S3 route with release artifact exercised."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-044-WEB-DEP-009-03",
+      "requirement_id": "WEB-DEP-009",
+      "status": "PARTIAL",
+      "expected_observation": "An archive changes during verification \u2014 - **GIVEN** a special/oversized/replaced archive or mismatching member/digest - **WHEN** bounded verification executes - **THEN** it fails before any public bytes are published.",
+      "unproved_then_clauses": [
+        "\u201cspecial/replaced archive ... fails before public bytes published\u201d: file-reader archive-specific special/inode-change-during-read rejection and publication-not-called are not asserted together; post-snapshot replacement test intentionally succeeds with verified original snapshot. That safe snapshot behavior is distinguished from the stricter scenario wording; no malicious replacement-byte publication demonstrated."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Oversized archive rejected before signer called; changed/injected ZIP or duplicate member rejected. Deliberate replacement AFTER bounded snapshot returns original accepted bytes, not replacement."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_archive_bound_precedes_hashing_and_admission_uses_one_stable_snapshot",
+        "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+        "infra/test/test_web_deployment.py::test_public_asset_types_paths_symlinks_and_duplicate_zip_entries_are_rejected"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_archive_bound_precedes_hashing_and_admission_uses_one_stable_snapshot",
+          "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+          "infra/test/test_web_deployment.py::test_public_asset_types_paths_symlinks_and_duplicate_zip_entries_are_rejected"
+        ],
+        "exact_missing_observation": [
+          "\u201cspecial/replaced archive ... fails before public bytes published\u201d: file-reader archive-specific special/inode-change-during-read rejection and publication-not-called are not asserted together; post-snapshot replacement test intentionally succeeds with verified original snapshot. That safe snapshot behavior is distinguished from the stricter scenario wording; no malicious replacement-byte publication demonstrated."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-044-WEB-DEP-010-01",
+      "requirement_id": "WEB-DEP-010",
+      "status": "PARTIAL",
+      "expected_observation": "The public release returns its exact artifact \u2014 - **GIVEN** the admitted published index/assets and matching identity responses - **WHEN** the bounded transport probe executes - **THEN** signed byte sizes and digests match, including the history fallback.",
+      "unproved_then_clauses": [
+        "The actual admitted public release must return all exact asset/index/history bytes under current identity. All-asset operator fixture assertions are now proved; public deployment identity/HTTPS execution remains unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Existing nominal probe verifies exact index/first JS and history fixture bytes.",
+        "ActualoperatorHTTPfixture checks everyadmittedasset; secondaryscript/otherassetomission/corruption/encoding/redirect/oversize refuse before generalaccesspass."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+        "infra/test/test_web_deployment.py::test_every_admitted_asset_is_read_and_checked_before_public_access_passes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+          "infra/test/test_web_deployment.py::test_every_admitted_asset_is_read_and_checked_before_public_access_passes"
+        ],
+        "exact_missing_observation": [
+          "The actual admitted public release must return all exact asset/index/history bytes under current identity. All-asset operator fixture assertions are now proved; public deployment identity/HTTPS execution remains unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-044-WEB-DEP-007-01",
+      "required_clause": [
+        "Actual published verified-HTTPS index, every admitted asset and history route must meet exact digest/size/transport/CSP policy. Current operator HTTP fixtures now check every admitted asset and fail missing/corrupt/encoded/redirected/oversized members; actual CloudFront/S3/DNS release transport is unexecuted."
+      ],
+      "types": [
+        "deployment_cloud_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+          "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport",
+          "infra/test/test_web_deployment.py::test_every_admitted_asset_is_read_and_checked_before_public_access_passes"
+        ],
+        "exact_missing_observation": [
+          "Actual published verified-HTTPS index, every admitted asset and history route must meet exact digest/size/transport/CSP policy. Current operator HTTP fixtures now check every admitted asset and fail missing/corrupt/encoded/redirected/oversized members; actual CloudFront/S3/DNS release transport is unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-044-WEB-DEP-009-01",
+      "required_clause": [
+        "\u201cactual one-origin OAC distribution ... publication/DNS admission ... before mutation\u201d: runtime route metadata is fixture SDK responses; no actual deployed CloudFront/private-S3 route with release artifact exercised."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+          "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last",
+          "infra/test/test_web_deployment.py::test_archive_bound_precedes_hashing_and_admission_uses_one_stable_snapshot"
+        ],
+        "exact_missing_observation": [
+          "\u201cactual one-origin OAC distribution ... publication/DNS admission ... before mutation\u201d: runtime route metadata is fixture SDK responses; no actual deployed CloudFront/private-S3 route with release artifact exercised."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-044-WEB-DEP-009-03",
+      "required_clause": [
+        "\u201cspecial/replaced archive ... fails before public bytes published\u201d: file-reader archive-specific special/inode-change-during-read rejection and publication-not-called are not asserted together; post-snapshot replacement test intentionally succeeds with verified original snapshot. That safe snapshot behavior is distinguished from the stricter scenario wording; no malicious replacement-byte publication demonstrated."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_archive_bound_precedes_hashing_and_admission_uses_one_stable_snapshot",
+          "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+          "infra/test/test_web_deployment.py::test_public_asset_types_paths_symlinks_and_duplicate_zip_entries_are_rejected"
+        ],
+        "exact_missing_observation": [
+          "\u201cspecial/replaced archive ... fails before public bytes published\u201d: file-reader archive-specific special/inode-change-during-read rejection and publication-not-called are not asserted together; post-snapshot replacement test intentionally succeeds with verified original snapshot. That safe snapshot behavior is distinguished from the stricter scenario wording; no malicious replacement-byte publication demonstrated."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-044-WEB-DEP-010-01",
+      "required_clause": [
+        "The actual admitted public release must return all exact asset/index/history bytes under current identity. All-asset operator fixture assertions are now proved; public deployment identity/HTTPS execution remains unexecuted."
+      ],
+      "types": [
+        "deployment_cloud_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+          "infra/test/test_web_deployment.py::test_every_admitted_asset_is_read_and_checked_before_public_access_passes"
+        ],
+        "exact_missing_observation": [
+          "The actual admitted public release must return all exact asset/index/history bytes under current identity. All-asset operator fixture assertions are now proved; public deployment identity/HTTPS execution remains unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

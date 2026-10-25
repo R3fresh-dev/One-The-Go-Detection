@@ -1,0 +1,408 @@
+{
+  "spec_id": "OTGD-008",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/research-evaluation/spec.md",
+  "canonical_sha256": "1307ac2ebe390b58619b599669a9c52773104dded84661be708aa132d95f8626",
+  "canonical_requirements": [
+    "EVAL-001 Frozen leakage-resistant partitions",
+    "EVAL-002 Complete matched evaluation and ablations",
+    "EVAL-003 Explicit information cutoffs",
+    "EVAL-004 Prespecified subgroup accounting",
+    "EVAL-005 Qualified predictive values",
+    "EVAL-006 Custody and pipeline locks",
+    "EVAL-007 Independent research evidence",
+    "EVAL-008 Bounded file custody"
+  ],
+  "canonical_scenarios": [
+    "Reproducible fitting",
+    "Participant or partition leakage",
+    "Full report",
+    "Omitted or changed rows",
+    "Engineering fixtures",
+    "Same-check acquisition",
+    "Future information",
+    "Reconciled categories",
+    "Sparse or omitted categories",
+    "Unplanned category",
+    "Unclassified checks",
+    "Undefined predictive value",
+    "Defined predictive values",
+    "Server-compatible evidence",
+    "Altered or premature evidence",
+    "Supplied historical assertions",
+    "Self-approved model",
+    "Stable regular input",
+    "Unsafe or changing input"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 13,
+    "PARTIAL": 6
+  },
+  "all_current_case_ids": [
+    "OTGD-008-EVAL-001-01",
+    "OTGD-008-EVAL-001-02",
+    "OTGD-008-EVAL-002-01",
+    "OTGD-008-EVAL-002-02",
+    "OTGD-008-EVAL-002-03",
+    "OTGD-008-EVAL-003-01",
+    "OTGD-008-EVAL-003-02",
+    "OTGD-008-EVAL-004-01",
+    "OTGD-008-EVAL-004-02",
+    "OTGD-008-EVAL-004-03",
+    "OTGD-008-EVAL-005-01",
+    "OTGD-008-EVAL-005-02",
+    "OTGD-008-EVAL-005-03",
+    "OTGD-008-EVAL-006-01",
+    "OTGD-008-EVAL-006-02",
+    "OTGD-008-EVAL-007-01",
+    "OTGD-008-EVAL-007-02",
+    "OTGD-008-EVAL-008-01",
+    "OTGD-008-EVAL-008-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-008-EVAL-001-02",
+      "requirement_id": "EVAL-001",
+      "status": "PARTIAL",
+      "expected_observation": "Participant or partition leakage \u2014 - **WHEN** a held-out participant enters fitting or a later session crosses its frozen partition boundary - **THEN** the tooling refuses the evaluation rather than reporting performance",
+      "unproved_then_clauses": [
+        "Exact conjunction: direct train invocation with held-out participant inserted into fit and a later-session row reassigned across an already frozen partition is not explicitly asserted; evaluation-tamper rejection is narrower than refusal before fitting."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Frozen split identities are disjoint; altered split is rejected by evaluation; missing earlier held-out session and single-class whole cohorts refuse. Current named tests pass."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_evaluation.py::test_frozen_participant_and_temporal_partitions_reproduce_without_outcomes",
+        "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+        "services/api/tests/test_model_evaluation.py::test_later_validation_without_prior_held_out_session_and_single_class_cohort_fail"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_frozen_participant_and_temporal_partitions_reproduce_without_outcomes",
+          "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+          "services/api/tests/test_model_evaluation.py::test_later_validation_without_prior_held_out_session_and_single_class_cohort_fail"
+        ],
+        "exact_missing_observation": [
+          "Exact conjunction: direct train invocation with held-out participant inserted into fit and a later-session row reassigned across an already frozen partition is not explicitly asserted; evaluation-tamper rejection is narrower than refusal before fitting."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-008-EVAL-002-02",
+      "requirement_id": "EVAL-002",
+      "status": "PARTIAL",
+      "expected_observation": "Omitted or changed rows \u2014 - **WHEN** invalid or abstaining rows are removed, an ablation uses different rows, or a threshold changes after locking - **THEN** the tooling refuses to attest a valid evaluation report",
+      "unproved_then_clauses": [
+        "Exact negative manipulation of an invalid/abstaining row removed from a frozen evaluation or row identities differing for only one ablation is not directly asserted; current denominator/missing-ablation negatives do not establish those exact row-subset cases."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Positive invalid/abstain inclusion and matched rows asserted; registry rejects altered denominator/missing ablation/threshold and evaluator rejects altered split/training receipt/weights/chronology."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_evaluation.py::test_censored_invalid_and_abstaining_rows_stay_in_every_matched_denominator",
+        "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+        "services/api/tests/test_model_engine.py::test_training_evaluation_policy_and_result_proof_are_bound"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_censored_invalid_and_abstaining_rows_stay_in_every_matched_denominator",
+          "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+          "services/api/tests/test_model_engine.py::test_training_evaluation_policy_and_result_proof_are_bound"
+        ],
+        "exact_missing_observation": [
+          "Exact negative manipulation of an invalid/abstaining row removed from a frozen evaluation or row identities differing for only one ablation is not directly asserted; current denominator/missing-ablation negatives do not establish those exact row-subset cases."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-008-EVAL-002-03",
+      "requirement_id": "EVAL-002",
+      "status": "PARTIAL",
+      "expected_observation": "Engineering fixtures \u2014 - **WHEN** automated tests use fictional cohort rows - **THEN** their artifacts are labeled engineering evidence and never loaded as an approved study or human model by deployment",
+      "unproved_then_clauses": [
+        "Deployment/runtime attempt using exactly those generated engineering artifacts as a human model is not part of these output assertions. Bind a direct current runtime/deployment refusal case, not actual scientific qualification."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Fictional data_kind and authority/clinical-success false are asserted in actual CLI artifacts and evidence; typed/untyped forged approval flags refuse."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_evaluation.py::test_external_history_references_remain_unverified_through_pipeline",
+        "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_external_history_references_remain_unverified_through_pipeline",
+          "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history"
+        ],
+        "exact_missing_observation": [
+          "Deployment/runtime attempt using exactly those generated engineering artifacts as a human model is not part of these output assertions. Bind a direct current runtime/deployment refusal case, not actual scientific qualification."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-008-EVAL-003-01",
+      "requirement_id": "EVAL-003",
+      "status": "PARTIAL",
+      "expected_observation": "Same-check acquisition \u2014 - **WHEN** a chemical or task observation follows the target but falls within the frozen capture and information cutoffs - **THEN** it remains eligible without changing the original target or partition",
+      "unproved_then_clauses": [
+        "The original frozen partition identity and every output variant/later-session target are not explicitly compared after this timing change; source positive target assertion is narrower than full unchanged-target/partition conjunction."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Same-check observations at target+10s/task capture and availability at cutoff are accepted; original confirmatory target times retained, and shorter span/delivery limits refuse."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_evaluation.py::test_same_check_observations_and_later_assay_delivery_preserve_original_target"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_same_check_observations_and_later_assay_delivery_preserve_original_target"
+        ],
+        "exact_missing_observation": [
+          "The original frozen partition identity and every output variant/later-session target are not explicitly compared after this timing change; source positive target assertion is narrower than full unchanged-target/partition conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-008-EVAL-004-03",
+      "requirement_id": "EVAL-004",
+      "status": "PARTIAL",
+      "expected_observation": "Unplanned category \u2014 - **WHEN** a row omits a dimension or introduces a category outside the frozen plan - **THEN** admission fails before fitting or evaluation",
+      "unproved_then_clauses": [
+        "A missing stratum dimension and refusal before both fitting/evaluation for that malformed row are not directly asserted; unknown-category evaluation refusal does not close all named admissions."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "An unprespecified route category causes evaluated evidence refusal in changed-plan test."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order"
+        ],
+        "exact_missing_observation": [
+          "A missing stratum dimension and refusal before both fitting/evaluation for that malformed row are not directly asserted; unknown-category evaluation refusal does not close all named admissions."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-008-EVAL-007-02",
+      "requirement_id": "EVAL-007",
+      "status": "PARTIAL",
+      "expected_observation": "Self-approved model \u2014 - **WHEN** tooling output is supplied as authority without independently released study, model, calibration and qualification records - **THEN** runtime admission refuses an estimate despite internally consistent artifact and report bytes",
+      "unproved_then_clauses": [
+        "No direct exact run presents the actual generated internally consistent toolkit artifact/report with all independent registry approvals absent and asserts runtime refusal. Existing revocation/self-approval tests use other contexts; do not infer genuine approval from tooling."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "CLI output authority flags false and extra/rehashed assertions rejected; registry self-review/self-release fail independently; current authority/qualification/calibration revocation returns no score."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history",
+        "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+        "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history",
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+        ],
+        "exact_missing_observation": [
+          "No direct exact run presents the actual generated internally consistent toolkit artifact/report with all independent registry approvals absent and asserts runtime refusal. Existing revocation/self-approval tests use other contexts; do not infer genuine approval from tooling."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-008-EVAL-001-02",
+      "required_clause": [
+        "Exact conjunction: direct train invocation with held-out participant inserted into fit and a later-session row reassigned across an already frozen partition is not explicitly asserted; evaluation-tamper rejection is narrower than refusal before fitting."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_frozen_participant_and_temporal_partitions_reproduce_without_outcomes",
+          "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+          "services/api/tests/test_model_evaluation.py::test_later_validation_without_prior_held_out_session_and_single_class_cohort_fail"
+        ],
+        "exact_missing_observation": [
+          "Exact conjunction: direct train invocation with held-out participant inserted into fit and a later-session row reassigned across an already frozen partition is not explicitly asserted; evaluation-tamper rejection is narrower than refusal before fitting."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-008-EVAL-002-02",
+      "required_clause": [
+        "Exact negative manipulation of an invalid/abstaining row removed from a frozen evaluation or row identities differing for only one ablation is not directly asserted; current denominator/missing-ablation negatives do not establish those exact row-subset cases."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_censored_invalid_and_abstaining_rows_stay_in_every_matched_denominator",
+          "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+          "services/api/tests/test_model_engine.py::test_training_evaluation_policy_and_result_proof_are_bound"
+        ],
+        "exact_missing_observation": [
+          "Exact negative manipulation of an invalid/abstaining row removed from a frozen evaluation or row identities differing for only one ablation is not directly asserted; current denominator/missing-ablation negatives do not establish those exact row-subset cases."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-008-EVAL-002-03",
+      "required_clause": [
+        "Deployment/runtime attempt using exactly those generated engineering artifacts as a human model is not part of these output assertions. Bind a direct current runtime/deployment refusal case, not actual scientific qualification."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_external_history_references_remain_unverified_through_pipeline",
+          "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history"
+        ],
+        "exact_missing_observation": [
+          "Deployment/runtime attempt using exactly those generated engineering artifacts as a human model is not part of these output assertions. Bind a direct current runtime/deployment refusal case, not actual scientific qualification."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-008-EVAL-003-01",
+      "required_clause": [
+        "The original frozen partition identity and every output variant/later-session target are not explicitly compared after this timing change; source positive target assertion is narrower than full unchanged-target/partition conjunction."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_same_check_observations_and_later_assay_delivery_preserve_original_target"
+        ],
+        "exact_missing_observation": [
+          "The original frozen partition identity and every output variant/later-session target are not explicitly compared after this timing change; source positive target assertion is narrower than full unchanged-target/partition conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-008-EVAL-004-03",
+      "required_clause": [
+        "A missing stratum dimension and refusal before both fitting/evaluation for that malformed row are not directly asserted; unknown-category evaluation refusal does not close all named admissions."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order"
+        ],
+        "exact_missing_observation": [
+          "A missing stratum dimension and refusal before both fitting/evaluation for that malformed row are not directly asserted; unknown-category evaluation refusal does not close all named admissions."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-008-EVAL-007-02",
+      "required_clause": [
+        "No direct exact run presents the actual generated internally consistent toolkit artifact/report with all independent registry approvals absent and asserts runtime refusal. Existing revocation/self-approval tests use other contexts; do not infer genuine approval from tooling."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history",
+          "services/api/tests/test_operator_governance.py::test_immutable_submission_three_principals_lifecycle_history_and_revision",
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+        ],
+        "exact_missing_observation": [
+          "No direct exact run presents the actual generated internally consistent toolkit artifact/report with all independent registry approvals absent and asserts runtime refusal. Existing revocation/self-approval tests use other contexts; do not infer genuine approval from tooling."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

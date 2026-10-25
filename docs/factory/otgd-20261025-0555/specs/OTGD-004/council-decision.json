@@ -1,0 +1,45 @@
+{
+  "spec_id": "OTGD-004",
+  "decision": "PASS",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": "SCOPED_CANONICAL_SOFTWARE_IMPLEMENTATION",
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/android-history/spec.md",
+  "canonical_sha256": "b29801322e8700aa11edce8289d84290485834005cba2fa80ee5695dd3d248ce",
+  "canonical_requirements": [
+    "AND-HIST-003 Faithful state, qualifier, and time display"
+  ],
+  "canonical_scenarios": [
+    "Historical approved research result",
+    "Legacy or unapproved claim"
+  ],
+  "rationale": "PASS for complete canonical AND-HIST-003 software amendment. Actual row/History and result-detail production rendering preserves historical research scope; strict result verification binds original target/evaluation dates, endpoint/population, original immutable values and rejects changed proof/legacy/synthetic/owner linkage. Direct unchanged source renders original times/qualifiers/units and rejects unsupported research. This is a software historical-evidence reader, with no current sobriety or genuine study qualification claim.",
+  "six_current_independent_decisions": {
+    "security": "PASS",
+    "code": "PASS",
+    "ux": "PASS",
+    "ui": "PASS",
+    "product": "PASS",
+    "engineering": "PASS"
+  },
+  "case_counts": {
+    "PASS": 2
+  },
+  "all_current_case_ids": [
+    "OTGD-004-AND-HIST-003-01",
+    "OTGD-004-AND-HIST-003-02"
+  ],
+  "exact_remaining_clauses": [],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [],
+  "escalation": null,
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

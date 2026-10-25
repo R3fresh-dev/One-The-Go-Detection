@@ -1,0 +1,986 @@
+{
+  "spec_id": "OTGD-026",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-guided-check/spec.md",
+  "canonical_sha256": "cef15148de295ecabe3b38d6f9b2d45530b60993c1aacf1b41e1b4fc495c6562",
+  "canonical_requirements": [
+    "AND-CHECK-001 Start and capability-aware checklist",
+    "AND-CHECK-002 Immutable context and independent consent",
+    "AND-CHECK-003 Attempt identity and sequence rules",
+    "AND-CHECK-004 Capture timing, partial data, and review",
+    "AND-CHECK-005 Cancellation, navigation, and interruptions",
+    "AND-CHECK-006 Offline persistence and finalization",
+    "AND-CHECK-007 Result navigation and claim boundaries",
+    "AND-CHECK-008 Accessible parity and end-to-end evidence"
+  ],
+  "canonical_scenarios": [
+    "Start a synthetic check",
+    "Required capability is blocked",
+    "Profile changes during a check",
+    "Local capture permission without upload consent",
+    "Offline clock rollback cannot grant capture",
+    "Invalid saliva collection retried",
+    "User requests repeated valid game",
+    "Finalized invalid check requires a fresh assessment",
+    "Device step skipped in a permitted measurement-only workflow",
+    "Laboratory analysis returns the next day",
+    "App terminated during reaction task",
+    "Cancel command cannot reach the peripheral",
+    "Keep draft cannot resume an ended task",
+    "Network drops after finalization submission",
+    "Draft version conflicts with server",
+    "Save and sign in cannot upload guest evidence",
+    "Synthetic check completes successfully",
+    "Forged result includes a probability",
+    "Signed future result is unsupported in this release",
+    "Screen-reader navigation outside capture",
+    "Cross-platform offline replay"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 14,
+    "PASS": 4,
+    "BLOCKED": 3
+  },
+  "all_current_case_ids": [
+    "OTGD-026-AND-CHECK-001-01",
+    "OTGD-026-AND-CHECK-001-02",
+    "OTGD-026-AND-CHECK-002-01",
+    "OTGD-026-AND-CHECK-002-02",
+    "OTGD-026-AND-CHECK-002-03",
+    "OTGD-026-AND-CHECK-003-01",
+    "OTGD-026-AND-CHECK-003-02",
+    "OTGD-026-AND-CHECK-003-03",
+    "OTGD-026-AND-CHECK-004-01",
+    "OTGD-026-AND-CHECK-004-02",
+    "OTGD-026-AND-CHECK-005-01",
+    "OTGD-026-AND-CHECK-005-02",
+    "OTGD-026-AND-CHECK-005-03",
+    "OTGD-026-AND-CHECK-006-01",
+    "OTGD-026-AND-CHECK-006-02",
+    "OTGD-026-AND-CHECK-006-03",
+    "OTGD-026-AND-CHECK-007-01",
+    "OTGD-026-AND-CHECK-007-02",
+    "OTGD-026-AND-CHECK-007-03",
+    "OTGD-026-AND-CHECK-008-01",
+    "OTGD-026-AND-CHECK-008-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-026-AND-CHECK-001-01",
+      "requirement_id": "AND-CHECK-001",
+      "status": "PARTIAL",
+      "expected_observation": "Start a synthetic check \u2014 - **GIVEN** local demonstration mode and no physical assay - **WHEN** the user selects Start check - **THEN** the app SHALL allocate a new session UUID, display Simulated data for fictional channels and Uncalibrated practice for actual native taps, and present concrete synthetic steps without requiring a cloud account or claiming a physical measurement.",
+      "unproved_then_clauses": [
+        "Rendered Simulated data for each fictional channel versus Uncalibrated practice for actual native taps in one synthetic check is not directly asserted by current no-native browser journey. Actual native mixed-provenance path remains separate."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Guest controller allocates UUID, confirmed context and explicit fictional captures; browser shows unavailable native task and measurement-only completion without cloud account."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Rendered Simulated data for each fictional channel versus Uncalibrated practice for actual native taps in one synthetic check is not directly asserted by current no-native browser journey. Actual native mixed-provenance path remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-001-02",
+      "requirement_id": "AND-CHECK-001",
+      "status": "PARTIAL",
+      "expected_observation": "Required capability is blocked \u2014 - **GIVEN** an unavailable approved optical or assay configuration - **WHEN** the checklist evaluates that capability - **THEN** it SHALL show the specific blocker and an allowed preview, sample-record, or skip action where the mode permits it; it SHALL not show a completed measurement or fabricate a substitute.",
+      "unproved_then_clauses": [
+        "Checklist evaluating missing approved optical/assay configuration needs exact blocker plus permitted preview/sample/skip and no-completed-substitute assertions; direct availability component is narrower than checklist action."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Conditional availability component distinguishes approved/unavailable channel; participant flow shows pending lab without fabricated chemistry; browser permits no-native skip."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::actual service component labels conditional approved channels and model support, while the fictional build refuses both",
+        "apps/mobile/e2e/raw-recordings.spec.ts::pending laboratory UI preserves the draft, refreshes actual admitted analysis and requires explicit cancellation without inventing chemistry"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::actual service component labels conditional approved channels and model support, while the fictional build refuses both",
+          "apps/mobile/e2e/raw-recordings.spec.ts::pending laboratory UI preserves the draft, refreshes actual admitted analysis and requires explicit cancellation without inventing chemistry"
+        ],
+        "exact_missing_observation": [
+          "Checklist evaluating missing approved optical/assay configuration needs exact blocker plus permitted preview/sample/skip and no-completed-substitute assertions; direct availability component is narrower than checklist action."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-002-02",
+      "requirement_id": "AND-CHECK-002",
+      "status": "PARTIAL",
+      "expected_observation": "Local capture permission without upload consent \u2014 - **GIVEN** a granted camera or Bluetooth permission but no research upload authorization - **WHEN** the user completes an allowed local action - **THEN** the app SHALL keep it within the permitted local scope and SHALL not enqueue participant data for a study merely because OS permission was granted.",
+      "unproved_then_clauses": [
+        "Local camera/Bluetooth granted but no upload authorization context must complete a permitted local action with explicit no study queue. Existing approved capture fixture already has study consent, so it cannot prove no-consent branch."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Owned signed capture retains projection locally and save does not queue until explicit queueCheck; permission receipt never itself grants study consent."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Local camera/Bluetooth granted but no upload authorization context must complete a permitted local action with explicit no study queue. Existing approved capture fixture already has study consent, so it cannot prove no-consent branch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-002-03",
+      "requirement_id": "AND-CHECK-002",
+      "status": "PARTIAL",
+      "expected_observation": "Offline clock rollback cannot grant capture \u2014 - **GIVEN** cached formerly available capabilities and no network - **WHEN** the wall clock is set backward or the phone reboots - **THEN** qualified Start capture SHALL remain blocked pending a fresh online acknowledgment; permitted local uncalibrated practice SHALL remain available.",
+      "unproved_then_clauses": [
+        "Cached formerlyavailable capabilities plus offline backward wall clock/reboot must remain blocked while local practice stays available; no exact combined stale-cache/clock/reboot test located. Physical reboot and native practice remain OS prerequisites."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Fresh online instruction/grant/start sequence precedes hardware, and revoked/stale/reader-substituted state cannot invoke hardware."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+        "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "Cached formerlyavailable capabilities plus offline backward wall clock/reboot must remain blocked while local practice stays available; no exact combined stale-cache/clock/reboot test located. Physical reboot and native practice remain OS prerequisites."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-003-01",
+      "requirement_id": "AND-CHECK-003",
+      "status": "PARTIAL",
+      "expected_observation": "Invalid saliva collection retried \u2014 - **GIVEN** a sample marked invalid for inadequate volume - **WHEN** the user selects Replace sample and follows the allowed protocol - **THEN** a new sample attempt SHALL be created, the first SHALL remain in the audit history, and only the accepted sample SHALL supply that check's analyte records.",
+      "unproved_then_clauses": [
+        "Accepted replacement sample alone supplying this check analyte projection is not explicitly asserted by this retry test; collection receipts with no analysis do not prove selected analyte source."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual API inadequate-specimen invalid collection preserved byte-for-byte; linked retry has new sample/receipt, supersedes first attempt and first null volume remains."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_invalid_collection_preserves_failure_and_linked_retry_allocates_new_sample"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_invalid_collection_preserves_failure_and_linked_retry_allocates_new_sample"
+        ],
+        "exact_missing_observation": [
+          "Accepted replacement sample alone supplying this check analyte projection is not explicitly asserted by this retry test; collection receipts with no analysis do not prove selected analyte source."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-003-02",
+      "requirement_id": "AND-CHECK-003",
+      "status": "PARTIAL",
+      "expected_observation": "User requests repeated valid game \u2014 - **GIVEN** one completed valid task in the current check - **WHEN** the user reopens the reaction step - **THEN** the app SHALL show the saved completion and review action, not a rerun action that can replace the accepted task with a faster result.",
+      "unproved_then_clauses": [
+        "A completed valid native task reopened in UI must show saved completion/review and no rerun action; current domain retake test uses cardiac, not reaction task. Need task-specific same-check retake assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Domain and cardiac same-modality retake guards reject preferred-reading replacement; native terminal persistence deduplicates same run."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::a valid component cannot be retaken for a preferred reading",
+        "apps/mobile/tests/lifecycle.test.ts::native callback and cancellation receipt share one durable terminal write while persistence is delayed"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::a valid component cannot be retaken for a preferred reading",
+          "apps/mobile/tests/lifecycle.test.ts::native callback and cancellation receipt share one durable terminal write while persistence is delayed"
+        ],
+        "exact_missing_observation": [
+          "A completed valid native task reopened in UI must show saved completion/review and no rerun action; current domain retake test uses cardiac, not reaction task. Need task-specific same-check retake assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-003-03",
+      "requirement_id": "AND-CHECK-003",
+      "status": "PARTIAL",
+      "expected_observation": "Finalized invalid check requires a fresh assessment \u2014 - **GIVEN** an invalid check already saved locally with a completed saliva or cardiac observation - **WHEN** the user selects Start replacement check - **THEN** the app SHALL create new session/target identities and explicit supersedes_session_id, keep the original immutable, and SHALL not carry any physical acquisition into the replacement.",
+      "unproved_then_clauses": [
+        "Actual finalized invalid check with completed physical saliva/cardiac observation needs explicit original-hash unchanged and no physical evidence carried into replacement. Existing guest fixtures prove logical replacement, not actual acquisition noncarry."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Replacement helper keeps original digest, creates distinct target/sample and bidirectional links; controller new guest replacement has zero attempts; browser invalid synthetic ECG replacement navigates original/new."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+        ],
+        "exact_missing_observation": [
+          "Actual finalized invalid check with completed physical saliva/cardiac observation needs explicit original-hash unchanged and no physical evidence carried into replacement. Existing guest fixtures prove logical replacement, not actual acquisition noncarry."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-004-01",
+      "requirement_id": "AND-CHECK-004",
+      "status": "PARTIAL",
+      "expected_observation": "Device step skipped in a permitted measurement-only workflow \u2014 - **GIVEN** no actual cardiac capture and a mode that permits a missing cardiac component - **WHEN** the user advances to Review - **THEN** cardiac data SHALL be marked not_collected with null timing/features and the stated reason; the app SHALL not copy an earlier pulse value or substitute zero.",
+      "unproved_then_clauses": [
+        "Direct review/save with no cardiac capture must assert all null timing/features, reason and no reused prior pulse/zero. Current cardiac-selection tests skip alternative ECG after validPPG, a different context."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Domain creation initializes missing cardiac not_collected with null features/timing; no earlier value copied by source."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/cardiac-selection.test.ts::ECG followed by PPG retains the same choice semantics and cannot relabel ECG"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/cardiac-selection.test.ts::ECG followed by PPG retains the same choice semantics and cannot relabel ECG"
+        ],
+        "exact_missing_observation": [
+          "Direct review/save with no cardiac capture must assert all null timing/features, reason and no reused prior pulse/zero. Current cardiac-selection tests skip alternative ECG after validPPG, a different context."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-004-02",
+      "requirement_id": "AND-CHECK-004",
+      "status": "PARTIAL",
+      "expected_observation": "Laboratory analysis returns the next day \u2014 - **GIVEN** saliva collected yesterday with separately timed physiological/task measurements - **WHEN** a permitted laboratory result is linked today - **THEN** Review and history SHALL retain yesterday's collection and target times, identify the later analysis time, and SHALL not call the result a current real-time assessment.",
+      "unproved_then_clauses": [
+        "Next-day lab arrival with separately timed physiology/task must visibly retain original collection/target in Review/history and avoid current real-time claim. Existing imported fixture/parser contexts do not assert all UI/time clauses."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Laboratory controller retains same specimenID across pending/import; report parser preserves original target, formatter shows collection/analysis separately."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization",
+        "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+        "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization",
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+          "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible"
+        ],
+        "exact_missing_observation": [
+          "Next-day lab arrival with separately timed physiology/task must visibly retain original collection/target in Review/history and avoid current real-time claim. Existing imported fixture/parser contexts do not assert all UI/time clauses."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-005-01",
+      "requirement_id": "AND-CHECK-005",
+      "status": "BLOCKED",
+      "expected_observation": "App terminated during reaction task \u2014 - **GIVEN** a persisted started task attempt without a completion event - **WHEN** the app restarts - **THEN** it SHALL mark that attempt interrupted, preserve already completed independent components, and require a new linked task attempt before representing task completion.",
+      "unproved_then_clauses": [
+        "Actual process death mid-task then reopen with independent prior components retained and new linked task requirement is unexecuted; reducer does not simulate native restart persistence."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Pure process-interruption reducer marks started task invalid/null aggregates, linked retry supersedes original; controlled store reopen retains serialized state."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+        ],
+        "exact_missing_observation": [
+          "Actual process death mid-task then reopen with independent prior components retained and new linked task requirement is unexecuted; reducer does not simulate native restart persistence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-005-02",
+      "requirement_id": "AND-CHECK-005",
+      "status": "PARTIAL",
+      "expected_observation": "Cancel command cannot reach the peripheral \u2014 - **GIVEN** an active capture and a lost BLE connection - **WHEN** the user selects Cancel check - **THEN** the UI SHALL terminate locally, record cancellation, and reject subsequent late events for the canceled attempt regardless of whether the peripheral received the command.",
+      "unproved_then_clauses": [
+        "Lost BLE Cancel check route must terminate UI, retain cancellation and reject all late peripheral events even when cancel command never arrives. Current test radio Promise later resolves and terminal fixture was already valid, not unreachable peripheral canceled attempt."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Controller requests local native cancellation before delayed radio stop; stale terminal run ignored and unmounted arm invalidates."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion",
+        "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion",
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Lost BLE Cancel check route must terminate UI, retain cancellation and reject all late peripheral events even when cancel command never arrives. Current test radio Promise later resolves and terminal fixture was already valid, not unreachable peripheral canceled attempt."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-005-03",
+      "requirement_id": "AND-CHECK-005",
+      "status": "PARTIAL",
+      "expected_observation": "Keep draft cannot resume an ended task \u2014 - **GIVEN** an active scored task whose parent navigator keeps tabs mounted - **WHEN** the user selects another tab and then Keep draft in the resulting sheet - **THEN** the native stimulus SHALL have already stopped and the attempt SHALL remain invalid; returning SHALL expose a permitted new attempt or replacement action rather than resuming.",
+      "unproved_then_clauses": [
+        "Mounted-tab active-scored-task\u2192other tab\u2192Keep draft must assert native stimulus already stopped, attempt invalid and returning offers only new attempt/replacement, never resume. Browser retained saliva draft has no active native task."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "RunStopGate coalesces route/background stop before persistence; unmounted task invalidation keeps INTERRUPTED."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+        "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Mounted-tab active-scored-task\u2192other tab\u2192Keep draft must assert native stimulus already stopped, attempt invalid and returning offers only new attempt/replacement, never resume. Browser retained saliva draft has no active native task."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-006-01",
+      "requirement_id": "AND-CHECK-006",
+      "status": "PARTIAL",
+      "expected_observation": "Network drops after finalization submission \u2014 - **GIVEN** a frozen local snapshot and an unknown server acknowledgment outcome - **WHEN** the user requests reconciliation, or previously enabled automatic retry permits it, after connectivity returns - **THEN** the app SHALL retry or query with the same identifiers and digest, reconcile one logical finalization, and SHALL not create another sample, task, or check.",
+      "unproved_then_clauses": [
+        "Accepted finalization response lost specifically, then explicit/manual or permitted auto reconciliation must assert one logical finalization and no new sample/task/checkIDs. Registration-loss fixture is narrower and does not count finalize acceptance."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Lost accepted registration request retries exact key/body/gen and ends synced; original frozen evidence stays."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::a lost accepted response replays the same identity and unchanged bytes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a lost accepted response replays the same identity and unchanged bytes"
+        ],
+        "exact_missing_observation": [
+          "Accepted finalization response lost specifically, then explicit/manual or permitted auto reconciliation must assert one logical finalization and no new sample/task/checkIDs. Registration-loss fixture is narrower and does not count finalize acceptance."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-006-03",
+      "requirement_id": "AND-CHECK-006",
+      "status": "PARTIAL",
+      "expected_observation": "Save and sign in cannot upload guest evidence \u2014 - **GIVEN** a guest demo containing fictional chemistry and actual uncalibrated native taps - **WHEN** the user saves the check, reconnects, and signs in - **THEN** the check SHALL remain in its guest namespace with exact mixed provenance and no queue entry or account migration.",
+      "unproved_then_clauses": [
+        "Guest demo with actual native taps then reconnect/sign-in must retain exact mixed provenance/namespace/no queue/no migration in one journey; current browser lacks native module and unitguest uses fictional task absent."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Guest save queue empty and guest upload refused; native measurements retain prototype provenance in separately tested native flow."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "Guest demo with actual native taps then reconnect/sign-in must retain exact mixed provenance/namespace/no queue/no migration in one journey; current browser lacks native module and unitguest uses fictional task absent."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-007-02",
+      "requirement_id": "AND-CHECK-007",
+      "status": "PARTIAL",
+      "expected_observation": "Forged result includes a probability \u2014 - **GIVEN** a synthetic or unauthorized check - **WHEN** a malformed cache or response contains an intoxication probability - **THEN** the client SHALL reject that field/result, surface a data-integrity error, and SHALL not display it as a research estimate.",
+      "unproved_then_clauses": [
+        "Actual malformed cache/response opened from synthetic current UI must surface data-integrity error and no estimate; current parser rejection asserts throw, not rendered safe error transition."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Legacy0.1research-shaped result and guest/synthetic proof mutation refuse verification."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::every research_estimate is rejected even when its shape could be schema-valid",
+        "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::every research_estimate is rejected even when its shape could be schema-valid",
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed"
+        ],
+        "exact_missing_observation": [
+          "Actual malformed cache/response opened from synthetic current UI must surface data-integrity error and no estimate; current parser rejection asserts throw, not rendered safe error transition."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-008-01",
+      "requirement_id": "AND-CHECK-008",
+      "status": "BLOCKED",
+      "expected_observation": "Screen-reader navigation outside capture \u2014 - **GIVEN** an enabled Android or iOS screen reader - **WHEN** the user traverses the checklist and Review - **THEN** step names, states, reasons, and actions SHALL be announced in a meaningful order without depending on badge color.",
+      "unproved_then_clauses": [
+        "Actual Android/iOS screen-reader checklist/Review spoken names/states/reasons/actions meaningful order without color dependency unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Browser role/step labels and control reachability exercised at two viewports.",
+        "Current DOM focus restoration, modal semantics, contrast and reduced-motion assertions are executed; no actual TalkBack/VoiceOver/native OS claim."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Actual Android/iOS screen-reader checklist/Review spoken names/states/reasons/actions meaningful order without color dependency unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-008-02",
+      "requirement_id": "AND-CHECK-008",
+      "status": "BLOCKED",
+      "expected_observation": "Cross-platform offline replay \u2014 - **GIVEN** equivalent fictional engineering-account records saved offline on each platform - **WHEN** each signed-in user explicitly selects Upload check to the same permitted API environment - **THEN** both SHALL preserve quantities, qualifiers, provenance, context/evidence hashes, and terminal states with platform metadata retained; guest demo records SHALL remain local and ineligible for this upload.",
+      "unproved_then_clauses": [
+        "Equivalent native Android+iOS offline engineering-account saves/uploads to same actual API with preserved quantities/qualifiers/provenance/platform metadata and terminal states are not executed. CI pure native modules do not constitute full installed cross-platform offline replay."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Shared exact canonical hashing/DTO and explicit upload fixture preserve evidence; guest refuses cloud upload."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+        "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "Equivalent native Android+iOS offline engineering-account saves/uploads to same actual API with preserved quantities/qualifiers/provenance/platform metadata and terminal states are not executed. CI pure native modules do not constitute full installed cross-platform offline replay."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-026-AND-CHECK-001-01",
+      "required_clause": [
+        "Rendered Simulated data for each fictional channel versus Uncalibrated practice for actual native taps in one synthetic check is not directly asserted by current no-native browser journey. Actual native mixed-provenance path remains separate."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Rendered Simulated data for each fictional channel versus Uncalibrated practice for actual native taps in one synthetic check is not directly asserted by current no-native browser journey. Actual native mixed-provenance path remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-001-02",
+      "required_clause": [
+        "Checklist evaluating missing approved optical/assay configuration needs exact blocker plus permitted preview/sample/skip and no-completed-substitute assertions; direct availability component is narrower than checklist action."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::actual service component labels conditional approved channels and model support, while the fictional build refuses both",
+          "apps/mobile/e2e/raw-recordings.spec.ts::pending laboratory UI preserves the draft, refreshes actual admitted analysis and requires explicit cancellation without inventing chemistry"
+        ],
+        "exact_missing_observation": [
+          "Checklist evaluating missing approved optical/assay configuration needs exact blocker plus permitted preview/sample/skip and no-completed-substitute assertions; direct availability component is narrower than checklist action."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-002-02",
+      "required_clause": [
+        "Local camera/Bluetooth granted but no upload authorization context must complete a permitted local action with explicit no study queue. Existing approved capture fixture already has study consent, so it cannot prove no-consent branch."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Local camera/Bluetooth granted but no upload authorization context must complete a permitted local action with explicit no study queue. Existing approved capture fixture already has study consent, so it cannot prove no-consent branch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-002-03",
+      "required_clause": [
+        "Cached formerlyavailable capabilities plus offline backward wall clock/reboot must remain blocked while local practice stays available; no exact combined stale-cache/clock/reboot test located. Physical reboot and native practice remain OS prerequisites."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+          "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware"
+        ],
+        "exact_missing_observation": [
+          "Cached formerlyavailable capabilities plus offline backward wall clock/reboot must remain blocked while local practice stays available; no exact combined stale-cache/clock/reboot test located. Physical reboot and native practice remain OS prerequisites."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-003-01",
+      "required_clause": [
+        "Accepted replacement sample alone supplying this check analyte projection is not explicitly asserted by this retry test; collection receipts with no analysis do not prove selected analyte source."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_invalid_collection_preserves_failure_and_linked_retry_allocates_new_sample"
+        ],
+        "exact_missing_observation": [
+          "Accepted replacement sample alone supplying this check analyte projection is not explicitly asserted by this retry test; collection receipts with no analysis do not prove selected analyte source."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-003-02",
+      "required_clause": [
+        "A completed valid native task reopened in UI must show saved completion/review and no rerun action; current domain retake test uses cardiac, not reaction task. Need task-specific same-check retake assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::a valid component cannot be retaken for a preferred reading",
+          "apps/mobile/tests/lifecycle.test.ts::native callback and cancellation receipt share one durable terminal write while persistence is delayed"
+        ],
+        "exact_missing_observation": [
+          "A completed valid native task reopened in UI must show saved completion/review and no rerun action; current domain retake test uses cardiac, not reaction task. Need task-specific same-check retake assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-003-03",
+      "required_clause": [
+        "Actual finalized invalid check with completed physical saliva/cardiac observation needs explicit original-hash unchanged and no physical evidence carried into replacement. Existing guest fixtures prove logical replacement, not actual acquisition noncarry."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+        ],
+        "exact_missing_observation": [
+          "Actual finalized invalid check with completed physical saliva/cardiac observation needs explicit original-hash unchanged and no physical evidence carried into replacement. Existing guest fixtures prove logical replacement, not actual acquisition noncarry."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-004-01",
+      "required_clause": [
+        "Direct review/save with no cardiac capture must assert all null timing/features, reason and no reused prior pulse/zero. Current cardiac-selection tests skip alternative ECG after validPPG, a different context."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/cardiac-selection.test.ts::ECG followed by PPG retains the same choice semantics and cannot relabel ECG"
+        ],
+        "exact_missing_observation": [
+          "Direct review/save with no cardiac capture must assert all null timing/features, reason and no reused prior pulse/zero. Current cardiac-selection tests skip alternative ECG after validPPG, a different context."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-004-02",
+      "required_clause": [
+        "Next-day lab arrival with separately timed physiology/task must visibly retain original collection/target in Review/history and avoid current real-time claim. Existing imported fixture/parser contexts do not assert all UI/time clauses."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization",
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+          "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible"
+        ],
+        "exact_missing_observation": [
+          "Next-day lab arrival with separately timed physiology/task must visibly retain original collection/target in Review/history and avoid current real-time claim. Existing imported fixture/parser contexts do not assert all UI/time clauses."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-005-01",
+      "required_clause": [
+        "Actual process death mid-task then reopen with independent prior components retained and new linked task requirement is unexecuted; reducer does not simulate native restart persistence."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+        ],
+        "exact_missing_observation": [
+          "Actual process death mid-task then reopen with independent prior components retained and new linked task requirement is unexecuted; reducer does not simulate native restart persistence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-005-02",
+      "required_clause": [
+        "Lost BLE Cancel check route must terminate UI, retain cancellation and reject all late peripheral events even when cancel command never arrives. Current test radio Promise later resolves and terminal fixture was already valid, not unreachable peripheral canceled attempt."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion",
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Lost BLE Cancel check route must terminate UI, retain cancellation and reject all late peripheral events even when cancel command never arrives. Current test radio Promise later resolves and terminal fixture was already valid, not unreachable peripheral canceled attempt."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-005-03",
+      "required_clause": [
+        "Mounted-tab active-scored-task\u2192other tab\u2192Keep draft must assert native stimulus already stopped, attempt invalid and returning offers only new attempt/replacement, never resume. Browser retained saliva draft has no active native task."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+          "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+        ],
+        "exact_missing_observation": [
+          "Mounted-tab active-scored-task\u2192other tab\u2192Keep draft must assert native stimulus already stopped, attempt invalid and returning offers only new attempt/replacement, never resume. Browser retained saliva draft has no active native task."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-006-01",
+      "required_clause": [
+        "Accepted finalization response lost specifically, then explicit/manual or permitted auto reconciliation must assert one logical finalization and no new sample/task/checkIDs. Registration-loss fixture is narrower and does not count finalize acceptance."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a lost accepted response replays the same identity and unchanged bytes"
+        ],
+        "exact_missing_observation": [
+          "Accepted finalization response lost specifically, then explicit/manual or permitted auto reconciliation must assert one logical finalization and no new sample/task/checkIDs. Registration-loss fixture is narrower and does not count finalize acceptance."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-006-03",
+      "required_clause": [
+        "Guest demo with actual native taps then reconnect/sign-in must retain exact mixed provenance/namespace/no queue/no migration in one journey; current browser lacks native module and unitguest uses fictional task absent."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "Guest demo with actual native taps then reconnect/sign-in must retain exact mixed provenance/namespace/no queue/no migration in one journey; current browser lacks native module and unitguest uses fictional task absent."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-007-02",
+      "required_clause": [
+        "Actual malformed cache/response opened from synthetic current UI must surface data-integrity error and no estimate; current parser rejection asserts throw, not rendered safe error transition."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::every research_estimate is rejected even when its shape could be schema-valid",
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed"
+        ],
+        "exact_missing_observation": [
+          "Actual malformed cache/response opened from synthetic current UI must surface data-integrity error and no estimate; current parser rejection asserts throw, not rendered safe error transition."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-008-01",
+      "required_clause": [
+        "Actual Android/iOS screen-reader checklist/Review spoken names/states/reasons/actions meaningful order without color dependency unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Actual Android/iOS screen-reader checklist/Review spoken names/states/reasons/actions meaningful order without color dependency unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-026-AND-CHECK-008-02",
+      "required_clause": [
+        "Equivalent native Android+iOS offline engineering-account saves/uploads to same actual API with preserved quantities/qualifiers/provenance/platform metadata and terminal states are not executed. CI pure native modules do not constitute full installed cross-platform offline replay."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "Equivalent native Android+iOS offline engineering-account saves/uploads to same actual API with preserved quantities/qualifiers/provenance/platform metadata and terminal states are not executed. CI pure native modules do not constitute full installed cross-platform offline replay."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

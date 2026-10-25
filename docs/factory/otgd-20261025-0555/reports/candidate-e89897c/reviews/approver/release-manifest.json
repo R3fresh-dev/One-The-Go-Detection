@@ -1,0 +1,76 @@
+{
+  "status": "RELEASED_IMMUTABLE",
+  "released_at": "2026-10-25T11:47:53.289451+00:00",
+  "identity": {
+    "agent_id": "/root/final_approver",
+    "role": "independent final Factory council approver",
+    "provider": "OpenAI",
+    "configured_model": "gpt-6.1-sol",
+    "configured_reasoning_effort": "high",
+    "fork_turns": "none",
+    "evidence": "PM confirmed actual successful collaboration.spawn_agent arguments and returned canonical identity via native message during this assessment.",
+    "runtime_model_independently_queryable": false,
+    "independence": "Fresh separate context; no source/spec/test authorship, no PM role; only assigned approver output writes."
+  },
+  "overall_decision": "NEEDS_HUMAN",
+  "decision_counts": {
+    "BLOCKED": 45,
+    "PASS": 2
+  },
+  "source_candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "source_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "source_fingerprint_sha256": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "all_owned_writes_released": true,
+  "files": [
+    {
+      "path": "assess.py",
+      "sha256": "fcbf9c9ac4351fb41935d17017ea0545c9b0628e4666063ba6d18c2f044b20d4",
+      "bytes": 31329
+    },
+    {
+      "path": "inspection-evidence.json",
+      "sha256": "00a7932e54ed70b2c2ef82c94455d008d01f501e6ff402366da389f00bb2c880",
+      "bytes": 666654
+    },
+    {
+      "path": "per-spec-decisions.json",
+      "sha256": "ea7440a26e2d9426e686863f3d22904c62cfeee5836119268527a26dffa47b58",
+      "bytes": 2208385
+    },
+    {
+      "path": "provisional-before-normative-about-review/SHA256SUMS",
+      "sha256": "cc345d26cbddf7e57bd0578a793ede3a4d1570556076a0d2e6ff9773f8a2a324",
+      "bytes": 421
+    },
+    {
+      "path": "provisional-before-normative-about-review/assess.py",
+      "sha256": "0b3c19c46eb383f7d2e6e8db7195d81b29722590146a7ac2d96dacc109784eac",
+      "bytes": 26089
+    },
+    {
+      "path": "provisional-before-normative-about-review/inspection-evidence.json",
+      "sha256": "f5e36f8f5b44dc1632e1e5d8562ecdf8ecdf4730d79e075fa0addf5b0b1a80a9",
+      "bytes": 660290
+    },
+    {
+      "path": "provisional-before-normative-about-review/per-spec-decisions.json",
+      "sha256": "3bb77d6f80695258adcd27184d36591485f3ecb9abba9b16ab8bd173b14a1e04",
+      "bytes": 2192673
+    },
+    {
+      "path": "provisional-before-normative-about-review/release-manifest.json",
+      "sha256": "28a2ed3b4640a7ad2808513bb3c05ccabed3b486036f999dc0e4fe48a6ae5fb9",
+      "bytes": 1674
+    },
+    {
+      "path": "provisional-before-normative-about-review/report.md",
+      "sha256": "cfe238f893f7ee755d44523eb53ccce2506f248df9dda1c0561316761c52d6ba",
+      "bytes": 23536
+    },
+    {
+      "path": "report.md",
+      "sha256": "cfd31ee67e6e948bde6c1b123a77220367916e206f03345d30ad727520d19a31",
+      "bytes": 25121
+    }
+  ]
+}

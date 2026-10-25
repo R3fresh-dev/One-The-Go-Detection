@@ -2029,5 +2029,6 @@
       }
     }
   },
-  "independent_council": "PENDING"
+  "independent_council": "PASS",
+  "council_decision": "council-decision.json"
 }

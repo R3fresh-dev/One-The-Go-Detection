@@ -1,0 +1,613 @@
+{
+  "spec_id": "OTGD-043",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md",
+  "canonical_sha256": "c6f863bc71ebf167438fbe5cffe07b892da12cc066d0487d21403ff8dd49fa0d",
+  "canonical_requirements": [
+    "VPPG-001 Pin and initialize the actual selected sensor SDK",
+    "VPPG-002 Count only fresh bounded vendor records",
+    "VPPG-003 Preserve vendor quality and finite extraction semantics",
+    "VPPG-004 Bind measured output to signed current origin",
+    "VPPG-005 Stop independently of transport and connection replacement",
+    "VPPG-006 Advertise only the installed matching vendor adapter",
+    "VPPG-007 Verify executable software separately from physical qualification"
+  ],
+  "canonical_scenarios": [
+    "Exact selected breakout initializes",
+    "Generic ADC or failed hub initialization",
+    "Fresh FIFO with known invalid records",
+    "No new FIFO data",
+    "Identical values from genuine fresh dequeues",
+    "Valid finger and vendor quality",
+    "Poor finger state or confidence reinterpretation",
+    "Current signed vendor completion",
+    "Foreign boot or configuration",
+    "Cancellation during warmup or blocked delivery",
+    "Late old vendor read versus reconnect",
+    "Installed and currently admitted vendor PPG",
+    "Approved record names an absent driver or raw codec",
+    "Actual driver software fixtures",
+    "Compile mistaken for participant qualification"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 10,
+    "PASS": 5
+  },
+  "all_current_case_ids": [
+    "OTGD-043-VPPG-001-01",
+    "OTGD-043-VPPG-001-02",
+    "OTGD-043-VPPG-002-01",
+    "OTGD-043-VPPG-002-02",
+    "OTGD-043-VPPG-002-03",
+    "OTGD-043-VPPG-003-01",
+    "OTGD-043-VPPG-003-02",
+    "OTGD-043-VPPG-004-01",
+    "OTGD-043-VPPG-004-02",
+    "OTGD-043-VPPG-005-01",
+    "OTGD-043-VPPG-005-02",
+    "OTGD-043-VPPG-006-01",
+    "OTGD-043-VPPG-006-02",
+    "OTGD-043-VPPG-007-01",
+    "OTGD-043-VPPG-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-043-VPPG-001-01",
+      "requirement_id": "VPPG-001",
+      "status": "PARTIAL",
+      "expected_observation": "Exact selected breakout initializes \u2014 - **GIVEN** approved/provisioned selected hardware, firmware and SDK material - **WHEN** the current signed PPG start is admitted - **THEN** the actual SDK adapter initializes the declared I2C/reset/MFIO/BPM mode and progresses through bounded warmup without blocking cancellation.",
+      "unproved_then_clauses": [
+        "Full production adapter initialization must assert declared physical I2C/reset/MFIO sequence and cancellation remains nonblocking during each stage."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Pinned SDK host test verifies command bytes/mode1/2 and core reset/warmup stage deadlines; both firmware targets compile."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/sparkfun_ppg_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Full production adapter initialization must assert declared physical I2C/reset/MFIO sequence and cancellation remains nonblocking during each stage."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-001-02",
+      "requirement_id": "VPPG-001",
+      "status": "PARTIAL",
+      "expected_observation": "Generic ADC or failed hub initialization \u2014 - **GIVEN** a configuration expects SEN-15219 but a different adapter or failed I2C hub is present - **WHEN** acquisition is requested - **THEN** it returns a concrete invalid/unavailable disposition and never substitutes ADC counts, a simulator or a fabricated bpm.",
+      "unproved_then_clauses": [
+        "Failed hub initialization or wrong ADC adapter under exact SEN-15219 configuration must produce named unavailable/invalid completion with no fabricated bpm."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "SDK failed/short/error reads return zeroed fields; raw ADC/signed generic material cannot invent missing sampling adapter."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/sparkfun_ppg_test.cpp::main",
+        "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main",
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+        ],
+        "exact_missing_observation": [
+          "Failed hub initialization or wrong ADC adapter under exact SEN-15219 configuration must produce named unavailable/invalid completion with no fabricated bpm."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-003-02",
+      "requirement_id": "VPPG-003",
+      "status": "PARTIAL",
+      "expected_observation": "Poor finger state or confidence reinterpretation \u2014 - **GIVEN** finger absence, insufficient accepted data or a vendor confidence score - **WHEN** output is validated/displayed - **THEN** invalid capture has null bpm and explicit reasons, and confidence cannot be shown as accuracy or cannabis impairment probability.",
+      "unproved_then_clauses": [
+        "UI must assert confidence is acquisition quality rather than accuracy/intoxication probability and display explicit inadequate reason."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Poor-contact and stale core produce invalid/null bpm; client rejects impossible confidence and retains modelEligible=false."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/sparkfun_ppg_test.cpp::main",
+        "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main",
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence"
+        ],
+        "exact_missing_observation": [
+          "UI must assert confidence is acquisition quality rather than accuracy/intoxication probability and display explicit inadequate reason."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-004-01",
+      "requirement_id": "VPPG-004",
+      "status": "PARTIAL",
+      "expected_observation": "Current signed vendor completion \u2014 - **GIVEN** a verified binding and current scoped start token with actual accepted vendor records - **WHEN** completion is signed and consumed by Android/iOS and the API - **THEN** the unchanged normalized evidence and timing/source labels survive exact signature and configuration validation.",
+      "unproved_then_clauses": [
+        "No same current signed vendor completion is independently accepted by actual Android/iOS applications and API as an end-to-end record."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Vendor factory fixture survives strict client normalization/signature/configuration checks and timing/source labels remain intact."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+        "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+          "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+        ],
+        "exact_missing_observation": [
+          "No same current signed vendor completion is independently accepted by actual Android/iOS applications and API as an end-to-end record."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-004-02",
+      "requirement_id": "VPPG-004",
+      "status": "PARTIAL",
+      "expected_observation": "Foreign boot or configuration \u2014 - **GIVEN** a signed completion from another boot, authorization, protocol/configuration or workspace - **WHEN** it is delivered late or replayed - **THEN** current client/server admission rejects it without attaching the old bpm to the replacement attempt.",
+      "unproved_then_clauses": [
+        "Late foreign-boot/config vendor completion must pass actual server ingestion rejection and leave replacement attempt bpm untouched."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Client rejects altered boot/owner/generation/config authorization scope under signed completion."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection",
+        "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection",
+          "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association"
+        ],
+        "exact_missing_observation": [
+          "Late foreign-boot/config vendor completion must pass actual server ingestion rejection and leave replacement attempt bpm untouched."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-005-01",
+      "requirement_id": "VPPG-005",
+      "status": "PARTIAL",
+      "expected_observation": "Cancellation during warmup or blocked delivery \u2014 - **GIVEN** vendor acquisition is warming up or terminal transport is backpressured - **WHEN** Cancel or the admitted cutoff occurs - **THEN** the actual adapter stops before later delivery, retains the originating terminal identity and performs no resumed sampling.",
+      "unproved_then_clauses": [
+        "Integrated adapter must stop before delayed/backpressured terminal delivery and preserve origin identity/no resumed sampling; core-only callback tests omit transport pressure."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Core cancel during warmup ends once with no later end mutation; deadline overrun discards observation."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/sparkfun_ppg_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Integrated adapter must stop before delayed/backpressured terminal delivery and preserve origin identity/no resumed sampling; core-only callback tests omit transport pressure."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-005-02",
+      "requirement_id": "VPPG-005",
+      "status": "PARTIAL",
+      "expected_observation": "Late old vendor read versus reconnect \u2014 - **GIVEN** an old read/result is delayed while another authenticated connection becomes current - **WHEN** it completes or notification is attempted - **THEN** origin fencing rejects its effects and only its own resources may be stopped; no participant payload reaches the replacement peer.",
+      "unproved_then_clauses": [
+        "Delay an actual vendor read and notification across authenticated reconnect, assert only old resources stop and no old participant payload reaches replacement peer."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Shared origin gate orders concurrent transition; client old ACK rejection leaves replacement association intact."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/signed_reader_acquisition_test.cpp::main",
+        "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main",
+          "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association"
+        ],
+        "exact_missing_observation": [
+          "Delay an actual vendor read and notification across authenticated reconnect, assert only old resources stop and no old participant payload reaches replacement peer."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-006-01",
+      "requirement_id": "VPPG-006",
+      "status": "PARTIAL",
+      "expected_observation": "Installed and currently admitted vendor PPG \u2014 - **GIVEN** the selected adapter is compiled and all its exact current independently released scopes match - **WHEN** Home and PPG capture are opened - **THEN** the supported vendor path and instruction journey are shown while actual acquisition still obtains a fresh start.",
+      "unproved_then_clauses": [
+        "Actual native Home-to-PPG instruction journey for the installed currently admitted vendor path must obtain a fresh Start. Current shared presentation, exact conditional capabilities and fresh-start server guards are proved; installed native journey and physical adapter remain unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Exact inventory/configuration compatibility and fresh authorized customer sequence execute at software fixture boundary.",
+        "Healthy signed protocol state/currentboot is distinct from servicebinding and syntheticconnection; actualHome/Device current/revoked/expired/owner/gen/offline observations match; mountedexpiry removesconditionalavailability, no flag grants capture authority."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+        "apps/mobile/tests/device-presentation.test.ts::per-channel display uses active matching scope and unexpired admitted configuration independently from connection or binding",
+        "apps/mobile/tests/device-presentation.test.ts::a healthy signed reader connection is physical and retains current boot independently from service binding",
+        "apps/mobile/tests/result-ui.test.ts::actual Home and Device agree on a connected physical reader without synthetic or unconditional unavailable claims",
+        "apps/mobile/e2e/components.spec.ts::Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority",
+        "apps/mobile/e2e/components.spec.ts::Home expires its current channel observation while mounted and Device retains that expired status"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+          "apps/mobile/tests/device-presentation.test.ts::per-channel display uses active matching scope and unexpired admitted configuration independently from connection or binding",
+          "apps/mobile/tests/device-presentation.test.ts::a healthy signed reader connection is physical and retains current boot independently from service binding",
+          "apps/mobile/tests/result-ui.test.ts::actual Home and Device agree on a connected physical reader without synthetic or unconditional unavailable claims",
+          "apps/mobile/e2e/components.spec.ts::Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority"
+        ],
+        "exact_missing_observation": [
+          "Actual native Home-to-PPG instruction journey for the installed currently admitted vendor path must obtain a fresh Start. Current shared presentation, exact conditional capabilities and fresh-start server guards are proved; installed native journey and physical adapter remain unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-006-02",
+      "requirement_id": "VPPG-006",
+      "status": "PARTIAL",
+      "expected_observation": "Approved record names an absent driver or raw codec \u2014 - **GIVEN** an operator record names a missing vendor build or unsupported raw encoding - **WHEN** capability/start/recording is evaluated - **THEN** software availability remains refused; an approval cannot manufacture code or raw permission.",
+      "unproved_then_clauses": [
+        "Exact missing vendor build/raw encoding must be evaluated across capability/start/recording routes, not just generic ADC driver support helper."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Governance rejects generic signed transport missing actual sampling driver and refuses unsupported raw codec/material."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+        ],
+        "exact_missing_observation": [
+          "Exact missing vendor build/raw encoding must be evaluated across capability/start/recording routes, not just generic ADC driver support helper."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-043-VPPG-007-01",
+      "requirement_id": "VPPG-007",
+      "status": "PARTIAL",
+      "expected_observation": "Actual driver software fixtures \u2014 - **GIVEN** the same adapter used by firmware and the pinned vendor commands - **WHEN** fresh/empty/malformed FIFO, reset, quality, cutoff and cancellation cases execute - **THEN** tests verify its actual observable outcomes and both target builds retain source/artifact evidence without claiming sensor execution.",
+      "unproved_then_clauses": [
+        "Full production GPIO/BLE adapter initialization/reset/error/cutoff/cancellation transitions must execute with both target build evidence. Current actual pinned-SDK fresh/empty/malformed/stale/truncated software core fixtures pass, including identical fresh records; they do not execute the complete physical adapter integration."
+      ],
+      "remaining_prerequisite_types": [
+        "software_adapter_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Actual patched vendor source executes I2C decode/short/error/empty/contact/quality/deadline/cancel host tests; Arduino and protectedSDK build logs retain binary digests.",
+        "Reviewedhostfixture assertsidenticalgenuinefreshdequeues/mixedvalidity/priorvalid\u2192empty/stale/truncatednullsemantics inbothmodes withoutchangingoriginalproduction/goldens."
+      ],
+      "current_source_assertion_refs": [
+        "firmware/tests/sparkfun_ppg_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Full production GPIO/BLE adapter initialization/reset/error/cutoff/cancellation transitions must execute with both target build evidence. Current actual pinned-SDK fresh/empty/malformed/stale/truncated software core fixtures pass, including identical fresh records; they do not execute the complete physical adapter integration."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-043-VPPG-001-01",
+      "required_clause": [
+        "Full production adapter initialization must assert declared physical I2C/reset/MFIO sequence and cancellation remains nonblocking during each stage."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Full production adapter initialization must assert declared physical I2C/reset/MFIO sequence and cancellation remains nonblocking during each stage."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-001-02",
+      "required_clause": [
+        "Failed hub initialization or wrong ADC adapter under exact SEN-15219 configuration must produce named unavailable/invalid completion with no fabricated bpm."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main",
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+        ],
+        "exact_missing_observation": [
+          "Failed hub initialization or wrong ADC adapter under exact SEN-15219 configuration must produce named unavailable/invalid completion with no fabricated bpm."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-003-02",
+      "required_clause": [
+        "UI must assert confidence is acquisition quality rather than accuracy/intoxication probability and display explicit inadequate reason."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main",
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence"
+        ],
+        "exact_missing_observation": [
+          "UI must assert confidence is acquisition quality rather than accuracy/intoxication probability and display explicit inadequate reason."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-004-01",
+      "required_clause": [
+        "No same current signed vendor completion is independently accepted by actual Android/iOS applications and API as an end-to-end record."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+          "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection"
+        ],
+        "exact_missing_observation": [
+          "No same current signed vendor completion is independently accepted by actual Android/iOS applications and API as an end-to-end record."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-004-02",
+      "required_clause": [
+        "Late foreign-boot/config vendor completion must pass actual server ingestion rejection and leave replacement attempt bpm untouched."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection",
+          "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association"
+        ],
+        "exact_missing_observation": [
+          "Late foreign-boot/config vendor completion must pass actual server ingestion rejection and leave replacement attempt bpm untouched."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-005-01",
+      "required_clause": [
+        "Integrated adapter must stop before delayed/backpressured terminal delivery and preserve origin identity/no resumed sampling; core-only callback tests omit transport pressure."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Integrated adapter must stop before delayed/backpressured terminal delivery and preserve origin identity/no resumed sampling; core-only callback tests omit transport pressure."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-005-02",
+      "required_clause": [
+        "Delay an actual vendor read and notification across authenticated reconnect, assert only old resources stop and no old participant payload reaches replacement peer."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/signed_reader_acquisition_test.cpp::main",
+          "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association"
+        ],
+        "exact_missing_observation": [
+          "Delay an actual vendor read and notification across authenticated reconnect, assert only old resources stop and no old participant payload reaches replacement peer."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-006-01",
+      "required_clause": [
+        "Actual native Home-to-PPG instruction journey for the installed currently admitted vendor path must obtain a fresh Start. Current shared presentation, exact conditional capabilities and fresh-start server guards are proved; installed native journey and physical adapter remain unexecuted."
+      ],
+      "types": [
+        "native_os_execution",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+          "apps/mobile/tests/device-presentation.test.ts::per-channel display uses active matching scope and unexpired admitted configuration independently from connection or binding",
+          "apps/mobile/tests/device-presentation.test.ts::a healthy signed reader connection is physical and retains current boot independently from service binding",
+          "apps/mobile/tests/result-ui.test.ts::actual Home and Device agree on a connected physical reader without synthetic or unconditional unavailable claims",
+          "apps/mobile/e2e/components.spec.ts::Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority"
+        ],
+        "exact_missing_observation": [
+          "Actual native Home-to-PPG instruction journey for the installed currently admitted vendor path must obtain a fresh Start. Current shared presentation, exact conditional capabilities and fresh-start server guards are proved; installed native journey and physical adapter remain unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-006-02",
+      "required_clause": [
+        "Exact missing vendor build/raw encoding must be evaluated across capability/start/recording routes, not just generic ADC driver support helper."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+        ],
+        "exact_missing_observation": [
+          "Exact missing vendor build/raw encoding must be evaluated across capability/start/recording routes, not just generic ADC driver support helper."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-043-VPPG-007-01",
+      "required_clause": [
+        "Full production GPIO/BLE adapter initialization/reset/error/cutoff/cancellation transitions must execute with both target build evidence. Current actual pinned-SDK fresh/empty/malformed/stale/truncated software core fixtures pass, including identical fresh records; they do not execute the complete physical adapter integration."
+      ],
+      "types": [
+        "software_adapter_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Full production GPIO/BLE adapter initialization/reset/error/cutoff/cancellation transitions must execute with both target build evidence. Current actual pinned-SDK fresh/empty/malformed/stale/truncated software core fixtures pass, including identical fresh records; they do not execute the complete physical adapter integration."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

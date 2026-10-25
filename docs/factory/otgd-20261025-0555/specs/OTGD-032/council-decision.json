@@ -1,0 +1,797 @@
+{
+  "spec_id": "OTGD-032",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-profile/spec.md",
+  "canonical_sha256": "b90bbf657f3c8e8a24eab7ab93f04c680018bbe2179131c1b8aa70c6d3d67a43",
+  "canonical_requirements": [
+    "AND-PRO-001 Optional values and explicit missingness",
+    "AND-PRO-002 Deterministic units and validation",
+    "AND-PRO-003 Revisioned save and frozen session context",
+    "AND-PRO-004 Conflict-aware and idempotent synchronization",
+    "AND-PRO-005 Offline drafts and account separation",
+    "AND-PRO-006 Timestamp and baseline integrity",
+    "AND-PRO-007 Accessible entry and iOS parity"
+  ],
+  "canonical_scenarios": [
+    "pro-empty-profile-save",
+    "pro-declined-history",
+    "pro-imperial-bmi",
+    "pro-invalid-number",
+    "pro-edit-after-check",
+    "pro-edit-during-open-draft",
+    "pro-edit-before-first-acquisition-still-frozen",
+    "pro-two-device-conflict",
+    "pro-save-timeout-retry",
+    "pro-stale-generation-is-quarantined",
+    "pro-offline-edit",
+    "pro-guest-to-account",
+    "pro-future-use-time",
+    "pro-demographics-do-not-score",
+    "pro-accessible-errors",
+    "pro-ios-unit-roundtrip"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 14,
+    "PASS": 2
+  },
+  "all_current_case_ids": [
+    "OTGD-032-AND-PRO-001-01",
+    "OTGD-032-AND-PRO-001-02",
+    "OTGD-032-AND-PRO-002-01",
+    "OTGD-032-AND-PRO-002-02",
+    "OTGD-032-AND-PRO-003-01",
+    "OTGD-032-AND-PRO-003-02",
+    "OTGD-032-AND-PRO-003-03",
+    "OTGD-032-AND-PRO-004-01",
+    "OTGD-032-AND-PRO-004-02",
+    "OTGD-032-AND-PRO-004-03",
+    "OTGD-032-AND-PRO-005-01",
+    "OTGD-032-AND-PRO-005-02",
+    "OTGD-032-AND-PRO-006-01",
+    "OTGD-032-AND-PRO-006-02",
+    "OTGD-032-AND-PRO-007-01",
+    "OTGD-032-AND-PRO-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-032-AND-PRO-001-01",
+      "requirement_id": "AND-PRO-001",
+      "status": "PARTIAL",
+      "expected_observation": "pro-empty-profile-save \u2014 - **GIVEN** an account profile with no provided fields - **WHEN** the user saves without entering optional context - **THEN** numeric values remain null and no default cannabis exposure or baseline is created.",
+      "unproved_then_clauses": [
+        "No exact account empty-profile save plus reload asserts all numeric values null and absence of default cannabis exposure/baseline; validation-only assertion does not cover persisted account state."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Blank validator leaves age/BMI null; domain starts empty context and browser allows profile-free guest check."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/profile-form.test.ts::optional blank demographics stay null and unknown remains distinct from declined"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::optional blank demographics stay null and unknown remains distinct from declined"
+        ],
+        "exact_missing_observation": [
+          "No exact account empty-profile save plus reload asserts all numeric values null and absence of default cannabis exposure/baseline; validation-only assertion does not cover persisted account state."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-001-02",
+      "requirement_id": "AND-PRO-001",
+      "status": "PARTIAL",
+      "expected_observation": "pro-declined-history \u2014 - **GIVEN** last use is set to Prefer not to say - **WHEN** the profile is saved and reloaded - **THEN** the declined marker persists and its timestamp remains null.",
+      "unproved_then_clauses": [
+        "Saving and reopening that declined profile, with explicit last_use_at null assertion, is absent from reviewed current profile tests."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Validator preserves distinct declined history and last_use_status markers."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/profile-form.test.ts::optional blank demographics stay null and unknown remains distinct from declined"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::optional blank demographics stay null and unknown remains distinct from declined"
+        ],
+        "exact_missing_observation": [
+          "Saving and reopening that declined profile, with explicit last_use_at null assertion, is absent from reviewed current profile tests."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-002-01",
+      "requirement_id": "AND-PRO-002",
+      "status": "PARTIAL",
+      "expected_observation": "pro-imperial-bmi \u2014 - **GIVEN** the user enters 5 feet 10 inches and 180 pounds - **WHEN** the draft is validated and saved - **THEN** canonical height is 177.8 cm, weight is 81.6466266 kg before contract precision handling, and displayed BMI is 25.8 with no category label.",
+      "unproved_then_clauses": [
+        "Canonical scenario specifies 180lb ->81.6466266kg and displayed25.8 with no category. Existing150lb21.5225 fixture and metric browser values do not assert that exact numeric/display boundary."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Imperial validator directly tests 5ft10in at 150lb, exact SI and BMI; browser tests metric180cm/80kg toggle."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/profile-form.test.ts::whole feet plus bounded inches and pounds use exact SI conversions",
+        "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::whole feet plus bounded inches and pounds use exact SI conversions",
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Canonical scenario specifies 180lb ->81.6466266kg and displayed25.8 with no category. Existing150lb21.5225 fixture and metric browser values do not assert that exact numeric/display boundary."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-002-02",
+      "requirement_id": "AND-PRO-002",
+      "status": "PARTIAL",
+      "expected_observation": "pro-invalid-number \u2014 - **GIVEN** height is zero, weight is non-finite, or age contains a fraction - **WHEN** Save profile is pressed - **THEN** the relevant inline errors appear, BMI is unavailable, and no invalid profile is submitted.",
+      "unproved_then_clauses": [
+        "Exact zero-height/nonfinite-weight/fractional-age submissions require assertions of BMI unavailable and no API profile submission; reviewed fixtures instead use age17/height301/weight0."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Validator collects four errors without clearing text; locale parser refuses Infinity; real browser age17 reports inline aria-invalid, focuses age and preserves values."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/profile-form.test.ts::profile validation collects independent inline errors without clearing draft text",
+        "apps/mobile/tests/profile-form.test.ts::locale decimal and digit input becomes locale-independent numbers",
+        "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::profile validation collects independent inline errors without clearing draft text",
+          "apps/mobile/tests/profile-form.test.ts::locale decimal and digit input becomes locale-independent numbers",
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Exact zero-height/nonfinite-weight/fractional-age submissions require assertions of BMI unavailable and no API profile submission; reviewed fixtures instead use age17/height301/weight0."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-003-02",
+      "requirement_id": "AND-PRO-003",
+      "status": "PARTIAL",
+      "expected_observation": "pro-edit-during-open-draft \u2014 - **GIVEN** a check draft has already copied version A - **WHEN** another device changes the profile - **THEN** the open check does not silently acquire the new context and displays its saved profile version on review.",
+      "unproved_then_clauses": [
+        "An open measurement draft receiving another-device profile update, visible saved revision and unchanged non-null context are not directly exercised; current finalized engineering fixture does not establish exact open-draft conjunction."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Controller asserts original context/snapshot equality after profile save; UI exposes snapshot revision."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "An open measurement draft receiving another-device profile update, visible saved revision and unchanged non-null context are not directly exercised; current finalized engineering fixture does not establish exact open-draft conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-003-03",
+      "requirement_id": "AND-PRO-003",
+      "status": "PARTIAL",
+      "expected_observation": "pro-edit-before-first-acquisition-still-frozen \u2014 - **GIVEN** Start check created session A with profile revision P1 and no capture yet - **WHEN** the user saves revision P2 on this or another device - **THEN** A still displays P1 and its original target time; using P2 requires a new linked check created after that save.",
+      "unproved_then_clauses": [
+        "The check must still display P1 when P2 is saved on this or another device. Current no-capture controller state, original target and linked P2 replacement are proved; actual rendered frozen-P1 review / another-device presentation is not directly observed."
+      ],
+      "remaining_prerequisite_types": [
+        "software_ui_assertion_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Domain copies profile and original start time; controller refuses implicit snapshot replacement.",
+        "Real measurement-mode software context P1=80kg/versionA before capture remains after P2=82kg/versionB, optional software interrupted ledger; new linked check usesP2/no carriedattempts, original staysP1."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+        "apps/mobile/tests/domain.test.ts::check freezes original profile timestamp and recomputes elapsed use at its start",
+        "apps/mobile/tests/controller.test.ts::ordinary measurement P1 stays frozen after P2 profile update ${ledgerTransition ? \"across a software-only interrupted first attempt\" : \"while the draft has no captures\"}"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "apps/mobile/tests/domain.test.ts::check freezes original profile timestamp and recomputes elapsed use at its start",
+          "apps/mobile/tests/controller.test.ts::ordinary measurement P1 stays frozen after P2 profile update ${ledgerTransition ? \"across a software-only interrupted first attempt\" : \"while the draft has no captures\"}"
+        ],
+        "exact_missing_observation": [
+          "The check must still display P1 when P2 is saved on this or another device. Current no-capture controller state, original target and linked P2 replacement are proved; actual rendered frozen-P1 review / another-device presentation is not directly observed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-004-01",
+      "requirement_id": "AND-PRO-004",
+      "status": "PARTIAL",
+      "expected_observation": "pro-two-device-conflict \u2014 - **GIVEN** two devices edit the same base revision - **WHEN** the first save succeeds and the second receives 412 - **THEN** the second displays both versions and retains its draft until the user chooses.",
+      "unproved_then_clauses": [
+        "Two-device UI scenario must assert both versions displayed, original local draft retained, and no write until explicit choice. Existing browser form only tests validation/unsaved navigation; no current same-context412 journey found."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "API ETag/idempotency tests reject stale writes; controller saveProfile refreshes current profile after conflict and exposes explicit resolution."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Two-device UI scenario must assert both versions displayed, original local draft retained, and no write until explicit choice. Existing browser form only tests validation/unsaved navigation; no current same-context412 journey found."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-004-02",
+      "requirement_id": "AND-PRO-004",
+      "status": "PARTIAL",
+      "expected_observation": "pro-save-timeout-retry \u2014 - **GIVEN** the server saved a revision but the response was lost - **WHEN** the app retries with the original key and payload - **THEN** one revision is returned and no duplicate change is recorded.",
+      "unproved_then_clauses": [
+        "Actual accepted-profile-response-lost retry with original key and payload, one server revision and no duplicate change is not directly asserted in the reviewed profile tests; ordinary successful save is narrower."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Server profile idempotency uses original key/payload; controller queues exact profile operation."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "Actual accepted-profile-response-lost retry with original key and payload, one server revision and no duplicate change is not directly asserted in the reviewed profile tests; ordinary successful save is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-004-03",
+      "requirement_id": "AND-PRO-004",
+      "status": "PARTIAL",
+      "expected_observation": "pro-stale-generation-is-quarantined \u2014 - **GIVEN** a queued profile Save carries an earlier data generation - **WHEN** the service returns 410 after accepted all-data deletion - **THEN** the operation is quarantined without rewriting its generation; new saves wait for the explicit reset acknowledgment.",
+      "unproved_then_clauses": [
+        "Need profile-specific accepted-all-data-deletion410 scenario proving original queued profile generation unchanged and new profile save waits for acknowledgment, rather than session queue only."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Generic generation410 queue test quarantines unchanged request evidence; explicit reset controller prevents prior data reuse."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+        ],
+        "exact_missing_observation": [
+          "Need profile-specific accepted-all-data-deletion410 scenario proving original queued profile generation unchanged and new profile save waits for acknowledgment, rather than session queue only."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-005-01",
+      "requirement_id": "AND-PRO-005",
+      "status": "PARTIAL",
+      "expected_observation": "pro-offline-edit \u2014 - **GIVEN** an account profile is cached and the network is unavailable - **WHEN** the user saves valid changes - **THEN** the local revision is labeled pending and reconciliation later applies the original ETag rather than pretending a server save occurred.",
+      "unproved_then_clauses": [
+        "Actual cached account edit offline then reconnect is not exercised with pending label and original ETag assertion; guest local-save and ordinary account-success tests are different contexts."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Controller implementation saves local profile pending and queues ETag; sync sends exact request."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "Actual cached account edit offline then reconnect is not exercised with pending label and original ETag assertion; guest local-save and ordinary account-success tests are different contexts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-005-02",
+      "requirement_id": "AND-PRO-005",
+      "status": "PARTIAL",
+      "expected_observation": "pro-guest-to-account \u2014 - **GIVEN** a fictional demo profile exists - **WHEN** the user opens a newly authenticated account - **THEN** the account profile is fetched or shown empty and the demo profile is not imported automatically.",
+      "unproved_then_clauses": [
+        "Need same-context fictional profile with known values followed by authenticated account fetch/empty response and explicit no-import comparison; guest check ownership assertion alone does not prove profile isolation."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "Guest domain object cannot acquire account ownership; controller partitions workspace."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "Need same-context fictional profile with known values followed by authenticated account fetch/empty response and explicit no-import comparison; guest check ownership assertion alone does not prove profile isolation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-006-02",
+      "requirement_id": "AND-PRO-006",
+      "status": "PARTIAL",
+      "expected_observation": "pro-demographics-do-not-score \u2014 - **GIVEN** a complete profile with daily use and all demographics - **WHEN** the dashboard or result is displayed - **THEN** no metabolic-rate calculation, baseline qualification, or intoxication probability is created from those fields.",
+      "unproved_then_clauses": [
+        "No exact complete daily-use/demographics profile rendered in dashboard/result asserts absence of metabolic rate, baseline qualification and generated intoxication probability. Null-profile engineering fixture is not that scenario."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "current_assertions_proven": [
+        "Profile is context, not numeric model output; engineering snapshot result remains measurement-only with null probability."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "No exact complete daily-use/demographics profile rendered in dashboard/result asserts absence of metabolic rate, baseline qualification and generated intoxication probability. Null-profile engineering fixture is not that scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-007-01",
+      "requirement_id": "AND-PRO-007",
+      "status": "PARTIAL",
+      "expected_observation": "pro-accessible-errors \u2014 - **GIVEN** screen-reader navigation and 200% text scaling - **WHEN** two fields fail validation - **THEN** the error summary is announced, the first invalid field receives focus, and Save/Cancel remain reachable without overlapping controls.",
+      "unproved_then_clauses": [
+        "Actual screen-reader and200%text with two simultaneous field failures, summary announcement, first-invalid focus and unobscured Save/Cancel is not executed; browser17age alone is narrower."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Real browser age error announces alert/focus and retains Save; two viewport component execution exists."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Actual screen-reader and200%text with two simultaneous field failures, summary announcement, first-invalid focus and unobscured Save/Cancel is not executed; browser17age alone is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-007-02",
+      "requirement_id": "AND-PRO-007",
+      "status": "PARTIAL",
+      "expected_observation": "pro-ios-unit-roundtrip \u2014 - **GIVEN** an iOS profile contains canonical values with more precision than display - **WHEN** the user toggles units twice without editing - **THEN** stored values and BMI are unchanged and no new profile revision is created.",
+      "unproved_then_clauses": [
+        "Actual iOS installed profile toggle twice with original high precision, unchanged BMI and no new revision has no admitted native execution; pure validator does not assert revision count."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Pure validator25unit toggles preserve177.8cm/68.0388555kg; browser roundtrip preserves180cm/80kg."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/profile-form.test.ts::display rounding and repeated unit toggles preserve original canonical values",
+        "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::display rounding and repeated unit toggles preserve original canonical values",
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS installed profile toggle twice with original high precision, unchanged BMI and no new revision has no admitted native execution; pure validator does not assert revision count."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-032-AND-PRO-001-01",
+      "required_clause": [
+        "No exact account empty-profile save plus reload asserts all numeric values null and absence of default cannabis exposure/baseline; validation-only assertion does not cover persisted account state."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::optional blank demographics stay null and unknown remains distinct from declined"
+        ],
+        "exact_missing_observation": [
+          "No exact account empty-profile save plus reload asserts all numeric values null and absence of default cannabis exposure/baseline; validation-only assertion does not cover persisted account state."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-001-02",
+      "required_clause": [
+        "Saving and reopening that declined profile, with explicit last_use_at null assertion, is absent from reviewed current profile tests."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::optional blank demographics stay null and unknown remains distinct from declined"
+        ],
+        "exact_missing_observation": [
+          "Saving and reopening that declined profile, with explicit last_use_at null assertion, is absent from reviewed current profile tests."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-002-01",
+      "required_clause": [
+        "Canonical scenario specifies 180lb ->81.6466266kg and displayed25.8 with no category. Existing150lb21.5225 fixture and metric browser values do not assert that exact numeric/display boundary."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::whole feet plus bounded inches and pounds use exact SI conversions",
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Canonical scenario specifies 180lb ->81.6466266kg and displayed25.8 with no category. Existing150lb21.5225 fixture and metric browser values do not assert that exact numeric/display boundary."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-002-02",
+      "required_clause": [
+        "Exact zero-height/nonfinite-weight/fractional-age submissions require assertions of BMI unavailable and no API profile submission; reviewed fixtures instead use age17/height301/weight0."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::profile validation collects independent inline errors without clearing draft text",
+          "apps/mobile/tests/profile-form.test.ts::locale decimal and digit input becomes locale-independent numbers",
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Exact zero-height/nonfinite-weight/fractional-age submissions require assertions of BMI unavailable and no API profile submission; reviewed fixtures instead use age17/height301/weight0."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-003-02",
+      "required_clause": [
+        "An open measurement draft receiving another-device profile update, visible saved revision and unchanged non-null context are not directly exercised; current finalized engineering fixture does not establish exact open-draft conjunction."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "An open measurement draft receiving another-device profile update, visible saved revision and unchanged non-null context are not directly exercised; current finalized engineering fixture does not establish exact open-draft conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-003-03",
+      "required_clause": [
+        "The check must still display P1 when P2 is saved on this or another device. Current no-capture controller state, original target and linked P2 replacement are proved; actual rendered frozen-P1 review / another-device presentation is not directly observed."
+      ],
+      "types": [
+        "software_ui_assertion_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "apps/mobile/tests/domain.test.ts::check freezes original profile timestamp and recomputes elapsed use at its start",
+          "apps/mobile/tests/controller.test.ts::ordinary measurement P1 stays frozen after P2 profile update ${ledgerTransition ? \"across a software-only interrupted first attempt\" : \"while the draft has no captures\"}"
+        ],
+        "exact_missing_observation": [
+          "The check must still display P1 when P2 is saved on this or another device. Current no-capture controller state, original target and linked P2 replacement are proved; actual rendered frozen-P1 review / another-device presentation is not directly observed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-004-01",
+      "required_clause": [
+        "Two-device UI scenario must assert both versions displayed, original local draft retained, and no write until explicit choice. Existing browser form only tests validation/unsaved navigation; no current same-context412 journey found."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Two-device UI scenario must assert both versions displayed, original local draft retained, and no write until explicit choice. Existing browser form only tests validation/unsaved navigation; no current same-context412 journey found."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-004-02",
+      "required_clause": [
+        "Actual accepted-profile-response-lost retry with original key and payload, one server revision and no duplicate change is not directly asserted in the reviewed profile tests; ordinary successful save is narrower."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "Actual accepted-profile-response-lost retry with original key and payload, one server revision and no duplicate change is not directly asserted in the reviewed profile tests; ordinary successful save is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-004-03",
+      "required_clause": [
+        "Need profile-specific accepted-all-data-deletion410 scenario proving original queued profile generation unchanged and new profile save waits for acknowledgment, rather than session queue only."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+        ],
+        "exact_missing_observation": [
+          "Need profile-specific accepted-all-data-deletion410 scenario proving original queued profile generation unchanged and new profile save waits for acknowledgment, rather than session queue only."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-005-01",
+      "required_clause": [
+        "Actual cached account edit offline then reconnect is not exercised with pending label and original ETag assertion; guest local-save and ordinary account-success tests are different contexts."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "Actual cached account edit offline then reconnect is not exercised with pending label and original ETag assertion; guest local-save and ordinary account-success tests are different contexts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-005-02",
+      "required_clause": [
+        "Need same-context fictional profile with known values followed by authenticated account fetch/empty response and explicit no-import comparison; guest check ownership assertion alone does not prove profile isolation."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+        ],
+        "exact_missing_observation": [
+          "Need same-context fictional profile with known values followed by authenticated account fetch/empty response and explicit no-import comparison; guest check ownership assertion alone does not prove profile isolation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-006-02",
+      "required_clause": [
+        "No exact complete daily-use/demographics profile rendered in dashboard/result asserts absence of metabolic rate, baseline qualification and generated intoxication probability. Null-profile engineering fixture is not that scenario."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it"
+        ],
+        "exact_missing_observation": [
+          "No exact complete daily-use/demographics profile rendered in dashboard/result asserts absence of metabolic rate, baseline qualification and generated intoxication probability. Null-profile engineering fixture is not that scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-007-01",
+      "required_clause": [
+        "Actual screen-reader and200%text with two simultaneous field failures, summary announcement, first-invalid focus and unobscured Save/Cancel is not executed; browser17age alone is narrower."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Actual screen-reader and200%text with two simultaneous field failures, summary announcement, first-invalid focus and unobscured Save/Cancel is not executed; browser17age alone is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-032-AND-PRO-007-02",
+      "required_clause": [
+        "Actual iOS installed profile toggle twice with original high precision, unchanged BMI and no new revision has no admitted native execution; pure validator does not assert revision count."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/profile-form.test.ts::display rounding and repeated unit toggles preserve original canonical values",
+          "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS installed profile toggle twice with original high precision, unchanged BMI and no new revision has no admitted native execution; pure validator does not assert revision count."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

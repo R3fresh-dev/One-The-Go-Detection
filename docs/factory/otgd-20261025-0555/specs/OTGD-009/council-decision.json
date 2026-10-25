@@ -1,0 +1,455 @@
+{
+  "spec_id": "OTGD-009",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/research-model-execution/spec.md",
+  "canonical_sha256": "a110df0160cb1dfa6b1eb471ebe558eec1af8bcb86c7c883b8795bac2fdf714a",
+  "canonical_requirements": [
+    "MODEL-006 Independently qualified optical diameter",
+    "MODEL-001 Approved immutable artifact admission",
+    "MODEL-002 Current participant and scientific authority",
+    "MODEL-003 Qualified acquisition and temporal features",
+    "MODEL-004 Personal baseline ownership and age",
+    "MODEL-005 Abstention and authenticated research presentation"
+  ],
+  "canonical_scenarios": [
+    "Qualified diameter-only model",
+    "Geometry cannot qualify response timing",
+    "Geometry approval withdrawn during computation",
+    "Admitted artifact",
+    "Unsupported or changed artifact",
+    "Authorized positive path",
+    "Revocation during computation",
+    "Unqualified demonstration",
+    "Missing or censored required chemical feature",
+    "Native timing qualification",
+    "Unqualified phone timing",
+    "Valid prior baseline",
+    "Foreign or stale baseline",
+    "Admitted research estimate",
+    "Uncertainty abstention",
+    "Relabeled or inconsistent proof"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 9,
+    "PARTIAL": 7
+  },
+  "all_current_case_ids": [
+    "OTGD-009-MODEL-006-01",
+    "OTGD-009-MODEL-006-02",
+    "OTGD-009-MODEL-006-03",
+    "OTGD-009-MODEL-001-01",
+    "OTGD-009-MODEL-001-02",
+    "OTGD-009-MODEL-002-01",
+    "OTGD-009-MODEL-002-02",
+    "OTGD-009-MODEL-002-03",
+    "OTGD-009-MODEL-003-01",
+    "OTGD-009-MODEL-003-02",
+    "OTGD-009-MODEL-003-03",
+    "OTGD-009-MODEL-004-01",
+    "OTGD-009-MODEL-004-02",
+    "OTGD-009-MODEL-005-01",
+    "OTGD-009-MODEL-005-02",
+    "OTGD-009-MODEL-005-03"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-009-MODEL-006-03",
+      "requirement_id": "MODEL-006",
+      "status": "PARTIAL",
+      "expected_observation": "Geometry approval withdrawn during computation \u2014 - **WHEN** the geometry release is retired or replaced before result commit - **THEN** current authority is resolved again and the old computation cannot commit",
+      "unproved_then_clauses": [
+        "Replaced rather than retired geometry release between compute/commit is not directly asserted; retirement proves revocation but not every listed replacement branch."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual optical output is computed, geometry calibration retired, current verification raises Problem before commit."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_admission.py::test_optical_geometry_retirement_between_compute_and_commit_refuses_result"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_admission.py::test_optical_geometry_retirement_between_compute_and_commit_refuses_result"
+        ],
+        "exact_missing_observation": [
+          "Replaced rather than retired geometry release between compute/commit is not directly asserted; retirement proves revocation but not every listed replacement branch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-009-MODEL-001-02",
+      "requirement_id": "MODEL-001",
+      "status": "PARTIAL",
+      "expected_observation": "Unsupported or changed artifact \u2014 - **WHEN** the artifact is executable, noncanonical, nonfinite, oversized, uses unknown features, has unstable scales or differs from its pinned hash - **THEN** the worker returns a controlled refusal with no research probability",
+      "unproved_then_clauses": [
+        "Reviewed tests do not directly supply an artifact exceeding the maximum admitted byte limit; mismatched expected size is not the same oversized artifact boundary. Add exact max+1 and bounded-read/controlled no-score assertion if not covered elsewhere."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Executable/unknown feature/nonfinite/dimension/zero and underflow scales reject; pinned byte/size/version/calibration/feature/noncanonical mutations refuse. Runtime changed bytes returns null probability."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_engine.py::test_executable_unknown_future_and_nonfinite_artifacts_fail",
+        "services/api/tests/test_model_engine.py::test_artifact_pinning_is_required",
+        "services/api/tests/test_model_engine.py::test_reversed_abstention_and_underflow_scales_fail_before_execution",
+        "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_executable_unknown_future_and_nonfinite_artifacts_fail",
+          "services/api/tests/test_model_engine.py::test_artifact_pinning_is_required",
+          "services/api/tests/test_model_engine.py::test_reversed_abstention_and_underflow_scales_fail_before_execution",
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+        ],
+        "exact_missing_observation": [
+          "Reviewed tests do not directly supply an artifact exceeding the maximum admitted byte limit; mismatched expected size is not the same oversized artifact boundary. Add exact max+1 and bounded-read/controlled no-score assertion if not covered elsewhere."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-009-MODEL-002-02",
+      "requirement_id": "MODEL-002",
+      "status": "PARTIAL",
+      "expected_observation": "Revocation during computation \u2014 - **WHEN** a study, model, method, calibration, device binding or consent changes before commit - **THEN** the result is refused or the operation fails without committing an estimate from stale authority",
+      "unproved_then_clauses": [
+        "Only model retirement is directly interleaved after computation. Same boundary mutation of study/method/calibration/device binding/consent is not explicitly asserted before commit in reviewed model tests."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual claimed worker output cannot commit after model revocation; stored result remains null. Separate pre-execution current consent/calibration/qualification/recovery mutations refuse."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_admission.py::test_model_retirement_and_consent_change_between_compute_and_commit",
+        "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_admission.py::test_model_retirement_and_consent_change_between_compute_and_commit",
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+        ],
+        "exact_missing_observation": [
+          "Only model retirement is directly interleaved after computation. Same boundary mutation of study/method/calibration/device binding/consent is not explicitly asserted before commit in reviewed model tests."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-009-MODEL-003-01",
+      "requirement_id": "MODEL-003",
+      "status": "PARTIAL",
+      "expected_observation": "Missing or censored required chemical feature \u2014 - **WHEN** a required analyte is missing, below quantification, incompatible or out of scope - **THEN** the system preserves its qualifier and refuses inference without imputing zero",
+      "unproved_then_clauses": [
+        "Exact missing required analyte and all named censored/incompatible/out-of-scope alternatives need input qualifier/value preservation comparison and explicit no-zero-imputation output; exception assertions do not compare original input after refusal."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Acquisition matrix refuses censored below_loq and incompatible assay tuple; feature matrix refuses missing task/censored chemical feature rather than producing value."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+        "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+          "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates"
+        ],
+        "exact_missing_observation": [
+          "Exact missing required analyte and all named censored/incompatible/out-of-scope alternatives need input qualifier/value preservation comparison and explicit no-zero-imputation output; exception assertions do not compare original input after refusal."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-009-MODEL-003-02",
+      "requirement_id": "MODEL-003",
+      "status": "PARTIAL",
+      "expected_observation": "Native timing qualification \u2014 - **WHEN** the phone model, OS, native build, input/presentation clocks, implementation and extractor match independently released timing qualification - **THEN** the model uses its approved timing bias and uncertainty bound while retaining the unmodified native timing evidence",
+      "unproved_then_clauses": [
+        "Complete independent physical timing qualification for actual phone/OS/build/input/presentation clocks remains absent; software fixture does not establish calibrated uncertainty/bias on hardware. Exact approved uncertainty-bound application is not explicitly compared in reviewed model test."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution",
+        "study_scientific_approval"
+      ],
+      "current_assertions_proven": [
+        "Typed native HTTP lifecycle resolves exact fictional timing approval and result proof includes timing-calibration SHA. Bias test hashes feature vector after2ms adjustment; current input snapshot remains frozen in owned fixture."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_admission.py::test_http_native_evidence_real_registry_lifecycle_worker_and_research_read",
+        "services/api/tests/test_model_admission.py::test_baseline_bounds_and_bias_are_applied_to_frozen_features"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_admission.py::test_http_native_evidence_real_registry_lifecycle_worker_and_research_read",
+          "services/api/tests/test_model_admission.py::test_baseline_bounds_and_bias_are_applied_to_frozen_features"
+        ],
+        "exact_missing_observation": [
+          "Complete independent physical timing qualification for actual phone/OS/build/input/presentation clocks remains absent; software fixture does not establish calibrated uncertainty/bias on hardware. Exact approved uncertainty-bound application is not explicitly compared in reviewed model test."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-009-MODEL-004-01",
+      "requirement_id": "MODEL-004",
+      "status": "PARTIAL",
+      "expected_observation": "Valid prior baseline \u2014 - **WHEN** the current and historical captures meet all owned evidence and scope checks - **THEN** the model uses their approved feature differences and binds the exact baseline snapshot hash",
+      "unproved_then_clauses": [
+        "Generic model case requires exact baseline snapshot SHA bound into personalized output; client baseline test accepts supplied arbitrary nonzero digest after adding owned reference, not independent full generic baseline resolution. Need explicit actual prior baseline digest and approved feature-difference output binding."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Pure feature calculation compares prior/current owned features and yields differences; HR personalized HTTP fixture resolves original baseline and rejects changed signature."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+        "services/api/tests/test_cardiac_authority.py::test_personalized_http_capture_resolves_its_own_original_baseline_and_rejects_changed_signature",
+        "apps/mobile/tests/research-result.test.ts::personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+          "services/api/tests/test_cardiac_authority.py::test_personalized_http_capture_resolves_its_own_original_baseline_and_rejects_changed_signature",
+          "apps/mobile/tests/research-result.test.ts::personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields"
+        ],
+        "exact_missing_observation": [
+          "Generic model case requires exact baseline snapshot SHA bound into personalized output; client baseline test accepts supplied arbitrary nonzero digest after adding owned reference, not independent full generic baseline resolution. Need explicit actual prior baseline digest and approved feature-difference output binding."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-009-MODEL-004-02",
+      "requirement_id": "MODEL-004",
+      "status": "PARTIAL",
+      "expected_observation": "Foreign or stale baseline \u2014 - **WHEN** a baseline is foreign, retired, future, stale, incomplete or unqualified - **THEN** the worker refuses personalized inference",
+      "unproved_then_clauses": [
+        "Generic retired or independently unqualified baseline refusal is not directly executed in reviewed model baseline test; HR-only scope test does not prove each generic multi-channel baseline dependency."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Direct foreign/future/missing/censored baseline features refuse; personalized max-age gate refuses incompatible baseline; HR scope/interval signature tests apply independent baseline authority."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+        "services/api/tests/test_model_admission.py::test_baseline_bounds_and_bias_are_applied_to_frozen_features"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+          "services/api/tests/test_model_admission.py::test_baseline_bounds_and_bias_are_applied_to_frozen_features"
+        ],
+        "exact_missing_observation": [
+          "Generic retired or independently unqualified baseline refusal is not directly executed in reviewed model baseline test; HR-only scope test does not prove each generic multi-channel baseline dependency."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-009-MODEL-006-03",
+      "required_clause": [
+        "Replaced rather than retired geometry release between compute/commit is not directly asserted; retirement proves revocation but not every listed replacement branch."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_admission.py::test_optical_geometry_retirement_between_compute_and_commit_refuses_result"
+        ],
+        "exact_missing_observation": [
+          "Replaced rather than retired geometry release between compute/commit is not directly asserted; retirement proves revocation but not every listed replacement branch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-009-MODEL-001-02",
+      "required_clause": [
+        "Reviewed tests do not directly supply an artifact exceeding the maximum admitted byte limit; mismatched expected size is not the same oversized artifact boundary. Add exact max+1 and bounded-read/controlled no-score assertion if not covered elsewhere."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_executable_unknown_future_and_nonfinite_artifacts_fail",
+          "services/api/tests/test_model_engine.py::test_artifact_pinning_is_required",
+          "services/api/tests/test_model_engine.py::test_reversed_abstention_and_underflow_scales_fail_before_execution",
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+        ],
+        "exact_missing_observation": [
+          "Reviewed tests do not directly supply an artifact exceeding the maximum admitted byte limit; mismatched expected size is not the same oversized artifact boundary. Add exact max+1 and bounded-read/controlled no-score assertion if not covered elsewhere."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-009-MODEL-002-02",
+      "required_clause": [
+        "Only model retirement is directly interleaved after computation. Same boundary mutation of study/method/calibration/device binding/consent is not explicitly asserted before commit in reviewed model tests."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_admission.py::test_model_retirement_and_consent_change_between_compute_and_commit",
+          "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+        ],
+        "exact_missing_observation": [
+          "Only model retirement is directly interleaved after computation. Same boundary mutation of study/method/calibration/device binding/consent is not explicitly asserted before commit in reviewed model tests."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-009-MODEL-003-01",
+      "required_clause": [
+        "Exact missing required analyte and all named censored/incompatible/out-of-scope alternatives need input qualifier/value preservation comparison and explicit no-zero-imputation output; exception assertions do not compare original input after refusal."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+          "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates"
+        ],
+        "exact_missing_observation": [
+          "Exact missing required analyte and all named censored/incompatible/out-of-scope alternatives need input qualifier/value preservation comparison and explicit no-zero-imputation output; exception assertions do not compare original input after refusal."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-009-MODEL-003-02",
+      "required_clause": [
+        "Complete independent physical timing qualification for actual phone/OS/build/input/presentation clocks remains absent; software fixture does not establish calibrated uncertainty/bias on hardware. Exact approved uncertainty-bound application is not explicitly compared in reviewed model test."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution",
+        "study_scientific_approval"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_admission.py::test_http_native_evidence_real_registry_lifecycle_worker_and_research_read",
+          "services/api/tests/test_model_admission.py::test_baseline_bounds_and_bias_are_applied_to_frozen_features"
+        ],
+        "exact_missing_observation": [
+          "Complete independent physical timing qualification for actual phone/OS/build/input/presentation clocks remains absent; software fixture does not establish calibrated uncertainty/bias on hardware. Exact approved uncertainty-bound application is not explicitly compared in reviewed model test."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-009-MODEL-004-01",
+      "required_clause": [
+        "Generic model case requires exact baseline snapshot SHA bound into personalized output; client baseline test accepts supplied arbitrary nonzero digest after adding owned reference, not independent full generic baseline resolution. Need explicit actual prior baseline digest and approved feature-difference output binding."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+          "services/api/tests/test_cardiac_authority.py::test_personalized_http_capture_resolves_its_own_original_baseline_and_rejects_changed_signature",
+          "apps/mobile/tests/research-result.test.ts::personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields"
+        ],
+        "exact_missing_observation": [
+          "Generic model case requires exact baseline snapshot SHA bound into personalized output; client baseline test accepts supplied arbitrary nonzero digest after adding owned reference, not independent full generic baseline resolution. Need explicit actual prior baseline digest and approved feature-difference output binding."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-009-MODEL-004-02",
+      "required_clause": [
+        "Generic retired or independently unqualified baseline refusal is not directly executed in reviewed model baseline test; HR-only scope test does not prove each generic multi-channel baseline dependency."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+          "services/api/tests/test_model_admission.py::test_baseline_bounds_and_bias_are_applied_to_frozen_features"
+        ],
+        "exact_missing_observation": [
+          "Generic retired or independently unqualified baseline refusal is not directly executed in reviewed model baseline test; HR-only scope test does not prove each generic multi-channel baseline dependency."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "spec_id": "OTGD-019",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-alcohol-channel/spec.md",
+  "canonical_sha256": "6c423c75ae449e935fe8856f61d70af07aaab582719baba1d1e1bc63d787f45a",
+  "canonical_requirements": [
+    "AND-ALC-001 Display actual alcohol availability",
+    "AND-ALC-002 Keep alcohol records independent",
+    "AND-ALC-003 Preserve mg/L and qualifiers",
+    "AND-ALC-004 Require calibration and sample adequacy",
+    "AND-ALC-005 Isolate fictional demonstrations",
+    "AND-ALC-006 Prohibit combined impairment shortcuts"
+  ],
+  "canonical_scenarios": [
+    "Only the starter PPG board is connected",
+    "Approved configuration is missing",
+    "Combined session has two measured channels",
+    "Cannabis result is unavailable",
+    "Quantified record arrives",
+    "Caller submits a BAC percentage",
+    "Sampling is inadequate",
+    "Calibration expires",
+    "Demo is intentionally opened",
+    "Simulated record targets a participant session",
+    "Alcohol co-use is present",
+    "A low displayed value"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 9,
+    "NOT_RUN": 2,
+    "PASS": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-019-AND-ALC-001-01",
+    "OTGD-019-AND-ALC-001-02",
+    "OTGD-019-AND-ALC-002-01",
+    "OTGD-019-AND-ALC-002-02",
+    "OTGD-019-AND-ALC-003-01",
+    "OTGD-019-AND-ALC-003-02",
+    "OTGD-019-AND-ALC-004-01",
+    "OTGD-019-AND-ALC-004-02",
+    "OTGD-019-AND-ALC-005-01",
+    "OTGD-019-AND-ALC-005-02",
+    "OTGD-019-AND-ALC-006-01",
+    "OTGD-019-AND-ALC-006-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-019-AND-ALC-001-01",
+      "requirement_id": "AND-ALC-001",
+      "status": "PARTIAL",
+      "expected_observation": "Only the starter PPG board is connected \u2014 - **GIVEN** a Nano ESP32 and PPG module without a calibrated breath channel - **WHEN** Alcohol is opened - **THEN** the app shows hardware-required guidance and does not start a blow timer or produce an alcohol value.",
+      "unproved_then_clauses": [
+        "Connected PPG-only user journey must assert hardware-required guidance, no blow timer and no alcohol value through opening Alcohol."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Production inventory has no alcohol driver and capabilities report HUMAN_ADAPTER_UNIMPLEMENTED; UI says qualified capture unavailable."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter",
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter",
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+        ],
+        "exact_missing_observation": [
+          "Connected PPG-only user journey must assert hardware-required guidance, no blow timer and no alcohol value through opening Alcohol."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-001-02",
+      "requirement_id": "AND-ALC-001",
+      "status": "PARTIAL",
+      "expected_observation": "Approved configuration is missing \u2014 - **GIVEN** a connected device advertises alcohol capability without an approved configuration - **WHEN** sampling is requested - **THEN** the app and server reject the request with a configuration-unavailable reason.",
+      "unproved_then_clauses": [
+        "Advertised alcohol with absent configuration must exercise both app and HTTP request and assert the specified configuration-unavailable reason."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "API refuses unavailable alcohol adapter and current invalid registry authority; controller never invokes acquisition on authoritative start refusal."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter",
+        "apps/mobile/tests/acquisition.test.ts::a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter",
+          "apps/mobile/tests/acquisition.test.ts::a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration"
+        ],
+        "exact_missing_observation": [
+          "Advertised alcohol with absent configuration must exercise both app and HTTP request and assert the specified configuration-unavailable reason."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-002-01",
+      "requirement_id": "AND-ALC-002",
+      "status": "PARTIAL",
+      "expected_observation": "Combined session has two measured channels \u2014 - **GIVEN** independently valid alcohol and cannabis records - **WHEN** session detail is displayed - **THEN** each channel has its own card, units, timing, and validity explanation.",
+      "unproved_then_clauses": [
+        "The conjunction of independently validated alcohol+cannabis records is hypothetical; no real breath adapter/qualified record exists and separate cannabis card validity text is not fully asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "DOM card tests preserve alcohol units/time/qualifier/source separately from displayed cannabis result."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+        ],
+        "exact_missing_observation": [
+          "The conjunction of independently validated alcohol+cannabis records is hypothetical; no real breath adapter/qualified record exists and separate cannabis card validity text is not fully asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-002-02",
+      "requirement_id": "AND-ALC-002",
+      "status": "PARTIAL",
+      "expected_observation": "Cannabis result is unavailable \u2014 - **GIVEN** a valid authorized alcohol record and unavailable cannabis inference - **WHEN** results render - **THEN** the alcohol measurement does not manufacture a cannabis estimate.",
+      "unproved_then_clauses": [
+        "Valid authorized alcohol plus unavailable inference must be rendered with an explicit assertion that no cannabis estimate appears."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Measurement/guest copy does not invent a result; domain rejects locally generated research estimates."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+        ],
+        "exact_missing_observation": [
+          "Valid authorized alcohol plus unavailable inference must be rendered with an explicit assertion that no cannabis estimate appears."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-003-01",
+      "requirement_id": "AND-ALC-003",
+      "status": "PARTIAL",
+      "expected_observation": "Quantified record arrives \u2014 - **GIVEN** an in-range qualified measurement in mg/L - **WHEN** the record is validated and displayed - **THEN** its numeric value and mg/L label remain paired.",
+      "unproved_then_clauses": [
+        "In-range qualified breath record validation is unavailable without actual approved adapter; display fixtures are explicitly hypothetical."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "DOM tests pair exact zero/0.001 value with mg/L across history/result/detail."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+        ],
+        "exact_missing_observation": [
+          "In-range qualified breath record validation is unavailable without actual approved adapter; display fixtures are explicitly hypothetical."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-003-02",
+      "requirement_id": "AND-ALC-003",
+      "status": "NOT_RUN",
+      "expected_observation": "Caller submits a BAC percentage \u2014 - **GIVEN** a value labeled percent BAC - **WHEN** it is submitted to the breath-alcohol route - **THEN** the service rejects the incompatible unit and performs no conversion.",
+      "unproved_then_clauses": [
+        "Submit percent BAC to the breath-alcohol route and assert incompatible-unit rejection with no conversion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Related saliva-unit and schema tests do not execute this breath-route unit mutation."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Submit percent BAC to the breath-alcohol route and assert incompatible-unit rejection with no conversion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-004-01",
+      "requirement_id": "AND-ALC-004",
+      "status": "PARTIAL",
+      "expected_observation": "Sampling is inadequate \u2014 - **GIVEN** the device reports an inadequate breath sample - **WHEN** acquisition ends - **THEN** the result is invalid with no exact concentration and an actionable retry explanation.",
+      "unproved_then_clauses": [
+        "Inadequate actual breath completion and actionable retry explanation are absent because no breath driver is implemented."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Alcohol censored/invalid schema requires null concentration; UI renders invalid as em dash."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_alcohol_censoring_is_null",
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_alcohol_censoring_is_null",
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+        ],
+        "exact_missing_observation": [
+          "Inadequate actual breath completion and actionable retry explanation are absent because no breath driver is implemented."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-004-02",
+      "requirement_id": "AND-ALC-004",
+      "status": "PARTIAL",
+      "expected_observation": "Calibration expires \u2014 - **GIVEN** the instrument calibration is outside its qualified interval - **WHEN** a new record is requested - **THEN** the app blocks qualified sampling and identifies recalibration as the required action.",
+      "unproved_then_clauses": [
+        "UI identifies only generic registry refusal; it does not assert recalibration as required action for specifically expired calibration."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "API expiry equality and just-over reject calibration/configuration, preserve history and refuse fresh/cached starts; controller preserves authoritative refusal and never acquires."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history",
+        "services/api/tests/test_operator_governance.py::test_alcohol_expiry_between_contract_grant_and_start_rejects_cached_authority",
+        "apps/mobile/tests/acquisition.test.ts::a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history",
+          "services/api/tests/test_operator_governance.py::test_alcohol_expiry_between_contract_grant_and_start_rejects_cached_authority",
+          "apps/mobile/tests/acquisition.test.ts::a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration"
+        ],
+        "exact_missing_observation": [
+          "UI identifies only generic registry refusal; it does not assert recalibration as required action for specifically expired calibration."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-005-01",
+      "requirement_id": "AND-ALC-005",
+      "status": "PARTIAL",
+      "expected_observation": "Demo is intentionally opened \u2014 - **GIVEN** the development demo action - **WHEN** the customer previews the channel - **THEN** every value is labeled fictional and no real measurement claim is made.",
+      "unproved_then_clauses": [
+        "Explicit development-demo opening must assert every displayed value is fictional and no real-measurement claim appears throughout capture/review."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Simulated qualifier/source appears on separate alcohol DOM card with no clearance copy."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+        ],
+        "exact_missing_observation": [
+          "Explicit development-demo opening must assert every displayed value is fictional and no real-measurement claim appears throughout capture/review."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-005-02",
+      "requirement_id": "AND-ALC-005",
+      "status": "NOT_RUN",
+      "expected_observation": "Simulated record targets a participant session \u2014 - **GIVEN** a nonsynthetic parent session - **WHEN** a simulated alcohol record is submitted - **THEN** the service rejects the provenance mismatch.",
+      "unproved_then_clauses": [
+        "POST simulated alcohol evidence to nonsynthetic session and assert provenance mismatch and no persisted reading."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Synthetic export fixture validates typed projections only; it does not submit to a participant parent."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "POST simulated alcohol evidence to nonsynthetic session and assert provenance mismatch and no persisted reading."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-006-01",
+      "requirement_id": "AND-ALC-006",
+      "status": "PARTIAL",
+      "expected_observation": "Alcohol co-use is present \u2014 - **GIVEN** the cannabis model does not support alcohol co-use - **WHEN** a future research request is evaluated - **THEN** the unsupported cohort is handled by the manifest gate rather than a score adjustment in the app.",
+      "unproved_then_clauses": [
+        "Test uses alcohol_co_use=unknown; a present unsupported alcohol co-use cohort must be directly asserted rather than relying on unknown-state rejection."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Model scope-check co_use mutation is rejected and DOM explains model-specific co-use authority/no automatic combined classification."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+        ],
+        "exact_missing_observation": [
+          "Test uses alcohol_co_use=unknown; a present unsupported alcohol co-use cohort must be directly asserted rather than relying on unknown-state rejection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-019-AND-ALC-001-01",
+      "required_clause": [
+        "Connected PPG-only user journey must assert hardware-required guidance, no blow timer and no alcohol value through opening Alcohol."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter",
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+        ],
+        "exact_missing_observation": [
+          "Connected PPG-only user journey must assert hardware-required guidance, no blow timer and no alcohol value through opening Alcohol."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-001-02",
+      "required_clause": [
+        "Advertised alcohol with absent configuration must exercise both app and HTTP request and assert the specified configuration-unavailable reason."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter",
+          "apps/mobile/tests/acquisition.test.ts::a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration"
+        ],
+        "exact_missing_observation": [
+          "Advertised alcohol with absent configuration must exercise both app and HTTP request and assert the specified configuration-unavailable reason."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-002-01",
+      "required_clause": [
+        "The conjunction of independently validated alcohol+cannabis records is hypothetical; no real breath adapter/qualified record exists and separate cannabis card validity text is not fully asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+        ],
+        "exact_missing_observation": [
+          "The conjunction of independently validated alcohol+cannabis records is hypothetical; no real breath adapter/qualified record exists and separate cannabis card validity text is not fully asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-002-02",
+      "required_clause": [
+        "Valid authorized alcohol plus unavailable inference must be rendered with an explicit assertion that no cannabis estimate appears."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+        ],
+        "exact_missing_observation": [
+          "Valid authorized alcohol plus unavailable inference must be rendered with an explicit assertion that no cannabis estimate appears."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-003-01",
+      "required_clause": [
+        "In-range qualified breath record validation is unavailable without actual approved adapter; display fixtures are explicitly hypothetical."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+        ],
+        "exact_missing_observation": [
+          "In-range qualified breath record validation is unavailable without actual approved adapter; display fixtures are explicitly hypothetical."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-003-02",
+      "required_clause": [
+        "Submit percent BAC to the breath-alcohol route and assert incompatible-unit rejection with no conversion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Submit percent BAC to the breath-alcohol route and assert incompatible-unit rejection with no conversion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-004-01",
+      "required_clause": [
+        "Inadequate actual breath completion and actionable retry explanation are absent because no breath driver is implemented."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_alcohol_censoring_is_null",
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+        ],
+        "exact_missing_observation": [
+          "Inadequate actual breath completion and actionable retry explanation are absent because no breath driver is implemented."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-004-02",
+      "required_clause": [
+        "UI identifies only generic registry refusal; it does not assert recalibration as required action for specifically expired calibration."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history",
+          "services/api/tests/test_operator_governance.py::test_alcohol_expiry_between_contract_grant_and_start_rejects_cached_authority",
+          "apps/mobile/tests/acquisition.test.ts::a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration"
+        ],
+        "exact_missing_observation": [
+          "UI identifies only generic registry refusal; it does not assert recalibration as required action for specifically expired calibration."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-005-01",
+      "required_clause": [
+        "Explicit development-demo opening must assert every displayed value is fictional and no real-measurement claim appears throughout capture/review."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail"
+        ],
+        "exact_missing_observation": [
+          "Explicit development-demo opening must assert every displayed value is fictional and no real-measurement claim appears throughout capture/review."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-005-02",
+      "required_clause": [
+        "POST simulated alcohol evidence to nonsynthetic session and assert provenance mismatch and no persisted reading."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "POST simulated alcohol evidence to nonsynthetic session and assert provenance mismatch and no persisted reading."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-019-AND-ALC-006-01",
+      "required_clause": [
+        "Test uses alcohol_co_use=unknown; a present unsupported alcohol co-use cohort must be directly asserted rather than relying on unknown-state rejection."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+        ],
+        "exact_missing_observation": [
+          "Test uses alcohol_co_use=unknown; a present unsupported alcohol co-use cohort must be directly asserted rather than relying on unknown-state rejection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

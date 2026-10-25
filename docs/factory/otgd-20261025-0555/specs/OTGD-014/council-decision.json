@@ -1,0 +1,601 @@
+{
+  "spec_id": "OTGD-014",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/cloud-deployment-customer-access/specs/cloud-browser-delivery/spec.md",
+  "canonical_sha256": "735f76493e8188925c157347dc22b0a2acad4cb76721f2ea8a7f324629631855",
+  "canonical_requirements": [
+    "WEB-DEP-001 Deliver public application bytes through a private origin",
+    "WEB-DEP-002 Preserve browser routing and asset failures",
+    "WEB-DEP-003 Pin secure public browser identity",
+    "WEB-DEP-004 Bind all web bytes to reviewed source and authority",
+    "WEB-DEP-005 Bound public artifact content",
+    "WEB-DEP-006 Publish immutably with an entry-point barrier",
+    "WEB-DEP-007 Enforce browser security headers",
+    "WEB-DEP-008 Keep customer access claims accurate"
+  ],
+  "canonical_scenarios": [
+    "Customer opens the published HTTPS origin",
+    "Caller requests the bucket directly",
+    "Customer opens a history deep link",
+    "A missing script is requested",
+    "QA and production are opened together",
+    "A host environment attempts to override identity",
+    "The reviewed artifact is published",
+    "An archive is altered after approval",
+    "A normal Expo export is packaged",
+    "Export contains a secret or traversal path",
+    "An identical approved release is retried",
+    "A dependency conflicts or fails",
+    "Public transport probes execute",
+    "The response lacks its security policy",
+    "A customer experiments in the browser",
+    "A deployment command succeeds"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 10,
+    "PASS": 6
+  },
+  "all_current_case_ids": [
+    "OTGD-014-WEB-DEP-001-01",
+    "OTGD-014-WEB-DEP-001-02",
+    "OTGD-014-WEB-DEP-002-01",
+    "OTGD-014-WEB-DEP-002-02",
+    "OTGD-014-WEB-DEP-003-01",
+    "OTGD-014-WEB-DEP-003-02",
+    "OTGD-014-WEB-DEP-004-01",
+    "OTGD-014-WEB-DEP-004-02",
+    "OTGD-014-WEB-DEP-005-01",
+    "OTGD-014-WEB-DEP-005-02",
+    "OTGD-014-WEB-DEP-006-01",
+    "OTGD-014-WEB-DEP-006-02",
+    "OTGD-014-WEB-DEP-007-01",
+    "OTGD-014-WEB-DEP-007-02",
+    "OTGD-014-WEB-DEP-008-01",
+    "OTGD-014-WEB-DEP-008-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-014-WEB-DEP-001-01",
+      "requirement_id": "WEB-DEP-001",
+      "status": "PARTIAL",
+      "expected_observation": "Customer opens the published HTTPS origin \u2014 - **GIVEN** an admitted published application artifact - **WHEN** a customer opens WebOrigin - **THEN** CloudFront serves the application without public S3 access or credentials in the URL.",
+      "unproved_then_clauses": [
+        "\u201cCloudFront serves application without public S3 access or credentials in URL\u201d: no admitted deployment/actual CloudFront GET/private-S3 denial execution; HTTP/CloudFront/S3 are doubles."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Publication accepts mocked enabled private one-origin OAC distribution, verifies stored bytes and HTTPS probe verifies fixture index."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last",
+        "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last",
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+        ],
+        "exact_missing_observation": [
+          "\u201cCloudFront serves application without public S3 access or credentials in URL\u201d: no admitted deployment/actual CloudFront GET/private-S3 denial execution; HTTP/CloudFront/S3 are doubles."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-001-02",
+      "requirement_id": "WEB-DEP-001",
+      "status": "PARTIAL",
+      "expected_observation": "Caller requests the bucket directly \u2014 - **GIVEN** an anonymous caller without distribution authority - **WHEN** it requests an S3 asset - **THEN** bucket policy does not grant public asset access.",
+      "unproved_then_clauses": [
+        "\u201canonymous caller ... requests S3 asset ... bucket policy does not grant public access\u201d: no actual anonymous direct-S3 access attempt or deployed policy evidence. Synthesized policy source is not deployed IAM execution."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Admission rejects missing OAC before put_object; inspected CDK synth source blocks public bucket policy and permits exact CloudFront source ARN."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last"
+        ],
+        "exact_missing_observation": [
+          "\u201canonymous caller ... requests S3 asset ... bucket policy does not grant public access\u201d: no actual anonymous direct-S3 access attempt or deployed policy evidence. Synthesized policy source is not deployed IAM execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-002-01",
+      "requirement_id": "WEB-DEP-002",
+      "status": "PARTIAL",
+      "expected_observation": "Customer opens a history deep link \u2014 - **GIVEN** published index.html - **WHEN** GET /history reaches the distribution - **THEN** the actual application entry point is returned.",
+      "unproved_then_clauses": [
+        "\u201cGET /history reaches distribution ... actual entry point returned\u201d: mock response supplies entry directly; no actual deployed CloudFront navigation execution."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "MockTransport serves /history exact index bytes and production verify_access accepts them; inspected CDK function source rewrites extensionless GET navigation only."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+        ],
+        "exact_missing_observation": [
+          "\u201cGET /history reaches distribution ... actual entry point returned\u201d: mock response supplies entry directly; no actual deployed CloudFront navigation execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-002-02",
+      "requirement_id": "WEB-DEP-002",
+      "status": "PARTIAL",
+      "expected_observation": "A missing script is requested \u2014 - **GIVEN** no matching .js asset - **WHEN** the browser requests that asset - **THEN** an origin error is preserved rather than returning a successful HTML body.",
+      "unproved_then_clauses": [
+        "\u201corigin error preserved rather than successful HTML\u201d: existing probe fixture returns404 itself; no executed negative response200/HTML sentinel case proving deployer rejection, nor actual CDN missing-script response."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "MockTransport missing-script sentinel404 is accepted by production probe; inspected CDK function source preserves extensioned asset path."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+        ],
+        "exact_missing_observation": [
+          "\u201corigin error preserved rather than successful HTML\u201d: existing probe fixture returns404 itself; no executed negative response200/HTML sentinel case proving deployer rejection, nor actual CDN missing-script response."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-003-01",
+      "requirement_id": "WEB-DEP-003",
+      "status": "PARTIAL",
+      "expected_observation": "QA and production are opened together \u2014 - **GIVEN** separate approved account deployments - **WHEN** both applications open - **THEN** each uses its own identity/API and QA remains visibly identified.",
+      "unproved_then_clauses": [
+        "\u201cboth applications open ... own identity/API and QA visibly identified\u201d: subprocess emits synthetic JS, not actual Expo browser apps; no two deployed origins/customer UI identity-label test."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "QA/prod build-orchestration double serializes each explicit environment/API/issuer into synthetic app.js; --clear required twice; host secrets removed."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache",
+        "infra/test/test_web_deployment.py::test_browser_build_environment_retains_transport_settings_without_deploy_credentials"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache",
+          "infra/test/test_web_deployment.py::test_browser_build_environment_retains_transport_settings_without_deploy_credentials"
+        ],
+        "exact_missing_observation": [
+          "\u201cboth applications open ... own identity/API and QA visibly identified\u201d: subprocess emits synthetic JS, not actual Expo browser apps; no two deployed origins/customer UI identity-label test."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-003-02",
+      "requirement_id": "WEB-DEP-003",
+      "status": "PARTIAL",
+      "expected_observation": "A host environment attempts to override identity \u2014 - **GIVEN** conflicting APP/EXPO_PUBLIC/EAS inputs on the build host - **WHEN** the reviewed artifact builds - **THEN** the explicit deployed identity controls the bundle and a mismatching output fails verification.",
+      "unproved_then_clauses": [
+        "A generated compiled JS bundle that ignores the selected environment identity tuple must fail output verification. Current OAuth pins, clean source rebuild and Metro cache clearing are asserted; the signed runtime metadata and fake exporter do not directly prove detection of a mismatching compiled bundle. This is an evidence limit, not a newly reproduced deployment defect."
+      ],
+      "remaining_prerequisite_types": [
+        "software_compiled_artifact_evidence"
+      ],
+      "current_assertions_proven": [
+        "Explicit public identity overwrites hostile host EXPO values; build clears modeled Metro cache; signed envelope runtime mismatch against output ClientId rejects."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_browser_build_environment_retains_transport_settings_without_deploy_credentials",
+        "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache",
+        "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_browser_build_environment_retains_transport_settings_without_deploy_credentials",
+          "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache",
+          "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound"
+        ],
+        "exact_missing_observation": [
+          "A generated compiled JS bundle that ignores the selected environment identity tuple must fail output verification. Current OAuth pins, clean source rebuild and Metro cache clearing are asserted; the signed runtime metadata and fake exporter do not directly prove detection of a mismatching compiled bundle. This is an evidence limit, not a newly reproduced deployment defect."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-005-01",
+      "requirement_id": "WEB-DEP-005",
+      "status": "PARTIAL",
+      "expected_observation": "A normal Expo export is packaged \u2014 - **GIVEN** reviewed HTML, JavaScript, metadata and supported assets - **WHEN** limits hold - **THEN** a deterministic ZIP and canonical manifest are created.",
+      "unproved_then_clauses": [
+        "\u201cnormal Expo ... metadata and supported assets ... deterministic ZIP\u201d: exporter is subprocess double with two files; no repeated independent packaging byte-equality assertion or normal Expo metadata/asset fixture coverage. This is not a demonstrated nondeterminism bug."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Real package() creates and verifies ZIP/canonical manifest for index.html+app.js fixture; source uses sorted paths/fixed ZIP timestamps."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+        "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+          "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache"
+        ],
+        "exact_missing_observation": [
+          "\u201cnormal Expo ... metadata and supported assets ... deterministic ZIP\u201d: exporter is subprocess double with two files; no repeated independent packaging byte-equality assertion or normal Expo metadata/asset fixture coverage. This is not a demonstrated nondeterminism bug."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-006-01",
+      "requirement_id": "WEB-DEP-006",
+      "status": "PARTIAL",
+      "expected_observation": "An identical approved release is retried \u2014 - **GIVEN** existing same-prefix identical bytes - **WHEN** publication repeats - **THEN** those bytes verify and are preserved.",
+      "unproved_then_clauses": [
+        "\u201cexisting same-prefix identical bytes ... retry verifies/preserves\u201d: no positive PreconditionFailed/412 retry with identical existing bytes and unchanged version/write state assertion. Hosted-preview service upload is a different transport."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Initial create-if-absent publication and returned-byte verification executed on S3 double; conflicting existing bytes rejected."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_conflicting_immutable_object_and_asset_upload_failure_block_entrypoint",
+        "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_conflicting_immutable_object_and_asset_upload_failure_block_entrypoint",
+          "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last"
+        ],
+        "exact_missing_observation": [
+          "\u201cexisting same-prefix identical bytes ... retry verifies/preserves\u201d: no positive PreconditionFailed/412 retry with identical existing bytes and unchanged version/write state assertion. Hosted-preview service upload is a different transport."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-007-01",
+      "requirement_id": "WEB-DEP-007",
+      "status": "PARTIAL",
+      "expected_observation": "Public transport probes execute \u2014 - **GIVEN** a published release - **WHEN** index.html is retrieved over HTTPS - **THEN** byte integrity and required security headers verify.",
+      "unproved_then_clauses": [
+        "\u201cpublished release ... retrieved over HTTPS\u201d: MockTransport provides no real TLS/public-origin/header observation; actual CloudFront/public release prerequisite unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Mock HTTPS probe validates fixture index hash/size and supported headers; header parser accepts correct/reordered exact policy."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+        "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+          "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport"
+        ],
+        "exact_missing_observation": [
+          "\u201cpublished release ... retrieved over HTTPS\u201d: MockTransport provides no real TLS/public-origin/header observation; actual CloudFront/public release prerequisite unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-007-02",
+      "requirement_id": "WEB-DEP-007",
+      "status": "PARTIAL",
+      "expected_observation": "The response lacks its security policy \u2014 - **GIVEN** missing CSP/HSTS/no-sniff/frame denial - **WHEN** public verification runs - **THEN** deployment exits nonzero without a verified-access receipt.",
+      "unproved_then_clauses": [
+        "\u201cdeployment exits nonzero without verified-access receipt\u201d: helper exceptions are observed, not failing one-shot CLI/public-verification stage with nonzero exit and absent deployment.json assertion. Missing header fields themselves are not each exercised by this header mutation table."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Bad CSP/HSTS/frame/referrer policy rejected; unprotected deep-link fixture makes verify_access raise."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport",
+        "infra/test/test_web_deployment.py::test_navigation_cannot_omit_required_policy_when_index_is_secure"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport",
+          "infra/test/test_web_deployment.py::test_navigation_cannot_omit_required_policy_when_index_is_secure"
+        ],
+        "exact_missing_observation": [
+          "\u201cdeployment exits nonzero without verified-access receipt\u201d: helper exceptions are observed, not failing one-shot CLI/public-verification stage with nonzero exit and absent deployment.json assertion. Missing header fields themselves are not each exercised by this header mutation table."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-014-WEB-DEP-001-01",
+      "required_clause": [
+        "\u201cCloudFront serves application without public S3 access or credentials in URL\u201d: no admitted deployment/actual CloudFront GET/private-S3 denial execution; HTTP/CloudFront/S3 are doubles."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last",
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+        ],
+        "exact_missing_observation": [
+          "\u201cCloudFront serves application without public S3 access or credentials in URL\u201d: no admitted deployment/actual CloudFront GET/private-S3 denial execution; HTTP/CloudFront/S3 are doubles."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-001-02",
+      "required_clause": [
+        "\u201canonymous caller ... requests S3 asset ... bucket policy does not grant public access\u201d: no actual anonymous direct-S3 access attempt or deployed policy evidence. Synthesized policy source is not deployed IAM execution."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last"
+        ],
+        "exact_missing_observation": [
+          "\u201canonymous caller ... requests S3 asset ... bucket policy does not grant public access\u201d: no actual anonymous direct-S3 access attempt or deployed policy evidence. Synthesized policy source is not deployed IAM execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-002-01",
+      "required_clause": [
+        "\u201cGET /history reaches distribution ... actual entry point returned\u201d: mock response supplies entry directly; no actual deployed CloudFront navigation execution."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+        ],
+        "exact_missing_observation": [
+          "\u201cGET /history reaches distribution ... actual entry point returned\u201d: mock response supplies entry directly; no actual deployed CloudFront navigation execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-002-02",
+      "required_clause": [
+        "\u201corigin error preserved rather than successful HTML\u201d: existing probe fixture returns404 itself; no executed negative response200/HTML sentinel case proving deployer rejection, nor actual CDN missing-script response."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance"
+        ],
+        "exact_missing_observation": [
+          "\u201corigin error preserved rather than successful HTML\u201d: existing probe fixture returns404 itself; no executed negative response200/HTML sentinel case proving deployer rejection, nor actual CDN missing-script response."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-003-01",
+      "required_clause": [
+        "\u201cboth applications open ... own identity/API and QA visibly identified\u201d: subprocess emits synthetic JS, not actual Expo browser apps; no two deployed origins/customer UI identity-label test."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache",
+          "infra/test/test_web_deployment.py::test_browser_build_environment_retains_transport_settings_without_deploy_credentials"
+        ],
+        "exact_missing_observation": [
+          "\u201cboth applications open ... own identity/API and QA visibly identified\u201d: subprocess emits synthetic JS, not actual Expo browser apps; no two deployed origins/customer UI identity-label test."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-003-02",
+      "required_clause": [
+        "A generated compiled JS bundle that ignores the selected environment identity tuple must fail output verification. Current OAuth pins, clean source rebuild and Metro cache clearing are asserted; the signed runtime metadata and fake exporter do not directly prove detection of a mismatching compiled bundle. This is an evidence limit, not a newly reproduced deployment defect."
+      ],
+      "types": [
+        "software_compiled_artifact_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_browser_build_environment_retains_transport_settings_without_deploy_credentials",
+          "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache",
+          "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound"
+        ],
+        "exact_missing_observation": [
+          "A generated compiled JS bundle that ignores the selected environment identity tuple must fail output verification. Current OAuth pins, clean source rebuild and Metro cache clearing are asserted; the signed runtime metadata and fake exporter do not directly prove detection of a mismatching compiled bundle. This is an evidence limit, not a newly reproduced deployment defect."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-005-01",
+      "required_clause": [
+        "\u201cnormal Expo ... metadata and supported assets ... deterministic ZIP\u201d: exporter is subprocess double with two files; no repeated independent packaging byte-equality assertion or normal Expo metadata/asset fixture coverage. This is not a demonstrated nondeterminism bug."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+          "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache"
+        ],
+        "exact_missing_observation": [
+          "\u201cnormal Expo ... metadata and supported assets ... deterministic ZIP\u201d: exporter is subprocess double with two files; no repeated independent packaging byte-equality assertion or normal Expo metadata/asset fixture coverage. This is not a demonstrated nondeterminism bug."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-006-01",
+      "required_clause": [
+        "\u201cexisting same-prefix identical bytes ... retry verifies/preserves\u201d: no positive PreconditionFailed/412 retry with identical existing bytes and unchanged version/write state assertion. Hosted-preview service upload is a different transport."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_conflicting_immutable_object_and_asset_upload_failure_block_entrypoint",
+          "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last"
+        ],
+        "exact_missing_observation": [
+          "\u201cexisting same-prefix identical bytes ... retry verifies/preserves\u201d: no positive PreconditionFailed/412 retry with identical existing bytes and unchanged version/write state assertion. Hosted-preview service upload is a different transport."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-007-01",
+      "required_clause": [
+        "\u201cpublished release ... retrieved over HTTPS\u201d: MockTransport provides no real TLS/public-origin/header observation; actual CloudFront/public release prerequisite unexecuted."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+          "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport"
+        ],
+        "exact_missing_observation": [
+          "\u201cpublished release ... retrieved over HTTPS\u201d: MockTransport provides no real TLS/public-origin/header observation; actual CloudFront/public release prerequisite unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-014-WEB-DEP-007-02",
+      "required_clause": [
+        "\u201cdeployment exits nonzero without verified-access receipt\u201d: helper exceptions are observed, not failing one-shot CLI/public-verification stage with nonzero exit and absent deployment.json assertion. Missing header fields themselves are not each exercised by this header mutation table."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport",
+          "infra/test/test_web_deployment.py::test_navigation_cannot_omit_required_policy_when_index_is_secure"
+        ],
+        "exact_missing_observation": [
+          "\u201cdeployment exits nonzero without verified-access receipt\u201d: helper exceptions are observed, not failing one-shot CLI/public-verification stage with nonzero exit and absent deployment.json assertion. Missing header fields themselves are not each exercised by this header mutation table."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "spec_id": "OTGD-045",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/cloud-release-orchestration/spec.md",
+  "canonical_sha256": "c62bb011c5e71f177ededaf19e710e2ec40a97618a5b427d144f97bcd67d7a26",
+  "canonical_requirements": [
+    "CLOUD-DEP-007 Register only the exact deployed UI CNAME",
+    "CLOUD-DEP-011 Bound release authority and evidence inputs"
+  ],
+  "canonical_scenarios": [
+    "A valid absent public subdomain is registered",
+    "A foreign record appears after preview",
+    "The exact target already exists",
+    "Caller supplies apex or foreign authority",
+    "Genuine matching release authority is supplied",
+    "A file is special, replaced or exposed"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 2,
+    "PASS": 4
+  },
+  "all_current_case_ids": [
+    "OTGD-045-CLOUD-DEP-007-01",
+    "OTGD-045-CLOUD-DEP-007-02",
+    "OTGD-045-CLOUD-DEP-007-03",
+    "OTGD-045-CLOUD-DEP-007-04",
+    "OTGD-045-CLOUD-DEP-011-01",
+    "OTGD-045-CLOUD-DEP-011-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-045-CLOUD-DEP-007-01",
+      "requirement_id": "CLOUD-DEP-007",
+      "status": "PARTIAL",
+      "expected_observation": "A valid absent public subdomain is registered \u2014 - **GIVEN** a matching enabled private distribution, issued TLS and absent record - **WHEN** apply is explicitly requested - **THEN** one CNAME is created; successful change observation must occur within ten minutes, SDK timeouts/retries may delay failure reporting, and failure does not imply cancellation or rollback.",
+      "unproved_then_clauses": [
+        "\u201cone CNAME created ... successful actual change observation within ten minutes\u201d: no live Route53 change/propagation or SDK timeout behavior observed; Mock waiter cannot qualify actual DNS."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Mocked exact TLS/distribution/public absent record emits one CREATE and waiter; deadline601 raises after create/wait without rollback code."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_plan_has_no_dns_mutation_and_apply_waits_for_actual_change",
+        "infra/test/test_web_deployment.py::test_late_dns_success_is_refused_without_claiming_rollback"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_plan_has_no_dns_mutation_and_apply_waits_for_actual_change",
+          "infra/test/test_web_deployment.py::test_late_dns_success_is_refused_without_claiming_rollback"
+        ],
+        "exact_missing_observation": [
+          "\u201cone CNAME created ... successful actual change observation within ten minutes\u201d: no live Route53 change/propagation or SDK timeout behavior observed; Mock waiter cannot qualify actual DNS."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-045-CLOUD-DEP-007-02",
+      "requirement_id": "CLOUD-DEP-007",
+      "status": "PARTIAL",
+      "expected_observation": "A foreign record appears after preview \u2014 - **GIVEN** an absent lookup followed by another actor creating that record - **WHEN** CREATE is submitted - **THEN** AWS rejects the conflict, the foreign record is preserved and the command reports failure.",
+      "unproved_then_clauses": [
+        "\u201cAWS rejects conflict, foreign record preserved\u201d: service mock does not store a competing record or exercise real Route53 atomic conflict; preservation is inferred from CREATE contract, not observed live."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "After absent lookup, mocked AWS CREATE raises InvalidChangeBatch; command propagates failure, request Action CREATE and no waiter."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_intervening_dns_record_fails_atomic_create_without_overwrite"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_intervening_dns_record_fails_atomic_create_without_overwrite"
+        ],
+        "exact_missing_observation": [
+          "\u201cAWS rejects conflict, foreign record preserved\u201d: service mock does not store a competing record or exercise real Route53 atomic conflict; preservation is inferred from CREATE contract, not observed live."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-045-CLOUD-DEP-007-01",
+      "required_clause": [
+        "\u201cone CNAME created ... successful actual change observation within ten minutes\u201d: no live Route53 change/propagation or SDK timeout behavior observed; Mock waiter cannot qualify actual DNS."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_plan_has_no_dns_mutation_and_apply_waits_for_actual_change",
+          "infra/test/test_web_deployment.py::test_late_dns_success_is_refused_without_claiming_rollback"
+        ],
+        "exact_missing_observation": [
+          "\u201cone CNAME created ... successful actual change observation within ten minutes\u201d: no live Route53 change/propagation or SDK timeout behavior observed; Mock waiter cannot qualify actual DNS."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-045-CLOUD-DEP-007-02",
+      "required_clause": [
+        "\u201cAWS rejects conflict, foreign record preserved\u201d: service mock does not store a competing record or exercise real Route53 atomic conflict; preservation is inferred from CREATE contract, not observed live."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_intervening_dns_record_fails_atomic_create_without_overwrite"
+        ],
+        "exact_missing_observation": [
+          "\u201cAWS rejects conflict, foreign record preserved\u201d: service mock does not store a competing record or exercise real Route53 atomic conflict; preservation is inferred from CREATE contract, not observed live."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

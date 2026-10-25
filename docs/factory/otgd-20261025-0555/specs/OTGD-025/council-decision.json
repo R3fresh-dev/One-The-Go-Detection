@@ -1,0 +1,770 @@
+{
+  "spec_id": "OTGD-025",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-eye-capture/spec.md",
+  "canonical_sha256": "bfb351373c6c3c2d33fd74fa1537ed0c610aa65624e5ce0e8c07fa8f5d1a6cf8",
+  "canonical_requirements": [
+    "AND-EYE-001 Eye screen and passive preview",
+    "AND-EYE-002 Camera permission and lifecycle",
+    "AND-EYE-003 Approved configuration and stimulus authorization",
+    "AND-EYE-004 Native frame and illumination evidence",
+    "AND-EYE-005 Geometry, feature units, and quality",
+    "AND-EYE-006 Raw artifact consent, minimization, and deletion",
+    "AND-EYE-007 Review, parity, and evidence boundaries"
+  ],
+  "canonical_scenarios": [
+    "Preview without an approved optical configuration",
+    "Synthetic eye fixture",
+    "Permission permanently denied",
+    "Backgrounded active capture",
+    "Qualified capture configuration available",
+    "Local override requests phone flash",
+    "Offline cached optical approval",
+    "Flash request has no verified physical onset",
+    "Variable camera cadence",
+    "Pixels supplied as millimeters",
+    "Eye lost during response window",
+    "User declines raw recording",
+    "Artifact upload fails",
+    "Withdrawal races with an issued upload ticket",
+    "Review after passive preview",
+    "Cross-platform camera capability mismatch"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "BLOCKED": 3,
+    "PARTIAL": 10,
+    "PASS": 2,
+    "NOT_RUN": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-025-AND-EYE-001-01",
+    "OTGD-025-AND-EYE-001-02",
+    "OTGD-025-AND-EYE-002-01",
+    "OTGD-025-AND-EYE-002-02",
+    "OTGD-025-AND-EYE-003-01",
+    "OTGD-025-AND-EYE-003-02",
+    "OTGD-025-AND-EYE-003-03",
+    "OTGD-025-AND-EYE-004-01",
+    "OTGD-025-AND-EYE-004-02",
+    "OTGD-025-AND-EYE-005-01",
+    "OTGD-025-AND-EYE-005-02",
+    "OTGD-025-AND-EYE-006-01",
+    "OTGD-025-AND-EYE-006-02",
+    "OTGD-025-AND-EYE-006-03",
+    "OTGD-025-AND-EYE-007-01",
+    "OTGD-025-AND-EYE-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-025-AND-EYE-001-01",
+      "requirement_id": "AND-EYE-001",
+      "status": "BLOCKED",
+      "expected_observation": "Preview without an approved optical configuration \u2014 - **GIVEN** camera permission and no qualified optical configuration - **WHEN** the user chooses Preview positioning - **THEN** a passive camera preview SHALL appear without stimulus, recording, or derived features, and ending it SHALL leave the eye component not_collected.",
+      "unproved_then_clauses": [
+        "Actual passive camera preview without stimulus/recording/features and ending it not_collected has no native camera execution."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "DOM describes passive/approved observation and not-collected projection without claiming measured onset."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Actual passive camera preview without stimulus/recording/features and ending it not_collected has no native camera execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-001-02",
+      "requirement_id": "AND-EYE-001",
+      "status": "PARTIAL",
+      "expected_observation": "Synthetic eye fixture \u2014 - **GIVEN** P0 demonstration mode - **WHEN** the user explicitly chooses the synthetic eye example - **THEN** the stored component SHALL be labeled simulated, retain its fictional fixture/configuration ID, and SHALL not be represented as an extraction from the user's preview.",
+      "unproved_then_clauses": [
+        "Explicit synthetic-example choice must assert fixture/configuration ID and distinguish it from the user's passive preview."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Synthetic typed eye projection is retained by export validator."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/export-projection.test.ts::every retained simulated sample, eye, PPG and separate alcohol projection satisfies its exact typed evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/export-projection.test.ts::every retained simulated sample, eye, PPG and separate alcohol projection satisfies its exact typed evidence"
+        ],
+        "exact_missing_observation": [
+          "Explicit synthetic-example choice must assert fixture/configuration ID and distinguish it from the user's passive preview."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-002-01",
+      "requirement_id": "AND-EYE-002",
+      "status": "BLOCKED",
+      "expected_observation": "Permission permanently denied \u2014 - **GIVEN** Android has denied camera permission permanently - **WHEN** the user selects preview - **THEN** the screen SHALL explain the missing permission, offer Open settings and Back to check, and SHALL not enter an indefinite loading state.",
+      "unproved_then_clauses": [
+        "Android permission permanently denied must settle loading and expose Open settings and Back to check."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "No actual permanently-denied camera preview flow was executed."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Android permission permanently denied must settle loading and expose Open settings and Back to check."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-002-02",
+      "requirement_id": "AND-EYE-002",
+      "status": "BLOCKED",
+      "expected_observation": "Backgrounded active capture \u2014 - **GIVEN** an authorized optical capture in progress - **WHEN** the app loses foreground activity - **THEN** the stimulus SHALL stop, camera resources SHALL be released, the attempt SHALL become invalid, and returning SHALL require a new linked attempt.",
+      "unproved_then_clauses": [
+        "Actual background transition must stop stimulus/release camera, invalidate current attempt and require linked retry on return."
+      ],
+      "remaining_prerequisite_types": [
+        "independent_prerequisite_or_exact_scenario_evidence"
+      ],
+      "current_assertions_proven": [
+        "Native core cache clear and origin cleanup are exercised as isolated helpers."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/eye-capture/android/src/test/java/expo/modules/otgdeye/EyeCoreTest.kt::completedRawHandoffAcknowledgmentAndPrivacyStopRemoveNativeReferences",
+        "apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift::testCompletedRawAcknowledgmentAndPrivacyClear"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/eye-capture/android/src/test/java/expo/modules/otgdeye/EyeCoreTest.kt::completedRawHandoffAcknowledgmentAndPrivacyStopRemoveNativeReferences",
+          "apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift::testCompletedRawAcknowledgmentAndPrivacyClear"
+        ],
+        "exact_missing_observation": [
+          "Actual background transition must stop stimulus/release camera, invalidate current attempt and require linked retry on return."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-003-01",
+      "requirement_id": "AND-EYE-003",
+      "status": "PARTIAL",
+      "expected_observation": "Qualified capture configuration available \u2014 - **GIVEN** a valid matching optical configuration and all required authorizations - **WHEN** the user reviews its instructions and selects Start capture - **THEN** the native module SHALL execute only the bounded approved sequence and store its exact configuration hash and timing evidence.",
+      "unproved_then_clauses": [
+        "Actual instruction-driven native view must execute bounded sequence using exact approved material, with runtime timing evidence."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Controller fresh-start fixture retains exact configuration/native result and separate clock anchors."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+        ],
+        "exact_missing_observation": [
+          "Actual instruction-driven native view must execute bounded sequence using exact approved material, with runtime timing evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-003-02",
+      "requirement_id": "AND-EYE-003",
+      "status": "PARTIAL",
+      "expected_observation": "Local override requests phone flash \u2014 - **GIVEN** no approved configuration or a configuration for a different phone - **WHEN** a deep link or modified local preference requests stimulus capture - **THEN** the module and orchestration gate SHALL reject the request and SHALL not activate the flash, torch, or modulated screen.",
+      "unproved_then_clauses": [
+        "Modified deep-link/local preference must be rejected through actual module/orchestration with flash/torch/modulation side effects observed absent."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Native config rejects digest mismatch, unknown fields, flashing mode and unreviewed millimeter scale; API exact phone tuple mutations fail."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_optical_evidence.py::test_material_fields_phone_build_sensor_and_stimulus_are_all_bound"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_optical_evidence.py::test_material_fields_phone_build_sensor_and_stimulus_are_all_bound"
+        ],
+        "exact_missing_observation": [
+          "Modified deep-link/local preference must be rejected through actual module/orchestration with flash/torch/modulation side effects observed absent."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-003-03",
+      "requirement_id": "AND-EYE-003",
+      "status": "PARTIAL",
+      "expected_observation": "Offline cached optical approval \u2014 - **GIVEN** a previously available cached optical capability and a current camera permission - **WHEN** the user enables airplane mode and selects Start capture - **THEN** the app SHALL require a fresh online capture acknowledgment and SHALL leave all participant stimulus output disabled; passive preview remains a separately labeled action.",
+      "unproved_then_clauses": [
+        "Airplane-mode cached optical approval must assert no participant stimulus output and distinct available passive preview action."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Controller obtains separate online grant/start for optical fixture before accepting local result."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+        ],
+        "exact_missing_observation": [
+          "Airplane-mode cached optical approval must assert no participant stimulus output and distinct available passive preview action."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-004-02",
+      "requirement_id": "AND-EYE-004",
+      "status": "PARTIAL",
+      "expected_observation": "Variable camera cadence \u2014 - **GIVEN** frame timestamps showing drops or irregular intervals - **WHEN** feature eligibility is evaluated - **THEN** the app SHALL retain actual cadence and gap evidence, apply the frozen configuration's quality rules, and SHALL not fabricate a constant high-rate sequence from requested FPS.",
+      "unproved_then_clauses": [
+        "Irregular cadence/drop fixtures need exact frozen maximum-gap/quality boundary assertions without requested-FPS substitution."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Client rejects changed sequence/regressing frame timestamps and impossible frame counts; evidence retains actual frame ledger."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/eye-acquisition.test.ts::actual Python optical fixture projects bounded native evidence without inventing millimeters, physical onset or latency",
+        "services/api/tests/test_optical_evidence.py::test_invalid_capture_counts_and_null_features_do_not_become_positive"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/eye-acquisition.test.ts::actual Python optical fixture projects bounded native evidence without inventing millimeters, physical onset or latency",
+          "services/api/tests/test_optical_evidence.py::test_invalid_capture_counts_and_null_features_do_not_become_positive"
+        ],
+        "exact_missing_observation": [
+          "Irregular cadence/drop fixtures need exact frozen maximum-gap/quality boundary assertions without requested-FPS substitution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-005-02",
+      "requirement_id": "AND-EYE-005",
+      "status": "PARTIAL",
+      "expected_observation": "Eye lost during response window \u2014 - **GIVEN** a capture with required frames obscured by blink or tracking loss - **WHEN** the extractor applies the approved quality policy - **THEN** the affected feature SHALL be null or the capture invalid according to that policy, with the reason retained; it SHALL not impute an apparently normal response.",
+      "unproved_then_clauses": [
+        "Required blink/tracking-loss frames during a response window must exercise configured adequacy failure and preserve exact reason."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Literal invalid segmentation produces explicit reasons and API invalid projection leaves features null/model ineligible."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/modules/eye-capture/android/src/test/java/expo/modules/otgdeye/EyeCoreTest.kt::literalSyntheticPixelGoldenParity",
+        "apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift::testLiteralSyntheticPixelGoldenParity",
+        "services/api/tests/test_optical_evidence.py::test_invalid_capture_counts_and_null_features_do_not_become_positive"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/eye-capture/android/src/test/java/expo/modules/otgdeye/EyeCoreTest.kt::literalSyntheticPixelGoldenParity",
+          "apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift::testLiteralSyntheticPixelGoldenParity",
+          "services/api/tests/test_optical_evidence.py::test_invalid_capture_counts_and_null_features_do_not_become_positive"
+        ],
+        "exact_missing_observation": [
+          "Required blink/tracking-loss frames during a response window must exercise configured adequacy failure and preserve exact reason."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-006-01",
+      "requirement_id": "AND-EYE-006",
+      "status": "PARTIAL",
+      "expected_observation": "User declines raw recording \u2014 - **GIVEN** a protocol that permits local feature extraction without raw retention - **WHEN** the user declines optional recording - **THEN** raw data SHALL not be persisted or uploaded, and only explicitly permitted features and quality metadata MAY be retained.",
+      "unproved_then_clauses": [
+        "Native raw frame persistence must be directly observed absent when optional recording declined; mocked controller cannot establish camera buffers/storage."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Feature-only grant has null recording permission; completion/save never requests artifact upload and local queue stays empty."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+        ],
+        "exact_missing_observation": [
+          "Native raw frame persistence must be directly observed absent when optional recording declined; mocked controller cannot establish camera buffers/storage."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-006-02",
+      "requirement_id": "AND-EYE-006",
+      "status": "PARTIAL",
+      "expected_observation": "Artifact upload fails \u2014 - **GIVEN** an authorized retained capture and a network interruption - **WHEN** upload cannot complete - **THEN** the UI SHALL show pending upload, retain the immutable local artifact only within its permitted lifetime, and SHALL not mark a partial remote object available for extraction.",
+      "unproved_then_clauses": [
+        "Network interruption during optical upload needs pending-upload UI, lifetime-bound retention and partial-remote-object extraction refusal assertions together."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Explicit raw upload selection validates exact local artifact/permission; dependent upload tests preserve bounded immutable selection."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/raw-upload.test.ts::Save and metadata-only upload never read or queue raw; explicit selection is immutable and exact"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/raw-upload.test.ts::Save and metadata-only upload never read or queue raw; explicit selection is immutable and exact"
+        ],
+        "exact_missing_observation": [
+          "Network interruption during optical upload needs pending-upload UI, lifetime-bound retention and partial-remote-object extraction refusal assertions together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-006-03",
+      "requirement_id": "AND-EYE-006",
+      "status": "PARTIAL",
+      "expected_observation": "Withdrawal races with an issued upload ticket \u2014 - **GIVEN** an optical artifact PUT URL issued before withdrawal - **WHEN** the user withdraws locally and the server accepts withdrawal while old bytes arrive - **THEN** local capture/queue work SHALL stop immediately, the server SHALL refuse artifact verification/evidence acceptance, and any uploaded version SHALL remain quarantined for scoped cleanup.",
+      "unproved_then_clauses": [
+        "Actual optical issued-PUT-ticket versus local+server withdrawal race must assert immediate stop, refused optical evidence and quarantine of arriving object version."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Local raw permission/withdrawal tests fence purposes and generic HTTP raw verification quarantines forged chunks."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/raw-artifacts.test.ts::fresh acquisition authority must match exact current optional receipt and cannot bypass offline or cross-device stop"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/raw-artifacts.test.ts::fresh acquisition authority must match exact current optional receipt and cannot bypass offline or cross-device stop"
+        ],
+        "exact_missing_observation": [
+          "Actual optical issued-PUT-ticket versus local+server withdrawal race must assert immediate stop, refused optical evidence and quarantine of arriving object version."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-007-01",
+      "requirement_id": "AND-EYE-007",
+      "status": "NOT_RUN",
+      "expected_observation": "Review after passive preview \u2014 - **GIVEN** a user who previewed positioning but performed no authorized measurement - **WHEN** Review is opened - **THEN** Eyes SHALL show Not collected with Preview only context and null measured features rather than a successful pupil test.",
+      "unproved_then_clauses": [
+        "Review after passive positioning must show Eyes Not collected/Preview only and null features with no successful pupil-test language."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Related optical fixture tests do not open Review after passive-only preview."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Review after passive positioning must show Eyes Not collected/Preview only and null features with no successful pupil-test language."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-007-02",
+      "requirement_id": "AND-EYE-007",
+      "status": "PARTIAL",
+      "expected_observation": "Cross-platform camera capability mismatch \u2014 - **GIVEN** an optical configuration qualified for a specific iPhone but not the Android device in use - **WHEN** Android requests measurement capture - **THEN** Android SHALL remain blocked with Unsupported optical configuration while iOS compatibility is assessed independently; visual similarity SHALL not establish equivalence.",
+      "unproved_then_clauses": [
+        "Android with iPhone-only configuration must surface Unsupported optical configuration while iOS is assessed independently."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "API rejects changed phone/build/configuration tuple and native config pins identity."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_optical_evidence.py::test_material_fields_phone_build_sensor_and_stimulus_are_all_bound"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_optical_evidence.py::test_material_fields_phone_build_sensor_and_stimulus_are_all_bound"
+        ],
+        "exact_missing_observation": [
+          "Android with iPhone-only configuration must surface Unsupported optical configuration while iOS is assessed independently."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-025-AND-EYE-001-01",
+      "required_clause": [
+        "Actual passive camera preview without stimulus/recording/features and ending it not_collected has no native camera execution."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Actual passive camera preview without stimulus/recording/features and ending it not_collected has no native camera execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-001-02",
+      "required_clause": [
+        "Explicit synthetic-example choice must assert fixture/configuration ID and distinguish it from the user's passive preview."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/export-projection.test.ts::every retained simulated sample, eye, PPG and separate alcohol projection satisfies its exact typed evidence"
+        ],
+        "exact_missing_observation": [
+          "Explicit synthetic-example choice must assert fixture/configuration ID and distinguish it from the user's passive preview."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-002-01",
+      "required_clause": [
+        "Android permission permanently denied must settle loading and expose Open settings and Back to check."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Android permission permanently denied must settle loading and expose Open settings and Back to check."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-002-02",
+      "required_clause": [
+        "Actual background transition must stop stimulus/release camera, invalidate current attempt and require linked retry on return."
+      ],
+      "types": [
+        "independent_prerequisite_or_exact_scenario_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/eye-capture/android/src/test/java/expo/modules/otgdeye/EyeCoreTest.kt::completedRawHandoffAcknowledgmentAndPrivacyStopRemoveNativeReferences",
+          "apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift::testCompletedRawAcknowledgmentAndPrivacyClear"
+        ],
+        "exact_missing_observation": [
+          "Actual background transition must stop stimulus/release camera, invalidate current attempt and require linked retry on return."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-003-01",
+      "required_clause": [
+        "Actual instruction-driven native view must execute bounded sequence using exact approved material, with runtime timing evidence."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+        ],
+        "exact_missing_observation": [
+          "Actual instruction-driven native view must execute bounded sequence using exact approved material, with runtime timing evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-003-02",
+      "required_clause": [
+        "Modified deep-link/local preference must be rejected through actual module/orchestration with flash/torch/modulation side effects observed absent."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_optical_evidence.py::test_material_fields_phone_build_sensor_and_stimulus_are_all_bound"
+        ],
+        "exact_missing_observation": [
+          "Modified deep-link/local preference must be rejected through actual module/orchestration with flash/torch/modulation side effects observed absent."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-003-03",
+      "required_clause": [
+        "Airplane-mode cached optical approval must assert no participant stimulus output and distinct available passive preview action."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+        ],
+        "exact_missing_observation": [
+          "Airplane-mode cached optical approval must assert no participant stimulus output and distinct available passive preview action."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-004-02",
+      "required_clause": [
+        "Irregular cadence/drop fixtures need exact frozen maximum-gap/quality boundary assertions without requested-FPS substitution."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/eye-acquisition.test.ts::actual Python optical fixture projects bounded native evidence without inventing millimeters, physical onset or latency",
+          "services/api/tests/test_optical_evidence.py::test_invalid_capture_counts_and_null_features_do_not_become_positive"
+        ],
+        "exact_missing_observation": [
+          "Irregular cadence/drop fixtures need exact frozen maximum-gap/quality boundary assertions without requested-FPS substitution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-005-02",
+      "required_clause": [
+        "Required blink/tracking-loss frames during a response window must exercise configured adequacy failure and preserve exact reason."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/modules/eye-capture/android/src/test/java/expo/modules/otgdeye/EyeCoreTest.kt::literalSyntheticPixelGoldenParity",
+          "apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift::testLiteralSyntheticPixelGoldenParity",
+          "services/api/tests/test_optical_evidence.py::test_invalid_capture_counts_and_null_features_do_not_become_positive"
+        ],
+        "exact_missing_observation": [
+          "Required blink/tracking-loss frames during a response window must exercise configured adequacy failure and preserve exact reason."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-006-01",
+      "required_clause": [
+        "Native raw frame persistence must be directly observed absent when optional recording declined; mocked controller cannot establish camera buffers/storage."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/eye-acquisition.test.ts::feature-only optical Start follows context, attempt and fresh grant; native completion saves locally with a separate actual acquisition clock"
+        ],
+        "exact_missing_observation": [
+          "Native raw frame persistence must be directly observed absent when optional recording declined; mocked controller cannot establish camera buffers/storage."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-006-02",
+      "required_clause": [
+        "Network interruption during optical upload needs pending-upload UI, lifetime-bound retention and partial-remote-object extraction refusal assertions together."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/raw-upload.test.ts::Save and metadata-only upload never read or queue raw; explicit selection is immutable and exact"
+        ],
+        "exact_missing_observation": [
+          "Network interruption during optical upload needs pending-upload UI, lifetime-bound retention and partial-remote-object extraction refusal assertions together."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-006-03",
+      "required_clause": [
+        "Actual optical issued-PUT-ticket versus local+server withdrawal race must assert immediate stop, refused optical evidence and quarantine of arriving object version."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/raw-artifacts.test.ts::fresh acquisition authority must match exact current optional receipt and cannot bypass offline or cross-device stop"
+        ],
+        "exact_missing_observation": [
+          "Actual optical issued-PUT-ticket versus local+server withdrawal race must assert immediate stop, refused optical evidence and quarantine of arriving object version."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-007-01",
+      "required_clause": [
+        "Review after passive positioning must show Eyes Not collected/Preview only and null features with no successful pupil-test language."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "Review after passive positioning must show Eyes Not collected/Preview only and null features with no successful pupil-test language."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-025-AND-EYE-007-02",
+      "required_clause": [
+        "Android with iPhone-only configuration must surface Unsupported optical configuration while iOS is assessed independently."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_optical_evidence.py::test_material_fields_phone_build_sensor_and_stimulus_are_all_bound"
+        ],
+        "exact_missing_observation": [
+          "Android with iPhone-only configuration must surface Unsupported optical configuration while iOS is assessed independently."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

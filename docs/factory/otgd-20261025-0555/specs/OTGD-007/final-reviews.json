@@ -1205,5 +1205,119 @@
       }
     }
   },
-  "independent_council": "PENDING"
+  "independent_council": "BLOCKED",
+  "council_decision": "council-decision.json",
+  "superseding_addenda": [
+    {
+      "role": "security",
+      "reviewer": "/root/replacement_security",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/security/apr001-addendum.md",
+      "sha256": "6b80b8d77d88b48aa9fdda2de3846a0475075556aaa2577aeb5ad99233985cd1",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "code",
+      "reviewer": "/root/replacement_code",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/code/apr001-addendum.md",
+      "sha256": "04dca4b2f6849024c9de2121209a0dbed3529f4cc2dce347271917f1bf35023a",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "ux",
+      "reviewer": "/root/replacement_ux",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/ux/apr001-addendum.md",
+      "sha256": "52d6411595cf67e045a5e8c3d5778e8d208b3a328ee1a0e82aaf8194629ea912",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "ui",
+      "reviewer": "/root/replacement_ui",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/ui/apr001-addendum.md",
+      "sha256": "7b7c597ad336e665ecc8c3408d81a437f4208166d3cba7b069139612cf4adc9d",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "product",
+      "reviewer": "/root/replacement_product",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/product/apr001-addendum.md",
+      "sha256": "0e5a34987345df54455f8a3621a4105ee22419c89357f3a44df2b7a49400a582",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    },
+    {
+      "role": "engineering",
+      "reviewer": "/root/replacement_engineering",
+      "acknowledgment": "AFFECTED",
+      "path": "docs/factory/otgd-20261025-0555/reports/candidate-e89897c/reviews/engineering/apr001-addendum.md",
+      "sha256": "d42f8db91cd71633d2bca96921bec481a5902fb310f9425ef76706a350bdb760",
+      "supersedes": {
+        "spec_id": "OTGD-007",
+        "previous": "PASS",
+        "current": "BLOCKED"
+      },
+      "other_46_unchanged": true,
+      "effective_counts": {
+        "PASS": 2,
+        "BLOCKED": 45
+      }
+    }
+  ],
+  "effective_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "normative_finding": "APR-001"
 }

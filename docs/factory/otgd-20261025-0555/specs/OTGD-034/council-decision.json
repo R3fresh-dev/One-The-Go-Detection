@@ -1,0 +1,653 @@
+{
+  "spec_id": "OTGD-034",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-results/spec.md",
+  "canonical_sha256": "dadd53ea7fd8027bb76d17c26e51d4910cc3c8763bfd8a838434fbf8112397ba",
+  "canonical_requirements": [
+    "AND-RES-001 Separate capture outcome from delivery status",
+    "AND-RES-002 Enforce result contract and linkage",
+    "AND-RES-003 Keep impairment inference closed",
+    "AND-RES-004 Preserve qualifiers and missingness",
+    "AND-RES-005 Preserve historical time and immutability",
+    "AND-RES-006 Provide actionable invalid and inconclusive states",
+    "AND-RES-007 Use bounded and cancelable result polling"
+  ],
+  "canonical_scenarios": [
+    "Completed offline measurement check",
+    "Pending server computation",
+    "Correctly linked measurement result",
+    "Stale response after another check",
+    "Demo completes all steps",
+    "Client requests research by changing a field",
+    "Below quantification",
+    "Unrun channel",
+    "Delayed laboratory result",
+    "Linked reanalysis",
+    "Interrupted reaction task",
+    "Unknown server reason",
+    "Temporary server outage",
+    "Account changes during polling"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 8,
+    "NOT_RUN": 3,
+    "PASS": 3
+  },
+  "all_current_case_ids": [
+    "OTGD-034-AND-RES-001-01",
+    "OTGD-034-AND-RES-001-02",
+    "OTGD-034-AND-RES-002-01",
+    "OTGD-034-AND-RES-002-02",
+    "OTGD-034-AND-RES-003-01",
+    "OTGD-034-AND-RES-003-02",
+    "OTGD-034-AND-RES-004-01",
+    "OTGD-034-AND-RES-004-02",
+    "OTGD-034-AND-RES-005-01",
+    "OTGD-034-AND-RES-005-02",
+    "OTGD-034-AND-RES-006-01",
+    "OTGD-034-AND-RES-006-02",
+    "OTGD-034-AND-RES-007-01",
+    "OTGD-034-AND-RES-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-034-AND-RES-001-01",
+      "requirement_id": "AND-RES-001",
+      "status": "PARTIAL",
+      "expected_observation": "Completed offline measurement check \u2014 - **GIVEN** a locally finalized check with no server result - **WHEN** the result screen opens - **THEN** it shows the local measurement record and **Not synced**, with no claim that cloud analysis finished.",
+      "unproved_then_clauses": [
+        "Canonical exact Not synced label and absence of cloud-analysis-complete claim are not asserted in current result UI test; local finalized may be truthful but is a different visible assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Offline guest browser saves and shows Measurements saved/local finalized with no Upload; exported result is measurement_only/null probability."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Canonical exact Not synced label and absence of cloud-analysis-complete claim are not asserted in current result UI test; local finalized may be truthful but is a different visible assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-001-02",
+      "requirement_id": "AND-RES-001",
+      "status": "NOT_RUN",
+      "expected_observation": "Pending server computation \u2014 - **GIVEN** GET result returns HTTP 202 - **WHEN** polling completes that request - **THEN** the app keeps **Analysis pending** and offers navigation without inventing a terminal result.",
+      "unproved_then_clauses": [
+        "No result GET202 fixture asserts Analysis pending retained and navigable without a terminal result; accepted finalize202 is not pending result202."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Sync handles accepted finalize202 then immediate successful result200 in fixture."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result"
+        ],
+        "exact_missing_observation": [
+          "No result GET202 fixture asserts Analysis pending retained and navigable without a terminal result; accepted finalize202 is not pending result202."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-002-01",
+      "requirement_id": "AND-RES-002",
+      "status": "PARTIAL",
+      "expected_observation": "Correctly linked measurement result \u2014 - **GIVEN** the expected session and frozen digest - **WHEN** a schema-valid measurement_only response arrives with matching references - **THEN** it is saved once and displayed for that check.",
+      "unproved_then_clauses": [
+        "The measurement-only response must be saved once and displayed for that exact check. Current same-ID pending/measurement-to-HR transition is directly observed, but that does not itself assert the separate measurement-only save-once conjunction."
+      ],
+      "remaining_prerequisite_types": [
+        "software_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Explicit upload sequence gets measurement result and marks one queue/check synced; parser validates frozen result links.",
+        "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+        "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+        "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+        "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+          "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists"
+        ],
+        "exact_missing_observation": [
+          "The measurement-only response must be saved once and displayed for that exact check. Current same-ID pending/measurement-to-HR transition is directly observed, but that does not itself assert the separate measurement-only save-once conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-002-02",
+      "requirement_id": "AND-RES-002",
+      "status": "PARTIAL",
+      "expected_observation": "Stale response after another check \u2014 - **GIVEN** a response references an earlier session - **WHEN** the current check screen receives it - **THEN** the response cannot replace the current check's result and the mismatch is recorded without raw health payloads.",
+      "unproved_then_clauses": [
+        "A previous-session result arriving at current check screen with safe mismatch diagnostics/no raw health payload requires direct assertion. Generic hash mutation and owner epoch do not exercise same-account previous-session route."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "Result verifier rejects altered input hash/target/owner linkage and epoch protects a new account."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+        "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+          "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+        ],
+        "exact_missing_observation": [
+          "A previous-session result arriving at current check screen with safe mismatch diagnostics/no raw health payload requires direct assertion. Generic hash mutation and owner epoch do not exercise same-account previous-session route."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-004-01",
+      "requirement_id": "AND-RES-004",
+      "status": "PARTIAL",
+      "expected_observation": "Below quantification \u2014 - **GIVEN** THC_COOH has qualifier below_loq and a stated LOQ - **WHEN** its card renders - **THEN** it shows below-quantification wording and the limit, with no exact numeric concentration or inferred detection claim.",
+      "unproved_then_clauses": [
+        "Source fixture analyte is OH11_THC; canonical THC_COOH rendered card with exact below-quantification/no detection inference is not a named component assertion. Pure generic formatter arithmetic is established, exact card/analyte conjunction remains."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Formatter below_loq explicitly outputs limit<0.003ng/mL, preserves null concentration/input bytes and supplied LOD."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/measurement-format.test.ts::below LOQ displays the supplied bound without creating a concentration or rounding it to zero"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/measurement-format.test.ts::below LOQ displays the supplied bound without creating a concentration or rounding it to zero"
+        ],
+        "exact_missing_observation": [
+          "Source fixture analyte is OH11_THC; canonical THC_COOH rendered card with exact below-quantification/no detection inference is not a named component assertion. Pure generic formatter arithmetic is established, exact card/analyte conjunction remains."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-005-01",
+      "requirement_id": "AND-RES-005",
+      "status": "PARTIAL",
+      "expected_observation": "Delayed laboratory result \u2014 - **GIVEN** analysis finishes the following day - **WHEN** the result arrives - **THEN** the original collection date remains the check's date and the later analysis time is visible.",
+      "unproved_then_clauses": [
+        "Actual next-day report arrival\u2192result screen retains check collection date and visibly later analysis time is not asserted as one current route; generic formatter values differ by1hour and report parser is not UI."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Formatter displays separate collected/measured UTC values, report companion keeps original target and reanalysis identity."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible",
+        "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible",
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+        ],
+        "exact_missing_observation": [
+          "Actual next-day report arrival\u2192result screen retains check collection date and visibly later analysis time is not asserted as one current route; generic formatter values differ by1hour and report parser is not UI."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-005-02",
+      "requirement_id": "AND-RES-005",
+      "status": "PARTIAL",
+      "expected_observation": "Linked reanalysis \u2014 - **GIVEN** a permitted newer result replaces an earlier result - **WHEN** history is opened - **THEN** both result identities remain reconstructable and the current display identifies the newer result's version.",
+      "unproved_then_clauses": [
+        "History opened with newer revision must visibly identify current version while both result IDs reconstructable; parser/revision cache assertions do not establish rendered history selection/version copy."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual backend-wire chain parses correction+reanalysis, links replaces_result_id through original, keeps original digest/target; incomplete/regressed chain refuses."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+        "apps/mobile/tests/report-revisions.test.ts::known incomplete report cache blocks device exports and append-only cache cannot regress"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+          "apps/mobile/tests/report-revisions.test.ts::known incomplete report cache blocks device exports and append-only cache cannot regress"
+        ],
+        "exact_missing_observation": [
+          "History opened with newer revision must visibly identify current version while both result IDs reconstructable; parser/revision cache assertions do not establish rendered history selection/version copy."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-006-01",
+      "requirement_id": "AND-RES-006",
+      "status": "PARTIAL",
+      "expected_observation": "Interrupted reaction task \u2014 - **GIVEN** a required task is invalid due to backgrounding - **WHEN** the completion summary opens - **THEN** it names the interrupted task and, if already finalized, offers Start replacement check with a new UUID/time and no carried-forward physical acquisitions; the original result/hash remain unchanged.",
+      "unproved_then_clauses": [
+        "Exact interrupted required task summary\u2192replacement newUUID/time/no carried physical acquisition and unchanged original result/hash is not one context; ECG invalid browser plus empty-guest replacement math is narrower. Actual OS interruption also external."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Interrupted domain task keeps invalid/null aggregates; replacement helper preserves original digest, distinct sample/target and bidirectional links; browser invalid ECG supports replacement UI."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features",
+        "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+        "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features",
+          "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+          "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+        ],
+        "exact_missing_observation": [
+          "Exact interrupted required task summary\u2192replacement newUUID/time/no carried physical acquisition and unchanged original result/hash is not one context; ECG invalid browser plus empty-guest replacement math is narrower. Actual OS interruption also external."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-006-02",
+      "requirement_id": "AND-RES-006",
+      "status": "NOT_RUN",
+      "expected_observation": "Unknown server reason \u2014 - **GIVEN** a newer service returns an unknown reason code - **WHEN** the app displays the result - **THEN** it shows a generic unavailable explanation and diagnostic request ID without silently treating the result as valid.",
+      "unproved_then_clauses": [
+        "No unknown result reason-code current UI case asserts generic unavailable explanation, requestID and no valid-state promotion. Formatter unknown measurement qualifier is a different input contract."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Diagnostics sanitizer permits bounded request IDs and generic categories, rejects raw payload."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+        ],
+        "exact_missing_observation": [
+          "No unknown result reason-code current UI case asserts generic unavailable explanation, requestID and no valid-state promotion. Formatter unknown measurement qualifier is a different input contract."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-007-01",
+      "requirement_id": "AND-RES-007",
+      "status": "NOT_RUN",
+      "expected_observation": "Temporary server outage \u2014 - **GIVEN** the result endpoint returns 503 - **WHEN** automatic retries exhaust the configured budget - **THEN** the record remains pending and a retry action appears; the local check is preserved.",
+      "unproved_then_clauses": [
+        "Need actual result endpoint503 through configured retry budget, pending local record preserved and visible manual retry. No current exact assertion located."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Sync catch retains retryable queue and frozen evidence; current mapped tests exercise conflict, not result503 budget exhaustion."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+        ],
+        "exact_missing_observation": [
+          "Need actual result endpoint503 through configured retry budget, pending local record preserved and visible manual retry. No current exact assertion located."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-007-02",
+      "requirement_id": "AND-RES-007",
+      "status": "PARTIAL",
+      "expected_observation": "Account changes during polling \u2014 - **GIVEN** an outstanding result request for account A - **WHEN** the app signs into account B - **THEN** A's request is canceled or ignored and its result never enters B's visible state.",
+      "unproved_then_clauses": [
+        "Current fixture defers registration response, not result polling. Exact outstanding A result request\u2192B sign-in with no A result entering B visible state remains unproved."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual deferred network response after epoch change leaves new workspace untouched and old queue unresolved."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+        ],
+        "exact_missing_observation": [
+          "Current fixture defers registration response, not result polling. Exact outstanding A result request\u2192B sign-in with no A result entering B visible state remains unproved."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-034-AND-RES-001-01",
+      "required_clause": [
+        "Canonical exact Not synced label and absence of cloud-analysis-complete claim are not asserted in current result UI test; local finalized may be truthful but is a different visible assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Canonical exact Not synced label and absence of cloud-analysis-complete claim are not asserted in current result UI test; local finalized may be truthful but is a different visible assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-001-02",
+      "required_clause": [
+        "No result GET202 fixture asserts Analysis pending retained and navigable without a terminal result; accepted finalize202 is not pending result202."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result"
+        ],
+        "exact_missing_observation": [
+          "No result GET202 fixture asserts Analysis pending retained and navigable without a terminal result; accepted finalize202 is not pending result202."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-002-01",
+      "required_clause": [
+        "The measurement-only response must be saved once and displayed for that exact check. Current same-ID pending/measurement-to-HR transition is directly observed, but that does not itself assert the separate measurement-only save-once conjunction."
+      ],
+      "types": [
+        "software_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::explicit upload registers evidence then snapshot then finalizes and verifies result",
+          "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists"
+        ],
+        "exact_missing_observation": [
+          "The measurement-only response must be saved once and displayed for that exact check. Current same-ID pending/measurement-to-HR transition is directly observed, but that does not itself assert the separate measurement-only save-once conjunction."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-002-02",
+      "required_clause": [
+        "A previous-session result arriving at current check screen with safe mismatch diagnostics/no raw health payload requires direct assertion. Generic hash mutation and owner epoch do not exercise same-account previous-session route."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+          "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+        ],
+        "exact_missing_observation": [
+          "A previous-session result arriving at current check screen with safe mismatch diagnostics/no raw health payload requires direct assertion. Generic hash mutation and owner epoch do not exercise same-account previous-session route."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-004-01",
+      "required_clause": [
+        "Source fixture analyte is OH11_THC; canonical THC_COOH rendered card with exact below-quantification/no detection inference is not a named component assertion. Pure generic formatter arithmetic is established, exact card/analyte conjunction remains."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/measurement-format.test.ts::below LOQ displays the supplied bound without creating a concentration or rounding it to zero"
+        ],
+        "exact_missing_observation": [
+          "Source fixture analyte is OH11_THC; canonical THC_COOH rendered card with exact below-quantification/no detection inference is not a named component assertion. Pure generic formatter arithmetic is established, exact card/analyte conjunction remains."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-005-01",
+      "required_clause": [
+        "Actual next-day report arrival\u2192result screen retains check collection date and visibly later analysis time is not asserted as one current route; generic formatter values differ by1hour and report parser is not UI."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible",
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings"
+        ],
+        "exact_missing_observation": [
+          "Actual next-day report arrival\u2192result screen retains check collection date and visibly later analysis time is not asserted as one current route; generic formatter values differ by1hour and report parser is not UI."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-005-02",
+      "required_clause": [
+        "History opened with newer revision must visibly identify current version while both result IDs reconstructable; parser/revision cache assertions do not establish rendered history selection/version copy."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+          "apps/mobile/tests/report-revisions.test.ts::known incomplete report cache blocks device exports and append-only cache cannot regress"
+        ],
+        "exact_missing_observation": [
+          "History opened with newer revision must visibly identify current version while both result IDs reconstructable; parser/revision cache assertions do not establish rendered history selection/version copy."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-006-01",
+      "required_clause": [
+        "Exact interrupted required task summary\u2192replacement newUUID/time/no carried physical acquisition and unchanged original result/hash is not one context; ECG invalid browser plus empty-guest replacement math is narrower. Actual OS interruption also external."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features",
+          "apps/mobile/tests/replacements.test.ts::local original and replacement links are bidirectional without changing either snapshot",
+          "apps/mobile/e2e/mobile.spec.ts::live device status, invalid synthetic ECG evidence and bidirectional replacement navigation remain explicit"
+        ],
+        "exact_missing_observation": [
+          "Exact interrupted required task summary\u2192replacement newUUID/time/no carried physical acquisition and unchanged original result/hash is not one context; ECG invalid browser plus empty-guest replacement math is narrower. Actual OS interruption also external."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-006-02",
+      "required_clause": [
+        "No unknown result reason-code current UI case asserts generic unavailable explanation, requestID and no valid-state promotion. Formatter unknown measurement qualifier is a different input contract."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload"
+        ],
+        "exact_missing_observation": [
+          "No unknown result reason-code current UI case asserts generic unavailable explanation, requestID and no valid-state promotion. Formatter unknown measurement qualifier is a different input contract."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-007-01",
+      "required_clause": [
+        "Need actual result endpoint503 through configured retry budget, pending local record preserved and visible manual retry. No current exact assertion located."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence"
+        ],
+        "exact_missing_observation": [
+          "Need actual result endpoint503 through configured retry budget, pending local record preserved and visible manual retry. No current exact assertion located."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-034-AND-RES-007-02",
+      "required_clause": [
+        "Current fixture defers registration response, not result polling. Exact outstanding A result request\u2192B sign-in with no A result entering B visible state remains unproved."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace"
+        ],
+        "exact_missing_observation": [
+          "Current fixture defers registration response, not result polling. Exact outstanding A result request\u2192B sign-in with no A result entering B visible state remains unproved."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

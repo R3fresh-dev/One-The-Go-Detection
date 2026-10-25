@@ -245,3 +245,9 @@ All D010 correction owners released exact source/test/report files; PM verified 
 }
 
 The planned auxiliary branch is implemented by the commit containing checkpoint13; exact commit/remote verification is recorded after creation, not predicted here. No application/spec/test/workflow/configuration change is included.
+
+## D012 v1 — independent normative finding and exhausted correction limit
+
+The independent approver found APR-001/P2 after six original007PASS votes. PM source inspection and all six actual reviewer addenda confirmed the omission; each ACKed AFFECTED and superseded only007 toBLOCKED. No source was repaired, counters reset or scenario results rewritten. Final council2PASS002/004,45BLOCKED; overallNEEDS_HUMAN. D011 evidence publication and all scope/science/retention boundaries remain unchanged. Original verdicts, provisional reports and both valid007scenario observations are preserved. The exact finding and actual addendum hashes are in reports/candidate-e89897c/final-review-impact.json.
+
+Factory pin4770878e18e9c587c2961b9e2bb13315da31abe9, factory/SKILL.md Gates5–6: at most two correction rounds; unresolved blockers after the limit→NEEDS_HUMAN. This is also the user’s explicit restriction, not an invented approval requirement. No third repair was denied by a tool; it has not been attempted and awaits explicit authority to change the limit.

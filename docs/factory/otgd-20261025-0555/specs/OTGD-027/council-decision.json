@@ -1,0 +1,851 @@
+{
+  "spec_id": "OTGD-027",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-heart-rate/spec.md",
+  "canonical_sha256": "e9288b9fbec177d7287962239555b7633a0cfbf80ecf3e1e350158da607f5139",
+  "canonical_requirements": [
+    "AND-HR-001 Heart-rate screen and channel availability",
+    "AND-HR-002 Protocol and verified device prerequisites",
+    "AND-HR-003 PPG capture contract and context",
+    "AND-HR-004 Live quality and stale-reading prevention",
+    "AND-HR-005 Cancellation, disconnect, and durable attempts",
+    "AND-HR-006 Review, privacy, and offline operation",
+    "AND-HR-007 Platform parity and acceptance evidence"
+  ],
+  "canonical_scenarios": [
+    "Simulated PPG acquisition",
+    "Unsupported heart-rate device",
+    "Qualified participant capture prerequisites satisfied",
+    "Unprovisioned reader sends a human-looking pulse",
+    "Network missing at a qualified start",
+    "PPG device reports confidence",
+    "PPG adapter tries to populate ECG variability",
+    "Finger removed during measurement",
+    "Few valid samples within a long recording",
+    "Reboot resets sensor counter",
+    "Duplicate completion after a successful capture",
+    "Canceled route change keeps an ended attempt",
+    "Network unavailable after allowed capture",
+    "Raw-signal storage not authorized",
+    "Same quality-loss fixture on both platforms",
+    "New firmware changes quality scale"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 14,
+    "PASS": 1,
+    "BLOCKED": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-027-AND-HR-001-01",
+    "OTGD-027-AND-HR-001-02",
+    "OTGD-027-AND-HR-002-01",
+    "OTGD-027-AND-HR-002-02",
+    "OTGD-027-AND-HR-002-03",
+    "OTGD-027-AND-HR-003-01",
+    "OTGD-027-AND-HR-003-02",
+    "OTGD-027-AND-HR-004-01",
+    "OTGD-027-AND-HR-004-02",
+    "OTGD-027-AND-HR-005-01",
+    "OTGD-027-AND-HR-005-02",
+    "OTGD-027-AND-HR-005-03",
+    "OTGD-027-AND-HR-006-01",
+    "OTGD-027-AND-HR-006-02",
+    "OTGD-027-AND-HR-007-01",
+    "OTGD-027-AND-HR-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-027-AND-HR-001-01",
+      "requirement_id": "AND-HR-001",
+      "status": "PARTIAL",
+      "expected_observation": "Simulated PPG acquisition \u2014 - **GIVEN** synthetic mode and the named demonstration fixture - **WHEN** the user starts capture - **THEN** the app SHALL run its bounded fixture sequence, show simulated progress and signal quality, and save simulated provenance with no inference eligibility.",
+      "unproved_then_clauses": [
+        "Visible bounded simulated progress/quality and saved provenance through full capture UI remain unasserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Local PPG simulator retains exact72bpm/3s fixture, simulated source, no model eligibility and complete framed evidence."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+        ],
+        "exact_missing_observation": [
+          "Visible bounded simulated progress/quality and saved provenance through full capture UI remain unasserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-001-02",
+      "requirement_id": "AND-HR-001",
+      "status": "PARTIAL",
+      "expected_observation": "Unsupported heart-rate device \u2014 - **GIVEN** a paired reader without the required PPG capability - **WHEN** the user opens Heart rate - **THEN** Start capture SHALL be unavailable with a clear missing-channel reason and SHALL not fall back to an unconfigured phone sensor.",
+      "unproved_then_clauses": [
+        "Paired reader missing PPG must render disabled Start with exact missing-channel reason and no phone-sensor fallback."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Reader inventory and capability decoder reject unknown hardware/source and missing driver support."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+        "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+          "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+        ],
+        "exact_missing_observation": [
+          "Paired reader missing PPG must render disabled Start with exact missing-channel reason and no phone-sensor fallback."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-002-01",
+      "requirement_id": "AND-HR-002",
+      "status": "PARTIAL",
+      "expected_observation": "Qualified participant capture prerequisites satisfied \u2014 - **GIVEN** a compatible configuration and verified bound reader - **WHEN** the user acknowledges the applicable instructions and selects Start capture - **THEN** the app SHALL freeze the configuration and association references for that capture and collect only the requested PPG modality.",
+      "unproved_then_clauses": [
+        "Actual qualified participant reader/instruction flow remains externally unqualified; channel-only acquisition is a software fixture boundary."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution",
+        "study_scientific_approval"
+      ],
+      "current_assertions_proven": [
+        "Frozen check records exact config/binding; full customer fixture persists context/attempt before grant/start and retains signed PPG projection locally."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Actual qualified participant reader/instruction flow remains externally unqualified; channel-only acquisition is a software fixture boundary."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-002-03",
+      "requirement_id": "AND-HR-002",
+      "status": "PARTIAL",
+      "expected_observation": "Network missing at a qualified start \u2014 - **GIVEN** a verified reader with previously cached available capability - **WHEN** the phone is offline when Start capture is selected - **THEN** the qualified start SHALL remain blocked with current-authorization-unavailable; an old capability timestamp SHALL not authorize collection.",
+      "unproved_then_clauses": [
+        "Cached capability with offline phone must assert current-authorization-unavailable and no hardware starts, not only reboot/consent rejection."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Reader capture uses separate fresh online start and cannot derive authority from local fixture material alone."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Cached capability with offline phone must assert current-authorization-unavailable and no hardware starts, not only reboot/consent rejection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-003-01",
+      "requirement_id": "AND-HR-003",
+      "status": "PARTIAL",
+      "expected_observation": "PPG device reports confidence \u2014 - **GIVEN** a capture containing the sensor's quality/confidence field - **WHEN** the app renders or exports it - **THEN** it SHALL label it Sensor signal quality using its documented scale, preserve provenance, and SHALL not display it as probability of correct heart rate or probability of intoxication.",
+      "unproved_then_clauses": [
+        "Rendered/exported confidence must explicitly say Sensor signal quality/documented scale and never accuracy/intoxication probability."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Vendor payload preserves confidence_percent as acquisition evidence with modelEligible=false, actual cadence unknown and no raw counts."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence"
+        ],
+        "exact_missing_observation": [
+          "Rendered/exported confidence must explicitly say Sensor signal quality/documented scale and never accuracy/intoxication probability."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-003-02",
+      "requirement_id": "AND-HR-003",
+      "status": "PARTIAL",
+      "expected_observation": "PPG adapter tries to populate ECG variability \u2014 - **GIVEN** a modality=ppg capture - **WHEN** an adapter supplies ecg_status=valid or ECG-derived RMSSD - **THEN** schema/semantic validation SHALL reject the incompatible fields rather than labeling pulse-rate variability as ECG heart-rate variability.",
+      "unproved_then_clauses": [
+        "Explicit PPG ecg_status=valid and finite ecg_rmssd_ms mutations must reject independently, including server schema path."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Vendor decoder rejects PPG projection relabeled ECG and baseline retains ecg_rmssd_ms=null."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+        "apps/mobile/tests/cardiac-selection.test.ts::a cardiac modality is pinned at start and cannot be supplied to another component"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+          "apps/mobile/tests/cardiac-selection.test.ts::a cardiac modality is pinned at start and cannot be supplied to another component"
+        ],
+        "exact_missing_observation": [
+          "Explicit PPG ecg_status=valid and finite ecg_rmssd_ms mutations must reject independently, including server schema path."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-004-01",
+      "requirement_id": "AND-HR-004",
+      "status": "PARTIAL",
+      "expected_observation": "Finger removed during measurement \u2014 - **GIVEN** a live valid-looking pulse value - **WHEN** the sensor reports no finger or the signal becomes stale - **THEN** the primary live display SHALL change to an actionable contact/stale state, and the old bpm SHALL not continue as if freshly measured.",
+      "unproved_then_clauses": [
+        "Actual PPG live UI sensor contact/stale state and withholding old bpm must be executed; host/model fixtures do not exercise hardware display."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Synthetic poor_contact/stale fixtures clear current bpm, keep last value separately, latch reason and reject later completion."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion",
+        "firmware/tests/sparkfun_ppg_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion",
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Actual PPG live UI sensor contact/stale state and withholding old bpm must be executed; host/model fixtures do not exercise hardware display."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-004-02",
+      "requirement_id": "AND-HR-004",
+      "status": "PARTIAL",
+      "expected_observation": "Few valid samples within a long recording \u2014 - **GIVEN** a recording whose elapsed duration meets the requested duration but whose valid samples do not - **WHEN** completion is evaluated - **THEN** the capture SHALL fail its configured adequacy rule or remain incomplete, with no apparently ordinary final heart-rate value.",
+      "unproved_then_clauses": [
+        "Long-enough duration with too few otherwise valid vendor records must directly assert configured adequacy and null final heart rate."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Synthetic insufficient_samples clears bpm and rejects completion; vendor no-data yields invalid null bpm."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion",
+        "firmware/tests/sparkfun_ppg_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion",
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Long-enough duration with too few otherwise valid vendor records must directly assert configured adequacy and null final heart rate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-005-01",
+      "requirement_id": "AND-HR-005",
+      "status": "PARTIAL",
+      "expected_observation": "Reboot resets sensor counter \u2014 - **GIVEN** an active PPG capture - **WHEN** a new boot ID or regressed monotonic counter appears - **THEN** the attempt SHALL become invalid, the clock association SHALL be cleared, and the next acquisition SHALL require a new capture identity and synchronization.",
+      "unproved_then_clauses": [
+        "Active PPG reboot/regression must explicitly clear clock association and require new synchronization+capture identity."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Journal rejects boot mismatch and synthetic reducer rejects foreign boot/sequence replay."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+        "apps/mobile/src/device/tests/signal.test.ts::stale identities, schema additions, sequence replay and bounded sample tampering cannot populate a current capture"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+          "apps/mobile/src/device/tests/signal.test.ts::stale identities, schema additions, sequence replay and bounded sample tampering cannot populate a current capture"
+        ],
+        "exact_missing_observation": [
+          "Active PPG reboot/regression must explicitly clear clock association and require new synchronization+capture identity."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-005-02",
+      "requirement_id": "AND-HR-005",
+      "status": "PARTIAL",
+      "expected_observation": "Duplicate completion after a successful capture \u2014 - **GIVEN** an immutable accepted capture - **WHEN** its identical completion event is repeated - **THEN** the app SHALL retain exactly one logical capture, acknowledge the repeated event, and SHALL not overwrite the stored feature or timestamp.",
+      "unproved_then_clauses": [
+        "Repeat actual accepted PPG completion after ACK timeout and assert one saved capture, repeated ACK and unchanged timestamp/feature."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Journal deduplicates identical body and protects immutable message ID; full customer capture stores one immutable projection."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Repeat actual accepted PPG completion after ACK timeout and assert one saved capture, repeated ACK and unchanged timestamp/feature."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-005-03",
+      "requirement_id": "AND-HR-005",
+      "status": "PARTIAL",
+      "expected_observation": "Canceled route change keeps an ended attempt \u2014 - **GIVEN** PPG acquisition is active and a navigation confirmation may be displayed - **WHEN** the user selects Back and then keeps the wider draft - **THEN** local acquisition SHALL already have stopped and the prior attempt SHALL retain its terminal invalid/canceled evidence; it SHALL never resume its original buffer.",
+      "unproved_then_clauses": [
+        "PPG Back then Keep draft UI journey must assert prior buffer cannot resume and wider draft survives, including visible confirmation ordering."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Controller cancellation precedes awaited transport stop and preserves terminal invalid evidence."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/protocol.test.ts::cancellation invalidates before disconnect and prevents stale completion into a different workspace"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::cancellation invalidates before disconnect and prevents stale completion into a different workspace"
+        ],
+        "exact_missing_observation": [
+          "PPG Back then Keep draft UI journey must assert prior buffer cannot resume and wider draft survives, including visible confirmation ordering."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-006-01",
+      "requirement_id": "AND-HR-006",
+      "status": "PARTIAL",
+      "expected_observation": "Network unavailable after allowed capture \u2014 - **GIVEN** a complete permitted local PPG capture and no network - **WHEN** the user reaches Review - **THEN** the app SHALL display the saved measurement and Saved on this device, retain its exact immutable record, and SHALL not claim it was uploaded or analyzed remotely.",
+      "unproved_then_clauses": [
+        "Disable network after allowed capture, open Review and assert Saved on this device/unchanged immutable record/no uploaded or remote-analysis claim."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Full customer PPG completion persists locally and queues only explicit upload."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Disable network after allowed capture, open Review and assert Saved on this device/unchanged immutable record/no uploaded or remote-analysis claim."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-006-02",
+      "requirement_id": "AND-HR-006",
+      "status": "PARTIAL",
+      "expected_observation": "Raw-signal storage not authorized \u2014 - **GIVEN** a protocol allowing only summary features - **WHEN** a PPG stream is processed - **THEN** raw buffers SHALL remain transient and be released after permitted extraction, while the allowed summary/configuration/quality metadata MAY be saved.",
+      "unproved_then_clauses": [
+        "Actual in-firmware transient raw buffers released after extraction and no persistent raw payload on summary-only path remain unobserved on hardware."
+      ],
+      "remaining_prerequisite_types": [
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Vendor factory removes raw IR/red counts, client accepts derived-only zero sample chunks/rawRecording=null and rejects raw field injection."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+        "firmware/tests/sparkfun_ppg_test.cpp::main"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Actual in-firmware transient raw buffers released after extraction and no persistent raw payload on summary-only path remain unobserved on hardware."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-007-01",
+      "requirement_id": "AND-HR-007",
+      "status": "BLOCKED",
+      "expected_observation": "Same quality-loss fixture on both platforms \u2014 - **GIVEN** a recorded synthetic sequence containing good contact, contact loss, and recovery - **WHEN** Android and iOS replay it - **THEN** both SHALL show matching quality transitions and SHALL not carry forward the last valid pulse during the gap.",
+      "unproved_then_clauses": [
+        "Same good/loss/recovery sequence must run in both actual Android/iOS apps and compare visible transitions without carrying stale bpm."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Shared synthetic reducer executes contact/stale failure transitions and clears bpm in Node."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+        ],
+        "exact_missing_observation": [
+          "Same good/loss/recovery sequence must run in both actual Android/iOS apps and compare visible transitions without carrying stale bpm."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-007-02",
+      "requirement_id": "AND-HR-007",
+      "status": "PARTIAL",
+      "expected_observation": "New firmware changes quality scale \u2014 - **GIVEN** a firmware revision outside the configured compatibility list - **WHEN** the reader reports a confidence field with a different scale - **THEN** the capture SHALL be blocked or marked incompatible until a reviewed adapter/configuration establishes its meaning; the app SHALL not reuse the prior threshold silently.",
+      "unproved_then_clauses": [
+        "New firmware specifically changing confidence scale must assert incompatibility until reviewed adapter/configuration rather than silently reuse old threshold."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Client rejects changed SDK commit/config evidence; exact firmware inventory enforced before authorization."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+        "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory"
+        ],
+        "exact_missing_observation": [
+          "New firmware specifically changing confidence scale must assert incompatibility until reviewed adapter/configuration rather than silently reuse old threshold."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-027-AND-HR-001-01",
+      "required_clause": [
+        "Visible bounded simulated progress/quality and saved provenance through full capture UI remain unasserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance"
+        ],
+        "exact_missing_observation": [
+          "Visible bounded simulated progress/quality and saved provenance through full capture UI remain unasserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-001-02",
+      "required_clause": [
+        "Paired reader missing PPG must render disabled Start with exact missing-channel reason and no phone-sensor fallback."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+          "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral"
+        ],
+        "exact_missing_observation": [
+          "Paired reader missing PPG must render disabled Start with exact missing-channel reason and no phone-sensor fallback."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-002-01",
+      "required_clause": [
+        "Actual qualified participant reader/instruction flow remains externally unqualified; channel-only acquisition is a software fixture boundary."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution",
+        "study_scientific_approval"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Actual qualified participant reader/instruction flow remains externally unqualified; channel-only acquisition is a software fixture boundary."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-002-03",
+      "required_clause": [
+        "Cached capability with offline phone must assert current-authorization-unavailable and no hardware starts, not only reboot/consent rejection."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Cached capability with offline phone must assert current-authorization-unavailable and no hardware starts, not only reboot/consent rejection."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-003-01",
+      "required_clause": [
+        "Rendered/exported confidence must explicitly say Sensor signal quality/documented scale and never accuracy/intoxication probability."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence"
+        ],
+        "exact_missing_observation": [
+          "Rendered/exported confidence must explicitly say Sensor signal quality/documented scale and never accuracy/intoxication probability."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-003-02",
+      "required_clause": [
+        "Explicit PPG ecg_status=valid and finite ecg_rmssd_ms mutations must reject independently, including server schema path."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+          "apps/mobile/tests/cardiac-selection.test.ts::a cardiac modality is pinned at start and cannot be supplied to another component"
+        ],
+        "exact_missing_observation": [
+          "Explicit PPG ecg_status=valid and finite ecg_rmssd_ms mutations must reject independently, including server schema path."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-004-01",
+      "required_clause": [
+        "Actual PPG live UI sensor contact/stale state and withholding old bpm must be executed; host/model fixtures do not exercise hardware display."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion",
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Actual PPG live UI sensor contact/stale state and withholding old bpm must be executed; host/model fixtures do not exercise hardware display."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-004-02",
+      "required_clause": [
+        "Long-enough duration with too few otherwise valid vendor records must directly assert configured adequacy and null final heart rate."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion",
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Long-enough duration with too few otherwise valid vendor records must directly assert configured adequacy and null final heart rate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-005-01",
+      "required_clause": [
+        "Active PPG reboot/regression must explicitly clear clock association and require new synchronization+capture identity."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+          "apps/mobile/src/device/tests/signal.test.ts::stale identities, schema additions, sequence replay and bounded sample tampering cannot populate a current capture"
+        ],
+        "exact_missing_observation": [
+          "Active PPG reboot/regression must explicitly clear clock association and require new synchronization+capture identity."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-005-02",
+      "required_clause": [
+        "Repeat actual accepted PPG completion after ACK timeout and assert one saved capture, repeated ACK and unchanged timestamp/feature."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Repeat actual accepted PPG completion after ACK timeout and assert one saved capture, repeated ACK and unchanged timestamp/feature."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-005-03",
+      "required_clause": [
+        "PPG Back then Keep draft UI journey must assert prior buffer cannot resume and wider draft survives, including visible confirmation ordering."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/protocol.test.ts::cancellation invalidates before disconnect and prevents stale completion into a different workspace"
+        ],
+        "exact_missing_observation": [
+          "PPG Back then Keep draft UI journey must assert prior buffer cannot resume and wider draft survives, including visible confirmation ordering."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-006-01",
+      "required_clause": [
+        "Disable network after allowed capture, open Review and assert Saved on this device/unchanged immutable record/no uploaded or remote-analysis claim."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence"
+        ],
+        "exact_missing_observation": [
+          "Disable network after allowed capture, open Review and assert Saved on this device/unchanged immutable record/no uploaded or remote-analysis claim."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-006-02",
+      "required_clause": [
+        "Actual in-firmware transient raw buffers released after extraction and no persistent raw payload on summary-only path remain unobserved on hardware."
+      ],
+      "types": [
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+          "firmware/tests/sparkfun_ppg_test.cpp::main"
+        ],
+        "exact_missing_observation": [
+          "Actual in-firmware transient raw buffers released after extraction and no persistent raw payload on summary-only path remain unobserved on hardware."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-007-01",
+      "required_clause": [
+        "Same good/loss/recovery sequence must run in both actual Android/iOS apps and compare visible transitions without carrying stale bpm."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion"
+        ],
+        "exact_missing_observation": [
+          "Same good/loss/recovery sequence must run in both actual Android/iOS apps and compare visible transitions without carrying stale bpm."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-027-AND-HR-007-02",
+      "required_clause": [
+        "New firmware specifically changing confidence scale must assert incompatibility until reviewed adapter/configuration rather than silently reuse old threshold."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory"
+        ],
+        "exact_missing_observation": [
+          "New firmware specifically changing confidence scale must assert incompatibility until reviewed adapter/configuration rather than silently reuse old threshold."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

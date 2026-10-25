@@ -1,0 +1,328 @@
+{
+  "spec_id": "OTGD-040",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/reference-lab-collection/spec.md",
+  "canonical_sha256": "09cbf8dccec136a1ec7895fc553c62160b63fa1e2133f5b5864d7d3aed13547a",
+  "canonical_requirements": [
+    "SALCOL-001 Dispatch the actual reference-lab adapter",
+    "SALCOL-002 Render only approved collection-form rules",
+    "SALCOL-003 Allocate specimen and collection lineage before start",
+    "SALCOL-004 Admit an immutable participant collection receipt",
+    "SALCOL-005 Preserve pending analysis and independent staff import",
+    "SALCOL-006 Retain failed attempts and immutable finalized boundaries",
+    "SALCOL-007 Apply privacy and preserve complete collection evidence",
+    "SALCOL-008 Preserve pending chronology and versioned projections"
+  ],
+  "canonical_scenarios": [
+    "Approved laboratory method without a peripheral",
+    "Unsupported cartridge-reader configuration",
+    "Approved buffered collection",
+    "Unknown required volume or expired supply",
+    "Protocol permits an unknown optional field",
+    "Unsupported or contradictory null reason",
+    "One collection supplies multiple analytes",
+    "Wrong specimen or impossible event time",
+    "Current complete sample record",
+    "Customer submits a quantified laboratory result",
+    "Lost accepted response",
+    "Distinct staff imports the participant report",
+    "Laboratory response is unavailable",
+    "Foreign target or caller scope",
+    "Consent changes before import",
+    "Inadequate volume before finalization",
+    "Explicit invalid collection receipt",
+    "Corrected finalized laboratory report",
+    "Owned evidence review and export",
+    "Withdrawal while collection response is delayed",
+    "Save and resume a pending laboratory handoff",
+    "Collection submission arrives too late",
+    "Delayed laboratory evidence is not current state",
+    "Strict legacy companion compatibility",
+    "Required versus optional model channel",
+    "Explicitly abandon pending analysis"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 22,
+    "PARTIAL": 4
+  },
+  "all_current_case_ids": [
+    "OTGD-040-SALCOL-001-01",
+    "OTGD-040-SALCOL-001-02",
+    "OTGD-040-SALCOL-002-01",
+    "OTGD-040-SALCOL-002-02",
+    "OTGD-040-SALCOL-002-03",
+    "OTGD-040-SALCOL-002-04",
+    "OTGD-040-SALCOL-003-01",
+    "OTGD-040-SALCOL-003-02",
+    "OTGD-040-SALCOL-004-01",
+    "OTGD-040-SALCOL-004-02",
+    "OTGD-040-SALCOL-004-03",
+    "OTGD-040-SALCOL-005-01",
+    "OTGD-040-SALCOL-005-02",
+    "OTGD-040-SALCOL-005-03",
+    "OTGD-040-SALCOL-005-04",
+    "OTGD-040-SALCOL-006-01",
+    "OTGD-040-SALCOL-006-02",
+    "OTGD-040-SALCOL-006-03",
+    "OTGD-040-SALCOL-007-01",
+    "OTGD-040-SALCOL-007-02",
+    "OTGD-040-SALCOL-008-01",
+    "OTGD-040-SALCOL-008-02",
+    "OTGD-040-SALCOL-008-03",
+    "OTGD-040-SALCOL-008-04",
+    "OTGD-040-SALCOL-008-05",
+    "OTGD-040-SALCOL-008-06"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-040-SALCOL-001-02",
+      "requirement_id": "SALCOL-001",
+      "status": "PARTIAL",
+      "expected_observation": "Unsupported cartridge-reader configuration \u2014 - **GIVEN** a configuration names an unimplemented assay reader - **WHEN** availability or Start is evaluated - **THEN** the app identifies the missing adapter rather than substituting the laboratory form, a timer or a generic ADC reading.",
+      "unproved_then_clauses": [
+        "Unsupported assay-reader saliva configuration specifically identifies missing adapter in availability/Start and cannot substitute laboratory form/timer/generic ADC: existing inspected inventory tests exercise cardiac transport, not this assay-channel dispatch case."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Generic cardiac transport without a driver reports HUMAN_ADAPTER_UNIMPLEMENTED and start refuses. Inspected software_supported rejects adapter names outside channel whitelist; saliva whitelist contains only reference_lab_import_v1."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+        "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+        ],
+        "exact_missing_observation": [
+          "Unsupported assay-reader saliva configuration specifically identifies missing adapter in availability/Start and cannot substitute laboratory form/timer/generic ADC: existing inspected inventory tests exercise cardiac transport, not this assay-channel dispatch case."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-040-SALCOL-003-01",
+      "requirement_id": "SALCOL-003",
+      "status": "PARTIAL",
+      "expected_observation": "One collection supplies multiple analytes \u2014 - **GIVEN** a started owned specimen attempt and its current instruction/start authority - **WHEN** the specimen is collected and later analyzed for several analytes - **THEN** every resulting report references the same original specimen and collection event, with separately identified analytical attempts.",
+      "unproved_then_clauses": [
+        "later analyzed for several analytes: multi-analyte initial import with all reports tied to that same collection is not directly exercised by these single-measurement flow bodies."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "One admitted collection and one analytical import retain same specimen/original time with distinct analytical attempt and separate ownership."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_actual_http_collection_staff_report_import_refresh_and_finalize",
+        "services/api/tests/test_lab_handoff.py::test_distinct_operator_creates_subject_owned_source_and_import"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_actual_http_collection_staff_report_import_refresh_and_finalize",
+          "services/api/tests/test_lab_handoff.py::test_distinct_operator_creates_subject_owned_source_and_import"
+        ],
+        "exact_missing_observation": [
+          "later analyzed for several analytes: multi-analyte initial import with all reports tied to that same collection is not directly exercised by these single-measurement flow bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-040-SALCOL-004-03",
+      "requirement_id": "SALCOL-004",
+      "status": "PARTIAL",
+      "expected_observation": "Lost accepted response \u2014 - **GIVEN** collection was accepted but the response was lost - **WHEN** the exact retained body/key is retried - **THEN** the original immutable receipt is reconciled without creating a second specimen, changing collection time or reopening expired authority.",
+      "unproved_then_clauses": [
+        "without reopening expired authority: exact receipt reconciliation after original authority expires is not asserted for collection operation."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Lost reply retries original body/key; backend exact retry returns identical receipt, changed-key/body cannot create second collection."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_participant_acquisition.py::test_positive_collection_without_ble_is_owned_immutable_and_pending",
+        "apps/mobile/tests/acquisition.test.ts::unknown specimen receipt retries the immutable declaration and key; explicit analysis cancellation never erases collection"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_positive_collection_without_ble_is_owned_immutable_and_pending",
+          "apps/mobile/tests/acquisition.test.ts::unknown specimen receipt retries the immutable declaration and key; explicit analysis cancellation never erases collection"
+        ],
+        "exact_missing_observation": [
+          "without reopening expired authority: exact receipt reconciliation after original authority expires is not asserted for collection operation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-040-SALCOL-008-05",
+      "requirement_id": "SALCOL-008",
+      "status": "PARTIAL",
+      "expected_observation": "Required versus optional model channel \u2014 - **GIVEN** a collection remains pending - **WHEN** an independently approved 1.1 manifest requires its chemical measurement or explicitly permits that channel to be missing - **THEN** pending collection cannot satisfy the required measurement; any separately eligible result still obeys exact approved missing-channel, provenance, tuple, freshness and delivery rules without deriving a value from pending status.",
+      "unproved_then_clauses": [
+        "Pending chemistry required-versus-optional admission, no invented value, delivery lateness and provenance/method refusal are directly tested at the real scope gate using an independently released typed manifest. A complete independently admitted result pipeline with the pending optional branch and all tuple/freshness rules is not executed by that isolated scope fixture."
+      ],
+      "remaining_prerequisite_types": [
+        "software_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "current_assertions_proven": [
+        "Model scope refuses missing/censored required features, incompatible assay tuple/provenance and bad acquisition/delivery timing; complete baseline feature values are exact. Inspected scope_check requires exactly one quantified analyte and valid sample for each required chemical channel; no pending collection value is synthesized.",
+        "ActualHTTPcollection/persistedreceipt and releasedtypedmodel required/optionalscope; noinventedpendingvalue, currentrequiredchemistryabandonfinalization refuses withoutjob; permittedothermodes preserve202; initialimporttarget/authority negatives at actualimportboundary."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+        "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+        "services/api/tests/test_participant_acquisition.py::test_collection_first_late_submission_is_denied_but_exact_key_replay_stays_historical",
+        "services/api/tests/test_participant_acquisition.py::test_present_collection_value_cannot_also_claim_a_missing_reason",
+        "services/api/tests/test_participant_acquisition.py::test_pending_collection_cannot_satisfy_required_chemistry_and_does_not_invent_optional_values",
+        "services/api/tests/test_participant_acquisition.py::test_abandonment_cannot_finalize_when_current_model_requires_missing_chemistry",
+        "services/api/tests/test_lab_handoff.py::test_initial_import_refuses_foreign_target_scope_not_only_source_creation",
+        "services/api/tests/test_lab_handoff.py::test_initial_import_readmits_configuration_consent_staff_and_report_custody"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+          "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+          "services/api/tests/test_participant_acquisition.py::test_collection_first_late_submission_is_denied_but_exact_key_replay_stays_historical",
+          "services/api/tests/test_participant_acquisition.py::test_present_collection_value_cannot_also_claim_a_missing_reason",
+          "services/api/tests/test_participant_acquisition.py::test_pending_collection_cannot_satisfy_required_chemistry_and_does_not_invent_optional_values",
+          "services/api/tests/test_participant_acquisition.py::test_abandonment_cannot_finalize_when_current_model_requires_missing_chemistry"
+        ],
+        "exact_missing_observation": [
+          "Pending chemistry required-versus-optional admission, no invented value, delivery lateness and provenance/method refusal are directly tested at the real scope gate using an independently released typed manifest. A complete independently admitted result pipeline with the pending optional branch and all tuple/freshness rules is not executed by that isolated scope fixture."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-040-SALCOL-001-02",
+      "required_clause": [
+        "Unsupported assay-reader saliva configuration specifically identifies missing adapter in availability/Start and cannot substitute laboratory form/timer/generic ADC: existing inspected inventory tests exercise cardiac transport, not this assay-channel dispatch case."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+          "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec"
+        ],
+        "exact_missing_observation": [
+          "Unsupported assay-reader saliva configuration specifically identifies missing adapter in availability/Start and cannot substitute laboratory form/timer/generic ADC: existing inspected inventory tests exercise cardiac transport, not this assay-channel dispatch case."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-040-SALCOL-003-01",
+      "required_clause": [
+        "later analyzed for several analytes: multi-analyte initial import with all reports tied to that same collection is not directly exercised by these single-measurement flow bodies."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_actual_http_collection_staff_report_import_refresh_and_finalize",
+          "services/api/tests/test_lab_handoff.py::test_distinct_operator_creates_subject_owned_source_and_import"
+        ],
+        "exact_missing_observation": [
+          "later analyzed for several analytes: multi-analyte initial import with all reports tied to that same collection is not directly exercised by these single-measurement flow bodies."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-040-SALCOL-004-03",
+      "required_clause": [
+        "without reopening expired authority: exact receipt reconciliation after original authority expires is not asserted for collection operation."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_participant_acquisition.py::test_positive_collection_without_ble_is_owned_immutable_and_pending",
+          "apps/mobile/tests/acquisition.test.ts::unknown specimen receipt retries the immutable declaration and key; explicit analysis cancellation never erases collection"
+        ],
+        "exact_missing_observation": [
+          "without reopening expired authority: exact receipt reconciliation after original authority expires is not asserted for collection operation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-040-SALCOL-008-05",
+      "required_clause": [
+        "Pending chemistry required-versus-optional admission, no invented value, delivery lateness and provenance/method refusal are directly tested at the real scope gate using an independently released typed manifest. A complete independently admitted result pipeline with the pending optional branch and all tuple/freshness rules is not executed by that isolated scope fixture."
+      ],
+      "types": [
+        "software_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+          "services/api/tests/test_model_engine.py::test_feature_missingness_and_temporal_baseline_gates",
+          "services/api/tests/test_participant_acquisition.py::test_collection_first_late_submission_is_denied_but_exact_key_replay_stays_historical",
+          "services/api/tests/test_participant_acquisition.py::test_present_collection_value_cannot_also_claim_a_missing_reason",
+          "services/api/tests/test_participant_acquisition.py::test_pending_collection_cannot_satisfy_required_chemistry_and_does_not_invent_optional_values",
+          "services/api/tests/test_participant_acquisition.py::test_abandonment_cannot_finalize_when_current_model_requires_missing_chemistry"
+        ],
+        "exact_missing_observation": [
+          "Pending chemistry required-versus-optional admission, no invented value, delivery lateness and provenance/method refusal are directly tested at the real scope gate using an independently released typed manifest. A complete independently admitted result pipeline with the pending optional branch and all tuple/freshness rules is not executed by that isolated scope fixture."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

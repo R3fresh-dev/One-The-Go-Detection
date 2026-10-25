@@ -1,0 +1,826 @@
+{
+  "spec_id": "OTGD-015",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/cloud-deployment-customer-access/specs/cloud-release-orchestration/spec.md",
+  "canonical_sha256": "32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6",
+  "canonical_requirements": [
+    "CLOUD-DEP-001 Provide separate environment entry points",
+    "CLOUD-DEP-002 Admit exact source and live release gates",
+    "CLOUD-DEP-003 Orchestrate infrastructure and code with actual inputs",
+    "CLOUD-DEP-004 Complete maintenance before enablement",
+    "CLOUD-DEP-005 Require actual healthy activation",
+    "CLOUD-DEP-006 Bind production to tested QA service and web evidence",
+    "CLOUD-DEP-007 Register only the exact deployed UI CNAME",
+    "CLOUD-DEP-008 Preserve immutable attempts and report actual checks",
+    "CLOUD-DEP-009 Provision distinct registry operator authority without assigning approvals",
+    "CLOUD-DEP-010 Require fresh independent admission evidence"
+  ],
+  "canonical_scenarios": [
+    "QA plan is requested",
+    "Production wrapper receives QA configuration",
+    "Every required exact-revision gate passes",
+    "A prior or cancelled run is supplied",
+    "Actual approved inputs are present",
+    "AWS credentials point to another account",
+    "Local emulation endpoint settings are inherited",
+    "First empty environment is established",
+    "Migration or fresh admission verification fails",
+    "Worker dependencies make useful progress",
+    "A worker process runs without qualifying progress",
+    "Approved QA is promoted",
+    "Web evidence refers to another artifact",
+    "A valid public subdomain is registered",
+    "Caller supplies apex, foreign zone or target",
+    "An operator repeats deployment",
+    "Public access or invalidation fails",
+    "An authorized operator validates registry evidence",
+    "A deployed application task attempts an approval",
+    "Maintenance completes with current independent authority",
+    "Admission proof is stale or uses a no-op command"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PASS": 7,
+    "PARTIAL": 13,
+    "NOT_RUN": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-015-CLOUD-DEP-001-01",
+    "OTGD-015-CLOUD-DEP-001-02",
+    "OTGD-015-CLOUD-DEP-002-01",
+    "OTGD-015-CLOUD-DEP-002-02",
+    "OTGD-015-CLOUD-DEP-003-01",
+    "OTGD-015-CLOUD-DEP-003-02",
+    "OTGD-015-CLOUD-DEP-003-03",
+    "OTGD-015-CLOUD-DEP-004-01",
+    "OTGD-015-CLOUD-DEP-004-02",
+    "OTGD-015-CLOUD-DEP-005-01",
+    "OTGD-015-CLOUD-DEP-005-02",
+    "OTGD-015-CLOUD-DEP-006-01",
+    "OTGD-015-CLOUD-DEP-006-02",
+    "OTGD-015-CLOUD-DEP-007-01",
+    "OTGD-015-CLOUD-DEP-007-02",
+    "OTGD-015-CLOUD-DEP-008-01",
+    "OTGD-015-CLOUD-DEP-008-02",
+    "OTGD-015-CLOUD-DEP-009-01",
+    "OTGD-015-CLOUD-DEP-009-02",
+    "OTGD-015-CLOUD-DEP-010-01",
+    "OTGD-015-CLOUD-DEP-010-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-002-01",
+      "requirement_id": "CLOUD-DEP-002",
+      "status": "PARTIAL",
+      "expected_observation": "Every required exact-revision gate passes \u2014 - **GIVEN** an eligible main/merge-group run and independently trusted signature - **WHEN** release operations execute - **THEN** source/run/attempt/job/image bindings are verified and retained.",
+      "unproved_then_clauses": [
+        "An eligible main/merge-group release run with independently trusted operational signer must retain its release bindings. Current exact-tree draft-PR CI40185247204 passes14 jobs and local7 gates pass, but this is not an eligible authorized deployment/release operation or independent signing authority."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Mock GitHub latest-attempt proof includes exact source/run/attempt/job IDs, trusted signatures bind proof, image/config revision/digest and QA envelope verified by real crypto."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_provenance.py::test_latest_attempt_requires_every_nested_job_and_aggregate",
+        "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+        "infra/test/test_provenance.py::test_cloud_image_manifest_and_local_config_must_bind_signed_source"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_provenance.py::test_latest_attempt_requires_every_nested_job_and_aggregate",
+          "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+          "infra/test/test_provenance.py::test_cloud_image_manifest_and_local_config_must_bind_signed_source"
+        ],
+        "exact_missing_observation": [
+          "An eligible main/merge-group release run with independently trusted operational signer must retain its release bindings. Current exact-tree draft-PR CI40185247204 passes14 jobs and local7 gates pass, but this is not an eligible authorized deployment/release operation or independent signing authority."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-003-01",
+      "requirement_id": "CLOUD-DEP-003",
+      "status": "PARTIAL",
+      "expected_observation": "Actual approved inputs are present \u2014 - **GIVEN** the configured credential chain and resource authority - **WHEN** one environment command executes - **THEN** its actual account/region is verified before infrastructure changes.",
+      "unproved_then_clauses": [
+        "\u201cactual configured credential chain ... actual account/region verified before infrastructure\u201d: no live credential/ST S/TLS/resource authority or environment deployment; all AWS clients are doubles."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Preflight SDK-double fixture verifies configured regional engine/capacity/zone selection with matching STS account. Inspected platform.preflight checks STS account before certificate/RDS/ECR operations."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_fargate_deploy.py::test_east1_preflight_requires_actual_engine_capacity_and_zone_metadata",
+        "infra/test/test_fargate_deploy.py::test_continuation_pins_retained_engine_and_keeps_fargate_budget_when_newer_version_is_available"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_fargate_deploy.py::test_east1_preflight_requires_actual_engine_capacity_and_zone_metadata",
+          "infra/test/test_fargate_deploy.py::test_continuation_pins_retained_engine_and_keeps_fargate_budget_when_newer_version_is_available"
+        ],
+        "exact_missing_observation": [
+          "\u201cactual configured credential chain ... actual account/region verified before infrastructure\u201d: no live credential/ST S/TLS/resource authority or environment deployment; all AWS clients are doubles."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-003-02",
+      "requirement_id": "CLOUD-DEP-003",
+      "status": "NOT_RUN",
+      "expected_observation": "AWS credentials point to another account \u2014 - **GIVEN** an STS mismatch - **WHEN** preflight executes - **THEN** no target deployment continues.",
+      "unproved_then_clauses": [
+        "\u201cSTS mismatch ... preflight ... no target deployment continues\u201d: no executed QA/prod preflight wrong-account STS response with zero subsequent mutation assertion; plan cost/environment tests do not exercise that branch."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Actual SDK endpoint resolution executes without network; inspected platform.py:75 raises on STS account mismatch."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_cloud_endpoints.py::test_identity_and_mutation_clients_ignore_global_service_and_profile_endpoints"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_cloud_endpoints.py::test_identity_and_mutation_clients_ignore_global_service_and_profile_endpoints"
+        ],
+        "exact_missing_observation": [
+          "\u201cSTS mismatch ... preflight ... no target deployment continues\u201d: no executed QA/prod preflight wrong-account STS response with zero subsequent mutation assertion; plan cost/environment tests do not exercise that branch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-004-01",
+      "requirement_id": "CLOUD-DEP-004",
+      "status": "PARTIAL",
+      "expected_observation": "First empty environment is established \u2014 - **GIVEN** explicit establish-new and no admitted data - **WHEN** bootstrap/migration succeed - **THEN** actual receipts qualify for the later activation gate.",
+      "unproved_then_clauses": [
+        "\u201cfirst empty environment ... actual receipts qualify\u201d: ECS, bootstrap/migration and database emptiness are simulated; no actual stopped environment, retained journal establishment or verified admission task receipt."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Maintenance launcher reads mocked ECS stopped/zero-exit/exact-image task and source-bound receipt, forwards establish-new to bootstrap, writes bootstrap receipt; modeled lifecycle orders bootstrap/migrate/admission before activation."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_fargate_deploy.py::test_maintenance_requires_actual_zero_exit_reviewed_digest_and_source_bound_receipt",
+        "infra/test/test_serverless_deploy.py::test_fresh_runtime_bootstraps_and_migrates_stopped_before_activation"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_fargate_deploy.py::test_maintenance_requires_actual_zero_exit_reviewed_digest_and_source_bound_receipt",
+          "infra/test/test_serverless_deploy.py::test_fresh_runtime_bootstraps_and_migrates_stopped_before_activation"
+        ],
+        "exact_missing_observation": [
+          "\u201cfirst empty environment ... actual receipts qualify\u201d: ECS, bootstrap/migration and database emptiness are simulated; no actual stopped environment, retained journal establishment or verified admission task receipt."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-005-01",
+      "requirement_id": "CLOUD-DEP-005",
+      "status": "PARTIAL",
+      "expected_observation": "Worker dependencies make useful progress \u2014 - **GIVEN** dispatcher/cleanup/both consumers qualify - **WHEN** ECS reports the worker container HEALTHY - **THEN** publication may proceed after the remaining gates.",
+      "unproved_then_clauses": [
+        "\u201cdispatcher/cleanup/both consumers qualify ... actual ECS HEALTHY ... publication may proceed\u201d: no real worker progress/consumer evidence tied to an actual ECS task and admitted public rollout; unrelated cost tests are not adopted."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Worker health refuses UNKNOWN progress; separate mocked Fargate observation accepts healthy owned runtime and actual app-config DTO."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_running_process_without_worker_progress_never_qualifies",
+        "infra/test/test_fargate_deploy.py::test_actual_app_config_dto_passes_auth_identity_and_rejects_wrong_client_or_old_oauth_key"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_running_process_without_worker_progress_never_qualifies",
+          "infra/test/test_fargate_deploy.py::test_actual_app_config_dto_passes_auth_identity_and_rejects_wrong_client_or_old_oauth_key"
+        ],
+        "exact_missing_observation": [
+          "\u201cdispatcher/cleanup/both consumers qualify ... actual ECS HEALTHY ... publication may proceed\u201d: no real worker progress/consumer evidence tied to an actual ECS task and admitted public rollout; unrelated cost tests are not adopted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-005-02",
+      "requirement_id": "CLOUD-DEP-005",
+      "status": "PARTIAL",
+      "expected_observation": "A worker process runs without qualifying progress \u2014 - **GIVEN** UNKNOWN/unhealthy worker status - **WHEN** the bounded health deadline expires - **THEN** public enablement fails and is not called successful deployment.",
+      "unproved_then_clauses": [
+        "\u201cpublic enablement fails ... not called successful deployment\u201d: direct health-helper test does not run one-shot orchestration with UNKNOWN deadline and assert zero web publish/final receipt; negative health gate exists but end-to-end software effect remains unasserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Bounded UNKNOWN-health fixture reaches601 seconds and raises Gate; process RUNNING alone is insufficient."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_running_process_without_worker_progress_never_qualifies"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_running_process_without_worker_progress_never_qualifies"
+        ],
+        "exact_missing_observation": [
+          "\u201cpublic enablement fails ... not called successful deployment\u201d: direct health-helper test does not run one-shot orchestration with UNKNOWN deadline and assert zero web publish/final receipt; negative health gate exists but end-to-end software effect remains unasserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-006-01",
+      "requirement_id": "CLOUD-DEP-006",
+      "status": "PARTIAL",
+      "expected_observation": "Approved QA is promoted \u2014 - **GIVEN** source service/web records and actual protected QA evidence - **WHEN** the authority signs and production admission runs - **THEN** production preserves the image/source and binds its separately configured web artifact to the approved QA envelope.",
+      "unproved_then_clauses": [
+        "\u201cactual protected QA evidence ... promoted production ... separately configured web artifact\u201d: fixtures invent QA probe references and double source-web verification/exporter; no operational QA signed customer run or actual production promotion."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Real signatures bind production image/source and exact QA envelope; source-web admission requires artifact hash plus separate protected customer-results URL; modeled prod web build includes source QA web envelope."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+        "infra/test/test_web_deployment.py::test_production_requires_results_reference_separate_from_artifact_binding",
+        "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+          "infra/test/test_web_deployment.py::test_production_requires_results_reference_separate_from_artifact_binding",
+          "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache"
+        ],
+        "exact_missing_observation": [
+          "\u201cactual protected QA evidence ... promoted production ... separately configured web artifact\u201d: fixtures invent QA probe references and double source-web verification/exporter; no operational QA signed customer run or actual production promotion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-006-02",
+      "requirement_id": "CLOUD-DEP-006",
+      "status": "PARTIAL",
+      "expected_observation": "Web evidence refers to another artifact \u2014 - **GIVEN** a foreign/missing web digest or expired QA approval - **WHEN** production starts - **THEN** it fails before target deployment.",
+      "unproved_then_clauses": [
+        "\u201cforeign/missing web digest ... fails before target deployment\u201d: existing source-web test uses the correct artifact digest and fails for missing RESULTS reference; no wrong/missing artifact digest production-admission test with zero target mutations assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Expired QA approval rejected by real validator; source-web admission refuses absent separate results reference."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_production_requires_results_reference_separate_from_artifact_binding",
+        "infra/test/test_provenance.py::test_qa_approval_expiry_future_execution_and_non_utc_are_rejected"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_production_requires_results_reference_separate_from_artifact_binding",
+          "infra/test/test_provenance.py::test_qa_approval_expiry_future_execution_and_non_utc_are_rejected"
+        ],
+        "exact_missing_observation": [
+          "\u201cforeign/missing web digest ... fails before target deployment\u201d: existing source-web test uses the correct artifact digest and fails for missing RESULTS reference; no wrong/missing artifact digest production-admission test with zero target mutations assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-007-01",
+      "requirement_id": "CLOUD-DEP-007",
+      "status": "PARTIAL",
+      "expected_observation": "A valid public subdomain is registered \u2014 - **GIVEN** a deployed matching distribution and issued TLS - **WHEN** apply is explicitly requested - **THEN** one CNAME targets that distribution and its actual change is awaited for at most ten minutes.",
+      "unproved_then_clauses": [
+        "\u201cactual change awaited ... deployed distribution and issued TLS\u201d: live Route53/ACM/CloudFront not executed; fixture waiter success is not real propagation."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "SDK-double apply sends one atomic CREATE to exact distribution, calls waiter; source sets600-second deadline and late601 success refused."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_plan_has_no_dns_mutation_and_apply_waits_for_actual_change",
+        "infra/test/test_web_deployment.py::test_late_dns_success_is_refused_without_claiming_rollback"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_plan_has_no_dns_mutation_and_apply_waits_for_actual_change",
+          "infra/test/test_web_deployment.py::test_late_dns_success_is_refused_without_claiming_rollback"
+        ],
+        "exact_missing_observation": [
+          "\u201cactual change awaited ... deployed distribution and issued TLS\u201d: live Route53/ACM/CloudFront not executed; fixture waiter success is not real propagation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-008-01",
+      "requirement_id": "CLOUD-DEP-008",
+      "status": "PARTIAL",
+      "expected_observation": "An operator repeats deployment \u2014 - **GIVEN** prior reviewed records - **WHEN** another invocation starts - **THEN** a separate attempt retains earlier evidence and same-prefix object conflicts fail closed.",
+      "unproved_then_clauses": [
+        "\u201canother invocation ... separate attempt retains earlier evidence\u201d: test gives a new TemporaryDirectory for each invocation and never repeats the same work-dir with prior reviewed records, so preservation across retry remains unasserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Failure journal preserves completed stage receipt hashes under private attempt path; immutable object conflict rejects."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_partial_failures_journal_completed_stages_without_inferred_rollback",
+        "infra/test/test_web_deployment.py::test_conflicting_immutable_object_and_asset_upload_failure_block_entrypoint"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_partial_failures_journal_completed_stages_without_inferred_rollback",
+          "infra/test/test_web_deployment.py::test_conflicting_immutable_object_and_asset_upload_failure_block_entrypoint"
+        ],
+        "exact_missing_observation": [
+          "\u201canother invocation ... separate attempt retains earlier evidence\u201d: test gives a new TemporaryDirectory for each invocation and never repeats the same work-dir with prior reviewed records, so preservation across retry remains unasserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-008-02",
+      "requirement_id": "CLOUD-DEP-008",
+      "status": "PARTIAL",
+      "expected_observation": "Public access or invalidation fails \u2014 - **GIVEN** incomplete delivery - **WHEN** the bounded operation fails - **THEN** no verified-access receipt is written and cloud acceptance remains unresolved.",
+      "unproved_then_clauses": [
+        "\u201cpublic access or invalidation ... bounded operation ... no verified-access receipt\u201d: no one-shot failure injection at verify-public-access or CloudFront invalidation waiter with final receipt absence asserted. Separate helper/pub-stage failures do not execute those exact branches."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Injected publish-web failure leaves no deployment.json and journal says failed/no rollback; unprotected history makes public probe throw."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_partial_failures_journal_completed_stages_without_inferred_rollback",
+        "infra/test/test_web_deployment.py::test_navigation_cannot_omit_required_policy_when_index_is_secure"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_partial_failures_journal_completed_stages_without_inferred_rollback",
+          "infra/test/test_web_deployment.py::test_navigation_cannot_omit_required_policy_when_index_is_secure"
+        ],
+        "exact_missing_observation": [
+          "\u201cpublic access or invalidation ... bounded operation ... no verified-access receipt\u201d: no one-shot failure injection at verify-public-access or CloudFront invalidation waiter with final receipt absence asserted. Separate helper/pub-stage failures do not execute those exact branches."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-009-01",
+      "requirement_id": "CLOUD-DEP-009",
+      "status": "PARTIAL",
+      "expected_observation": "An authorized operator validates registry evidence \u2014 - **GIVEN** an approved private operator host with the actual named role and protected database credentials - **WHEN** the typed CLI validates the corresponding command - **THEN** STS/IAM identity and database authority are verified independently of participant API access.",
+      "unproved_then_clauses": [
+        "\u201capproved private operator host ... actual named role ... protected database credentials ... verified independently\u201d: no actual private operator access/assigned roles/admin credential execution. No participant API role or fixture is treated as real operator evidence."
+      ],
+      "remaining_prerequisite_types": [
+        "independent_prerequisite_or_exact_scenario_evidence"
+      ],
+      "current_assertions_proven": [
+        "Real typed CLI lifecycle and principal verifier distinguish fictional local vs canonical mocked STS/IAM role; application database maintenance authority checks refuse fake app/superuser context."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+        ],
+        "exact_missing_observation": [
+          "\u201capproved private operator host ... actual named role ... protected database credentials ... verified independently\u201d: no actual private operator access/assigned roles/admin credential execution. No participant API role or fixture is treated as real operator evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-009-02",
+      "requirement_id": "CLOUD-DEP-009",
+      "status": "PARTIAL",
+      "expected_observation": "A deployed application task attempts an approval \u2014 - **GIVEN** a runtime database/task identity - **WHEN** it attempts to administer or impersonate a registry operator - **THEN** runtime write/trust permissions do not authorize the operation and no approval is invented.",
+      "unproved_then_clauses": [
+        "Actual deployed runtime database/task write/trust permissions must refuse unauthorized operational authority. Current local PostgreSQL role and LocalStack checks pass, but deployed IAM/task-role impersonation and target database write denial are not executed."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Application maintenance context rejected in operator CLI boundary; inspected CDK role trust has three MFA roles, no service principal, narrow scopes; postgres_roles.py contains runtime authority-write denial assertions."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+        ],
+        "exact_missing_observation": [
+          "Actual deployed runtime database/task write/trust permissions must refuse unauthorized operational authority. Current local PostgreSQL role and LocalStack checks pass, but deployed IAM/task-role impersonation and target database write denial are not executed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-010-01",
+      "requirement_id": "CLOUD-DEP-010",
+      "status": "PARTIAL",
+      "expected_observation": "Maintenance completes with current independent authority \u2014 - **GIVEN** migration and required recovery have completed with services stopped - **WHEN** the exact pinned admission task verifies journal/control versions and database barriers - **THEN** its fresh actual ECS receipt may qualify activation alongside the other release gates.",
+      "unproved_then_clauses": [
+        "\u201cexact pinned admission task verifies journal/control/database ... fresh actual ECS receipt qualifies activation\u201d: mock task metadata and direct helper success do not execute recovery_authority in stopped AWS environment or activate using that actual receipt."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Receipt validator accepts fresh exact recovery_authority command with matching modeled ECS task, source/image/container identity; maintenance mutations/time offsets refused."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_maintenance.py::test_activation_requires_fresh_exact_independent_admission_task",
+        "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_maintenance.py::test_activation_requires_fresh_exact_independent_admission_task",
+          "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+        ],
+        "exact_missing_observation": [
+          "\u201cexact pinned admission task verifies journal/control/database ... fresh actual ECS receipt qualifies activation\u201d: mock task metadata and direct helper success do not execute recovery_authority in stopped AWS environment or activate using that actual receipt."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-002-01",
+      "required_clause": [
+        "An eligible main/merge-group release run with independently trusted operational signer must retain its release bindings. Current exact-tree draft-PR CI40185247204 passes14 jobs and local7 gates pass, but this is not an eligible authorized deployment/release operation or independent signing authority."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_provenance.py::test_latest_attempt_requires_every_nested_job_and_aggregate",
+          "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+          "infra/test/test_provenance.py::test_cloud_image_manifest_and_local_config_must_bind_signed_source"
+        ],
+        "exact_missing_observation": [
+          "An eligible main/merge-group release run with independently trusted operational signer must retain its release bindings. Current exact-tree draft-PR CI40185247204 passes14 jobs and local7 gates pass, but this is not an eligible authorized deployment/release operation or independent signing authority."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-003-01",
+      "required_clause": [
+        "\u201cactual configured credential chain ... actual account/region verified before infrastructure\u201d: no live credential/ST S/TLS/resource authority or environment deployment; all AWS clients are doubles."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_fargate_deploy.py::test_east1_preflight_requires_actual_engine_capacity_and_zone_metadata",
+          "infra/test/test_fargate_deploy.py::test_continuation_pins_retained_engine_and_keeps_fargate_budget_when_newer_version_is_available"
+        ],
+        "exact_missing_observation": [
+          "\u201cactual configured credential chain ... actual account/region verified before infrastructure\u201d: no live credential/ST S/TLS/resource authority or environment deployment; all AWS clients are doubles."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-003-02",
+      "required_clause": [
+        "\u201cSTS mismatch ... preflight ... no target deployment continues\u201d: no executed QA/prod preflight wrong-account STS response with zero subsequent mutation assertion; plan cost/environment tests do not exercise that branch."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_cloud_endpoints.py::test_identity_and_mutation_clients_ignore_global_service_and_profile_endpoints"
+        ],
+        "exact_missing_observation": [
+          "\u201cSTS mismatch ... preflight ... no target deployment continues\u201d: no executed QA/prod preflight wrong-account STS response with zero subsequent mutation assertion; plan cost/environment tests do not exercise that branch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-004-01",
+      "required_clause": [
+        "\u201cfirst empty environment ... actual receipts qualify\u201d: ECS, bootstrap/migration and database emptiness are simulated; no actual stopped environment, retained journal establishment or verified admission task receipt."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_fargate_deploy.py::test_maintenance_requires_actual_zero_exit_reviewed_digest_and_source_bound_receipt",
+          "infra/test/test_serverless_deploy.py::test_fresh_runtime_bootstraps_and_migrates_stopped_before_activation"
+        ],
+        "exact_missing_observation": [
+          "\u201cfirst empty environment ... actual receipts qualify\u201d: ECS, bootstrap/migration and database emptiness are simulated; no actual stopped environment, retained journal establishment or verified admission task receipt."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-005-01",
+      "required_clause": [
+        "\u201cdispatcher/cleanup/both consumers qualify ... actual ECS HEALTHY ... publication may proceed\u201d: no real worker progress/consumer evidence tied to an actual ECS task and admitted public rollout; unrelated cost tests are not adopted."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_running_process_without_worker_progress_never_qualifies",
+          "infra/test/test_fargate_deploy.py::test_actual_app_config_dto_passes_auth_identity_and_rejects_wrong_client_or_old_oauth_key"
+        ],
+        "exact_missing_observation": [
+          "\u201cdispatcher/cleanup/both consumers qualify ... actual ECS HEALTHY ... publication may proceed\u201d: no real worker progress/consumer evidence tied to an actual ECS task and admitted public rollout; unrelated cost tests are not adopted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-005-02",
+      "required_clause": [
+        "\u201cpublic enablement fails ... not called successful deployment\u201d: direct health-helper test does not run one-shot orchestration with UNKNOWN deadline and assert zero web publish/final receipt; negative health gate exists but end-to-end software effect remains unasserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_running_process_without_worker_progress_never_qualifies"
+        ],
+        "exact_missing_observation": [
+          "\u201cpublic enablement fails ... not called successful deployment\u201d: direct health-helper test does not run one-shot orchestration with UNKNOWN deadline and assert zero web publish/final receipt; negative health gate exists but end-to-end software effect remains unasserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-006-01",
+      "required_clause": [
+        "\u201cactual protected QA evidence ... promoted production ... separately configured web artifact\u201d: fixtures invent QA probe references and double source-web verification/exporter; no operational QA signed customer run or actual production promotion."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+          "infra/test/test_web_deployment.py::test_production_requires_results_reference_separate_from_artifact_binding",
+          "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache"
+        ],
+        "exact_missing_observation": [
+          "\u201cactual protected QA evidence ... promoted production ... separately configured web artifact\u201d: fixtures invent QA probe references and double source-web verification/exporter; no operational QA signed customer run or actual production promotion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-006-02",
+      "required_clause": [
+        "\u201cforeign/missing web digest ... fails before target deployment\u201d: existing source-web test uses the correct artifact digest and fails for missing RESULTS reference; no wrong/missing artifact digest production-admission test with zero target mutations assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_production_requires_results_reference_separate_from_artifact_binding",
+          "infra/test/test_provenance.py::test_qa_approval_expiry_future_execution_and_non_utc_are_rejected"
+        ],
+        "exact_missing_observation": [
+          "\u201cforeign/missing web digest ... fails before target deployment\u201d: existing source-web test uses the correct artifact digest and fails for missing RESULTS reference; no wrong/missing artifact digest production-admission test with zero target mutations assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-007-01",
+      "required_clause": [
+        "\u201cactual change awaited ... deployed distribution and issued TLS\u201d: live Route53/ACM/CloudFront not executed; fixture waiter success is not real propagation."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_plan_has_no_dns_mutation_and_apply_waits_for_actual_change",
+          "infra/test/test_web_deployment.py::test_late_dns_success_is_refused_without_claiming_rollback"
+        ],
+        "exact_missing_observation": [
+          "\u201cactual change awaited ... deployed distribution and issued TLS\u201d: live Route53/ACM/CloudFront not executed; fixture waiter success is not real propagation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-008-01",
+      "required_clause": [
+        "\u201canother invocation ... separate attempt retains earlier evidence\u201d: test gives a new TemporaryDirectory for each invocation and never repeats the same work-dir with prior reviewed records, so preservation across retry remains unasserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_partial_failures_journal_completed_stages_without_inferred_rollback",
+          "infra/test/test_web_deployment.py::test_conflicting_immutable_object_and_asset_upload_failure_block_entrypoint"
+        ],
+        "exact_missing_observation": [
+          "\u201canother invocation ... separate attempt retains earlier evidence\u201d: test gives a new TemporaryDirectory for each invocation and never repeats the same work-dir with prior reviewed records, so preservation across retry remains unasserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-008-02",
+      "required_clause": [
+        "\u201cpublic access or invalidation ... bounded operation ... no verified-access receipt\u201d: no one-shot failure injection at verify-public-access or CloudFront invalidation waiter with final receipt absence asserted. Separate helper/pub-stage failures do not execute those exact branches."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_partial_failures_journal_completed_stages_without_inferred_rollback",
+          "infra/test/test_web_deployment.py::test_navigation_cannot_omit_required_policy_when_index_is_secure"
+        ],
+        "exact_missing_observation": [
+          "\u201cpublic access or invalidation ... bounded operation ... no verified-access receipt\u201d: no one-shot failure injection at verify-public-access or CloudFront invalidation waiter with final receipt absence asserted. Separate helper/pub-stage failures do not execute those exact branches."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-009-01",
+      "required_clause": [
+        "\u201capproved private operator host ... actual named role ... protected database credentials ... verified independently\u201d: no actual private operator access/assigned roles/admin credential execution. No participant API role or fixture is treated as real operator evidence."
+      ],
+      "types": [
+        "independent_prerequisite_or_exact_scenario_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+        ],
+        "exact_missing_observation": [
+          "\u201capproved private operator host ... actual named role ... protected database credentials ... verified independently\u201d: no actual private operator access/assigned roles/admin credential execution. No participant API role or fixture is treated as real operator evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-009-02",
+      "required_clause": [
+        "Actual deployed runtime database/task write/trust permissions must refuse unauthorized operational authority. Current local PostgreSQL role and LocalStack checks pass, but deployed IAM/task-role impersonation and target database write denial are not executed."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_operator_governance.py::test_cli_dry_run_apply_history_and_authenticated_cloud_principal"
+        ],
+        "exact_missing_observation": [
+          "Actual deployed runtime database/task write/trust permissions must refuse unauthorized operational authority. Current local PostgreSQL role and LocalStack checks pass, but deployed IAM/task-role impersonation and target database write denial are not executed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-015-CLOUD-DEP-010-01",
+      "required_clause": [
+        "\u201cexact pinned admission task verifies journal/control/database ... fresh actual ECS receipt qualifies activation\u201d: mock task metadata and direct helper success do not execute recovery_authority in stopped AWS environment or activate using that actual receipt."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_maintenance.py::test_activation_requires_fresh_exact_independent_admission_task",
+          "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+        ],
+        "exact_missing_observation": [
+          "\u201cexact pinned admission task verifies journal/control/database ... fresh actual ECS receipt qualifies activation\u201d: mock task metadata and direct helper success do not execute recovery_authority in stopped AWS environment or activate using that actual receipt."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

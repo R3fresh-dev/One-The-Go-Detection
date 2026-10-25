@@ -81,3 +81,7 @@ Each remaining clause requires the minimal evidence/action recorded beside that 
 |---|---|---|
 | OTGD-007-AND-SET-004-01 | Authorized new binary — - **WHEN** the authenticated account has current independently released research and qualified channel scope - **THEN** capability screens describe that conditional scope without presenting it as clinical validation | PASS |
 | OTGD-007-AND-SET-004-02 | Legacy or unapproved claim — - **WHEN** a legacy result, local preference or valid-looking manifest claims research authority without current complete admission - **THEN** no score is admitted and the historical measurement-only or unsupported-result boundary remains in force | PASS |
+
+## Future APR-001 verification after authorized correction
+
+Preserve the existing two stable cases. Add direct production About call-path evidence for admitted versus ordinary/guest/offline/revoked/wrong-owner/generation states, reusing existing validated workspaceScope/control-flow assertions where meaningful. This is planned verification, not executed evidence. Do not grant scientific authority from sign-in, preferences, binary version or public configuration. Any changed source invalidates affected evidence and requires the mandated exact-revision gates and fresh affected independent signoffs.

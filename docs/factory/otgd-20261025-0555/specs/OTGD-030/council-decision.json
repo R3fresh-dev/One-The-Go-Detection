@@ -1,0 +1,781 @@
+{
+  "spec_id": "OTGD-030",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-onboarding/spec.md",
+  "canonical_sha256": "da9837761a2034853336456f15dc249daf23aed73a9808bbdf4b1b690eda53ee",
+  "canonical_requirements": [
+    "AND-ONB-001 Accurate first-run scope",
+    "AND-ONB-002 Explicit workspace isolation",
+    "AND-ONB-003 Versioned notice acknowledgment",
+    "AND-ONB-004 Permission timing and offline entry",
+    "AND-ONB-005 Restart-safe progression",
+    "AND-ONB-006 Accessible introduction and parity"
+  ],
+  "canonical_scenarios": [
+    "onb-first-launch-demo",
+    "onb-signed-in-still-measurement-only",
+    "onb-research-configuration-cannot-change-release",
+    "onb-demo-does-not-upload",
+    "onb-cancel-workspace-switch",
+    "onb-guest-demo-never-has-upload-path",
+    "onb-notice-accepted-once",
+    "onb-stale-notice-write",
+    "onb-airplane-mode-demo",
+    "onb-no-permission-prompts",
+    "onb-kill-before-commit",
+    "onb-kill-after-commit",
+    "onb-talkback-and-large-text",
+    "onb-ios-parity"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 8,
+    "NOT_RUN": 1,
+    "PASS": 1,
+    "BLOCKED": 4
+  },
+  "all_current_case_ids": [
+    "OTGD-030-AND-ONB-001-01",
+    "OTGD-030-AND-ONB-001-02",
+    "OTGD-030-AND-ONB-001-03",
+    "OTGD-030-AND-ONB-002-01",
+    "OTGD-030-AND-ONB-002-02",
+    "OTGD-030-AND-ONB-002-03",
+    "OTGD-030-AND-ONB-003-01",
+    "OTGD-030-AND-ONB-003-02",
+    "OTGD-030-AND-ONB-004-01",
+    "OTGD-030-AND-ONB-004-02",
+    "OTGD-030-AND-ONB-005-01",
+    "OTGD-030-AND-ONB-005-02",
+    "OTGD-030-AND-ONB-006-01",
+    "OTGD-030-AND-ONB-006-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-030-AND-ONB-001-01",
+      "requirement_id": "AND-ONB-001",
+      "status": "PARTIAL",
+      "expected_observation": "onb-first-launch-demo \u2014 - **GIVEN** a fresh installation without preferences - **WHEN** the user selects Explore the demo - **THEN** the introduction identifies synthetic sample/sensor values and does not display a probability or create a research enrollment.",
+      "unproved_then_clauses": [
+        "Exact introduction fictional provenance text is not asserted in current browser test, nor is enrollment store unchanged checked at entry. Existing final-record null probability is narrower than full introduction criterion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Current browser traverses welcome/demo/notice and exports guest_demo measurement_only/null probability; research access states No automatic enrollment. Source intro explicitly names synthetic sample/sensor examples."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Exact introduction fictional provenance text is not asserted in current browser test, nor is enrollment store unchanged checked at entry. Existing final-record null probability is narrower than full introduction criterion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-001-02",
+      "requirement_id": "AND-ONB-001",
+      "status": "PARTIAL",
+      "expected_observation": "onb-signed-in-still-measurement-only \u2014 - **GIVEN** an authenticated account with no study authorization - **WHEN** onboarding completes - **THEN** the dashboard shows measurement-only availability and no study capability is inferred from the account or notice receipt.",
+      "unproved_then_clauses": [
+        "Actual authenticated no-study onboarding dashboard lacks a rendered assertion of measurement-only availability and no implied study capability. Current browser journey is guest, not authenticated account."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Ordinary account fixture lands Home; API public config inference_availablefalse and missing study notice/consent cannot confer execution authority."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+        "services/api/tests/test_api.py::test_health_and_compile_time_inference"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "services/api/tests/test_api.py::test_health_and_compile_time_inference"
+        ],
+        "exact_missing_observation": [
+          "Actual authenticated no-study onboarding dashboard lacks a rendered assertion of measurement-only availability and no implied study capability. Current browser journey is guest, not authenticated account."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-001-03",
+      "requirement_id": "AND-ONB-001",
+      "status": "PARTIAL",
+      "expected_observation": "onb-research-configuration-cannot-change-release \u2014 - **GIVEN** an authenticated account and a valid-looking research manifest - **WHEN** onboarding or public configuration reports research availability - **THEN** the release retains inference_available=false and displays no probability or research-estimate capability.",
+      "unproved_then_clauses": [
+        "A valid-looking public model manifest supplied during the actual onboarding transition is not directly exercised to prove no new capability/probability. Current onboarding copy is reconciled and capability/proof guards are tested; this is a residual scenario evidence gap, not the old copy defect."
+      ],
+      "remaining_prerequisite_types": [
+        "software_scenario_evidence"
+      ],
+      "current_assertions_proven": [
+        "Public config returns inference_availablefalse, while independent conditional account model support remains possible under later approved amendments. Client rejects unbound proof and unqualified synthetic records.",
+        "Actual rendered Home/history/welcome conditional software copy, current account/generation and revoked/offline guards, immutable 1.1 proof and legacy/guest refusal. Later admitted 1.1 delta explicitly supersedes blanket legacy 0.1 fixed-false wording."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_health_and_compile_time_inference",
+        "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+        "apps/mobile/tests/result-ui.test.ts::actual Home changes research access with current identity capabilities and immediately with revocation",
+        "apps/mobile/tests/result-ui.test.ts::actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy",
+        "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+        "apps/mobile/tests/result-ui.test.ts::actual welcome describes measurement defaults and separate research authority without enrollment",
+        "apps/mobile/tests/result-presentation.test.ts::current research scope requires live matching authenticated account and generation capabilities",
+        "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_health_and_compile_time_inference",
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+          "apps/mobile/tests/result-ui.test.ts::actual Home changes research access with current identity capabilities and immediately with revocation",
+          "apps/mobile/tests/result-ui.test.ts::actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy",
+          "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+          "apps/mobile/tests/result-ui.test.ts::actual welcome describes measurement defaults and separate research authority without enrollment"
+        ],
+        "exact_missing_observation": [
+          "A valid-looking public model manifest supplied during the actual onboarding transition is not directly exercised to prove no new capability/probability. Current onboarding copy is reconciled and capability/proof guards are tested; this is a residual scenario evidence gap, not the old copy defect."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-002-01",
+      "requirement_id": "AND-ONB-002",
+      "status": "PARTIAL",
+      "expected_observation": "onb-demo-does-not-upload \u2014 - **GIVEN** a completed demo check and a subsequently authenticated account - **WHEN** the user opens the account workspace - **THEN** demo history is absent from account history and no upload request for the demo check is enqueued.",
+      "unproved_then_clauses": [
+        "One actual saved demo then sign-in transition with account history excluding exact guestID and zero enqueued guest operation is not asserted by these separated contexts."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Guest check refuses queue/upload and account-empty workspace has no checks; controller saves guest with no queue."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in",
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "One actual saved demo then sign-in transition with account history excluding exact guestID and zero enqueued guest operation is not asserted by these separated contexts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-002-02",
+      "requirement_id": "AND-ONB-002",
+      "status": "NOT_RUN",
+      "expected_observation": "onb-cancel-workspace-switch \u2014 - **GIVEN** an unfinished demo check - **WHEN** the user selects Sign in and then Stay in check - **THEN** the check remains visible with unchanged identity and no authentication browser is opened; if a native run had already ended to leave capture, it remains ended with that fact displayed.",
+      "unproved_then_clauses": [
+        "No named current acceptance test invokes Sign in then Stay in check with unchanged checkID, no auth browser, and explicit previously-ended native run fact. Existing profile-cancel/browser reload is another action."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Domain enforces one owned draft and controlled native Stop preserves terminal completion; source offers stay/leave confirmation."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion"
+        ],
+        "exact_missing_observation": [
+          "No named current acceptance test invokes Sign in then Stay in check with unchanged checkID, no auth browser, and explicit previously-ended native run fact. Existing profile-cancel/browser reload is another action."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-002-03",
+      "requirement_id": "AND-ONB-002",
+      "status": "PARTIAL",
+      "expected_observation": "onb-guest-demo-never-has-upload-path \u2014 - **GIVEN** a guest demo check and an authenticated local/QA synthetic project both exist - **WHEN** the user opens the guest check, signs in, or reconnects - **THEN** the guest check remains local and has no upload action; a separate account-owned synthetic fixture requires its own creation and upload choice.",
+      "unproved_then_clauses": [
+        "Simultaneous guest and account-owned fixture followed by sign-in/reconnect requires a direct no guest upload action/no queue assertion plus distinct fixtureID. Current unit tests separate those workspaces."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Guest upload is explicitly rejected; isolated account engineering fixture is separately created and never shares guest ownership."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in",
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Simultaneous guest and account-owned fixture followed by sign-in/reconnect requires a direct no guest upload action/no queue assertion plus distinct fixtureID. Current unit tests separate those workspaces."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-003-01",
+      "requirement_id": "AND-ONB-003",
+      "status": "PARTIAL",
+      "expected_observation": "onb-notice-accepted-once \u2014 - **GIVEN** the current notice is visible and its checkbox is initially unchecked - **WHEN** the user checks it and selects Continue - **THEN** one dated receipt is saved, the dashboard opens, and repeating the submission creates no duplicate receipt.",
+      "unproved_then_clauses": [
+        "One durable dated receipt and repeated successful acknowledgment creating no duplicate server receipt is not asserted; lost first reply unit transport does not count real duplicate receipts."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Browser notice starts unchecked/disabled and explicit checkbox opens Home. Controller sends exact displayed sha/version/gen; lost-response retry retains timestamp/key/body."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::notice and context components require separate explicit acknowledgments",
+        "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization",
+        "apps/mobile/tests/sync.test.ts::lost notice acknowledgment response replays its durable timestamp and key before unblocking"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::notice and context components require separate explicit acknowledgments",
+          "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization",
+          "apps/mobile/tests/sync.test.ts::lost notice acknowledgment response replays its durable timestamp and key before unblocking"
+        ],
+        "exact_missing_observation": [
+          "One durable dated receipt and repeated successful acknowledgment creating no duplicate server receipt is not asserted; lost first reply unit transport does not count real duplicate receipts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-003-02",
+      "requirement_id": "AND-ONB-003",
+      "status": "PARTIAL",
+      "expected_observation": "onb-stale-notice-write \u2014 - **GIVEN** the server requires a newer notice than the bundled accepted version - **WHEN** the app attempts an account write - **THEN** the write remains pending, the app offers the newer notice, and neither a fabricated acknowledgment nor a research-consent record is sent.",
+      "unproved_then_clauses": [
+        "Newer server notice versus bundled accepted old version needs a queued write/pending state/new notice UI assertion and zero fabricated acknowledgment/consent requests. Reviewed test only clears acknowledgment, not mismatched versions."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "API write without current notice403; client blocks save without acknowledgment and sends exact displayed notice version/hash."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_no_write_without_current_notice",
+        "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_no_write_without_current_notice",
+          "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization"
+        ],
+        "exact_missing_observation": [
+          "Newer server notice versus bundled accepted old version needs a queued write/pending state/new notice UI assertion and zero fabricated acknowledgment/consent requests. Reviewed test only clears acknowledgment, not mismatched versions."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-004-02",
+      "requirement_id": "AND-ONB-004",
+      "status": "PARTIAL",
+      "expected_observation": "onb-no-permission-prompts \u2014 - **GIVEN** every OS permission is denied - **WHEN** all onboarding screens are traversed - **THEN** no permission dialog appears and onboarding is not blocked by those denials.",
+      "unproved_then_clauses": [
+        "Actual installed OS with every permission denied traversing all onboarding and no permission dialog is unexecuted. Browser spies do not establish OS denial lifecycle."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Browser guest and fictional preview run with zero camera/Bluetooth calls; native task unavailable is visible and does not block onboarding."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Actual installed OS with every permission denied traversing all onboarding and no permission dialog is unexecuted. Browser spies do not establish OS denial lifecycle."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-005-01",
+      "requirement_id": "AND-ONB-005",
+      "status": "BLOCKED",
+      "expected_observation": "onb-kill-before-commit \u2014 - **GIVEN** acknowledgment persistence has not completed - **WHEN** the process is terminated and relaunched - **THEN** the notice remains unacknowledged and no account write is sent.",
+      "unproved_then_clauses": [
+        "Native process termination before acknowledgment transaction commit and relaunch, unacknowledged notice and zero account writes is not executed. Controlled Promise/lost reply is not process death."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Browser reload returns first-use and never claims native encrypted persistence; queue logic does not mark lost notice reply acknowledged."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::lost notice acknowledgment response replays its durable timestamp and key before unblocking",
+        "apps/mobile/e2e/mobile.spec.ts::profile errors remain actionable and browser reload never pretends encrypted persistence"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::lost notice acknowledgment response replays its durable timestamp and key before unblocking",
+          "apps/mobile/e2e/mobile.spec.ts::profile errors remain actionable and browser reload never pretends encrypted persistence"
+        ],
+        "exact_missing_observation": [
+          "Native process termination before acknowledgment transaction commit and relaunch, unacknowledged notice and zero account writes is not executed. Controlled Promise/lost reply is not process death."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-005-02",
+      "requirement_id": "AND-ONB-005",
+      "status": "BLOCKED",
+      "expected_observation": "onb-kill-after-commit \u2014 - **GIVEN** the acknowledgment transaction completed before process termination - **WHEN** the app relaunches - **THEN** the chosen workspace opens with the existing receipt and no duplicate onboarding event.",
+      "unproved_then_clauses": [
+        "Native process termination after actual acknowledgment commit and relaunch with same dated receipt/no duplicate onboarding event has no admitted actual OS execution."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Controlled native store reopen preserves an ordinary serialized workspace; controller retains accepted hash."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization",
+        "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization",
+          "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+        ],
+        "exact_missing_observation": [
+          "Native process termination after actual acknowledgment commit and relaunch with same dated receipt/no duplicate onboarding event has no admitted actual OS execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-006-01",
+      "requirement_id": "AND-ONB-006",
+      "status": "BLOCKED",
+      "expected_observation": "onb-talkback-and-large-text \u2014 - **GIVEN** TalkBack and 200% font scaling are enabled on a 360 dp-wide Android screen - **WHEN** the user traverses welcome and the notice - **THEN** each action is reachable, its role/label is announced, and scrolling exposes the entire notice and Continue control.",
+      "unproved_then_clauses": [
+        "Actual Android TalkBack+200%font360dp welcome/entire notice/Continue traversal is not executed. DOM role checks cannot establish spoken announcements or native scrolling."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "DOM component tests assert roles and reachable controls at two viewports; exact notice text hash is verified server-side."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::notice and context components require separate explicit acknowledgments",
+        "services/api/tests/test_api.py::test_notice_exact_text_hash"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::notice and context components require separate explicit acknowledgments",
+          "services/api/tests/test_api.py::test_notice_exact_text_hash"
+        ],
+        "exact_missing_observation": [
+          "Actual Android TalkBack+200%font360dp welcome/entire notice/Continue traversal is not executed. DOM role checks cannot establish spoken announcements or native scrolling."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-006-02",
+      "requirement_id": "AND-ONB-006",
+      "status": "BLOCKED",
+      "expected_observation": "onb-ios-parity \u2014 - **GIVEN** a fresh iOS installation with Reduce Motion enabled - **WHEN** demo onboarding completes using VoiceOver - **THEN** the same workspace and notice states are stored without required animation or a camera/Bluetooth prompt.",
+      "unproved_then_clauses": [
+        "Actual fresh iOS VoiceOver+Reduce Motion onboarding, stored state and no native permission prompt is unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Fictional browser guards avoid camera/Bluetooth; shared workspace/notice logic is exercised.",
+        "ActualDOMroute/dialog/backfocus, renderedmodalanimation preference/system, destructive light/dark normal/pressed compositecontrast atbothviewports.",
+        "Current DOM focus restoration, modal semantics, contrast and reduced-motion assertions are executed; no actual TalkBack/VoiceOver/native OS claim."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+        "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+        "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+          "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+          "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+        ],
+        "exact_missing_observation": [
+          "Actual fresh iOS VoiceOver+Reduce Motion onboarding, stored state and no native permission prompt is unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-030-AND-ONB-001-01",
+      "required_clause": [
+        "Exact introduction fictional provenance text is not asserted in current browser test, nor is enrollment store unchanged checked at entry. Existing final-record null probability is narrower than full introduction criterion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Exact introduction fictional provenance text is not asserted in current browser test, nor is enrollment store unchanged checked at entry. Existing final-record null probability is narrower than full introduction criterion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-001-02",
+      "required_clause": [
+        "Actual authenticated no-study onboarding dashboard lacks a rendered assertion of measurement-only availability and no implied study capability. Current browser journey is guest, not authenticated account."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "services/api/tests/test_api.py::test_health_and_compile_time_inference"
+        ],
+        "exact_missing_observation": [
+          "Actual authenticated no-study onboarding dashboard lacks a rendered assertion of measurement-only availability and no implied study capability. Current browser journey is guest, not authenticated account."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-001-03",
+      "required_clause": [
+        "A valid-looking public model manifest supplied during the actual onboarding transition is not directly exercised to prove no new capability/probability. Current onboarding copy is reconciled and capability/proof guards are tested; this is a residual scenario evidence gap, not the old copy defect."
+      ],
+      "types": [
+        "software_scenario_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_health_and_compile_time_inference",
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+          "apps/mobile/tests/result-ui.test.ts::actual Home changes research access with current identity capabilities and immediately with revocation",
+          "apps/mobile/tests/result-ui.test.ts::actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy",
+          "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+          "apps/mobile/tests/result-ui.test.ts::actual welcome describes measurement defaults and separate research authority without enrollment"
+        ],
+        "exact_missing_observation": [
+          "A valid-looking public model manifest supplied during the actual onboarding transition is not directly exercised to prove no new capability/probability. Current onboarding copy is reconciled and capability/proof guards are tested; this is a residual scenario evidence gap, not the old copy defect."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-002-01",
+      "required_clause": [
+        "One actual saved demo then sign-in transition with account history excluding exact guestID and zero enqueued guest operation is not asserted by these separated contexts."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "One actual saved demo then sign-in transition with account history excluding exact guestID and zero enqueued guest operation is not asserted by these separated contexts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-002-02",
+      "required_clause": [
+        "No named current acceptance test invokes Sign in then Stay in check with unchanged checkID, no auth browser, and explicit previously-ended native run fact. Existing profile-cancel/browser reload is another action."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion"
+        ],
+        "exact_missing_observation": [
+          "No named current acceptance test invokes Sign in then Stay in check with unchanged checkID, no auth browser, and explicit previously-ended native run fact. Existing profile-cancel/browser reload is another action."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-002-03",
+      "required_clause": [
+        "Simultaneous guest and account-owned fixture followed by sign-in/reconnect requires a direct no guest upload action/no queue assertion plus distinct fixtureID. Current unit tests separate those workspaces."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Simultaneous guest and account-owned fixture followed by sign-in/reconnect requires a direct no guest upload action/no queue assertion plus distinct fixtureID. Current unit tests separate those workspaces."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-003-01",
+      "required_clause": [
+        "One durable dated receipt and repeated successful acknowledgment creating no duplicate server receipt is not asserted; lost first reply unit transport does not count real duplicate receipts."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::notice and context components require separate explicit acknowledgments",
+          "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization",
+          "apps/mobile/tests/sync.test.ts::lost notice acknowledgment response replays its durable timestamp and key before unblocking"
+        ],
+        "exact_missing_observation": [
+          "One durable dated receipt and repeated successful acknowledgment creating no duplicate server receipt is not asserted; lost first reply unit transport does not count real duplicate receipts."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-003-02",
+      "required_clause": [
+        "Newer server notice versus bundled accepted old version needs a queued write/pending state/new notice UI assertion and zero fabricated acknowledgment/consent requests. Reviewed test only clears acknowledgment, not mismatched versions."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_no_write_without_current_notice",
+          "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization"
+        ],
+        "exact_missing_observation": [
+          "Newer server notice versus bundled accepted old version needs a queued write/pending state/new notice UI assertion and zero fabricated acknowledgment/consent requests. Reviewed test only clears acknowledgment, not mismatched versions."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-004-02",
+      "required_clause": [
+        "Actual installed OS with every permission denied traversing all onboarding and no permission dialog is unexecuted. Browser spies do not establish OS denial lifecycle."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Actual installed OS with every permission denied traversing all onboarding and no permission dialog is unexecuted. Browser spies do not establish OS denial lifecycle."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-005-01",
+      "required_clause": [
+        "Native process termination before acknowledgment transaction commit and relaunch, unacknowledged notice and zero account writes is not executed. Controlled Promise/lost reply is not process death."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::lost notice acknowledgment response replays its durable timestamp and key before unblocking",
+          "apps/mobile/e2e/mobile.spec.ts::profile errors remain actionable and browser reload never pretends encrypted persistence"
+        ],
+        "exact_missing_observation": [
+          "Native process termination before acknowledgment transaction commit and relaunch, unacknowledged notice and zero account writes is not executed. Controlled Promise/lost reply is not process death."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-005-02",
+      "required_clause": [
+        "Native process termination after actual acknowledgment commit and relaunch with same dated receipt/no duplicate onboarding event has no admitted actual OS execution."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::notice acknowledgment is explicit and keeps the exact displayed version through account synchronization",
+          "apps/mobile/tests/native-storage.test.ts::concurrent native partition initialization keeps one keystore key and separate handles, then reopened records remain readable"
+        ],
+        "exact_missing_observation": [
+          "Native process termination after actual acknowledgment commit and relaunch with same dated receipt/no duplicate onboarding event has no admitted actual OS execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-006-01",
+      "required_clause": [
+        "Actual Android TalkBack+200%font360dp welcome/entire notice/Continue traversal is not executed. DOM role checks cannot establish spoken announcements or native scrolling."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::notice and context components require separate explicit acknowledgments",
+          "services/api/tests/test_api.py::test_notice_exact_text_hash"
+        ],
+        "exact_missing_observation": [
+          "Actual Android TalkBack+200%font360dp welcome/entire notice/Continue traversal is not executed. DOM role checks cannot establish spoken announcements or native scrolling."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-030-AND-ONB-006-02",
+      "required_clause": [
+        "Actual fresh iOS VoiceOver+Reduce Motion onboarding, stored state and no native permission prompt is unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+          "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+          "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+        ],
+        "exact_missing_observation": [
+          "Actual fresh iOS VoiceOver+Reduce Motion onboarding, stored state and no native permission prompt is unexecuted. Current DOM focus/reduced-motion software repairs have current named observations; actual OS scenario remains unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

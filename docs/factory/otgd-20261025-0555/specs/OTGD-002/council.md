@@ -37,3 +37,13 @@ All required current local7/CI14 gates passed. Exact current criteria and unprov
 | engineering | PASS | /root/replacement_engineering |
 
 The exact unchanged review rows are preserved in [final-reviews.json](final-reviews.json). Independent approver /root/final_approver is active; no final council decision is recorded in checkpoint13. Correction2/2, recovery0/3. Source and metadata identities are separate under D011v1.
+
+## Final independent council disposition — checkpoint14
+
+**PASS — IMPLEMENTATION**, issued by `/root/final_approver`, a fresh independent OpenAI gpt-6.1-sol/high context. Source `e89897cc852a111b131eaf5c2caaf163ef201a48`; canonical SHA256 `c8e2d63aad6f7f973a181d917ef645e8d32b012ca41df1f2abd7d7a0b7525fe4`.
+
+PASS for complete canonical AND-DASH-001 software amendment. Actual Home JSX and workspaceScope assertions exercise active matching account/generation/current capabilities, revocation, offline, deleting and guest refusal. Verified immutable result/proof refusal prevents legacy/local/synthetic authority. Home preserves snapshot acquisition time; shared rendering and strict typed missingness/provenance controls retain unavailable channels. No surrounding dashboard/native/study approval follows.
+
+The authoritative unchanged per-spec result, precise approved scope, excluded claims and next actions are in [council-decision.json](council-decision.json); the complete [independent report](../../reports/candidate-e89897c/reviews/approver/report.md) and release manifest retain all source/evidence bindings. Overall application disposition is NEEDS_HUMAN; APP_VERIFIED and RELEASE_READY are withheld. Only narrow canonical amendment scopes002/004 pass; separate broad dashboard/history/native specs remain subject to their own decisions.
+
+All7 current local and14 CI gates passed. The original six3/44 reports and782 scenario observations remain preserved; D012v1 addenda supersede only OTGD-007 after the approver identified APR-001. Effective six-review and final council counts are2PASS/45BLOCKED. Correction2/2 is exhausted; recovery0/3 remains untested. No merge/deployment/participant permission is granted.

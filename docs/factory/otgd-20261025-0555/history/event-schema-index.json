@@ -464,6 +464,14 @@
       "index_event_id": "otgd-20261025-0555-final-six-reviews",
       "stored_timestamp": "2026-10-25T11:41:39.593063+00:00",
       "stored_type": "REVIEWS_RELEASED"
+    },
+    {
+      "line": 59,
+      "raw_line_sha256": "3ba5f4e84b1d0a9324bd8a6f801bc4f08205af6c6401b18f5bf07134168d8503",
+      "stored_event_id": "otgd-20261025-0555-checkpoint14-final-needs-human",
+      "index_event_id": "otgd-20261025-0555-checkpoint14-final-needs-human",
+      "stored_timestamp": "2026-10-25T11:57:08.311962+00:00",
+      "stored_type": "DELIBERATE_QUALITY_HOLD"
     }
   ]
 }

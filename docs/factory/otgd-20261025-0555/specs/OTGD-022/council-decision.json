@@ -1,0 +1,505 @@
+{
+  "spec_id": "OTGD-022",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-data-export/spec.md",
+  "canonical_sha256": "2e02ae2e4ea75c4e789b29399dee2b6e4206f12ecb81630b04ca54c4a6e1ef30",
+  "canonical_requirements": [
+    "AND-EXP-001 Require a deliberate scope and action",
+    "AND-EXP-002 Enforce ownership on selection and download",
+    "AND-EXP-003 Preserve evidence semantics",
+    "AND-EXP-004 Separate raw-data authorization",
+    "AND-EXP-005 Bound availability and clean temporary copies",
+    "AND-EXP-006 Make jobs idempotent and failures visible",
+    "AND-EXP-007 Prevent archive path and memory abuse"
+  ],
+  "canonical_scenarios": [
+    "Local single-check export",
+    "Confirmation is canceled",
+    "Own synced records",
+    "Another user's session is injected",
+    "Censored saliva result",
+    "Historical reanalysis",
+    "Default export",
+    "Raw consent is revoked during processing",
+    "Expired export is reopened",
+    "Share sheet is canceled",
+    "Export request response is lost",
+    "Artifact verification fails",
+    "Profile text resembles a path",
+    "Export exceeds its configured bound"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 4,
+    "NOT_RUN": 4,
+    "PASS": 6
+  },
+  "all_current_case_ids": [
+    "OTGD-022-AND-EXP-001-01",
+    "OTGD-022-AND-EXP-001-02",
+    "OTGD-022-AND-EXP-002-01",
+    "OTGD-022-AND-EXP-002-02",
+    "OTGD-022-AND-EXP-003-01",
+    "OTGD-022-AND-EXP-003-02",
+    "OTGD-022-AND-EXP-004-01",
+    "OTGD-022-AND-EXP-004-02",
+    "OTGD-022-AND-EXP-005-01",
+    "OTGD-022-AND-EXP-005-02",
+    "OTGD-022-AND-EXP-006-01",
+    "OTGD-022-AND-EXP-006-02",
+    "OTGD-022-AND-EXP-007-01",
+    "OTGD-022-AND-EXP-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-022-AND-EXP-001-01",
+      "requirement_id": "AND-EXP-001",
+      "status": "PARTIAL",
+      "expected_observation": "Local single-check export \u2014 - **GIVEN** History selects one check while unrelated records also exist - **WHEN** the customer confirms This device for that exact selection - **THEN** only the selected check, its frozen profile/context, attempts, alcohol, and linked results are exported locally, with no cloud mutation or unrelated profile revision.",
+      "unproved_then_clauses": [
+        "History-selected single-check local export with unrelated retained records must preserve every linked frozen profile/context/attempt/alcohol/result and cause zero cloud mutation. Direct generator scoping and the visible one-record journey are proved separately; complete selected-with-unrelated-records transport/association conjunction is not retained as direct evidence."
+      ],
+      "remaining_prerequisite_types": [
+        "software_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Multi-check unit archive excludes second check and unrelated current profile; browser explicit confirmation creates one-check local archive with context/manifest and bounded hash-verified entries, no cloud service succeeds because API routes aborted.",
+        "ExistingHRcache exactdigest/view/epoch/account/gen ephemeralread, late/offline/denial/mismatch refusal; separateexportadmission atassembly/finalrelease, actualResultDOMwithprepopulatedHR."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::single-check export preserves exact scope and excludes unrelated current profile",
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+        "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+        "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+        "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+        "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+        "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::single-check export preserves exact scope and excludes unrelated current profile",
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+          "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+          "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+          "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+          "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation"
+        ],
+        "exact_missing_observation": [
+          "History-selected single-check local export with unrelated retained records must preserve every linked frozen profile/context/attempt/alcohol/result and cause zero cloud mutation. Direct generator scoping and the visible one-record journey are proved separately; complete selected-with-unrelated-records transport/association conjunction is not retained as direct evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-001-02",
+      "requirement_id": "AND-EXP-001",
+      "status": "NOT_RUN",
+      "expected_observation": "Confirmation is canceled \u2014 - **GIVEN** the export summary sheet - **WHEN** the customer cancels - **THEN** no job/file/share action is created.",
+      "unproved_then_clauses": [
+        "\u201ccustomer cancels [export summary] ... no job/file/share action is created\u201d: no observed export-summary cancellation with zero export job/file/share effects."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Related executed cancellation test concerns automatic retry and local deletion, not export confirmation."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+        ],
+        "exact_missing_observation": [
+          "\u201ccustomer cancels [export summary] ... no job/file/share action is created\u201d: no observed export-summary cancellation with zero export job/file/share effects."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-002-02",
+      "requirement_id": "AND-EXP-002",
+      "status": "NOT_RUN",
+      "expected_observation": "Another user's session is injected \u2014 - **GIVEN** an export selection containing a foreign UUID - **WHEN** the request is validated - **THEN** it is rejected without including or disclosing the foreign record.",
+      "unproved_then_clauses": [
+        "\u201cexport selection containing foreign UUID ... rejected without including or disclosing foreign record\u201d: no executed structured selection-injection request with foreign owned session and safe denial asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Related tests deny foreign downloads and raw artifact IDs; they do not submit foreign session UUID in structured export selection."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_export_scope_and_authenticated_download",
+        "services/api/tests/test_raw_export.py::test_scope_revision_hash_owner_and_confirmation_clock_rechecked"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_export_scope_and_authenticated_download",
+          "services/api/tests/test_raw_export.py::test_scope_revision_hash_owner_and_confirmation_clock_rechecked"
+        ],
+        "exact_missing_observation": [
+          "\u201cexport selection containing foreign UUID ... rejected without including or disclosing foreign record\u201d: no executed structured selection-injection request with foreign owned session and safe denial asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-005-01",
+      "requirement_id": "AND-EXP-005",
+      "status": "PARTIAL",
+      "expected_observation": "Expired export is reopened \u2014 - **GIVEN** an export past expires_at - **WHEN** the customer opens it - **THEN** no new valid ticket is issued and a new export action is offered.",
+      "unproved_then_clauses": [
+        "\u201cnew export action is offered\u201d when reopening expired customer job: no UI/controller expired-job test asserts new export action; manage.tsx renders expired badge and general privacy export controls but job-specific offer is not executed. Do not infer a behavior defect from missing assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Expired API export gives410; raw expired status has no raw_export/download_path, so no new valid gateway metadata disclosed."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_api.py::test_export_scope_and_authenticated_download",
+        "services/api/tests/test_raw_export.py::test_actual_http_async_worker_zip_download_replay_expiry_and_foreign_denial"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_export_scope_and_authenticated_download",
+          "services/api/tests/test_raw_export.py::test_actual_http_async_worker_zip_download_replay_expiry_and_foreign_denial"
+        ],
+        "exact_missing_observation": [
+          "\u201cnew export action is offered\u201d when reopening expired customer job: no UI/controller expired-job test asserts new export action; manage.tsx renders expired badge and general privacy export controls but job-specific offer is not executed. Do not infer a behavior defect from missing assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-005-02",
+      "requirement_id": "AND-EXP-005",
+      "status": "NOT_RUN",
+      "expected_observation": "Share sheet is canceled \u2014 - **GIVEN** a downloaded temporary export - **WHEN** the share sheet returns without sharing - **THEN** the app schedules immediate cleanup and does not claim it sent the file anywhere.",
+      "unproved_then_clauses": [
+        "\u201cshare sheet returns without sharing ... immediate cleanup ... does not claim it sent file\u201d: no executed cancel-return native-sharing/temporary-file test. OS sheet and app-private deletion behavior not established by browser downloads."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Related integrity test rejects tampered archive only; native sharing.native.ts finally deletes temporary file after shareAsync returns (source inspected)."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::export rejects file tampering and traversal or hidden files before sharing"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::export rejects file tampering and traversal or hidden files before sharing"
+        ],
+        "exact_missing_observation": [
+          "\u201cshare sheet returns without sharing ... immediate cleanup ... does not claim it sent file\u201d: no executed cancel-return native-sharing/temporary-file test. OS sheet and app-private deletion behavior not established by browser downloads."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-006-02",
+      "requirement_id": "AND-EXP-006",
+      "status": "PARTIAL",
+      "expected_observation": "Artifact verification fails \u2014 - **GIVEN** a selected permitted artifact whose bytes fail the stored hash - **WHEN** the worker assembles the export - **THEN** the job fails with a safe reason and no complete-download state is exposed.",
+      "unproved_then_clauses": [
+        "\u201cjob fails with safe reason and no complete-download state is exposed\u201d: test calls read_sources directly rather than worker.run_job and does not assert failed job receipt/failure_code/download denial after a selected artifact hash mismatch."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Source read rejects incorrect returned version/length/type/hash or read-limit excess, closes stream and returns no partial files."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_raw_export.py::test_version_length_type_hash_and_read_limit_failure_never_returns_partial_file"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_raw_export.py::test_version_length_type_hash_and_read_limit_failure_never_returns_partial_file"
+        ],
+        "exact_missing_observation": [
+          "\u201cjob fails with safe reason and no complete-download state is exposed\u201d: test calls read_sources directly rather than worker.run_job and does not assert failed job receipt/failure_code/download denial after a selected artifact hash mismatch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-007-01",
+      "requirement_id": "AND-EXP-007",
+      "status": "NOT_RUN",
+      "expected_observation": "Profile text resembles a path \u2014 - **GIVEN** text containing ../ or absolute-path characters in user data - **WHEN** an export is generated - **THEN** it remains JSON content and cannot control an archive entry name.",
+      "unproved_then_clauses": [
+        "\u201ctext containing ../ or absolute-path characters in user data ... remains JSON content ... cannot control entry name\u201d: existing path-negative test supplies a malicious ZIP entry, not pathlike text inside valid user data passed through export generation."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Traversal ZIP entry is rejected and empty metadata export works. Generator source uses fixed prefixes and generated IDs."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::export rejects file tampering and traversal or hidden files before sharing",
+        "apps/mobile/tests/domain.test.ts::empty all-data export contains profile metadata and no invented check"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::export rejects file tampering and traversal or hidden files before sharing",
+          "apps/mobile/tests/domain.test.ts::empty all-data export contains profile metadata and no invented check"
+        ],
+        "exact_missing_observation": [
+          "\u201ctext containing ../ or absolute-path characters in user data ... remains JSON content ... cannot control entry name\u201d: existing path-negative test supplies a malicious ZIP entry, not pathlike text inside valid user data passed through export generation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-007-02",
+      "requirement_id": "AND-EXP-007",
+      "status": "PARTIAL",
+      "expected_observation": "Export exceeds its configured bound \u2014 - **GIVEN** selected data larger than the supported single-export limit - **WHEN** the job validates size - **THEN** it reports an explicit size failure and never silently omits records or invents an unimplemented partitioning workflow.",
+      "unproved_then_clauses": [
+        "\u201creports explicit size failure\u201d: worker tests assert run_job failed and absence of written archive, but do not assert exposed failed-job failure_code/actionable customer message identifies size overflow instead of generic failure."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Total-byte helper includes manifest and raises EXPORT_TOO_LARGE at 50MiB+manifest; oversized structured record/profile jobs fail with zero export objects; no truncation/partition code adopted."
+      ],
+      "current_source_assertion_refs": [
+        "services/api/tests/test_report_revisions.py::test_archive_budget_includes_manifest_bytes_without_a_manifest_record_cap",
+        "services/api/tests/test_report_revisions.py::test_combined_check_record_over_512k_refuses_whole_export_before_object_write",
+        "services/api/tests/test_report_revisions.py::test_profile_history_file_over_512k_refuses_whole_export"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_report_revisions.py::test_archive_budget_includes_manifest_bytes_without_a_manifest_record_cap",
+          "services/api/tests/test_report_revisions.py::test_combined_check_record_over_512k_refuses_whole_export_before_object_write",
+          "services/api/tests/test_report_revisions.py::test_profile_history_file_over_512k_refuses_whole_export"
+        ],
+        "exact_missing_observation": [
+          "\u201creports explicit size failure\u201d: worker tests assert run_job failed and absence of written archive, but do not assert exposed failed-job failure_code/actionable customer message identifies size overflow instead of generic failure."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-022-AND-EXP-001-01",
+      "required_clause": [
+        "History-selected single-check local export with unrelated retained records must preserve every linked frozen profile/context/attempt/alcohol/result and cause zero cloud mutation. Direct generator scoping and the visible one-record journey are proved separately; complete selected-with-unrelated-records transport/association conjunction is not retained as direct evidence."
+      ],
+      "types": [
+        "software_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::single-check export preserves exact scope and excludes unrelated current profile",
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+          "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+          "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+          "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+          "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation"
+        ],
+        "exact_missing_observation": [
+          "History-selected single-check local export with unrelated retained records must preserve every linked frozen profile/context/attempt/alcohol/result and cause zero cloud mutation. Direct generator scoping and the visible one-record journey are proved separately; complete selected-with-unrelated-records transport/association conjunction is not retained as direct evidence."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-001-02",
+      "required_clause": [
+        "\u201ccustomer cancels [export summary] ... no job/file/share action is created\u201d: no observed export-summary cancellation with zero export job/file/share effects."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::confirmation components never enable retry or erase unsynced records on cancellation"
+        ],
+        "exact_missing_observation": [
+          "\u201ccustomer cancels [export summary] ... no job/file/share action is created\u201d: no observed export-summary cancellation with zero export job/file/share effects."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-002-02",
+      "required_clause": [
+        "\u201cexport selection containing foreign UUID ... rejected without including or disclosing foreign record\u201d: no executed structured selection-injection request with foreign owned session and safe denial asserted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_export_scope_and_authenticated_download",
+          "services/api/tests/test_raw_export.py::test_scope_revision_hash_owner_and_confirmation_clock_rechecked"
+        ],
+        "exact_missing_observation": [
+          "\u201cexport selection containing foreign UUID ... rejected without including or disclosing foreign record\u201d: no executed structured selection-injection request with foreign owned session and safe denial asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-005-01",
+      "required_clause": [
+        "\u201cnew export action is offered\u201d when reopening expired customer job: no UI/controller expired-job test asserts new export action; manage.tsx renders expired badge and general privacy export controls but job-specific offer is not executed. Do not infer a behavior defect from missing assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_api.py::test_export_scope_and_authenticated_download",
+          "services/api/tests/test_raw_export.py::test_actual_http_async_worker_zip_download_replay_expiry_and_foreign_denial"
+        ],
+        "exact_missing_observation": [
+          "\u201cnew export action is offered\u201d when reopening expired customer job: no UI/controller expired-job test asserts new export action; manage.tsx renders expired badge and general privacy export controls but job-specific offer is not executed. Do not infer a behavior defect from missing assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-005-02",
+      "required_clause": [
+        "\u201cshare sheet returns without sharing ... immediate cleanup ... does not claim it sent file\u201d: no executed cancel-return native-sharing/temporary-file test. OS sheet and app-private deletion behavior not established by browser downloads."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::export rejects file tampering and traversal or hidden files before sharing"
+        ],
+        "exact_missing_observation": [
+          "\u201cshare sheet returns without sharing ... immediate cleanup ... does not claim it sent file\u201d: no executed cancel-return native-sharing/temporary-file test. OS sheet and app-private deletion behavior not established by browser downloads."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-006-02",
+      "required_clause": [
+        "\u201cjob fails with safe reason and no complete-download state is exposed\u201d: test calls read_sources directly rather than worker.run_job and does not assert failed job receipt/failure_code/download denial after a selected artifact hash mismatch."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_raw_export.py::test_version_length_type_hash_and_read_limit_failure_never_returns_partial_file"
+        ],
+        "exact_missing_observation": [
+          "\u201cjob fails with safe reason and no complete-download state is exposed\u201d: test calls read_sources directly rather than worker.run_job and does not assert failed job receipt/failure_code/download denial after a selected artifact hash mismatch."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-007-01",
+      "required_clause": [
+        "\u201ctext containing ../ or absolute-path characters in user data ... remains JSON content ... cannot control entry name\u201d: existing path-negative test supplies a malicious ZIP entry, not pathlike text inside valid user data passed through export generation."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::export rejects file tampering and traversal or hidden files before sharing",
+          "apps/mobile/tests/domain.test.ts::empty all-data export contains profile metadata and no invented check"
+        ],
+        "exact_missing_observation": [
+          "\u201ctext containing ../ or absolute-path characters in user data ... remains JSON content ... cannot control entry name\u201d: existing path-negative test supplies a malicious ZIP entry, not pathlike text inside valid user data passed through export generation."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-022-AND-EXP-007-02",
+      "required_clause": [
+        "\u201creports explicit size failure\u201d: worker tests assert run_job failed and absence of written archive, but do not assert exposed failed-job failure_code/actionable customer message identifies size overflow instead of generic failure."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "services/api/tests/test_report_revisions.py::test_archive_budget_includes_manifest_bytes_without_a_manifest_record_cap",
+          "services/api/tests/test_report_revisions.py::test_combined_check_record_over_512k_refuses_whole_export_before_object_write",
+          "services/api/tests/test_report_revisions.py::test_profile_history_file_over_512k_refuses_whole_export"
+        ],
+        "exact_missing_observation": [
+          "\u201creports explicit size failure\u201d: worker tests assert run_job failed and absence of written archive, but do not assert exposed failed-job failure_code/actionable customer message identifies size overflow instead of generic failure."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

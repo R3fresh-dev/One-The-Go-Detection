@@ -1,0 +1,980 @@
+{
+  "spec_id": "OTGD-021",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-dashboard/spec.md",
+  "canonical_sha256": "c756e1eb65e8b3e9929a58c4c191e7c179529f8cd238da6e9cd6b5403439105e",
+  "canonical_requirements": [
+    "AND-DASH-001 Honest scope and provenance",
+    "AND-DASH-002 Single check entry and authorization",
+    "AND-DASH-003 Explicit draft resumption",
+    "AND-DASH-004 Current device state",
+    "AND-DASH-005 Offline availability and synchronization truth",
+    "AND-DASH-006 Refresh and workspace race control",
+    "AND-DASH-007 Accessible navigation and iOS parity"
+  ],
+  "canonical_scenarios": [
+    "dash-demo-home",
+    "dash-old-check",
+    "dash-double-start-tap",
+    "dash-gated-capture",
+    "dash-frozen-profile-at-creation",
+    "dash-resume-saliva-draft",
+    "dash-task-interruption-return",
+    "dash-reader-disconnect",
+    "dash-reader-reboot",
+    "dash-offline-check-list",
+    "dash-lost-finalization-response",
+    "dash-reconnect-respects-manual-retry",
+    "dash-account-switch-race",
+    "dash-out-of-order-refresh",
+    "dash-accessible-status",
+    "dash-ios-check-tab",
+    "dash-alcohol-route-is-reachable"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 14,
+    "NOT_RUN": 1,
+    "BLOCKED": 2
+  },
+  "all_current_case_ids": [
+    "OTGD-021-AND-DASH-001-01",
+    "OTGD-021-AND-DASH-001-02",
+    "OTGD-021-AND-DASH-002-01",
+    "OTGD-021-AND-DASH-002-02",
+    "OTGD-021-AND-DASH-002-03",
+    "OTGD-021-AND-DASH-003-01",
+    "OTGD-021-AND-DASH-003-02",
+    "OTGD-021-AND-DASH-004-01",
+    "OTGD-021-AND-DASH-004-02",
+    "OTGD-021-AND-DASH-005-01",
+    "OTGD-021-AND-DASH-005-02",
+    "OTGD-021-AND-DASH-005-03",
+    "OTGD-021-AND-DASH-006-01",
+    "OTGD-021-AND-DASH-006-02",
+    "OTGD-021-AND-DASH-007-01",
+    "OTGD-021-AND-DASH-007-02",
+    "OTGD-021-AND-DASH-007-03"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-021-AND-DASH-001-01",
+      "requirement_id": "AND-DASH-001",
+      "status": "PARTIAL",
+      "expected_observation": "dash-demo-home \u2014 - **GIVEN** an isolated demo workspace with a synthetic check - **WHEN** Home is displayed - **THEN** the demo badge and synthetic source description remain visible and no intoxication percentage appears.",
+      "unproved_then_clauses": [
+        "Exact Home demo badge plus synthetic-source description with saved check and no percentage is not asserted in mapped browser Home expectations; final export/result assertions are narrower."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Guest browser finishes explicit synthetic record and domain result null probability; Home source identifies guest workspace."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+        "apps/mobile/tests/domain.test.ts::save freezes all evidence and never queues upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+          "apps/mobile/tests/domain.test.ts::save freezes all evidence and never queues upload"
+        ],
+        "exact_missing_observation": [
+          "Exact Home demo badge plus synthetic-source description with saved check and no percentage is not asserted in mapped browser Home expectations; final export/result assertions are narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-001-02",
+      "requirement_id": "AND-DASH-001",
+      "status": "PARTIAL",
+      "expected_observation": "dash-old-check \u2014 - **GIVEN** the latest check was collected yesterday - **WHEN** the dashboard opens today - **THEN** its collection date/time is shown and the card does not claim to represent the user's present state.",
+      "unproved_then_clauses": [
+        "No actual Home opened next day with yesterday check asserts date/time and absent present-state claim. Stable sorter alone does not verify card copy/time."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "History sorter uses original acquisition timestamps; Home source renders created_at."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+        ],
+        "exact_missing_observation": [
+          "No actual Home opened next day with yesterday check asserts date/time and absent present-state claim. Stable sorter alone does not verify card copy/time."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-002-01",
+      "requirement_id": "AND-DASH-002",
+      "status": "PARTIAL",
+      "expected_observation": "dash-double-start-tap \u2014 - **GIVEN** no active draft and an enabled start action - **WHEN** two rapid taps occur before navigation completes - **THEN** one logical session is created and both navigation events resolve to that session.",
+      "unproved_then_clauses": [
+        "Two rapid UI taps before navigation are not directly asserted with both callbacks resolving sameID and session count1. Sequential domain refusal is narrower than concurrent controller/UI admission."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Domain explicitly refuses second draft allocation and controller creates one session on ordinary Start."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/domain.test.ts::context must be explicitly confirmed and a second draft cannot start",
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::context must be explicitly confirmed and a second draft cannot start",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Two rapid UI taps before navigation are not directly asserted with both callbacks resolving sameID and session count1. Sequential domain refusal is narrower than concurrent controller/UI admission."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-002-02",
+      "requirement_id": "AND-DASH-002",
+      "status": "PARTIAL",
+      "expected_observation": "dash-gated-capture \u2014 - **GIVEN** pupil capture is unavailable because its approved protocol is not configured - **WHEN** View availability is selected - **THEN** the app explains that channel's unavailability and does not open the camera/flash or replace it with a fabricated account measurement.",
+      "unproved_then_clauses": [
+        "Specific Home View availability action for absent optical config, exact blocker and zero camera/flash with no fabricated account projection is not directly asserted. Guest fictional example is an explicit different mode."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Browser native task unavailable and qualified optical source requires approved configuration; no automatic substitute is permitted in account measurement."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Specific Home View availability action for absent optical config, exact blocker and zero camera/flash with no fabricated account projection is not directly asserted. Guest fictional example is an explicit different mode."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-002-03",
+      "requirement_id": "AND-DASH-002",
+      "status": "PARTIAL",
+      "expected_observation": "dash-frozen-profile-at-creation \u2014 - **GIVEN** profile revision P1 is selected when Start check is pressed - **WHEN** P2 arrives before the first acquisition - **THEN** the draft retains P1, target_at equals its created_at, and its review identifies P1.",
+      "unproved_then_clauses": [
+        "The actual Review UI must identify frozen P1 after P2 arrives before first capture. The real measurement controller now proves P1=80kg/versionA and target immutability, then a new linked P2 check, but the visible P1 review assertion is not retained."
+      ],
+      "remaining_prerequisite_types": [
+        "software_ui_assertion_evidence"
+      ],
+      "current_assertions_proven": [
+        "Domain copies context at creation and target_at equals created_at; controller keeps original engineering snapshot after edit.",
+        "Real measurement-mode software context P1=80kg/versionA before capture remains after P2=82kg/versionB, optional software interrupted ledger; new linked check usesP2/no carriedattempts, original staysP1."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+        "apps/mobile/tests/domain.test.ts::check freezes original profile timestamp and recomputes elapsed use at its start",
+        "apps/mobile/tests/controller.test.ts::ordinary measurement P1 stays frozen after P2 profile update ${ledgerTransition ? \"across a software-only interrupted first attempt\" : \"while the draft has no captures\"}"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "apps/mobile/tests/domain.test.ts::check freezes original profile timestamp and recomputes elapsed use at its start",
+          "apps/mobile/tests/controller.test.ts::ordinary measurement P1 stays frozen after P2 profile update ${ledgerTransition ? \"across a software-only interrupted first attempt\" : \"while the draft has no captures\"}"
+        ],
+        "exact_missing_observation": [
+          "The actual Review UI must identify frozen P1 after P2 arrives before first capture. The real measurement controller now proves P1=80kg/versionA and target immutability, then a new linked P2 check, but the visible P1 review assertion is not retained."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-003-01",
+      "requirement_id": "AND-DASH-003",
+      "status": "PARTIAL",
+      "expected_observation": "dash-resume-saliva-draft \u2014 - **GIVEN** a draft with one retained saliva attempt and no completed task - **WHEN** Continue check is selected - **THEN** the same draft opens at its next eligible step with the original sample identity.",
+      "unproved_then_clauses": [
+        "Home Continue check specifically choosing next eligible step and exact original sampleID is not asserted; Check tab same displayed identity is narrower."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Actual browser Settings/Back returns same saliva draft text and Add example remains disabled, proving attempt retained."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt"
+        ],
+        "exact_missing_observation": [
+          "Home Continue check specifically choosing next eligible step and exact original sampleID is not asserted; Check tab same displayed identity is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-003-02",
+      "requirement_id": "AND-DASH-003",
+      "status": "PARTIAL",
+      "expected_observation": "dash-task-interruption-return \u2014 - **GIVEN** the app was backgrounded during the native task - **WHEN** Home is opened and the draft resumed - **THEN** the interruption is shown and no task completion is inferred from elapsed wall time.",
+      "unproved_then_clauses": [
+        "Actual backgrounded task ->Home ->resume displaying interruption and no wall-clock completion has no native OS execution; unit pure invalidation does not establish installed route."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Native lifecycle unit stops before terminal persistence; domain process interruption invalidates task with null aggregates."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+        "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+        ],
+        "exact_missing_observation": [
+          "Actual backgrounded task ->Home ->resume displaying interruption and no wall-clock completion has no native OS execution; unit pure invalidation does not establish installed route."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-004-01",
+      "requirement_id": "AND-DASH-004",
+      "status": "PARTIAL",
+      "expected_observation": "dash-reader-disconnect \u2014 - **GIVEN** a connected reader with a recent battery value - **WHEN** its BLE link drops - **THEN** Home changes to Not connected and the battery value cannot remain labeled live.",
+      "unproved_then_clauses": [
+        "A connected reader with recent battery must lose its live-battery label after BLE disconnect in actual Home. Current shared Home/Device connection states are rendered, but the recent-battery-to-disconnect transition is not directly asserted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_ui_assertion_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Presentation helper idle/failed link marks not connected and excludes battery; distinct LINK_DISCONNECTED title is asserted.",
+        "Healthy signed protocol state/currentboot is distinct from servicebinding and syntheticconnection; actualHome/Device current/revoked/expired/owner/gen/offline observations match; mountedexpiry removesconditionalavailability, no flag grants capture authority."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/device-presentation.test.ts::a saved reader alias does not become connected readiness or live battery",
+        "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery",
+        "apps/mobile/tests/device-presentation.test.ts::per-channel display uses active matching scope and unexpired admitted configuration independently from connection or binding",
+        "apps/mobile/tests/device-presentation.test.ts::a healthy signed reader connection is physical and retains current boot independently from service binding",
+        "apps/mobile/tests/result-ui.test.ts::actual Home and Device agree on a connected physical reader without synthetic or unconditional unavailable claims",
+        "apps/mobile/e2e/components.spec.ts::Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority",
+        "apps/mobile/e2e/components.spec.ts::Home expires its current channel observation while mounted and Device retains that expired status"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::a saved reader alias does not become connected readiness or live battery",
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery",
+          "apps/mobile/tests/device-presentation.test.ts::per-channel display uses active matching scope and unexpired admitted configuration independently from connection or binding",
+          "apps/mobile/tests/device-presentation.test.ts::a healthy signed reader connection is physical and retains current boot independently from service binding",
+          "apps/mobile/tests/result-ui.test.ts::actual Home and Device agree on a connected physical reader without synthetic or unconditional unavailable claims",
+          "apps/mobile/e2e/components.spec.ts::Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority"
+        ],
+        "exact_missing_observation": [
+          "A connected reader with recent battery must lose its live-battery label after BLE disconnect in actual Home. Current shared Home/Device connection states are rendered, but the recent-battery-to-disconnect transition is not directly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-004-02",
+      "requirement_id": "AND-DASH-004",
+      "status": "PARTIAL",
+      "expected_observation": "dash-reader-reboot \u2014 - **GIVEN** a reader reconnects with a different boot identity - **WHEN** readiness is recalculated - **THEN** unfinished capture readiness resets and old monotonic readings are not presented as belonging to the new boot.",
+      "unproved_then_clauses": [
+        "Actual connected reader reboot/newboot and unfinished Home capture reset with old monotonic readings excluded is not asserted by presentation fixture alone; hardware reboot prerequisite remains separate."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "BOOT_MISMATCH presentation clears connected readiness and shows Reader restarted; firmware source enforces boot-bound evidence."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+        ],
+        "exact_missing_observation": [
+          "Actual connected reader reboot/newboot and unfinished Home capture reset with old monotonic readings excluded is not asserted by presentation fixture alone; hardware reboot prerequisite remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-005-01",
+      "requirement_id": "AND-DASH-005",
+      "status": "PARTIAL",
+      "expected_observation": "dash-offline-check-list \u2014 - **GIVEN** cached permitted history and no network - **WHEN** Home opens - **THEN** cached rows remain available with an offline indicator and the latest refresh time.",
+      "unproved_then_clauses": [
+        "Cached account history plus failed refresh needs actual Home assertions for retained rows, offline indicator and last refresh time. Offline empty guest workflow does not prove cached account Home."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Local guest works while backend aborts; history sorter retains timestamps."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+        ],
+        "exact_missing_observation": [
+          "Cached account history plus failed refresh needs actual Home assertions for retained rows, offline indicator and last refresh time. Offline empty guest workflow does not prove cached account Home."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-005-02",
+      "requirement_id": "AND-DASH-005",
+      "status": "PARTIAL",
+      "expected_observation": "dash-lost-finalization-response \u2014 - **GIVEN** a session finalization request timed out - **WHEN** Home renders its recent row - **THEN** the row remains pending until the server is reconciled using the original identity/idempotency key.",
+      "unproved_then_clauses": [
+        "Fixture loses registration, not finalize response; no actual Home recent-row pending assertion until original finalization identity reconciles. Add accepted-finalize/lost-response context and visible pending\u2192one result."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Sync lost-registration reply retains retry_wait and exact key/body/gen, then completes same queue."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::a lost accepted response replays the same identity and unchanged bytes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a lost accepted response replays the same identity and unchanged bytes"
+        ],
+        "exact_missing_observation": [
+          "Fixture loses registration, not finalize response; no actual Home recent-row pending assertion until original finalization identity reconciles. Add accepted-finalize/lost-response context and visible pending\u2192one result."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-005-03",
+      "requirement_id": "AND-DASH-005",
+      "status": "PARTIAL",
+      "expected_observation": "dash-reconnect-respects-manual-retry \u2014 - **GIVEN** an explicitly queued account check has automatic retries disabled - **WHEN** the network reconnects - **THEN** Home shows the waiting item and manual Upload/Retry action without beginning a network mutation.",
+      "unproved_then_clauses": [
+        "Home waiting row plus manual Upload/Retry rendering on reconnect is not asserted. Engine request count proves scheduling guard, not actionable Home UI."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "retryDue(false) sends zero requests and leaves ordinary explicitly queued row queued; pendingSync classifies requested delivery correctly."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off",
+        "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off",
+          "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+        ],
+        "exact_missing_observation": [
+          "Home waiting row plus manual Upload/Retry rendering on reconnect is not asserted. Engine request count proves scheduling guard, not actionable Home UI."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-006-01",
+      "requirement_id": "AND-DASH-006",
+      "status": "PARTIAL",
+      "expected_observation": "dash-account-switch-race \u2014 - **GIVEN** an account-A refresh is in flight - **WHEN** the user switches to demo before the response returns - **THEN** A's response is discarded and no account data appears in demo.",
+      "unproved_then_clauses": [
+        "Exact A->demo switch while Home refresh in flight and unchanged demo data is not directly asserted; sign-out-to-welcome is another transition."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Account epoch late response cannot write; controller delayed history after sign-out rejected and visible/historyIndex empty."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace",
+        "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace",
+          "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace"
+        ],
+        "exact_missing_observation": [
+          "Exact A->demo switch while Home refresh in flight and unchanged demo data is not directly asserted; sign-out-to-welcome is another transition."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-006-02",
+      "requirement_id": "AND-DASH-006",
+      "status": "NOT_RUN",
+      "expected_observation": "dash-out-of-order-refresh \u2014 - **GIVEN** refresh B returns a newer session revision before refresh A - **WHEN** A completes later - **THEN** the displayed revision does not regress.",
+      "unproved_then_clauses": [
+        "Need B newer session revision arrives first, A older same-owner revision later, and displayed revision must not regress. Epoch/owner race is not this ordering scenario."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "current_assertions_proven": [
+        "Workspace generation guards reject stale owner responses; no same-owner revision-order assertion located."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace"
+        ],
+        "exact_missing_observation": [
+          "Need B newer session revision arrives first, A older same-owner revision later, and displayed revision must not regress. Epoch/owner race is not this ordering scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-007-01",
+      "requirement_id": "AND-DASH-007",
+      "status": "BLOCKED",
+      "expected_observation": "dash-accessible-status \u2014 - **GIVEN** TalkBack is enabled and the reader disconnects - **WHEN** the status changes - **THEN** \u201cReader, not connected\u201d is announced once without an unbounded repeating alert.",
+      "unproved_then_clauses": [
+        "Actual TalkBack disconnect announcement once with bounded repeats has no admitted Android execution."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Presentation helper provides distinct disconnect state and component roles exist."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+        ],
+        "exact_missing_observation": [
+          "Actual TalkBack disconnect announcement once with bounded repeats has no admitted Android execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-007-02",
+      "requirement_id": "AND-DASH-007",
+      "status": "BLOCKED",
+      "expected_observation": "dash-ios-check-tab \u2014 - **GIVEN** an existing draft on iOS - **WHEN** the Check tab is selected using VoiceOver - **THEN** the same draft decision used by the primary CTA appears with its correct focus and no duplicate session allocation.",
+      "unproved_then_clauses": [
+        "Actual iOS VoiceOver Check-tab focus and same primary-CTA draft decision/no duplicate allocation is unexecuted. Source route focus defect UX002 remains separate."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Browser Check tab keeps same draft identity across Settings/Back.",
+        "ActualDOMroute/dialog/backfocus, renderedmodalanimation preference/system, destructive light/dark normal/pressed compositecontrast atbothviewports."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt",
+        "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+        "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+        "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt",
+          "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+          "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+          "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS VoiceOver Check-tab focus and same primary-CTA draft decision/no duplicate allocation is unexecuted. Source route focus defect UX002 remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-007-03",
+      "requirement_id": "AND-DASH-007",
+      "status": "PARTIAL",
+      "expected_observation": "dash-alcohol-route-is-reachable \u2014 - **GIVEN** no alcohol instrument or approved configuration exists - **WHEN** the user selects Alcohol measurement on Home - **THEN** the alcohol availability screen opens with Hardware required, its requirements action, and working Back navigation.",
+      "unproved_then_clauses": [
+        "No actual Home Alcohol action\u2192Hardware required\u2192requirements\u2192Back browser journey is asserted by current direct Alcohol render fixture. Native physical fuel-cell channel remains independently unavailable."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "current_assertions_proven": [
+        "Alcohol screen direct component tests display future mg/L hardware/qualification boundary."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+        ],
+        "exact_missing_observation": [
+          "No actual Home Alcohol action\u2192Hardware required\u2192requirements\u2192Back browser journey is asserted by current direct Alcohol render fixture. Native physical fuel-cell channel remains independently unavailable."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-021-AND-DASH-001-01",
+      "required_clause": [
+        "Exact Home demo badge plus synthetic-source description with saved check and no percentage is not asserted in mapped browser Home expectations; final export/result assertions are narrower."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+          "apps/mobile/tests/domain.test.ts::save freezes all evidence and never queues upload"
+        ],
+        "exact_missing_observation": [
+          "Exact Home demo badge plus synthetic-source description with saved check and no percentage is not asserted in mapped browser Home expectations; final export/result assertions are narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-001-02",
+      "required_clause": [
+        "No actual Home opened next day with yesterday check asserts date/time and absent present-state claim. Stable sorter alone does not verify card copy/time."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+        ],
+        "exact_missing_observation": [
+          "No actual Home opened next day with yesterday check asserts date/time and absent present-state claim. Stable sorter alone does not verify card copy/time."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-002-01",
+      "required_clause": [
+        "Two rapid UI taps before navigation are not directly asserted with both callbacks resolving sameID and session count1. Sequential domain refusal is narrower than concurrent controller/UI admission."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/domain.test.ts::context must be explicitly confirmed and a second draft cannot start",
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "Two rapid UI taps before navigation are not directly asserted with both callbacks resolving sameID and session count1. Sequential domain refusal is narrower than concurrent controller/UI admission."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-002-02",
+      "required_clause": [
+        "Specific Home View availability action for absent optical config, exact blocker and zero camera/flash with no fabricated account projection is not directly asserted. Guest fictional example is an explicit different mode."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey"
+        ],
+        "exact_missing_observation": [
+          "Specific Home View availability action for absent optical config, exact blocker and zero camera/flash with no fabricated account projection is not directly asserted. Guest fictional example is an explicit different mode."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-002-03",
+      "required_clause": [
+        "The actual Review UI must identify frozen P1 after P2 arrives before first capture. The real measurement controller now proves P1=80kg/versionA and target immutability, then a new linked P2 check, but the visible P1 review assertion is not retained."
+      ],
+      "types": [
+        "software_ui_assertion_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+          "apps/mobile/tests/domain.test.ts::check freezes original profile timestamp and recomputes elapsed use at its start",
+          "apps/mobile/tests/controller.test.ts::ordinary measurement P1 stays frozen after P2 profile update ${ledgerTransition ? \"across a software-only interrupted first attempt\" : \"while the draft has no captures\"}"
+        ],
+        "exact_missing_observation": [
+          "The actual Review UI must identify frozen P1 after P2 arrives before first capture. The real measurement controller now proves P1=80kg/versionA and target immutability, then a new linked P2 check, but the visible P1 review assertion is not retained."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-003-01",
+      "required_clause": [
+        "Home Continue check specifically choosing next eligible step and exact original sampleID is not asserted; Check tab same displayed identity is narrower."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt"
+        ],
+        "exact_missing_observation": [
+          "Home Continue check specifically choosing next eligible step and exact original sampleID is not asserted; Check tab same displayed identity is narrower."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-003-02",
+      "required_clause": [
+        "Actual backgrounded task ->Home ->resume displaying interruption and no wall-clock completion has no native OS execution; unit pure invalidation does not establish installed route."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+          "apps/mobile/tests/domain.test.ts::process interruption preserves invalid task evidence with null aggregate features"
+        ],
+        "exact_missing_observation": [
+          "Actual backgrounded task ->Home ->resume displaying interruption and no wall-clock completion has no native OS execution; unit pure invalidation does not establish installed route."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-004-01",
+      "required_clause": [
+        "A connected reader with recent battery must lose its live-battery label after BLE disconnect in actual Home. Current shared Home/Device connection states are rendered, but the recent-battery-to-disconnect transition is not directly asserted."
+      ],
+      "types": [
+        "software_ui_assertion_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::a saved reader alias does not become connected readiness or live battery",
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery",
+          "apps/mobile/tests/device-presentation.test.ts::per-channel display uses active matching scope and unexpired admitted configuration independently from connection or binding",
+          "apps/mobile/tests/device-presentation.test.ts::a healthy signed reader connection is physical and retains current boot independently from service binding",
+          "apps/mobile/tests/result-ui.test.ts::actual Home and Device agree on a connected physical reader without synthetic or unconditional unavailable claims",
+          "apps/mobile/e2e/components.spec.ts::Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority"
+        ],
+        "exact_missing_observation": [
+          "A connected reader with recent battery must lose its live-battery label after BLE disconnect in actual Home. Current shared Home/Device connection states are rendered, but the recent-battery-to-disconnect transition is not directly asserted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-004-02",
+      "required_clause": [
+        "Actual connected reader reboot/newboot and unfinished Home capture reset with old monotonic readings excluded is not asserted by presentation fixture alone; hardware reboot prerequisite remains separate."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+        ],
+        "exact_missing_observation": [
+          "Actual connected reader reboot/newboot and unfinished Home capture reset with old monotonic readings excluded is not asserted by presentation fixture alone; hardware reboot prerequisite remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-005-01",
+      "required_clause": [
+        "Cached account history plus failed refresh needs actual Home assertions for retained rows, offline indicator and last refresh time. Offline empty guest workflow does not prove cached account Home."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/support-history.test.ts::mixed local and synced history uses acquisition time and stable identity ties"
+        ],
+        "exact_missing_observation": [
+          "Cached account history plus failed refresh needs actual Home assertions for retained rows, offline indicator and last refresh time. Offline empty guest workflow does not prove cached account Home."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-005-02",
+      "required_clause": [
+        "Fixture loses registration, not finalize response; no actual Home recent-row pending assertion until original finalization identity reconciles. Add accepted-finalize/lost-response context and visible pending\u2192one result."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a lost accepted response replays the same identity and unchanged bytes"
+        ],
+        "exact_missing_observation": [
+          "Fixture loses registration, not finalize response; no actual Home recent-row pending assertion until original finalization identity reconciles. Add accepted-finalize/lost-response context and visible pending\u2192one result."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-005-03",
+      "required_clause": [
+        "Home waiting row plus manual Upload/Retry rendering on reconnect is not asserted. Engine request count proves scheduling guard, not actionable Home UI."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::reconnection does not retry an ordinary explicit queue when preference remains off",
+          "apps/mobile/tests/support-history.test.ts::pending sync means explicitly requested delivery, not local saves or retired records"
+        ],
+        "exact_missing_observation": [
+          "Home waiting row plus manual Upload/Retry rendering on reconnect is not asserted. Engine request count proves scheduling guard, not actionable Home UI."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-006-01",
+      "required_clause": [
+        "Exact A->demo switch while Home refresh in flight and unchanged demo data is not directly asserted; sign-out-to-welcome is another transition."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/sync.test.ts::a new account epoch prevents late network results writing into its workspace",
+          "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace"
+        ],
+        "exact_missing_observation": [
+          "Exact A->demo switch while Home refresh in flight and unchanged demo data is not directly asserted; sign-out-to-welcome is another transition."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-006-02",
+      "required_clause": [
+        "Need B newer session revision arrives first, A older same-owner revision later, and displayed revision must not regress. Epoch/owner race is not this ordering scenario."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "independent_owner_review"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::delayed history cannot enter another account or reopen a signed-out workspace"
+        ],
+        "exact_missing_observation": [
+          "Need B newer session revision arrives first, A older same-owner revision later, and displayed revision must not regress. Epoch/owner race is not this ordering scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-007-01",
+      "required_clause": [
+        "Actual TalkBack disconnect announcement once with bounded repeats has no admitted Android execution."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/device-presentation.test.ts::permission, radio, reboot and unsupported reader failures have distinct recovery"
+        ],
+        "exact_missing_observation": [
+          "Actual TalkBack disconnect announcement once with bounded repeats has no admitted Android execution."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-007-02",
+      "required_clause": [
+        "Actual iOS VoiceOver Check-tab focus and same primary-CTA draft decision/no duplicate allocation is unexecuted. Source route focus defect UX002 remains separate."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt",
+          "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+          "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+          "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes"
+        ],
+        "exact_missing_observation": [
+          "Actual iOS VoiceOver Check-tab focus and same primary-CTA draft decision/no duplicate allocation is unexecuted. Source route focus defect UX002 remains separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-021-AND-DASH-007-03",
+      "required_clause": [
+        "No actual Home Alcohol action\u2192Hardware required\u2192requirements\u2192Back browser journey is asserted by current direct Alcohol render fixture. Native physical fuel-cell channel remains independently unavailable."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "physical_hardware_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts"
+        ],
+        "exact_missing_observation": [
+          "No actual Home Alcohol action\u2192Hardware required\u2192requirements\u2192Back browser journey is asserted by current direct Alcohol render fixture. Native physical fuel-cell channel remains independently unavailable."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

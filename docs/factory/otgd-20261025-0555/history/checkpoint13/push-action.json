@@ -1,0 +1,9 @@
+{
+  "action_id": "otgd-checkpoint13-evidence-push",
+  "status": "PLANNED",
+  "time": "2026-10-25T11:42:51.267223+00:00",
+  "target": "origin refs/heads/factory/one-the-go-detection-20261025-evidence",
+  "commit": "1470d467e7b4e0e80bd5f1f796e71405bb2117ec",
+  "force": false,
+  "authority": "User authorized software commits/pushes and durable checkpoints; D011 metadata-only records, primary exact tested source unchanged"
+}

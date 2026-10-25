@@ -92,3 +92,7 @@ Actual current raw artifacts:
 All scoped criterion clauses are supported. Fixture limitations and external scientific/OS release gates are not converted into approval.
 
 Baseline history: 28e07295cb37bb9dcaaac82cc8fc846eb89006a6 / PASS; record SHA 179a4d0f53fa92a3ec2b838504f3feeef98c82f4f4311ec6b73a3597539e8ece. Actual current source and raw evidence supply this disposition.
+
+## APR-001 — additional normative source inspection
+
+The two existing scenario PASS observations remain true. They exercise conditional Service presentation and legacy refusal, not the complete About SHALL clause. The independent approver, all six reviewers and PM inspected the actual About/Page/App path: current account admitted scope is absent. This is a confirmed P2 requirement omission observed by source/control-flow inspection, not a newly executed failing regression test. Requirement AND-SET-004 and specification007 are BLOCKED despite those scenario results. See council-decision.json and the six APR001 addenda. Earlier statements of no newly demonstrated defect are superseded by this later finding. No source repair or third correction was attempted.

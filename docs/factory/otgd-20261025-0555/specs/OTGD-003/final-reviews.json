@@ -1580,5 +1580,6 @@
       }
     }
   },
-  "independent_council": "PENDING"
+  "independent_council": "BLOCKED",
+  "council_decision": "council-decision.json"
 }

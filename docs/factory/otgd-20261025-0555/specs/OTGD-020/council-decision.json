@@ -1,0 +1,482 @@
+{
+  "spec_id": "OTGD-020",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-app-environment/spec.md",
+  "canonical_sha256": "6cef683b7ac1b04bdf104e0b87aa36badf61e905580d32223c05a39ce8efac35",
+  "canonical_requirements": [
+    "AND-ENV-001 Fix environment identity in each build",
+    "AND-ENV-002 Bound startup and preserve local data",
+    "AND-ENV-003 Provide a reproducible LocalStack path",
+    "AND-ENV-004 Keep cloud isolation and secrets explicit",
+    "AND-ENV-005 Promote immutable verified releases",
+    "AND-ENV-006 Implement observable recovery boundaries",
+    "AND-ENV-007 Report verification honestly"
+  ],
+  "canonical_scenarios": [
+    "QA and production are installed together",
+    "Cloud service receives local-only configuration",
+    "Phone launches offline",
+    "Store cannot be decrypted",
+    "Local prerequisites are present",
+    "LocalStack prerequisite is absent",
+    "Synthesized production stack",
+    "Secret is omitted",
+    "QA release passes its checks",
+    "Migration fails",
+    "Database is unavailable",
+    "Backup contains subsequently deleted data",
+    "iOS source exists on a Linux runner",
+    "Infrastructure synthesis succeeds without AWS credentials"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 8,
+    "PASS": 6
+  },
+  "all_current_case_ids": [
+    "OTGD-020-AND-ENV-001-01",
+    "OTGD-020-AND-ENV-001-02",
+    "OTGD-020-AND-ENV-002-01",
+    "OTGD-020-AND-ENV-002-02",
+    "OTGD-020-AND-ENV-003-01",
+    "OTGD-020-AND-ENV-003-02",
+    "OTGD-020-AND-ENV-004-01",
+    "OTGD-020-AND-ENV-004-02",
+    "OTGD-020-AND-ENV-005-01",
+    "OTGD-020-AND-ENV-005-02",
+    "OTGD-020-AND-ENV-006-01",
+    "OTGD-020-AND-ENV-006-02",
+    "OTGD-020-AND-ENV-007-01",
+    "OTGD-020-AND-ENV-007-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-020-AND-ENV-001-01",
+      "requirement_id": "AND-ENV-001",
+      "status": "PARTIAL",
+      "expected_observation": "QA and production are installed together \u2014 - **GIVEN** separate configured builds - **WHEN** both run on one phone - **THEN** they have distinct app identities and local namespaces and QA is visibly labeled.",
+      "unproved_then_clauses": [
+        "\u201cboth run on one phone ... distinct identities/local namespaces and QA visibly labeled\u201d: no co-installed QA+prod native execution or same-phone namespace/UI observation. Build-source declarations and dev infrastructure templates are not this phone scenario."
+      ],
+      "remaining_prerequisite_types": [
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Build configuration rejects hosted-fictional preview in QA/prod; inspected app.config.ts gives distinct bundle/package suffix, name and scheme; controller/storage namespace logic is environment-scoped source."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior"
+        ],
+        "exact_missing_observation": [
+          "\u201cboth run on one phone ... distinct identities/local namespaces and QA visibly labeled\u201d: no co-installed QA+prod native execution or same-phone namespace/UI observation. Build-source declarations and dev infrastructure templates are not this phone scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-002-01",
+      "requirement_id": "AND-ENV-002",
+      "status": "PARTIAL",
+      "expected_observation": "Phone launches offline \u2014 - **GIVEN** a usable encrypted store - **WHEN** the configuration request times out - **THEN** permitted local functions open with an offline state and no fabricated server result.",
+      "unproved_then_clauses": [
+        "\u201cusable encrypted store ... configuration request times out ... offline state and no fabricated server result\u201d: controller test uses runtime memory store and immediate thrown fetch, not bounded timeout with retained encrypted data; it does not assert offline flag or absence of fabricated SERVER result. Guest fictional simulation is explicitly separate."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Offline fetch fixture still opens local guest notice/home, saves frozen measurements with empty upload queue and blocks guest upload."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "\u201cusable encrypted store ... configuration request times out ... offline state and no fabricated server result\u201d: controller test uses runtime memory store and immediate thrown fetch, not bounded timeout with retained encrypted data; it does not assert offline flag or absence of fabricated SERVER result. Guest fictional simulation is explicitly separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-002-02",
+      "requirement_id": "AND-ENV-002",
+      "status": "PARTIAL",
+      "expected_observation": "Store cannot be decrypted \u2014 - **GIVEN** a missing or invalid local key - **WHEN** startup opens storage - **THEN** the app reports a storage recovery/reset choice and does not fall back to plaintext storage.",
+      "unproved_then_clauses": [
+        "\u201cmissing/invalid key ... app reports recovery/reset choice\u201d: storage-unit rejection does not exercise a retained encrypted database/key-loss or controller/UI recovery/reset affordance; actual SQLCipher failure and native UI remain unexecuted."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "current_assertions_proven": [
+        "Native-storage boundary rejects unavailable key storage with no-plaintext-fallback error, missing cipher and missing backup exclusion. Expo native modules are doubles."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/native-storage.test.ts::native account storage fails closed when key storage, cipher support or backup exclusion is unavailable"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/native-storage.test.ts::native account storage fails closed when key storage, cipher support or backup exclusion is unavailable"
+        ],
+        "exact_missing_observation": [
+          "\u201cmissing/invalid key ... app reports recovery/reset choice\u201d: storage-unit rejection does not exercise a retained encrypted database/key-loss or controller/UI recovery/reset affordance; actual SQLCipher failure and native UI remain unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-003-02",
+      "requirement_id": "AND-ENV-003",
+      "status": "PARTIAL",
+      "expected_observation": "LocalStack prerequisite is absent \u2014 - **GIVEN** no Docker daemon, or the explicitly selected licensed preset without its required activation token - **WHEN** local integration is requested - **THEN** the command fails with a clear prerequisite message and no test report calls a mock execution LocalStack validation.",
+      "unproved_then_clauses": [
+        "An actual missing-Docker prerequisite and an explicitly selected licensed LocalStack mode without its authorized token must produce the documented clear refusal and no mocked-validation claim. Current community mode is qualified and token-free; no community activation token is required. These missing-prerequisite startup scenarios are not directly executed."
+      ],
+      "remaining_prerequisite_types": [
+        "software_startup_scenario_evidence"
+      ],
+      "current_assertions_proven": [
+        "Related health CLI rejects Docker inspection failure and reports safe nonzero prerequisite code. local-platform.py source rejects missing Docker; licensed Compose explicitly requires token."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_canonical_health.py::test_docker_failure_missing_inventory_and_invalid_json_are_explicit_failures",
+        "infra/test/test_canonical_health.py::test_cli_preserves_failure_exit_without_vendor_secret_output"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_canonical_health.py::test_docker_failure_missing_inventory_and_invalid_json_are_explicit_failures",
+          "infra/test/test_canonical_health.py::test_cli_preserves_failure_exit_without_vendor_secret_output"
+        ],
+        "exact_missing_observation": [
+          "An actual missing-Docker prerequisite and an explicitly selected licensed LocalStack mode without its authorized token must produce the documented clear refusal and no mocked-validation claim. Current community mode is qualified and token-free; no community activation token is required. These missing-prerequisite startup scenarios are not directly executed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-005-01",
+      "requirement_id": "AND-ENV-005",
+      "status": "PARTIAL",
+      "expected_observation": "QA release passes its checks \u2014 - **GIVEN** a tested image digest and compatible schema - **WHEN** promoted to production - **THEN** production references that digest and records the migration/release evidence.",
+      "unproved_then_clauses": [
+        "\u201cpromoted to production ... records migration/release evidence\u201d: mocked GitHub/ECR/ECS and generated keys do not execute QA-to-prod promotion or actual compatible-schema migration; external deployment remains unexecuted and outside draft-PR-only action scope."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Real Ed25519 production record binds exact QA image/source/provenance and QA envelope; maintenance validator accepts matching zero-exit/source/image/task receipt and rejects mutations."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+        "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+          "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+        ],
+        "exact_missing_observation": [
+          "\u201cpromoted to production ... records migration/release evidence\u201d: mocked GitHub/ECR/ECS and generated keys do not execute QA-to-prod promotion or actual compatible-schema migration; external deployment remains unexecuted and outside draft-PR-only action scope."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-005-02",
+      "requirement_id": "AND-ENV-005",
+      "status": "PARTIAL",
+      "expected_observation": "Migration fails \u2014 - **GIVEN** a nonzero migration exit - **WHEN** deployment automation evaluates the gate - **THEN** service rollout stops and the previous deployment remains the rollback target.",
+      "unproved_then_clauses": [
+        "\u201cprevious deployment remains rollback target\u201d: no failed-migration test retains/asserts exact prior release/task-definition rollback reference after stopping new rollout. Template circuit-breaker settings or journal rollback_executed=false are not that retained-target assertion."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "Injected migration failure stops orchestration before activation/web build/publication; actual validator rejects modeled migration task exit1."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_web_deployment.py::test_failed_migration_never_activates_or_uploads_web",
+        "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_failed_migration_never_activates_or_uploads_web",
+          "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+        ],
+        "exact_missing_observation": [
+          "\u201cprevious deployment remains rollback target\u201d: no failed-migration test retains/asserts exact prior release/task-definition rollback reference after stopping new rollout. Template circuit-breaker settings or journal rollback_executed=false are not that retained-target assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-006-02",
+      "requirement_id": "AND-ENV-006",
+      "status": "PARTIAL",
+      "expected_observation": "Backup contains subsequently deleted data \u2014 - **GIVEN** a restore from an older backup - **WHEN** the restore runbook is executed - **THEN** deletion tombstones are reapplied before access is reopened and the drill records whether RPO/RTO objectives were achieved.",
+      "unproved_then_clauses": [
+        "\u201crestore runbook ... tombstones before reopening ... drill records RPO/RTO\u201d: no actual older-backup restore/independent retained journal/API reopening drill or measured RPO<=24h/RTO<=4h result. SQLite plan application cannot establish these operational objectives."
+      ],
+      "remaining_prerequisite_types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "current_assertions_proven": [
+        "SQLite barrier unit test replays accepted/completed deletion, restores original owner/generation barrier, disables old registry trust and scrubs restored health rows."
+      ],
+      "current_source_assertion_refs": [
+        "infra/test/test_recovery.py::test_backup_predating_account_restores_original_id_and_generation",
+        "infra/test/test_recovery.py::test_completed_barrier_scrubs_restored_health_data"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_recovery.py::test_backup_predating_account_restores_original_id_and_generation",
+          "infra/test/test_recovery.py::test_completed_barrier_scrubs_restored_health_data"
+        ],
+        "exact_missing_observation": [
+          "\u201crestore runbook ... tombstones before reopening ... drill records RPO/RTO\u201d: no actual older-backup restore/independent retained journal/API reopening drill or measured RPO<=24h/RTO<=4h result. SQLite plan application cannot establish these operational objectives."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-007-01",
+      "requirement_id": "AND-ENV-007",
+      "status": "PARTIAL",
+      "expected_observation": "iOS source exists on a Linux runner \u2014 - **GIVEN** no Xcode/macOS build toolchain - **WHEN** delivery status is generated - **THEN** iOS native compilation is recorded as unexecuted rather than inferred from a JavaScript bundle.",
+      "unproved_then_clauses": [
+        "\u201cLinux without toolchain ... delivery status generated ... iOS compilation recorded unexecuted\u201d: truthful static planning/report statements exist but no toolchain-absent delivery-status generation execution is source-bound to this case. No iOS compile is inferred from JS; no missing automated generator is invented."
+      ],
+      "remaining_prerequisite_types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Immutable OTGD020 test-results explicitly says no runtime/browser/native/firmware execution claimed; verification-plan C-IOS requires macOS26/Xcode26.4.1 and says Linux cannot substitute. Current oldCI native macOS evidence remains separate from Linux JavaScript execution."
+      ],
+      "current_source_assertion_refs": [],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "\u201cLinux without toolchain ... delivery status generated ... iOS compilation recorded unexecuted\u201d: truthful static planning/report statements exist but no toolchain-absent delivery-status generation execution is source-bound to this case. No iOS compile is inferred from JS; no missing automated generator is invented."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-020-AND-ENV-001-01",
+      "required_clause": [
+        "\u201cboth run on one phone ... distinct identities/local namespaces and QA visibly labeled\u201d: no co-installed QA+prod native execution or same-phone namespace/UI observation. Build-source declarations and dev infrastructure templates are not this phone scenario."
+      ],
+      "types": [
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior"
+        ],
+        "exact_missing_observation": [
+          "\u201cboth run on one phone ... distinct identities/local namespaces and QA visibly labeled\u201d: no co-installed QA+prod native execution or same-phone namespace/UI observation. Build-source declarations and dev infrastructure templates are not this phone scenario."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-002-01",
+      "required_clause": [
+        "\u201cusable encrypted store ... configuration request times out ... offline state and no fabricated server result\u201d: controller test uses runtime memory store and immediate thrown fetch, not bounded timeout with retained encrypted data; it does not assert offline flag or absence of fabricated SERVER result. Guest fictional simulation is explicitly separate."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+        ],
+        "exact_missing_observation": [
+          "\u201cusable encrypted store ... configuration request times out ... offline state and no fabricated server result\u201d: controller test uses runtime memory store and immediate thrown fetch, not bounded timeout with retained encrypted data; it does not assert offline flag or absence of fabricated SERVER result. Guest fictional simulation is explicitly separate."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-002-02",
+      "required_clause": [
+        "\u201cmissing/invalid key ... app reports recovery/reset choice\u201d: storage-unit rejection does not exercise a retained encrypted database/key-loss or controller/UI recovery/reset affordance; actual SQLCipher failure and native UI remain unexecuted."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "native_os_execution"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/native-storage.test.ts::native account storage fails closed when key storage, cipher support or backup exclusion is unavailable"
+        ],
+        "exact_missing_observation": [
+          "\u201cmissing/invalid key ... app reports recovery/reset choice\u201d: storage-unit rejection does not exercise a retained encrypted database/key-loss or controller/UI recovery/reset affordance; actual SQLCipher failure and native UI remain unexecuted."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-003-02",
+      "required_clause": [
+        "An actual missing-Docker prerequisite and an explicitly selected licensed LocalStack mode without its authorized token must produce the documented clear refusal and no mocked-validation claim. Current community mode is qualified and token-free; no community activation token is required. These missing-prerequisite startup scenarios are not directly executed."
+      ],
+      "types": [
+        "software_startup_scenario_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_canonical_health.py::test_docker_failure_missing_inventory_and_invalid_json_are_explicit_failures",
+          "infra/test/test_canonical_health.py::test_cli_preserves_failure_exit_without_vendor_secret_output"
+        ],
+        "exact_missing_observation": [
+          "An actual missing-Docker prerequisite and an explicitly selected licensed LocalStack mode without its authorized token must produce the documented clear refusal and no mocked-validation claim. Current community mode is qualified and token-free; no community activation token is required. These missing-prerequisite startup scenarios are not directly executed."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-005-01",
+      "required_clause": [
+        "\u201cpromoted to production ... records migration/release evidence\u201d: mocked GitHub/ECR/ECS and generated keys do not execute QA-to-prod promotion or actual compatible-schema migration; external deployment remains unexecuted and outside draft-PR-only action scope."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_provenance.py::test_production_activation_rechecks_signed_git_and_exact_qa_envelopes",
+          "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+        ],
+        "exact_missing_observation": [
+          "\u201cpromoted to production ... records migration/release evidence\u201d: mocked GitHub/ECR/ECS and generated keys do not execute QA-to-prod promotion or actual compatible-schema migration; external deployment remains unexecuted and outside draft-PR-only action scope."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-005-02",
+      "required_clause": [
+        "\u201cprevious deployment remains rollback target\u201d: no failed-migration test retains/asserts exact prior release/task-definition rollback reference after stopping new rollout. Template circuit-breaker settings or journal rollback_executed=false are not that retained-target assertion."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence",
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_web_deployment.py::test_failed_migration_never_activates_or_uploads_web",
+          "infra/test/test_maintenance.py::test_exact_task_definition_container_command_and_receipt_required"
+        ],
+        "exact_missing_observation": [
+          "\u201cprevious deployment remains rollback target\u201d: no failed-migration test retains/asserts exact prior release/task-definition rollback reference after stopping new rollout. Template circuit-breaker settings or journal rollback_executed=false are not that retained-target assertion."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-006-02",
+      "required_clause": [
+        "\u201crestore runbook ... tombstones before reopening ... drill records RPO/RTO\u201d: no actual older-backup restore/independent retained journal/API reopening drill or measured RPO<=24h/RTO<=4h result. SQLite plan application cannot establish these operational objectives."
+      ],
+      "types": [
+        "deployment_cloud_or_owner_prerequisite"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "infra/test/test_recovery.py::test_backup_predating_account_restores_original_id_and_generation",
+          "infra/test/test_recovery.py::test_completed_barrier_scrubs_restored_health_data"
+        ],
+        "exact_missing_observation": [
+          "\u201crestore runbook ... tombstones before reopening ... drill records RPO/RTO\u201d: no actual older-backup restore/independent retained journal/API reopening drill or measured RPO<=24h/RTO<=4h result. SQLite plan application cannot establish these operational objectives."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-007-01",
+      "required_clause": [
+        "\u201cLinux without toolchain ... delivery status generated ... iOS compilation recorded unexecuted\u201d: truthful static planning/report statements exist but no toolchain-absent delivery-status generation execution is source-bound to this case. No iOS compile is inferred from JS; no missing automated generator is invented."
+      ],
+      "types": [
+        "software_assertion_or_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [],
+        "exact_missing_observation": [
+          "\u201cLinux without toolchain ... delivery status generated ... iOS compilation recorded unexecuted\u201d: truthful static planning/report statements exist but no toolchain-absent delivery-status generation execution is source-bound to this case. No iOS compile is inferred from JS; no missing automated generator is invented."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}

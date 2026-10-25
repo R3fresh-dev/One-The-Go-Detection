@@ -1,0 +1,115 @@
+{
+  "spec_id": "OTGD-005",
+  "decision": "BLOCKED",
+  "scope": "IMPLEMENTATION",
+  "approval_kind": null,
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/android-onboarding/spec.md",
+  "canonical_sha256": "1b82b7101ffe6bf0538ffe24b814aea01369f322c9bb8e96808e05f0dd70e369",
+  "canonical_requirements": [
+    "AND-ONB-001 Accurate first-run scope"
+  ],
+  "canonical_scenarios": [
+    "Independent research admission",
+    "Legacy or unapproved claim"
+  ],
+  "rationale": "Required implementation acceptance remains unproved. The exact unmet clauses below prevent approval after final correction 2/2. Passing shared gates and closed prior source findings do not supply those clauses. This is an evidence block, not a newly reproduced source defect.",
+  "six_current_independent_decisions": {
+    "security": "BLOCKED",
+    "code": "BLOCKED",
+    "ux": "BLOCKED",
+    "ui": "BLOCKED",
+    "product": "BLOCKED",
+    "engineering": "BLOCKED"
+  },
+  "case_counts": {
+    "PARTIAL": 1,
+    "PASS": 1
+  },
+  "all_current_case_ids": [
+    "OTGD-005-AND-ONB-001-01",
+    "OTGD-005-AND-ONB-001-02"
+  ],
+  "exact_remaining_clauses": [
+    {
+      "case_id": "OTGD-005-AND-ONB-001-01",
+      "requirement_id": "AND-ONB-001",
+      "status": "PARTIAL",
+      "expected_observation": "Independent research admission \u2014 - **WHEN** onboarding completes for an account whose separate current study and channel authority is admitted - **THEN** the dashboard identifies authorized research access independently of the onboarding receipt",
+      "unproved_then_clauses": [
+        "The actual onboarding-completion transition for a separately admitted account to the conditional research dashboard is not asserted as a complete journey. Current welcome/Home rendering and live matching capability gates are separately proved; an onboarding receipt never supplies research authority."
+      ],
+      "remaining_prerequisite_types": [
+        "software_integration_evidence"
+      ],
+      "current_assertions_proven": [
+        "Related independent review finding; this broad case still requires exact semantic body/owner review. The tag alone does not establish a software defect in this criterion. PROD-002 onboarding conditional scope",
+        "Actual rendered Home/history/welcome conditional software copy, current account/generation and revoked/offline guards, immutable 1.1 proof and legacy/guest refusal. Later admitted 1.1 delta explicitly supersedes blanket legacy 0.1 fixed-false wording."
+      ],
+      "current_source_assertion_refs": [
+        "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+        "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+        "apps/mobile/tests/result-ui.test.ts::actual Home changes research access with current identity capabilities and immediately with revocation",
+        "apps/mobile/tests/result-ui.test.ts::actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy",
+        "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+        "apps/mobile/tests/result-ui.test.ts::actual welcome describes measurement defaults and separate research authority without enrollment",
+        "apps/mobile/tests/result-presentation.test.ts::current research scope requires live matching authenticated account and generation capabilities",
+        "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint"
+      ],
+      "minimal_next_evidence_or_action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+          "apps/mobile/tests/result-ui.test.ts::actual Home changes research access with current identity capabilities and immediately with revocation",
+          "apps/mobile/tests/result-ui.test.ts::actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy",
+          "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+          "apps/mobile/tests/result-ui.test.ts::actual welcome describes measurement defaults and separate research authority without enrollment"
+        ],
+        "exact_missing_observation": [
+          "The actual onboarding-completion transition for a separately admitted account to the conditional research dashboard is not asserted as a complete journey. Current welcome/Home rendering and live matching capability gates are separately proved; an onboarding receipt never supplies research authority."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      },
+      "open_implementation_defect": false
+    }
+  ],
+  "independent_normative_findings": [],
+  "minimum_next_inputs_or_actions": [
+    {
+      "case_id": "OTGD-005-AND-ONB-001-01",
+      "required_clause": [
+        "The actual onboarding-completion transition for a separately admitted account to the conditional research dashboard is not asserted as a complete journey. Current welcome/Home rendering and live matching capability gates are separately proved; an onboarding receipt never supplies research authority."
+      ],
+      "types": [
+        "software_integration_evidence"
+      ],
+      "existing_evidence_first": true,
+      "action": {
+        "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+        "target_assertion_sources": [
+          "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+          "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+          "apps/mobile/tests/result-ui.test.ts::actual Home changes research access with current identity capabilities and immediately with revocation",
+          "apps/mobile/tests/result-ui.test.ts::actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy",
+          "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+          "apps/mobile/tests/result-ui.test.ts::actual welcome describes measurement defaults and separate research authority without enrollment"
+        ],
+        "exact_missing_observation": [
+          "The actual onboarding-completion transition for a separately admitted account to the conditional research dashboard is not asserted as a complete journey. Current welcome/Home rendering and live matching capability gates are separately proved; an onboarding receipt never supplies research authority."
+        ],
+        "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+      }
+    }
+  ],
+  "escalation": "NEEDS_HUMAN: correction 2/2 exhausted; evidence/owner adjudication or explicit further scope/budget decision; no automatic third correction.",
+  "approval_excludes": [
+    "whole application",
+    "broader contributing feature specs",
+    "installed native OS acceptance",
+    "qualified hardware/science/participant use",
+    "release readiness",
+    "merge/deploy/publish"
+  ]
+}
