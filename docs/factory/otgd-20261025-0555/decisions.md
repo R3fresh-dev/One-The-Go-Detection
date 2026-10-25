@@ -205,3 +205,11 @@ Recheck no references immediately before non-force removal. Do not remove G/base
 ## D-008 v2 — replacement source freeze (2026-10-25T09:46:37.074966+00:00)
 
 All correction owners have released their source. The checkpoint 10 commit is the next immutable candidate. PM runs all seven local gates and current CI; independent reviewers and verifier write only outside the repository during the fingerprint window. Require the actual candidate commit, canonical spec hashes and evidence hashes for each disposition. Historical candidate 28 and checkpoints 8/9 remain history. Round 1/2 is preserved; any consolidated actionable review repairs start round 2/2 before editing. No science, hardware, participant-use, native OS, deployment, merge or scope waiver is implied.
+
+## D-010 v1 — final consolidated correction round (2026-10-25T10:03:31.382145+00:00)
+
+All six cf74fcf independent reviews are preserved. Start correction round **2/2**, recovery **0/3**, exactly four demonstrated source findings and owners in correction-round-2.md. Require real RED/GREEN, unchanged approved scientific/participant/authority limits, current image proof and all required gates/rereviews. No third automatic correction round. The cf74fcf fingerprint window ended after confirmed intentional stop; source edits may resume only by assigned owner after actual ACK.
+
+## D-010 v2 — consistent reader capability presentation (2026-10-25T10:08:31.887442+00:00)
+
+The existing UX-R001/UI003 correction includes only the DeviceScreen acquisition Facts/list section in ui/manage.tsx so Home and Device reuse current scoped per-channel presentation. Mobile owner has sole ownership of that section; Settings/privacy/raw sections and the capability-admission engine remain outside this edit. Physical connection or verified binding cannot grant approval. This is the same consolidated round2 finding, not additional scope or a third round.

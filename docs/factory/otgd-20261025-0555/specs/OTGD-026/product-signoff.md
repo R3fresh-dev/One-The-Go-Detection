@@ -9,3 +9,5 @@ Decision **CHANGES_REQUIRED**. Frozen context, immutable attempts/replacements, 
 Findings: PROD-003.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **CHANGES_REQUIRED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 cef15148de295ecabe3b38d6f9b2d45530b60993c1aacf1b41e1b4fc495c6562. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

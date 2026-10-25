@@ -9,3 +9,5 @@ Decision **BLOCKED**. HR-only reduced report requires explicit frozen policy and
 Findings: none; required evidence pending.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **BLOCKED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 f4bef2eee7577e8f57b7cd27b7463d3879dcb1d452c73540d8916f9d6bf41726. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

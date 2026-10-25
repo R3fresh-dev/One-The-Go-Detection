@@ -9,3 +9,5 @@ Decision **BLOCKED**. Restricted HR-only interval and independent current/baseli
 Findings: none; required evidence pending.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **CHANGES_REQUIRED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 277f1727d50ffc6c0ee8717d1c77541bca64139ea78ffe032795ebf8a0c2b0a7. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

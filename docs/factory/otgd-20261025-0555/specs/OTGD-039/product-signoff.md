@@ -9,3 +9,5 @@ Decision **BLOCKED**. Exact released instructions, immutable acknowledgment, mon
 Findings: none; required evidence pending.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **CHANGES_REQUIRED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 238b3c329cd79edb4bd57807926311a3bed0c935cf77ef77577fcf79afda02ef. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

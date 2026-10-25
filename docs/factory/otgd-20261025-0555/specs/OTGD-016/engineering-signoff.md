@@ -20,3 +20,5 @@ Relevant findings:
 - ENG-SIGN-002
 
 D-001–005 v1, D-006 v5, D-007 v1 and D-008 v1 acknowledged through actual parent messaging; exact impact responses are in the JSON record and main report. Scope remains approved software only. Native OS execution, physical/scientific/study/cloud/store evidence are distinct where applicable. No merge, deploy, participant use, paid service or provisioning was attempted. Correction round 0/2; recovery 0.
+
+Current independent replacement disposition: **BLOCKED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 430fe7dfbfdb117add502c5632150690905d94b3dcb42ddc892bf1e8943f273c. Actual /root/replacement_engineering report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/engineering/. This is provisional IMPLEMENTATION review, not final approval.

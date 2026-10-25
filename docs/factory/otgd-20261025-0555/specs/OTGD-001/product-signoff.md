@@ -9,3 +9,5 @@ Decision **CHANGES_REQUIRED**. The reconciled product retains one collection/one
 Findings: PROD-001, PROD-002, PROD-003.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **CHANGES_REQUIRED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

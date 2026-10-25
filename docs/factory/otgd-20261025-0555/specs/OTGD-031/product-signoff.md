@@ -9,3 +9,5 @@ Decision **BLOCKED**. Local clear preserves privacy intents, deletion requires f
 Findings: none; required evidence pending.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **BLOCKED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 993e7c0f65b5ee4bd9b2f470e2d4111f6329f083e7650a76ab71f78abf5e9f3f. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

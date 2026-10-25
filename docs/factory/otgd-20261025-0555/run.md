@@ -93,3 +93,7 @@ All six independent initial reviews complete for candidate28e07295; all47 per-sp
 ## Checkpoint 10 — replacement candidate
 
 2026-10-25T09:46:37.074966+00:00: All authors released source and reports. D009 v1–v11 corrections and the complete historical baseline acceptance audit are preserved. Current mobile 385 tests / 91.14% coverage and 72 browser cases pass; backend 1529 tests plus 208 subtests / 89.92% coverage pass. G COPY proof matches current backend; all services healthy. Freeze under D008 v2 after this commit for full current gates and six independent reviews. Correction 1/2, recovery 0/3; no final approval.
+
+## Checkpoint 11 — correction round 2
+
+2026-10-25T10:03:31.382145+00:00: All six independent replacement reviews and282per-spec decisions preserved. Four source defects consolidated in correction-round-2.md. Local runner deliberately stopped after four passing stages with unchanged fingerprint; no crash/recovery. Correction2/2 begins, recovery0/3. Current CI12jobsPASS, LocalStackpending; no final approval.

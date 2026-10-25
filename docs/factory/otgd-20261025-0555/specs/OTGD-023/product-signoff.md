@@ -9,3 +9,5 @@ Decision **BLOCKED**. Simulator versus verified physical binding, explicit disco
 Findings: none; required evidence pending.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **BLOCKED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 c772a370e6d80b6568ad3d210081934ac57ecb9e7449e7e776efeb776cdd98c4. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

@@ -9,3 +9,5 @@ Decision **BLOCKED**. Raw export has a separate participant-copy authority, exac
 Findings: none; required evidence pending.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **CHANGES_REQUIRED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 6e7ff5b60880e7234eec431ccb702b3e452b6a1d6e76a01720cb60b478782993. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

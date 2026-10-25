@@ -18,3 +18,7 @@ All six actual agents were explicitly dispatched with OpenAI gpt-6.1-sol/high; s
 | engineering | /root/review_engineering | BLOCKED | ../../reviews/candidate-28e0729/engineering/engineering-signoffs.json |
 Final required gates, explicit acceptance-case execution and applicable native/external evidence remain unresolved. Pending evidence is not a passing signoff; neither software tests nor reviews establish scientific, hardware, participant or release qualification.
 Decision register: ../../decisions.md; correction plan: ../../correction-round-1.md.
+
+## Candidate cf74fcf independent replacement review
+
+Exact candidate cf74fcff6ad19e639538d260f223ec18d618658d; current canonical SHA256 eb9f89e04620ed296b248ce076e2c5447df6c5fb2c9da0eb9fa90725f2bd99a2. All six real OpenAI independent reviewers completed their provisional implementation assessments. Decisions are preserved at ../../reviews/candidate-cf74fcf/<role>/per-spec-decisions.json. security: BLOCKED; ux: BLOCKED; ui: BLOCKED; code: BLOCKED; product: BLOCKED; engineering: CHANGES_REQUIRED. No final council approval. Four consolidated source findings require correction round 2/2; execution and external prerequisites remain distinct.

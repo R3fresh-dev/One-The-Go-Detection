@@ -1,0 +1,404 @@
+{
+  "algorithm": "SHA-256",
+  "recorded_at": "2026-10-25T09:56:24.756945+00:00",
+  "reviewer": {
+    "agent_id": "/root/replacement_code",
+    "role": "code reviewer",
+    "provider": "OpenAI",
+    "configured_model": "gpt-6.1-sol",
+    "configured_reasoning_effort": "high",
+    "fork_turns": "none",
+    "runtime_model_independently_queryable": false,
+    "model_evidence": "Parent corrected and explicitly confirmed actual spawn arguments through native message; no runtime model query exposed.",
+    "independence": "Fresh separate context; no authoring of reviewed production code/tests."
+  },
+  "candidate": "cf74fcff6ad19e639538d260f223ec18d618658d",
+  "tree": "cad51ecbc675a548c9e918782363264736276292",
+  "canonical_hashes_all_match": true,
+  "evidence": [
+    {
+      "path": "services/api/otgd/main.py",
+      "sha256": "a84b0694e0e97b41ed113f78ad261e0cfc352c9d84961969311d72d10681a46a",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/otgd/domain.py",
+      "sha256": "ba1d898a1107ab9983a5ce4d2f6f04884b94acab3fc6130e04ad106fb3fc92d5",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/otgd/history_cursor.py",
+      "sha256": "f6fff83507257b75a7fcabde84fd35ac46ad129563df4bcafe6fcefac700112e",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/otgd/participant_acquisition.py",
+      "sha256": "bfef64d21a695a3bf9c3dd853592b007f8ff3b75eb02888af9e70963e33eba6e",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/otgd/raw_export.py",
+      "sha256": "476079108819029a785bc86950406029752e5834fb5f59660e59d7ac2523d8b8",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/otgd/report_revisions.py",
+      "sha256": "9857ff4eeeac5123e5e092640d57c6023c8992f1119137e820c2166ed30347af",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/otgd/worker.py",
+      "sha256": "71340311bc34f66daf641c439b4c6f66098cf1386969e78309731779edb9787d",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/otgd/model_engine.py",
+      "sha256": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/otgd/native_evidence.py",
+      "sha256": "be7d1fe0b49c666f599d0e8978cdef2e6d5230268335c29d1a1a18663a045ced",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/tests/test_current_result_readback.py",
+      "sha256": "4aeec53c610ba9c6f609fcd63b05406d0d7c61305d9bd674382e0d7680c12dd5",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/tests/test_cardiac_authority.py",
+      "sha256": "96d34c6540fcdbaedcd35a347c30661bbe94e9bb5582a7b6c5ecd42ec247695a",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/tests/test_history_cursors.py",
+      "sha256": "6c309744fdcd25f8d9b28ac4981736f52232700e3047e0ddb5dda45147fbf554",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/tests/test_participant_acquisition.py",
+      "sha256": "70585678405b2ba85fc9cf53d515c327118bd63b74b16fee2cd5ce6caa8a647a",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/tests/test_model_evaluation.py",
+      "sha256": "7d8df519466ee08a3461fbac69176b621e07b587fe85c07e07098d94b57b3d31",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "services/api/tests/test_model_evaluation_cardiac.py",
+      "sha256": "61c92b0c9d5d91f6a486626ba778e8f2a9229a22837eaa456c7e217664700b83",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/controller.ts",
+      "sha256": "b732ee942a27c57abd638ef5806574c574b746313c29101ca19a925e68d95665",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/ui/checks.tsx",
+      "sha256": "52bb48e4cc5e71e73df793c34e7204d6100eb8c7ea6a6cecc0a06040a3686be7",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/core/resultPresentation.ts",
+      "sha256": "17b4d4f2e7bf60909c41f0cc6359655c6175d3e978bb0ccb9bc70fa08af7bcd0",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/services/sync.ts",
+      "sha256": "5062dd28e9db43709b010b8da65fcbafbda563fdd40c33bfe1b32c10a499e3a4",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/services/export.ts",
+      "sha256": "6cc4977cc639f5629629ce09f25651e1fb63add8c96ddf740add87698ad5b22d",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/core/oauthPolicy.ts",
+      "sha256": "aee029fd3852a0a6fa99814e34eade19179271ca39b012e79e1d09203a2924f8",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/oauth-build-policy.js",
+      "sha256": "8464c59acc6d93508efee0c6458bfdfca9e9faf980152e5b406021f03b5d4a78",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/services/auth.ts",
+      "sha256": "c1f9ef918b2f2b8a1f52a82937a3576d51d232b89aa7f5656aa3d87156c15cc9",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/platform/config.ts",
+      "sha256": "aed4cd500d5ac406e854384114b61d8bc4b12d26b0b51561c28c032ad7d21748",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/platform/sharing.ts",
+      "sha256": "4742d753029e4d03e4536863203517501ed4e8516dc6e0efe977e4bb1126a419",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/platform/sharing.native.ts",
+      "sha256": "8b0d71f308e8f0feb988e8ee9c7cce0cade86ca55e8ff8da58261d7795213f89",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/tests/hr-read-admission.test.ts",
+      "sha256": "b55d7461225c3c94494bbbeb5317d63fb7f1736da8ed1a64af7a55c1645a0142",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/tests/result-ui.test.ts",
+      "sha256": "f6252bca25084765c1681b662b6acbb1493483b08046f9547ec617f709b5e5aa",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/tests/unit-build-isolation.test.ts",
+      "sha256": "829a6ca78ac16082018846bc916ddb3674c85bde8a5ee7db54951305e9d2c6cf",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/tests/support/constants.cjs",
+      "sha256": "c0a09a0900163da61f06c53ac9bc44274786c54380d794c359792ebe850b094b",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/src/core/preparationClock.ts",
+      "sha256": "853b394a82f3ce04d7d66ede53bd6c0c42280560bc44bff115b3cde57cd7aad2",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/scripts/test-coverage.mjs",
+      "sha256": "f99021554fb051bcb21465832dddea7d2d4ef8e85609c4b14e99d83656c95dba",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "apps/mobile/scripts/coverage-reporter.mjs",
+      "sha256": "98da8c7b643b93d6ea1c1d9c664065ed8e9c8a9a1635a4157d4fcc476cd69fc1",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "deploy/web_artifact.py",
+      "sha256": "883b39d1a57992a7ee0124f85b861f5ae76ec1ff5e316e7c0f99b74cac7bda32",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "deploy/fargate.py",
+      "sha256": "e2a9c63d17122a6cd486d5d866fc0f72b67331bf221e62c63bebee21e3dc5135",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "deploy/serverless.py",
+      "sha256": "883691d55a322986eab1ffb6aa377d0ae42d1ae2f3c2cf781804d60ec643168c",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "scripts/ci_gate.py",
+      "sha256": "96b1daa84983ed76d99dc4a45dfa1bc387e3703778ed2828d5eb66c307e0ec1a",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": ".github/workflows/merge-gate.yml",
+      "sha256": "9759a137309d85311e482b4c4672ffb01c14bca7678fd12194fe378d295ab20c",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": ".github/workflows/platform.yml",
+      "sha256": "a8aa1d5e4f239417b2b4c4d2432d7159185d7f1f379fd7817c7549ae26755df5",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": ".github/workflows/native-build.yml",
+      "sha256": "cb022b094192a3ac6cbb422254a3f4ba5d2a961e7f27811ca0b2d13c9b7a3984",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": ".github/workflows/hosted-native-preview.yml",
+      "sha256": "b34c2230a163a643063ea6637bc490daff973b9c58f1ebd34b095d90a3e27c06",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "openspec/changes/production-mobile-platform/shared-contracts.md",
+      "sha256": "c74f1fdf1ad65c208fb4d5f6b2f488961c3f2edff73c6a657d263073974bd8ec",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "openspec/changes/authorized-model-execution/design.md",
+      "sha256": "599b95eb34042a7f2a934bdfa1209a0d146f790fa2707b8c23fd8c04b2857625",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-auth.md",
+      "sha256": "010860d631be2e7bb84db781c8c701ccaecc20cc65f113ff3a01242da92fe2ab",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-auth-acceptance.md",
+      "sha256": "ccaddb7036526b6de895984536aa9131b93cdeab044270d6b870edfc7d1a7bd1",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-history-boundaries.md",
+      "sha256": "881b3d853dd61d583f6a0e83e4388ab632e403bb93dadf1deb4297c20376cb0e",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-salcol.md",
+      "sha256": "c706f8e2b03152ac8ca8a6bcb62e470bcc844e99c69f46c2885f6e43204d00fc",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-hr-readback.md",
+      "sha256": "3b296866eac653f310d3062579e49b1852766cf6b318e87cfabe983598988ff3",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-preview-fixtures.md",
+      "sha256": "686ad103af794d0541b6062274b882c5e4045b33a00fb1e05ea8c93dadce8331",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-native-assertions.md",
+      "sha256": "84c60f25d6d2a1f97f476c0d9a1f8c593a0db66dbc8be7a54ebb2993e2c5f00b",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-native-optical-fifo.md",
+      "sha256": "fa766ab96b67c6d3c6c2788473a155296e180e77597b2b1446402d8023569e29",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-evaluation.md",
+      "sha256": "e50bb689352fc973f11aac289d5c01407ed15b762f9b7250caeceaab4e3bb0b5",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-evaluation-invalid-rows.md",
+      "sha256": "792a3c5c1d3bbde6ab8c4682e3f7d1a938636381ad2a354e0780d1cee45d0d7f",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-infra-capacity.md",
+      "sha256": "12d8fd9b5b6f5f0844934338696c32cb1aee2cdc5954fb8ee76de7818e6058c2",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-web-assets.md",
+      "sha256": "e732331cfec1df71b01f6aad8fecb1e9052f9e28f2e0af3f406ede262ee78130",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-product.md",
+      "sha256": "e4a8aaceebc5fcc0e77f4017fcfbaa167f742f5204cfd9166e171adc9e52a8ff",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reports/correction-privacy-raw-ui.md",
+      "sha256": "5924f815c227c1656f14494bf71e0735db73f48b448da43f09e4e93d04b791e4",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/reviews/candidate-28e0729/code/review.md",
+      "sha256": "221ea557e5a46fc914c8633b971b55fb90863121a45fc303930a7c7466baa1b4",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/correction-round-1.md",
+      "sha256": "9ffc022d0e6e785ad50d3fc1f747dc3d34bcdc9af7b7694b48fe0c87f5a2ad01",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/decisions.md",
+      "sha256": "b5283fd80a6e2ebcf34165226d8e012504097ed30ae1fe4c2c295fac896a1424",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "docs/factory/otgd-20261025-0555/impact-register.md",
+      "sha256": "a2c323c52ade46d6bc449cba866e64048fb9fa9af2e16b915797b086c9557d15",
+      "kind": "current_source_or_preserved_correction_report",
+      "execution_attribution": "Static inspection; authors own reported executions; no reviewer runtime test."
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/candidate-binding.json",
+      "sha256": "15850b9e86668d2e614188f8a6477ca74b1628821b40c01db264fc5975674638",
+      "kind": "candidate_gate_status_at_review",
+      "execution_attribution": "PM gate status only; RUN is not PASS."
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/gate-process.json",
+      "sha256": "321f1152f550727c9a6ae7f96114e7ca263b48fceb78a4009da5b449bdcaee07",
+      "kind": "candidate_gate_status_at_review",
+      "execution_attribution": "PM gate status only; RUN is not PASS."
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/final-gates.log",
+      "sha256": "0fa66e00f789ab045900ff6ba18b8d0b4d61bc08bf3f9f1d727b27d554118ddb",
+      "kind": "candidate_gate_status_at_review",
+      "execution_attribution": "PM gate status only; RUN is not PASS."
+    }
+  ]
+}

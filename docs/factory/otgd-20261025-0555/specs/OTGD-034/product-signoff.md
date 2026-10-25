@@ -9,3 +9,5 @@ Decision **CHANGES_REQUIRED**. Result detail distinguishes scientific outcome/de
 Findings: PROD-003.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **CHANGES_REQUIRED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 dadd53ea7fd8027bb76d17c26e51d4910cc3c8763bfd8a838434fbf8112397ba. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

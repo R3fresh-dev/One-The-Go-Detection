@@ -1,0 +1,37 @@
+{
+  "time": "2026-10-25T09:54:16.426508+00:00",
+  "artifacts": [
+    {
+      "path": "reports/unit.xml",
+      "bytes": 578487,
+      "sha256": "abd14e0784c4f8ff2a60ad3b9fbf451b41c3b617e94666bd85c5af36df4bceed",
+      "testsuites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "1737",
+          "time": "330.118",
+          "timestamp": "2026-10-25T09:47:05.300010+00:00",
+          "hostname": "3a026c20741d"
+        }
+      ]
+    },
+    {
+      "path": "reports/unit-coverage.log",
+      "bytes": 161587,
+      "sha256": "610537c29421285468f524394bfc6f32181f59ebbba34e7ae4666725c93527dc"
+    },
+    {
+      "path": "apps/mobile/reports/mobile-unit-coverage.json",
+      "bytes": 10104,
+      "sha256": "5dc5f40bc9e785bea54732e55f104be8f485d7b3cf7a1205cfcc13a671eab433",
+      "summary": {
+        "total_lines": 20577,
+        "covered_lines": 18754,
+        "percent_covered": 91.14059386693881
+      }
+    }
+  ]
+}

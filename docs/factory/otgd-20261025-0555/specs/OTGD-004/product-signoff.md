@@ -9,3 +9,5 @@ Decision **CHANGES_REQUIRED**. Local History reuses CheckRow and labels every fr
 Findings: PROD-001.
 
 This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.
+
+Current independent replacement disposition: **BLOCKED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 b29801322e8700aa11edce8289d84290485834005cba2fa80ee5695dd3d248ce. Actual /root/replacement_product report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/product/. This is provisional IMPLEMENTATION review, not final approval.

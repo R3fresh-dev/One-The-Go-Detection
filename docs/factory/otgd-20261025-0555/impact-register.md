@@ -49,3 +49,7 @@ Checkpoint9 author hold: mobile, backend and firmware owners explicitly paused r
 ## Replacement candidate author release
 
 Actual owner messages confirm D009 v8 SALCOL, v9 current HR server read, v10 preview test fixture isolation and v11 cached HR display/export corrections. Backend, mobile, auth/preview and firmware owners released all source/test/report writes; mobile released port 8082 after 72/72 component/raw cases. G image proof/adoption and D cache retention receipts are preserved. All are author evidence, not independent signoffs. New reviewers must acknowledge D008 v2 and current D001–D009 decisions before dependent signoff.
+
+## Final correction round acknowledgments
+
+Actual D010v1 AFFECTED acknowledgments received from /root/browser_builder (returned callback), /root/acceptance_backend (generic numeric export, prior blanket-policy rationale withdrawn), /root/mobile_builder (mounted HR arrival and signed reader presentation), /root/firmware_validation (source-image proof/resource hold) and /root/verification (immutable historical cf74fcf evidence, final rebind later). No unresolved clarification. Auth owner reproduced matching-state wrong callback with one exchange and one capability lookup; backend reproduced two legitimate numeric export503 failures. These are author RED evidence, not fixes/signoffs. PM granted D010v2 narrow DeviceScreen list ownership to mobile owner; actual ACK remains required before dependent final signoff.
