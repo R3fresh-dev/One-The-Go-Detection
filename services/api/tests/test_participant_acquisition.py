@@ -526,6 +526,110 @@ def test_acknowledgment_time_cannot_be_rebased_onto_new_server_acceptance(collec
         assert denied.status_code == 422 and denied.json()["code"] == "ACKNOWLEDGMENT_TIME_INVALID"
 
 
+@pytest.mark.parametrize('age_offset', [-0.001, 0, 0.001])
+def test_acknowledgment_submission_maximum_age_exact_boundary(collection_scope, client, monkeypatch, age_offset):
+    """Isolate approved age from the separate attempt-creation lower bound."""
+    run = start_collection(client, collection_scope)
+    tick = int(now())
+    maximum = run['config']['participant_protocol']['maximum_acknowledgment_age_seconds']
+    with factory().begin() as db:
+        owner = db.get(Account, run['account'])
+        record(db, owner, 'attempt', run['attempt_id']).created = tick - maximum - 10
+    monkeypatch.setattr('otgd.participant_acquisition.now', lambda: tick)
+    body = {**run['ack'], 'acknowledged_at': iso(tick - maximum - age_offset)}
+    response = client.post(f"/v1/sessions/{run['session_id']}/instruction-acknowledgments",
+        headers=headers(), json=body)
+    if age_offset <= 0:
+        assert response.status_code == 201, response.text
+        assert response.json()['acknowledged_at'] == body['acknowledged_at']
+    else:
+        assert response.status_code == 422 and response.json()['code'] == 'ACKNOWLEDGMENT_TIME_INVALID', response.text
+    with factory()() as db:
+        receipts = db.query(Record).filter_by(account_id=run['account'],
+            parent_id=run['session_id'], kind='instruction_receipt').all()
+        assert len(receipts) == (1 if age_offset <= 0 else 0)
+
+
+@pytest.mark.parametrize('early_offset', [-0.001, 0, 0.001])
+def test_acknowledgment_submission_attempt_minus_five_seconds_exact_boundary(
+    collection_scope, client, monkeypatch, early_offset
+):
+    run = start_collection(client, collection_scope)
+    created = int(now())
+    with factory().begin() as db:
+        owner = db.get(Account, run['account'])
+        record(db, owner, 'attempt', run['attempt_id']).created = created
+    # The approved age window is wider, so only attempt.created-5 is limiting.
+    monkeypatch.setattr('otgd.participant_acquisition.now', lambda: created + 10)
+    body = {**run['ack'], 'acknowledged_at': iso(created - 5 - early_offset)}
+    response = client.post(f"/v1/sessions/{run['session_id']}/instruction-acknowledgments",
+        headers=headers(), json=body)
+    if early_offset <= 0:
+        assert response.status_code == 201, response.text
+        assert response.json()['acknowledged_at'] == body['acknowledged_at']
+    else:
+        assert response.status_code == 422 and response.json()['code'] == 'ACKNOWLEDGMENT_TIME_INVALID', response.text
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        assert record(db, owner, 'attempt', run['attempt_id']).body == run['attempt']
+        assert db.query(Record).filter_by(account_id=run['account'], parent_id=run['session_id'],
+            kind='instruction_receipt').count() == (1 if early_offset <= 0 else 0)
+
+
+@pytest.mark.parametrize('boundary', ['grant', 'start'])
+@pytest.mark.parametrize('age_offset', [-0.001, 0, 0.001])
+def test_original_instruction_receipt_expires_only_after_maximum_at_grant_and_start(
+    collection_scope, client, monkeypatch, boundary, age_offset
+):
+    from datetime import datetime
+
+    run = start_collection(client, collection_scope)
+    declared = int(now()) - 1
+    body = {**run['ack'], 'acknowledged_at': iso(declared)}
+    original_headers = headers()
+    path = f"/v1/sessions/{run['session_id']}/instruction-acknowledgments"
+    accepted = client.post(path, headers=original_headers, json=body)
+    assert accepted.status_code == 201, accepted.text
+    receipt = accepted.json()
+    assert declared < datetime.fromisoformat(receipt['accepted_at']).timestamp()
+    maximum = run['config']['participant_protocol']['maximum_acknowledgment_age_seconds']
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        original_row = record(db, owner, 'instruction_receipt', receipt['instruction_receipt_id'])
+        original_created, original_hash = original_row.created, original_row.sha256
+    grant_body = {'attempt_id': run['attempt_id'], 'channel': 'saliva', 'binding_id': None,
+        'device_id': None, 'configuration_id': CONFIGURATION, 'configuration_hash': run['config']['sha256'],
+        'instruction_receipt_id': receipt['instruction_receipt_id'], 'raw_recording_kind': None}
+    if boundary == 'start':
+        monkeypatch.setattr('otgd.participant_acquisition.now', lambda: declared + maximum - 0.001)
+        grant = client.post(f"/v1/sessions/{run['session_id']}/capture-authorizations",
+            headers=headers(), json=grant_body)
+        assert grant.status_code == 201, grant.text
+    monkeypatch.setattr('otgd.participant_acquisition.now', lambda: declared + maximum + age_offset)
+    # Replaying the historical receipt never changes the original minimum T.
+    replay = client.post(path, headers=original_headers, json=body)
+    assert replay.status_code == 201 and replay.json() == receipt
+    if boundary == 'grant':
+        response = client.post(f"/v1/sessions/{run['session_id']}/capture-authorizations",
+            headers=headers(), json=grant_body)
+    else:
+        response = client.post(f"/v1/sessions/{run['session_id']}/capture-authorizations/{grant.json()['authorization_id']}/start",
+            headers=headers(), json={'attempt_id': run['attempt_id'], 'device_boot_id': None, 'device_nonce': None})
+    if age_offset <= 0:
+        assert response.status_code == (201 if boundary == 'grant' else 200), response.text
+    else:
+        assert response.status_code == 403 and response.json()['code'] == 'INSTRUCTION_ACKNOWLEDGMENT_EXPIRED', response.text
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        row = record(db, owner, 'instruction_receipt', receipt['instruction_receipt_id'])
+        assert row.body == receipt and row.created == original_created and row.sha256 == original_hash
+        if age_offset > 0:
+            authorizations = db.query(Record).filter_by(account_id=run['account'],
+                parent_id=run['session_id'], kind='authorization').all()
+            assert len(authorizations) == (0 if boundary == 'grant' else 1)
+            assert all(authorization.body['state'] == 'issued' for authorization in authorizations)
+
+
 def test_foreign_attempt_receipt_and_missing_receipt_do_not_create_collection_start(collection_scope, client):
     first, second = (start_collection(client, collection_scope) for _ in range(2))
     accepted = client.post(f"/v1/sessions/{first['session_id']}/instruction-acknowledgments",

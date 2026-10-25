@@ -1,0 +1,5 @@
+# Production capacity assertion supplement
+
+At 2026-10-25T08:55:12.141347+00:00, PM addressed the exact OTGD020 AND-ENV004-01 assertion gap identified by the independent backend acceptance audit. The actual synthesized API service is located through its API task definition; tests require at least two active production API tasks, at least one QA API task, and production autoscaling minimum at least two. Existing TLS/private placement/encryption/MultiAZ assertions remain. No deployment or production-source change.
+
+Executed `npm run build` and `node --import tsx --test --test-reporter=junit --test-reporter-destination=/workspace/scratch/otgd-20261025-0555-live/correction-infra-capacity.xml test/platform.test.ts` in infra: exit0,6cases,0failures/errors/skips. Raw log /workspace/scratch/otgd-20261025-0555-live/correction-infra-capacity.log. XML SHA256 `7f8848cb6e77b779b15160cd469970f2c62b108e20625589fe31b56d6e5f8d82`; source SHA256 `0e949874e8b8c86b6f4ae1075222dc65383648b0b66dcc14b20669eedc92878c`. The replacement full candidate gates and independent reviews remain required. Correction1/2; recovery0/3.

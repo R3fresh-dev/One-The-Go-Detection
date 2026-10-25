@@ -5,6 +5,8 @@
   "expo_account": "REPLACE_WITH_ACCOUNT_OR_ORGANIZATION_SLUG",
   "api_url": "https://REPLACE_WITH_DEPLOYED_QA_API_ORIGIN",
   "oauth_issuer": "https://REPLACE_WITH_DEPLOYED_QA_COGNITO_ISSUER",
+  "oauth_origin": "https://REPLACE_WITH_ADMITTED_IDENTITY_ORIGIN",
+  "oauth_web_callback_uri": "https://REPLACE_WITH_ADMITTED_WEB_ORIGIN/",
   "oauth_client_id": "REPLACE_WITH_DEPLOYED_PUBLIC_CLIENT_ID",
   "artifact_hosts": ["REPLACE_WITH_APPROVED_EAS_ARTIFACT_HOST"],
   "bundletool_jar": "/tmp/otgd-store-inputs/bundletool-all-1.18.3.jar",

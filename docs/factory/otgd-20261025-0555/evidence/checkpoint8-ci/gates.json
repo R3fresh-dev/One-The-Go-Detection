@@ -1,0 +1,19 @@
+{
+  "revision": "ad7ee3951edf53e3e06a64608347105339eb1945",
+  "run_url": "https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/40174287684",
+  "passed": [
+    "unit-coverage",
+    "atdd",
+    "components",
+    "performance",
+    "live-dependencies",
+    "docker-health",
+    "localstack-api",
+    "specifications",
+    "native-android",
+    "native-ios",
+    "firmware",
+    "hosted-android",
+    "hosted-ios"
+  ]
+}

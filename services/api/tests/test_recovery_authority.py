@@ -541,3 +541,103 @@ def test_worker_claim_and_commit_refuse_retained_activation_missing_in_database(
         worker.commit_output(claim, {})
     with factory()() as db:
         assert db.get(Check, claim.body["session_id"]).result is None
+
+
+def test_failed_nonprivacy_admission_preserves_accepted_cleanup_and_retained_journal(
+    client, journal, monkeypatch
+):
+    """Actual worker cleanup decisions; versioned transport is an explicit unit fixture."""
+    from botocore.exceptions import ClientError
+    from otgd import storage, worker
+    from otgd.db import Artifact, Outbox, Record, factory
+
+    activation(journal)
+    retained_before = deepcopy(journal.s3.objects)
+    monkeypatch.setattr('otgd.config.settings', lambda: journal.cfg)
+    monkeypatch.setattr('otgd.journal_continuity.verify_binding', lambda *_: None)
+    nonprivacy = '20000000-0000-4000-8000-000000000002'
+    artifact_id = '50000000-0000-4000-8000-000000000001'
+    key = f'quarantine/{ACCOUNT}/1/fixture'
+    export_key = f'exports/{ACCOUNT}/1/fixture/1.zip'
+    neighbor = 'quarantine/10000000-0000-4000-8000-000000000002/1/neighbor'
+
+    class CleanupTransport:
+        def __init__(self):
+            self.objects = {(settings().artifact_bucket, key): ['source-version', 'marker-version'],
+                (settings().export_bucket, export_key): ['export-version'],
+                (settings().artifact_bucket, neighbor): ['neighbor-version']}
+            self.deleted = []
+
+        def get_paginator(self, name):
+            assert name == 'list_object_versions'
+            return self
+
+        def paginate(self, Bucket, Prefix):
+            assert Bucket != journal.cfg.journal_bucket, 'Privacy cleanup must not sweep the independent journal'
+            return [{'Versions': [{'Key': object_key, 'VersionId': version}
+                for (bucket, object_key), versions in self.objects.items()
+                if bucket == Bucket and object_key.startswith(Prefix)
+                for version in versions if not version.startswith('marker')],
+                'DeleteMarkers': [{'Key': object_key, 'VersionId': version}
+                for (bucket, object_key), versions in self.objects.items()
+                if bucket == Bucket and object_key.startswith(Prefix)
+                for version in versions if version.startswith('marker')]}]
+
+        def delete_objects(self, Bucket, Delete):
+            assert Bucket != journal.cfg.journal_bucket
+            for item in Delete['Objects']:
+                self.objects[(Bucket, item['Key'])].remove(item['VersionId'])
+                self.deleted.append((Bucket, item['Key'], item['VersionId']))
+            return {}
+
+        def put_object(self, **request):
+            assert request['Bucket'] == journal.cfg.journal_bucket
+            assert request['Key'] == f'events/{JOB}/completed.json'
+            assert request['IfNoneMatch'] == '*'
+            raise ClientError({'Error': {'Code': 'PreconditionFailed'},
+                'ResponseMetadata': {'HTTPStatusCode': 412}}, 'PutObject')
+
+        def head_object(self, Bucket, Key):
+            assert Bucket == journal.cfg.journal_bucket
+            return {'VersionId': journal.s3.objects[Key]['version_id']}
+
+        def get_object(self, **request):
+            return journal.s3.get_object(**request)
+
+    transport = CleanupTransport()
+    monkeypatch.setattr(storage, 'client', lambda service: transport)
+    with factory().begin() as db:
+        db.add(Account(id=ACCOUNT, subject_hash=SUBJECT, generation=2, state='deleting'))
+        db.flush()
+        db.add_all([
+            Job(id=JOB, account_id=ACCOUNT, generation=1, kind='deletion', state='pending',
+                journal_accepted=True, body={'scope': 'account', 'provider_sub': 'fictional-cleanup-sub',
+                    'journal_receipt': journal.receipt}),
+            Job(id=nonprivacy, account_id=ACCOUNT, generation=2, kind='result', state='pending',
+                body={'session_id': '40000000-0000-4000-8000-000000000001'}),
+            Artifact(id=artifact_id, account_id=ACCOUNT, generation=1,
+                session_id='40000000-0000-4000-8000-000000000001', bucket=settings().artifact_bucket,
+                key=key, sha256='a' * 64, size=7, media_type='video/mp4', kind='eye_video',
+                state='quarantine', expires=now()-100, scope={}),
+            Record(id=ACCOUNT+':context:fixture', account_id=ACCOUNT, generation=1, kind='context',
+                body={'fictional': True}, sha256=digest({'fictional': True})),
+        ])
+        db.flush()
+        db.add_all([Outbox(job_id=JOB), Outbox(job_id=nonprivacy)])
+    with pytest.raises(Problem, match='INDEPENDENT_RECOVERY_NOT_VERIFIED'):
+        worker.claim_job(nonprivacy)
+    assert worker.run_job(JOB) == 'completed'
+    with factory()() as db:
+        assert db.get(Account, ACCOUNT).state == 'deleted'
+        assert db.get(Account, ACCOUNT).generation == 2
+        assert db.get(Job, JOB).state == 'completed' and db.get(Job, JOB).journal_accepted
+        assert db.get(Job, nonprivacy).state == 'pending' and db.get(Job, nonprivacy).fence == 0
+        assert db.get(Record, ACCOUNT+':context:fixture') is None
+        assert db.get(Artifact, artifact_id).state == 'purged'
+    with pytest.raises(Problem, match='INDEPENDENT_RECOVERY_NOT_VERIFIED'):
+        worker.claim_job(nonprivacy)
+    assert transport.objects[(settings().artifact_bucket, key)] == []
+    assert transport.objects[(settings().export_bucket, export_key)] == []
+    assert transport.objects[(settings().artifact_bucket, neighbor)] == ['neighbor-version']
+    assert len(transport.deleted) == 3
+    assert journal.s3.objects == retained_before

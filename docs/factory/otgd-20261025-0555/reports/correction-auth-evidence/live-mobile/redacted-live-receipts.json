@@ -1,0 +1,110 @@
+{
+  "namespace": "fictional-browser-6a1246886f3240f2b8ddba15c1f8764a",
+  "fictional_only": true,
+  "project": "live-mobile",
+  "viewport": {
+    "width": 412,
+    "height": 839
+  },
+  "origins": [
+    "http://localhost:8000",
+    "http://localhost:8081",
+    "http://localhost:8082"
+  ],
+  "finalize": {
+    "session_id": "89b95093-8947-4b8e-9e5c-6e9cb7b04e93",
+    "state": "processing",
+    "job_id": "239a94b1-2d7f-40f0-9280-b05f1591a6ee",
+    "revision": 3,
+    "snapshot_sha256": "b522924f8271f5bfdf973ed20e01018504d2a303bfce7930e32692a6638336b9",
+    "evidence_sha256": "e76446d02c0b3f9d56a8aa4cc1a05720c911fedd9a23a04172f316bd42e5dfeb"
+  },
+  "finalize_receipt_replayed": true,
+  "result": {
+    "state": "measurement_only",
+    "probability": null,
+    "session_id": "89b95093-8947-4b8e-9e5c-6e9cb7b04e93"
+  },
+  "export": {
+    "schema_version": "1.0.0",
+    "job_id": "e0edb881-244d-4d50-9b8c-f9e9b1875aca",
+    "kind": "export",
+    "state": "pending",
+    "scope": {
+      "kind": "single",
+      "session_ids": [
+        "89b95093-8947-4b8e-9e5c-6e9cb7b04e93"
+      ]
+    },
+    "data_generation": 4,
+    "accepted_at": "2026-10-25T08:10:36.915Z",
+    "started_at": null,
+    "completed_at": null,
+    "expires_at": "2026-10-26T08:10:36.915Z",
+    "failure_code": null,
+    "retained_categories": [],
+    "policy_version": "privacy-v1",
+    "attempt_count": 0,
+    "allowed_actions": [
+      "refresh"
+    ]
+  },
+  "archive": {
+    "sha256": "7322071e8ab151fc217429e75bd910741392ef555f97b69e057ff424d955e5b4",
+    "bytes": 3187,
+    "member_count": 3
+  },
+  "consent": {
+    "study_id": "fictional-probe-03ab4619f85f4b3a-study",
+    "consent_record_id": "ce69e542-ee0c-4e62-bbd5-b3b0973c0228",
+    "state": "active",
+    "document_sha256": "2604b8e9b67de37c41256f0ca53f9b2832088e5614021417993eae38a02672d5"
+  },
+  "withdrawal": {
+    "study_id": "fictional-probe-03ab4619f85f4b3a-study",
+    "state": "withdrawn",
+    "accepted_at": "2026-10-25T08:10:41.081Z"
+  },
+  "withdrawn_consent_denied": true,
+  "deletion": {
+    "schema_version": "1.0.0",
+    "job_id": "6a66e535-ec81-4d59-a1d6-c9437784a359",
+    "kind": "deletion",
+    "state": "pending",
+    "scope": "all_data",
+    "data_generation": 4,
+    "accepted_at": "2026-10-25T08:10:42.022Z",
+    "started_at": null,
+    "completed_at": null,
+    "expires_at": null,
+    "failure_code": null,
+    "retained_categories": [
+      "identity_and_generation_barriers",
+      "audit_and_security_metadata",
+      "minimal_operation_receipts",
+      "operator_membership_references",
+      "private_cleanup_references",
+      "deletion_journal"
+    ],
+    "policy_version": "privacy-v1",
+    "attempt_count": 0,
+    "allowed_actions": [
+      "refresh"
+    ]
+  },
+  "pending_deletion_after_lost_ack": true,
+  "logout": {
+    "state": "accepted",
+    "remote_family_revoked": true,
+    "accepted_at": "2026-10-25T08:10:44.112Z"
+  },
+  "memory_only_reload": true,
+  "foreign_denied": true,
+  "retired_generation_denied": true,
+  "revoked_refresh_denied": true,
+  "network_destinations": [
+    "http://localhost:8000",
+    "http://localhost:8081",
+    "http://localhost:8082"
+  ]
+}

@@ -436,6 +436,9 @@ def test_actual_http_async_worker_zip_download_replay_expiry_and_foreign_denial(
     assert done.status_code == 200 and done.json()['state'] == 'completed', done.text
     download = http.get(path+'/download',headers=live_headers())
     assert download.status_code == 200, download.text
+    assert download.headers['cache-control'] == 'private, no-store'
+    assert download.headers['content-disposition'] == f'attachment; filename="otgd-{id}.zip"'
+    assert download.headers['content-type'] == 'application/zip'
     assert store.archive_read_bound == len(download.content)+1 and store.streams[-1].closed
     assert hashlib.sha256(download.content).hexdigest() == done.json()['sha256']
     with zipfile.ZipFile(io.BytesIO(download.content)) as archive:
@@ -480,6 +483,53 @@ def test_http_accepted_raw_replay_and_new_download_are_denied_after_revocation(h
     assert replay.status_code == 403
     assert http.get('/v1/privacy/jobs/'+id+'/download',headers=live_headers()).status_code == 403
     assert http.get('/v1/privacy/raw-export-scopes',headers=live_headers()).json()['scopes'][0]['artifacts'] == []
+
+
+def test_accepted_post_replay_after_export_authority_retirement_hides_original_scope(http, fixture):
+    body = {'selection': {'kind': 'single', 'session_ids': [raw_fixture.CHECK]},
+        'format': 'json_zip', 'include_raw': True, 'raw_scope': scope().data()}
+    original_headers = live_headers(key='80000000-0000-4000-8000-000000000003')
+    accepted_response = http.post('/v1/privacy/exports', headers=original_headers, json=body)
+    assert accepted_response.status_code == 202, accepted_response.text
+    job_id = accepted_response.json()['job_id']
+    with fixture.sessions.begin() as db:
+        original = deepcopy(db.get(Job, job_id).body)
+        transition(db, 'raw_export', grant()['registry_id'], 'v1', 'retire',
+            'local:fixture-releaser', 'Fictional export authority retirement, not consent withdrawal', 3)
+        owner = db.get(Account, raw_fixture.ACCOUNT)
+        assert retention.record(db, owner, 'consent', 'FICTIONAL-STUDY').body['state'] == 'active'
+    replay = http.post('/v1/privacy/exports', headers=original_headers, json=body)
+    assert replay.status_code == 403, replay.text
+    assert replay.json()['code'] == 'APPROVED_REGISTRY_VERSION_REQUIRED'
+    assert not {'raw_export', 'download_path', 'scope', 'job_id'} & replay.json().keys()
+    with fixture.sessions() as db:
+        jobs = list(db.scalars(select(Job).where(Job.kind == 'export')))
+        assert len(jobs) == 1 and jobs[0].id == job_id
+        assert jobs[0].body == original and jobs[0].state == 'pending'
+
+
+def test_raw_members_fit_but_complete_structured_manifest_archive_exceeds_grant(fixture, monkeypatch):
+    cap = len(DATA) + 1
+    store = ArchiveStore()
+    monkeypatch.setattr(worker, 'factory', lambda: fixture.sessions)
+    monkeypatch.setattr(worker.storage, 'client', lambda service: store)
+    monkeypatch.setattr(worker.storage, 'put_versioned', store.put_versioned)
+    with fixture.sessions.begin() as db:
+        install_full_evidence(db)
+        owner, job = accepted(db, grant(max_uncompressed_bytes=cap))
+        frozen = export.validate_job(db, owner, job)
+        assert sum(source['size_bytes'] for source in frozen['sources']) == len(DATA) < cap
+        structured = canonical(main.detail(db.get(Check, raw_fixture.CHECK)))
+        assert len(structured) <= 512 * 1024
+        assert len(structured) + len(DATA) > cap
+    assert worker.run_job(JOB) == 'failed'
+    with fixture.sessions() as db:
+        job = db.get(Job, JOB)
+        assert job.state == 'failed' and job.failure == 'EXPORT_TOO_LARGE'
+        assert job.output is None and job.completed is None
+        assert job.body['raw_export']['authorization']['max_uncompressed_bytes'] == cap
+    assert store.reads and store.streams[-1].closed
+    assert store.archives == {}, 'Overflow must not publish a partial ZIP'
 
 
 def test_http_revoked_cleanup_has_minimal_terminal_receipt(http, fixture, monkeypatch, tmp_path):
@@ -640,6 +690,35 @@ def test_individually_over_export_budget_source_is_not_offered(fixture):
         assert response['scopes'][0]['artifacts'] == []
         with pytest.raises(Problem, match='EXPORT_TOO_LARGE'):
             export.freeze_export(db, account, scope(grant(max_uncompressed_bytes=127)), [raw_fixture.CHECK])
+
+
+def test_over_budget_source_does_not_hide_or_disable_an_eligible_owned_choice(fixture):
+    cap = len(DATA)
+    too_large_id = '50000000-0000-4000-8000-000000000130'
+    with fixture.sessions.begin() as db:
+        value = grant(max_uncompressed_bytes=cap)
+        approve(db, 'raw_export', value)
+        account = db.get(Account, raw_fixture.ACCOUNT)
+        original = db.get(Artifact, raw_fixture.ARTIFACT)
+        retained = db.get(retention.RawRetention, original.id)
+        large = Artifact(**{column.name: deepcopy(getattr(original, column.name))
+            for column in Artifact.__table__.columns})
+        large.id = too_large_id
+        large.key = 'quarantine/fictional/' + too_large_id
+        large.size = cap + 1
+        lifetime = retention.RawRetention(**{column.name: deepcopy(getattr(retained, column.name))
+            for column in retention.RawRetention.__table__.columns})
+        lifetime.artifact_id = large.id
+        lifetime.key = large.key
+        db.add_all([large, lifetime])
+        db.flush()
+        seed_fictional_verification(db, large)
+        page = export.available_scopes(db, account)['scopes'][0]
+        assert [item['artifact_id'] for item in page['artifacts']] == [original.id]
+        frozen = export.freeze_export(db, account, scope(value), [raw_fixture.CHECK])
+        assert [item['artifact_id'] for item in frozen['raw_export']['sources']] == [original.id]
+        with pytest.raises(Problem, match='EXPORT_TOO_LARGE'):
+            export.freeze_export(db, account, scope(value, artifact_ids=[large.id]), [raw_fixture.CHECK])
 
 
 def test_source_cursor_lists_every_eligible_source_without_truncation(fixture):

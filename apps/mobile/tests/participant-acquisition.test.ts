@@ -458,17 +458,20 @@ test("rounded approved dilution and explicit invalid observations retain the ser
   assert.throws(() => participantProtocol(bad));
 });
 test("foreground rest requires monotonic elapsed time and interruption invalidates prior wait", () => {
-  let mono = 100;
-  const clock = new PreparationClock(() => mono);
+  let mono = 100,
+    wall = Date.parse("2026-10-11T12:00:00Z");
+  const clock = new PreparationClock(
+    () => mono,
+    () => wall,
+  );
   assert.equal(clock.remaining(30), 30);
   clock.start();
   mono += 10000;
+  wall += 10000;
   assert.equal(clock.remaining(30), 20);
-  const original = Date.now;
-  Date.now = () => 9999999999999;
   assert.equal(clock.remaining(30), 20);
-  Date.now = original;
   mono += 20000;
+  wall += 20000;
   assert.equal(clock.remaining(30), 0);
   clock.reset();
   assert.equal(clock.remaining(30), 30);
@@ -480,10 +483,12 @@ test("foreground rest requires monotonic elapsed time and interruption invalidat
   assert.equal(clock.remaining(30), 30);
   clock.start();
   mono += 30000;
+  wall += 30000;
   assert.equal(clock.remaining(30), 0);
   mono = 100;
   clock.start();
   mono = 500;
+  wall += 400;
   assert.equal(clock.remaining(30), 30);
   mono = 300;
   assert.equal(clock.remaining(30), 30);

@@ -45,6 +45,7 @@ import {
 } from "./components";
 import { useTheme } from "./theme";
 import { HomeDeviceSummary } from "./device-summary";
+import { presentCheckResult, workspaceScope } from "../core/resultPresentation";
 
 export interface ScreenProps {
   controller: AppController;
@@ -81,7 +82,7 @@ export function WelcomeScreen({ controller, model }: ScreenProps) {
       subtitle={
         intro
           ? "Explore the whole journey before connecting hardware."
-          : "Collect a saliva result, eye and pulse measurements, and one reaction task. This release reports measurements only."
+          : "Collect a saliva result, eye and pulse measurements, and one reaction task. Measurement mode is the default."
       }
     >
       <View
@@ -133,6 +134,12 @@ export function WelcomeScreen({ controller, model }: ScreenProps) {
         <Paragraph>
           Collect and organize measurement evidence, show its quality and
           source, and keep a clear history.
+        </Paragraph>
+        <Paragraph>
+          Separately authenticated research access requires independent study
+          and model approval. Sign-in and this introduction do not enroll you or
+          grant research authority. Guest examples and ordinary checks remain
+          measurements and practice.
         </Paragraph>
         <Notice>
           It does not determine whether someone is intoxicated, impaired, or
@@ -547,7 +554,13 @@ export function HomeScreen({ controller, model }: ScreenProps) {
           detail={
             model.offline
               ? "Offline or service unavailable"
-              : "Measurement-only release"
+              : workspaceScope({
+                  identity: model.identity,
+                  capabilities: state.capabilities,
+                  generation: state.generation,
+                  offline: model.offline,
+                  hostedPreview: BUILD.hostedPreview,
+                })
           }
           onPress={action(controller, () => controller.navigate("status"))}
         />
@@ -569,6 +582,7 @@ export function CheckRow({
   check: CheckRecord;
   onPress: () => void;
 }) {
+  const presentation = presentCheckResult(check);
   return (
     <Card>
       <Row>
@@ -577,7 +591,7 @@ export function CheckRow({
             ? "Guest demo"
             : check.kind === "engineering_fixture"
               ? "Fictional fixture"
-              : "Measurement record"}
+              : presentation.badge}
         </Badge>
         <Badge>
           {check.labCollection?.state === "pending_lab"
@@ -589,7 +603,7 @@ export function CheckRow({
       </Row>
       <ActionRow
         title={dateLabel(check.snapshot.created_at)}
-        detail={`${check.frozen ? "Measurements only" : `Draft · ${friendly(check.stage)}`} · ${shortId(check.id)}`}
+        detail={`${presentation.summary} · ${shortId(check.id)}`}
         onPress={onPress}
       />
     </Card>

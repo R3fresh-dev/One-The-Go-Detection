@@ -15,6 +15,8 @@ const expected = {
   environment: "test",
   issuer: "http://localhost:8081",
   clientId: "otgd-local-mobile",
+  oauthOrigin: "http://localhost:8081",
+  redirectUris: ["otgd-local://oauth/callback", "http://localhost:8082/"],
 };
 test("actual backend app-config and capabilities responses decode without removing mandatory fields", () => {
   const config = parseAppConfig(actualConfig, expected),
@@ -141,4 +143,85 @@ test("maintenance blocks an ordinary HTTP write before fetch and preserves exact
   } finally {
     globalThis.fetch = oldFetch;
   }
+});
+
+for (const key of [
+  "authorization_endpoint",
+  "token_endpoint",
+  "revocation_endpoint",
+  "logout_endpoint",
+] as const) {
+  const path =
+    key === "logout_endpoint"
+      ? "/logout"
+      : `/oauth2/${key === "authorization_endpoint" ? "authorize" : key === "token_endpoint" ? "token" : "revoke"}`;
+  for (const [name, endpoint] of Object.entries({
+    foreign_origin: "https://foreign.invalid" + path,
+    changed_port: "http://localhost:8089" + path,
+    wrong_path: expected.oauthOrigin + path + "/extra",
+    query: expected.oauthOrigin + path + "?override=1",
+    fragment: expected.oauthOrigin + path + "#override",
+    userinfo: "http://user@localhost:8081" + path,
+    encoded_path: expected.oauthOrigin + path.replace("/", "/%2e/"),
+  }))
+    test(`OAuth metadata refuses ${key} ${name} despite matching issuer and client`, () => {
+      const changed = clone(actualConfig);
+      changed.auth[key] = endpoint;
+      assert.throws(
+        () => parseAppConfig(changed, expected),
+        /authentication|endpoint/i,
+      );
+    });
+}
+
+test("OAuth callbacks are independently pinned and missing hosted-origin policy fails closed", () => {
+  for (const redirect_uris of [
+    [...expected.redirectUris, "https://foreign.invalid/"],
+    ["https://foreign.invalid/"],
+    [...expected.redirectUris, expected.redirectUris[0]],
+    [expected.redirectUris[0]],
+  ]) {
+    assert.throws(
+      () =>
+        parseAppConfig(
+          { ...actualConfig, auth: { ...actualConfig.auth, redirect_uris } },
+          expected,
+        ),
+      /callback/i,
+    );
+  }
+  assert.throws(
+    () => parseAppConfig(actualConfig, { ...expected, oauthOrigin: "" }),
+    /authentication|origin|configured/i,
+  );
+});
+
+test("separately compiled Cognito hosted origin works without treating the user-pool issuer as its domain", () => {
+  const pins = {
+    environment: "qa",
+    issuer: "https://cognito-idp.us-east-2.amazonaws.com/us-east-2_fixture",
+    clientId: "public-client",
+    oauthOrigin: "https://admitted.auth.us-east-2.amazoncognito.com",
+    redirectUris: ["otgd-qa://oauth/callback", "https://web.qa.otgd.test/"],
+  };
+  const changed = clone(actualConfig) as any;
+  changed.environment = "qa";
+  changed.auth = {
+    issuer: pins.issuer,
+    client_id: pins.clientId,
+    authorization_endpoint: pins.oauthOrigin + "/oauth2/authorize",
+    token_endpoint: pins.oauthOrigin + "/oauth2/token",
+    revocation_endpoint: pins.oauthOrigin + "/oauth2/revoke",
+    logout_endpoint: pins.oauthOrigin + "/logout",
+    redirect_uris: pins.redirectUris,
+  };
+  assert.equal(
+    parseAppConfig(changed, pins).auth.token_endpoint,
+    pins.oauthOrigin + "/oauth2/token",
+  );
+  changed.auth.token_endpoint = pins.issuer + "/oauth2/token";
+  assert.throws(
+    () => parseAppConfig(changed, pins),
+    /authentication|endpoint/i,
+  );
 });

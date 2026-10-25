@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import {
-  AccessibilityInfo,
   ActivityIndicator,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,18 +14,22 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from "react-native";
-import { useTheme } from "./theme";
+import { useReducedMotion, useTheme } from "./theme";
+import {
+  scheduleAccessibilityFocus,
+  useAccessibilityNavigation,
+} from "./accessibility";
 
-export function Title({
-  children,
-  small = false,
-}: {
-  children: React.ReactNode;
-  small?: boolean;
-}) {
+export const Title = React.forwardRef<
+  Text,
+  { children: React.ReactNode; small?: boolean; focusable?: boolean }
+>(function Title({ children, small = false, focusable = false }, ref) {
   const c = useTheme();
   return (
     <Text
+      ref={ref}
+      accessible
+      {...(Platform.OS === "web" && focusable ? { tabIndex: -1 } : {})}
       accessibilityRole="header"
       style={{
         color: c.ink,
@@ -38,7 +42,7 @@ export function Title({
       {children}
     </Text>
   );
-}
+});
 export function Paragraph({
   children,
   muted = false,
@@ -184,15 +188,24 @@ export function Button({
   testID?: string;
   compact?: boolean;
 }) {
-  const c = useTheme();
+  const c = useTheme(),
+    trigger = useRef<View>(null),
+    navigation = useAccessibilityNavigation();
   return (
     <Pressable
+      ref={trigger}
       accessibilityRole="button"
       accessibilityLabel={title}
       accessibilityState={{ disabled: disabled || busy, busy }}
       testID={testID}
       disabled={disabled || busy}
-      onPress={onPress}
+      onPress={() => {
+        navigation.origin.current = {
+          target: trigger.current,
+          routeKey: navigation.routeKey,
+        };
+        onPress();
+      }}
       style={({ pressed }) => ({
         minHeight: 50,
         paddingVertical: 13,
@@ -211,11 +224,15 @@ export function Button({
             : danger
               ? c.danger
               : c.accent,
-        opacity: pressed ? 0.75 : 1,
+        opacity: pressed ? (danger && !secondary ? 0.9 : 0.75) : 1,
         alignSelf: compact ? "flex-start" : "stretch",
       })}
     >
-      {busy && <ActivityIndicator color={secondary ? c.accent : c.onAccent} />}
+      {busy && (
+        <ActivityIndicator
+          color={secondary ? c.accent : danger ? c.onDanger : c.onAccent}
+        />
+      )}
       <Text
         style={{
           fontSize: 15,
@@ -226,7 +243,7 @@ export function Button({
             : secondary
               ? c.ink
               : danger
-                ? c.white
+                ? c.onDanger
                 : c.onAccent,
         }}
       >
@@ -402,7 +419,9 @@ export function SwitchRow({
   disabled?: boolean;
   onChange: (value: boolean) => void;
 }) {
-  const c = useTheme();
+  const c = useTheme(),
+    trigger = useRef<Switch>(null),
+    navigation = useAccessibilityNavigation();
   return (
     <Row style={{ flexWrap: "nowrap" }}>
       <View style={{ flex: 1, gap: 5 }}>
@@ -416,12 +435,19 @@ export function SwitchRow({
         )}
       </View>
       <Switch
+        ref={trigger}
         value={value}
         disabled={disabled}
         accessibilityState={{ disabled, checked: value }}
         aria-disabled={disabled}
         aria-checked={value}
-        onValueChange={onChange}
+        onValueChange={(value) => {
+          navigation.origin.current = {
+            target: trigger.current,
+            routeKey: navigation.routeKey,
+          };
+          onChange(value);
+        }}
         accessibilityLabel={title}
         trackColor={{ true: c.accent }}
       />
@@ -556,11 +582,38 @@ export function Page({
   onScrollY?: (y: number) => void;
 }) {
   const scroll = useRef<ScrollView>(null),
-    restored = useRef(false);
+    heading = useRef<Text>(null),
+    restored = useRef(false),
+    focusedRoute = useRef<string | null>(null),
+    navigation = useAccessibilityNavigation();
+  const current = useRef(navigation);
+  current.current = navigation;
   useEffect(() => {
     restored.current = false;
-    AccessibilityInfo.announceForAccessibility(title);
   }, [title]);
+  useEffect(() => {
+    const key = `${navigation.routeKey}:${title}`;
+    if (navigation.suspended) {
+      focusedRoute.current = null;
+      return;
+    }
+    if (navigation.backgroundBlocked || focusedRoute.current === key) return;
+    return scheduleAccessibilityFocus(
+      () => heading.current,
+      () =>
+        current.current.routeKey === navigation.routeKey &&
+        !current.current.backgroundBlocked &&
+        !current.current.suspended,
+      () => {
+        focusedRoute.current = key;
+      },
+    );
+  }, [
+    title,
+    navigation.routeKey,
+    navigation.backgroundBlocked,
+    navigation.suspended,
+  ]);
   return (
     <ScrollView
       ref={scroll}
@@ -587,7 +640,9 @@ export function Page({
       <View style={{ gap: 10 }}>
         {onBack && <Button compact secondary title="‹ Back" onPress={onBack} />}
         {eyebrow && <Label>{eyebrow}</Label>}
-        <Title>{title}</Title>
+        <Title ref={heading} focusable>
+          {title}
+        </Title>
         {subtitle && <Paragraph muted>{subtitle}</Paragraph>}
       </View>
       {children}
@@ -616,12 +671,70 @@ export function Confirmation({
   onConfirm: () => void;
   onSecondary: () => void;
 }) {
-  const c = useTheme();
+  const c = useTheme(),
+    reducedMotion = useReducedMotion(),
+    navigation = useAccessibilityNavigation();
+  const cancelHeadingFocus = useRef<(() => void) | undefined>(undefined),
+    cancelRestoreFocus = useRef<(() => void) | undefined>(undefined);
+  const heading = useRef<Text>(null),
+    previous = useRef(false),
+    origin = useRef(navigation.origin.current),
+    latest = useRef({ navigation, sheet });
+  latest.current = { navigation, sheet };
+  const focusHeading = () => {
+    cancelHeadingFocus.current?.();
+    cancelHeadingFocus.current = scheduleAccessibilityFocus(
+      () => heading.current,
+      () => !!latest.current.sheet && !latest.current.navigation.suspended,
+    );
+  };
+  const restoreFocus = () => {
+    cancelRestoreFocus.current?.();
+    const saved = origin.current;
+    cancelRestoreFocus.current = scheduleAccessibilityFocus(
+      () => saved?.target,
+      () =>
+        !latest.current.sheet &&
+        !latest.current.navigation.suspended &&
+        saved?.routeKey === latest.current.navigation.routeKey,
+    );
+  };
+  useEffect(
+    () => () => {
+      cancelHeadingFocus.current?.();
+      cancelRestoreFocus.current?.();
+    },
+    [],
+  );
+  useEffect(() => {
+    if (sheet) {
+      const opening = !previous.current;
+      if (opening) origin.current = navigation.origin.current;
+      previous.current = true;
+      // Initial focus waits for Modal.onShow, after its focus trap and entrance
+      // animation are ready. A replacement sheet still needs a new heading.
+      if (!opening) focusHeading();
+      return () => cancelHeadingFocus.current?.();
+    }
+    if (!previous.current) return;
+    previous.current = false;
+    restoreFocus();
+    return () => cancelRestoreFocus.current?.();
+  }, [sheet, navigation.suspended, navigation.routeKey]);
+  // Remove a dismissed dialog and its focus trap in the same render. Keeping a
+  // hidden fade-out portal races destination focus and changing motion settings.
+  if (!sheet) return null;
   return (
     <Modal
-      visible={!!sheet}
+      visible
       transparent
-      animationType="fade"
+      animationType={reducedMotion ? "none" : "fade"}
+      onShow={() => {
+        focusHeading();
+      }}
+      onDismiss={() => {
+        if (!latest.current.sheet) restoreFocus();
+      }}
       onRequestClose={onClose}
     >
       <View
@@ -647,7 +760,9 @@ export function Confirmation({
             gap: 18,
           }}
         >
-          <Title small>{sheet?.title}</Title>
+          <Title ref={heading} focusable small>
+            {sheet?.title}
+          </Title>
           <Paragraph>{sheet?.text}</Paragraph>
           <Button
             title={sheet?.confirm ?? "Continue"}

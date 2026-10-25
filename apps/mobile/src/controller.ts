@@ -145,7 +145,12 @@ import {
 } from "./services/api";
 import { AuthManager } from "./services/auth";
 import { createLocalExport, inspectExportArchive } from "./services/export";
-import { queueCheck, queueMutation, SyncEngine } from "./services/sync";
+import {
+  queueCheck,
+  queueMutation,
+  SyncEngine,
+  verifyConflictReadback,
+} from "./services/sync";
 import type { SheetSpec } from "./ui/components";
 
 export interface ActiveTask {
@@ -2692,6 +2697,14 @@ export class AppController {
     });
   }
   async prepareReplacement(id: string): Promise<void> {
+    if (
+      this.model.state?.queue.some(
+        (item) => item.check_id === id && item.state === "conflict",
+      )
+    ) {
+      await this.prepareUploadCorrection(id);
+      return;
+    }
     const scope = this.scope(),
       check = this.check;
     if (!check || check.id !== id || !check.frozen)
@@ -3710,6 +3723,19 @@ export class AppController {
         "SIGN_IN_REQUIRED",
         "Account uploads require a signed-in owner. Guest records never migrate.",
       );
+    const pending = this.model.state!.queue.find(
+      (item) => item.check_id === check.id && item.state !== "synced",
+    );
+    if (pending?.state === "conflict")
+      throw new IntegrityError(
+        "SYNC_CONFLICT_REQUIRES_REVIEW",
+        "Inspect the separately retained server state. A frozen snapshot requires a new linked correction; this upload cannot overwrite it.",
+      );
+    if (pending?.state === "blocked")
+      throw new IntegrityError(
+        "UPLOAD_VALIDATION_REQUIRES_CORRECTION",
+        "Inspect the reported upload error. This immutable upload is stopped and cannot be retried automatically.",
+      );
     await this.commit((s) =>
       queueCheck(s, check.id, newId, now(), rawLocalIds),
     );
@@ -3717,6 +3743,51 @@ export class AppController {
       (q) => q.check_id === check.id && q.state !== "synced",
     );
     if (queue) await this.sync.run(queue.id, true);
+  }
+  async refreshUploadConflict(queueId: string): Promise<void> {
+    const scope = this.scope();
+    await scope.wait(this.sync.inspectConflict(queueId));
+  }
+  async prepareUploadCorrection(id: string): Promise<void> {
+    this.requireWritable();
+    const scope = this.scope(),
+      check = this.check,
+      state = this.model.state!,
+      identity = this.model.identity;
+    const conflict = check?.sync_conflict;
+    if (
+      !identity ||
+      !check ||
+      check.id !== id ||
+      !check.frozen ||
+      !conflict?.server_record ||
+      conflict.account_ref !== identity.accountRef ||
+      state.capabilities?.account_ref !== identity.accountRef ||
+      conflict.data_generation !== state.generation ||
+      identity.generation !== state.generation ||
+      !state.queue.some(
+        (item) => item.check_id === id && item.state === "conflict",
+      )
+    )
+      throw new IntegrityError(
+        "SYNC_CONFLICT_REQUIRES_REVIEW",
+        "Refresh and inspect the owned server comparison before creating a correction.",
+      );
+    const verified = verifyConflictReadback(
+      conflict.server_record,
+      conflict.server_etag,
+      state,
+      check,
+    );
+    if (!verified.frozen)
+      throw new IntegrityError(
+        "SERVER_CHECK_NOT_FROZEN",
+        "The accepted server snapshot is still a draft. Resolve it on its originating device; no overwrite or frozen correction was submitted.",
+      );
+    scope.assertCurrent();
+    await scope.wait(this.stopActive("ROUTE_HIDDEN"));
+    scope.assertCurrent();
+    this.patch({ pendingReplacement: id, route: "home" });
   }
   async reconcilePrivacy(queueId: string): Promise<void> {
     const original = this.model.state?.queue.find((q) => q.id === queueId);
@@ -3742,6 +3813,14 @@ export class AppController {
     await this.sync.retryDue(true);
   }
   async cancelQueue(id: string): Promise<void> {
+    const retained = this.model.state?.queue.find((item) => item.id === id);
+    if (retained?.state === "conflict") {
+      this.patch({
+        message:
+          "This conflicted upload is already stopped. Its immutable pending operation and server comparison remain available for inspection and a linked correction.",
+      });
+      return;
+    }
     this.api.cancelAll();
     await this.commit((s) => ({
       ...s,

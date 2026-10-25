@@ -1,0 +1,13 @@
+[WebServer] (node:158382) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:158413) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [live-mobile] › e2e/authenticated-live.spec.ts:220:5 › ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries (11.9s)
+(node:158701) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [live-desktop] › e2e/authenticated-live.spec.ts:220:5 › ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries (11.6s)
+
+  2 passed (25.0s)

@@ -1,0 +1,5 @@
+ℹ tests 348
+ℹ pass 348
+ℹ fail 0
+ℹ skipped 0
+Mobile executable TypeScript unit coverage: 90.29% (required >80%); unloaded: src/platform/sharing.native.ts.

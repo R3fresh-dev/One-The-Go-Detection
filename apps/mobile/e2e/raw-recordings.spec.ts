@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { build, buildSync } from "esbuild";
 import { resolve } from "node:path";
 import fixture from "../testfixtures/backend-raw-recordings.json";
+import privacyReceipt from "../testfixtures/backend-privacy-deletion-receipt.json";
 import { clone, digest, digestText } from "../src/core/integrity";
 import { readFileSync } from "node:fs";
 import researchFixture from "../testfixtures/backend-research-result.json";
@@ -116,6 +117,8 @@ function screenOptions(entry: string, native = false) {
   };
 }
 const alcoholBundle = buildSync(screenOptions("alcohol-component"))
+  .outputFiles![0]!.text;
+const receiptBundle = buildSync(screenOptions("privacy-raw-receipt-component"))
   .outputFiles![0]!.text;
 let permissionsBundle: string;
 test.beforeAll(async () => {
@@ -245,7 +248,9 @@ test("alcohol qualifiers retain zero, low, censored, invalid and simulated evide
         /safe to drive|cleared to drive|legally cleared|combined score/i,
       ),
     ).toHaveCount(0);
-    await page.getByRole("button", { name: /Measurements only/ }).click();
+    await page
+      .getByRole("button", { name: /Historical research result/ })
+      .click();
     await expect(page.getByText("83.2%", { exact: true })).toBeVisible();
     await expect(
       page.getByText("above threshold", { exact: true }),
@@ -720,7 +725,6 @@ test("approved rest begins after online preparation, uses monotonic time, and ne
       exact: true,
     }),
   ).toBeVisible();
-  await page.clock.setSystemTime(Date.parse("2026-10-11T14:00:00Z"));
   await expect(start).toBeDisabled();
   await expect(
     page.getByRole("switch", { name: "rest_completed", exact: true }),
@@ -806,6 +810,11 @@ test("a monotonic regression resets approved rest and declarations until an expl
   const configuration = cardiacPreparation();
   await page.evaluate((value) => {
     (window as any).restTick = 1000;
+    const wallAnchor = Date.now();
+    Object.defineProperty(Date, "now", {
+      configurable: true,
+      value: () => wallAnchor + (window as any).restTick - 1000,
+    });
     Object.defineProperty(performance, "now", {
       configurable: true,
       value: () => (window as any).restTick,
@@ -841,7 +850,7 @@ test("a monotonic regression resets approved rest and declarations until an expl
   });
   await page.clock.fastForward(200);
   await expect(
-    page.getByText(/The monotonic rest clock changed/),
+    page.getByText(/Preparation timing changed/),
   ).toBeVisible();
   await expect(
     page.getByRole("switch", { name: "posture_confirmed", exact: true }),
@@ -1453,5 +1462,119 @@ test("actual service component labels conditional approved channels and model su
   ).toBeVisible();
   await expect(
     page.getByText("Approved acquisition available", { exact: true }),
+  ).toHaveCount(0);
+});
+
+test("actual raw receipt screen keeps quarantine and cleanup confirmation distinct from retention expiry", async ({
+  page,
+}) => {
+  await screenDOM(page, receiptBundle);
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("raw", value),
+    fixture,
+  );
+  await expect(
+    page.getByText("Eye video · quarantine · retained", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Retention deadline", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Not confirmed", { exact: true })).toBeVisible();
+  const changed: any = clone(fixture);
+  changed.artifacts[0].state = "cleanup_pending";
+  changed.artifacts[0].upload_state = "cleanup_pending";
+  changed.artifacts[0].retention_due_at = "2026-10-10T00:00:00.000Z";
+  changed.revocations = [
+    {
+      receipt_id: "70000000-0000-4000-8000-000000000001",
+      artifact_kinds: ["eye_video"],
+      accepted_at: "2026-10-11T01:00:00Z",
+      state: "cleanup_pending",
+    },
+  ];
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("raw", value),
+    changed,
+  );
+  await expect(
+    page.getByText("Eye video · cleanup pending · cleanup pending", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Eye video · quarantine · retained", { exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText("Not confirmed", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Eye video · cleanup pending", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(/Oct 10, 2026/)).toBeVisible();
+  changed.artifacts[0].state = "purged";
+  changed.artifacts[0].upload_state = "purged";
+  changed.artifacts[0].cleanup_completed_at = "2026-10-11T02:03:00Z";
+  changed.revocations[0].state = "completed";
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("raw", value),
+    changed,
+  );
+  await expect(
+    page.getByText("Eye video · purged · purged", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Not confirmed", { exact: true })).toHaveCount(0);
+  await expect(page.getByText(/Oct 11, 2026, 02:03/)).toBeVisible();
+  await expect(page.getByText(/Oct 10, 2026/)).toBeVisible();
+});
+
+test("actual API privacy receipt renders category policy reason and supplied or absent expiry without generic legacy names", async ({
+  page,
+}) => {
+  await screenDOM(page, receiptBundle);
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("privacy", value),
+    privacyReceipt,
+  );
+  for (const category of privacyReceipt.retained_categories) {
+    await expect(
+      page.getByText(category.category, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(category.reason, { exact: true }),
+    ).toBeVisible();
+  }
+  await expect(
+    page.getByText("No scheduled expiry supplied", { exact: true }),
+  ).toHaveCount(6);
+  await expect(
+    page.getByText("Retention policy basis", { exact: true }),
+  ).toHaveCount(6);
+  const supplied: any = clone(privacyReceipt);
+  supplied.retained_categories[0].expires_at = "2027-02-28T23:59:59.123Z";
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("privacy", value),
+    supplied,
+  );
+  await expect(
+    page.getByText("2027-02-28T23:59:59.123Z", { exact: true }),
+  ).toBeVisible();
+  const legacy: any = {
+    ...privacyReceipt,
+    retained_categories: privacyReceipt.retained_categories.map(
+      (entry) => entry.category,
+    ),
+  };
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("privacy", value),
+    legacy,
+  );
+  for (const category of legacy.retained_categories)
+    await expect(page.getByText(category, { exact: true })).toBeVisible();
+  await expect(
+    page.getByText(
+      "Legacy receipt: policy basis, retention reason and expiry were not supplied.",
+      { exact: true },
+    ),
+  ).toHaveCount(6);
+  await expect(
+    page.getByText("2027-02-28T23:59:59.123Z", { exact: true }),
   ).toHaveCount(0);
 });

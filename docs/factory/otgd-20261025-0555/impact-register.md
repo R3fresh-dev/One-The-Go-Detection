@@ -39,3 +39,9 @@ D-006 v4 and D-007 v1 were acknowledged AFFECTED by browser builder; source refr
 ## Checkpoint8 independent review acknowledgments
 
 All six actual reviewers ACKed D001–D008/currentD006v5/D007v1/D008v1 through native messages and their preserved reports. Every reviewer confirmed source/spec hashes and respected source freeze; no author self-signoff. D009 correction1 is persisted before repairs; correction owners must ACK its scope/ownership and affected reviewers must reconfirm against replacement evidence. Initial review decisions remain history, not current replacement signoffs.
+
+## Consolidated correction acknowledgments through checkpoint9
+
+Real owner messages and preserved reports acknowledge D009v1–v7 within correction1/2, recovery0/3. Mobile builder AFFECTED for product/sync/preparation/RetryAfter, backend builder AFFECTED for privacy/history/participant assertions, auth builder assigned bounded callback/concurrent401 assertions, accessibility owner completed assigned focus/motion/contrast/privacy/raw UI repairs, evaluation owner completed assigned descriptor/sparse/bootstrap assertions, firmware owner AFFECTED for reference validation and image proofs. D006v7 explicitly ACKed AFFECTED by image owner and evidence verifier, NOT_AFFECTED to mobile runtime actions; no Docker mutation follows proof alone. Verification and acceptance backend/native/participant helpers ACK D009v6 scope, preserving old hashes and requiring replacement binding. D009v7 bounds remaining first-round repairs; no generic evidence gap becomes a production defect without proof.
+
+Checkpoint9 author hold: mobile, backend and firmware owners explicitly paused repository writes at coherent boundaries; auth owner instructed read-only until release. These acknowledgments are coordination evidence, not independent signoff.

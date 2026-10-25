@@ -71,7 +71,7 @@ function harness(selected = true) {
     at,
     selected ? [raw.local_id] : [],
   );
-  const calls: { path: string; options: any }[] = [],
+  const calls: { path: string; options: any; persistedRawTickets?: any }[] = [],
     readBuffers: Uint8Array[] = [],
     artifactId = randomUUID();
   let putFailures = 0,
@@ -99,7 +99,13 @@ function harness(selected = true) {
   });
   const api = {
     request: async (path: string, options: any = {}) => {
-      calls.push({ path, options: clone(options) });
+      calls.push({
+        path,
+        options: clone(options),
+        ...(path.endsWith("/ticket")
+          ? { persistedRawTickets: clone(state.queue[0]!.body.raw_tickets) }
+          : {}),
+      });
       let value: any = {},
         status = 200;
       if (path === "/v1/artifact-uploads") value = ticket();
@@ -280,12 +286,40 @@ test("acknowledged expired tickets advance durable renewal identity, while a los
   await h.engine.run(h.queue.id, true);
   const renewals = h.calls.filter((call) => call.path.endsWith("/ticket"));
   assert.equal(renewals[1]!.options.key, firstRenew);
+  assert.deepEqual(renewals[0]!.options.body, {});
+  assert.deepEqual(renewals[1]!.options.body, renewals[0]!.options.body);
+  for (const renewal of renewals) {
+    // These snapshots are captured before the replacement HTTP response, at
+    // the request boundary after SyncEngine's persisted state update.
+    assert.deepEqual(renewal.persistedRawTickets[h.raw.local_id], {
+      epoch: 1,
+      key: firstRenew,
+      ticket: null,
+    });
+    assert.equal(renewal.options.method, "POST");
+    assert.equal(renewal.options.generation, h.queue.generation);
+  }
+  const acknowledged = clone((h.queue.body.raw_tickets as any)[h.raw.local_id]);
+  assert.equal(acknowledged.epoch, 1);
+  assert.equal(
+    acknowledged.ticket.artifact_id,
+    h.state.rawArtifacts![0]!.server_artifact_id,
+  );
   context.mock.timers.setTime(Date.now() + 301_000);
   await h.engine.run(h.queue.id, true);
   const keys = h.calls
     .filter((call) => call.path.endsWith("/ticket"))
     .map((call) => call.options.key);
   assert.notEqual(keys[2], firstRenew);
+  const nextRenewal = h.calls.filter((call) =>
+    call.path.endsWith("/ticket"),
+  )[2]!;
+  assert.deepEqual(nextRenewal.options.body, {});
+  assert.deepEqual(nextRenewal.persistedRawTickets[h.raw.local_id], {
+    epoch: 2,
+    key: keys[2],
+    ticket: null,
+  });
   assert.notEqual(firstRenew, createKey);
   assert.equal(h.state.rawArtifacts![0]!.state, "uploaded");
   assert.equal(

@@ -40,7 +40,7 @@ def public_headers():
 
 class WebArtifactTest(unittest.TestCase):
     def test_browser_build_environment_retains_transport_settings_without_deploy_credentials(self):
-        runtime={'environment':'qa','api_url':'https://api.qa.otgd.test','issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','client_id':'public-client'}
+        runtime={'environment':'qa','api_url':'https://api.qa.otgd.test','issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','client_id':'public-client','oauth_origin':'https://admitted.auth.us-east-2.amazoncognito.com','callback_uri':'https://d123.cloudfront.net/'}
         secrets={key:'fixture-secret' for key in ('AWS_ACCESS_KEY_ID','AWS_SECRET_ACCESS_KEY','AWS_SESSION_TOKEN','AWS_PROFILE','AWS_CONFIG_FILE',
             'GH_TOKEN','GITHUB_TOKEN','OTGD_DATABASE_URL','OPENAI_API_KEY','CUSTOM_SERVICE_TOKEN','SERVICE_PASSWORD','SSH_AUTH_SOCK','EAS_TOKEN','APPETIZE_API_TOKEN')}
         transport={'HTTPS_PROXY':'http://proxy.test:80','NODE_EXTRA_CA_CERTS':'/approved/ca.pem','npm_config_registry':'https://registry.npmjs.org','PATH':'/usr/bin'}
@@ -50,7 +50,37 @@ class WebArtifactTest(unittest.TestCase):
         for key,value in transport.items():self.assertEqual(environment[key],value)
         self.assertEqual(environment['EXPO_PUBLIC_APP_ENV'],'qa');self.assertEqual(environment['APP_ENV'],'qa')
         self.assertEqual(environment['EXPO_PUBLIC_API_URL'],runtime['api_url'])
+        self.assertEqual(environment['EXPO_PUBLIC_OAUTH_ORIGIN'],runtime['oauth_origin'])
+        self.assertEqual(environment['EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI'],runtime['callback_uri'])
         self.assertEqual(environment['EXPO_PUBLIC_HOSTED_PREVIEW'],'false');self.assertNotIn('NODE_OPTIONS',environment)
+
+    def test_public_build_requires_independent_origin_and_callback_not_ambient_guesses(self):
+        runtime={'environment':'qa','api_url':'https://api.qa.otgd.test','issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','client_id':'public-client','oauth_origin':'https://admitted.auth.us-east-2.amazoncognito.com','callback_uri':'https://d123.cloudfront.net/'}
+        for key in ('oauth_origin','callback_uri'):
+            absent={name:value for name,value in runtime.items() if name!=key}
+            with patch.dict(os.environ, {'EXPO_PUBLIC_OAUTH_ORIGIN':'https://foreign.invalid','EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI':'https://foreign.invalid/'},clear=True), self.assertRaises((Gate,KeyError)):
+                web.build_environment(absent)
+
+    def test_exact_oauth_pin_shapes_reject_path_query_fragment_credentials_and_port(self):
+        runtime={'oauth_origin':'https://admitted.auth.us-east-2.amazoncognito.com','callback_uri':'https://web.owned-research.org/'}
+        for key, values in {
+            'oauth_origin':['https://admitted.auth.us-east-2.amazoncognito.com/path','https://admitted.auth.us-east-2.amazoncognito.com?x=1','https://admitted.auth.us-east-2.amazoncognito.com#x','https://user@admitted.auth.us-east-2.amazoncognito.com','https://admitted.auth.us-east-2.amazoncognito.com:443'],
+            'callback_uri':['https://web.owned-research.org/path','https://web.owned-research.org/?x=1','https://web.owned-research.org/#x','https://user@web.owned-research.org/','https://web.owned-research.org:443/'],
+        }.items():
+            for value in values:
+                with self.subTest(key=key,value=value), self.assertRaises(Gate):
+                    web.validate_oauth_runtime({**runtime,key:value})
+
+    def test_unpinned_historical_envelope_keeps_its_signature_but_fails_current_admission(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            _,archive,_,config,service,service_payload,public,record,body,out=self.fixture(root)
+            del body['runtime']['oauth_origin']
+            body['runtime_sha256']=sha256(body['runtime'])
+            record=root/'legacy-web-release.json'
+            platform.sign_release(body,record,root/'private.pem')
+            self.assertEqual(web.verify_signed_record(record,public),body)
+            with self.assertRaises(Gate):web.verify(record,archive,public,config,service,service_payload,out)
 
     def test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache(self):
         # Model the observed non-environment-keyed Metro cache. This exercises
@@ -88,6 +118,8 @@ class WebArtifactTest(unittest.TestCase):
                     self.assertEqual(runtime['EXPO_PUBLIC_APP_ENV'],environment)
                     self.assertEqual(runtime['EXPO_PUBLIC_API_URL'],outputs['ApiOrigin'])
                     self.assertEqual(runtime['EXPO_PUBLIC_OAUTH_ISSUER'],outputs['Issuer'])
+                    self.assertEqual(runtime['EXPO_PUBLIC_OAUTH_ORIGIN'],outputs['IdentityOrigin'])
+                    self.assertEqual(runtime['EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI'],outputs['WebCallbackUri'])
                     self.assertEqual(runtime['EXPO_PUBLIC_HOSTED_PREVIEW'],'false')
                     verified,_=web.verify(record,artifact,public,config,service,service_payload,outputs,
                         qa_web_release_sha256=hashlib.sha256(qa_record.read_bytes()).hexdigest() if qa_record else None)
@@ -104,13 +136,13 @@ class WebArtifactTest(unittest.TestCase):
         public.write_bytes(key.public_key().public_bytes(serialization.Encoding.PEM,serialization.PublicFormat.SubjectPublicKeyInfo))
         c={'environment':'qa','account':'123456789012','region':'us-east-2','releaseId':'c'*40,'imageDigest':'sha256:'+'a'*64,'domain':'api.qa.otgd.test'}
         service=root/'service.json';service.write_text('signed-service-fixture');service_payload={'gate_provenance_sha256':'f'*64}
-        runtime={'environment':'qa','api_url':'https://'+c['domain'],'issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','client_id':'public-client','web_origin':'https://d123.cloudfront.net','callback_uri':'https://d123.cloudfront.net/'}
+        runtime={'environment':'qa','api_url':'https://'+c['domain'],'issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','client_id':'public-client','oauth_origin':'https://admitted.auth.us-east-2.amazoncognito.com','web_origin':'https://d123.cloudfront.net','callback_uri':'https://d123.cloudfront.net/'}
         body={'schema_version':'1.0.0','purpose':'web-release','environment':c['environment'],'account':c['account'],'region':c['region'],'release_id':c['releaseId'],'image_digest':c['imageDigest'],
             'service_release_sha256':hashlib.sha256(service.read_bytes()).hexdigest(),'gate_provenance_sha256':service_payload['gate_provenance_sha256'],
             'runtime':runtime,'runtime_sha256':sha256(runtime),'package_lock_sha256':'d'*64,'archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),
             'manifest':manifest,'manifest_sha256':sha256(manifest),'release_prefix':'releases/'+c['releaseId'],'inference_available':False}
         record=root/'web-release.json';platform.sign_release(body,record,private)
-        out={'ApiOrigin':runtime['api_url'],'Issuer':runtime['issuer'],'ClientId':runtime['client_id'],'WebOrigin':runtime['web_origin'],'WebCallbackUri':runtime['callback_uri'],
+        out={'ApiOrigin':runtime['api_url'],'Issuer':runtime['issuer'],'ClientId':runtime['client_id'],'IdentityOrigin':runtime['oauth_origin'],'WebOrigin':runtime['web_origin'],'WebCallbackUri':runtime['callback_uri'],
              'WebReleasePrefix':body['release_prefix'],'ReleaseId':c['releaseId'],'ImageDigest':c['imageDigest'],'WebBucket':'private-assets','WebDistributionId':'D123','WebDistributionDomain':'d123.cloudfront.net'}
         return directory,archive,manifest,c,service,service_payload,public,record,body,out
 
@@ -122,6 +154,8 @@ class WebArtifactTest(unittest.TestCase):
             for change in ({'releaseId':'e'*40},{'account':'987654321098'},{'environment':'prod'},{'imageDigest':'sha256:'+'b'*64}):
                 with self.subTest(change=change),self.assertRaises(Gate):web.verify(record,archive,public,{**c,**change},service,service_payload,out)
             with self.assertRaises(Gate):web.verify(record,archive,public,c,service,service_payload,{**out,'ClientId':'foreign-client'})
+            with self.assertRaises(Gate):web.verify(record,archive,public,c,service,service_payload,{**out,'IdentityOrigin':'https://foreign.invalid'})
+            with self.assertRaises(Gate):web.verify(record,archive,public,c,service,service_payload,{**out,'WebCallbackUri':'https://foreign.invalid/'})
             with zipfile.ZipFile(archive,'a') as output:output.writestr('injected.js','tampered')
             with self.assertRaises(Gate):web.verify(record,archive,public,c,service,service_payload,out)
 
@@ -209,6 +243,50 @@ class WebArtifactTest(unittest.TestCase):
         with patch.object(web.httpx,'Client',return_value=client):
             result=web.verify_access(out,{},files)
         self.assertEqual(result['authenticated_customer_acceptance'],'not_executed')
+
+    def test_every_admitted_asset_is_read_and_checked_before_public_access_passes(self):
+        out={'WebOrigin':'https://web.otgd.test','ApiOrigin':'https://api.otgd.test',
+            'IdentityOrigin':'https://fixture.auth.us-east-2.amazoncognito.com','Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool'}
+        files={'index.html':b'entry','app.js':b'first script','secondary.js':b'second script',
+            'styles.css':b'body{color:black}','assets/icon.png':b'fictional image','help/index.html':b'help'}
+        for corrupt_path in (None,'secondary.js','styles.css','assets/icon.png','help/index.html'):
+            for failure in (('none',) if corrupt_path is None else ('missing','changed','overrun')):
+                with self.subTest(path=corrupt_path,failure=failure):
+                    requested=[]
+                    def respond(request):
+                        path=request.url.path.lstrip('/');requested.append(path)
+                        if path=='health/ready':return httpx.Response(200,content=b'{}')
+                        if path=='history':return httpx.Response(200,content=files['index.html'],headers=public_headers())
+                        if path not in files:return httpx.Response(404)
+                        body=files[path]
+                        if path==corrupt_path:
+                            if failure=='missing':return httpx.Response(404)
+                            body=b'x'*len(body) if failure=='changed' else body+b'!'
+                        return httpx.Response(200,content=body,headers=public_headers() if path.endswith('.html') else {})
+                    client=httpx.Client(transport=httpx.MockTransport(respond))
+                    with patch.object(web.httpx,'Client',return_value=client):
+                        if corrupt_path is None:
+                            result=web.verify_access(out,{},files)
+                            self.assertEqual(result['web_https'],'passed')
+                            self.assertTrue(set(files).issubset(requested))
+                            self.assertEqual(requested.count('index.html'),1)
+                        else:
+                            with self.assertRaises(Gate):web.verify_access(out,{},files)
+                            self.assertNotIn('health/ready',requested)
+
+    def test_secondary_html_cannot_omit_security_policy(self):
+        out={'WebOrigin':'https://web.otgd.test','ApiOrigin':'https://api.otgd.test',
+            'IdentityOrigin':'https://fixture.auth.us-east-2.amazoncognito.com','Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool'}
+        files={'index.html':b'entry','app.js':b'javascript','help/index.html':b'help'}
+        def respond(request):
+            path=request.url.path.lstrip('/')
+            if path=='history':return httpx.Response(200,content=files['index.html'],headers=public_headers())
+            if path=='health/ready':return httpx.Response(200,content=b'{}')
+            if path in files:return httpx.Response(200,content=files[path],headers=public_headers() if path=='index.html' else {})
+            return httpx.Response(404)
+        client=httpx.Client(transport=httpx.MockTransport(respond))
+        with patch.object(web.httpx,'Client',return_value=client),self.assertRaises(Gate):
+            web.verify_access(out,{},files)
 
     def test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport(self):
         out={'ApiOrigin':'https://api.otgd.test','IdentityOrigin':'https://fixture.auth.us-east-2.amazoncognito.com',

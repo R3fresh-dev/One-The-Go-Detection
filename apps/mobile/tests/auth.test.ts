@@ -27,6 +27,8 @@ async function harness() {
     environment: "test",
     issuer: "http://localhost:8081",
     clientId: "otgd-local-mobile",
+    oauthOrigin: "http://localhost:8081",
+    redirectUris: ["otgd-local://oauth/callback", "http://localhost:8082/"],
   });
   const identity: Identity = {
     issuer: config.auth.issuer,
@@ -429,6 +431,176 @@ test("authorization-code tokens cannot inherit a prior account refresh credentia
       }),
     );
     await assert.rejects(() => new AuthManager().restore(), /another service/);
+  } finally {
+    await close();
+  }
+});
+
+for (const endpoint of [
+  "authorization_endpoint",
+  "token_endpoint",
+  "revocation_endpoint",
+  "logout_endpoint",
+] as const) {
+  test(`unadmitted ${endpoint} is rejected before authorization browser or credential fetch`, async () => {
+    const { auth, service, config, close } = await harness();
+    let prompts = 0;
+    try {
+      unit().prompt = async () => {
+        prompts++;
+        return { type: "cancel" };
+      };
+      const changed = structuredClone(config);
+      changed.auth[endpoint] =
+        "https://foreign.invalid" + new URL(config.auth[endpoint]!).pathname;
+      await assert.rejects(
+        () => auth.authorize(changed),
+        /authentication|endpoint/i,
+      );
+      assert.equal(prompts, 0);
+      assert.equal(service.calls.length, 0);
+    } finally {
+      await close();
+    }
+  });
+
+  test(`restored ${endpoint} substitution never activates saved credentials`, async () => {
+    const { auth, service, config, identity, close } = await harness();
+    try {
+      const tokens = (await auth.authorize(config))!;
+      await auth.commit(tokens, identity);
+      const saved = JSON.parse((await vault.get("otgd.auth.test"))!);
+      await auth.clear();
+      service.calls.length = 0;
+      const path = new URL(config.auth[endpoint]!).pathname;
+      for (const target of [
+        "https://foreign.invalid" + path,
+        "http://localhost:8089" + path,
+        "http://localhost:8081" + path + "/extra",
+        "http://localhost:8081" + path + "?override=1",
+        "http://localhost:8081" + path + "#override",
+        "http://user@localhost:8081" + path,
+      ]) {
+        const changed = structuredClone(saved);
+        changed.auth[endpoint] = target;
+        await vault.set("otgd.auth.test", JSON.stringify(changed));
+        const restored = new AuthManager();
+        await assert.rejects(
+          () => restored.restore(),
+          /authentication|endpoint/i,
+        );
+        assert.equal(restored.identity, null);
+        assert.equal(service.calls.length, 0);
+      }
+    } finally {
+      await close();
+    }
+  });
+}
+
+test("commit refuses altered endpoints before activating or persisting credentials", async () => {
+  const { auth, service, config, identity, close } = await harness();
+  try {
+    const tokens = (await auth.authorize(config))!;
+    service.calls.length = 0;
+    for (const key of [
+      "authorization_endpoint",
+      "token_endpoint",
+      "revocation_endpoint",
+      "logout_endpoint",
+    ] as const) {
+      const changed = structuredClone(tokens);
+      changed.auth[key] += "?override=1";
+      await assert.rejects(
+        () => auth.commit(changed, identity),
+        /authentication|endpoint/i,
+      );
+      assert.equal(auth.identity, null);
+      assert.equal(await vault.get("otgd.auth.test"), null);
+    }
+    assert.equal(service.calls.length, 0);
+  } finally {
+    await close();
+  }
+});
+
+test("refresh and captured provider operations recheck endpoint metadata before credential traffic", async () => {
+  const { auth, service, config, identity, close } = await harness();
+  try {
+    const tokens = (await auth.authorize(config))!;
+    await auth.commit({ ...tokens, expiresAt: 0 }, identity);
+    service.calls.length = 0;
+    const internal = auth as unknown as {
+      stored: { auth: typeof config.auth };
+    };
+    const original = internal.stored.auth;
+    internal.stored.auth = {
+      ...original,
+      token_endpoint: original.token_endpoint + "#substitute",
+    };
+    await assert.rejects(() => auth.accessToken(), /authentication|endpoint/i);
+    internal.stored.auth = {
+      ...original,
+      revocation_endpoint: original.revocation_endpoint + "?substitute=1",
+    };
+    assert.throws(
+      () => auth.captureProviderRevocation(),
+      /authentication|endpoint/i,
+    );
+    internal.stored.auth = {
+      ...original,
+      logout_endpoint: "https://foreign.invalid/logout",
+    };
+    assert.throws(() => auth.providerLogoutUrl(), /authentication|endpoint/i);
+    assert.equal(service.calls.length, 0);
+  } finally {
+    await close();
+  }
+});
+
+test("admitted metadata snapshots cannot be retargeted while authorization or captured revocation is pending", async () => {
+  const { auth, service, config, identity, close } = await harness();
+  try {
+    unit().prompt = async (request: { state: string }) => {
+      config.auth.token_endpoint = "https://foreign.invalid/oauth2/token";
+      return {
+        type: "success",
+        params: { state: request.state, code: "one-time-code" },
+      };
+    };
+    const tokens = (await auth.authorize(config))!;
+    assert.equal(
+      tokens.auth.token_endpoint,
+      "http://localhost:8081/oauth2/token",
+    );
+    await auth.commit(tokens, identity);
+    const revoke = auth.captureProviderRevocation();
+    tokens.auth.revocation_endpoint = "https://foreign.invalid/oauth2/revoke";
+    await auth.clear();
+    service.calls.length = 0;
+    await revoke();
+    assert.equal(service.calls.length, 1);
+    assert.equal(service.calls[0]!.path, "/oauth2/revoke");
+  } finally {
+    await close();
+  }
+});
+
+test("provider logout refuses origin, callback and query substitution before opening a browser", async () => {
+  const { auth, close } = await harness();
+  const before = unit().providerCalls.length;
+  try {
+    for (const url of [
+      "https://foreign.invalid/logout?client_id=otgd-local-mobile&logout_uri=http%3A%2F%2Flocalhost%3A8082%2F",
+      "http://localhost:8081/logout?client_id=otgd-local-mobile&logout_uri=https%3A%2F%2Fforeign.invalid%2F",
+      "http://localhost:8081/logout?client_id=otgd-local-mobile&logout_uri=http%3A%2F%2Flocalhost%3A8082%2F&extra=1",
+      "http://localhost:8081/logout?client_id=otgd-local-mobile&logout_uri=http%3A%2F%2Flocalhost%3A8082%2F#extra",
+    ])
+      await assert.rejects(
+        () => auth.openProviderLogout(url),
+        /authentication|endpoint/i,
+      );
+    assert.equal(unit().providerCalls.length, before);
   } finally {
     await close();
   }

@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "job_id": "18d03dcc-59ff-42c1-b5ae-736cddff4753",
+  "kind": "deletion",
+  "state": "pending",
+  "scope": "all_data",
+  "data_generation": 1,
+  "accepted_at": "2026-10-25T08:20:11.928Z",
+  "started_at": null,
+  "completed_at": null,
+  "expires_at": null,
+  "failure_code": null,
+  "retained_categories": [
+    {
+      "category": "identity_and_generation_barriers",
+      "policy_basis": "privacy-v1",
+      "reason": "Retained to enforce deletion barriers and prevent restoration of retired data generations.",
+      "expires_at": null
+    },
+    {
+      "category": "audit_and_security_metadata",
+      "policy_basis": "privacy-v1",
+      "reason": "Retained as minimal records of security and administrative actions.",
+      "expires_at": null
+    },
+    {
+      "category": "minimal_operation_receipts",
+      "policy_basis": "privacy-v1",
+      "reason": "Retained so accepted privacy requests can be retried and their status verified.",
+      "expires_at": null
+    },
+    {
+      "category": "operator_membership_references",
+      "policy_basis": "privacy-v1",
+      "reason": "Retained to preserve authorization history and reconcile operator membership.",
+      "expires_at": null
+    },
+    {
+      "category": "private_cleanup_references",
+      "policy_basis": "privacy-v1",
+      "reason": "Retained to locate and remove late object versions after deletion.",
+      "expires_at": null
+    },
+    {
+      "category": "deletion_journal",
+      "policy_basis": "privacy-v1",
+      "reason": "Retained independently to preserve accepted deletion barriers during recovery.",
+      "expires_at": null
+    }
+  ],
+  "policy_version": "privacy-v1",
+  "attempt_count": 0,
+  "allowed_actions": [
+    "refresh"
+  ]
+}

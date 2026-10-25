@@ -1,0 +1,14 @@
+Recovery state: /tmp/tmpew51a9ss/.local/deploy/serverless-development/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/781d12564c674321bfb4991d990b1c6b/deployment-state.json; inspect completed stages before retry. No rollback is inferred.
+Recovery state: /tmp/tmprgre3fis/.local/deploy/serverless-development/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/2df37609614e427eac9e689db6236cbb/deployment-state.json; inspect completed stages before retry. No rollback is inferred.
+Recovery state: /tmp/tmpph7hu4xb/attempts/cccccccccccccccccccccccccccccccccccccccc/ce52ae767af748648dcc214f62418cf0/deployment-state.json; inspect completed stages before retry. No rollback is inferred.
+Recovery state: /tmp/tmpke1___lp/attempts/cccccccccccccccccccccccccccccccccccccccc/7910060b9f7e49169eaf8347a5b7fcaf/deployment-state.json; inspect completed stages before retry. No rollback is inferred.
+Recovery state: /tmp/tmpkwa48ztv/attempts/cccccccccccccccccccccccccccccccccccccccc/f5bad509339d47629c2903f6a41e23f8/deployment-state.json; inspect completed stages before retry. No rollback is inferred.
+Recovery state: /tmp/tmp2b51tmdk/attempts/cccccccccccccccccccccccccccccccccccccccc/f82330f7f53045539a825c1ee070da33/deployment-state.json; inspect completed stages before retry. No rollback is inferred.
+Recovery state: /tmp/tmpprmnx8mu/attempts/cccccccccccccccccccccccccccccccccccccccc/a760a04f86854c87a13faf7c909a41b4/deployment-state.json; inspect completed stages before retry. No rollback is inferred.
+Recovery state: /tmp/tmpmpbjgmpf/attempts/cccccccccccccccccccccccccccccccccccccccc/09eacd1708324d0fb50936e28856462c/deployment-state.json; inspect completed stages before retry. No rollback is inferred.
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/zipfile/__init__.py:1625: UserWarning: Duplicate name: 'index.html'
+  return self._open_to_write(zinfo, force_zip64=force_zip64)
+----------------------------------------------------------------------
+Ran 194 tests in 5.251s
+
+OK

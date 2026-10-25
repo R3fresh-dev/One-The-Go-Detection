@@ -1,0 +1,572 @@
+✔ a stalled OAuth refresh has a bounded deadline and its late reply cannot replace retained credentials (41.68693ms)
+✔ authorization supplies a fresh cryptographic state satisfying the issuer minimum (1.28631ms)
+✔ PKCE callback binds state and verifier and credential restore uses verified API identity (2.43326ms)
+✔ cancelled, wrong-state, duplicate and invalidated callbacks cannot exchange a code (1.27946ms)
+✔ one current refresh request preserves an omitted refresh token and every waiter receives the same access token (4.380316ms)
+✔ revoked refresh clears the current account while transient connection failure retains its protected identity (2.172767ms)
+✔ a stale refresh response cannot clear or overwrite a newly signed-in account (1.39265ms)
+✔ a current-account refresh starts independently from an older in-flight account refresh (4.384873ms)
+✔ credential writes cannot finish after a serialized sign-out removal (0.983914ms)
+✔ provider revocation HTTP failure is not reported as a confirmed revocation (1.3458ms)
+✔ provider revocation and configured browser logout use the captured family without changing a replacement account (1.426882ms)
+✔ authorization-code tokens cannot inherit a prior account refresh credential and malformed responses are refused (1.293922ms)
+✖ unadmitted authorization_endpoint is rejected before authorization browser or credential fetch (3.289361ms)
+✖ restored authorization_endpoint substitution never activates saved credentials (0.945746ms)
+✖ unadmitted token_endpoint is rejected before authorization browser or credential fetch (0.348466ms)
+✖ restored token_endpoint substitution never activates saved credentials (0.836471ms)
+✖ unadmitted revocation_endpoint is rejected before authorization browser or credential fetch (0.46468ms)
+✖ restored revocation_endpoint substitution never activates saved credentials (0.567045ms)
+✖ unadmitted logout_endpoint is rejected before authorization browser or credential fetch (0.283488ms)
+✖ restored logout_endpoint substitution never activates saved credentials (0.672014ms)
+✔ actual backend app-config and capabilities responses decode without removing mandatory fields (2.24797ms)
+✔ unsupported app version, minimum version or contract pauses synchronization; maintenance is separate (0.683691ms)
+✔ research result format advertisement supports only the versioned reader and grants no inference authority (1.189574ms)
+✔ maintenance blocks an ordinary HTTP write before fetch and preserves exact privacy escape routes (26.976665ms)
+✖ OAuth metadata refuses authorization_endpoint foreign_origin despite matching issuer and client (1.944222ms)
+✖ OAuth metadata refuses authorization_endpoint changed_port despite matching issuer and client (0.315476ms)
+✖ OAuth metadata refuses authorization_endpoint wrong_path despite matching issuer and client (0.235485ms)
+✖ OAuth metadata refuses authorization_endpoint query despite matching issuer and client (0.250588ms)
+✔ OAuth metadata refuses authorization_endpoint fragment despite matching issuer and client (0.268325ms)
+✔ OAuth metadata refuses authorization_endpoint userinfo despite matching issuer and client (0.402036ms)
+✖ OAuth metadata refuses authorization_endpoint encoded_path despite matching issuer and client (0.574086ms)
+✖ OAuth metadata refuses token_endpoint foreign_origin despite matching issuer and client (0.259912ms)
+✖ OAuth metadata refuses token_endpoint changed_port despite matching issuer and client (0.210488ms)
+✖ OAuth metadata refuses token_endpoint wrong_path despite matching issuer and client (0.215185ms)
+✖ OAuth metadata refuses token_endpoint query despite matching issuer and client (0.175494ms)
+✔ OAuth metadata refuses token_endpoint fragment despite matching issuer and client (0.125349ms)
+✔ OAuth metadata refuses token_endpoint userinfo despite matching issuer and client (0.14611ms)
+✖ OAuth metadata refuses token_endpoint encoded_path despite matching issuer and client (0.183307ms)
+✖ OAuth metadata refuses revocation_endpoint foreign_origin despite matching issuer and client (0.189616ms)
+✖ OAuth metadata refuses revocation_endpoint changed_port despite matching issuer and client (0.208734ms)
+✖ OAuth metadata refuses revocation_endpoint wrong_path despite matching issuer and client (0.213281ms)
+✖ OAuth metadata refuses revocation_endpoint query despite matching issuer and client (0.184949ms)
+✔ OAuth metadata refuses revocation_endpoint fragment despite matching issuer and client (0.172921ms)
+✔ OAuth metadata refuses revocation_endpoint userinfo despite matching issuer and client (0.132119ms)
+✖ OAuth metadata refuses revocation_endpoint encoded_path despite matching issuer and client (0.224028ms)
+✖ OAuth metadata refuses logout_endpoint foreign_origin despite matching issuer and client (0.18623ms)
+✖ OAuth metadata refuses logout_endpoint changed_port despite matching issuer and client (0.189476ms)
+✖ OAuth metadata refuses logout_endpoint wrong_path despite matching issuer and client (0.192901ms)
+✖ OAuth metadata refuses logout_endpoint query despite matching issuer and client (0.169175ms)
+✔ OAuth metadata refuses logout_endpoint fragment despite matching issuer and client (0.124618ms)
+✔ OAuth metadata refuses logout_endpoint userinfo despite matching issuer and client (0.098509ms)
+✖ OAuth metadata refuses logout_endpoint encoded_path despite matching issuer and client (0.13213ms)
+✖ OAuth callbacks are independently pinned and missing hosted-origin policy fails closed (0.218259ms)
+✖ separately compiled Cognito hosted origin works without treating the user-pool issuer as its domain (0.25911ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 24
+ℹ fail 30
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 983.802996
+
+✖ failing tests:
+
+test at tests/auth.test.ts:2:14037
+✖ unadmitted authorization_endpoint is rejected before authorization browser or credential fetch (3.289361ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts:448:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/auth.test.ts:2:14621
+✖ restored authorization_endpoint substitution never activates saved credentials (0.945746ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts:463:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/auth.test.ts:2:14037
+✖ unadmitted token_endpoint is rejected before authorization browser or credential fetch (0.348466ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts:448:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/auth.test.ts:2:14621
+✖ restored token_endpoint substitution never activates saved credentials (0.836471ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts:463:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/auth.test.ts:2:14037
+✖ unadmitted revocation_endpoint is rejected before authorization browser or credential fetch (0.46468ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts:448:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/auth.test.ts:2:14621
+✖ restored revocation_endpoint substitution never activates saved credentials (0.567045ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts:463:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/auth.test.ts:2:14037
+✖ unadmitted logout_endpoint is rejected before authorization browser or credential fetch (0.283488ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts:448:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/auth.test.ts:2:14621
+✖ restored logout_endpoint substitution never activates saved credentials (0.672014ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts:463:7)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses authorization_endpoint foreign_origin despite matching issuer and client (1.944222ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses authorization_endpoint changed_port despite matching issuer and client (0.315476ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses authorization_endpoint wrong_path despite matching issuer and client (0.235485ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses authorization_endpoint query despite matching issuer and client (0.250588ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses authorization_endpoint encoded_path despite matching issuer and client (0.574086ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses token_endpoint foreign_origin despite matching issuer and client (0.259912ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses token_endpoint changed_port despite matching issuer and client (0.210488ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses token_endpoint wrong_path despite matching issuer and client (0.215185ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses token_endpoint query despite matching issuer and client (0.175494ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses token_endpoint encoded_path despite matching issuer and client (0.183307ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses revocation_endpoint foreign_origin despite matching issuer and client (0.189616ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses revocation_endpoint changed_port despite matching issuer and client (0.208734ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses revocation_endpoint wrong_path despite matching issuer and client (0.213281ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses revocation_endpoint query despite matching issuer and client (0.184949ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses revocation_endpoint encoded_path despite matching issuer and client (0.224028ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses logout_endpoint foreign_origin despite matching issuer and client (0.18623ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses logout_endpoint changed_port despite matching issuer and client (0.189476ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses logout_endpoint wrong_path despite matching issuer and client (0.192901ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses logout_endpoint query despite matching issuer and client (0.169175ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6384
+✖ OAuth metadata refuses logout_endpoint encoded_path despite matching issuer and client (0.13213ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:162:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:6707
+✖ OAuth callbacks are independently pinned and missing hosted-origin policy fails closed (0.218259ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:168:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /callback/i,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/service-boundary.test.ts:2:7375
+✖ separately compiled Cognito hosted origin works without treating the user-pool issuer as its domain (0.25911ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/workspace/One-The-Go-Detection/apps/mobile/tests/service-boundary.test.ts:180:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /authentication|endpoint/i,
+    operator: 'throws',
+    diff: 'simple'
+  }

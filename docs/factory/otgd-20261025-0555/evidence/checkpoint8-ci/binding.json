@@ -1,0 +1,12 @@
+{
+  "checkpoint": "3d2c71a435b261f3291d92ac44f6c91ce416e3cc",
+  "merge_revision": "ad7ee3951edf53e3e06a64608347105339eb1945",
+  "identical_tree": "2cc2fc5ff8d68a09831d2b4a59ecfec99116f375",
+  "ci_run": 40174287684,
+  "jobs_passed": 14,
+  "status": "historical pre-correction checkpoint only; not current repair proof",
+  "artifact_sha256": {
+    "localstack.zip": "d520c19782d5ad90c83abb44aa1769d51696775d435c48a99c9f13f60740c3f6",
+    "merge.zip": "c202dcfc317fa7494da5f8676b30c1d26bd63d6f38d3a95c866d1a50677ea447"
+  }
+}

@@ -45,9 +45,15 @@ test("guest notice, confirmed Start check, immutable local Save and linked repla
 });
 
 import { customerService, deferred } from "./support/customer";
-import { clone, digestText } from "../src/core/integrity";
+import { clone, digest, digestText } from "../src/core/integrity";
 import nativeFixture from "../modules/reaction-task/fixtures/native-result-valid-contract-fixture.json";
 import { randomUUID } from "node:crypto";
+import { queueCheck } from "../src/services/sync";
+import {
+  startAttempt,
+  interruptStartedAttempts,
+  replaceCheck,
+} from "../src/core/domain";
 import type { NativeTaskResult } from "../modules/reaction-task/types";
 const unit = () => (globalThis as any).__otgdUnitRuntime;
 async function account() {
@@ -73,6 +79,131 @@ async function account() {
     },
   };
 }
+
+test("a frozen server conflict requires explicit inspection and a linked fresh correction without rebinding the pending record", async (context) => {
+  context.mock.timers.enable({
+    apis: ["Date"],
+    now: Date.parse("2026-10-11T15:00:00Z"),
+  });
+  const { app, service, close } = await account();
+  try {
+    await app.beginCheck("engineering_fixture", true);
+    await app.simulate("saliva");
+    await app.saveCheck();
+    const original = clone(app.check!);
+    const remote: any = {
+      session_id: original.id,
+      state: "completed",
+      revision: 7,
+      mode: original.snapshot.mode,
+      created_at: original.snapshot.created_at,
+      snapshot_sha256: original.snapshot_sha256,
+      evidence_sha256: original.evidence_sha256,
+      result: original.result,
+      snapshot: original.snapshot,
+      context: original.context,
+      manifest: original.manifest,
+      attempts: original.attempts,
+      alcohol: original.alcohol,
+      instruction_receipts: [],
+      collections: [],
+      collection_abandons: [],
+      raw_artifacts_omitted_reason: "NO_RAW_EXPORT_SCOPE",
+    };
+    await app.commit((state) => {
+      const queued = queueCheck(
+        state,
+        original.id,
+        randomUUID,
+        new Date().toISOString(),
+      );
+      queued.queue.find((item) => item.check_id === original.id)!.phase =
+        original.attempts.length + 4;
+      return queued;
+    });
+    service.overrides.set(`PUT /v1/sessions/${original.id}/snapshot`, () =>
+      service.result({ code: "STATE_CONFLICT" }, 409),
+    );
+    service.overrides.set(`GET /v1/sessions/${original.id}`, () =>
+      service.result(remote, 200, { ETag: '"7"' }),
+    );
+    await app.uploadCheck();
+    assert.equal(app.check!.delivery, "conflict");
+    await assert.rejects(app.uploadCheck(), {
+      code: "SYNC_CONFLICT_REQUIRES_REVIEW",
+    });
+    const stoppedId = app
+      .getSnapshot()
+      .state!.queue.find((item) => item.check_id === original.id)!.id;
+    const stoppedKeys = clone(
+      app.getSnapshot().state!.queue.find((item) => item.id === stoppedId)!
+        .keys,
+    );
+    await app.cancelQueue(stoppedId);
+    assert.equal(
+      app.getSnapshot().state!.queue.find((item) => item.id === stoppedId)
+        ?.state,
+      "conflict",
+    );
+    assert.deepEqual(
+      app.getSnapshot().state!.queue.find((item) => item.id === stoppedId)!
+        .keys,
+      stoppedKeys,
+    );
+    await assert.rejects(app.uploadCheck(), {
+      code: "SYNC_CONFLICT_REQUIRES_REVIEW",
+    });
+    await app.signOut(false);
+    await app.signIn();
+    await app.selectCheck(original.id);
+    assert.equal(app.check!.sync_conflict!.server_etag, '"7"');
+    assert.deepEqual(
+      app.getSnapshot().state!.queue.find((item) => item.id === stoppedId)!
+        .keys,
+      stoppedKeys,
+    );
+    assert.equal(app.check!.snapshot_sha256, original.snapshot_sha256);
+    await app.commit((state) => {
+      state.checks.find(
+        (item) => item.id === original.id,
+      )!.sync_conflict!.server_record!.state = "draft";
+      return state;
+    });
+    await assert.rejects(app.prepareReplacement(original.id), {
+      code: "SERVER_CHECK_NOT_FROZEN",
+    });
+    assert.equal(app.getSnapshot().pendingReplacement, null);
+    await app.commit((state) => {
+      state.checks.find(
+        (item) => item.id === original.id,
+      )!.sync_conflict!.server_record!.state = "completed";
+      return state;
+    });
+    assert.equal(typeof (app as any).prepareUploadCorrection, "function");
+    await (app as any).prepareUploadCorrection(original.id);
+    assert.equal(app.getSnapshot().pendingReplacement, original.id);
+    assert.equal(app.getSnapshot().route, "home");
+    context.mock.timers.setTime(Date.now() + 1000);
+    await app.beginCheck("engineering_fixture", true);
+    assert.notEqual(app.check!.id, original.id);
+    assert.notEqual(app.check!.snapshot.target_at, original.snapshot.target_at);
+    assert.equal(app.check!.snapshot.supersedes_session_id, original.id);
+    assert.deepEqual(app.check!.attempts, []);
+    const retained = app
+      .getSnapshot()
+      .state!.checks.find((item) => item.id === original.id)!;
+    assert.equal(digest(retained.snapshot), digest(original.snapshot));
+    assert.equal(retained.remote_etag, original.remote_etag);
+    assert.equal(
+      app
+        .getSnapshot()
+        .state!.queue.find((item) => item.check_id === original.id)!.state,
+      "conflict",
+    );
+  } finally {
+    await close();
+  }
+});
 
 test("sign-out records the API receipt before provider revocation and clears local identity immediately", async () => {
   const { app, service, close } = await account();
@@ -488,6 +619,127 @@ test("signed-in profile revision freezes into Start check and a later profile sa
     await close();
   }
 });
+
+for (const ledgerTransition of [false, true]) {
+  test(`ordinary measurement P1 stays frozen after P2 profile update ${ledgerTransition ? "across a software-only interrupted first attempt" : "while the draft has no captures"}`, async (context) => {
+    context.mock.timers.enable({
+      apis: ["Date"],
+      now: Date.parse("2026-10-11T15:00:00Z"),
+    });
+    const { app, service, close } = await account();
+    try {
+      const p1 = clone(app.getSnapshot().state!.profile);
+      p1.profile.age_years = 30;
+      p1.profile.height_cm = 180;
+      p1.profile.weight_kg = 80;
+      p1.history.sleep_hours = 7;
+      await app.saveProfile(p1);
+      const revision1 = clone(app.getSnapshot().state!.profile);
+      assert.equal(revision1.sync, "synced");
+      assert.ok(revision1.profile_version_id);
+      await app.beginCheck("measurement", true);
+      const original = clone(app.check!);
+      assert.equal(original.kind, "measurement");
+      assert.equal(original.snapshot.profile.source, "self_report");
+      assert.equal(original.snapshot.profile.weight_kg, 80);
+      assert.equal(original.snapshot.history.sleep_hours, 7);
+      assert.equal(
+        original.context.profile_version_id,
+        revision1.profile_version_id,
+      );
+      assert.deepEqual(original.attempts, []);
+      context.mock.timers.setTime(Date.now() + 1000);
+      const p2 = clone(app.getSnapshot().state!.profile);
+      p2.profile.weight_kg = 82;
+      p2.history.sleep_hours = 6.5;
+      await app.saveProfile(p2);
+      const revision2 = clone(app.getSnapshot().state!.profile);
+      assert.equal(revision2.profile.weight_kg, 82);
+      assert.equal(revision2.revision, revision1.revision + 1);
+      assert.notEqual(
+        revision2.profile_version_id,
+        revision1.profile_version_id,
+      );
+      assert.equal(app.check!.snapshot.profile.weight_kg, 80);
+      assert.equal(app.check!.snapshot.history.sleep_hours, 7);
+      assert.equal(app.check!.snapshot.target_at, original.snapshot.target_at);
+      assert.deepEqual(app.check!.context, original.context);
+      assert.deepEqual(app.check!.attempts, []);
+      if (ledgerTransition) {
+        // Only a software ledger transition: no permission, instrument, grant,
+        // successful acquisition or participant qualification is supplied.
+        await app.commit((state) =>
+          replaceCheck(
+            state,
+            startAttempt(
+              app.check!,
+              "eyes",
+              new Date().toISOString(),
+              randomUUID,
+              "prototype_sensor",
+            ).check,
+          ),
+        );
+        const startedAttempt = app
+          .getSnapshot()
+          .state!.checks.find((item) => item.id === original.id)!.attempts[0]!;
+        assert.equal(startedAttempt.status, "started");
+        assert.equal(app.check!.snapshot.profile.weight_kg, 80);
+        assert.deepEqual(app.check!.context, original.context);
+        await app.commit((state) =>
+          replaceCheck(
+            state,
+            interruptStartedAttempts(app.check!, new Date().toISOString()),
+          ),
+        );
+        const stoppedAttempt = app
+          .getSnapshot()
+          .state!.checks.find((item) => item.id === original.id)!.attempts[0]!;
+        assert.equal(stoppedAttempt.status, "invalid");
+        assert.ok(stoppedAttempt.quality_flags.includes("INTERRUPTED"));
+      }
+      await app.saveCheck();
+      const frozen = clone(app.check!);
+      assert.equal(frozen.snapshot.profile.weight_kg, 80);
+      assert.equal(
+        frozen.context.profile_version_id,
+        revision1.profile_version_id,
+      );
+      assert.deepEqual(frozen.context, original.context);
+      await app.prepareReplacement(frozen.id);
+      context.mock.timers.setTime(Date.now() + 1000);
+      await app.beginCheck("measurement", true);
+      assert.notEqual(app.check!.id, frozen.id);
+      assert.equal(app.check!.snapshot.supersedes_session_id, frozen.id);
+      assert.notEqual(app.check!.snapshot.target_at, frozen.snapshot.target_at);
+      assert.equal(app.check!.snapshot.profile.weight_kg, 82);
+      assert.equal(app.check!.snapshot.history.sleep_hours, 6.5);
+      assert.equal(
+        app.check!.context.profile_version_id,
+        revision2.profile_version_id,
+      );
+      assert.deepEqual(app.check!.attempts, []);
+      assert.equal(app.check!.snapshot.eyes.status, "not_collected");
+      assert.equal(
+        app.getSnapshot().state!.checks.find((item) => item.id === frozen.id)!
+          .snapshot.profile.weight_kg,
+        80,
+      );
+      assert.equal(
+        service.calls.some((call) =>
+          /capture-authorizations|\/finalize|\/snapshot/.test(call.path),
+        ),
+        false,
+      );
+      assert.equal(
+        app.getSnapshot().state!.queue.some((item) => item.kind === "check"),
+        false,
+      );
+    } finally {
+      await close();
+    }
+  });
+}
 
 test("notice acknowledgment is explicit and keeps the exact displayed version through account synchronization", async () => {
   const { app, service, close } = await account();

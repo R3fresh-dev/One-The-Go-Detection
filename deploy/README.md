@@ -255,3 +255,14 @@ Then use the same stopped deployment → bootstrap verification → migration/re
 Use the detailed [runbooks](../infra/runbooks/OPERATIONS.md). Rollback chooses a previously signed, still-retained digest and a database-compatible release. This baseline supports schema 1 only; it never automatically downgrades a database. Stop services, deploy the prior digest stopped, run/verify its compatible migration, obtain a fresh independent admission receipt and activate using both. Do not recover health data from an older snapshot merely to undo an application release.
 
 Database recovery is a separate process with a deletion-journal replay and fresh authentication cutoff. Optional `databaseSnapshotIdentifier` names a same-account/region RDS snapshot ARN and requires `recoveryRequired=true`. Preflight checks its source environment tag, original age, encryption key, engine/version and capacity. Recovery retains the replaced database for operator reconciliation; it does not drop the independent journal/key or shrink snapshot storage. Keep that snapshot identifier in subsequent configs until an explicitly reviewed infrastructure migration removes the restore-origin property; removing it casually can trigger another replacement.
+
+
+Current web artifacts independently compile the admitted `IdentityOrigin` output
+as `EXPO_PUBLIC_OAUTH_ORIGIN` and `WebCallbackUri` as
+`EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI`. The hosted origin is separate from Cognito's
+user-pool `Issuer`. Missing, path-bearing, credentialed or noncanonical public pins
+fail the build; no ambient environment or metadata value supplies a replacement.
+The signed web runtime now includes `oauth_origin` alongside the existing exact
+`callback_uri`, and current admission binds both back to actual stack outputs.
+Historical envelopes/digests are unchanged; unpinned old bundles require a new
+reviewed build for current admission, and are not silently upgraded by verification.

@@ -523,6 +523,23 @@ class ServerlessCloudFormationTest(unittest.TestCase):
 
 
 class ServerlessImageTest(unittest.TestCase):
+    def test_actual_web_builder_passes_independent_stack_oauth_pins(self):
+        class ObservedInputs(Exception): pass
+        out={'ApiOrigin':'https://api.owned-research.org','Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','ClientId':'approved-public-client','IdentityOrigin':'https://admitted.auth.us-east-2.amazoncognito.com','WebCallbackUri':'https://web.owned-research.org/'}
+        aws=Mock()
+        def observe(command, *, cwd, env, **kwargs):
+            self.assertEqual(env['EXPO_PUBLIC_OAUTH_ORIGIN'],out['IdentityOrigin'])
+            self.assertEqual(env['EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI'],out['WebCallbackUri'])
+            self.assertEqual(env['EXPO_PUBLIC_OAUTH_ISSUER'],out['Issuer'])
+            raise ObservedInputs
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);source=root/'source.tar'
+            with tarfile.open(source,'w'):pass
+            with patch.object(serverless,'verify_upload_access',return_value={}), patch.object(serverless.subprocess,'run',side_effect=observe):
+                with self.assertRaises(ObservedInputs):serverless.build_and_publish_web(aws, {}, out, source, root)
+            self.assertEqual(aws.method_calls,[])
+
+
     def source(self, path):
         with tarfile.open(path, 'w') as archive:
             raw = b'FROM fixture\n'

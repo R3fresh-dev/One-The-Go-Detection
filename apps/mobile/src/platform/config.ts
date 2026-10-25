@@ -1,11 +1,23 @@
+import { validateOAuthPolicy } from "../core/oauthPolicy";
 import Constants from "expo-constants";
 import type { Environment } from "../core/types";
 import { IntegrityError } from "../core/integrity";
 const extra = Constants.expoConfig?.extra ?? {};
+const environment = (extra.environment ??
+  process.env.EXPO_PUBLIC_APP_ENV ??
+  "local") as Environment;
+const local = ["local", "test"].includes(environment);
+const redirectUri = String(
+  extra.redirectUri ??
+    `otgd${environment === "prod" ? "" : "-" + environment}://oauth/callback`,
+);
+const webCallbackUri = String(
+  extra.webCallbackUri ??
+    process.env.EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI ??
+    (local ? "http://localhost:8082/" : ""),
+);
 export const BUILD = Object.freeze({
-  environment: (extra.environment ??
-    process.env.EXPO_PUBLIC_APP_ENV ??
-    "local") as Environment,
+  environment,
   hostedPreview:
     extra.hostedPreview === true ||
     process.env.EXPO_PUBLIC_HOSTED_PREVIEW === "true",
@@ -24,13 +36,21 @@ export const BUILD = Object.freeze({
       process.env.EXPO_PUBLIC_OAUTH_CLIENT_ID ??
       "otgd-local-mobile",
   ),
-  redirectUri: String(extra.redirectUri ?? "otgd-local://oauth/callback"),
+  oauthOrigin: String(
+    extra.oauthOrigin ??
+      process.env.EXPO_PUBLIC_OAUTH_ORIGIN ??
+      (local ? "http://localhost:8081" : ""),
+  ),
+  redirectUri,
+  webCallbackUri,
+  redirectUris: Object.freeze([redirectUri, webCallbackUri]),
   version:
     Constants.nativeAppVersion ?? Constants.expoConfig?.version ?? "0.2.0",
   buildNumber: Constants.nativeBuildVersion ?? String(extra.buildNumber ?? "1"),
   contract: "1.0.0 / scientific 0.1.0",
 });
 export function validateBuild(): void {
+  validateOAuthPolicy(BUILD);
   if (BUILD.serverless && !["qa", "prod"].includes(BUILD.environment))
     throw new IntegrityError(
       "SERVERLESS_ENVIRONMENT_INVALID",

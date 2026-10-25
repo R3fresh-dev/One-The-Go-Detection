@@ -18,7 +18,7 @@ During maintenance, saved local records remain readable after unlock and the app
 
 Environment values local/qa/prod/test are build/deployment inputs. Android package IDs and iOS bundle IDs differ by environment. API URL, OAuth issuer/client, callback allowlist, and feature-contract versions are immutable in a release build. GET /v1/app-config returns environment, app version range, contract versions, maintenance flag, notice version/hash/content route, and capability summaries. Notice content, generation/revocation, companion evidence, and authenticated export delivery follow the shared contracts. The platform contract freezes queue leases, quotas, pinned object versions, deletion-journal recovery, and operational budgets. Private membership/capability data comes only from authenticated endpoints.
 
-Local Compose includes API, worker, real PostgreSQL, LocalStack S3/SQS, and isolated signed development identity. The LocalStack image/version is pinned and its required activation token comes from an ignored environment file; no token is committed. Missing Docker/token is a reported prerequisite, not silently replaced while claiming LocalStack validation. Startup hooks idempotently create only the local buckets/queues. The same API/worker images run in AWS with actual AWS endpoints and task-role credentials.
+Local Compose includes API, worker, real PostgreSQL, LocalStack S3/SQS, and isolated signed development identity. The LocalStack image/version is pinned. The default community preset requires no activation token; the explicitly selected licensed preset requires an authorized token from an ignored environment file, and no token is committed. Missing Docker, or a missing token for the licensed preset, is a reported prerequisite, not silently replaced while claiming LocalStack validation. Startup hooks idempotently create only the local buckets/queues. The same API/worker images run in AWS with actual AWS endpoints and task-role credentials.
 
 QA/prod infrastructure uses separate environment identity/data, ALB TLS, private ECS tasks/RDS, Secrets Manager, private encrypted S3, encrypted SQS/DLQ, CloudWatch logs/alarms, managed database backups, and a bounded outbox/worker retry policy. Production capacity includes at least two API tasks across AZs and Multi-AZ RDS. QA retains security controls at lower capacity. Cloud deployments reject local-auth mode, emulator endpoints, wildcard CORS, placeholder credentials, and missing required TLS/identity configuration.
 
@@ -58,12 +58,12 @@ App startup SHALL time out network readiness checks and SHALL preserve existing 
 The repository SHALL provide pinned local services, initialization, health checks, environment examples, and integration commands using actual LocalStack S3/SQS and PostgreSQL.
 
 #### Scenario: Local prerequisites are present
-- **GIVEN** Docker and an authorized LocalStack activation token
+- **GIVEN** Docker and the pinned community preset, or Docker and an authorized activation token for the explicitly selected licensed preset
 - **WHEN** the documented local startup command runs
 - **THEN** resources initialize idempotently and a synthetic session reaches a persisted result through the API/worker path.
 
 #### Scenario: LocalStack prerequisite is absent
-- **GIVEN** no Docker daemon or activation token
+- **GIVEN** no Docker daemon, or the explicitly selected licensed preset without its required activation token
 - **WHEN** local integration is requested
 - **THEN** the command fails with a clear prerequisite message and no test report calls a mock execution LocalStack validation.
 

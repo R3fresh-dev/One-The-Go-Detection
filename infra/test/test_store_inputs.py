@@ -58,6 +58,8 @@ def fictional_config(platform="android", environment="qa"):
         "expo_account": "fictional-software-test",
         "api_url": "https://api.otgd-fixture.org",
         "oauth_issuer": "https://auth.otgd-fixture.org/pool",
+        "oauth_origin": "https://hosted.engineering-research.org",
+        "oauth_web_callback_uri": "https://web.engineering-research.org/",
         "oauth_client_id": "A" * 26,
         "artifact_hosts": ["builds.otgd-fixture.org"],
         "bundletool_jar": None,

@@ -1,3 +1,4 @@
+import { validateOAuthPolicy } from "./oauth-build-policy.js";
 import type { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => {
@@ -42,6 +43,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const clientId =
     process.env.EXPO_PUBLIC_OAUTH_CLIENT_ID ??
     (local ? "otgd-local-mobile" : "");
+  const oauthOrigin =
+    process.env.EXPO_PUBLIC_OAUTH_ORIGIN ??
+    (local ? "http://localhost:8081" : "");
+  const webCallbackUri =
+    process.env.EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI ??
+    (local ? "http://localhost:8082/" : "");
   for (const url of [apiUrl, issuer]) {
     if (
       !url ||
@@ -57,6 +64,15 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     throw new Error("Set the environment Cognito public client ID");
   const suffix = environment === "prod" ? "" : `.${environment}`;
   const scheme = `otgd${environment === "prod" ? "" : `-${environment}`}`;
+  const redirectUri = `${scheme}://oauth/callback`;
+  const redirectUris = [redirectUri, webCallbackUri];
+  validateOAuthPolicy({
+    environment,
+    issuer,
+    clientId,
+    oauthOrigin,
+    redirectUris,
+  });
   return {
     ...config,
     name: `One The Go${environment === "prod" ? "" : ` · ${environment.toUpperCase()}`}`,
@@ -158,7 +174,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       apiUrl,
       issuer,
       clientId,
-      redirectUri: `${scheme}://oauth/callback`,
+      oauthOrigin,
+      webCallbackUri,
+      redirectUri,
+      redirectUris,
       ...(process.env.EAS_PROJECT_ID
         ? { eas: { projectId: process.env.EAS_PROJECT_ID } }
         : {}),

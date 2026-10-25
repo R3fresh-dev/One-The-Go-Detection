@@ -293,8 +293,15 @@ def test_invalid_training_rows_are_shared_by_every_ablation_and_constant_scaling
 
 
 @pytest.mark.parametrize('change',['future','future_observation','future_profile','unknown_feature','nonfinite','false_independence','boolean_label','unlocked_label','missing_time','foreign_endpoint','cutoff_order'])
-def test_invalid_or_future_source_data_are_rejected_before_fitting(cohort,change):
+@pytest.mark.parametrize('acquisition_status', ['valid', 'invalid'])
+def test_invalid_or_future_source_data_are_rejected_before_fitting(cohort,change,acquisition_status):
     dataset,_,_ = cohort;value = dataset.model_dump();row = value['sessions'][0]
+    row['acquisition_status'] = acquisition_status
+    if acquisition_status == 'invalid':
+        row['quality_flags'] = ['fictional-interruption']
+    # An invalid acquisition is a retained row, not a bypass of input custody.
+    # Establish that the unchanged row is admissible before corrupting it.
+    assert m.Dataset.model_validate(value).sessions[0].acquisition_status == acquisition_status
     if change == 'future':row['features']['saliva.THC']['available_at'] = '2026-01-02T12:00:00Z'
     elif change == 'future_observation':row['features']['saliva.THC']['observed_at'] = '2026-01-01T12:01:01Z'
     elif change == 'future_profile':row['features']['profile.age_years'] = {'status': 'valid','value': 30.,'observed_at': '2026-01-01T11:59:00Z','available_at': row['capture_completed_at']}
@@ -409,6 +416,183 @@ def test_input_snapshot_uses_bounded_read_and_rejects_nonregular_files(tmp_path,
     assert m.load(regular) == {'safe': True} and limits == [m.MAX_BYTES+1]
     fifo = tmp_path/'named-pipe';m.os.mkfifo(fifo)
     with pytest.raises(ValueError):m.load(fifo)
+
+
+@pytest.mark.parametrize('change', ['same_size_metadata', 'size'])
+def test_descriptor_change_during_actual_bounded_read_refuses_training_without_output(cohort, tmp_path, monkeypatch, change):
+    dataset, plan, split = cohort
+    data, analysis, frozen = [tmp_path / name for name in ('dataset.json', 'analysis.json', 'split.json')]
+    m.store(data, dataset.model_dump()); m.store(analysis, plan.model_dump()); m.store(frozen, split)
+    original_bytes = data.read_bytes()
+    original_stat = data.stat()
+    original_fdopen = m.os.fdopen
+    reads = []
+    mutated = []
+
+    class ChangingReader:
+        def __init__(self, opened):self.opened = opened
+        def __enter__(self):return self
+        def __exit__(self, *_):self.opened.close()
+        def fileno(self):return self.opened.fileno()
+        def read(self, limit):
+            reads.append(limit)
+            raw = self.opened.read(limit)
+            # load() already took its first real fstat. Change the same inode
+            # through a second descriptor before load() takes its second fstat.
+            if not mutated:
+                changed = (original_bytes.replace(b'engineering-fixture-only', b'ENGINEERING-fixture-only')
+                    if change == 'same_size_metadata' else original_bytes + b' ')
+                data.write_bytes(changed)
+                m.os.utime(data, ns=(original_stat.st_atime_ns, original_stat.st_mtime_ns + 1_000_000_000))
+                mutated.append(changed)
+            return raw
+
+    def tracked_fdopen(descriptor, *args, **kwargs):
+        opened = original_fdopen(descriptor, *args, **kwargs)
+        return ChangingReader(opened) if m.os.fstat(descriptor).st_ino == original_stat.st_ino else opened
+
+    monkeypatch.setattr(m.os, 'fdopen', tracked_fdopen)
+    output = tmp_path / 'training'
+    with pytest.raises(ValueError, match='Input changed during bounded snapshot admission'):
+        m.main(['train', '--dataset', str(data), '--analysis', str(analysis), '--split', str(frozen), '--output', str(output)])
+    assert not output.exists() and not list(tmp_path.glob('*.artifact.json'))
+    assert reads == [m.MAX_BYTES + 1] and len(mutated) == 1
+    assert data.stat().st_ino == original_stat.st_ino
+    assert data.stat().st_mtime_ns != original_stat.st_mtime_ns
+    assert len(mutated[0]) == len(original_bytes) + (1 if change == 'size' else 0)
+    # The adjacent stable read of this very same file still admits its exact
+    # current bytes; the reader does not manufacture a blanket refusal.
+    assert m.load(data, m.Dataset).model_dump() == m.strict_loads(mutated[0])
+    assert reads == [m.MAX_BYTES + 1, m.MAX_BYTES + 1]
+    assert not output.exists()
+
+
+def assert_sparse_subgroups_preserve_rows_and_unsupported_statistics(cohort):
+    dataset, plan, split = cohort
+    original = deepcopy([dataset.model_dump(), plan.model_dump(), split])
+    original_artifacts, _ = m.train(dataset, plan, split, '2026-03-02T00:00:00Z')
+    people = sorted(split['held_out_participants'])
+    raw, analysis = dataset.model_dump(), plan.model_dump()
+    analysis['strata']['route'] = ['fictional-only-positive', 'fictional-only-negative', 'fictional-empty']
+    analysis['strata']['population'] = ['fictional-single-participant', 'fictional-two-participants', 'fictional-other']
+    for row in raw['sessions']:
+        row['strata']['route'] = 'fictional-only-positive' if row['endpoint']['value'] else 'fictional-only-negative'
+        row['strata']['population'] = ('fictional-single-participant' if row['participant_ref'] == people[0]
+            else 'fictional-two-participants' if row['participant_ref'] in people[1:3] else 'fictional-other')
+    sparse = rebind(m.Dataset.model_validate(raw), m.AnalysisPlan.model_validate(analysis))
+    expected_dataset_hash, expected_plan_hash, expected_split_hash = (digest(sparse[0].model_dump()),
+        digest(sparse[1].model_dump()), digest(sparse[2]))
+    assert sparse[2]['session_ids'] == split['session_ids']
+    for source, current in zip(original[0]['sessions'], sparse[0].model_dump()['sessions']):
+        assert {key: value for key, value in current.items() if key != 'strata'} == {key: value for key, value in source.items() if key != 'strata'}
+    artifacts, training, report, evidence = pipeline(sparse)
+    assert artifacts == original_artifacts
+    expected_variants = {'cardiac_hr_only'} if plan.cardiac_timing_policy is not None else set(m.VARIANTS)
+    assert set(artifacts) == set(report['ablations']) == expected_variants
+    for bound in (training, report, evidence):
+        assert bound['dataset_sha256'] == expected_dataset_hash
+        assert bound['analysis_plan_sha256'] == expected_plan_hash
+        assert bound['split_plan_sha256'] == expected_split_hash
+    assert evidence['artifact_sha256'] == {name: digest(value) for name, value in original_artifacts.items()}
+    for partition in ('confirmatory', 'later_sessions'):
+        assert set(evidence['row_predictions'][partition]) == expected_variants
+        for dimension, categories in sparse[1].strata.items():
+            groups = evidence['subgroups'][partition][dimension]
+            assert set(groups) == set(categories)
+            for variant in expected_variants:
+                members = [identity for category in groups.values() for identity in category[variant]['session_ids']]
+                assert sorted(members) == split['session_ids'][partition] and len(set(members)) == 8
+                assert sum(category[variant]['metrics']['total'] for category in groups.values()) == 8
+                assert sum(category[variant]['metrics']['positives'] for category in groups.values()) == 4
+                assert sum(category[variant]['metrics']['negatives'] for category in groups.values()) == 4
+                assert sum(category[variant]['metrics']['valid'] for category in groups.values()) == 8
+                assert sum(category[variant]['metrics']['invalid'] for category in groups.values()) == 0
+                assert sum(category[variant]['metrics']['abstained'] for category in groups.values()) == 0
+        for variant in expected_variants:
+            route = evidence['subgroups'][partition]['route']
+            for category, positive in [('fictional-only-positive', True), ('fictional-only-negative', False)]:
+                group = route[category][variant]; summary, detail = group['metrics'], group['details']
+                expected_ids = [row.session_id for row in sparse[0].sessions
+                    if row.session_id in split['session_ids'][partition] and row.endpoint.value == int(positive)]
+                assert group['session_ids'] == sorted(expected_ids)
+                assert summary['total'] == summary['valid'] == detail['participants'] == 4
+                assert summary['positives'] == (4 if positive else 0)
+                assert summary['negatives'] == (0 if positive else 4)
+                assert summary['sensitivity'] == (1.0 if positive else None)
+                assert summary['specificity'] == (None if positive else 1.0)
+                assert summary['sensitivity_interval'] == ([1.0, 1.0] if positive else None)
+                assert summary['specificity_interval'] == (None if positive else [1.0, 1.0])
+                assert detail['defined_sensitivity_draws'] == (200 if positive else 0)
+                assert detail['defined_specificity_draws'] == (0 if positive else 200)
+                assert detail['unestimable_reasons'] == [('NO_ENDPOINT_NEGATIVES' if positive else 'NO_ENDPOINT_POSITIVES'),
+                    'INSUFFICIENT_DEFINED_CLASSIFICATION_BOOTSTRAP_DRAWS']
+                predictive = detail['predictive_values']
+                assert predictive['classified_positive_denominator'] == (4 if positive else 0)
+                assert predictive['classified_negative_denominator'] == (0 if positive else 4)
+                assert predictive['positive_predictive_value'] == (1.0 if positive else None)
+                assert predictive['negative_predictive_value'] == (None if positive else 1.0)
+                assert predictive['positive_interval'] == ([1.0, 1.0] if positive else None)
+                assert predictive['negative_interval'] == (None if positive else [1.0, 1.0])
+                assert predictive['defined_positive_draws'] == (200 if positive else 0)
+                assert predictive['defined_negative_draws'] == (0 if positive else 200)
+                assert predictive['observed_endpoint_prevalence'] == float(positive)
+                assert predictive['decision_coverage'] == predictive['probability_coverage'] == 1.0
+            population = evidence['subgroups'][partition]['population']
+            for category, participants in [('fictional-single-participant', 1), ('fictional-two-participants', 2)]:
+                group = population[category][variant]; summary, detail = group['metrics'], group['details']
+                assert summary['total'] == summary['valid'] == 2 * participants
+                assert summary['positives'] == summary['negatives'] == participants
+                assert summary['sensitivity'] == summary['specificity'] == 1.0
+                assert detail['participants'] == participants and detail['draws'] == 200
+                assert detail['defined_sensitivity_draws'] == detail['defined_specificity_draws'] == (0 if participants == 1 else 200)
+                assert summary['sensitivity_interval'] == summary['specificity_interval'] == (None if participants == 1 else [1.0, 1.0])
+                assert detail['unestimable_reasons'] == (['INSUFFICIENT_PARTICIPANTS_FOR_CLUSTER_INTERVAL',
+                    'INSUFFICIENT_DEFINED_CLASSIFICATION_BOOTSTRAP_DRAWS'] if participants == 1 else [])
+                predictive = detail['predictive_values']
+                assert predictive['classified_positive_denominator'] == predictive['classified_negative_denominator'] == participants
+                assert predictive['positive_predictive_value'] == predictive['negative_predictive_value'] == 1.0
+                assert predictive['positive_interval'] == predictive['negative_interval'] == (None if participants == 1 else [1.0, 1.0])
+                assert predictive['defined_positive_draws'] == predictive['defined_negative_draws'] == (0 if participants == 1 else 200)
+                assert predictive['observed_endpoint_prevalence'] == 0.5
+                assert predictive['decision_coverage'] == predictive['probability_coverage'] == 1.0
+    assert [dataset.model_dump(), plan.model_dump(), split] == original
+
+
+def test_sparse_one_class_and_participant_boundary_subgroups_preserve_all_rows(cohort):
+    assert_sparse_subgroups_preserve_rows_and_unsupported_statistics(cohort)
+
+
+@pytest.mark.parametrize('label,positive_draws,negative_draws', [
+    ('fictional-sparse-boundary-1', 149, 163), ('fictional-sparse-boundary-5', 150, 146)])
+def test_predictive_intervals_require_frozen_minimum_defined_cluster_draws(cohort, label, positive_draws, negative_draws):
+    _, original_plan, _ = cohort
+    # One fixed prespecified minimum in both cases; actual seeded resampling
+    # produces minimum - 1 and exact minimum. No fabricated bootstrap provider.
+    plan = m.AnalysisPlan.model_validate({**original_plan.model_dump(), 'minimum_defined_bootstrap_replicates': 150})
+    rows = [{'session_id': 'fictional-positive-session', 'participant_ref': 'fictional-positive', 'endpoint': 1,
+        'state': 'classified', 'probability': 0.9, 'predicted_positive': True, 'reason_codes': []},
+        {'session_id': 'fictional-negative-session', 'participant_ref': 'fictional-negative', 'endpoint': 0,
+        'state': 'classified', 'probability': 0.1, 'predicted_positive': False, 'reason_codes': []}]
+    original = deepcopy(rows)
+    summary, detail = m.metrics(rows, plan, label, allow_unestimable=True)
+    assert rows == original
+    assert summary['total'] == summary['valid'] == detail['participants'] == 2
+    assert summary['positives'] == summary['negatives'] == 1 and summary['invalid'] == summary['abstained'] == 0
+    assert summary['sensitivity'] == summary['specificity'] == 1.0
+    assert detail['draws'] == 200 and detail['defined_sensitivity_draws'] == positive_draws
+    assert detail['defined_specificity_draws'] == negative_draws
+    assert summary['sensitivity_interval'] == (None if positive_draws == 149 else [1.0, 1.0])
+    assert summary['specificity_interval'] == ([1.0, 1.0] if negative_draws == 163 else None)
+    assert detail['unestimable_reasons'] == ['INSUFFICIENT_DEFINED_CLASSIFICATION_BOOTSTRAP_DRAWS']
+    predictive = detail['predictive_values']
+    assert predictive['classified_positive_denominator'] == predictive['classified_negative_denominator'] == 1
+    assert predictive['positive_predictive_value'] == predictive['negative_predictive_value'] == 1.0
+    assert predictive['defined_positive_draws'] == positive_draws and predictive['defined_negative_draws'] == negative_draws
+    assert predictive['positive_interval'] == summary['sensitivity_interval']
+    assert predictive['negative_interval'] == summary['specificity_interval']
+    assert predictive['observed_endpoint_prevalence'] == 0.5
+    assert predictive['decision_coverage'] == predictive['probability_coverage'] == 1.0
+    assert predictive['qualification'] == 'conditional_on_classification_and_observed_locked_cohort_prevalence_not_target_population'
 
 
 def test_subgroups_reconcile_all_rows_and_predictive_values_are_prevalence_qualified(cohort):

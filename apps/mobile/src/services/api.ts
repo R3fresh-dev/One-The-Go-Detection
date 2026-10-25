@@ -1,3 +1,4 @@
+import { admitOAuthMetadata, type OAuthPolicy } from "../core/oauthPolicy";
 import type {
   AppConfig,
   Capabilities,
@@ -534,7 +535,7 @@ function noticeRef(value: unknown): NoticeRef {
 }
 export function parseAppConfig(
   value: unknown,
-  expected: { environment: string; issuer: string; clientId: string },
+  expected: OAuthPolicy,
 ): AppConfig {
   const v = requireObject(value);
   knownKeys(v, [
@@ -558,48 +559,7 @@ export function parseAppConfig(
       "SERVICE_CONFIG_MISMATCH",
       "This service does not match the installed measurement-only build.",
     );
-  const auth = requireObject(v.auth);
-  knownKeys(auth, [
-    "issuer",
-    "client_id",
-    "authorization_endpoint",
-    "token_endpoint",
-    "revocation_endpoint",
-    "logout_endpoint",
-    "redirect_uris",
-  ]);
-  if (
-    auth.issuer !== expected.issuer ||
-    auth.client_id !== expected.clientId ||
-    !Array.isArray(auth.redirect_uris) ||
-    auth.redirect_uris.some((v) => typeof v !== "string")
-  )
-    throw new IntegrityError(
-      "AUTH_CONFIG_MISMATCH",
-      "The service identity differs from this build.",
-    );
-  for (const key of [
-    "authorization_endpoint",
-    "token_endpoint",
-    "revocation_endpoint",
-    "logout_endpoint",
-  ]) {
-    const endpoint = auth[key];
-    if (endpoint === undefined || endpoint === null) continue;
-    const url = new URL(requiredString(endpoint, 2048));
-    if (
-      !["http:", "https:"].includes(url.protocol) ||
-      (["qa", "prod"].includes(expected.environment) &&
-        url.protocol !== "https:") ||
-      url.username ||
-      url.password ||
-      url.hash
-    )
-      throw new IntegrityError(
-        "AUTH_ENDPOINT_INVALID",
-        "An authentication endpoint is invalid.",
-      );
-  }
+  const auth = admitOAuthMetadata(v.auth, expected);
   if (
     typeof v.maintenance !== "boolean" ||
     typeof v.minimum_app_version !== "string" ||
@@ -654,7 +614,7 @@ export function parseAppConfig(
   safeInteger(limits.request_bytes, 1);
   safeInteger(limits.attempt_bytes, 1);
   safeInteger(limits.export_sessions, 1);
-  return { ...(v as unknown as AppConfig), notice: noticeRef(v.notice) };
+  return { ...(v as unknown as AppConfig), auth, notice: noticeRef(v.notice) };
 }
 export interface SyncReadiness {
   allowed: boolean;
@@ -949,9 +909,47 @@ export function parsePrivacyJob(value: unknown): PrivacyJob {
     "completed_steps",
     "raw_export",
   ]);
+  // Validate calendar components as well as Date.parse: Date.parse alone
+  // normalizes impossible dates such as February 30 instead of refusing them.
+  const receiptDate = (value: unknown): string => {
+    const text = requiredString(value, 64);
+    const match =
+      /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,9})?(Z|[+-](\d{2}):(\d{2}))$/.exec(
+        text,
+      );
+    const [year, month, day, hour, minute, second] = match
+      ? match.slice(1, 7).map(Number)
+      : [];
+    const leap =
+      year !== undefined &&
+      year % 4 === 0 &&
+      (year % 100 !== 0 || year % 400 === 0);
+    const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (
+      !match ||
+      !year ||
+      !month ||
+      month > 12 ||
+      !day ||
+      day > days[month - 1]! ||
+      hour! > 23 ||
+      minute! > 59 ||
+      second! > 59 ||
+      Number(match[8] ?? 0) > 23 ||
+      Number(match[9] ?? 0) > 59 ||
+      !Number.isFinite(Date.parse(text))
+    )
+      throw new IntegrityError(
+        "PRIVACY_JOB_UNSUPPORTED",
+        "The privacy receipt contains an invalid timestamp.",
+      );
+    return text;
+  };
   const state = v.state ?? v.status;
   if (
     v.schema_version !== "1.0.0" ||
+    typeof v.kind !== "string" ||
+    typeof state !== "string" ||
     !["export", "deletion"].includes(String(v.kind)) ||
     ![
       "pending",
@@ -979,17 +977,68 @@ export function parsePrivacyJob(value: unknown): PrivacyJob {
     parseRawExportManifest(v.raw_export);
   }
   safeInteger(v.data_generation, 1);
-  requiredString(v.accepted_at);
+  receiptDate(v.accepted_at);
+  for (const key of [
+    "started_at",
+    "completed_at",
+    "expires_at",
+    "download_fresh_until",
+    "download_metadata_expires_at",
+  ])
+    if (v[key] !== undefined && v[key] !== null) receiptDate(v[key]);
+  requiredString(v.policy_version);
+  safeInteger(v.attempt_count);
+  if (v.failure_code !== undefined && v.failure_code !== null)
+    requiredString(v.failure_code);
+  if (typeof v.scope === "string") requiredString(v.scope);
+  else {
+    const scope = requireObject(v.scope);
+    knownKeys(scope, ["kind", "session_ids"]);
+    requiredString(scope.kind, 64);
+    if (scope.session_ids !== undefined) {
+      if (!Array.isArray(scope.session_ids) || scope.session_ids.length > 500)
+        throw new IntegrityError(
+          "PRIVACY_JOB_UNSUPPORTED",
+          "The privacy receipt scope is invalid.",
+        );
+      scope.session_ids.forEach((id) => requiredString(id));
+    }
+  }
   if (
     !Array.isArray(v.retained_categories) ||
-    !Array.isArray(v.allowed_actions)
+    v.retained_categories.length > 32 ||
+    !Array.isArray(v.allowed_actions) ||
+    v.allowed_actions.length > 16
   )
     throw new IntegrityError(
       "PRIVACY_JOB_UNSUPPORTED",
       "The privacy receipt is incomplete.",
     );
+  v.allowed_actions.forEach((action) => requiredString(action, 64));
+  const retainedText = (value: unknown, max = 256) => {
+    const text = requiredString(value, max);
+    if (!text.trim())
+      throw new IntegrityError(
+        "PRIVACY_JOB_UNSUPPORTED",
+        "A retained category detail is empty.",
+      );
+    return text;
+  };
+  const retained_categories = v.retained_categories.map((entry) => {
+    if (typeof entry === "string") return retainedText(entry);
+    const category = requireObject(entry);
+    knownKeys(category, ["category", "policy_basis", "reason", "expires_at"]);
+    return {
+      category: retainedText(category.category),
+      policy_basis: retainedText(category.policy_basis),
+      reason: retainedText(category.reason, 1000),
+      expires_at:
+        category.expires_at === null ? null : receiptDate(category.expires_at),
+    };
+  });
   return {
     ...(v as unknown as PrivacyJob),
+    retained_categories,
     state: state as PrivacyJob["state"],
   };
 }

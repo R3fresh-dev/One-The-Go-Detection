@@ -1,0 +1,10 @@
+<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="27.910306000000002">
+<testsuite name="authenticated-live.spec.ts" timestamp="2026-10-25T08:28:25.688Z" hostname="live-mobile" tests="1" failures="0" skipped="0" time="13.08" errors="0">
+<testcase name="ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries" classname="authenticated-live.spec.ts" time="13.08">
+</testcase>
+</testsuite>
+<testsuite name="authenticated-live.spec.ts" timestamp="2026-10-25T08:28:25.688Z" hostname="live-desktop" tests="1" failures="0" skipped="0" time="12.605" errors="0">
+<testcase name="ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries" classname="authenticated-live.spec.ts" time="12.605">
+</testcase>
+</testsuite>
+</testsuites>

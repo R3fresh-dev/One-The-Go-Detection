@@ -303,6 +303,13 @@ def validate_native(v, projection):
             "nativeSequence",
         ):
             number(e[f])
+        if not isclose(
+            e["dispatchDelayMs"],
+            e["dispatchTimestampMs"] - e["nativeTimestampMs"],
+            abs_tol=1e-6,
+            rel_tol=0,
+        ):
+            raise Problem(422, "NATIVE_TIMING_FAULT")
         if (
             e["nativeSequence"] in seq
             or e["target"] not in ("left", "right", "outside")
@@ -375,6 +382,29 @@ def validate_native(v, projection):
         ):
             raise Problem(422, "INVALID_TASK_FEATURES")
         return
+    # Only complete valid runs have the fixed final drain cutoff. Interrupted
+    # ledgers may retain their fault-triggering event and partial/null timing.
+    last_onset = v["trialEvents"][-1]["onsetMs"]
+    cutoff = timing["terminalCutoffMs"]
+    expected_cutoff = (
+        None
+        if last_onset is None
+        else last_onset
+        + CONFIG["timing"]["response_window_ms"]
+        + CONFIG["timing"]["final_event_drain_ms"]
+    )
+    if (
+        last_onset is None
+        or cutoff is None
+        or not isclose(
+            cutoff,
+            expected_cutoff,
+            abs_tol=1e-6,
+            rel_tol=0,
+        )
+        or any(e["dispatchTimestampMs"] >= expected_cutoff for e in v["inputEvents"])
+    ):
+        raise Problem(422, "NATIVE_TIMING_FAULT")
     if any(
         timing[k] > 100
         for k in (

@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import base64
 import hashlib
 import re
 import secrets
 import threading
 from contextlib import contextmanager
 from datetime import datetime
-from uuid import UUID as PyUUID
 
 from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import FastAPI, Request
@@ -25,6 +23,7 @@ from . import storage
 from .auth import authenticate, family_hash, recent
 from .canonical import canonical, digest, strict_loads
 from .capture_signing import require_signing_key, sign_start
+from .history_cursor import decode_cursor, encode_cursor
 from .participant_acquisition import (InstructionAcknowledgment, CollectionRequest, acknowledge_instructions, instruction_receipt, accept_collection, collection_status, require_completed_collections, CollectionAbandonment, abandon_collection)
 from .config import settings, web_origins
 from .db import (
@@ -436,12 +435,22 @@ def job_view(job):
         "expires_at": iso(job.expires) if job.expires else None,
         "failure_code": job.failure,
         "retained_categories": [
-            "identity_and_generation_barriers",
-            "audit_and_security_metadata",
-            "minimal_operation_receipts",
-            "operator_membership_references",
-            "private_cleanup_references",
-            "deletion_journal",
+            {"category": category, "policy_basis": "privacy-v1", "reason": reason,
+                "expires_at": None}
+            for category, reason in (
+                ("identity_and_generation_barriers",
+                    "Retained to enforce deletion barriers and prevent restoration of retired data generations."),
+                ("audit_and_security_metadata",
+                    "Retained as minimal records of security and administrative actions."),
+                ("minimal_operation_receipts",
+                    "Retained so accepted privacy requests can be retried and their status verified."),
+                ("operator_membership_references",
+                    "Retained to preserve authorization history and reconcile operator membership."),
+                ("private_cleanup_references",
+                    "Retained to locate and remove late object versions after deletion."),
+                ("deletion_journal",
+                    "Retained independently to preserve accepted deletion barriers during recovery."),
+            )
         ] if job.kind == "deletion" else [],
         "policy_version": "privacy-v1",
         "attempt_count": job.attempts,
@@ -706,20 +715,21 @@ def session_list(request: Request, cursor: str | None = None, limit: int = 20):
         query = select(Check).where(
             Check.account_id == a.id, Check.generation == a.generation
         )
-        if cursor:
-            try:
-                d = strict_loads(
-                    base64.urlsafe_b64decode(cursor + "=" * ((4 - len(cursor) % 4) % 4))
+        if cursor is not None:
+            created, identity = decode_cursor(cursor, a, settings())
+            boundary = db.scalar(
+                select(Check.id).where(
+                    Check.id == identity,
+                    Check.account_id == a.id,
+                    Check.generation == a.generation,
+                    Check.created == created,
                 )
-                if set(d) != {"id", "created"}:
-                    raise ValueError()
-                PyUUID(d["id"])
-                created = float(d["created"])
-            except Exception:
+            )
+            if boundary is None:
                 raise Problem(422, "INVALID_CURSOR") from None
             query = query.where(
                 (Check.created < created)
-                | ((Check.created == created) & (Check.id < d["id"]))
+                | ((Check.created == created) & (Check.id < identity))
             )
         rows = list(
             db.scalars(
@@ -729,11 +739,7 @@ def session_list(request: Request, cursor: str | None = None, limit: int = 20):
         more = len(rows) > limit
         rows = rows[:limit]
         next_cursor = (
-            base64.urlsafe_b64encode(
-                canonical({"id": rows[-1].id, "created": rows[-1].created})
-            )
-            .decode()
-            .rstrip("=")
+            encode_cursor(a, rows[-1], settings())
             if more
             else None
         )
