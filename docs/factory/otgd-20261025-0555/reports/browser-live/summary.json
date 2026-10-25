@@ -1,0 +1,46 @@
+[
+  {
+    "project": "live-mobile",
+    "viewport": {
+      "width": 412,
+      "height": 839
+    },
+    "archive": {
+      "sha256": "b88a6b164c5fdcfd3476c7284dbfcb7a32c365be981744b515dc7c4d930fc8a0",
+      "bytes": 3190,
+      "member_count": 3
+    },
+    "logout": {
+      "state": "accepted",
+      "remote_family_revoked": true,
+      "accepted_at": "2026-10-25T07:19:14.026Z"
+    },
+    "network_destinations": [
+      "http://localhost:8000",
+      "http://localhost:8081",
+      "http://localhost:8082"
+    ]
+  },
+  {
+    "project": "live-desktop",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "archive": {
+      "sha256": "83111f88049a154faf2dbac4bdfe1fa9758f5e68cb4f7181c11d303c6cc1fd44",
+      "bytes": 3188,
+      "member_count": 3
+    },
+    "logout": {
+      "state": "accepted",
+      "remote_family_revoked": true,
+      "accepted_at": "2026-10-25T07:19:29.603Z"
+    },
+    "network_destinations": [
+      "http://localhost:8000",
+      "http://localhost:8081",
+      "http://localhost:8082"
+    ]
+  }
+]

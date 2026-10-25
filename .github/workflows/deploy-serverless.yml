@@ -86,7 +86,7 @@ jobs:
           import subprocess
           import zipfile
           from deploy import platform
-          from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH, bounded_file, positive_int, trusted_branch
+          from deploy.provenance import Gate, REPOSITORY, REQUIRED_JOBS, WORKFLOW_PATH, bounded_file, positive_int, trusted_branch
           from otgd.canonical import strict_loads
 
           DEPLOY_WORKFLOW_PATH = '.github/workflows/deploy-serverless.yml'
@@ -312,7 +312,10 @@ jobs:
                   capture_output=True, text=True, timeout=60)
               if downloaded.returncode != 0:
                   raise Gate('Historical exact-source aggregate gate artifact is unavailable')
-              proof = platform.verify_gate_file(historical_directory / 'gates.json', manifest['release_id'])
+              # Historical Ohio recovery authenticates its original 13-job run;
+              # current source admission above still requires all current jobs.
+              proof = platform.verify_gate_file(historical_directory / 'gates.json', manifest['release_id'],
+                                                required_jobs=REQUIRED_JOBS)
               if proof['run_id'] != gate_run_id:
                   raise Gate('Historical gate evidence belongs to a different workflow run')
               current = github_json(f'repos/{REPOSITORY}/actions/runs/{run_id}')

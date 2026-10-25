@@ -81,6 +81,8 @@ function expected() {
     build.EXPO_NO_DOTENV !== "1" ||
     build.EXPO_PUBLIC_API_URL !== "https://unavailable.invalid" ||
     build.EXPO_PUBLIC_OAUTH_ISSUER !== "https://unavailable.invalid" ||
+    build.EXPO_PUBLIC_OAUTH_ORIGIN !== "https://unavailable.invalid" ||
+    build.EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI !== "https://unavailable.invalid/" ||
     build.EXPO_PUBLIC_OAUTH_CLIENT_ID !== "otgd-hosted-fictional"
   )
     throw Error("Rebuild the isolated fictional guest export");

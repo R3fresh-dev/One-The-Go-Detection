@@ -1,0 +1,360 @@
+{
+  "observed_at": "2026-10-25T09:54:18.877407+00:00",
+  "hash_algorithm": "SHA-256 over actual file bytes",
+  "candidate": {
+    "observed_at": "2026-10-25T09:54:18.877407+00:00",
+    "revision": "cf74fcff6ad19e639538d260f223ec18d618658d",
+    "tree": "cad51ecbc675a548c9e918782363264736276292",
+    "source_nonignored_files": 1248,
+    "source_fingerprint_sha256": "d8b9455b68905dc6da7384a0ab85adb8644dc5d5c2e96c7f3bd1b69c2d08582a",
+    "expected_fingerprint_sha256": "d8b9455b68905dc6da7384a0ab85adb8644dc5d5c2e96c7f3bd1b69c2d08582a",
+    "source_fingerprint_matches": true,
+    "clean_status": true
+  },
+  "artifacts": {
+    "apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift": {
+      "sha256": "bea5fa65942293bffcc1cdf14918fc22ded6db527ee6becb5142db7b72a47552",
+      "bytes": 8912
+    },
+    "apps/mobile/modules/scripts/hosted_preview.py": {
+      "sha256": "6dc0c80d02c7f60498e663453b606a84486de0857d967f5825b28a5be01a149b",
+      "bytes": 21858
+    },
+    "apps/mobile/modules/scripts/store_inputs.py": {
+      "sha256": "ed9437199abcf244abb249528d38ea0be35e09fd1c826a0f270cbb89c1b2b189",
+      "bytes": 41013
+    },
+    "apps/mobile/modules/scripts/store_release.py": {
+      "sha256": "2a21616903a76cb246c211dab59859478dd99412ce1ea4f5babdfa4ec6f0b601",
+      "bytes": 67346
+    },
+    "apps/mobile/node_modules/expo-auth-session/package.json": {
+      "sha256": "9567a538b10e550b5df34869de48bed0e204fe6b863eaf1a44d76f764d3edebf",
+      "bytes": 1367
+    },
+    "apps/mobile/node_modules/expo-auth-session/src/AuthRequest.ts": {
+      "sha256": "178cf2f87adbf1b77d03a529ead4d21459a1547e84e3fe2f844cc72e8979d804",
+      "bytes": 9093
+    },
+    "apps/mobile/node_modules/expo-web-browser/ios/WebAuthSession.swift": {
+      "sha256": "99a6f2a3c9d57bdd33842a0388dbe32423ab4564b67d1a00364a67ea98e22063",
+      "bytes": 2849
+    },
+    "apps/mobile/node_modules/expo-web-browser/package.json": {
+      "sha256": "de9bdf86a6c1c290d193860b557ef0a6878396b5d6440df2949086655fe0273a",
+      "bytes": 1641
+    },
+    "apps/mobile/node_modules/expo-web-browser/src/WebBrowser.ts": {
+      "sha256": "e3820ef8a50c9da2b585c9a056a8b820bd67322a3d3b6930340cda4af8ae8611",
+      "bytes": 17777
+    },
+    "apps/mobile/oauth-build-policy.js": {
+      "sha256": "8464c59acc6d93508efee0c6458bfdfca9e9faf980152e5b406021f03b5d4a78",
+      "bytes": 3026
+    },
+    "apps/mobile/package-lock.json": {
+      "sha256": "94e68b06919966cb777700e0e6ea521b7c538afa387b6f777b7885a3e3e9f676",
+      "bytes": 272225
+    },
+    "apps/mobile/src/controller.ts": {
+      "sha256": "b732ee942a27c57abd638ef5806574c574b746313c29101ca19a925e68d95665",
+      "bytes": 183514
+    },
+    "apps/mobile/src/core/diagnostics.ts": {
+      "sha256": "50f2aa46d721ccde61bdd12812a9cb67ff2c5cf96b842f4b242fea83af1e5db4",
+      "bytes": 4127
+    },
+    "apps/mobile/src/core/domain.ts": {
+      "sha256": "ec3caeeefbf7fa22c2d137476b170311cbcb568c31ebbf135ecc66022d4fc108",
+      "bytes": 44984
+    },
+    "apps/mobile/src/core/oauthPolicy.ts": {
+      "sha256": "aee029fd3852a0a6fa99814e34eade19179271ca39b012e79e1d09203a2924f8",
+      "bytes": 3439
+    },
+    "apps/mobile/src/core/operationGuards.ts": {
+      "sha256": "391e5c77ed7e29821163ff24561d82f20d6cb6a7d6692ee6a3a859702b37c868",
+      "bytes": 3029
+    },
+    "apps/mobile/src/core/preparationClock.ts": {
+      "sha256": "853b394a82f3ce04d7d66ede53bd6c0c42280560bc44bff115b3cde57cd7aad2",
+      "bytes": 2335
+    },
+    "apps/mobile/src/core/rawRecordings.ts": {
+      "sha256": "11d93e04b2612434902744de9b3e443ad4092579e894280c4c7f03f0179f1bec",
+      "bytes": 15167
+    },
+    "apps/mobile/src/core/resultPresentation.ts": {
+      "sha256": "17b4d4f2e7bf60909c41f0cc6359655c6175d3e978bb0ccb9bc70fa08af7bcd0",
+      "bytes": 4952
+    },
+    "apps/mobile/src/device/controller.ts": {
+      "sha256": "c961a3471bff3c3c209e24d9e681105221f8dd014ec3a5c48f9ae5683961e2a7",
+      "bytes": 39564
+    },
+    "apps/mobile/src/device/physicalProtocol.ts": {
+      "sha256": "e65243f6aedac10c99102d74ea1eea13ef68a2c5eacdc0bf22eb00c7fa807d77",
+      "bytes": 27104
+    },
+    "apps/mobile/src/platform/config.ts": {
+      "sha256": "aed4cd500d5ac406e854384114b61d8bc4b12d26b0b51561c28c032ad7d21748",
+      "bytes": 2807
+    },
+    "apps/mobile/src/platform/sharing.native.ts": {
+      "sha256": "8b0d71f308e8f0feb988e8ee9c7cce0cade86ca55e8ff8da58261d7795213f89",
+      "bytes": 1377
+    },
+    "apps/mobile/src/platform/storage.native.ts": {
+      "sha256": "a9a13a16e80675b74ffebe1de78e44d7cdb16e0a87d5e62f24d4685443038055",
+      "bytes": 11852
+    },
+    "apps/mobile/src/services/api.ts": {
+      "sha256": "55987fdae9b06762e5e31118a52f64eb6256e782fe921b3c5b16674cfd1f0e94",
+      "bytes": 34398
+    },
+    "apps/mobile/src/services/auth.ts": {
+      "sha256": "c1f9ef918b2f2b8a1f52a82937a3576d51d232b89aa7f5656aa3d87156c15cc9",
+      "bytes": 13310
+    },
+    "apps/mobile/src/services/export.ts": {
+      "sha256": "6cc4977cc639f5629629ce09f25651e1fb63add8c96ddf740add87698ad5b22d",
+      "bytes": 23595
+    },
+    "apps/mobile/src/services/sync.ts": {
+      "sha256": "5062dd28e9db43709b010b8da65fcbafbda563fdd40c33bfe1b32c10a499e3a4",
+      "bytes": 45851
+    },
+    "apps/mobile/src/ui/account.tsx": {
+      "sha256": "ab70f633e0a23ac8b185c2f547a686ac4081a27f194f9af64ec2765670c37f45",
+      "bytes": 35584
+    },
+    "apps/mobile/src/ui/checks.tsx": {
+      "sha256": "52bb48e4cc5e71e73df793c34e7204d6100eb8c7ea6a6cecc0a06040a3686be7",
+      "bytes": 77675
+    },
+    "apps/mobile/src/ui/manage.tsx": {
+      "sha256": "1c74b1ebbc41ff28a837ee7f1e62d5aacb82031453ab1f222db2a0f0f24a6dc9",
+      "bytes": 67964
+    },
+    "apps/mobile/tests/auth-acceptance.test.ts": {
+      "sha256": "a90f860a3dafbd0f83a8c7a0c35cc6dea8bff167aa0585ed70b1ed2c8341b164",
+      "bytes": 9591
+    },
+    "apps/mobile/tests/auth-cognito.test.ts": {
+      "sha256": "cd2c95920ea289c1d2e0d8547707c2dfdd96e4bbdd8d671e1107a8e7864e3b40",
+      "bytes": 4001
+    },
+    "apps/mobile/tests/auth.test.ts": {
+      "sha256": "810e8774a266199757076d96562b5856c9e87267eb560f2fe36ab8212edf3549",
+      "bytes": 20767
+    },
+    "apps/mobile/tests/hr-read-admission.test.ts": {
+      "sha256": "b55d7461225c3c94494bbbeb5317d63fb7f1736da8ed1a64af7a55c1645a0142",
+      "bytes": 13347
+    },
+    "apps/mobile/tests/sync-conflict.test.ts": {
+      "sha256": "d07ac22260034e8b944704a194419121035b2ac3c56992f4b3e6fe80fd7d997f",
+      "bytes": 13644
+    },
+    "deploy/fargate.py": {
+      "sha256": "e2a9c63d17122a6cd486d5d866fc0f72b67331bf221e62c63bebee21e3dc5135",
+      "bytes": 64069
+    },
+    "deploy/provenance.py": {
+      "sha256": "81d44c50e87a7fafc200012618920eb607a8bff0d9303a3193b7829a39f87d76",
+      "bytes": 15435
+    },
+    "deploy/serverless.py": {
+      "sha256": "883691d55a322986eab1ffb6aa377d0ae42d1ae2f3c2cf781804d60ec643168c",
+      "bytes": 36744
+    },
+    "deploy/web_artifact.py": {
+      "sha256": "883b39d1a57992a7ee0124f85b861f5ae76ec1ff5e316e7c0f99b74cac7bda32",
+      "bytes": 20471
+    },
+    "docs/factory/otgd-20261025-0555/decisions.md": {
+      "sha256": "b5283fd80a6e2ebcf34165226d8e012504097ed30ae1fe4c2c295fac896a1424",
+      "bytes": 40094
+    },
+    "docs/factory/otgd-20261025-0555/impact-register.md": {
+      "sha256": "a2c323c52ade46d6bc449cba866e64048fb9fa9af2e16b915797b086c9557d15",
+      "bytes": 7534
+    },
+    "docs/factory/otgd-20261025-0555/reports/correction-auth-acceptance.md": {
+      "sha256": "ccaddb7036526b6de895984536aa9131b93cdeab044270d6b870edfc7d1a7bd1",
+      "bytes": 5016
+    },
+    "docs/factory/otgd-20261025-0555/reports/correction-auth-evidence/auth-release.log": {
+      "sha256": "58f32df74965f50998f543c86601b25f717f49cc22f735e9d742170b47a178e1",
+      "bytes": 6700
+    },
+    "docs/factory/otgd-20261025-0555/reports/correction-auth-evidence/packaging-release.log": {
+      "sha256": "83f6b2c9dac921d75bf83a072e7c6bb2c48eda8e9ede40308f95ae8c7bef7f3d",
+      "bytes": 1985
+    },
+    "docs/factory/otgd-20261025-0555/reports/correction-auth-evidence/source-hashes.json": {
+      "sha256": "1a44086e2b96524d5c3b4fc234000c371408e865efc964f279fcb416c76aff2d",
+      "bytes": 4050
+    },
+    "docs/factory/otgd-20261025-0555/reports/correction-hr-readback.md": {
+      "sha256": "3b296866eac653f310d3062579e49b1852766cf6b318e87cfabe983598988ff3",
+      "bytes": 4854
+    },
+    "docs/factory/otgd-20261025-0555/reviews/candidate-28e0729/security/security-review.md": {
+      "sha256": "682eeec7e41b540f43bf8f4aa7f0af38cc45dfd0be1b734260b343dec34848e4",
+      "bytes": 19817
+    },
+    "firmware/nano_esp32_signed_reader/ProtectedSigner.h": {
+      "sha256": "367ed5b894c371c16fcd101a8cba05b1f130bacdd81e904c71de79a7a9b335ad",
+      "bytes": 6110
+    },
+    "firmware/nano_esp32_signed_reader/ReaderLifecycle.h": {
+      "sha256": "d12a4e60177eccee75c9dc0d6bbe00ce0c88ab889ac060a6e3ee36645b27214e",
+      "bytes": 3228
+    },
+    "firmware/nano_esp32_signed_reader/SELECTED_PPG.md": {
+      "sha256": "a52503bfe9e238e05cce0bceb8d88cb60b2262db2113563bfe013f350d994d28",
+      "bytes": 8678
+    },
+    "firmware/nano_esp32_signed_reader/nano_esp32_signed_reader.ino": {
+      "sha256": "e8d71cc23f5b6b8e93b5470daf838c4458652159bd429e70898e6bcbed6e79c6",
+      "bytes": 32282
+    },
+    "firmware/tests/sparkfun_ppg_test.cpp": {
+      "sha256": "c99c4f33547dcf20d4091bf867e2c8d6ac7452f0fc784a1d8e89ad5bce6ab6bb",
+      "bytes": 12638
+    },
+    "infra/test/test_web_deployment.py": {
+      "sha256": "e14f26278041db1bb3f5c34cf42c4f7a3f752a4aaabcaa4d15d2aaeac11aa4e1",
+      "bytes": 47767
+    },
+    "services/api/otgd/auth.py": {
+      "sha256": "865f4d0fcf199b9898d3bb43fd5301f814979d47f01ea48d9be2df75063c4fd7",
+      "bytes": 7164
+    },
+    "services/api/otgd/capture_signing.py": {
+      "sha256": "234fdc8a6660f81683232461d27bfe1821aa39bd6688513fa906b5fa1a1065d2",
+      "bytes": 9026
+    },
+    "services/api/otgd/cardiac_authority.py": {
+      "sha256": "3cd89f16cc15742323f753b85bfe4e7ec7563dea42e7b96dfef7dd8f56c33f2d",
+      "bytes": 23805
+    },
+    "services/api/otgd/domain.py": {
+      "sha256": "ba1d898a1107ab9983a5ce4d2f6f04884b94acab3fc6130e04ad106fb3fc92d5",
+      "bytes": 29647
+    },
+    "services/api/otgd/history_cursor.py": {
+      "sha256": "f6fff83507257b75a7fcabde84fd35ac46ad129563df4bcafe6fcefac700112e",
+      "bytes": 3080
+    },
+    "services/api/otgd/main.py": {
+      "sha256": "a84b0694e0e97b41ed113f78ad261e0cfc352c9d84961969311d72d10681a46a",
+      "bytes": 82594
+    },
+    "services/api/otgd/model_engine.py": {
+      "sha256": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+      "bytes": 46783
+    },
+    "services/api/otgd/native_evidence.py": {
+      "sha256": "be7d1fe0b49c666f599d0e8978cdef2e6d5230268335c29d1a1a18663a045ced",
+      "bytes": 18315
+    },
+    "services/api/otgd/operator_governance.py": {
+      "sha256": "1e16fc9b3679b1d6abd4cc6bdad1a53d18e8e02c4b759e2c3a950b04286ce971",
+      "bytes": 61295
+    },
+    "services/api/otgd/participant_acquisition.py": {
+      "sha256": "bfef64d21a695a3bf9c3dd853592b007f8ff3b75eb02888af9e70963e33eba6e",
+      "bytes": 31633
+    },
+    "services/api/otgd/raw_export.py": {
+      "sha256": "476079108819029a785bc86950406029752e5834fb5f59660e59d7ac2523d8b8",
+      "bytes": 21440
+    },
+    "services/api/otgd/worker.py": {
+      "sha256": "71340311bc34f66daf641c439b4c6f66098cf1386969e78309731779edb9787d",
+      "bytes": 30635
+    },
+    "services/api/tests/test_current_result_readback.py": {
+      "sha256": "4aeec53c610ba9c6f609fcd63b05406d0d7c61305d9bd674382e0d7680c12dd5",
+      "bytes": 8637
+    },
+    "services/api/tests/test_history_cursors.py": {
+      "sha256": "6c309744fdcd25f8d9b28ac4981736f52232700e3047e0ddb5dda45147fbf554",
+      "bytes": 7758
+    },
+    "services/api/tests/test_lab_handoff.py": {
+      "sha256": "104d40bebc567b3288972a2a1916655926ff69bd2a68b72ef61c67f4135f9492",
+      "bytes": 34137
+    },
+    "services/api/tests/test_mobile_store_release.py": {
+      "sha256": "6e39fe7f435848bc9f1c4b033695e11dfb40b821e845d5f397c3a3ca9a3bb13d",
+      "bytes": 48227
+    },
+    "services/api/tests/test_model_evaluation.py": {
+      "sha256": "7d8df519466ee08a3461fbac69176b621e07b587fe85c07e07098d94b57b3d31",
+      "bytes": 47979
+    },
+    "services/api/tests/test_model_evaluation_cardiac.py": {
+      "sha256": "61c92b0c9d5d91f6a486626ba778e8f2a9229a22837eaa456c7e217664700b83",
+      "bytes": 23013
+    },
+    "services/api/tests/test_participant_acquisition.py": {
+      "sha256": "70585678405b2ba85fc9cf53d515c327118bd63b74b16fee2cd5ce6caa8a647a",
+      "bytes": 62175
+    },
+    "services/api/tests/test_privacy_receipts.py": {
+      "sha256": "84efc2d18bd0bcced419d82a6877e619b2bc1924a06118333b74cbe0f3c0c1d7",
+      "bytes": 2413
+    },
+    "services/api/tests/test_raw_export.py": {
+      "sha256": "4e56b75f3098467f17898644d3ae7d77f37d7be31efd3fb6e464c852dc2c3014",
+      "bytes": 43106
+    },
+    "services/api/tests/test_reaction_task_goldens.py": {
+      "sha256": "748931e4e751153aa09ebcf0a61437d3d6433e113e1199a026fb5806605a108e",
+      "bytes": 13062
+    },
+    "services/api/tests/test_recovery_authority.py": {
+      "sha256": "c6f39c45163f8e2c709b5f63094f1c7df83afb094c9905003fee61fc7fa0b638",
+      "bytes": 23684
+    },
+    "services/api/tests/test_recovery_scopes.py": {
+      "sha256": "3fe448145c086a5441b96caeffa0fa006f24a0b18396da3ac60462fba4850344",
+      "bytes": 13438
+    },
+    "specs/FULL_SPECIFICATION.md": {
+      "sha256": "c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7",
+      "bytes": 38064
+    },
+    "tools/model_evaluation.py": {
+      "sha256": "80488d36507c7adb49bbf02448eec9f8ab173008f53e82f59c2d5d782194396c",
+      "bytes": 54142
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/candidate-binding.json": {
+      "sha256": "15850b9e86668d2e614188f8a6477ca74b1628821b40c01db264fc5975674638",
+      "bytes": 42881
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/gate-process.json": {
+      "sha256": "321f1152f550727c9a6ae7f96114e7ca263b48fceb78a4009da5b449bdcaee07",
+      "bytes": 333
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/final-gates.log": {
+      "sha256": "71d49f4d4a6df0304f9d31e13e0861e770ee47b0f3642e345c2f3ce11cbc0104",
+      "bytes": 165356
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/hr-readback-reproduction/green-summary.json": {
+      "sha256": "f46d8063bbf74950271b6c781dfcef67c5220d1f6c93a98b7a30b0d72778c098",
+      "bytes": 2898
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/hr-readback-reproduction/green.xml": {
+      "sha256": "e6d674591a1a774e0c333d62e92f80c3244920f09c57be7d9922282030fbce38",
+      "bytes": 86689
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/hr-readback-reproduction/green-source-bindings.json": {
+      "sha256": "a0889d2ae8fe8764137bb1da129529efa1c0f70218e561fc11bedeba6740f7f0",
+      "bytes": 1393
+    }
+  }
+}

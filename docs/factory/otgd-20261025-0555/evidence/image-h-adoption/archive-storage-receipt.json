@@ -1,0 +1,14 @@
+{
+  "time": "2026-10-25T10:25:55.643513+00:00",
+  "action": "relocate_new_aggregate_evidence_archive_preserving_original_path",
+  "source_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/partial-local-evidence.zip",
+  "retained_target": "/tmp/otgd-image-proof/source-refresh-h/preserved-cf74fcf-partial-local-evidence.zip",
+  "bytes": 26605108,
+  "sha256": "c2d43ed6af55e1521f944f592948662515bcae355a1733b1e086ce5cbf857778",
+  "zip_entries": 125,
+  "original_path_access_verified": true,
+  "original_raw_evidence_untouched": true,
+  "free_before": 900849664,
+  "free_after": 927457280,
+  "service_data_containers_volumes_untouched": true
+}

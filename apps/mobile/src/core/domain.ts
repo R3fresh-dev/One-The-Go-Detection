@@ -251,7 +251,7 @@ export function emptyWorkspace(
     queue: [],
     preferences: {
       theme: "system",
-      reducedMotion: false,
+      reducedMotion: "system",
       units: "metric",
       retryQueuedAutomatically: false,
     },

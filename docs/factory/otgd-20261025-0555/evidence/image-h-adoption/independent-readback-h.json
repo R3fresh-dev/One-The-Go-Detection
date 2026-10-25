@@ -1,0 +1,77 @@
+{
+  "changes_from_G_exact_two": [
+    "app/services/api/otgd/report_revisions.py",
+    "app/services/api/tests/test_current_result_readback.py"
+  ],
+  "G_archive_preserved_sha256": "e7d1d9b7efe2225910c7abb07b4062586bb669f27dffdbd1a5d0c5dea01d26c5",
+  "actual_root_free_after_proof": 891973632,
+  "stageA_root_required": 876705792,
+  "stageB_root_required": 901013504,
+  "adoption_status": "BLOCKED_CAPACITY",
+  "stageB_deficit_bytes": 9039872,
+  "time": "2026-10-25T10:17:18.274152+00:00",
+  "independent_readback": "PASS",
+  "gzip_integrity_and_uncompressed_archive_hash_verified": true,
+  "compressed_archive_sha256": "e33a167902ff8157d4e726fbdf5c4dc3ce0cec962515acc12e7d1ecdbabbf011",
+  "uncompressed_docker_archive_sha256": "4827f55f27677c7e97530196cf7903160c01c8c2bc01e8cb2102bf188e1b9afc",
+  "every_header_field_and_payload_outside_copy_exact": true,
+  "full_current_copy_manifest_exact": true,
+  "whole_original_runtime_config_exact": true,
+  "platform_exact": true,
+  "oci_and_docker_descriptors_verified": true,
+  "sole_layer_diffid_verified": true,
+  "workspace_snapshot_twice_exact": true,
+  "changes_from_D": {
+    "added": [
+      "app/services/api/otgd/history_cursor.py",
+      "app/services/api/tests/test_current_result_readback.py",
+      "app/services/api/tests/test_history_cursors.py",
+      "app/services/api/tests/test_privacy_receipts.py",
+      "app/services/api/tests/test_reaction_task_goldens.py"
+    ],
+    "removed": [],
+    "changed": [
+      "app/openspec/changes/production-mobile-platform/fixtures/reaction-task-golden-v1.json",
+      "app/services/api",
+      "app/services/api/otgd",
+      "app/services/api/otgd/domain.py",
+      "app/services/api/otgd/main.py",
+      "app/services/api/otgd/native_evidence.py",
+      "app/services/api/otgd/participant_acquisition.py",
+      "app/services/api/otgd/raw_export.py",
+      "app/services/api/otgd/report_revisions.py",
+      "app/services/api/otgd/worker.py",
+      "app/services/api/tests",
+      "app/services/api/tests/test_lab_handoff.py",
+      "app/services/api/tests/test_mobile_store_release.py",
+      "app/services/api/tests/test_model_evaluation.py",
+      "app/services/api/tests/test_model_evaluation_cardiac.py",
+      "app/services/api/tests/test_operator_governance.py",
+      "app/services/api/tests/test_participant_acquisition.py",
+      "app/services/api/tests/test_raw_export.py",
+      "app/services/api/tests/test_recovery_authority.py",
+      "app/services/api/tests/test_recovery_scopes.py"
+    ]
+  },
+  "copy_entry_count": 224,
+  "config_keys": [
+    "ArgsEscaped",
+    "Cmd",
+    "Env",
+    "ExposedPorts",
+    "User",
+    "Volumes",
+    "WorkingDir"
+  ],
+  "platform": {
+    "os": "linux",
+    "architecture": "amd64"
+  },
+  "resources": {
+    "root_available": 891973632,
+    "tmp_available": 352952320,
+    "cgroup_limit": 17179869184,
+    "cgroup_current": 15077027840
+  },
+  "docker_mutations": false
+}

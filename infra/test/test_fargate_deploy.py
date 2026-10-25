@@ -9,6 +9,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import tarfile
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -30,6 +31,23 @@ SOURCE = "a" * 40
 
 
 class FargateDeployTest(unittest.TestCase):
+    def test_actual_web_builder_passes_independent_stack_oauth_pins(self):
+        class ObservedInputs(Exception): pass
+        out={'ApiOrigin':'https://api.owned-research.org','Issuer':'https://cognito-idp.us-east-2.amazonaws.com/pool','ClientId':'approved-public-client','IdentityOrigin':'https://admitted.auth.us-east-2.amazoncognito.com','WebCallbackUri':'https://web.owned-research.org/'}
+        aws=Mock()
+        def observe(command, *, cwd, env, **kwargs):
+            self.assertEqual(env['EXPO_PUBLIC_OAUTH_ORIGIN'],out['IdentityOrigin'])
+            self.assertEqual(env['EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI'],out['WebCallbackUri'])
+            self.assertEqual(env['EXPO_PUBLIC_OAUTH_ISSUER'],out['Issuer'])
+            raise ObservedInputs
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);source=root/'source.tar'
+            with tarfile.open(source,'w'):pass
+            with patch.object(MODULE,'build_command',side_effect=observe):
+                with self.assertRaises(ObservedInputs):MODULE.build_ui(aws, {}, {}, out, source, root)
+            self.assertEqual(aws.method_calls,[])
+
+
     def setUp(self):
         self.config = {"environment": "fargate-development", "account": ACCOUNT,
             "region": "us-east-2", "alarmEmail": "operator@otgd.test", "monthlyBudgetUsd": 100,

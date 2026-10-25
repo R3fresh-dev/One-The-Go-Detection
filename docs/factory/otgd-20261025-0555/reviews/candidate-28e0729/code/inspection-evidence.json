@@ -1,0 +1,102 @@
+{
+  "observed_at": "2026-10-25T07:43:23.330448+00:00",
+  "candidate_revision": "28e07295cb37bb9dcaaac82cc8fc846eb89006a6",
+  "working_tree_sha256": "36ed8d800edcb560ac8ca189e98b64518b3342a29458d6e91a8d943085310f8c",
+  "candidate_manifest_sha256": "d9ac81db7cae9e77fbd0518081b4e1cf231d5ccc8b91069acc96050af521b59f",
+  "manifest_files_checked": 1014,
+  "manifest_mismatches": [],
+  "all_47_inventory_hashes_match": true,
+  "evidence_sha256": {
+    "docs/factory/otgd-20261025-0555/inventory.json": "7e2ee28c07f424636fe5fd59262a01faafe65f8e78f9804840bdedc300728f4f",
+    "docs/factory/otgd-20261025-0555/reports/implementation-plan.md": "801dcd4e8c7e1c348de596980600aa902f3e8ed35b5d9bbb7fac73842ac9eebb",
+    "docs/factory/otgd-20261025-0555/reports/verification-plan.md": "30b2dd09733b4fc6f9e6c1fdde2ef529653b4c80635fbe437759b4975663a3b8",
+    "docs/factory/otgd-20261025-0555/reports/browser-live/playwright-live.log": "4b6a3c4db3680d64c1ce14bb247f0742adc1bbd9f34bb68d769b071490a86fd0",
+    "docs/factory/otgd-20261025-0555/reports/browser-live/summary.json": "7369ca7a107207b236f80edea79b10f0154816f20c1a8662a07624b032813e53",
+    "reports/worker-interrupt-preflight-20261025T0654.json": "553ca2622904804d938b51201b5225c81160d2e052d2a58187804ae145280f33"
+  },
+  "reviewer_executed_tests": false,
+  "inspection": "Read-only source/diff/requirements/plans/logs and SHA-256 comparison; no tests, Docker, services, installs, repository mutations, git commits or pushes.",
+  "historical_focused_log_sha256": {
+    "/tmp/otgd-provenance-focused-green.log": "a7cdbabf0012d50e55df88a37c75a2157201d5b8f27b3feb900c180af4c911db",
+    "/tmp/otgd-provenance-release-green.log": "5533a98cf07c957db1baa04bfd2baa0a7fb62e161cdbc2ba4431b424296acdff",
+    "/tmp/mobile-unit-final.log": "69b8a994265d3b0ec4eb27ffdcc0d03b54c61ba4a2be06844874bcf8ebbe77fa",
+    "/tmp/mobile-components-final.log": "435d23ae69657d8696e4551ec8e75c4edb008714572021ed3ecbd21b0abc26d0",
+    "/tmp/mobile-raw-final.log": "d432ef581c90d2939fef0b5f67dea59e7671386f7b8c33945444cab352718412",
+    "/tmp/otgd-provenance-infra-unit.log": "c3a42f4bf981e51bc3df77778281a1c52aa2d5eb806f66b0628927bfcde7452f",
+    "/tmp/otgd-browser-mobile-unit-release.log": "7a4bec7609c994e04d366de7d77a7fad8e73c9f72a818b134574ac999c900514"
+  },
+  "ci_snapshot": {
+    "path": "/workspace/scratch/otgd-20261025-0555-live/ci-jobs-0739.json",
+    "sha256": "0c060b4d02c4156c23e61ae02fa08577a77aebb2454489e8248854090fc3bee0",
+    "observed_at": "2026-10-25T07:39:18.714Z",
+    "candidate": "28e07295cb37bb9dcaaac82cc8fc846eb89006a6",
+    "run_id": 40173151613,
+    "jobs": [
+      {
+        "name": "unit-coverage",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "platform / localstack-integration",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "native / ios",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "atdd",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "native / protected-reader",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "native / android",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "native / shared-and-firmware",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "preview / ios",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "components",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "preview / android",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "platform / fargate-container-runtime",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "platform / postgres-integration",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "platform / contracts-and-synthesis",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  }
+}

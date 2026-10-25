@@ -1,4 +1,533 @@
 import { test, expect, type Page } from "@playwright/test";
+import { buildSync } from "esbuild";
+import { resolve } from "node:path";
+import { preparationConfiguration } from "./fixtures/preparation-configuration";
+
+const hrResultBundle = buildSync({
+  entryPoints: [resolve("e2e/fixtures/hr-result-component.tsx")],
+  bundle: true,
+  write: false,
+  platform: "browser",
+  format: "iife",
+  resolveExtensions: [
+    ".web.tsx",
+    ".web.ts",
+    ".web.js",
+    ".tsx",
+    ".ts",
+    ".jsx",
+    ".js",
+    ".json",
+  ],
+  alias: { "react-native": resolve("e2e/fixtures/native-web-shim.js") },
+  define: {
+    __DEV__: "false",
+    "process.env.NODE_ENV": '"test"',
+    "process.env.EXPO_PUBLIC_APP_ENV": '"local"',
+    "process.env.EXPO_PUBLIC_HOSTED_PREVIEW": '"false"',
+  },
+}).outputFiles![0]!.text;
+
+const readerPresentationBundle = buildSync({
+  entryPoints: [resolve("e2e/fixtures/device-presentation-component.tsx")],
+  bundle: true,
+  write: false,
+  platform: "browser",
+  format: "iife",
+  resolveExtensions: [
+    ".web.tsx",
+    ".web.ts",
+    ".web.js",
+    ".tsx",
+    ".ts",
+    ".jsx",
+    ".js",
+    ".json",
+  ],
+  alias: { "react-native": resolve("e2e/fixtures/native-web-shim.js") },
+  define: {
+    __DEV__: "false",
+    "process.env.NODE_ENV": '"test"',
+    "process.env.EXPO_PUBLIC_APP_ENV": '"local"',
+    "process.env.EXPO_PUBLIC_HOSTED_PREVIEW": '"false"',
+  },
+}).outputFiles![0]!.text;
+
+test("Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: readerPresentationBundle });
+  for (const kind of [
+    "unbound",
+    "bound",
+    "current",
+    "revoked",
+    "expired",
+    "mismatched",
+    "disconnected",
+    "rebooted",
+    "simulator",
+  ]) {
+    await page.evaluate(
+      (value) => (window as any).renderReaderPresentation(value),
+      kind,
+    );
+    const conditional = ["current", "disconnected", "rebooted"].includes(kind);
+    await expect(
+      page.getByText(
+        "Conditionally available · fresh online authorization required for each Start",
+        { exact: true },
+      ),
+    ).toHaveCount(conditional ? 1 : 0);
+    if (kind === "unbound")
+      await expect(
+        page.getByRole("heading", {
+          name: "Signed-protocol reader connected · identity unverified",
+          exact: true,
+        }),
+      ).toBeVisible();
+    else if (kind === "simulator")
+      await expect(
+        page.getByText("Synthetic only", { exact: true }),
+      ).toBeVisible();
+    else
+      await expect(
+        page.getByText("Synthetic only", { exact: true }),
+      ).toHaveCount(0);
+    if (kind === "revoked")
+      await expect(
+        page.getByText("Unavailable · approval revoked", { exact: true }),
+      ).toBeVisible();
+    if (kind === "expired")
+      await expect(
+        page.getByText("Unavailable · approved configuration expired", {
+          exact: true,
+        }),
+      ).toBeVisible();
+    await expect(
+      page.getByText("Reader connection unavailable", { exact: true }),
+    ).toHaveCount(0);
+    await page.getByTestId("home-device-connection").click();
+    await expect(
+      page.getByRole("heading", { name: "Devices & connection", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "Conditionally available · fresh online authorization required for each Start",
+        { exact: true },
+      ),
+    ).toHaveCount(conditional ? 1 : 0);
+    await expect(
+      page.getByText(
+        /Connection and binding do not grant capture or scientific approval/,
+      ),
+    ).toBeVisible();
+  }
+});
+
+test("Home expires its current channel observation while mounted and Device retains that expired status", async ({
+  page,
+}) => {
+  await page.clock.install({ time: Date.parse("2026-10-25T10:00:00Z") });
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: readerPresentationBundle });
+  await page.evaluate(() =>
+    (window as any).renderReaderPresentation(
+      "current",
+      new Date(Date.now() + 2000).toISOString(),
+    ),
+  );
+  await expect(
+    page.getByText(
+      "Conditionally available · fresh online authorization required for each Start",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.clock.runFor(2000);
+  await expect(
+    page.getByText("Unavailable · approved configuration expired", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByTestId("home-device-connection").click();
+  await expect(
+    page.getByText(
+      "Conditionally available · fresh online authorization required for each Start",
+      { exact: true },
+    ),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText("Unavailable · approved configuration expired", {
+      exact: true,
+    }),
+  ).toBeVisible();
+});
+
+test("mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion", async ({
+  page,
+}) => {
+  for (const initial of ["pending", "measurement"]) {
+    await page.goto(`/#${initial}`);
+    await page.setContent('<main id="root"></main>');
+    await page.addScriptTag({ content: hrResultBundle });
+    await expect(
+      page.getByRole("heading", { name: "Your measurements", exact: true }),
+    ).toBeVisible();
+    const before = await page.evaluate(() =>
+      (window as any).hrCurrentIdentity(),
+    );
+    expect(
+      await page.evaluate(() => (window as any).hrReadRequests.length),
+    ).toBe(0);
+    await page.evaluate(() => {
+      void (window as any).deliverHrThroughSync();
+    });
+    await expect
+      .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+      .toBe(1);
+    await page.evaluate(() => (window as any).resolveHrRead(200));
+    await expect(
+      page.getByText("Current research result admission required", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+      .toBe(2);
+    expect(
+      await page.evaluate(() => (window as any).hrCurrentIdentity()),
+    ).toMatchObject({ id: before.id, epoch: before.epoch });
+    await page.evaluate(() => (window as any).resolveHrRead(200));
+    await expect(page.getByText("81.8%", { exact: true })).toBeVisible();
+    expect(
+      await page.evaluate(() => (window as any).hrReadRequests.length),
+    ).toBe(2);
+  }
+});
+
+test("manual service refresh establishes current HR admission from a mounted pending result without a prior token", async ({
+  page,
+}) => {
+  await page.goto("/#pending");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: hrResultBundle });
+  await expect(
+    page.getByRole("heading", { name: "Your measurements", exact: true }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => (window as any).hrReadRequests.length)).toBe(
+    0,
+  );
+  await page
+    .getByRole("button", {
+      name: "Refresh service result. Verify the same snapshot and evidence before displaying",
+      exact: true,
+    })
+    .click();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBeGreaterThan(0);
+  await page.evaluate(() => (window as any).resolveHrRead(200));
+  await expect(page.getByText("81.8%", { exact: true })).toBeVisible();
+});
+
+test("actual HR screen requires a fresh admitted result on open and after evidence navigation", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: hrResultBundle });
+  await expect(
+    page.getByText("Current research result admission required", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("81.8%", { exact: true })).toHaveCount(0);
+  const retained = await page.evaluate(() =>
+    (window as any).hrRetainedDigest(),
+  );
+  await page.evaluate(() => (window as any).resolveHrRead(200));
+  await expect(page.getByText("81.8%", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /About this result/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Evidence & context", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("81.8%", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await expect(
+    page.getByText("Current research result admission required", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.evaluate(() => (window as any).resolveHrRead(403));
+  await expect(page.getByRole("alert")).toContainText(
+    "current HR authority retired",
+  );
+  await expect(page.getByText("81.8%", { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByText("Probability of the named research endpoint", {
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  expect(await page.evaluate(() => (window as any).hrRetainedDigest())).toBe(
+    retained,
+  );
+});
+
+test("actual HR manual refresh and late read after leaving cannot revive cached numeric research", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: hrResultBundle });
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBe(1);
+  await page.evaluate(() => (window as any).resolveHrRead(200));
+  await expect(page.getByText("81.8%", { exact: true })).toBeVisible();
+  await page
+    .getByRole("button", {
+      name: "Refresh service result. Verify the same snapshot and evidence before displaying",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByText("Current research result admission required", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBe(2);
+  await page.evaluate(() => (window as any).resolveHrRead(403));
+  await expect(page.getByRole("alert")).toBeVisible();
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Reopen cached result", exact: true })
+    .click();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBe(3);
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await page.evaluate(() => (window as any).resolveHrRead(200));
+  await page
+    .getByRole("button", { name: "Reopen cached result", exact: true })
+    .click();
+  await expect(
+    page.getByText("Current research result admission required", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).hrReadRequests.length))
+    .toBe(4);
+  await page.evaluate(() => (window as any).resolveHrRead(422));
+  await expect(page.getByText("81.8%", { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByText("Uncertainty policy", { exact: true }),
+  ).toHaveCount(0);
+});
+
+const preparationBundle = buildSync({
+  entryPoints: [resolve("e2e/fixtures/participant-component.tsx")],
+  bundle: true,
+  write: false,
+  platform: "browser",
+  format: "iife",
+  resolveExtensions: [
+    ".web.tsx",
+    ".web.ts",
+    ".web.js",
+    ".tsx",
+    ".ts",
+    ".jsx",
+    ".js",
+    ".json",
+  ],
+  alias: { "react-native": resolve("e2e/fixtures/native-web-shim.js") },
+  define: {
+    "process.env.NODE_ENV": '"test"',
+    "process.env.EXPO_PUBLIC_APP_ENV": '"local"',
+    "process.env.EXPO_PUBLIC_HOSTED_PREVIEW": '"false"',
+  },
+}).outputFiles![0]!.text;
+const preparationPages = new WeakSet<Page>();
+async function preparationDOM(page: Page, rest = 30) {
+  if (!preparationPages.has(page)) {
+    await page.clock.install({ time: Date.parse("2026-10-11T12:00:00Z") });
+    preparationPages.add(page);
+  } else await page.clock.setSystemTime(Date.parse("2026-10-11T12:00:00Z"));
+  await page.goto("/");
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content: preparationBundle });
+  const configuration = preparationConfiguration(rest);
+  await page.evaluate(
+    (value) => (window as any).renderPreparation(value),
+    configuration,
+  );
+  await page
+    .getByRole("radio", { name: "Fictional portable bench", exact: true })
+    .click();
+  return configuration;
+}
+
+test("preparation wall-clock forward/backward discontinuity clears guidance and declarations until a fresh admitted rest", async ({
+  page,
+}) => {
+  for (const shift of [7_200_000, -7_200_000]) {
+    const configuration = await preparationDOM(page);
+    await page
+      .getByRole("button", { name: "Start approved rest period", exact: true })
+      .click();
+    await page.evaluate(() => (window as any).resolvePreparation());
+    await expect(
+      page.getByText("Required foreground rest: 30 seconds remaining.", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await page
+      .getByRole("switch", { name: "posture_confirmed", exact: true })
+      .check();
+    const before = await page.evaluate(() => Date.now());
+    await page.clock.setSystemTime(before + shift);
+    await page.clock.runFor(200);
+    await expect(page.getByText(/Preparation timing changed/)).toBeVisible();
+    await expect(
+      page.getByText(/Begin only after the service saves/),
+    ).toBeVisible();
+    for (const item of configuration.participant_protocol
+      .required_confirmations)
+      await expect(
+        page.getByRole("switch", { name: item.text, exact: true }),
+      ).not.toBeChecked();
+    const start = page.getByRole("button", {
+      name: "Start authorized pulse capture",
+      exact: true,
+    });
+    await expect(start).toBeDisabled();
+    expect(
+      (await page.evaluate(() => (window as any).participantCalls)).map(
+        (call: any) => call.kind,
+      ),
+    ).toEqual(["prepare", "stop"]);
+    await page.clock.fastForward(60_000);
+    await expect(start).toBeDisabled();
+    await page
+      .getByRole("button", { name: "Start approved rest period", exact: true })
+      .click();
+    await page.evaluate(() => (window as any).resolvePreparation());
+    await page.clock.fastForward(30_000);
+    for (const item of configuration.participant_protocol
+      .required_confirmations)
+      await page.getByRole("switch", { name: item.text, exact: true }).check();
+    await expect(start).toBeEnabled();
+    await start.click();
+    expect(
+      (await page.evaluate(() => (window as any).participantCalls)).map(
+        (call: any) => call.kind,
+      ),
+    ).toEqual(["prepare", "stop", "prepare", "capture"]);
+  }
+});
+
+test("a wall-clock jump between rest completion and Start immediately clears authority without a capture", async ({
+  page,
+}) => {
+  const configuration = await preparationDOM(page, 0);
+  await page
+    .getByRole("button", { name: "Start approved rest period", exact: true })
+    .click();
+  await page.evaluate(() => (window as any).resolvePreparation());
+  for (const item of configuration.participant_protocol.required_confirmations)
+    await page.getByRole("switch", { name: item.text, exact: true }).check();
+  const start = page.getByRole("button", {
+    name: "Start authorized pulse capture",
+    exact: true,
+  });
+  await expect(start).toBeEnabled();
+  const now = await page.evaluate(() => Date.now());
+  await page.clock.pauseAt(now + 1000);
+  await page.clock.setSystemTime(now + 3_600_000);
+  // Timers stay paused so the actual explicit Start handler must perform the guard.
+  await start.click({ force: true });
+  await expect(start).toBeDisabled();
+  await expect(page.getByText(/Preparation timing changed/)).toBeVisible();
+  for (const item of configuration.participant_protocol.required_confirmations)
+    await expect(
+      page.getByRole("switch", { name: item.text, exact: true }),
+    ).not.toBeChecked();
+  expect(
+    (await page.evaluate(() => (window as any).participantCalls)).map(
+      (call: any) => call.kind,
+    ),
+  ).toEqual(["prepare", "stop"]);
+});
+
+test("zero and maximum approved rest retain explicit declarations and unshortened monotonic bounds", async ({
+  page,
+}) => {
+  for (const rest of [0, 3600]) {
+    const configuration = await preparationDOM(page, rest);
+    await page
+      .getByRole("button", { name: "Start approved rest period", exact: true })
+      .click();
+    await page.evaluate(() => (window as any).resolvePreparation());
+    const start = page.getByRole("button", {
+      name: "Start authorized pulse capture",
+      exact: true,
+    });
+    await expect(start).toBeDisabled();
+    if (rest) {
+      await page.clock.fastForward(rest * 1000 - 1000);
+      await expect(
+        page.getByRole("switch", { name: "rest_completed", exact: true }),
+      ).toBeDisabled();
+      await page.clock.fastForward(1000);
+    }
+    for (const item of configuration.participant_protocol
+      .required_confirmations)
+      await page.getByRole("switch", { name: item.text, exact: true }).check();
+    await expect(start).toBeEnabled();
+    await start.click();
+    expect(
+      (await page.evaluate(() => (window as any).participantCalls)).map(
+        (call: any) => call.kind,
+      ),
+    ).toEqual(["prepare", "capture"]);
+  }
+});
+
+test("an unavailable wall clock after admitted preparation stops its attempt instead of leaving it armed", async ({
+  page,
+}) => {
+  await preparationDOM(page, 0);
+  await page
+    .getByRole("button", { name: "Start approved rest period", exact: true })
+    .click();
+  await page.evaluate(() => {
+    Date.now = () => NaN;
+    (window as any).resolvePreparation();
+  });
+  await expect(
+    page.getByText(
+      "Valid monotonic and wall preparation clocks are required.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Start authorized pulse capture",
+      exact: true,
+    }),
+  ).toBeDisabled();
+  expect(
+    (await page.evaluate(() => (window as any).participantCalls)).map(
+      (call: any) => call.kind,
+    ),
+  ).toEqual(["prepare", "stop"]);
+});
 
 // These are real React Native Web DOM component checks against the exported
 // production application. Offline guest fixtures are never live-dependency proof.
@@ -251,4 +780,246 @@ test("navigation and theme components expose selected state at both viewport siz
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(page.viewportSize()!.width);
+});
+
+test("Settings and Back preserve the actual draft and collected example without a camera prompt", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    (window as any).cameraRequests = 0;
+    if (navigator.mediaDevices) {
+      navigator.mediaDevices.getUserMedia = async () => {
+        (window as any).cameraRequests++;
+        throw new Error("No camera acquisition in this software journey");
+      };
+    }
+  });
+  await enterGuest(page);
+  await acknowledgeNotice(page);
+  await page.getByTestId("review-context").click();
+  await page
+    .getByRole("switch", { name: "I have reviewed this check’s context." })
+    .check();
+  await page.getByTestId("start-check").click();
+  await page.getByRole("button", { name: "3 Saliva", exact: true }).click();
+  await page.getByTestId("simulate-saliva").click();
+  const identity = await page.getByText(/Check 3 of 8 ·/).textContent();
+  await expect(page.getByTestId("simulate-saliva")).toBeDisabled();
+  await page.getByRole("tab", { name: "Settings", exact: true }).click();
+  await expect(
+    page.getByText("Browser permission is checked at eye preview", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Refresh permission status", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Check", exact: true }).click();
+  await expect(page.getByText(identity!, { exact: true })).toBeVisible();
+  await expect(page.getByTestId("simulate-saliva")).toBeDisabled();
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Keep draft and leave", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Check", exact: true }).click();
+  await expect(page.getByText(identity!, { exact: true })).toBeVisible();
+  await expect(page.getByTestId("simulate-saliva")).toBeDisabled();
+  expect(await page.evaluate(() => (window as any).cameraRequests)).toBe(0);
+});
+
+// Review corrections exercised against the exported production DOM.
+test("route headings receive focus across tabs, deeper navigation and Back", async ({
+  page,
+}) => {
+  await enterGuest(page);
+  await acknowledgeNotice(page);
+  await expect(
+    page.getByRole("heading", { name: "A check with context", exact: true }),
+  ).toBeFocused();
+  await page.getByRole("tab", { name: "Settings", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Settings", exact: true }),
+  ).toBeFocused();
+  await openPrivacy(page);
+  await expect(
+    page.getByRole("heading", { name: "Privacy & data", exact: true }),
+  ).toBeFocused();
+  await page
+    .getByRole("button", { name: "Clear local records", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Clear this workspace’s local records?",
+      exact: true,
+    }),
+  ).toBeFocused();
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Clear local records", exact: true }),
+  ).toBeFocused();
+  await page.getByRole("button", { name: "‹ Back", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Settings", exact: true }),
+  ).toBeFocused();
+  await page.getByRole("tab", { name: "History", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Your check history", exact: true }),
+  ).toBeFocused();
+});
+async function modalAnimationSeconds(page: Page) {
+  return page
+    .getByRole("dialog", {
+      name: "Clear this workspace’s local records?",
+      exact: true,
+    })
+    .evaluate((dialog) => {
+      let maximum = 0;
+      for (
+        let node: HTMLElement | null = dialog as HTMLElement;
+        node;
+        node = node.parentElement
+      ) {
+        const style = getComputedStyle(node);
+        if (style.animationName !== "none")
+          maximum = Math.max(
+            maximum,
+            ...style.animationDuration
+              .split(",")
+              .map(
+                (duration) =>
+                  parseFloat(duration) *
+                  (duration.trim().endsWith("ms") ? 0.001 : 1),
+              ),
+          );
+      }
+      return maximum;
+    });
+}
+test("system motion and explicit overrides control rendered ordinary modal animation", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await enterGuest(page);
+  await acknowledgeNotice(page);
+  await page.getByRole("tab", { name: "Settings", exact: true }).click();
+  const motion = page.getByRole("switch", {
+    name: "Reduce motion",
+    exact: true,
+  });
+  await expect(motion).toBeChecked();
+  await openPrivacy(page);
+  await page
+    .getByRole("button", { name: "Clear local records", exact: true })
+    .click();
+  await expect.poll(() => modalAnimationSeconds(page)).toBe(0);
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await page.getByRole("tab", { name: "Settings", exact: true }).click();
+  await motion.uncheck();
+  await openPrivacy(page);
+  await page
+    .getByRole("button", { name: "Clear local records", exact: true })
+    .click();
+  await expect.poll(() => modalAnimationSeconds(page)).toBeGreaterThan(0);
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await page.getByRole("tab", { name: "Settings", exact: true }).click();
+  await expect(motion).not.toBeChecked();
+  await motion.check();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(motion).toBeChecked();
+  await openPrivacy(page);
+  await page
+    .getByRole("button", { name: "Clear local records", exact: true })
+    .click();
+  await expect.poll(() => modalAnimationSeconds(page)).toBe(0);
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await page.getByRole("tab", { name: "Settings", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Use system motion setting", exact: true })
+    .click();
+  await expect(motion).not.toBeChecked();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(motion).toBeChecked();
+});
+test("rendered destructive labels meet contrast minimum in light and dark themes", async ({
+  page,
+}, testInfo) => {
+  await enterGuest(page);
+  await acknowledgeNotice(page);
+  const observations: unknown[] = [];
+  const luminance = (channels: number[]) => {
+    const linear = channels.map((value) => {
+      value /= 255;
+      return value <= 0.04045
+        ? value / 12.92
+        : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return linear[0]! * 0.2126 + linear[1]! * 0.7152 + linear[2]! * 0.0722;
+  };
+  const rgb = (color: string) =>
+    color
+      .match(/[\d.]+/g)!
+      .slice(0, 3)
+      .map(Number);
+  for (const theme of ["Light", "Dark"]) {
+    await page.getByRole("tab", { name: "Settings", exact: true }).click();
+    await page.getByRole("radio", { name: theme, exact: true }).click();
+    await openPrivacy(page);
+    await page
+      .getByRole("button", { name: "Clear local records", exact: true })
+      .click();
+    const button = page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Clear local records", exact: true });
+    for (const state of ["normal", "pressed"]) {
+      if (state === "pressed") {
+        const box = (await button.boundingBox())!;
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        await page.mouse.down();
+        await expect
+          .poll(() =>
+            button.evaluate((element) =>
+              Number(getComputedStyle(element).opacity),
+            ),
+          )
+          .toBeLessThan(1);
+      }
+      const colors = await button.evaluate((element) => ({
+        foreground: getComputedStyle(element.firstElementChild!).color,
+        background: getComputedStyle(element).backgroundColor,
+        surface: getComputedStyle(element.parentElement!).backgroundColor,
+        opacity: Number(getComputedStyle(element).opacity),
+      }));
+      const composite = (color: string) =>
+        rgb(color).map(
+          (value, index) =>
+            value * colors.opacity +
+            rgb(colors.surface)[index]! * (1 - colors.opacity),
+        );
+      const values = [
+        luminance(composite(colors.foreground)),
+        luminance(composite(colors.background)),
+      ].sort((a, b) => b - a);
+      const contrast = (values[0]! + 0.05) / (values[1]! + 0.05);
+      observations.push({ theme, state, ...colors, contrast });
+      if (state === "pressed") {
+        // Release outside the control so the test does not confirm deletion.
+        await page.mouse.move(0, 0);
+        await page.mouse.up();
+      }
+      expect(
+        contrast,
+        `${theme}/${state}: ${JSON.stringify(colors)}`,
+      ).toBeGreaterThanOrEqual(4.5);
+    }
+    await expect(
+      page
+        .getByRole("dialog")
+        .getByRole("button", { name: "Cancel", exact: true }),
+    ).toBeEnabled();
+    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  }
+  await testInfo.attach("computed-destructive-contrast.json", {
+    body: JSON.stringify(observations, null, 2),
+    contentType: "application/json",
+  });
 });

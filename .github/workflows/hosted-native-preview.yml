@@ -19,6 +19,8 @@ env:
   EXPO_NO_TELEMETRY: '1'
   EXPO_PUBLIC_API_URL: https://unavailable.invalid
   EXPO_PUBLIC_OAUTH_ISSUER: https://unavailable.invalid
+  EXPO_PUBLIC_OAUTH_ORIGIN: https://unavailable.invalid
+  EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI: https://unavailable.invalid/
   EXPO_PUBLIC_OAUTH_CLIENT_ID: otgd-hosted-fictional
 
 jobs:

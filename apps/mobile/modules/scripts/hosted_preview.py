@@ -35,6 +35,8 @@ PERMISSIONS = ('run', 'networkProxy', 'networkIntercept', 'debugLog', 'adbConnec
 BUILD_ENV = {'APP_ENV': 'local', 'EXPO_PUBLIC_HOSTED_PREVIEW': 'true', 'EXPO_NO_DOTENV': '1',
              'EXPO_PUBLIC_API_URL': 'https://unavailable.invalid',
              'EXPO_PUBLIC_OAUTH_ISSUER': 'https://unavailable.invalid',
+             'EXPO_PUBLIC_OAUTH_ORIGIN': 'https://unavailable.invalid',
+             'EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI': 'https://unavailable.invalid/',
              'EXPO_PUBLIC_OAUTH_CLIENT_ID': 'otgd-hosted-fictional'}
 
 

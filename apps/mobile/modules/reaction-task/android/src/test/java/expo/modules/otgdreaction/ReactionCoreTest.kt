@@ -9,6 +9,10 @@ class ReactionCoreTest {
   private fun number(expected: JSONObject, key: String, actual: Double?) {
     if (expected.isNull(key)) assertNull(key, actual) else assertEquals(key, expected.getDouble(key), requireNotNull(actual), 1e-6)
   }
+  private fun snapshot(result: ScoredEvidence): Map<String, Any?> = mapOf(
+    "trials" to result.trials.map { it.map() }, "inputs" to result.inputs.map { it.map() },
+    "counts" to result.counts.toMap(), "features" to result.features?.toMap()
+  )
   @Test fun frozenLiteralSchedulesAndHashes() {
     val f = fixture(); assertEquals(ReactionConfig.SHA256, f.getString("configuration_sha256"))
     val schedules = f.getJSONArray("schedules")
@@ -32,13 +36,19 @@ class ReactionCoreTest {
       val t = Trial(0,"scored",v.getString("stimulus"),onset.toInt(),1700, onsetMs=onset)
       val sourceInputs = v.getJSONArray("inputs"); val cutoff = if (v.has("terminal_cutoff_ms")) v.getDouble("terminal_cutoff_ms") else null
       val inputs = mutableListOf<TaskInput>(); var ignored = 0; var fault: String? = null
+      var committedSnapshot: Map<String, Any?>? = null
       for (j in 0 until sourceInputs.length()) {
         val e = sourceInputs.getJSONObject(j)
-        if (ReactionCore.inputAdmission(inputs.size,e.getDouble("dispatch_timestamp_ms"),cutoff) == "ignore_after_terminal") { ignored++; continue }
+        if (ReactionCore.inputAdmission(inputs.size,e.getDouble("dispatch_timestamp_ms"),cutoff) == "ignore_after_terminal") {
+          if (committedSnapshot == null) committedSnapshot = snapshot(ReactionCore.score(
+            listOf(t.copy()),inputs.map { it.copy() },requireNotNull(cutoff),fault == null))
+          ignored++; continue
+        }
         val input = TaskInput(e.getDouble("native_timestamp_ms"),e.getDouble("dispatch_timestamp_ms"),e.getString("target"),e.getInt("pointer_id"),e.getInt("native_sequence"),e.getString("input_kind"))
         inputs.add(input); fault = fault ?: ReactionCore.inputFault(input)
       }
       val result = ReactionCore.score(listOf(t),inputs,cutoff ?: onset+1100, fault == null)
+      if (committedSnapshot != null) assertEquals(v.getString("case_id"),committedSnapshot,snapshot(result))
       if (expected.getString("run_integrity") == "invalid") {
         assertEquals(expected.getJSONArray("quality_flags").getString(0),fault); assertNull(result.features)
       } else {
@@ -55,6 +65,22 @@ class ReactionCoreTest {
           assertEquals((0 until expectedValues.length()).map { expectedValues.getInt(it) },result.inputs.map { it.nativeSequence })
         }
         if (expected.has("ignored_after_terminal_count")) assertEquals(expected.getInt("ignored_after_terminal_count"),ignored)
+        if (expected.has("retained_input_count")) assertEquals(v.getString("case_id"),expected.getInt("retained_input_count"),result.inputs.size)
+        if (expected.has("retained_inputs")) {
+          val ledger = expected.getJSONArray("retained_inputs")
+          assertEquals(ledger.length(),result.inputs.size)
+          for (j in 0 until ledger.length()) {
+            val e = ledger.getJSONObject(j); val a = result.inputs[j]
+            assertEquals(e.getDouble("native_timestamp_ms"),a.nativeTimestampMs,1e-6)
+            assertEquals(e.getDouble("dispatch_timestamp_ms"),a.dispatchTimestampMs,1e-6)
+            assertEquals(e.getDouble("dispatch_delay_ms"),a.dispatchDelayMs,1e-6)
+            assertEquals(e.getDouble("dispatch_delay_ms"),a.map()["dispatchDelayMs"] as Double,1e-6)
+            assertEquals(e.getString("target"),a.target); assertEquals(e.getInt("pointer_id"),a.pointerId)
+            assertEquals(e.getInt("native_sequence"),a.nativeSequence); assertEquals(e.getString("input_kind"),a.inputKind)
+            assertEquals(e.getString("disposition"),a.disposition); assertEquals(e.getInt("trial_index"),a.trialIndex)
+            assertNull(a.anticipatoryForTrialIndex)
+          }
+        }
       }
     }
   }

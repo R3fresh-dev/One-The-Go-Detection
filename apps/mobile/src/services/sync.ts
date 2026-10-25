@@ -7,11 +7,15 @@ import {
   type RawKind,
 } from "../core/rawRecordings";
 import {
+  assertBytes,
   clone,
   digest,
   IntegrityError,
+  knownKeys,
   requireObject,
+  safeInteger,
 } from "../core/integrity";
+import { parseRemoteCheck } from "../core/remote";
 import {
   quarantineGeneration,
   verifyCheck,
@@ -22,6 +26,7 @@ import type {
   IdFactory,
   JsonObject,
   QueueOperation,
+  SyncConflict,
   WorkspaceState,
 } from "../core/types";
 import { ApiClient, ApiError, parsePrivacyJob } from "./api";
@@ -210,6 +215,141 @@ export function errorDisposition(error: unknown): {
     retryAfter: null,
   };
 }
+/** Match the API's redacted validation contract: locations and type codes only,
+ * at most 32 fields. Never retain input/context objects or arbitrary messages. */
+const VALIDATION_CODES = new Set([
+  "invalid",
+  "missing",
+  "value_error",
+  "assertion_error",
+  "extra_forbidden",
+  "literal_error",
+  "enum",
+  "greater_than",
+  "greater_than_equal",
+  "less_than",
+  "less_than_equal",
+  "multiple_of",
+  "finite_number",
+  "string_type",
+  "string_too_short",
+  "string_too_long",
+  "string_pattern_mismatch",
+  "string_unicode",
+  "int_type",
+  "int_parsing",
+  "int_from_float",
+  "int_parsing_size",
+  "float_type",
+  "float_parsing",
+  "bool_type",
+  "bool_parsing",
+  "list_type",
+  "dict_type",
+  "tuple_type",
+  "set_type",
+  "too_short",
+  "too_long",
+  "uuid_type",
+  "uuid_parsing",
+  "uuid_version",
+  "datetime_type",
+  "datetime_parsing",
+  "datetime_future",
+  "datetime_past",
+  "datetime_aware",
+  "datetime_naive",
+  "date_type",
+  "date_parsing",
+  "url_type",
+  "url_parsing",
+  "url_scheme",
+  "json_invalid",
+  "json_type",
+  "union_tag_invalid",
+  "union_tag_not_found",
+]);
+export function validationFields(
+  fields: Record<string, string>,
+): Record<string, string> {
+  const safe: Record<string, string> = {};
+  for (const [path, code] of Object.entries(fields)) {
+    const parts = path.split(".");
+    if (Object.keys(safe).length >= 32) break;
+    if (
+      path.length > 512 ||
+      parts.length > 16 ||
+      typeof code !== "string" ||
+      parts.some(
+        (part) =>
+          !/^[A-Za-z0-9_]{1,64}$/.test(part) ||
+          ["__proto__", "constructor", "prototype"].includes(part),
+      )
+    )
+      continue;
+    safe[path] = VALIDATION_CODES.has(code) ? code : "invalid";
+  }
+  return safe;
+}
+/** Recheck stored comparisons before display/correction as well as on receipt. */
+export function verifyConflictReadback(
+  value: unknown,
+  etag: string | null,
+  state: WorkspaceState,
+  check: CheckRecord,
+): { record: JsonObject; frozen: boolean } {
+  assertBytes(value, 67_108_864);
+  const remote = requireObject(value);
+  knownKeys(remote, [
+    "session_id",
+    "state",
+    "revision",
+    "mode",
+    "created_at",
+    "snapshot_sha256",
+    "evidence_sha256",
+    "result",
+    "snapshot",
+    "context",
+    "manifest",
+    "attempts",
+    "alcohol",
+    "raw_artifacts_omitted_reason",
+    "instruction_receipts",
+    "collections",
+    "collection_abandons",
+  ]);
+  const revision = safeInteger(remote.revision, 1);
+  if (
+    check.generation !== state.generation ||
+    !state.capabilities?.account_ref ||
+    remote.session_id !== check.id ||
+    remote.mode !== check.snapshot.mode ||
+    etag !== `"${revision}"` ||
+    !["draft", "processing", "completed", "invalid"].includes(
+      String(remote.state),
+    )
+  )
+    throw new IntegrityError(
+      "CONFLICT_READBACK_MISMATCH",
+      "The server state does not match this owned session and revision.",
+    );
+  const frozen = remote.state !== "draft";
+  if (frozen) parseRemoteCheck(remote, state);
+  else if (remote.snapshot !== null) {
+    const snapshot = requireObject(remote.snapshot);
+    if (
+      snapshot.subject_ref !== state.capabilities.account_ref ||
+      snapshot.session_id !== check.id ||
+      digest(snapshot) !== remote.snapshot_sha256
+    )
+      throw new IntegrityError(
+        "CONFLICT_READBACK_MISMATCH",
+        "The pending server snapshot does not match its owner or digest.",
+      );
+  }
+  return { record: clone(remote) as JsonObject, frozen };
+}
 export class SyncEngine {
   private active = false;
   private idleWaiters: (() => void)[] = [];
@@ -242,6 +382,11 @@ export class SyncEngine {
       ["synced", "blocked", "conflict", "quarantined"].includes(queue.state)
     )
       return;
+    if (
+      queue.rate_limited_until &&
+      Date.parse(queue.rate_limited_until) > Date.now()
+    )
+      return;
     const durablePrivacy =
       queue.kind === "withdrawal" ||
       queue.kind === "deletion" ||
@@ -261,13 +406,22 @@ export class SyncEngine {
     )
       return;
     const epoch = this.epoch(),
-      workspace = state.workspace;
+      workspace = state.workspace,
+      generation = state.generation,
+      accountRef = state.capabilities?.account_ref,
+      accountState = state.capabilities?.account_state,
+      capabilityGeneration = state.capabilities?.data_generation;
+    let snapshotWrite = false;
     this.active = true;
     const guard = () => {
       const current = this.read()?.queue.find((item) => item.id === queueId);
       if (
         this.epoch() !== epoch ||
         this.read()?.workspace !== workspace ||
+        this.read()?.generation !== generation ||
+        this.read()?.capabilities?.account_ref !== accountRef ||
+        this.read()?.capabilities?.account_state !== accountState ||
+        this.read()?.capabilities?.data_generation !== capabilityGeneration ||
         !current ||
         ["synced", "blocked", "conflict", "quarantined"].includes(
           current.state,
@@ -465,6 +619,7 @@ export class SyncEngine {
       if (queue.phase < offset + 2) {
         guard();
         const current = this.read()!.checks.find((c) => c.id === check.id)!;
+        snapshotWrite = true;
         const result = await this.api.request<JsonObject>(`${path}/snapshot`, {
           method: "PUT",
           body: check.snapshot,
@@ -472,6 +627,7 @@ export class SyncEngine {
           key: queue.keys.snapshot,
           etag: current.remote_etag,
         });
+        snapshotWrite = false;
         if (result.value.snapshot_sha256 !== check.snapshot_sha256)
           throw new IntegrityError(
             "SNAPSHOT_ACK_MISMATCH",
@@ -511,17 +667,44 @@ export class SyncEngine {
       const result = verifyResult(response.value, check);
       await update(offset + 4, "synced", { result });
     } catch (error) {
+      let failure = error;
+      let conflict: SyncConflict | undefined;
+      if (
+        snapshotWrite &&
+        error instanceof ApiError &&
+        [409, 412].includes(error.status)
+      ) {
+        try {
+          guard();
+          const check = this.read()!.checks.find(
+            (item) => item.id === queue.check_id,
+          )!;
+          conflict = await this.readConflict(check, guard);
+        } catch (readError) {
+          // Generation retirement is authoritative even when discovered during readback.
+          if (readError instanceof ApiError && readError.status === 410)
+            failure = readError;
+        }
+      }
       if (
         this.epoch() === epoch &&
         this.read()?.workspace === workspace &&
+        this.read()?.generation === generation &&
+        this.read()?.capabilities?.account_ref === accountRef &&
+        this.read()?.capabilities?.account_state === accountState &&
+        this.read()?.capabilities?.data_generation === capabilityGeneration &&
         this.available() &&
         ready()
       ) {
-        const disposition = errorDisposition(error);
+        const disposition = errorDisposition(failure);
         await this.commit((current) => {
           if (
             this.epoch() !== epoch ||
             current.workspace !== workspace ||
+            current.generation !== generation ||
+            current.capabilities?.account_ref !== accountRef ||
+            current.capabilities?.account_state !== accountState ||
+            current.capabilities?.data_generation !== capabilityGeneration ||
             !this.available() ||
             !ready()
           )
@@ -538,6 +721,8 @@ export class SyncEngine {
           q.state = disposition.state;
           q.error = disposition.message;
           q.attempts++;
+          if (failure instanceof ApiError && failure.status === 422)
+            q.field_errors = validationFields(failure.fields);
           const delay =
             disposition.retryAfter ??
             Math.min(60, 2 ** Math.min(q.attempts, 6));
@@ -546,11 +731,36 @@ export class SyncEngine {
               ? new Date(Date.now() + Math.max(1, delay) * 1000).toISOString()
               : null;
           if (delay > 3600) q.attempts = Math.max(8, q.attempts);
+          if (
+            failure instanceof ApiError &&
+            failure.status === 429 &&
+            disposition.retryAfter !== null
+          ) {
+            const deadline = Date.now() + Math.max(1, delay) * 1000;
+            if (
+              Number.isFinite(delay) &&
+              delay >= 0 &&
+              Number.isFinite(deadline) &&
+              Math.abs(deadline) <= 8_640_000_000_000_000
+            ) {
+              q.next_attempt_at = new Date(deadline).toISOString();
+              q.rate_limited_until = q.next_attempt_at;
+              if (delay > 3600)
+                q.error +=
+                  " The service wait exceeds the one-hour retry bound; retry this same intent manually only after the displayed server deadline.";
+            } else {
+              q.state = "blocked";
+              q.next_attempt_at = null;
+              q.error +=
+                " The server retry deadline cannot be represented safely; this intent remains stopped for inspection.";
+            }
+          }
           if (q.check_id) {
             const c = next.checks.find((c) => c.id === q.check_id);
             if (c) {
               c.delivery = q.state;
               c.error = q.error;
+              if (conflict) c.sync_conflict = conflict;
             }
           }
           if (disposition.state === "quarantined")
@@ -561,6 +771,127 @@ export class SyncEngine {
     } finally {
       this.active = false;
       for (const resolve of this.idleWaiters.splice(0)) resolve();
+    }
+  }
+  /** A stopped conflict may be inspected explicitly, never replayed as a write. */
+  async inspectConflict(queueId: string): Promise<void> {
+    const state = this.read(),
+      queue = state?.queue.find((item) => item.id === queueId);
+    const check = state?.checks.find((item) => item.id === queue?.check_id);
+    if (
+      this.active ||
+      !state ||
+      !check ||
+      !queue ||
+      queue.kind !== "check" ||
+      queue.state !== "conflict" ||
+      !this.available() ||
+      state.capabilities?.account_state !== "active" ||
+      check.generation !== state.generation ||
+      queue.generation !== state.generation
+    )
+      return;
+    const epoch = this.epoch(),
+      workspace = state.workspace,
+      generation = state.generation,
+      accountRef = state.capabilities.account_ref;
+    const guard = () => {
+      const current = this.read();
+      if (
+        this.epoch() !== epoch ||
+        current?.workspace !== workspace ||
+        current.generation !== generation ||
+        current.capabilities?.account_ref !== accountRef ||
+        current.capabilities.account_state !== "active" ||
+        current.queue.find((item) => item.id === queueId)?.state !==
+          "conflict" ||
+        !this.available()
+      )
+        throw new IntegrityError(
+          "WORKSPACE_CHANGED",
+          "Conflict inspection stopped because its owned workspace changed.",
+        );
+    };
+    this.active = true;
+    try {
+      const conflict = await this.readConflict(check, guard);
+      guard();
+      await this.commit((current) => {
+        guard();
+        const next = clone(current);
+        next.checks.find((item) => item.id === check.id)!.sync_conflict =
+          conflict;
+        return next;
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 410) {
+        guard();
+        await this.commit((current) => {
+          guard();
+          return quarantineGeneration(current, -1, new Date().toISOString());
+        });
+      } else if (!(
+        error instanceof IntegrityError && error.code === "WORKSPACE_CHANGED"
+      ))
+        throw error;
+    } finally {
+      this.active = false;
+      for (const resolve of this.idleWaiters.splice(0)) resolve();
+    }
+  }
+  private async readConflict(
+    check: CheckRecord,
+    guard: () => void,
+  ): Promise<SyncConflict> {
+    const state = this.read()!;
+    const observation: SyncConflict = {
+      account_ref: state.capabilities?.account_ref ?? "",
+      data_generation: state.generation,
+      observed_at: new Date().toISOString(),
+      server_record: null,
+      server_etag: null,
+      frozen: false,
+      read_error: null,
+    };
+    try {
+      guard();
+      if (!observation.account_ref || check.generation !== state.generation)
+        throw new IntegrityError(
+          "CONFLICT_OWNER_UNAVAILABLE",
+          "Refresh the current owned account before inspecting server state.",
+        );
+      const response = await this.api.request<unknown>(
+        `/v1/sessions/${check.id}`,
+        { generation: check.generation },
+      );
+      guard();
+      if (response.status !== 200)
+        throw new IntegrityError(
+          "CONFLICT_READBACK_MISMATCH",
+          "The server state does not match this session and revision.",
+        );
+      const verified = verifyConflictReadback(
+        response.value,
+        response.etag,
+        state,
+        check,
+      );
+      return {
+        ...observation,
+        server_record: verified.record,
+        server_etag: response.etag,
+        frozen: verified.frozen,
+      };
+    } catch (error) {
+      guard();
+      if (error instanceof ApiError && error.status === 410) throw error;
+      return {
+        ...observation,
+        read_error:
+          error instanceof Error
+            ? error.message
+            : "Server state is unavailable; inspect again explicitly.",
+      };
     }
   }
   private async uploadRaw(

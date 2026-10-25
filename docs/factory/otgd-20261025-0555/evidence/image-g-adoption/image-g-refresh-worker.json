@@ -1,0 +1,41 @@
+{
+  "time": "2026-10-25T09:32:36.268155+00:00",
+  "action": "refresh",
+  "service": "worker",
+  "image": "sha256:9fa3ec8d4076bfb2d115634d32bdf61f34d160836dd29a1c19eb1a6ef5cc4707",
+  "free_before": 662544384,
+  "retained_before": {
+    "otgd-local-postgres-1": {
+      "id": "4146ac7a804333f1c0a770681d63e44c2e31647c7f88b513c1d3ac00db88225c",
+      "image": "sha256:e8538db784b854a9baac5c1be6d059dcf0db257af2d94c8c5807b5fc15f11222",
+      "started_at": "2026-10-25T06:09:05.218851142Z",
+      "volumes": [
+        "otgd-local_postgres-data"
+      ]
+    },
+    "otgd-local-localstack-1": {
+      "id": "bc63b337918365ce1c1b8de84972bf5c75b9e731aa92b70bfeedae325f0dbf50",
+      "image": "sha256:0e9f1067a26f6e32a07af9f5eaba68bfd7737c8b8ef41296e3b46094fb9e59cf",
+      "started_at": "2026-10-25T06:03:20.020516942Z",
+      "volumes": [
+        "otgd-local_localstack-data"
+      ]
+    },
+    "otgd-local-migrate-1": {
+      "id": "b4f7c81094136c5caa524a8eecb6aedf5eb1e3196eaf4aff0cb1c070d277b45c",
+      "image": "sha256:1af98b2872a49d3be4f8e6468507e9bc56468b1554252dcdf19293c21850d57b",
+      "started_at": "2026-10-25T06:39:54.874870326Z",
+      "volumes": []
+    },
+    "otgd-local-resource-init-1": {
+      "id": "793f701e35ed34c37eb2c26c8d8e519fc65bbe54291c6f3cb7f7050eb06a79ca",
+      "image": "sha256:1af98b2872a49d3be4f8e6468507e9bc56468b1554252dcdf19293c21850d57b",
+      "started_at": "2026-10-25T06:38:14.414832613Z",
+      "volumes": []
+    }
+  },
+  "status": "confirmed",
+  "container_id": "d8efc4b0e92cf83f8130f59565749af2ac205e41ec0b07d4889db5a1393b9bf5",
+  "free_after": 662282240,
+  "ended_at": "2026-10-25T09:33:23.597130+00:00"
+}

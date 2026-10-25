@@ -1,0 +1,292 @@
+{
+  "created_at": "2026-10-25T09:56:24.708067+00:00",
+  "procedures": [
+    "Read-only git HEAD/tree/status; recomputed exact tracked+nonignored source fingerprint using same algorithm as run_all_gates.py",
+    "Recomputed all47 canonical SHA256 against candidate binding: zero mismatches",
+    "Read original independent engineering report and47-spec metadata, current HLD/LLD/shared contract, canonical requirement/scenario inventories and all47 dossier result states",
+    "Reviewed historical782-case semantic handoff, focused replacement source assertions and correction source/report evidence; no old PASS adopted",
+    "Inspected risk-focused source/test call chains for OAuth, result/current HR read, export, sync conflicts/retry, deletion receipts/storage/migrations, worker/gate/performance/provenance, native/firmware and release boundaries",
+    "Recomputed retained imageG compressed archive SHA256 and compared proof/Config/COPY readback identity; no Docker mutation or proof-script/test execution",
+    "Reviewer executed no tests, services, build, browser or runtime probes; wrote only this owned external directory"
+  ],
+  "head": "cf74fcff6ad19e639538d260f223ec18d618658d",
+  "tree": "cad51ecbc675a548c9e918782363264736276292",
+  "clean": true,
+  "source_fingerprint_sha256": "d8b9455b68905dc6da7384a0ab85adb8644dc5d5c2e96c7f3bd1b69c2d08582a",
+  "source_hashes": {
+    ".devcontainer/preview-state.mjs": "52621c6568c20c3438e5f3b1f56561f3e8c2352a24f59fbfb336f90ce9d09b78",
+    ".github/workflows/hosted-native-preview.yml": "b34c2230a163a643063ea6637bc490daff973b9c58f1ebd34b095d90a3e27c06",
+    ".github/workflows/mobile-store-release.yml": "5404c7aaca64553e897f5831e460832b5b3e2234ebd8c05aba47e74d5b2890d9",
+    ".github/workflows/native-build.yml": "cb022b094192a3ac6cbb422254a3f4ba5d2a961e7f27811ca0b2d13c9b7a3984",
+    ".github/workflows/platform.yml": "a8aa1d5e4f239417b2b4c4d2432d7159185d7f1f379fd7817c7549ae26755df5",
+    "AGENTS.md": "92a015f16480dae34990dca4a58f5d8085ce3ed651e40819f6b3260562d4bfd8",
+    "apps/mobile/App.tsx": "62355551f8ab206fd0eb9efc2bec18f27256444b03a7119c660d8663d039207d",
+    "apps/mobile/app.config.ts": "50abbd3144f7330e40d0e046e52eaadde646e0e2adeae8d51f835ba30b8fe1c8",
+    "apps/mobile/e2e/raw-recordings.spec.ts": "889dd5531958c8b2995141698485fd3e192db80db2402e41ee3527129fab1abd",
+    "apps/mobile/modules/eye-capture/tests/swift/EyeCoreTests.swift": "bea5fa65942293bffcc1cdf14918fc22ded6db527ee6becb5142db7b72a47552",
+    "apps/mobile/modules/reaction-task/fixtures/golden.json": "1e3ee2974e977aa5977bbe36a828851ff044e1f3335ac37e62b3f7ba4cb1270c",
+    "apps/mobile/modules/scripts/store_release.py": "2a21616903a76cb246c211dab59859478dd99412ce1ea4f5babdfa4ec6f0b601",
+    "apps/mobile/scripts/build-preview.mjs": "85bffdaf5415f19f4f3e9d0dbcd5e108e3c830bc183023805b323f1008571e13",
+    "apps/mobile/src/controller.ts": "b732ee942a27c57abd638ef5806574c574b746313c29101ca19a925e68d95665",
+    "apps/mobile/src/core/domain.ts": "ec3caeeefbf7fa22c2d137476b170311cbcb568c31ebbf135ecc66022d4fc108",
+    "apps/mobile/src/core/oauthPolicy.ts": "aee029fd3852a0a6fa99814e34eade19179271ca39b012e79e1d09203a2924f8",
+    "apps/mobile/src/core/preparationClock.ts": "853b394a82f3ce04d7d66ede53bd6c0c42280560bc44bff115b3cde57cd7aad2",
+    "apps/mobile/src/core/resultPresentation.ts": "17b4d4f2e7bf60909c41f0cc6359655c6175d3e978bb0ccb9bc70fa08af7bcd0",
+    "apps/mobile/src/platform/config.ts": "aed4cd500d5ac406e854384114b61d8bc4b12d26b0b51561c28c032ad7d21748",
+    "apps/mobile/src/platform/sharing.native.ts": "8b0d71f308e8f0feb988e8ee9c7cce0cade86ca55e8ff8da58261d7795213f89",
+    "apps/mobile/src/services/api.ts": "55987fdae9b06762e5e31118a52f64eb6256e782fe921b3c5b16674cfd1f0e94",
+    "apps/mobile/src/services/auth.ts": "c1f9ef918b2f2b8a1f52a82937a3576d51d232b89aa7f5656aa3d87156c15cc9",
+    "apps/mobile/src/services/export.ts": "6cc4977cc639f5629629ce09f25651e1fb63add8c96ddf740add87698ad5b22d",
+    "apps/mobile/src/services/sync.ts": "5062dd28e9db43709b010b8da65fcbafbda563fdd40c33bfe1b32c10a499e3a4",
+    "apps/mobile/src/ui/accessibility.tsx": "25398bbe930bf27079a4e26b157860702b86fbc0a74f23c41869218e953068e8",
+    "apps/mobile/src/ui/account.tsx": "ab70f633e0a23ac8b185c2f547a686ac4081a27f194f9af64ec2765670c37f45",
+    "apps/mobile/src/ui/checks.tsx": "52bb48e4cc5e71e73df793c34e7204d6100eb8c7ea6a6cecc0a06040a3686be7",
+    "apps/mobile/src/ui/components.tsx": "adc89118200592946e0f95cf2db81caadcbd627569a63f940f2b512ffb3a2071",
+    "apps/mobile/src/ui/manage.tsx": "1c74b1ebbc41ff28a837ee7f1e62d5aacb82031453ab1f222db2a0f0f24a6dc9",
+    "apps/mobile/src/ui/participant-capture.tsx": "85a70b5260e2add61c68c6360cb08314564776517661d1446dc2263532c260f4",
+    "apps/mobile/src/ui/theme.tsx": "48d5e8b34b44415d1bcad3f31380547a0bf315b976a4ead81df81f662610410d",
+    "apps/mobile/tests/accessibility-focus.test.ts": "f9c68684978ffbbd41e83b4b7d1f41bba2ab58a7716bcad0af1ec5741ea82a9d",
+    "apps/mobile/tests/auth-acceptance.test.ts": "a90f860a3dafbd0f83a8c7a0c35cc6dea8bff167aa0585ed70b1ed2c8341b164",
+    "apps/mobile/tests/auth-cognito.test.ts": "cd2c95920ea289c1d2e0d8547707c2dfdd96e4bbdd8d671e1107a8e7864e3b40",
+    "apps/mobile/tests/controller.test.ts": "2732b7974198bc87f6643d3e27c3d89d88780cf769e5a3e6c928dbe4b866789a",
+    "apps/mobile/tests/device-presentation.test.ts": "11e79b59ead32c0a6bc4fa818784bc00347f337cfb5dff71d13534673064600a",
+    "apps/mobile/tests/eye-acquisition.test.ts": "88e39f5aa09db012ecee16274b7a54f938f85f5f1e6df42ecfb5e1f72172d8a5",
+    "apps/mobile/tests/hr-read-admission.test.ts": "b55d7461225c3c94494bbbeb5317d63fb7f1736da8ed1a64af7a55c1645a0142",
+    "apps/mobile/tests/preparation-clock.test.ts": "26e1ae978c239b5ac48bb5b7ceac75114d96e7642fbcffd57623e49c3dc652dc",
+    "apps/mobile/tests/privacy-receipt.test.ts": "064fd7d4007a4a2f9752a98c557b35af90e1958145d1326bf047b91144c4d6f3",
+    "apps/mobile/tests/profile-form.test.ts": "0c2b5f39798e297673af92b008243169f4628c08438fc0be9defe065da2dc30e",
+    "apps/mobile/tests/raw-recordings.test.ts": "f2d9a32b5ff0e11ca6aacfb3ea86b246341a1900cfa0042623a0552222900a08",
+    "apps/mobile/tests/result-presentation.test.ts": "2e40afa442c1e7ba2f736ba324542361e7897485901d569d9b7a69326ea93120",
+    "apps/mobile/tests/result-ui.test.ts": "f6252bca25084765c1681b662b6acbb1493483b08046f9547ec617f709b5e5aa",
+    "apps/mobile/tests/study-consent.test.ts": "d862ef179f94af0018561a8c6dfa62972dcdd2d89c1e7060ea6a740552807481",
+    "apps/mobile/tests/sync-conflict.test.ts": "d07ac22260034e8b944704a194419121035b2ac3c56992f4b3e6fe80fd7d997f",
+    "apps/mobile/tests/unit-build-isolation.test.ts": "829a6ca78ac16082018846bc916ddb3674c85bde8a5ee7db54951305e9d2c6cf",
+    "deploy/fargate.py": "e2a9c63d17122a6cd486d5d866fc0f72b67331bf221e62c63bebee21e3dc5135",
+    "deploy/provenance.py": "81d44c50e87a7fafc200012618920eb607a8bff0d9303a3193b7829a39f87d76",
+    "deploy/register_cname.py": "7651a8deb585a9a170b83a61034e040094ddf9709fe6c3fdfef4a206264283e3",
+    "deploy/serverless.py": "883691d55a322986eab1ffb6aa377d0ae42d1ae2f3c2cf781804d60ec643168c",
+    "deploy/web_artifact.py": "883b39d1a57992a7ee0124f85b861f5ae76ec1ff5e316e7c0f99b74cac7bda32",
+    "firmware/nano_esp32_signed_reader/AdcAcquisitionDriver.h": "1863434b7acaf25cf8796d36de47d883b8a0e115a492a01bd2e545fadb463005",
+    "firmware/nano_esp32_signed_reader/ProtectedSigner.h": "367ed5b894c371c16fcd101a8cba05b1f130bacdd81e904c71de79a7a9b335ad",
+    "firmware/nano_esp32_signed_reader/ProtocolCore.h": "fd09caab16af98ead2ba7f7aa53d86531c07deb148cb0a67d296f1ace3755dfe",
+    "firmware/nano_esp32_signed_reader/ReaderLifecycle.h": "d12a4e60177eccee75c9dc0d6bbe00ce0c88ab889ac060a6e3ee36645b27214e",
+    "firmware/nano_esp32_signed_reader/ServerGrantCore.h": "7270b813d9dd27d319158ce8c353ae928b4fd77d0ee429cfef27ab7e23b8ab58",
+    "firmware/nano_esp32_signed_reader/SparkFunBioSensor.cpp": "03f1eee8b58e2aa08c99e36fb3a7a54b136d93bc83c88a50e99233fe99d9afb9",
+    "firmware/nano_esp32_signed_reader/SparkFunPpgCore.h": "0d6a94f68999a03392c9a33e5c4c1da829e8cc735a35634709ebff0422458d85",
+    "firmware/tests/sparkfun_ppg_test.cpp": "c99c4f33547dcf20d4091bf867e2c8d6ac7452f0fc784a1d8e89ad5bce6ab6bb",
+    "infra/local/compose.yml": "bfee23800ef703fd187b6faf3e6fb1f331ee573d37a5f221d21d96f16a82b689",
+    "infra/test/platform.test.ts": "0e949874e8b8c86b6f4ae1075222dc65383648b0b66dcc14b20669eedc92878c",
+    "infra/test/test_web_deployment.py": "e14f26278041db1bb3f5c34cf42c4f7a3f752a4aaabcaa4d15d2aaeac11aa4e1",
+    "openspec/changes/production-mobile-platform/shared-contracts.md": "c74f1fdf1ad65c208fb4d5f6b2f488961c3f2edff73c6a657d263073974bd8ec",
+    "scripts/ci_gate.py": "96b1daa84983ed76d99dc4a45dfa1bc387e3703778ed2828d5eb66c307e0ec1a",
+    "scripts/run_all_gates.py": "535f0d25cfbe7d8a27566b44e6ae587460ac53dfa4e7887456952ff6ae3606bd",
+    "services/api/otgd/cardiac_authority.py": "3cd89f16cc15742323f753b85bfe4e7ec7563dea42e7b96dfef7dd8f56c33f2d",
+    "services/api/otgd/domain.py": "ba1d898a1107ab9983a5ce4d2f6f04884b94acab3fc6130e04ad106fb3fc92d5",
+    "services/api/otgd/history_cursor.py": "f6fff83507257b75a7fcabde84fd35ac46ad129563df4bcafe6fcefac700112e",
+    "services/api/otgd/lab_handoff.py": "ab6a3136b75934a95327aee9e20f8f454b5b6d8b4ad8540d5e6c2a755a1e70e1",
+    "services/api/otgd/main.py": "a84b0694e0e97b41ed113f78ad261e0cfc352c9d84961969311d72d10681a46a",
+    "services/api/otgd/migrate.py": "2d11514252952b5f4c808e9bbf37ca643b7411d46be7d177d8f248af3882f3e8",
+    "services/api/otgd/model_engine.py": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+    "services/api/otgd/native_evidence.py": "be7d1fe0b49c666f599d0e8978cdef2e6d5230268335c29d1a1a18663a045ced",
+    "services/api/otgd/operator_governance.py": "1e16fc9b3679b1d6abd4cc6bdad1a53d18e8e02c4b759e2c3a950b04286ce971",
+    "services/api/otgd/optical_evidence.py": "3a25c6dbceba62c35f609fee33de126dc20c69064254009a3108301f78cd5a73",
+    "services/api/otgd/participant_acquisition.py": "bfef64d21a695a3bf9c3dd853592b007f8ff3b75eb02888af9e70963e33eba6e",
+    "services/api/otgd/raw_export.py": "476079108819029a785bc86950406029752e5834fb5f59660e59d7ac2523d8b8",
+    "services/api/otgd/recovery_authority.py": "ffd428ab0b804cded987ff625c1623297c6e7cf887e5c35f35903221465ac821",
+    "services/api/otgd/recovery_scopes.py": "43f68c53f2bc0eca790654e1a8cc9dfe9ba9185348e2989e40269f8d094db31b",
+    "services/api/otgd/report_revisions.py": "9857ff4eeeac5123e5e092640d57c6023c8992f1119137e820c2166ed30347af",
+    "services/api/otgd/schema_migrations.py": "e78165d36a6287669aa3cada9e83f76822b79d6869922c201b06c87a184703b3",
+    "services/api/otgd/vendor_evidence.py": "4d8869f13b01292a2fe052e651858aea8904e391550a62d4f2d6a6fe8c3eb959",
+    "services/api/otgd/worker.py": "71340311bc34f66daf641c439b4c6f66098cf1386969e78309731779edb9787d",
+    "services/api/tests/test_current_result_readback.py": "4aeec53c610ba9c6f609fcd63b05406d0d7c61305d9bd674382e0d7680c12dd5",
+    "services/api/tests/test_history_cursors.py": "6c309744fdcd25f8d9b28ac4981736f52232700e3047e0ddb5dda45147fbf554",
+    "services/api/tests/test_lab_handoff.py": "104d40bebc567b3288972a2a1916655926ff69bd2a68b72ef61c67f4135f9492",
+    "services/api/tests/test_mobile_store_release.py": "6e39fe7f435848bc9f1c4b033695e11dfb40b821e845d5f397c3a3ca9a3bb13d",
+    "services/api/tests/test_model_evaluation.py": "7d8df519466ee08a3461fbac69176b621e07b587fe85c07e07098d94b57b3d31",
+    "services/api/tests/test_model_evaluation_cardiac.py": "61c92b0c9d5d91f6a486626ba778e8f2a9229a22837eaa456c7e217664700b83",
+    "services/api/tests/test_operator_governance.py": "0a942e16b6c648daf32f044b550bbcb25f68fed8990b1c934959d7496cdbf600",
+    "services/api/tests/test_participant_acquisition.py": "70585678405b2ba85fc9cf53d515c327118bd63b74b16fee2cd5ce6caa8a647a",
+    "services/api/tests/test_privacy_receipts.py": "84efc2d18bd0bcced419d82a6877e619b2bc1924a06118333b74cbe0f3c0c1d7",
+    "services/api/tests/test_raw_export.py": "4e56b75f3098467f17898644d3ae7d77f37d7be31efd3fb6e464c852dc2c3014",
+    "services/api/tests/test_reaction_task_goldens.py": "748931e4e751153aa09ebcf0a61437d3d6433e113e1199a026fb5806605a108e",
+    "services/api/tests/test_recovery_authority.py": "c6f39c45163f8e2c709b5f63094f1c7df83afb094c9905003fee61fc7fa0b638",
+    "services/api/tests/test_recovery_scopes.py": "3fe448145c086a5441b96caeffa0fa006f24a0b18396da3ac60462fba4850344",
+    "specs/HLD.md": "f87c55cd14eb24da6341ba415d03f18a0006e269893e0123c4aa59dfaf858480",
+    "specs/LLD.md": "110e863de22d4a3297b02be119d75ef6d7d15d36b50ae756fffcf98f02d10e83",
+    "tools/model_evaluation.py": "80488d36507c7adb49bbf02448eec9f8ab173008f53e82f59c2d5d782194396c"
+  },
+  "evidence": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/candidate-binding.json",
+      "sha256": "15850b9e86668d2e614188f8a6477ca74b1628821b40c01db264fc5975674638"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/gate-process.json",
+      "sha256": "321f1152f550727c9a6ae7f96114e7ca263b48fceb78a4009da5b449bdcaee07"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/final-gates.log",
+      "sha256": "0fa66e00f789ab045900ff6ba18b8d0b4d61bc08bf3f9f1d727b27d554118ddb"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/review-acknowledgments.json",
+      "sha256": "e3b8e1017347e086f7d980cc23d99e55bd1e0d104902ee4623102fd70d43cfc7"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/verification/report.md",
+      "sha256": "6a611f6d219e2db0cd27686468d9cc21e06dd6fdf43317acbb2c577a66839101"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/verification/summary.json",
+      "sha256": "ce099744482669aff98ef349f7f7677928bef15e2b76f9ef34fadc10a6b56bb4"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/verification/case-reconciliation.json",
+      "sha256": "cc9e733eb5d70504f8f612f7729de363c93a1133282f87332ff808bae58b48b1"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/verification/replacement-focused-review.json",
+      "sha256": "e0076b3ceb0523d291f08d00ea21fd28cd580b8aff84b9f685b3729ead5fa6e8"
+    },
+    {
+      "path": "/tmp/otgd-image-proof/source-refresh-g/independent-readback-g.json",
+      "sha256": "e6dc2ff232003b615a9ec1b40b6b32ce055bee59d58e6b18783bb0fe402382e2"
+    },
+    {
+      "path": "/tmp/otgd-image-proof/source-refresh-g/image-g.receipt.json",
+      "sha256": "0144a0bcc123d60ced3ef7590705bc6da347f1c7840fa9789bd00296df5f969f"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-accessibility.md",
+      "sha256": "4c7d911591242116646bb20be8a658fd5e5b040b65a49a67b3c46698c63eca10"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-auth-acceptance.md",
+      "sha256": "ccaddb7036526b6de895984536aa9131b93cdeab044270d6b870edfc7d1a7bd1"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-auth.md",
+      "sha256": "010860d631be2e7bb84db781c8c701ccaecc20cc65f113ff3a01242da92fe2ab"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-backend-assertions.md",
+      "sha256": "823d9fb35f879746badac56d083f59e705cf464e46f66b41ca4a7d5832f098a5"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-evaluation-invalid-rows.md",
+      "sha256": "792a3c5c1d3bbde6ab8c4682e3f7d1a938636381ad2a354e0780d1cee45d0d7f"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-evaluation.md",
+      "sha256": "e50bb689352fc973f11aac289d5c01407ed15b762f9b7250caeceaab4e3bb0b5"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-history-boundaries.md",
+      "sha256": "881b3d853dd61d583f6a0e83e4388ab632e403bb93dadf1deb4297c20376cb0e"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-hr-readback.md",
+      "sha256": "3b296866eac653f310d3062579e49b1852766cf6b318e87cfabe983598988ff3"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-infra-capacity.md",
+      "sha256": "12d8fd9b5b6f5f0844934338696c32cb1aee2cdc5954fb8ee76de7818e6058c2"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-native-assertions.md",
+      "sha256": "84c60f25d6d2a1f97f476c0d9a1f8c593a0db66dbc8be7a54ebb2993e2c5f00b"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-native-optical-fifo.md",
+      "sha256": "fa766ab96b67c6d3c6c2788473a155296e180e77597b2b1446402d8023569e29"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-preview-fixtures.md",
+      "sha256": "686ad103af794d0541b6062274b882c5e4045b33a00fb1e05ea8c93dadce8331"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-privacy-raw-ui.md",
+      "sha256": "5924f815c227c1656f14494bf71e0735db73f48b448da43f09e4e93d04b791e4"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-product.md",
+      "sha256": "e4a8aaceebc5fcc0e77f4017fcfbaa167f742f5204cfd9166e171adc9e52a8ff"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-salcol.md",
+      "sha256": "c706f8e2b03152ac8ca8a6bcb62e470bcc844e99c69f46c2885f6e43204d00fc"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-web-assets.md",
+      "sha256": "e732331cfec1df71b01f6aad8fecb1e9052f9e28f2e0af3f406ede262ee78130"
+    },
+    {
+      "path": "/workspace/scratch/otgd-image-proof-g/source-refresh-image-g.tar.gz",
+      "sha256": "e7d1d9b7efe2225910c7abb07b4062586bb669f27dffdbd1a5d0c5dea01d26c5"
+    }
+  ],
+  "image_g_compressed_archive_hash_matches_receipt": true,
+  "latest_stage_evidence": {
+    "unit": "PASS stage only; raw XML suite header1737,1529 testcase elements plus208pytest subtests, failures/errors/skips0; backend coverage89.91773148958515%, mobile91.14059386693881%",
+    "atdd": "6 ordinary +2guest preview actual browser cases, no failures/errors/skips",
+    "components": "72cases,0failures/errors/skips",
+    "performance": {
+      "workflows": 40,
+      "concurrency": 20,
+      "requests": 400,
+      "p95_ms": 912.9210720002447,
+      "p99_ms": 1134.2940919985267,
+      "seconds": 11.971087797999644,
+      "result_deadline_seconds": 15
+    },
+    "aggregate": "NOT COMPLETE; PM requested intentional stop at PostgreSQL boundary for correction2; no crash or recovery increment inferred",
+    "artifacts": [
+      {
+        "path": "/workspace/One-The-Go-Detection/reports/unit.xml",
+        "sha256": "abd14e0784c4f8ff2a60ad3b9fbf451b41c3b617e94666bd85c5af36df4bceed"
+      },
+      {
+        "path": "/workspace/One-The-Go-Detection/reports/unit-coverage.json",
+        "sha256": "2f9a1c8bc44f5b9879ac9db50cd2d134c6a6fa6d88920b82540b12e037bab4bf"
+      },
+      {
+        "path": "/workspace/One-The-Go-Detection/reports/atdd.xml",
+        "sha256": "0e6b5632ffe9582734ed0f1a9308848697f13edfb524cb3773223c5be87999eb"
+      },
+      {
+        "path": "/workspace/One-The-Go-Detection/reports/hosted-preview.xml",
+        "sha256": "a6e804ea6da4cddceb02c431bd54ef41e440c5d2b8ae259fa34b1316417a556d"
+      },
+      {
+        "path": "/workspace/One-The-Go-Detection/reports/components.xml",
+        "sha256": "2766a0dca978417a61a0c52e61065b5bb3f344e9083a9a00794eefda734e15cd"
+      },
+      {
+        "path": "/workspace/One-The-Go-Detection/reports/performance.json",
+        "sha256": "c770c5eb3f1e2c56c14047c0440b47345c18643370646475ade606b5311f805c"
+      },
+      {
+        "path": "/workspace/One-The-Go-Detection/apps/mobile/reports/mobile-unit-coverage.json",
+        "sha256": "5dc5f40bc9e785bea54732e55f104be8f485d7b3cf7a1205cfcc13a671eab433"
+      },
+      {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/unit-stage-artifacts.json",
+        "sha256": "7a1223703817241c74488ed83b200a8a100c13f34d754aa8788c414a3bdcda81"
+      }
+    ]
+  },
+  "specialist_reports_source_correlated": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/reviews/code/report.md",
+      "sha256": "936af8827eb5617cfe4c4e5f2cef1a2c8427383360c1deb46ecd1ded21c96f49"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/reviews/security/report.md",
+      "sha256": "62f0fa70adb81247e1dd247913e3b0836b3f71b1d1ff480f9e159c7f5b264bde"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/reviews/ux/report.md",
+      "sha256": "0fedea1f6b364af20eada6cc5afdb68545700c3193cd52c4eeb206848f14bca3"
+    }
+  ]
+}

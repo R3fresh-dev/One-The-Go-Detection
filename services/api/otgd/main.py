@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import base64
 import hashlib
 import re
 import secrets
 import threading
 from contextlib import contextmanager
 from datetime import datetime
-from uuid import UUID as PyUUID
 
 from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import FastAPI, Request
@@ -25,6 +23,7 @@ from . import storage
 from .auth import authenticate, family_hash, recent
 from .canonical import canonical, digest, strict_loads
 from .capture_signing import require_signing_key, sign_start
+from .history_cursor import decode_cursor, encode_cursor
 from .participant_acquisition import (InstructionAcknowledgment, CollectionRequest, acknowledge_instructions, instruction_receipt, accept_collection, collection_status, require_completed_collections, CollectionAbandonment, abandon_collection)
 from .config import settings, web_origins
 from .db import (
@@ -368,7 +367,7 @@ def mutate(request, handler, escape=False, ack=False, replay_guard=None):
         return answer(entry, body, status, headers, opid)
 
 
-def detail(check, include=True):
+def detail(check, include=True, *, db=None, account=None):
     data = {
         "session_id": check.id,
         "state": check.state,
@@ -379,7 +378,7 @@ def detail(check, include=True):
         else iso(check.created),
         "snapshot_sha256": check.snapshot_sha256,
         "evidence_sha256": check.evidence_sha256,
-        "result": safe_result(check.result),
+        "result": safe_result(check.result, db=db, account=account, check=check),
     }
     if include:
         data["snapshot"] = check.snapshot
@@ -436,12 +435,22 @@ def job_view(job):
         "expires_at": iso(job.expires) if job.expires else None,
         "failure_code": job.failure,
         "retained_categories": [
-            "identity_and_generation_barriers",
-            "audit_and_security_metadata",
-            "minimal_operation_receipts",
-            "operator_membership_references",
-            "private_cleanup_references",
-            "deletion_journal",
+            {"category": category, "policy_basis": "privacy-v1", "reason": reason,
+                "expires_at": None}
+            for category, reason in (
+                ("identity_and_generation_barriers",
+                    "Retained to enforce deletion barriers and prevent restoration of retired data generations."),
+                ("audit_and_security_metadata",
+                    "Retained as minimal records of security and administrative actions."),
+                ("minimal_operation_receipts",
+                    "Retained so accepted privacy requests can be retried and their status verified."),
+                ("operator_membership_references",
+                    "Retained to preserve authorization history and reconcile operator membership."),
+                ("private_cleanup_references",
+                    "Retained to locate and remove late object versions after deletion."),
+                ("deletion_journal",
+                    "Retained independently to preserve accepted deletion barriers during recovery."),
+            )
         ] if job.kind == "deletion" else [],
         "policy_version": "privacy-v1",
         "attempt_count": job.attempts,
@@ -706,20 +715,21 @@ def session_list(request: Request, cursor: str | None = None, limit: int = 20):
         query = select(Check).where(
             Check.account_id == a.id, Check.generation == a.generation
         )
-        if cursor:
-            try:
-                d = strict_loads(
-                    base64.urlsafe_b64decode(cursor + "=" * ((4 - len(cursor) % 4) % 4))
+        if cursor is not None:
+            created, identity = decode_cursor(cursor, a, settings())
+            boundary = db.scalar(
+                select(Check.id).where(
+                    Check.id == identity,
+                    Check.account_id == a.id,
+                    Check.generation == a.generation,
+                    Check.created == created,
                 )
-                if set(d) != {"id", "created"}:
-                    raise ValueError()
-                PyUUID(d["id"])
-                created = float(d["created"])
-            except Exception:
+            )
+            if boundary is None:
                 raise Problem(422, "INVALID_CURSOR") from None
             query = query.where(
                 (Check.created < created)
-                | ((Check.created == created) & (Check.id < d["id"]))
+                | ((Check.created == created) & (Check.id < identity))
             )
         rows = list(
             db.scalars(
@@ -729,16 +739,12 @@ def session_list(request: Request, cursor: str | None = None, limit: int = 20):
         more = len(rows) > limit
         rows = rows[:limit]
         next_cursor = (
-            base64.urlsafe_b64encode(
-                canonical({"id": rows[-1].id, "created": rows[-1].created})
-            )
-            .decode()
-            .rstrip("=")
+            encode_cursor(a, rows[-1], settings())
             if more
             else None
         )
         return {
-            "items": [detail(row, False) for row in rows],
+            "items": [detail(row, False, db=db, account=a) for row in rows],
             "next_cursor": next_cursor,
         }
 
@@ -748,7 +754,7 @@ def session_get(request: Request, session_id: UUID):
     with access(request) as (db, a, c, r):
         row = owned_check(db, a, session_id)
         return JSONResponse(
-            {**detail(row), **evidence(db, a, row)},
+            {**detail(row, db=db, account=a), **evidence(db, a, row)},
             headers={"ETag": f'"{row.revision}"'},
         )
 
@@ -934,6 +940,9 @@ def finalize(request: Request, session_id: UUID, body: Finalize):
             or manifest.sha256 != body.evidence_sha256
         ):
             raise Problem(422, "DIGEST_MISMATCH")
+        from .participant_acquisition import require_abandoned_chemistry
+
+        require_abandoned_chemistry(db, a, row)
         row.evidence_sha256 = body.evidence_sha256
         row.state = "processing"
         row.revision += 1
@@ -975,7 +984,8 @@ def result_get(request: Request, session_id: UUID):
                 headers={"Retry-After": "2"},
             )
         return JSONResponse(
-            safe_result(row.result), headers={"X-Evidence-Sha256": row.evidence_sha256}
+            safe_result(row.result, db=db, account=a, check=row),
+            headers={"X-Evidence-Sha256": row.evidence_sha256}
         )
 
 
@@ -1805,7 +1815,7 @@ def export_post(request: Request, body: ExportRequest):
             check = owned_check(db, a, id)
             if check.state not in ("completed", "invalid"):
                 raise Problem(409, "FINALIZED_CHECK_REQUIRED")
-            safe_result(check.result)
+            safe_result(check.result, db=db, account=a, check=check)
             report_heads[id] = freeze_head(db, a, check)
         version_ids = set()
         current_version = None
@@ -1957,7 +1967,7 @@ def privacy_download(request: Request, job_id: UUID):
                 consent = record(db, a, "consent", check.study_id)
                 if not consent or consent.body["state"] != "active":
                     raise Problem(403, "CAPABILITY_DENIED")
-            safe_result(check.result)
+            safe_result(check.result, db=db, account=a, check=check)
         value = job.output
         if (not value.get("version_id") or value["version_id"] == "null"
             or not isinstance(value.get("size_bytes"), int)

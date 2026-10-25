@@ -98,6 +98,76 @@ def refresh(api, module, value, **extra):
     )
 
 
+@pytest.mark.parametrize("account", ["browser_mobile", "browser_desktop"])
+def test_reserved_fictional_browser_accounts_complete_pkce_rotation_and_revocation(issuer, account):
+    api, module = issuer
+    page, _ = authorization(api, module)
+    assert f'value="{account}"' in page.text
+    assert "Fictional Browser" in page.text
+    code, verifier, _ = select_account(api, module, account)
+    issued = exchange(api, module, code, verifier)
+    assert issued.status_code == 200
+    claims = jwt.decode(issued.json()["access_token"], options={"verify_signature": False})
+    assert claims["sub"] == "local-" + account
+    rotated = refresh(api, module, issued.json()["refresh_token"])
+    assert rotated.status_code == 200
+    revoked = api.post("/oauth2/revoke", data={
+        "client_id": module.s.client_id,
+        "token": rotated.json()["refresh_token"], "token_type_hint": "refresh_token",
+    })
+    assert revoked.status_code == 200
+    assert refresh(api, module, rotated.json()["refresh_token"]).status_code == 400
+
+
+@pytest.mark.parametrize("account", ["browser_arbitrary", "browser_mobile_123", "participant", "local-browser_mobile"])
+def test_browser_fixture_extension_does_not_admit_arbitrary_accounts(issuer, account):
+    api, module = issuer
+    page, _ = authorization(api, module)
+    ident = re.search(r'name="authorization_id" value="([^\"]+)"', page.text).group(1)
+    refused = api.post("/oauth2/authorize", headers={"Origin": module.s.identity_origin.rstrip("/")},
+        data={"authorization_id": ident, "account": account})
+    assert refused.status_code == 400
+    assert refused.json()["error"] == "invalid_request"
+
+
+def test_reserved_browser_staff_uses_pkce_without_a_consumer_button(issuer):
+    api, module = issuer
+    page, _ = authorization(api, module)
+    assert 'value="browser_staff"' not in page.text
+    code, verifier, _ = select_account(api, module, "browser_staff")
+    issued = exchange(api, module, code, verifier)
+    assert issued.status_code == 200
+    claims = jwt.decode(issued.json()["access_token"], options={"verify_signature": False})
+    assert claims["sub"] == "local-browser_staff"
+
+
+def test_form_redirect_policy_allows_only_registered_browser_callback_origins(issuer, monkeypatch):
+    api, module = issuer
+    page, _ = authorization(api, module)
+    assert page.headers["content-security-policy"] == (
+        "default-src 'none'; form-action 'self' http://localhost:8082; frame-ancestors 'none'"
+    )
+    monkeypatch.setattr(module, "s", module.s.model_copy(update={"oauth_redirect_uris": [
+        "otgd-local://oauth/callback", "http://localhost:8082/", "http://localhost:8082/other",
+        "https://registered.example.test/callback",
+    ]}))
+    page, _ = authorization(api, module)
+    assert page.headers["content-security-policy"] == (
+        "default-src 'none'; form-action 'self' http://localhost:8082 https://registered.example.test; frame-ancestors 'none'"
+    )
+    assert "*" not in page.headers["content-security-policy"]
+    refused, _ = authorization(api, module, redirect_uri="https://unregistered.example.test/callback")
+    assert refused.status_code == 400
+    assert refused.json()["error"] == "invalid_request"
+
+
+def test_native_only_issuer_does_not_add_browser_form_targets(issuer, monkeypatch):
+    api, module = issuer
+    monkeypatch.setattr(module, "s", module.s.model_copy(update={"oauth_redirect_uris": ["otgd-local://oauth/callback"]}))
+    page, _ = authorization(api, module)
+    assert page.headers["content-security-policy"] == "default-src 'none'; form-action 'self'; frame-ancestors 'none'"
+
+
 def test_discovery_jwks_and_issuer_bound_access_token(issuer):
     api, module = issuer
     assert api.get("/health/live").json()["fictional_identity"] is True

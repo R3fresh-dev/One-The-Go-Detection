@@ -33,13 +33,17 @@ import type {
   Capabilities,
   CheckRecord,
   JsonObject,
+  QueueOperation,
   Stage,
 } from "../core/types";
 import { cardiacAttemptModality } from "../core/domain";
+import { presentCheckResult } from "../core/resultPresentation";
+import { validationFields, verifyConflictReadback } from "../services/sync";
 import { formatSalivaMeasurement } from "./measurement-format";
 import { SignalPanel } from "../device/SignalPanel";
-import { canonicalJson } from "../core/integrity";
+import { canonicalJson, digest } from "../core/integrity";
 import { BUILD } from "../platform/config";
+import { newId } from "../platform/storage";
 import { configurationFor, type AcquisitionChannel } from "../core/acquisition";
 import { ReplacementLinksCard, ReportRevisionsCard } from "./revisions";
 import {
@@ -1520,10 +1524,175 @@ export function TaskCard({ check }: { check: CheckRecord }) {
     </Card>
   );
 }
+function UploadIssueCard({
+  controller,
+  model,
+  check,
+  queue,
+}: ScreenProps & { check: CheckRecord; queue: QueueOperation }) {
+  const [inspect, setInspect] = useState(false),
+    epoch = controller.epoch,
+    colors = useTheme();
+  const conflict = check.sync_conflict;
+  let server: ReturnType<typeof verifyConflictReadback> | null = null;
+  if (
+    model.identity &&
+    conflict?.server_record &&
+    conflict.account_ref === model.identity.accountRef &&
+    conflict.data_generation === model.state!.generation &&
+    model.identity.generation === model.state!.generation
+  ) {
+    try {
+      server = verifyConflictReadback(
+        conflict.server_record,
+        conflict.server_etag,
+        model.state!,
+        check,
+      );
+    } catch {
+      /* A changed or foreign saved comparison never becomes an authoritative view. */
+    }
+  }
+  const fields = validationFields(queue.field_errors ?? {});
+  return (
+    <Card>
+      <Title small>
+        {queue.state === "conflict"
+          ? "Upload conflict needs review"
+          : queue.state === "retry_wait"
+            ? "Upload waiting"
+            : "Upload needs correction"}
+      </Title>
+      {queue.state === "retry_wait" ? (
+        <>
+          <Fact
+            label="Retry allowed after (UTC)"
+            value={
+              queue.rate_limited_until ??
+              queue.next_attempt_at ??
+              "Explicit retry required"
+            }
+          />
+          <Paragraph>
+            Service-requested waits are honored before another attempt. Waits
+            longer than one hour require manual retry after the server deadline.
+          </Paragraph>
+        </>
+      ) : (
+        <Paragraph>
+          The saved local evidence remains unchanged. This stopped upload will
+          not overwrite the server or automatically retry.
+        </Paragraph>
+      )}
+      {Object.entries(fields).map(([field, code]) => (
+        <Fact key={field} label={field} value={friendly(code)} />
+      ))}
+      {queue.state === "conflict" && (
+        <>
+          {server ? (
+            <>
+              <Fact
+                label="Server state / revision"
+                value={`${server.record.state} / ${server.record.revision}`}
+              />
+              <Fact
+                label="Server snapshot SHA-256"
+                value={String(
+                  server.record.snapshot_sha256 ?? "No snapshot yet",
+                )}
+              />
+              <Fact
+                label="Pending local snapshot SHA-256"
+                value={check.snapshot_sha256 ?? "Not assigned"}
+              />
+              <Button
+                title={
+                  inspect
+                    ? "Hide server and local comparison"
+                    : "Inspect server and pending local evidence"
+                }
+                secondary
+                onPress={() => {
+                  if (controller.epoch === epoch) setInspect((value) => !value);
+                }}
+              />
+              {inspect && (
+                <>
+                  <Title small>Accepted server snapshot</Title>
+                  <Text selectable style={{ color: colors.ink, fontSize: 12 }}>
+                    {JSON.stringify(server.record.snapshot, null, 2)}
+                  </Text>
+                  <Title small>Pending local snapshot</Title>
+                  <Text selectable style={{ color: colors.ink, fontSize: 12 }}>
+                    {JSON.stringify(check.snapshot, null, 2)}
+                  </Text>
+                </>
+              )}
+              {server.frozen ? (
+                <>
+                  <Paragraph>
+                    A correction needs a new linked check, a new acquisition
+                    time and new captures. Both original records remain
+                    unchanged.
+                  </Paragraph>
+                  <Button
+                    title="Review a new linked correction"
+                    onPress={action(controller, () => {
+                      if (controller.epoch === epoch)
+                        return controller.prepareUploadCorrection(check.id);
+                    })}
+                  />
+                </>
+              ) : (
+                <Notice>
+                  The server check is still a draft. Review it on its
+                  originating device; no overwrite or frozen correction is
+                  available.
+                </Notice>
+              )}
+            </>
+          ) : (
+            <Notice>
+              Server comparison is unavailable or could not be verified. The
+              pending local evidence is preserved; inspect again explicitly.
+            </Notice>
+          )}
+          <Button
+            title="Refresh server comparison"
+            secondary
+            onPress={action(controller, () => {
+              if (controller.epoch === epoch)
+                return controller.refreshUploadConflict(queue.id);
+            })}
+          />
+        </>
+      )}
+    </Card>
+  );
+}
+
 export function ResultScreen({ controller, model }: ScreenProps) {
   const check = controller.check;
+  const presentation = check
+    ? presentCheckResult(check, controller.hasCurrentHrResultAdmission(check))
+    : null;
+  const result = presentation?.result;
+  const savedResultDigest = check ? digest(check.result) : null;
   const [rawSelection, setRawSelection] = useState<string[]>([]);
   useEffect(() => setRawSelection([]), [check?.id, controller.epoch]);
+  useEffect(() => {
+    if (!check) return;
+    const token = newId(),
+      epoch = controller.epoch;
+    let active = true;
+    void controller.refreshHrResultAdmission(check.id, token).catch((error) => {
+      if (active && controller.epoch === epoch) controller.report(error);
+    });
+    return () => {
+      active = false;
+      controller.releaseHrResultView(token);
+    };
+  }, [check?.id, controller.epoch, savedResultDigest]);
   const pendingRaw = model.state?.queue.find(
     (q) =>
       q.kind === "check" && q.check_id === check?.id && q.state !== "synced",
@@ -1549,97 +1718,114 @@ export function ResultScreen({ controller, model }: ScreenProps) {
     >
       <Card>
         <Row>
-          <Badge tone={check.result?.state === "invalid" ? "danger" : "accent"}>
-            {check.result?.state === "measurement_only"
-              ? "Measurement record"
-              : friendly(check.result?.state ?? "unavailable")}
+          <Badge tone={result?.state === "invalid" ? "danger" : "accent"}>
+            {presentation!.badge}
           </Badge>
           {check.kind !== "measurement" && <Badge tone="warning">Demo</Badge>}
           <Badge>{friendly(check.delivery)}</Badge>
         </Row>
-        <Title small>
-          {check.result?.state === "measurement_only"
-            ? "Measurements saved"
-            : check.result?.schema_version === "1.1.0"
-              ? check.result.state === "research_estimate"
-                ? "Authorized research result"
-                : "Research result abstained"
-              : check.result?.state === "invalid"
-                ? "Check needs attention"
-                : "Result unavailable"}
-        </Title>
-        {check.result?.schema_version === "1.1.0" ? (
+        <Title small>{presentation!.title}</Title>
+        {result?.schema_version === "1.1.0" ? (
           <>
             <Notice>
               Research use only. This result concerns the named endpoint at the
               historical capture time. It does not determine current
-              intoxication, legal fitness or driving safety.
+              intoxication, legal fitness or driving safety. Historical evidence
+              does not grant current research access.
             </Notice>
             <Fact
               label="Research endpoint"
-              value={check.result.model_execution.endpoint_definition}
+              value={result.model_execution.endpoint_definition}
             />
-            <Fact label="Endpoint ID" value={check.result.endpoint_id} />
+            <Fact label="Endpoint ID" value={result.endpoint_id} />
             <Fact
               label="Population scope"
-              value={check.result.model_execution.population_description}
+              value={result.model_execution.population_description}
             />
             <Fact
               label="Historical target time"
-              value={dateLabel(check.result.target_at)}
+              value={dateLabel(result.target_at)}
             />
-            <Fact
-              label="Evaluated at"
-              value={dateLabel(check.result.evaluated_at)}
-            />
+            <Fact label="Evaluated at" value={dateLabel(result.evaluated_at)} />
             <Fact
               label="Model"
-              value={`${check.result.model_id} · ${check.result.model_lifecycle}`}
+              value={`${result.model_id} · ${result.model_lifecycle}`}
             />
             <Fact
               label="Model manifest SHA-256"
-              value={check.result.model_execution.manifest_sha256}
+              value={result.model_execution.manifest_sha256}
             />
             <Fact
               label="Execution authority SHA-256"
-              value={check.result.model_execution.authority_sha256}
+              value={result.model_execution.authority_sha256}
             />
-            {check.result.state === "research_estimate" ? (
+            <Fact
+              label="Uncertainty policy"
+              value={presentation!.uncertainty!.policyId}
+            />
+            <Fact
+              label="Uncertainty method"
+              value={presentation!.uncertainty!.method}
+            />
+            {presentation!.uncertainty!.band && (
+              <Fact
+                label="Abstention probability band"
+                value={presentation!.uncertainty!.band}
+              />
+            )}
+            <Paragraph>{presentation!.uncertainty!.explanation}</Paragraph>
+            <Fact
+              label="Policy rationale"
+              value={presentation!.uncertainty!.rationale ?? "Not supplied"}
+            />
+            {result.state === "research_estimate" ? (
               <>
                 <Metric
                   label="Probability of the named research endpoint"
-                  value={`${(check.result.probability! * 100).toFixed(1)}%`}
+                  value={`${(result.probability! * 100).toFixed(1)}%`}
                 />
                 <Fact
                   label="Research operating threshold"
-                  value={`${(check.result.operating_threshold! * 100).toFixed(1)}%`}
+                  value={`${(result.operating_threshold! * 100).toFixed(1)}%`}
                 />
                 <Fact
                   label="Endpoint classification"
-                  value={friendly(check.result.classification)}
+                  value={friendly(result.classification)}
                 />
               </>
             ) : (
               <Notice>
                 No probability or classification was produced. The admitted
-                model abstained:{" "}
-                {check.result.reason_codes.map(friendly).join(", ")}.
+                model abstained: {result.reason_codes.map(friendly).join(", ")}.
               </Notice>
             )}
           </>
+        ) : presentation?.currentAdmissionRequired ? (
+          <Notice tone="warning">
+            Reconnect for a fresh authenticated service read. The saved HR
+            research probability, classification and uncertainty policy remain
+            withheld until current authority is admitted. Recorded measurements
+            are preserved.
+          </Notice>
         ) : (
           <Paragraph>
             No validated impairment model is available for this check.
             Intoxication cannot be determined.
           </Paragraph>
         )}
-        {check.result?.state === "invalid" && (
+        {check.result && !result && !presentation?.currentAdmissionRequired && (
+          <Notice tone="warning">
+            Saved result could not be verified. No research score or uncertainty
+            policy is displayed.
+          </Notice>
+        )}
+        {result?.state === "invalid" && (
           <Paragraph muted>
             Review the invalid acquisitions below. A replacement check uses new
             measurements and preserves this record.
           </Paragraph>
         )}
-        {check.result?.state === "inconclusive" && (
+        {result?.state === "inconclusive" && (
           <Paragraph muted>
             The available evidence could not produce a complete result. The
             recorded measurements and missing values remain visible below.
@@ -1648,6 +1834,16 @@ export function ResultScreen({ controller, model }: ScreenProps) {
         <Fact label="Recorded at" value={dateLabel(check.snapshot.target_at)} />
       </Card>
       {check.error && <Notice tone="danger">{check.error}</Notice>}
+      {pendingRaw &&
+        ["conflict", "blocked", "retry_wait"].includes(pendingRaw.state) && (
+          <UploadIssueCard
+            key={`${controller.epoch}:${check.id}:${check.generation}`}
+            controller={controller}
+            model={model}
+            check={check}
+            queue={pendingRaw}
+          />
+        )}
       <SalivaCard check={check} />
       <View style={layout.grid}>
         <Card style={layout.column}>
@@ -1716,6 +1912,14 @@ export function ResultScreen({ controller, model }: ScreenProps) {
             label="Qualifier / source"
             value={`${friendly(check.alcohol.qualifier)} / ${friendly(check.alcohol.source)}`}
           />
+          <Fact
+            label="Measured (UTC)"
+            value={
+              typeof check.alcohol.measured_at === "string"
+                ? check.alcohol.measured_at
+                : "Not reported"
+            }
+          />
           <Paragraph muted>
             No BAC conversion or cannabis impairment adjustment is calculated.
           </Paragraph>
@@ -1770,7 +1974,8 @@ export function ResultScreen({ controller, model }: ScreenProps) {
       {model.identity &&
         check.kind !== "guest_demo" &&
         check.delivery !== "synced" &&
-        check.delivery !== "quarantined" && (
+        check.delivery !== "quarantined" &&
+        !["conflict", "blocked"].includes(pendingRaw?.state ?? "") && (
           <Button
             title={
               check.remote_revision ? "Retry requested upload" : "Upload check"

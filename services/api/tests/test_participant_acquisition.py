@@ -46,6 +46,7 @@ from .governance_fixture import (
     study,
 )
 from .helpers import session_fixture
+from .test_model_engine import model as model_fixture  # noqa: F401 - pytest fixture
 
 COLLECTION_METHOD = "FICTIONAL-PARTICIPANT-COLLECTION"
 ASSAY_METHOD = "FICTIONAL-INDEPENDENT-LABORATORY-METHOD"
@@ -162,12 +163,13 @@ def collection_scope(client, account, request):
     })
     assert accepted.status_code == 201, accepted.text
     sid = str(uuid4())
+    mode = adjustments.get('mode', 'controlled_research')
     created = client.post("/v1/sessions", headers=headers(), json={"session_id": sid,
-        "mode": "controlled_research", "study_id": STUDY, "protocol_id": PROTOCOL})
+        "mode": mode, "study_id": STUDY, "protocol_id": PROTOCOL})
     assert created.status_code == 201, created.text
     frozen = session_fixture(account)
     frozen["profile"]["source"] = "study_measurement"
-    frozen.update(session_id=sid, mode="controlled_research", study_id=STUDY, protocol_id=PROTOCOL,
+    frozen.update(session_id=sid, mode=mode, study_id=STUDY, protocol_id=PROTOCOL,
         created_at=iso(), target_at=iso())
     frozen["target_at"] = frozen["created_at"]
     context = {"schema_version": "1.0.0", "session_id": sid, "context_confirmed_at": iso(),
@@ -293,6 +295,60 @@ def test_positive_collection_without_ble_is_owned_immutable_and_pending(collecti
         with pytest.raises(Problem) as denied:
             require_completed_collections(db, owner, db.get(Check, run["session_id"]))
         assert denied.value.code == "LAB_ANALYSIS_PENDING"
+
+
+@pytest.mark.parametrize('already_accepted', [False, True])
+def test_collection_first_late_submission_is_denied_but_exact_key_replay_stays_historical(
+    collection_scope, client, monkeypatch, already_accepted
+):
+    from datetime import datetime
+
+    run = acknowledge_and_start(client, start_collection(client, collection_scope))
+    body, original_headers = collection_body(run), headers()
+    path = f"/v1/sessions/{run['session_id']}/collections"
+    if already_accepted:
+        accepted = client.post(path, headers=original_headers, json=body)
+        assert accepted.status_code == 201, accepted.text
+        original_receipt = accepted.json()
+        with factory()() as db:
+            row = record(db, db.get(Account, run['account']), 'collection', run['sample_id'])
+            original_created, original_hash = row.created, row.sha256
+    collected = datetime.fromisoformat(body['collected_at']).timestamp()
+    maximum = run['config']['participant_protocol']['maximum_collection_submission_delay_seconds']
+    monkeypatch.setattr('otgd.participant_acquisition.now', lambda: collected + maximum + 0.001)
+    response = client.post(path, headers=original_headers, json=body)
+    if already_accepted:
+        assert response.status_code == 201 and response.json() == original_receipt
+    else:
+        assert response.status_code == 422 and response.json()['code'] == 'COLLECTION_TIME_INVALID', response.text
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        receipts = db.query(Record).filter_by(account_id=owner.id,
+            parent_id=run['session_id'], kind='collection').all()
+        assert len(receipts) == int(already_accepted)
+        assert db.query(Record).filter_by(account_id=owner.id,
+            parent_id=run['session_id'], kind='lab_import').count() == 0
+        if already_accepted:
+            assert receipts[0].created == original_created and receipts[0].sha256 == original_hash
+            assert receipts[0].body == original_receipt
+            assert receipts[0].body['projection']['saliva'] == []
+            assert receipts[0].body['state'] == 'pending_lab'
+        else:
+            assert record(db, owner, 'attempt', run['attempt_id']).body == run['attempt']
+
+
+@pytest.mark.parametrize('field', ['saliva_volume_ml', 'collector_lot'])
+def test_present_collection_value_cannot_also_claim_a_missing_reason(collection_scope, client, field):
+    run = acknowledge_and_start(client, start_collection(client, collection_scope))
+    body = collection_body(run)
+    assert body[field] is not None
+    body['missing_reasons'] = {**body['missing_reasons'], field: 'unknown'}
+    response = client.post(f"/v1/sessions/{run['session_id']}/collections", headers=headers(), json=body)
+    assert response.status_code == 422 and response.json()['code'] == 'VALIDATION_FAILED', response.text
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        assert record(db, owner, 'collection', run['sample_id']) is None
+        assert record(db, owner, 'attempt', run['attempt_id']).body == run['attempt']
 
 
 @pytest.mark.parametrize("change,expected", [
@@ -526,6 +582,110 @@ def test_acknowledgment_time_cannot_be_rebased_onto_new_server_acceptance(collec
         assert denied.status_code == 422 and denied.json()["code"] == "ACKNOWLEDGMENT_TIME_INVALID"
 
 
+@pytest.mark.parametrize('age_offset', [-0.001, 0, 0.001])
+def test_acknowledgment_submission_maximum_age_exact_boundary(collection_scope, client, monkeypatch, age_offset):
+    """Isolate approved age from the separate attempt-creation lower bound."""
+    run = start_collection(client, collection_scope)
+    tick = int(now())
+    maximum = run['config']['participant_protocol']['maximum_acknowledgment_age_seconds']
+    with factory().begin() as db:
+        owner = db.get(Account, run['account'])
+        record(db, owner, 'attempt', run['attempt_id']).created = tick - maximum - 10
+    monkeypatch.setattr('otgd.participant_acquisition.now', lambda: tick)
+    body = {**run['ack'], 'acknowledged_at': iso(tick - maximum - age_offset)}
+    response = client.post(f"/v1/sessions/{run['session_id']}/instruction-acknowledgments",
+        headers=headers(), json=body)
+    if age_offset <= 0:
+        assert response.status_code == 201, response.text
+        assert response.json()['acknowledged_at'] == body['acknowledged_at']
+    else:
+        assert response.status_code == 422 and response.json()['code'] == 'ACKNOWLEDGMENT_TIME_INVALID', response.text
+    with factory()() as db:
+        receipts = db.query(Record).filter_by(account_id=run['account'],
+            parent_id=run['session_id'], kind='instruction_receipt').all()
+        assert len(receipts) == (1 if age_offset <= 0 else 0)
+
+
+@pytest.mark.parametrize('early_offset', [-0.001, 0, 0.001])
+def test_acknowledgment_submission_attempt_minus_five_seconds_exact_boundary(
+    collection_scope, client, monkeypatch, early_offset
+):
+    run = start_collection(client, collection_scope)
+    created = int(now())
+    with factory().begin() as db:
+        owner = db.get(Account, run['account'])
+        record(db, owner, 'attempt', run['attempt_id']).created = created
+    # The approved age window is wider, so only attempt.created-5 is limiting.
+    monkeypatch.setattr('otgd.participant_acquisition.now', lambda: created + 10)
+    body = {**run['ack'], 'acknowledged_at': iso(created - 5 - early_offset)}
+    response = client.post(f"/v1/sessions/{run['session_id']}/instruction-acknowledgments",
+        headers=headers(), json=body)
+    if early_offset <= 0:
+        assert response.status_code == 201, response.text
+        assert response.json()['acknowledged_at'] == body['acknowledged_at']
+    else:
+        assert response.status_code == 422 and response.json()['code'] == 'ACKNOWLEDGMENT_TIME_INVALID', response.text
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        assert record(db, owner, 'attempt', run['attempt_id']).body == run['attempt']
+        assert db.query(Record).filter_by(account_id=run['account'], parent_id=run['session_id'],
+            kind='instruction_receipt').count() == (1 if early_offset <= 0 else 0)
+
+
+@pytest.mark.parametrize('boundary', ['grant', 'start'])
+@pytest.mark.parametrize('age_offset', [-0.001, 0, 0.001])
+def test_original_instruction_receipt_expires_only_after_maximum_at_grant_and_start(
+    collection_scope, client, monkeypatch, boundary, age_offset
+):
+    from datetime import datetime
+
+    run = start_collection(client, collection_scope)
+    declared = int(now()) - 1
+    body = {**run['ack'], 'acknowledged_at': iso(declared)}
+    original_headers = headers()
+    path = f"/v1/sessions/{run['session_id']}/instruction-acknowledgments"
+    accepted = client.post(path, headers=original_headers, json=body)
+    assert accepted.status_code == 201, accepted.text
+    receipt = accepted.json()
+    assert declared < datetime.fromisoformat(receipt['accepted_at']).timestamp()
+    maximum = run['config']['participant_protocol']['maximum_acknowledgment_age_seconds']
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        original_row = record(db, owner, 'instruction_receipt', receipt['instruction_receipt_id'])
+        original_created, original_hash = original_row.created, original_row.sha256
+    grant_body = {'attempt_id': run['attempt_id'], 'channel': 'saliva', 'binding_id': None,
+        'device_id': None, 'configuration_id': CONFIGURATION, 'configuration_hash': run['config']['sha256'],
+        'instruction_receipt_id': receipt['instruction_receipt_id'], 'raw_recording_kind': None}
+    if boundary == 'start':
+        monkeypatch.setattr('otgd.participant_acquisition.now', lambda: declared + maximum - 0.001)
+        grant = client.post(f"/v1/sessions/{run['session_id']}/capture-authorizations",
+            headers=headers(), json=grant_body)
+        assert grant.status_code == 201, grant.text
+    monkeypatch.setattr('otgd.participant_acquisition.now', lambda: declared + maximum + age_offset)
+    # Replaying the historical receipt never changes the original minimum T.
+    replay = client.post(path, headers=original_headers, json=body)
+    assert replay.status_code == 201 and replay.json() == receipt
+    if boundary == 'grant':
+        response = client.post(f"/v1/sessions/{run['session_id']}/capture-authorizations",
+            headers=headers(), json=grant_body)
+    else:
+        response = client.post(f"/v1/sessions/{run['session_id']}/capture-authorizations/{grant.json()['authorization_id']}/start",
+            headers=headers(), json={'attempt_id': run['attempt_id'], 'device_boot_id': None, 'device_nonce': None})
+    if age_offset <= 0:
+        assert response.status_code == (201 if boundary == 'grant' else 200), response.text
+    else:
+        assert response.status_code == 403 and response.json()['code'] == 'INSTRUCTION_ACKNOWLEDGMENT_EXPIRED', response.text
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        row = record(db, owner, 'instruction_receipt', receipt['instruction_receipt_id'])
+        assert row.body == receipt and row.created == original_created and row.sha256 == original_hash
+        if age_offset > 0:
+            authorizations = db.query(Record).filter_by(account_id=run['account'],
+                parent_id=run['session_id'], kind='authorization').all()
+            assert len(authorizations) == (0 if boundary == 'grant' else 1)
+            assert all(authorization.body['state'] == 'issued' for authorization in authorizations)
+
+
 def test_foreign_attempt_receipt_and_missing_receipt_do_not_create_collection_start(collection_scope, client):
     first, second = (start_collection(client, collection_scope) for _ in range(2))
     accepted = client.post(f"/v1/sessions/{first['session_id']}/instruction-acknowledgments",
@@ -586,6 +746,160 @@ def test_pending_sample_blocks_finalization_until_explicit_cancellation_without_
         owner = db.get(Account, run["account"])
         assert record(db, owner, "collection", run["sample_id"]).body == original
         require_completed_collections(db, owner, db.get(Check, run["session_id"]))
+
+
+def released_pending_chemistry_model(run, fixture, *, required):
+    """Real typed fictional registry lifecycle; this does not qualify a cohort."""
+    from otgd import model_engine
+
+    body = deepcopy(fixture['body'])
+    body['study_ids'] = [STUDY]
+    manifest = body['manifest']
+    manifest.update(required_channels=['saliva_thc'] if required else ['pupil'],
+        allowed_protocol_ids=[PROTOCOL], allowed_collection_method_ids=[COLLECTION_METHOD],
+        allowed_assay_ids=[ASSAY_METHOD], allowed_hardware_revisions=['engineering-hw', 'unavailable'])
+    feature = 'saliva.THC' if required else 'eyes.baseline_diameter_mm'
+    artifact = fixture['artifact'].model_copy(update={'feature_names': [feature],
+        'means': [0.0], 'scales': [1.0], 'coefficients': [1.0],
+        'feature_limits': {feature: [0.0, 10000.0]}})
+    raw = canonical(artifact.model_dump())
+    manifest['artifact_sha256'] = hashlib.sha256(raw).hexdigest()
+    body['artifact_ref'].update(sha256=manifest['artifact_sha256'], size_bytes=len(raw))
+    body['evaluation_report']['artifact_sha256'] = manifest['artifact_sha256']
+    body['compatibility_policy']['assay_tuples'] = [{'analyte': 'THC', 'method_id': ASSAY_METHOD,
+        'assay_basis': 'free', 'concentration_basis': 'collected_mixture',
+        'correction_status': 'not_corrected', 'collection_method_id': COLLECTION_METHOD}]
+    assert model_engine.load_artifact(raw, body['artifact_ref'], manifest) == artifact
+    body = common(manifest['model_id'], **body)
+    with factory().begin() as db:
+        approve(db, 'calibration', common(manifest['calibration_id'],
+            calibration_id=manifest['calibration_id'], purpose='model', model_id=manifest['model_id'],
+            calibration_sha256=digest(artifact.calibration.model_dump())))
+        approve(db, 'model', body)
+        current = deepcopy(active_body(db, 'study', STUDY))
+        current.update(version='v2', model_id=manifest['model_id'])
+        approve(db, 'study', current)
+        admitted = deepcopy(active_body(db, 'model', manifest['model_id']))
+        assert admitted['manifest']['required_channels'] == manifest['required_channels']
+    return admitted
+
+
+@pytest.mark.parametrize('requires_chemistry', [True, False])
+def test_pending_collection_cannot_satisfy_required_chemistry_and_does_not_invent_optional_values(
+    collection_scope, client, model_fixture, requires_chemistry, monkeypatch  # noqa: F811 - pytest fixture
+):
+    from datetime import datetime
+
+    from otgd import model_engine
+
+    run = acknowledge_and_start(client, start_collection(client, collection_scope))
+    accepted = client.post(f"/v1/sessions/{run['session_id']}/collections", headers=headers(), json=collection_body(run))
+    assert accepted.status_code == 201, accepted.text
+    receipt = accepted.json()
+    assert receipt['state'] == 'pending_lab' and receipt['projection']['saliva'] == []
+    body = released_pending_chemistry_model(run, model_fixture, required=requires_chemistry)
+    # Engineered nonchemical channels isolate the real scope gate. This is not
+    # an end-to-end qualification or model-execution-authority fixture.
+    snapshot = deepcopy(model_fixture['snapshot'])
+    collected = datetime.fromisoformat(receipt['request']['collected_at']).timestamp()
+    snapshot.update(session_id=run['session_id'], subject_ref=run['account'], study_id=STUDY,
+        protocol_id=PROTOCOL, created_at=iso(collected-2), target_at=iso(collected-2),
+        capture_completed_at=iso(collected), acquisition_span_ms=1000)
+    snapshot['sample'] = deepcopy(receipt['projection']['sample'])
+    snapshot['saliva'] = []
+    for component in ('eyes', 'cardiac', 'task'):
+        snapshot[component].update(started_at=iso(collected-1), ended_at=iso(collected))
+    before = deepcopy(snapshot)
+    if requires_chemistry:
+        with pytest.raises(Problem, match='MISSING_REQUIRED_CHANNEL'):
+            model_engine.scope_check(snapshot, body, False)
+    else:
+        model_engine.scope_check(snapshot, body, False)
+        for mutation, expected in [({'source': 'simulated'}, 'INVALID_ACQUISITION'),
+            ({'scale_basis': 'unscaled', 'baseline_diameter_mm': None}, 'INCOMPATIBLE_METHOD')]:
+            changed = deepcopy(snapshot)
+            changed['eyes'].update(mutation)
+            with pytest.raises(Problem, match=expected):
+                model_engine.scope_check(changed, body, False)
+        delayed = collected + body['manifest']['max_delivery_delay_ms'] / 1000 + 0.001
+        with monkeypatch.context() as clock:
+            clock.setattr(model_engine, 'iso', lambda: iso(delayed))
+            with pytest.raises(Problem, match='TIMING_UNCERTAIN'):
+                model_engine.scope_check(snapshot, body, False)
+    assert snapshot == before and snapshot['saliva'] == []
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        assert record(db, owner, 'collection', run['sample_id']).body == receipt
+        assert db.query(Record).filter_by(account_id=owner.id, parent_id=run['session_id'], kind='lab_import').count() == 0
+
+
+def publish_abandoned_collection_evidence(client, run, receipt):
+    """Publish the actual sample-only companion projection under its real hashes."""
+    snapshot = deepcopy(run['frozen'])
+    snapshot['device'] = {key: 'unavailable' for key in snapshot['device']}
+    snapshot['sample'], snapshot['saliva'] = deepcopy(receipt['projection']['sample']), []
+    for component in ('eyes', 'cardiac', 'task'):
+        snapshot[component].update(status='not_collected', source='prototype_sensor',
+            started_at=None, ended_at=None)
+    snapshot['eyes'].update(frame_rate_hz=None, baseline_diameter_mm=None,
+        relative_constriction=None, latency_ms=None)
+    snapshot['cardiac'].update(modality='ppg', heart_rate_bpm=None)
+    snapshot['task'].update(practice_trials=0, scored_trials=0, go_trials=0, no_go_trials=0,
+        valid_correct_go_trials=0, features={key: None for key in snapshot['task']['features']})
+    snapshot.update(acquisition_span_ms=0.0, capture_completed_at=iso())
+    sid = run['session_id']
+    saved = client.put(f'/v1/sessions/{sid}/snapshot', headers=headers(revision=1), json=snapshot)
+    assert saved.status_code == 200, saved.text
+    evidence = client.get(f'/v1/sessions/{sid}/evidence', headers=headers())
+    assert evidence.status_code == 200, evidence.text
+    manifest = {'schema_version': '1.0.0', 'session_id': sid,
+        'context_sha256': digest(run['context']),
+        'attempts': [{'attempt_id': item['attempt_id'], 'sha256': digest(item)}
+            for item in evidence.json()['attempts']],
+        'selected': {'saliva': run['attempt_id'], 'eyes': None, 'cardiac': None, 'task': None, 'alcohol': None}}
+    published = client.put(f'/v1/sessions/{sid}/evidence-manifest', headers=headers(revision=0), json=manifest)
+    assert published.status_code == 200, published.text
+    return snapshot, manifest
+
+
+@pytest.mark.parametrize('collection_scope,minimum', [({}, 'required'), ({}, 'optional'),
+    ({}, 'unconfigured'), ({}, 'retired_model'), ({'mode': 'analytical'}, 'measurement')],
+    indirect=['collection_scope'])
+def test_abandonment_cannot_finalize_when_current_model_requires_missing_chemistry(
+    collection_scope, client, model_fixture, minimum  # noqa: F811 - pytest fixture
+):
+    from otgd.db import Job, Outbox
+
+    run = acknowledge_and_start(client, start_collection(client, collection_scope))
+    path = f"/v1/sessions/{run['session_id']}"
+    accepted = client.post(path+'/collections', headers=headers(), json=collection_body(run))
+    assert accepted.status_code == 201, accepted.text
+    receipt = accepted.json()
+    if minimum != 'unconfigured':
+        model = released_pending_chemistry_model(run, model_fixture, required=minimum != 'optional')
+    abandoned = client.post(path+f"/collections/{run['sample_id']}/abandon", headers=headers(),
+        json={'confirmation': True, 'reason': 'PARTICIPANT_DECLINED'})
+    assert abandoned.status_code == 201, abandoned.text
+    snapshot, manifest = publish_abandoned_collection_evidence(client, run, receipt)
+    if minimum == 'retired_model':
+        with factory().begin() as db:
+            transition(db, 'model', model['registry_id'], model['version'], 'retire',
+                'local:fixture-releaser', 'Fictional model retired before finalization', 3)
+    final = client.post(path+'/finalize', headers=headers(revision=2),
+        json={'snapshot_sha256': digest(snapshot), 'evidence_sha256': digest(manifest)})
+    if minimum == 'required':
+        assert final.status_code == 422 and final.json()['code'] == 'MISSING_REQUIRED_CHANNEL', final.text
+    else:
+        assert final.status_code == 202, final.text
+    with factory()() as db:
+        owner = db.get(Account, run['account'])
+        assert record(db, owner, 'collection', run['sample_id']).body == receipt
+        assert record(db, owner, 'collection_abandon', run['sample_id']).body['state'] == 'analysis_canceled'
+        assert db.get(Check, run['session_id']).state == ('draft' if minimum == 'required' else 'processing')
+        assert db.get(Check, run['session_id']).snapshot == snapshot
+        expected_jobs = 0 if minimum == 'required' else 1
+        assert db.query(Job).filter_by(account_id=owner.id).count() == expected_jobs
+        assert db.query(Outbox).count() == expected_jobs
 
 
 @pytest.mark.parametrize("collection_scope", [{"staff": True}], indirect=True)

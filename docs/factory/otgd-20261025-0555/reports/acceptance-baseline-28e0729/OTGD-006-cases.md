@@ -1,0 +1,8 @@
+# OTGD-006 — frozen candidate case reconciliation
+
+Candidate `28e07295cb37bb9dcaaac82cc8fc846eb89006a6`. Source SHA-256 `e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f`. No council signoff; status definitions in report.md. Full expected clauses and assertion/evidence bindings are in case-reconciliation.json/source-assertions.json/evidence-index.json.
+
+| Stable case | Status | Actual assertion symbols | Current named observations | Unproven scope / finding |
+|---|---|---|---:|---|
+| OTGD-006-AND-RES-003-01 | PARTIAL | apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint; apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts | 3 | Client verifies fully linked fictional1.1 endpoint/population/provenance and rejects altered proof; direct alcohol research context keeps no-driving-clearance copy. |
+| OTGD-006-AND-RES-003-02 | PASS | apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed; apps/mobile/tests/research-result.test.ts::personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields; services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score | 22 | Exact legacy0.1 field promotion and proof/owner/provenance tampering refuse; runtime current authority/bytes changes return inconclusive/null probability. Later1.1support does not grant authority to flags/preferences/manifests. |

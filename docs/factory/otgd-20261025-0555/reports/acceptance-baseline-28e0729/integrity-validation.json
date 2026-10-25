@@ -1,0 +1,20 @@
+{
+  "candidate": "28e07295cb37bb9dcaaac82cc8fc846eb89006a6",
+  "cases": 782,
+  "requirement_occurrences": 411,
+  "status_counts": {
+    "PARTIAL": 488,
+    "PASS": 191,
+    "BLOCKED": 81,
+    "NOT_RUN": 22
+  },
+  "adjudication_counts": {
+    "CLAUSE_REVIEWED": 782
+  },
+  "source_files_rehashed_from_immutable_git": 153,
+  "source_records": 646,
+  "raw_execution_files_rehashed": 17,
+  "errors": [],
+  "valid_integrity": true,
+  "completion": "Historical case audit integrity only; current replacement gates and explicit external prerequisites remain. No application or final verification acceptance."
+}

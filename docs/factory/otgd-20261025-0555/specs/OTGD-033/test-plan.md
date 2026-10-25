@@ -1,0 +1,149 @@
+# OTGD-033: verification plan
+
+Canonical: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md`; SHA-256 `1c5bfceae8b4e2b5e1bd8c9edd7f19fd73908cde1fb804af4e9530700d3ea317`.
+Planning snapshot HEAD: `33901a1ff785cd28e351d935be510d184fb7f8e2`; approved implementation baseline: `0844868aa543af4ab75ac5065ad48cf807b86bb3`. This is a mutable audit snapshot, not a frozen execution candidate.
+
+Owner: `/root/verification`, verification specialist; OpenAI `gpt-6.1-sol/high` requested explicitly in PM dispatch; effective model identifier is not independently exposed inside this worker. Decisions: D-001–005 v1 and D-006 v3 acknowledged through native messaging; D-006 v1/v2 retained as superseded method history. See `../../decisions.md`, `../../impact-register.md` and `../../reports/verification-plan.md`.
+
+Stage: PLANNED / NOT_RUN. Test-source symbols below are related existing checks, not a claim that every assertion is adequate or has passed. Static indexing does not establish runtime coverage. Every stated canonical scenario must execute and meet its full THEN conditions; use the source reference for complete GIVEN/WHEN context. Missing exact-case coverage remains a software verification gap until a meaningful assertion is inspected/added and executed. No historical test/CI result is adopted.
+
+Use the shared command catalog and source-binding rules in `../../reports/verification-plan.md`. API checks: C-UNIT/C-PG; mobile business checks: C-MOBILE; visible flows: C-ATDD/C-COMP; native: C-ANDROID/C-IOS; firmware: C-FW/C-SECURE. Real runtime: C-DOCKER/C-LOCAL/C-PERF. Contracts: C-SPEC/C-SCHEMA/C-CDK. Applicable external prerequisites are recorded per requirement below.
+
+Acceptance: no failure/error/skip/xfail/zero-case report; Python and TypeScript business-module coverage independently strictly >80%, each store helper >80% without excluded statements. Performance: all 400 writes, p95 <1000 ms, p99 <2000 ms, result <=15 s. Require fresh exact-source evidence, scoped independent signoffs and council decision before acceptance.
+
+## Existing mapped test source bindings
+
+These SHA-256 bindings identify inspected source at planning time. Any edit requires remapping and a fresh execution binding.
+
+- `apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/NativeEventSerializationTest.kt` — `55e01ae96993ce1b3071f9a8a202c4247a87b444dadaa718b783c189362e726e`
+- `apps/mobile/modules/reaction-task/android/src/test/java/expo/modules/otgdreaction/ReactionCoreTest.kt` — `a78bd28ecae75464e21e29726bce544c6aa6a6c216c7395f6e4b34bb1d600365`
+- `apps/mobile/modules/reaction-task/tests/swift/ReactionCoreTests.swift` — `f7658f6df0d7f7bbc6a85bd74c33763357a2805faa6d6b48918032acfb8153b2`
+- `apps/mobile/tests/controller.test.ts` — `e354d822120520b2336bacd98cac30b34de7921862cd4562342706358d9efa92`
+- `apps/mobile/tests/domain.test.ts` — `e71b15500f0d22ff8859b950cdda014ba20ed2a5b7f836c4b880b96abb87ed1d`
+- `apps/mobile/tests/export-evidence.test.ts` — `786b535dfe7940928cdcc9149b7efbb4b8cb9541066a3d2e7d39a78819cc64ee`
+- `apps/mobile/tests/lifecycle.test.ts` — `a69785a96f7fbe8c6193ba617741db43650cf9ad32a2eb595d92bf04ae9a4099`
+- `services/api/tests/test_cross_language.py` — `f702d93abb8e32afa715db8bfce6f0677ed0276be8369c95b1ed321641c55c39`
+
+## Requirement and criterion cases
+
+For each requirement, also exercise absent/null/malformed/unknown values, wrong owner/environment/generation, retired/revoked authority, duplicate same-body vs changed-body replay, delayed/out-of-order replies, cancellation/replacement and restart where applicable. For every numeric/string/time limit in the linked normative detailed contract, test equality plus the smallest representable increment below and above, including post-terminal immutability. Do not invent physical tolerances or treat a declaration as measured safety evidence.
+
+### AND-TASK-001 — Instructions, native entry, and completion states
+
+Normative acceptance source: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md` / `AND-TASK-001`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-033-AND-TASK-001-01 | First complete task — **GIVEN** a supported native application with no accepted task in this check **WHEN** the user selects Start task **THEN** the task SHALL execute one practice-plus-scored sequence and return one bounded native completion event containing the attempt identity, timing evidence, planned trials, observations, and derived features. | `apps/mobile/tests/domain.test.ts:270` — process interruption preserves invalid task evidence with null aggregate features<br>`services/api/tests/test_cross_language.py:147` — test_configured_task_attempt_cannot_diverge_from_its_stimulus_hash | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-001-02 | Native module unavailable — **GIVEN** a runtime without the compiled reaction module **WHEN** the reaction screen opens **THEN** the UI SHALL explain that a native build is required for capture and SHALL not silently replace it with JavaScript timers or mark a preview as a valid native task. | `apps/mobile/tests/export-evidence.test.ts:253` — canceling after a correct native tap counts only fully elapsed scored response windows<br>`services/api/tests/test_cross_language.py:147` — test_configured_task_attempt_cannot_diverge_from_its_stimulus_hash | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `120`, `16`, `20`, `240`, `32`, `400`, `44`, `48`, `60`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
+
+### AND-TASK-002 — Versioned deterministic schedule
+
+Normative acceptance source: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md` / `AND-TASK-002`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-033-AND-TASK-002-01 | Same seed on both native platforms — **GIVEN** the same seed and pinned configuration **WHEN** Kotlin and Swift generate the schedule **THEN** all 66 stimulus identities, practice/scored classifications, onset intervals, and planned times SHALL match the shared golden fixture exactly. | `services/api/tests/test_cross_language.py:161` — test_canceled_native_response_preserves_completed_window_count<br>`apps/mobile/tests/export-evidence.test.ts:253` — canceling after a correct native tap counts only fully elapsed scored response windows | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-002-02 | Responses influence apparent performance — **GIVEN** two runs with the same seed but different response streams **WHEN** either run advances **THEN** its next planned stimulus SHALL remain unchanged by response speed, mistakes, omission, or a desired score; the app SHALL not adapt the schedule to improve the outcome. | `services/api/tests/test_cross_language.py:161` — test_canceled_native_response_preserves_completed_window_count<br>`apps/mobile/tests/export-evidence.test.ts:253` — canceling after a correct native tap counts only fully elapsed scored response windows | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-002-03 | Unused final interval cannot prolong the task — **GIVEN** the seed-1 literal schedule with all trials presented without lateness **WHEN** the final response window closes **THEN** the run SHALL end after its 100-ms drain at the fixture terminal cutoff, independent of the retained final interval draw. | `services/api/tests/test_cross_language.py:142` — test_host_generated_native_contract_fixture_against_independent_server_scoring<br>`apps/mobile/tests/export-evidence.test.ts:253` — canceling after a correct native tap counts only fully elapsed scored response windows | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `0`, `1`, `1.0`, `1000 ms`, `1013904223`, `12`, `1500`, `1664525`, `2`, `2000 ms`, `24`, `32`, `401`, `60`, `66`, `66 trial`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
+
+### AND-TASK-003 — Native clocks and presentation evidence
+
+Normative acceptance source: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md` / `AND-TASK-003`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-033-AND-TASK-003-01 | Accurate-looking floating-point timestamps — **GIVEN** nanosecond or submillisecond software timestamps without physical display/touch calibration **WHEN** the task computes or displays reaction features **THEN** it SHALL retain uncalibrated status and report appropriate precision, without claiming that numeric resolution establishes equivalent physical timing accuracy. | `apps/mobile/tests/export-evidence.test.ts:207` — host-generated native golden is fully checked without claiming a physical acquisition<br>`apps/mobile/tests/lifecycle.test.ts:110` — native callback and cancellation receipt share one durable terminal write while persistence is delayed | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-003-02 | Wall clock changes during task — **GIVEN** an uninterrupted native run **WHEN** the system wall clock changes **THEN** native reaction intervals SHALL remain based on the monotonic clock, the wall-clock discontinuity SHALL be retained in timing quality, and cross-component time eligibility SHALL be resolved separately. | `apps/mobile/tests/lifecycle.test.ts:110` — native callback and cancellation receipt share one durable terminal write while persistence is delayed<br>`apps/mobile/tests/export-evidence.test.ts:320` — an intact native task with no correct responses keeps null RT quantiles and its explicit quality flag | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `1`, `100 ms`, `1000`, `34`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
+
+### AND-TASK-004 — First-response semantics and bounded raw events
+
+Normative acceptance source: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md` / `AND-TASK-004`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-033-AND-TASK-004-01 | Wrong then correct tap — **GIVEN** a left-arrow go trial **WHEN** the first qualifying tap is right and a later tap is left **THEN** the trial SHALL remain an incorrect choice, both touches SHALL remain in the event ledger, and the later left tap SHALL not supply a correct-go reaction time. | `services/api/tests/test_cross_language.py:161` — test_canceled_native_response_preserves_completed_window_count<br>`apps/mobile/tests/controller.test.ts:465` — unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-004-02 | Omission and anticipatory input — **GIVEN** a go trial with a tap before recorded onset and no qualifying tap afterward **WHEN** the response window ends **THEN** the early tap SHALL be retained as anticipatory, the go trial SHALL count as an omission, and no fabricated zero or 1000-ms reaction time SHALL enter the correct-go distribution. | `services/api/tests/test_cross_language.py:161` — test_canceled_native_response_preserves_completed_window_count<br>`apps/mobile/tests/controller.test.ts:465` — unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-004-03 | Response dispatched within the final drain — **GIVEN** the final trial starts at 10000 ms and a left event occurs at 10999 ms **WHEN** the native handler receives it at 11079 ms before cutoff 11100 ms **THEN** the event SHALL be scored with RT=999 ms and dispatch delay=80 ms; a handler at the exact cutoff SHALL be outside committed acquisition. | `services/api/tests/test_cross_language.py:161` — test_canceled_native_response_preserves_completed_window_count<br>`apps/mobile/tests/controller.test.ts:465` — unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-004-04 | Opposing simultaneous touches are stable — **GIVEN** a left trial and equal-timestamp right/left touches delivered in either order **WHEN** timestamp ordering is applied **THEN** left SHALL rank first, pointer/sequence ties SHALL follow the pinned comparator, and both platforms SHALL produce the golden correct choice. | `services/api/tests/test_cross_language.py:161` — test_canceled_native_response_preserves_completed_window_count<br>`apps/mobile/tests/controller.test.ts:465` — unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `0`, `1`, `100 ms`, `1000`, `1024`, `1025`, `2`, `66`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
+
+### AND-TASK-005 — Feature extraction and missingness
+
+Normative acceptance source: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md` / `AND-TASK-005`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-033-AND-TASK-005-01 | All go trials omitted — **GIVEN** an otherwise intact run with no correct go response **WHEN** extraction executes **THEN** correct-go quantiles SHALL be null, omission count/rate SHALL retain their true denominators, and the absence of a speed measurement SHALL not be interpreted as fast performance. | `apps/mobile/tests/export-evidence.test.ts:320` — an intact native task with no correct responses keeps null RT quantiles and its explicit quality flag<br>`apps/mobile/tests/domain.test.ts:270` — process interruption preserves invalid task evidence with null aggregate features | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-005-02 | Partial run stopped after ten scored trials — **GIVEN** six completed practice trials and ten presented scored trials **WHEN** the run is interrupted **THEN** the attempt SHALL preserve those actual counts and planned remaining trials, mark invalid, and keep final-session aggregate task features null rather than pretending that a 60-trial task was completed. | `apps/mobile/tests/export-evidence.test.ts:320` — an intact native task with no correct responses keeps null RT quantiles and its explicit quality flag<br>`apps/mobile/tests/domain.test.ts:270` — process interruption preserves invalid task evidence with null aggregate features | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `0`, `0.000001 ms`, `1`, `12`, `48`, `60`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
+
+### AND-TASK-006 — Interruptions, timing faults, and resource lifecycle
+
+Normative acceptance source: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md` / `AND-TASK-006`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-033-AND-TASK-006-01 | Notification drawer takes focus — **GIVEN** an active Android run **WHEN** the system UI causes window focus loss **THEN** the module SHALL stop the display sequence, emit one invalid completion with FOCUS_LOST, and require a newly identified attempt when the user returns. | `apps/mobile/tests/lifecycle.test.ts:148` — concurrent route/background stops issue native cancel immediately and wait for terminal persistence<br>`services/api/tests/test_cross_language.py:161` — test_canceled_native_response_preserves_completed_window_count | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-006-02 | Cancellation races with completion — **GIVEN** a run approaching its final response window **WHEN** cancellation and completion callbacks become runnable together **THEN** the module SHALL commit one deterministic terminal state for that run, stop all callbacks, and SHALL not emit both a valid result and a separate canceled result. | `apps/mobile/tests/lifecycle.test.ts:148` — concurrent route/background stops issue native cancel immediately and wait for terminal persistence<br>`apps/mobile/tests/controller.test.ts:465` — unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-006-03 | Navigation overlay cannot preserve an active scored run — **GIVEN** an active task whose tab stays mounted after navigation **WHEN** the user selects another tab and then Keep draft in a confirmation **THEN** the native stop acknowledgment and invalid settlement SHALL precede the overlay; returning SHALL never resume that run. | `apps/mobile/tests/lifecycle.test.ts:148` — concurrent route/background stops issue native cancel immediately and wait for terminal persistence<br>`services/api/tests/test_cross_language.py:161` — test_canceled_native_response_preserves_completed_window_count | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `100 ms`, `1000 ms`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
+
+### AND-TASK-007 — Native bridge, persistence, and repeat policy
+
+Normative acceptance source: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md` / `AND-TASK-007`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-033-AND-TASK-007-01 | Completion event received twice — **GIVEN** an accepted native result for a run ID **WHEN** the same payload is delivered again **THEN** persistence SHALL deduplicate it by run identity and hash; a different payload under the same run ID SHALL produce a conflict instead of replacing the accepted result. | `apps/mobile/tests/controller.test.ts:7` — guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload<br>`apps/mobile/tests/lifecycle.test.ts:110` — native callback and cancellation receipt share one durable terminal write while persistence is delayed | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-007-02 | Actual taps in a JavaScript preview — **GIVEN** a user interacting with an explicitly labeled fallback/practice view **WHEN** the preview ends **THEN** its output SHALL retain prototype_sensor with javascript_fallback provenance and SHALL not be labeled native_task or used as a compatible task baseline. | `apps/mobile/tests/controller.test.ts:7` — guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload<br>`apps/mobile/tests/domain.test.ts:270` — process interruption preserves invalid task evidence with null aggregate features | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-007-03 | Mixed guest demo preserves real native evidence — **GIVEN** fictional saliva and an actual completed native reaction task in guest demo **WHEN** the check is saved and later exported or the user signs in **THEN** native taps SHALL remain prototype_sensor/uncalibrated in complete hashed companion evidence; guest upload/migration SHALL remain forbidden, while the CLI all-fictional validator stays unchanged. | `apps/mobile/tests/controller.test.ts:7` — guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload<br>`apps/mobile/tests/domain.test.ts:270` — process interruption preserves invalid task evidence with null aggregate features | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `0`, `1`, `1.0`, `66 trial`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
+
+### AND-TASK-008 — Platform parity, accessibility, and independent verification
+
+Normative acceptance source: `openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md` / `AND-TASK-008`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-033-AND-TASK-008-01 | Matching event fixtures across implementations — **GIVEN** identical planned trials and ordered timestamped inputs **WHEN** Kotlin, Swift, and the reference extractor score them **THEN** counts, nullability, error rates, and quantiles SHALL match the named tolerances, with platform presentation-evidence differences retained in metadata. | `apps/mobile/tests/export-evidence.test.ts:320` — an intact native task with no correct responses keeps null RT quantiles and its explicit quality flag<br>`services/api/tests/test_cross_language.py:142` — test_host_generated_native_contract_fixture_against_independent_server_scoring | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-008-02 | Passing native build without physical timing tests — **GIVEN** successful Android/iOS compilation and fixture tests **WHEN** a release report is generated **THEN** it SHALL state native implementation/test completion separately from unresolved physical timing and predictive validation and SHALL keep modelEligible false. | `apps/mobile/tests/export-evidence.test.ts:320` — an intact native task with no correct responses keeps null RT quantiles and its explicit quality flag<br>`services/api/tests/test_cross_language.py:142` — test_host_generated_native_contract_fixture_against_independent_server_scoring | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-033-AND-TASK-008-03 | Development threshold and terminal boundaries are exercised — **GIVEN** literal fixture inputs at exactly 100 ms and just over each native budget **WHEN** both platform test suites execute **THEN** exact-budget cases SHALL remain eligible, over-budget active cases SHALL invalidate, and post-cutoff arrivals SHALL leave committed results immutable. | `apps/mobile/tests/export-evidence.test.ts:320` — an intact native task with no correct responses keeps null RT quantiles and its explicit quality flag<br>`services/api/tests/test_cross_language.py:142` — test_host_generated_native_contract_fixture_against_independent_server_scoring | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+Boundary inputs named in normative text (apply their actual units and semantics, not these bare numbers in isolation): `0`, `0.000001-ms`, `0.86`, `1`, `16.4`, `24`, `26.4`, `27`, `36`, `4294967295`, `57.0`, `66-trial`, `9`. Exact inclusive/exclusive comparisons and adjacent overflow/underflow must be asserted; see canonical detailed contract for the complete bounds.
+
+## Execution and evidence handoff
+
+Before running: PM freezes implementation/tests/contracts; capture HEAD, changed/untracked implementation hashes and tool versions, confirm canonical hash still matches, and record actual clock/environment/commands. Log each check under `reports/` or a PM-designated immutable attempt path; preserve JUnit/coverage/Playwright traces/screenshots/performance JSON and compute SHA-256 of actual artifacts. Shared passing suites can serve this dossier only when its relevant assertions and exact binding are explicit.
+
+Record each case PASS/FAIL/BLOCKED/NOT_RUN in `test-results.md`, with exit/result/timestamp and evidence path/hash. A historical file existing in reports is not a new execution. Required checks unavailable on this runner remain BLOCKED; neither design review nor npm tests substitute for native, firmware, physical or scientific evidence.
+
+## Reactivated verification audit
+
+Observed checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active writers’ working-tree edits, 2026-10-25T06:53:56.344429+00:00. This is not source freeze. Original planning HEAD and prior no-execution record above remain historical. Canonical hash above is rebound to the reconciled current source; OTGD-001 and OTGD-047 changed. Existing411 requirements /782 case IDs are retained. No Docker/build/probe or suite execution performed by this verifier.

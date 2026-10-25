@@ -107,7 +107,7 @@ def source_descriptor(db, account, authorization, artifact_id, session_ids):
         or check.study_id != authorization["study_id"] or check.state not in ("completed", "invalid")):
         raise Problem(403, "RAW_EXPORT_SELECTION_DENIED")
     from .domain import safe_result
-    safe_result(check.result)
+    safe_result(check.result, db=db, account=account, check=check)
     if artifact.state in ("cleanup_pending", "purged"):
         raise Problem(403, "RAW_EXPORT_SELECTION_DENIED")
     if artifact.state != "verified" or not artifact.version_id or artifact.version_id == "null":

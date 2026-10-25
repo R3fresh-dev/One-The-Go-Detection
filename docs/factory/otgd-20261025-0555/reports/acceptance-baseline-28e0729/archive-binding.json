@@ -1,0 +1,9 @@
+{
+  "candidate": "28e07295cb37bb9dcaaac82cc8fc846eb89006a6",
+  "archive_sha256": "89804264880c9a8e7676fb232eff570ff47921ec74cf11596400329ceb641ff8",
+  "archive_bytes": 1306664,
+  "file_count": 67,
+  "all_readback_hashes_match": true,
+  "copied_at": "2026-10-25T09:10:51.544540+00:00",
+  "scope": "Historical baseline782-case semantic audit only; newer repairs/current gates not adopted"
+}

@@ -25,6 +25,7 @@ import {
   verifyReportArchiveIndex,
 } from "../core/reportRevisions";
 import { verifyExportEvidence } from "../core/exportEvidence";
+import { requiresCurrentHrRead } from "../core/resultPresentation";
 import { parseRawExportManifest } from "../core/rawExport";
 import type {
   CaptureAttempt,
@@ -67,6 +68,7 @@ export function createLocalExport(
   state: WorkspaceState,
   selection: ExportSelection,
   now: string,
+  currentHrResultDigests: ReadonlyMap<string, string> = new Map(),
 ): Uint8Array {
   const checks = selectExportChecks(state, selection),
     files: Record<string, Uint8Array> = {},
@@ -91,6 +93,14 @@ export function createLocalExport(
   };
   for (const check of checks) {
     verifyExportEvidence(check);
+    if (
+      requiresCurrentHrRead(check.result) &&
+      currentHrResultDigests.get(check.id) !== digest(check.result)
+    )
+      fail(
+        "HR_RESULT_ADMISSION_REQUIRED",
+        "Reconnect to admit each selected HR research result before exporting. No selected record was changed or omitted.",
+      );
     const revisions = reportArchiveRecords(check);
     add(`checks/${check.id}.json`, {
       snapshot: check.snapshot,

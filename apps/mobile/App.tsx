@@ -41,6 +41,7 @@ import {
 import { CheckScreen, EvidenceScreen, ResultScreen } from "./src/ui/checks";
 import { RawRecordingsScreen } from "./src/ui/raw-recordings";
 import { Button, Confirmation, Notice } from "./src/ui/components";
+import { NavigationAccessibilityProvider } from "./src/ui/accessibility";
 import { ThemeProvider, useTheme } from "./src/ui/theme";
 
 const primary: { route: Route; label: string; glyph: string }[] = [
@@ -157,7 +158,10 @@ function Application() {
     };
   }, [controller]);
   return (
-    <ThemeProvider mode={model.state?.preferences.theme ?? "system"}>
+    <ThemeProvider
+      mode={model.state?.preferences.theme ?? "system"}
+      reducedMotion={model.state?.preferences.reducedMotion ?? "system"}
+    >
       <Shell
         controller={controller}
         model={model}
@@ -276,258 +280,268 @@ function Shell({
     </View>
   );
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <StatusBar style={colors.background === "#0D2027" ? "light" : "dark"} />
-      <View
-        aria-hidden={!!model.sheet || privateCover}
-        accessibilityElementsHidden={!!model.sheet || privateCover}
-        importantForAccessibility={
-          model.sheet || privateCover ? "no-hide-descendants" : "auto"
-        }
-        style={{
-          flex: 1,
-          flexDirection: wide ? "row" : "column",
-          maxWidth: 1440,
-          width: "100%",
-          alignSelf: "center",
-        }}
-      >
-        {wide && showNav && (
-          <View
-            style={{
-              width: 245,
-              backgroundColor: colors.surface,
-              borderRightWidth: 1,
-              borderColor: colors.line,
-              paddingTop: 30,
-            }}
-          >
-            <View style={{ paddingHorizontal: 24, paddingBottom: 30, gap: 8 }}>
-              <Text
-                style={{
-                  color: colors.ink,
-                  fontSize: 23,
-                  fontWeight: "800",
-                  letterSpacing: -0.5,
-                }}
-              >
-                one the go<Text style={{ color: colors.accent }}>.</Text>
-              </Text>
-              <Text
-                style={{
-                  color: colors.secondary,
-                  fontSize: 12,
-                  lineHeight: 20,
-                }}
-              >
-                MEASUREMENT COMPANION
-              </Text>
-            </View>
-            {nav(true)}
-            <View style={{ padding: 22, gap: 12, marginTop: "auto" }}>
-              <Text
-                style={{
-                  color: colors.secondary,
-                  fontSize: 13,
-                  lineHeight: 21,
-                }}
-              >
-                Evidence and context. No impairment verdict.
-              </Text>
-              <Text
-                style={{
-                  color: colors.accent,
-                  fontSize: 12,
-                  fontWeight: "700",
-                }}
-              >
-                {BUILD.environment.toUpperCase()} · v{BUILD.version}
-              </Text>
-            </View>
-          </View>
-        )}
-        <View style={{ flex: 1, minWidth: 0, maxWidth: 1100 }}>
-          {!model.activeTask && !model.activeEye && (
+    <NavigationAccessibilityProvider
+      routeKey={`${model.route}:${model.locked}`}
+      backgroundBlocked={!!model.sheet}
+      suspended={privateCover || !!model.activeTask || !!model.activeEye}
+    >
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <StatusBar style={colors.background === "#0D2027" ? "light" : "dark"} />
+        <View
+          aria-hidden={!!model.sheet || privateCover}
+          accessibilityElementsHidden={!!model.sheet || privateCover}
+          importantForAccessibility={
+            model.sheet || privateCover ? "no-hide-descendants" : "auto"
+          }
+          style={{
+            flex: 1,
+            flexDirection: wide ? "row" : "column",
+            maxWidth: 1440,
+            width: "100%",
+            alignSelf: "center",
+          }}
+        >
+          {wide && showNav && (
             <View
               style={{
-                paddingHorizontal: 24,
-                paddingVertical: 15,
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 9,
-                borderBottomWidth: 1,
+                width: 245,
+                backgroundColor: colors.surface,
+                borderRightWidth: 1,
                 borderColor: colors.line,
+                paddingTop: 30,
               }}
             >
-              <Text
-                style={{
-                  color: colors.ink,
-                  fontSize: 18,
-                  fontWeight: "800",
-                  letterSpacing: -0.5,
-                }}
-              >
-                one the go<Text style={{ color: colors.accent }}>.</Text>
-              </Text>
               <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                style={{ paddingHorizontal: 24, paddingBottom: 30, gap: 8 }}
               >
-                {model.busy && (
-                  <ActivityIndicator
-                    color={colors.accent}
-                    accessibilityLabel="Saving or connecting"
-                  />
-                )}
                 <Text
-                  accessibilityLiveRegion="polite"
+                  style={{
+                    color: colors.ink,
+                    fontSize: 23,
+                    fontWeight: "800",
+                    letterSpacing: -0.5,
+                  }}
+                >
+                  one the go<Text style={{ color: colors.accent }}>.</Text>
+                </Text>
+                <Text
                   style={{
                     color: colors.secondary,
                     fontSize: 12,
-                    fontWeight: "600",
+                    lineHeight: 20,
                   }}
                 >
-                  {model.locked
-                    ? "LOCKED"
-                    : model.identity
-                      ? `ACCOUNT · ${BUILD.environment.toUpperCase()}`
-                      : "GUEST DEMO"}
-                  {model.offline ? " · OFFLINE" : ""}
+                  MEASUREMENT COMPANION
+                </Text>
+              </View>
+              {nav(true)}
+              <View style={{ padding: 22, gap: 12, marginTop: "auto" }}>
+                <Text
+                  style={{
+                    color: colors.secondary,
+                    fontSize: 13,
+                    lineHeight: 21,
+                  }}
+                >
+                  Evidence and context. No impairment verdict.
+                </Text>
+                <Text
+                  style={{
+                    color: colors.accent,
+                    fontSize: 12,
+                    fontWeight: "700",
+                  }}
+                >
+                  {BUILD.environment.toUpperCase()} · v{BUILD.version}
                 </Text>
               </View>
             </View>
           )}
-          {!model.activeTask && !model.activeEye && (
-            <ContextStrip
-              key={`${controller.epoch}:${model.state?.generation}`}
-              browser={Platform.OS === "web"}
-              guest={
-                !!model.state?.acknowledgedNotice &&
-                !model.identity &&
-                model.route !== "welcome"
-              }
-            />
-          )}
-          {BUILD.hostedPreview && (
-            <View
-              accessibilityRole="text"
-              testID="fictional-preview-banner"
-              style={{
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                backgroundColor: colors.accentSoft,
-              }}
-            >
-              <Text style={{ color: colors.ink, fontSize: 13, lineHeight: 20 }}>
-                FICTIONAL GUEST PREVIEW · Use invented values only. No account
-                services, sensor permissions, raw recording or uploads.{" "}
-                {Platform.OS === "web"
-                  ? "Browser records last only until this page closes."
-                  : "Fictional records are isolated in this app’s local preview workspace."}
-              </Text>
-            </View>
-          )}
-          {!model.activeTask &&
-            !model.activeEye &&
-            (model.error || model.message) && (
+          <View style={{ flex: 1, minWidth: 0, maxWidth: 1100 }}>
+            {!model.activeTask && !model.activeEye && (
               <View
                 style={{
                   paddingHorizontal: 24,
-                  paddingVertical: 8,
-                  gap: 8,
+                  paddingVertical: 15,
                   flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "space-between",
                   alignItems: "center",
-                  backgroundColor: model.error
-                    ? colors.dangerSoft
-                    : colors.accentSoft,
+                  gap: 9,
+                  borderBottomWidth: 1,
+                  borderColor: colors.line,
                 }}
               >
                 <Text
-                  accessibilityLiveRegion="polite"
                   style={{
-                    flex: 1,
-                    color: model.error ? colors.danger : colors.ink,
-                    fontSize: 13,
-                    lineHeight: 19,
+                    color: colors.ink,
+                    fontSize: 18,
+                    fontWeight: "800",
+                    letterSpacing: -0.5,
                   }}
                 >
-                  {model.error ?? model.message}
+                  one the go<Text style={{ color: colors.accent }}>.</Text>
                 </Text>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Dismiss message"
-                  onPress={() => controller.dismissError()}
-                  style={{
-                    minWidth: 48,
-                    minHeight: 48,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
                 >
-                  <Text style={{ color: colors.secondary, fontSize: 22 }}>
-                    ×
+                  {model.busy && (
+                    <ActivityIndicator
+                      color={colors.accent}
+                      accessibilityLabel="Saving or connecting"
+                    />
+                  )}
+                  <Text
+                    accessibilityLiveRegion="polite"
+                    style={{
+                      color: colors.secondary,
+                      fontSize: 12,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {model.locked
+                      ? "LOCKED"
+                      : model.identity
+                        ? `ACCOUNT · ${BUILD.environment.toUpperCase()}`
+                        : "GUEST DEMO"}
+                    {model.offline ? " · OFFLINE" : ""}
                   </Text>
-                </Pressable>
+                </View>
               </View>
             )}
-          <View style={{ flex: 1, minHeight: 0 }}>
-            {model.loading ? (
+            {!model.activeTask && !model.activeEye && (
+              <ContextStrip
+                key={`${controller.epoch}:${model.state?.generation}`}
+                browser={Platform.OS === "web"}
+                guest={
+                  !!model.state?.acknowledgedNotice &&
+                  !model.identity &&
+                  model.route !== "welcome"
+                }
+              />
+            )}
+            {BUILD.hostedPreview && (
               <View
+                accessibilityRole="text"
+                testID="fictional-preview-banner"
                 style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 16,
+                  paddingHorizontal: 24,
+                  paddingVertical: 12,
+                  backgroundColor: colors.accentSoft,
                 }}
               >
-                <ActivityIndicator color={colors.accent} />
-                <Text style={{ color: colors.secondary }}>
-                  Opening your workspace…
+                <Text
+                  style={{ color: colors.ink, fontSize: 13, lineHeight: 20 }}
+                >
+                  FICTIONAL GUEST PREVIEW · Use invented values only. No account
+                  services, sensor permissions, raw recording or uploads.{" "}
+                  {Platform.OS === "web"
+                    ? "Browser records last only until this page closes."
+                    : "Fictional records are isolated in this app’s local preview workspace."}
                 </Text>
               </View>
-            ) : model.locked ? (
-              <LockedScreen {...props} />
-            ) : (
-              (screens[model.route] ?? <WelcomeScreen {...props} />)
             )}
+            {!model.activeTask &&
+              !model.activeEye &&
+              (model.error || model.message) && (
+                <View
+                  style={{
+                    paddingHorizontal: 24,
+                    paddingVertical: 8,
+                    gap: 8,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: model.error
+                      ? colors.dangerSoft
+                      : colors.accentSoft,
+                  }}
+                >
+                  <Text
+                    accessibilityLiveRegion="polite"
+                    style={{
+                      flex: 1,
+                      color: model.error ? colors.danger : colors.ink,
+                      fontSize: 13,
+                      lineHeight: 19,
+                    }}
+                  >
+                    {model.error ?? model.message}
+                  </Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Dismiss message"
+                    onPress={() => controller.dismissError()}
+                    style={{
+                      minWidth: 48,
+                      minHeight: 48,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ color: colors.secondary, fontSize: 22 }}>
+                      ×
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+            <View style={{ flex: 1, minHeight: 0 }}>
+              {model.loading ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 16,
+                  }}
+                >
+                  <ActivityIndicator color={colors.accent} />
+                  <Text style={{ color: colors.secondary }}>
+                    Opening your workspace…
+                  </Text>
+                </View>
+              ) : model.locked ? (
+                <LockedScreen {...props} />
+              ) : (
+                (screens[model.route] ?? <WelcomeScreen {...props} />)
+              )}
+            </View>
+            {!wide && showNav && nav(false)}
           </View>
-          {!wide && showNav && nav(false)}
         </View>
-      </View>
-      <Confirmation
-        sheet={model.activeTask || model.activeEye ? null : model.sheet}
-        busy={model.sheet?.interrupting ? model.privacyBusy : model.busy}
-        onClose={() => controller.closeSheet()}
-        onConfirm={() =>
-          void (model.sheet?.interrupting
-            ? controller.runPrivacy(() => controller.confirmSheet())
-            : controller.run(() => controller.confirmSheet()))
-        }
-        onSecondary={action(controller, () => controller.confirmSheet(true))}
-      />
-      {privateCover && (
-        <View
-          accessibilityViewIsModal
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundColor: colors.navy,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 14,
-            padding: 28,
-          }}
-        >
-          <Text style={{ color: "#FFFFFF", fontSize: 28, fontWeight: "700" }}>
-            one the go.
-          </Text>
-          <Text style={{ color: "#D6E6E8", fontSize: 16 }}>
-            Private workspace
-          </Text>
-        </View>
-      )}
-    </SafeAreaView>
+        <Confirmation
+          sheet={model.activeTask || model.activeEye ? null : model.sheet}
+          busy={model.sheet?.interrupting ? model.privacyBusy : model.busy}
+          onClose={() => controller.closeSheet()}
+          onConfirm={() =>
+            void (model.sheet?.interrupting
+              ? controller.runPrivacy(() => controller.confirmSheet())
+              : controller.run(() => controller.confirmSheet()))
+          }
+          onSecondary={action(controller, () => controller.confirmSheet(true))}
+        />
+        {privateCover && (
+          <View
+            accessibilityViewIsModal
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: colors.navy,
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 14,
+              padding: 28,
+            }}
+          >
+            <Text style={{ color: "#FFFFFF", fontSize: 28, fontWeight: "700" }}>
+              one the go.
+            </Text>
+            <Text style={{ color: "#D6E6E8", fontSize: 16 }}>
+              Private workspace
+            </Text>
+          </View>
+        )}
+      </SafeAreaView>
+    </NavigationAccessibilityProvider>
   );
 }
 function ContextStrip({

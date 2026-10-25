@@ -25,4 +25,4 @@ The requested QA/prod Python deployment and web CNAME entry points already exist
 
 ## Impact
 
-Canonical deploy tooling, mobile distribution configuration/scripts, devcontainer setup, release documentation and mandatory specification validation change. No account, domain, signing identity, vendor protocol, human approval or store publication is fabricated. Every changed revision requires fresh seven-category local and thirteen-job GitHub evidence. Main protection remains a separately verified prerequisite.
+Canonical deploy tooling, mobile distribution configuration/scripts, devcontainer setup, release documentation and mandatory specification validation change. No account, domain, signing identity, vendor protocol, human approval or store publication is fabricated. Every changed revision requires fresh seven-category local evidence and GitHub evidence for every actual mandatory job in the exact committed aggregate and reusable workflows. Main protection remains a separately verified prerequisite.

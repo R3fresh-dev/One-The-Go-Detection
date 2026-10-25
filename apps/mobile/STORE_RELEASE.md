@@ -32,7 +32,7 @@ Use the API's locked Python environment (`uv sync --project services/api --locke
 The JSON contains public identity/configuration and private **file selectors**, never key contents. Required fields are:
 
 - `project_id` and `expo_account`: actual project UUID and owning account/organization slug, checked with authenticated `project:info` before any billable build. Organization membership is not assumed to equal the logged-in username.
-- `api_url`, `oauth_issuer`, `oauth_client_id`: exact deployed QA/prod CloudFormation outputs. The actual target services must run the signed image and pass readiness. Their app configuration must allow `otgd-qa://oauth/callback` or production `otgd://oauth/callback`.
+- `api_url`, `oauth_issuer`, `oauth_client_id`, `oauth_origin`, `oauth_web_callback_uri`: exact deployed QA/prod CloudFormation outputs `ApiOrigin`, `Issuer`, `ClientId`, `IdentityOrigin`, and `WebCallbackUri`. Cognito's hosted OAuth origin differs from its user-pool issuer; supply the actual admitted origin, never derive it from the issuer. Both new pins are mandatory for current configuration, EAS environment verification and embedded artifact inspection. The actual target services must run the signed image and pass readiness. Their app configuration must allow `otgd-qa://oauth/callback` or production `otgd://oauth/callback`.
 - `artifact_hosts`: exact operator-approved EAS artifact download hosts. Every redirect is rechecked. No authentication or Expo token is sent to these hosts; signed artifact URLs are excluded from receipts/logs.
 - `android.upload_certificate_sha256`: independently trusted SHA-256 of the upload certificate **DER**; `service_account_key_path`: authorized Google Play service-account JSON selector for submission. Configure least-privilege access to the selected listing. The first Play upload and App Signing enrollment may require Play Console setup.
 - `ios.asc_app_id`, `apple_team_id`, `distribution_certificate_sha256`, `api_key_id`, `api_issuer_id`, `api_key_path`: exact Apple listing/team/distribution certificate and App Store Connect API identity. The private `.p8` selector is used only for deliberate submission.
@@ -106,3 +106,20 @@ The pinned CLI source was inspected for its actual output: `config --json` retur
 Relevant official documentation: [Expo iOS submission](https://docs.expo.dev/submit/ios/), [Expo Android submission](https://docs.expo.dev/submit/android/), [EAS version management](https://docs.expo.dev/build-reference/app-versions/), [Apple review submission](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app), [Google signing](https://developer.android.com/studio/publish/app-signing), and [Google release preparation](https://support.google.com/googleplay/android-developer/answer/9859348).
 
 Meaningful helper unit tests live in [test_mobile_store_release.py](../../services/api/tests/test_mobile_store_release.py) and run in the existing mandatory API unit gate. They include actual JDK cryptographic JAR verification and appended-unsigned-entry refusal, while macOS tool and vendor-account boundaries are explicitly doubled. Their results do not establish a real signed IPA/AAB, physical sensing approval, tester availability or store publication. Full repository gates and platform release evidence remain required for the exact final revision.
+
+
+Current builds compile `EXPO_PUBLIC_OAUTH_ORIGIN` and
+`EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI` from those admitted public outputs.
+Authorization, token, revocation and logout paths are fixed to `/oauth2/authorize`,
+`/oauth2/token`, `/oauth2/revoke` and `/logout`; both the environment's native
+callback and the exact web root callback are admitted. Missing pins fail before a
+build can use ambient OAuth metadata. Native Android emulator builds explicitly
+pin their local hosted origin to `http://10.0.2.2:8081`; isolated fictional previews
+pin both service origins to `https://unavailable.invalid` and retain their disabled
+account/network boundary.
+
+Existing signed record bytes and historical provenance digests are never rewritten.
+The configuration schema remains `1.0.0` with the new required public pin fields;
+unpinned historical configurations/artifacts fail current admission and must be
+rebuilt from the reviewed source. Their original signatures remain independently
+inspectable; a signature alone does not upgrade an old bundle's endpoint policy.

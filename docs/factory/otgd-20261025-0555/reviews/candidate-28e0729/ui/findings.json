@@ -1,0 +1,24 @@
+[
+  {
+    "id": "UI-001",
+    "severity": "P2",
+    "status": "OPEN",
+    "requirement": "AND-SET-006; shared destructive-control presentation",
+    "path": "apps/mobile/src/ui/components.tsx:215-244 and apps/mobile/src/ui/theme.tsx:4",
+    "evidence": "Button danger background c.danger uses dark #FFB6BA while foreground c.white is #FFFFFF at fontSize15; relative luminance contrast calculation yields1.6598:1. Light counterpart6.7718:1. No rendered dark danger screenshot claimed.",
+    "impact": "Destructive action labels are difficult to read in dark mode and fail4.5:1 normal-text minimum before privacy/withdrawal/discard actions.",
+    "required_correction": "Provide theme-appropriate destructive foreground/background pairing meeting4.5:1 for normal button text in all supported states.",
+    "verification": "Compute from effective tokens and inspect/render dark destructive confirmation before confirmation; show label contrast>=4.5:1 and accessible Cancel. Preserve behavior and scopes."
+  },
+  {
+    "id": "UI-002",
+    "severity": "P2",
+    "status": "OPEN",
+    "requirement": "AND-SET-002/006 and AND-ONB-006 reduced motion",
+    "path": "apps/mobile/src/ui/manage.tsx:690; apps/mobile/src/ui/components.tsx:624; apps/mobile/src/core/domain.ts:254",
+    "evidence": "rg of App.tsx and src shows reducedMotion only in Settings read/write, type and defaultfalse; no presentation consumer or OS reduced-motion listener. Shared Confirmation uses animationType=fade unconditionally.",
+    "impact": "Reduce motion preference is presented as functional but does not affect existing ordinary modal animation and does not follow system preference by default.",
+    "required_correction": "Resolve effective system/user motion preference and consume it in decorative ordinary UI animation, including shared Confirmation. Preserve approved native task stimulus timing/geometry.",
+    "verification": "Exercise system reduced motion and explicit Reduce motion on/off; inspect effective rendered Modal animation and preference persistence; keep fixed acquisition configuration unchanged."
+  }
+]

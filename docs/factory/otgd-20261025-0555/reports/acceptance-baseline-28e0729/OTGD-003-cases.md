@@ -1,0 +1,8 @@
+# OTGD-003 — frozen candidate case reconciliation
+
+Candidate `28e07295cb37bb9dcaaac82cc8fc846eb89006a6`. Source SHA-256 `c171a3fd1d7705d710dd172ebe5d59046cc0023a2ddfedaf162092008703e648`. No council signoff; status definitions in report.md. Full expected clauses and assertion/evidence bindings are in case-reconciliation.json/source-assertions.json/evidence-index.json.
+
+| Stable case | Status | Actual assertion symbols | Current named observations | Unproven scope / finding |
+|---|---|---|---:|---|
+| OTGD-003-AND-CHECK-007-01 | PARTIAL | apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload; apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint | 2 | Related independent review finding; this broad case still requires exact semantic body/owner review. The tag alone does not establish a software defect in this criterion. PROD-003 missing uncertainty-policy presentation |
+| OTGD-003-AND-CHECK-007-02 | PARTIAL | apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload; apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint | 2 | Related independent review finding; this broad case still requires exact semantic body/owner review. The tag alone does not establish a software defect in this criterion. PROD-003 missing uncertainty-policy presentation |

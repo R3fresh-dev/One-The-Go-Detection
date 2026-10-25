@@ -19,9 +19,10 @@ import {
   RawExportChoicesCard,
   type RawExportChoice,
 } from "./raw-export-choices";
-import { useTheme } from "./theme";
+import { useReducedMotion, useTheme } from "./theme";
 import { getEnrolledLevelAsync } from "expo-local-authentication";
 import { DevicePanel } from "../device";
+import { AcquisitionAvailability } from "./device-summary";
 import { digestText, utf8 } from "../core/integrity";
 import type { CheckRecord, JsonObject, PrivacyJob } from "../core/types";
 import { BUILD } from "../platform/config";
@@ -90,15 +91,7 @@ export function DeviceScreen({ controller, model }: ScreenProps) {
           hardware and an installed adapter for the selected approved
           configuration. Unknown proprietary reader protocols are unavailable.
         </Paragraph>
-        <Fact
-          label="Approved acquisition channels"
-          value={
-            Object.entries(model.state?.capabilities?.channels ?? {})
-              .filter(([, channel]) => channel.available)
-              .map(([name]) => friendly(name))
-              .join(", ") || "None available"
-          }
-        />
+        <AcquisitionAvailability model={model} />
         <Fact
           label="Research model execution"
           value={
@@ -458,9 +451,11 @@ function PermissionsCard({ controller }: Pick<ScreenProps, "controller">) {
     [unlock, setUnlock] = useState("Not checked");
   const active = useRef(true),
     sequence = useRef(0);
+  const epoch = controller.epoch;
   const refresh = async () => {
     const run = ++sequence.current;
-    const current = () => active.current && run === sequence.current;
+    const current = () =>
+      active.current && run === sequence.current && controller.epoch === epoch;
     if (Platform.OS === "web") {
       if (current()) {
         setCamera("Browser permission is checked at eye preview");
@@ -661,6 +656,7 @@ function DiagnosticsCard({ controller, model }: ScreenProps) {
   );
 }
 export function SettingsScreen({ controller, model }: ScreenProps) {
+  const reducedMotion = useReducedMotion();
   const state = model.state!,
     unsynced = state.checks.filter(
       (c) => c.delivery !== "synced" && c.delivery !== "quarantined",
@@ -685,13 +681,24 @@ export function SettingsScreen({ controller, model }: ScreenProps) {
         />
         <SwitchRow
           title="Reduce motion"
-          value={state.preferences.reducedMotion}
+          value={reducedMotion}
           onChange={(v) => {
             void controller
               .changePreferences({ reducedMotion: v })
               .catch((e) => controller.report(e));
           }}
-          detail="Navigation uses no continuous animation. The native task keeps its fixed acquisition presentation."
+          detail={`${typeof state.preferences.reducedMotion === "boolean" ? "Your choice overrides the system setting." : "Following the system setting."} Ordinary dialogs respect reduced motion. The native task keeps its fixed acquisition presentation.`}
+        />
+        <Button
+          secondary
+          compact
+          title="Use system motion setting"
+          disabled={typeof state.preferences.reducedMotion !== "boolean"}
+          onPress={() => {
+            void controller
+              .changePreferences({ reducedMotion: "system" })
+              .catch((e) => controller.report(e));
+          }}
         />
         <Choice
           label="Profile display units"
@@ -713,7 +720,12 @@ export function SettingsScreen({ controller, model }: ScreenProps) {
           override brightness.
         </Paragraph>
       </Card>
-      {!BUILD.hostedPreview && <PermissionsCard controller={controller} />}
+      {!BUILD.hostedPreview && (
+        <PermissionsCard
+          key={`permissions:${controller.epoch}:${state.generation}`}
+          controller={controller}
+        />
+      )}
       <DiagnosticsCard
         key={`${controller.epoch}:${state.generation}`}
         controller={controller}
@@ -865,15 +877,28 @@ function JobCard({
           any service archive is separate from copies already shared.
         </Notice>
       )}
-      {job.retained_categories.map((category, index) => (
-        <Fact
-          key={index}
-          label={String(category.category ?? `Retained category ${index + 1}`)}
-          value={String(
-            category.reason ?? category.policy_basis ?? "Policy retention",
-          )}
-        />
-      ))}
+      {job.retained_categories.map((category, index) =>
+        typeof category === "string" ? (
+          <Fact
+            key={index}
+            label={category}
+            value="Legacy receipt: policy basis, retention reason and expiry were not supplied."
+          />
+        ) : (
+          <React.Fragment key={index}>
+            <Fact label="Retained category" value={category.category} />
+            <Fact
+              label="Retention policy basis"
+              value={category.policy_basis}
+            />
+            <Fact label="Retention reason" value={category.reason} />
+            <Fact
+              label="Scheduled expiry"
+              value={category.expires_at ?? "No scheduled expiry supplied"}
+            />
+          </React.Fragment>
+        ),
+      )}
       {job.expires_at && (
         <Fact label="Logical expiry" value={dateLabel(job.expires_at)} />
       )}
@@ -1619,7 +1644,7 @@ export function AlcoholScreen({ controller, model }: ScreenProps) {
         <Fact label="Driving threshold or clearance" value="Unavailable" />
         <Fact
           label="Effect on cannabis classification"
-          value="No classification exists"
+          value="No automatic combined classification; research co-use requires model-specific authority"
         />
       </Card>
       {check && !check.frozen && check.kind !== "measurement" ? (

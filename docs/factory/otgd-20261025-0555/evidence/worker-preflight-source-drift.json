@@ -1,0 +1,2195 @@
+{
+  "budgets": {
+    "dlq_message_id": "48473592-dc59-49ae-81da-a55b9259180b",
+    "logical_attempts": [
+      {
+        "attempts": 1,
+        "completed": null,
+        "expires": 1792915990.974042,
+        "failure": "DEPENDENCY_FAILED",
+        "fence": 1,
+        "generation": 1,
+        "job_id": "c4725f97-2d4d-4029-9175-141871f09402",
+        "lease_until": null,
+        "outbox_id": "4b893430-2907-4d33-9d71-1e07ba81a7e9",
+        "output": null,
+        "published": null,
+        "state": "pending"
+      },
+      {
+        "attempts": 2,
+        "completed": null,
+        "expires": 1792915990.974042,
+        "failure": "DEPENDENCY_FAILED",
+        "fence": 2,
+        "generation": 1,
+        "job_id": "c4725f97-2d4d-4029-9175-141871f09402",
+        "lease_until": null,
+        "outbox_id": "4b893430-2907-4d33-9d71-1e07ba81a7e9",
+        "output": null,
+        "published": null,
+        "state": "pending"
+      },
+      {
+        "attempts": 3,
+        "completed": null,
+        "expires": 1792915990.974042,
+        "failure": "DEPENDENCY_FAILED",
+        "fence": 3,
+        "generation": 1,
+        "job_id": "c4725f97-2d4d-4029-9175-141871f09402",
+        "lease_until": null,
+        "outbox_id": "4b893430-2907-4d33-9d71-1e07ba81a7e9",
+        "output": null,
+        "published": null,
+        "state": "pending"
+      },
+      {
+        "attempts": 4,
+        "completed": null,
+        "expires": 1792915990.974042,
+        "failure": "DEPENDENCY_FAILED",
+        "fence": 4,
+        "generation": 1,
+        "job_id": "c4725f97-2d4d-4029-9175-141871f09402",
+        "lease_until": null,
+        "outbox_id": "4b893430-2907-4d33-9d71-1e07ba81a7e9",
+        "output": null,
+        "published": null,
+        "state": "pending"
+      },
+      {
+        "attempts": 5,
+        "completed": null,
+        "expires": 1792915990.974042,
+        "failure": "DEPENDENCY_FAILED",
+        "fence": 5,
+        "generation": 1,
+        "job_id": "c4725f97-2d4d-4029-9175-141871f09402",
+        "lease_until": null,
+        "outbox_id": "4b893430-2907-4d33-9d71-1e07ba81a7e9",
+        "output": null,
+        "published": null,
+        "state": "failed"
+      }
+    ],
+    "receives": [
+      {
+        "observed_at": 1792912422.42059,
+        "receipt_sha256": "5c14fc0d82112f8bcab8c5f1c70f8d9303d3b832b51aa23073da2aa9a18dc6be",
+        "receive_count": 1
+      },
+      {
+        "observed_at": 1792912542.980363,
+        "receipt_sha256": "7c172af282cf63ac57433acb4bda18abf91a8665867e0db35a5cf3e2a56a1604",
+        "receive_count": 2
+      },
+      {
+        "observed_at": 1792912664.695335,
+        "receipt_sha256": "60549c8af3b97f18e0615002608af29875673eb23bbfc58a1da4f82f4bd84b28",
+        "receive_count": 3
+      },
+      {
+        "observed_at": 1792912784.812074,
+        "receipt_sha256": "ab1a3cf4ea39f23e54347e3c2746cfe19c8e30b60b337ffc6a53792ce512de7b",
+        "receive_count": 4
+      },
+      {
+        "observed_at": 1792912906.45323,
+        "receipt_sha256": "d8afd92c1cc3b002ad61efe4206326b03b513107d5438e0d0a096d8fb963f332",
+        "receive_count": 5
+      }
+    ]
+  },
+  "error_type": "RuntimeError",
+  "events": [
+    {
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "pid": 13,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "action": "SIGKILL",
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "pid": 13
+    },
+    {
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "pid": 16,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "pid": 16,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911184.827634
+    },
+    {
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "key": "exports/9e157e35-7b35-4733-a090-bdb756149e20/1/d52de882-4055-4514-9032-d169886b0fde/1.zip",
+      "pid": 16,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "key": "exports/9e157e35-7b35-4733-a090-bdb756149e20/1/d52de882-4055-4514-9032-d169886b0fde/1.zip",
+      "pid": 16,
+      "protocol": 1,
+      "sha256": "20a841c7e86e2d5359eb16f98017c0c549f53a1c4c8aef3b96998a804bd8b960",
+      "stage": "after_write",
+      "version_id": "AaFxyAsIEhUEp3PIkDPGBalfaAptybCF"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "output": {
+        "key": "exports/9e157e35-7b35-4733-a090-bdb756149e20/1/d52de882-4055-4514-9032-d169886b0fde/1.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T06:53:05.137Z",
+          "expires_at": "2026-10-25T07:51:01.975Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "20a841c7e86e2d5359eb16f98017c0c549f53a1c4c8aef3b96998a804bd8b960",
+        "size_bytes": 571,
+        "version_id": "AaFxyAsIEhUEp3PIkDPGBalfaAptybCF"
+      },
+      "pid": 16,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "outcome": "completed",
+      "pid": 16,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "pid": 16,
+      "protocol": 1,
+      "receipt_sha256": "b02958a6ec073a9601355ac3620808482aeec5878a35ee56e19c80ee7d85a986",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "pid": 16,
+      "protocol": 1,
+      "receipt_sha256": "b02958a6ec073a9601355ac3620808482aeec5878a35ee56e19c80ee7d85a986",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+      "pid": 16,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 20,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 20,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911189.474335
+    },
+    {
+      "action": "SIGKILL",
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 20
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 23,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 2,
+      "generation": 1,
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 23,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911309.53326
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 23,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "outcome": "busy",
+      "pid": 23,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "key": "exports/2b15d02a-1ce8-4f1c-a279-768879e4a163/1/bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897/2.zip",
+      "pid": 23,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "key": "exports/2b15d02a-1ce8-4f1c-a279-768879e4a163/1/bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897/2.zip",
+      "pid": 23,
+      "protocol": 1,
+      "sha256": "6f717268c48f6d68d74240f87246de774d2b67ad278c56deee0b9bb85a3121fa",
+      "stage": "after_write",
+      "version_id": "AaFxyAsJ0Ba5c5Wsw2nnYjyNjqJSMwrY"
+    },
+    {
+      "fence": 2,
+      "generation": 1,
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "output": {
+        "key": "exports/2b15d02a-1ce8-4f1c-a279-768879e4a163/1/bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897/2.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T06:55:09.885Z",
+          "expires_at": "2026-10-25T07:53:06.866Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "6f717268c48f6d68d74240f87246de774d2b67ad278c56deee0b9bb85a3121fa",
+        "size_bytes": 569,
+        "version_id": "AaFxyAsJ0Ba5c5Wsw2nnYjyNjqJSMwrY"
+      },
+      "pid": 23,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "outcome": "completed",
+      "pid": 23,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 23,
+      "protocol": 1,
+      "receipt_sha256": "73eb8e8c1c957470ed92d3cf9aa5b09186c327d13352c6c57336b2a25e225397",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 23,
+      "protocol": 1,
+      "receipt_sha256": "73eb8e8c1c957470ed92d3cf9aa5b09186c327d13352c6c57336b2a25e225397",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+      "pid": 23,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 27,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 27,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911333.23352
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "key": "exports/af9d5b54-66b2-4fad-b719-f59016c72c9e/1/01c34dd9-293b-4d4b-b140-d36da12be5e9/1.zip",
+      "pid": 27,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "key": "exports/af9d5b54-66b2-4fad-b719-f59016c72c9e/1/01c34dd9-293b-4d4b-b140-d36da12be5e9/1.zip",
+      "pid": 27,
+      "protocol": 1,
+      "sha256": "007daca63535220f5cc32dfaa86e4121eae33d61bddd9a57f060a4a6d86549fa",
+      "stage": "after_write",
+      "version_id": "AaFxyAsK4KAPJ8lhG8WmVVko1rJb8yCh"
+    },
+    {
+      "action": "SIGKILL",
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 27
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 31,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "outcome": "busy",
+      "pid": 31,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 31,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 2,
+      "generation": 1,
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 31,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911453.70134
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "key": "exports/af9d5b54-66b2-4fad-b719-f59016c72c9e/1/01c34dd9-293b-4d4b-b140-d36da12be5e9/2.zip",
+      "pid": 31,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "key": "exports/af9d5b54-66b2-4fad-b719-f59016c72c9e/1/01c34dd9-293b-4d4b-b140-d36da12be5e9/2.zip",
+      "pid": 31,
+      "protocol": 1,
+      "sha256": "e3aafe57864d4eb567028499bdd440002caa59adcaf04032ee16f404670d71c2",
+      "stage": "after_write",
+      "version_id": "AaFxyAsLuH0v8OLnU.XKNCbxlm42yJNX"
+    },
+    {
+      "fence": 2,
+      "generation": 1,
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "output": {
+        "key": "exports/af9d5b54-66b2-4fad-b719-f59016c72c9e/1/01c34dd9-293b-4d4b-b140-d36da12be5e9/2.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T06:57:34.003Z",
+          "expires_at": "2026-10-25T07:55:30.322Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "e3aafe57864d4eb567028499bdd440002caa59adcaf04032ee16f404670d71c2",
+        "size_bytes": 571,
+        "version_id": "AaFxyAsLuH0v8OLnU.XKNCbxlm42yJNX"
+      },
+      "pid": 31,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "outcome": "completed",
+      "pid": 31,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 31,
+      "protocol": 1,
+      "receipt_sha256": "f4c83f27ace55908c99da643794d370914dc60d1296c445ec74c3d045d87a7b1",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 31,
+      "protocol": 1,
+      "receipt_sha256": "f4c83f27ace55908c99da643794d370914dc60d1296c445ec74c3d045d87a7b1",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+      "pid": 31,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "pid": 35,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "pid": 35,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911476.137337
+    },
+    {
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "key": "exports/7176f07c-8fe0-401a-9908-77fe69a5bc6d/1/f1d0016f-a403-4033-aab1-7fa55d32662d/1.zip",
+      "pid": 35,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "key": "exports/7176f07c-8fe0-401a-9908-77fe69a5bc6d/1/f1d0016f-a403-4033-aab1-7fa55d32662d/1.zip",
+      "pid": 35,
+      "protocol": 1,
+      "sha256": "ecdc0b227c876e20e009bfda5f5201645b4bfb4f70c7ce9337de467ee135416c",
+      "stage": "after_write",
+      "version_id": "AaFxyAsMAQU.kQVBnM7kkeY9ilco2UCV"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "output": {
+        "key": "exports/7176f07c-8fe0-401a-9908-77fe69a5bc6d/1/f1d0016f-a403-4033-aab1-7fa55d32662d/1.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T06:57:56.483Z",
+          "expires_at": "2026-10-25T07:57:53.348Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "ecdc0b227c876e20e009bfda5f5201645b4bfb4f70c7ce9337de467ee135416c",
+        "size_bytes": 567,
+        "version_id": "AaFxyAsMAQU.kQVBnM7kkeY9ilco2UCV"
+      },
+      "pid": 35,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "action": "SIGKILL",
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "pid": 35
+    },
+    {
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "pid": 39,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "outcome": "terminal",
+      "pid": 39,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "pid": 39,
+      "protocol": 1,
+      "receipt_sha256": "6e088349b1896cc2fb95d29c6a6a39234cb3414eb816f59ca54d366cb9734c39",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "pid": 39,
+      "protocol": 1,
+      "receipt_sha256": "6e088349b1896cc2fb95d29c6a6a39234cb3414eb816f59ca54d366cb9734c39",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+      "pid": 39,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "pid": 42,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "pid": 42,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911616.731777
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "key": "exports/63afa90a-a66f-4166-a2d4-4e4ebf8d634e/1/79212305-ae91-427a-bd02-7caaf56f0dc8/1.zip",
+      "pid": 42,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "key": "exports/63afa90a-a66f-4166-a2d4-4e4ebf8d634e/1/79212305-ae91-427a-bd02-7caaf56f0dc8/1.zip",
+      "pid": 42,
+      "protocol": 1,
+      "sha256": "2d4e40c2dfee4fb541a9f2d3874228af7eb177c600fbb37f80365a35105bd136",
+      "stage": "after_write",
+      "version_id": "AaFxyAsNtmKTqGu0KLy4QN3P6UURHSBW"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "output": {
+        "key": "exports/63afa90a-a66f-4166-a2d4-4e4ebf8d634e/1/79212305-ae91-427a-bd02-7caaf56f0dc8/1.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T07:00:17.071Z",
+          "expires_at": "2026-10-25T08:00:14.162Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "2d4e40c2dfee4fb541a9f2d3874228af7eb177c600fbb37f80365a35105bd136",
+        "size_bytes": 568,
+        "version_id": "AaFxyAsNtmKTqGu0KLy4QN3P6UURHSBW"
+      },
+      "pid": 42,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "outcome": "completed",
+      "pid": 42,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "pid": 42,
+      "protocol": 1,
+      "receipt_sha256": "650511495261cb355fc75030c8f36a4fbd0bf2b10ccb95eedf2d5ebd24ad2b55",
+      "stage": "before_delete"
+    },
+    {
+      "action": "SIGKILL",
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "pid": 42
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "pid": 46,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "outcome": "terminal",
+      "pid": 46,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "pid": 46,
+      "protocol": 1,
+      "receipt_sha256": "6e351aa1c539f06d70e1846140f5658607ebfd27f42b25fdf2499b79116c9368",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "pid": 46,
+      "protocol": 1,
+      "receipt_sha256": "6e351aa1c539f06d70e1846140f5658607ebfd27f42b25fdf2499b79116c9368",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+      "pid": 46,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 49,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 49,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911742.380306
+    },
+    {
+      "action": "SIGKILL",
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 49
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 52,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 2,
+      "generation": 1,
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 52,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911862.588812
+    },
+    {
+      "fence": 2,
+      "generation": 1,
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "output": {
+        "classification": null,
+        "endpoint_id": null,
+        "evaluated_at": "2026-10-25T07:04:22.605Z",
+        "input_sha256": "38dfaa8777e0c34281208a981c326eeaa71debf510670e4aa531a731dcf9e3f3",
+        "model_id": null,
+        "model_lifecycle": null,
+        "operating_threshold": null,
+        "probability": null,
+        "provenance_summary": [
+          "simulated"
+        ],
+        "reason_codes": [
+          "MODEL_UNAVAILABLE",
+          "MODEL_UNVALIDATED",
+          "SIMULATED_INPUT"
+        ],
+        "replaces_result_id": null,
+        "result_id": "752d25ac-f804-4c4a-aa6e-25eecc20a461",
+        "schema_version": "0.1.0",
+        "session_id": "0c84d6f2-e091-4ba1-8739-4f5cdefb1fe0",
+        "state": "measurement_only",
+        "target_at": "2026-10-10T18:00:00Z",
+        "uncertainty_policy_id": null
+      },
+      "pid": 52,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "outcome": "completed",
+      "pid": 52,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 52,
+      "protocol": 1,
+      "receipt_sha256": "ae3fcd307123ae24746c0b131f1275a8f2629b3337abd428ccf94c318dcf2a66",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 52,
+      "protocol": 1,
+      "receipt_sha256": "ae3fcd307123ae24746c0b131f1275a8f2629b3337abd428ccf94c318dcf2a66",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 52,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "outcome": "terminal",
+      "pid": 52,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 52,
+      "protocol": 1,
+      "receipt_sha256": "6195ac9387664dc47bf6fe19cad3c4165479f6d9066278d7f40201501bf7fabd",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 52,
+      "protocol": 1,
+      "receipt_sha256": "6195ac9387664dc47bf6fe19cad3c4165479f6d9066278d7f40201501bf7fabd",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+      "pid": 52,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "pid": 56,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "pid": 56,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911865.729957
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "output": {
+        "classification": null,
+        "endpoint_id": null,
+        "evaluated_at": "2026-10-25T07:04:25.745Z",
+        "input_sha256": "f3c26496d6369625e20912a61f6e3580e596edc2312e149f8680661299bbaa27",
+        "model_id": null,
+        "model_lifecycle": null,
+        "operating_threshold": null,
+        "probability": null,
+        "provenance_summary": [
+          "simulated"
+        ],
+        "reason_codes": [
+          "MODEL_UNAVAILABLE",
+          "MODEL_UNVALIDATED",
+          "SIMULATED_INPUT"
+        ],
+        "replaces_result_id": null,
+        "result_id": "2cfeaae6-52a5-4be9-8dcd-5c6c5869d837",
+        "schema_version": "0.1.0",
+        "session_id": "cb2b2eb9-d94e-4540-bec8-05165d4d273a",
+        "state": "measurement_only",
+        "target_at": "2026-10-10T18:00:00Z",
+        "uncertainty_policy_id": null
+      },
+      "pid": 56,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "action": "SIGKILL",
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "pid": 56
+    },
+    {
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "pid": 60,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "outcome": "terminal",
+      "pid": 60,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "pid": 60,
+      "protocol": 1,
+      "receipt_sha256": "606f15e47217a3cb0020178601667f3bd964cf4bb70e84f24b08324083da001c",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "pid": 60,
+      "protocol": 1,
+      "receipt_sha256": "606f15e47217a3cb0020178601667f3bd964cf4bb70e84f24b08324083da001c",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+      "pid": 60,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "pid": 63,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "pid": 63,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792911990.933211
+    },
+    {
+      "action": "SIGTERM",
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "pid": 63
+    },
+    {
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "key": "exports/ef5c5609-3903-4b19-af78-e92a6f585315/1/b1d5e32c-413c-4b04-930f-bd239df46917/1.zip",
+      "pid": 63,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "key": "exports/ef5c5609-3903-4b19-af78-e92a6f585315/1/b1d5e32c-413c-4b04-930f-bd239df46917/1.zip",
+      "pid": 63,
+      "protocol": 1,
+      "sha256": "a849cc41e89566c06303dd629c292528cf47f38365e265b1caaf494856facce0",
+      "stage": "after_write",
+      "version_id": "AaFxyAsOkZUOLDv6rp2MC0KTKiuPcjSv"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "output": {
+        "key": "exports/ef5c5609-3903-4b19-af78-e92a6f585315/1/b1d5e32c-413c-4b04-930f-bd239df46917/1.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T07:06:31.235Z",
+          "expires_at": "2026-10-25T08:06:28.267Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "a849cc41e89566c06303dd629c292528cf47f38365e265b1caaf494856facce0",
+        "size_bytes": 569,
+        "version_id": "AaFxyAsOkZUOLDv6rp2MC0KTKiuPcjSv"
+      },
+      "pid": 63,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "outcome": "completed",
+      "pid": 63,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "pid": 63,
+      "protocol": 1,
+      "receipt_sha256": "d76472bec7db1fb075106b9f41ef63488fd9017c64bfa72d531d146d654cbcee",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "pid": 63,
+      "protocol": 1,
+      "receipt_sha256": "d76472bec7db1fb075106b9f41ef63488fd9017c64bfa72d531d146d654cbcee",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "pid": 63,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 67,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 67,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792912013.477661
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "key": "exports/3a5d8738-07c1-413c-af5d-b0624e381013/1/53e86a50-2d9f-4373-915f-60f695754739/1.zip",
+      "pid": 67,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "action": "SIGSTOP",
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 67
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 71,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 2,
+      "generation": 1,
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 71,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792912133.830362
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "key": "exports/3a5d8738-07c1-413c-af5d-b0624e381013/1/53e86a50-2d9f-4373-915f-60f695754739/2.zip",
+      "pid": 71,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "key": "exports/3a5d8738-07c1-413c-af5d-b0624e381013/1/53e86a50-2d9f-4373-915f-60f695754739/2.zip",
+      "pid": 71,
+      "protocol": 1,
+      "sha256": "60f46609a6312f374e589de4be092017b339c9c86bdb07b6f015b90a51c99485",
+      "stage": "after_write",
+      "version_id": "AaFxyAsPbY._BWa0bYcmWebw.RzcFD5O"
+    },
+    {
+      "fence": 2,
+      "generation": 1,
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "output": {
+        "key": "exports/3a5d8738-07c1-413c-af5d-b0624e381013/1/53e86a50-2d9f-4373-915f-60f695754739/2.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T07:08:54.209Z",
+          "expires_at": "2026-10-25T07:10:00.855Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "60f46609a6312f374e589de4be092017b339c9c86bdb07b6f015b90a51c99485",
+        "size_bytes": 569,
+        "version_id": "AaFxyAsPbY._BWa0bYcmWebw.RzcFD5O"
+      },
+      "pid": 71,
+      "protocol": 1,
+      "stage": "after_commit"
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "outcome": "completed",
+      "pid": 71,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 71,
+      "protocol": 1,
+      "receipt_sha256": "2f2009f14c150047e5b136e73858e9269be9a5ea01e7222eadee0c81c42f617a",
+      "stage": "before_delete"
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 71,
+      "protocol": 1,
+      "receipt_sha256": "2f2009f14c150047e5b136e73858e9269be9a5ea01e7222eadee0c81c42f617a",
+      "stage": "after_delete"
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 71,
+      "protocol": 1,
+      "stage": "exited"
+    },
+    {
+      "action": "SIGCONT",
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "pid": 67
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "key": "exports/3a5d8738-07c1-413c-af5d-b0624e381013/1/53e86a50-2d9f-4373-915f-60f695754739/1.zip",
+      "pid": 67,
+      "protocol": 1,
+      "sha256": "ee3be0cb0258d34e7e3693c998ae8cc81cac3041d3d067bb1edf7f4a5ac6d4a2",
+      "stage": "after_write",
+      "version_id": "AaFxyAsQIXYh19vyudGZHjjwvNRJCpm."
+    },
+    {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "outcome": "lease_lost",
+      "pid": 67,
+      "protocol": 1,
+      "stage": "run_returned"
+    },
+    {
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "pid": 75,
+      "protocol": 1,
+      "stage": "before_claim"
+    },
+    {
+      "fence": 1,
+      "generation": 1,
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "pid": 75,
+      "protocol": 1,
+      "stage": "after_claim",
+      "started": 1792912203.75263
+    },
+    {
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "key": "exports/6012f251-402c-483e-89b5-91a9d19c472d/1/b93c2bc6-3aa3-4c49-8c63-528b6ca6517d/1.zip",
+      "pid": 75,
+      "protocol": 1,
+      "stage": "before_write"
+    },
+    {
+      "action": "SIGSTOP",
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "pid": 75
+    },
+    {
+      "action": "SIGTERM",
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "pid": 79
+    },
+    {
+      "action": "SIGCONT",
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "pid": 75
+    },
+    {
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "key": "exports/6012f251-402c-483e-89b5-91a9d19c472d/1/b93c2bc6-3aa3-4c49-8c63-528b6ca6517d/1.zip",
+      "pid": 75,
+      "protocol": 1,
+      "sha256": "7142e0b383725a73bee737cd17527773de63f0a175459b5d9ca954a93b34d0d3",
+      "stage": "after_write",
+      "version_id": "AaFxyAsbh6c.USNBbuqoZrxWgAUG3Qkp"
+    },
+    {
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "outcome": "lease_lost",
+      "pid": 75,
+      "protocol": 1,
+      "stage": "run_returned"
+    }
+  ],
+  "fictional": true,
+  "fixture": {
+    "artifact_bucket": "otgd-worker-probe-eec5896e4274c6a7-artifacts",
+    "database": "otgd_worker_probe_eec5896e4274c6a7",
+    "dlq_url": "http://localstack:4566/queue/us-east-2/000000000000/otgd-worker-probe-eec5896e4274c6a7-dlq",
+    "export_bucket": "otgd-worker-probe-eec5896e4274c6a7-exports",
+    "fictional": true,
+    "journal_bucket": "otgd-worker-probe-eec5896e4274c6a7-journal",
+    "namespace": "otgd-worker-probe-eec5896e4274c6a7",
+    "protocol": 1,
+    "queue_url": "http://localstack:4566/queue/us-east-2/000000000000/otgd-worker-probe-eec5896e4274c6a7-jobs"
+  },
+  "limits": {
+    "attempt_deadline_seconds": 900,
+    "heartbeat_seconds": 30,
+    "lease_seconds": 120,
+    "max_claims": 5,
+    "max_receives": 5,
+    "visibility_seconds": 120
+  },
+  "result_stages": [
+    {
+      "at_kill": {
+        "attempts": 1,
+        "completed": null,
+        "expires": 1792915339.764087,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+        "lease_until": 1792911862.3803,
+        "outbox_id": "6f58efbb-8c0d-4533-b841-6c484a910a44",
+        "output": null,
+        "published": 1792911739.774042,
+        "state": "running"
+      },
+      "barrier": {
+        "fence": 1,
+        "generation": 1,
+        "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+        "pid": 49,
+        "protocol": 1,
+        "stage": "after_claim",
+        "started": 1792911742.380306
+      },
+      "kind": "result",
+      "pid": 49,
+      "recovered": {
+        "attempts": 2,
+        "completed": 1792911862.629847,
+        "expires": 1792915339.764087,
+        "failure": null,
+        "fence": 2,
+        "generation": 1,
+        "job_id": "bbd94ddf-bddf-4f1b-8c74-0a393d65f032",
+        "lease_until": null,
+        "outbox_id": "6f58efbb-8c0d-4533-b841-6c484a910a44",
+        "output": {
+          "classification": null,
+          "endpoint_id": null,
+          "evaluated_at": "2026-10-25T07:04:22.605Z",
+          "input_sha256": "38dfaa8777e0c34281208a981c326eeaa71debf510670e4aa531a731dcf9e3f3",
+          "model_id": null,
+          "model_lifecycle": null,
+          "operating_threshold": null,
+          "probability": null,
+          "provenance_summary": [
+            "simulated"
+          ],
+          "reason_codes": [
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED",
+            "SIMULATED_INPUT"
+          ],
+          "replaces_result_id": null,
+          "result_id": "752d25ac-f804-4c4a-aa6e-25eecc20a461",
+          "schema_version": "0.1.0",
+          "session_id": "0c84d6f2-e091-4ba1-8739-4f5cdefb1fe0",
+          "state": "measurement_only",
+          "target_at": "2026-10-10T18:00:00Z",
+          "uncertainty_policy_id": null
+        },
+        "published": 1792911862.570561,
+        "state": "completed"
+      },
+      "recovery_seconds": 120.767,
+      "replacement_pid": 52,
+      "stage": "after_claim"
+    },
+    {
+      "at_kill": {
+        "attempts": 1,
+        "completed": 1792911865.76549,
+        "expires": 1792915463.172352,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+        "lease_until": null,
+        "outbox_id": "27cd8e54-5f27-410f-aee3-ed583bdf4a08",
+        "output": {
+          "classification": null,
+          "endpoint_id": null,
+          "evaluated_at": "2026-10-25T07:04:25.745Z",
+          "input_sha256": "f3c26496d6369625e20912a61f6e3580e596edc2312e149f8680661299bbaa27",
+          "model_id": null,
+          "model_lifecycle": null,
+          "operating_threshold": null,
+          "probability": null,
+          "provenance_summary": [
+            "simulated"
+          ],
+          "reason_codes": [
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED",
+            "SIMULATED_INPUT"
+          ],
+          "replaces_result_id": null,
+          "result_id": "2cfeaae6-52a5-4be9-8dcd-5c6c5869d837",
+          "schema_version": "0.1.0",
+          "session_id": "cb2b2eb9-d94e-4540-bec8-05165d4d273a",
+          "state": "measurement_only",
+          "target_at": "2026-10-10T18:00:00Z",
+          "uncertainty_policy_id": null
+        },
+        "published": 1792911863.184406,
+        "state": "completed"
+      },
+      "barrier": {
+        "fence": 1,
+        "generation": 1,
+        "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+        "output": {
+          "classification": null,
+          "endpoint_id": null,
+          "evaluated_at": "2026-10-25T07:04:25.745Z",
+          "input_sha256": "f3c26496d6369625e20912a61f6e3580e596edc2312e149f8680661299bbaa27",
+          "model_id": null,
+          "model_lifecycle": null,
+          "operating_threshold": null,
+          "probability": null,
+          "provenance_summary": [
+            "simulated"
+          ],
+          "reason_codes": [
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED",
+            "SIMULATED_INPUT"
+          ],
+          "replaces_result_id": null,
+          "result_id": "2cfeaae6-52a5-4be9-8dcd-5c6c5869d837",
+          "schema_version": "0.1.0",
+          "session_id": "cb2b2eb9-d94e-4540-bec8-05165d4d273a",
+          "state": "measurement_only",
+          "target_at": "2026-10-10T18:00:00Z",
+          "uncertainty_policy_id": null
+        },
+        "pid": 56,
+        "protocol": 1,
+        "stage": "after_commit"
+      },
+      "kind": "result",
+      "pid": 56,
+      "recovered": {
+        "attempts": 1,
+        "completed": 1792911865.76549,
+        "expires": 1792915463.172352,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "734378b7-d02d-4578-96f2-d634a4f031e5",
+        "lease_until": null,
+        "outbox_id": "27cd8e54-5f27-410f-aee3-ed583bdf4a08",
+        "output": {
+          "classification": null,
+          "endpoint_id": null,
+          "evaluated_at": "2026-10-25T07:04:25.745Z",
+          "input_sha256": "f3c26496d6369625e20912a61f6e3580e596edc2312e149f8680661299bbaa27",
+          "model_id": null,
+          "model_lifecycle": null,
+          "operating_threshold": null,
+          "probability": null,
+          "provenance_summary": [
+            "simulated"
+          ],
+          "reason_codes": [
+            "MODEL_UNAVAILABLE",
+            "MODEL_UNVALIDATED",
+            "SIMULATED_INPUT"
+          ],
+          "replaces_result_id": null,
+          "result_id": "2cfeaae6-52a5-4be9-8dcd-5c6c5869d837",
+          "schema_version": "0.1.0",
+          "session_id": "cb2b2eb9-d94e-4540-bec8-05165d4d273a",
+          "state": "measurement_only",
+          "target_at": "2026-10-10T18:00:00Z",
+          "uncertainty_policy_id": null
+        },
+        "published": 1792911863.184406,
+        "state": "completed"
+      },
+      "recovery_seconds": 122.484,
+      "replacement_pid": 60,
+      "stage": "after_commit"
+    }
+  ],
+  "retired_write": {
+    "after_late_commit": {
+      "attempts": 1,
+      "completed": null,
+      "expires": 1792912390.928019,
+      "failure": "DATA_GENERATION_RETIRED",
+      "fence": 1,
+      "generation": 1,
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "lease_until": 1792912323.752621,
+      "outbox_id": "0014995f-0c42-43a4-97af-82256bcd281e",
+      "output": null,
+      "published": 1792912200.94049,
+      "state": "failed"
+    },
+    "cleanup": {
+      "attempted": 1,
+      "failed": 0
+    },
+    "cleanup_boundary": "actual job expiry, not immediate orphan removal",
+    "late_output": {
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "key": "exports/6012f251-402c-483e-89b5-91a9d19c472d/1/b93c2bc6-3aa3-4c49-8c63-528b6ca6517d/1.zip",
+      "pid": 75,
+      "protocol": 1,
+      "sha256": "7142e0b383725a73bee737cd17527773de63f0a175459b5d9ca954a93b34d0d3",
+      "stage": "after_write",
+      "version_id": "AaFxyAsbh6c.USNBbuqoZrxWgAUG3Qkp"
+    },
+    "neighbor_version": "AaFxyAsiPFZ_YpLEDBuUX.lW8Yf39ZSI",
+    "original": {
+      "attempts": 1,
+      "completed": null,
+      "expires": 1792912390.928019,
+      "failure": null,
+      "fence": 1,
+      "generation": 1,
+      "job_id": "b93c2bc6-3aa3-4c49-8c63-528b6ca6517d",
+      "lease_until": 1792912323.752621,
+      "outbox_id": "0014995f-0c42-43a4-97af-82256bcd281e",
+      "output": null,
+      "published": 1792912200.94049,
+      "state": "running"
+    },
+    "retired": true
+  },
+  "runtime_database_role": "otgd_worker_probe_app_eec5896e4274c6a7",
+  "scope": {
+    "cleanup": "actual job expiry; no immediate orphan erasure assertion",
+    "export": "structured fictional export",
+    "not_exercised": [
+      "raw-export authority revocation",
+      "900-second work deadline",
+      "HTTP privacy deletion lifecycle",
+      "cloud/native/scientific qualification"
+    ],
+    "result": "synthetic measurement-only result",
+    "retirement": "real transaction retires account generation during stopped worker"
+  },
+  "sigterm": {
+    "pid": 63,
+    "result": {
+      "attempts": 1,
+      "completed": 1792911991.256291,
+      "expires": 1792915588.267748,
+      "failure": null,
+      "fence": 1,
+      "generation": 1,
+      "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+      "lease_until": null,
+      "outbox_id": "adc7958e-d4ff-4622-b037-6dc16bb4c5ed",
+      "output": {
+        "key": "exports/ef5c5609-3903-4b19-af78-e92a6f585315/1/b1d5e32c-413c-4b04-930f-bd239df46917/1.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T07:06:31.235Z",
+          "expires_at": "2026-10-25T08:06:28.267Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "b1d5e32c-413c-4b04-930f-bd239df46917",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "a849cc41e89566c06303dd629c292528cf47f38365e265b1caaf494856facce0",
+        "size_bytes": 569,
+        "version_id": "AaFxyAsOkZUOLDv6rp2MC0KTKiuPcjSv"
+      },
+      "published": 1792911988.277699,
+      "state": "completed"
+    },
+    "signal": "SIGTERM",
+    "stop_seconds": 19.907
+  },
+  "source_manifest_after": {
+    "contracts/application/Alcohol.schema.json": "9b5850b9b6528df7f44b0530c4bfbb05b81a2127acc60cc9b0495e0248733474",
+    "contracts/application/Attestation.schema.json": "d1e11a401fa993d51601967f23a7d6849c834c26bd5a1a90f26d9fec041a0bbd",
+    "contracts/application/CaptureAttempt.schema.json": "1e8573d7b3d42cb7a5302021f0b44cc08a66a4b0e8a3a15923183bd24c2721a2",
+    "contracts/application/CaptureAuthorization.schema.json": "4c94ab363981bfb074b4d126852a7245d5f1fc643dc21c32fa49373c617d5e90",
+    "contracts/application/CaptureContext.schema.json": "ffc678dec16845c20a91da983c9551ca92fb989a3f89ff91701f85d1e1541d34",
+    "contracts/application/CollectionAbandonment.schema.json": "82e7c2b9adfd8bd60c26b5ec7170ad40ce136c6a6f6374ce3a453a327b3ac2f1",
+    "contracts/application/CollectionReceipt.schema.json": "177ccd5c3b7bd6d2be271eec6bf0335cf3b9932be4eda44f85dd9a3912577b99",
+    "contracts/application/CollectionRequest.schema.json": "92cb4bede2a88175a4ab9b6ee8ed3b54dde66853e0d1e4a17e12326e7e50c726",
+    "contracts/application/ECGRecording.schema.json": "794e80c6762412092ced00acd1ddd34ba795f7a3348dc67888b6888c7c198590",
+    "contracts/application/EvidenceManifest.schema.json": "d066e582c2b24ea0a1629a5a690051381e19210894360961e0e176dbb0f357c8",
+    "contracts/application/ExportRequest.schema.json": "e058e8acf28221e8d905611f2b3a9524d44e87b4aa7bde807e9c012a8cd7866c",
+    "contracts/application/InstructionAcknowledgment.schema.json": "d6f2da1ada7db6dfa41016d1d8ffbb30e1ea2cc7de4febcd4232f10bca72a05d",
+    "contracts/application/LabSourceRequest.schema.json": "cbe7839e2c99b0a2e9e29784467dfba68febbeda668237cf2383559c8e4deb47",
+    "contracts/application/PPGEvidence.schema.json": "c9113ec14bf8a5847901ecbc2d7f1d485ac0f0aa6b2e615ceed4c53b091c433d",
+    "contracts/application/ProfileWrite.schema.json": "5cac4fdb8bdfbebfe8728879ba5b820cdd1cc4edbe5ccd64ec7c1201d121760d",
+    "contracts/application/ReplacementLinks.schema.json": "0d4ac14eec5be61e5e6a68c7553124aae77494ea8ce03b13f7d7beb3740bbfbd",
+    "contracts/application/ReportDescriptor.schema.json": "82d5e34902882645e7ba5d55963adc044a3c832d7d4565c42bca9ec126239f21",
+    "contracts/application/ReportRevisionCompanion.schema.json": "439339d69c6a988000e57f19f005dcd02fc4208d5f535fdbf99d6fbca79002ea",
+    "contracts/application/ReportRevisionDetail.schema.json": "2e6a20e76d5b143ea139e9b1215f91e6552203627b813c17bc854a7cbc82f4ed",
+    "contracts/application/ReportRevisionIndex.schema.json": "b2f3034016eb5863bb3e1e02997034500e6d13b9d537122c8570ead0e8909863",
+    "contracts/application/ReportRevisionList.schema.json": "b8e92dc764d6a03ee860ed2b562532d1ac40da50fe2ebed51532f9b1f2b67d9f",
+    "contracts/application/ReportRevisionRequest.schema.json": "db1cc503469558a7891be14d40e098ba2b6caf32dbf6cf35d9f5eebd4c269b83",
+    "contracts/application/ReportRevisionResult.schema.json": "a0766a4c0462fe064ee2cb93968fce50f9cae0581c39b12cb09eacbce288c11a",
+    "contracts/application/ServerStartToken.schema.json": "0f14a43845a44744ab29e938d9cc5f7cd70d3c9a0540069e3b774eb55f32b5c2",
+    "contracts/application/StartAuthorization.schema.json": "faa2d376f852c21e49b821e09f3e43b47aee9cb64085aea107da000e47bb640e",
+    "contracts/application/SyntheticDeviceCapture.schema.json": "8cc6b2bc9d0ceadedbadb40111919451560a251e193967aab0cb01e1c56e13ce",
+    "contracts/application/canonical-golden.json": "cfcf7a79db3fc20c737b364391aea73fe238379873cc24b5d5aed5539b7bc944",
+    "contracts/application/fixtures/synthetic-transport-ecg.json": "f3c577014f85bb67fd6de6d75a6222942e044c311490469b8e9b67ddb0d2a749",
+    "contracts/application/fixtures/synthetic-transport-ppg.json": "89ea865c840ffc7d805e4e127c5603d327a1e8f76b6f0883e1c9dc8393f89286",
+    "contracts/application/fixtures/synthetic-transport-saliva.json": "b4baaf1a3d4975b4d56fcbd9423475a4d8b523ba33744ba65ba40419c588c9ef",
+    "contracts/application/openapi.json": "d67cf5dd455cc80051c3092c54306614a6f485c5a1bf3c9a49bc5d22ff26671f",
+    "contracts/measurement.schema.json": "5793bcd9738d62c546608449d3806ed6fe0da4802233c575f45ba91d499a931f",
+    "contracts/model_manifest.schema.json": "a3dea558f563b9e79cd848fa17e4d6f41b1feb708ea1564d87710e6b5aa0a27e",
+    "contracts/operator/calibration.schema.json": "6355138d056f400431496cd9108f726e4bb8d66489b7673f21de2d1e9b2364f2",
+    "contracts/operator/configuration.schema.json": "e72cbe9a5783e76b2b5c86cb42d6d5c2bb4ca5f402bbfb408368c15e33b2f0c5",
+    "contracts/operator/device.schema.json": "a8018091e2b05df13332832a46609183a81f90fb2faba14765ad98641f683fc7",
+    "contracts/operator/method.schema.json": "38bf52c68ccb5d460ae00783a105e5ecc76514c111bc2cf8e0f2e03481e70232",
+    "contracts/operator/model.schema.json": "01dde37c9e331252026bc57cba4ca9a43510b00d03c644288337ab09ceebadec",
+    "contracts/operator/qualification.schema.json": "83b19c1e6c6e2eaf62881bab0c0888b6dcb1d22e46627d1a66bec72d4b063428",
+    "contracts/operator/raw_export.schema.json": "028a399579882361c69e51316be89017b78c08538a3bbad52d1ec54fb481e443",
+    "contracts/operator/retention.schema.json": "cf5757264305ee0c1c6ed51aa67b40dbb054e9b703d6653c4a55e7b553131280",
+    "contracts/operator/role.schema.json": "78183ee1bb315e4cb618ac72687d9d2561ad564787870c9e4639a4e2534f8da8",
+    "contracts/operator/study.schema.json": "571ca4c34a2f3b6d24c598b6dd8db630dd1cfc3fb28e1c33c03ff0a69a21b99e",
+    "contracts/research/ResearchResult.schema.json": "4c4663f625bf2d72b87e7c9101eafd6f3c5a209ad51b7044dda7466e947d4964",
+    "contracts/result.schema.json": "0eddf1e7079db6dddcf36f662857608b85cd8968059cf1f0cefd11b4f8055fa8",
+    "contracts/session.schema.json": "bceca135190143791a6cfec5fef1412c6f1c6f491f197885018e74dc95991a14",
+    "contracts/telemetry.schema.json": "d65f44641ea8605d533b5e50d74aa2843ba9429ab2ad55fdd33b95d11e1d5a50",
+    "infra/local/worker_interrupt_gate.py": "fd0ec8fccbe344df436775bdcaf484534eb236025c2c0e63e6ffdc7e730223b1",
+    "infra/local/worker_interrupt_probe.py": "17f19c89fb376416aec5379cf7181822082171863e5f202cba7b90cd972d98cc",
+    "services/api/otgd/__init__.py": "154a88f80d65ab95f4102878db91aed1523f1772016f52330947d4f3e6f6691f",
+    "services/api/otgd/auth.py": "865f4d0fcf199b9898d3bb43fd5301f814979d47f01ea48d9be2df75063c4fd7",
+    "services/api/otgd/canonical.py": "44400843af24ec301c3f6663e22206d599611934a05cc6b841b58717ffcfc186",
+    "services/api/otgd/capture_signing.py": "234fdc8a6660f81683232461d27bfe1821aa39bd6688513fa906b5fa1a1065d2",
+    "services/api/otgd/cardiac_authority.py": "3cd89f16cc15742323f753b85bfe4e7ec7563dea42e7b96dfef7dd8f56c33f2d",
+    "services/api/otgd/config.py": "684e9b17549519c8cd880dffa9013f0020bef8b25d00dc383290ad7f6105ef61",
+    "services/api/otgd/db.py": "60562b98fbaab9c5e83d47ca376f727ca235f2eaa2aa0f9b415cd3bf4d4c612e",
+    "services/api/otgd/domain.py": "0ca539870e392ce401144879aab95d3c5d07fc560d904c6e8e76658fd3d2bc8f",
+    "services/api/otgd/dto.py": "8702de1a389b622b30a34b123087026e72159f1930cdeb231d00456a2d534103",
+    "services/api/otgd/errors.py": "8e9649fce20f0b184249f9f1c2d16392c22cddb439b2b80241f43cd9d47c32b3",
+    "services/api/otgd/fargate_runtime.py": "d765a1d84be59fde00ba0fc0227bf6bbdc54c637719828298882f93ca21fcff5",
+    "services/api/otgd/identity_keys.py": "e3abade5a3242b8f8e30a67c2dd791f413c1ee675e95311a45845b4625e75ac0",
+    "services/api/otgd/journal_continuity.py": "09eb707c29150acd3e6b520f23e600df1b320ac24d8e3ec1b172b309c60332d2",
+    "services/api/otgd/lab_handoff.py": "ab6a3136b75934a95327aee9e20f8f454b5b6d8b4ad8540d5e6c2a755a1e70e1",
+    "services/api/otgd/local_identity.py": "1576b35868abd7a22b402f2efea4777b6d34dcfb786e8670350b915972bc1e9e",
+    "services/api/otgd/local_oauth_state.py": "e7456407ee43ddf4578161a7eeee2fe0bbe796fbd51a742524f283a1e20678ad",
+    "services/api/otgd/main.py": "fc2547f87b408ab83cbf164245fc0703c35bfd4012b6f692dec5e46ee52700f4",
+    "services/api/otgd/migrate.py": "2d11514252952b5f4c808e9bbf37ca643b7411d46be7d177d8f248af3882f3e8",
+    "services/api/otgd/model_engine.py": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+    "services/api/otgd/native_evidence.py": "c807bcec91bf8b60125334feb3b8177d12e5a05ec84c4acb539077a1e03d8510",
+    "services/api/otgd/operator_cli.py": "944d9a6a429f10e6159bcf4761748d0b6c380b6d1b2d787bb7eb2edab273f396",
+    "services/api/otgd/operator_governance.py": "1e16fc9b3679b1d6abd4cc6bdad1a53d18e8e02c4b759e2c3a950b04286ce971",
+    "services/api/otgd/optical_evidence.py": "3a25c6dbceba62c35f609fee33de126dc20c69064254009a3108301f78cd5a73",
+    "services/api/otgd/participant_acquisition.py": "dc0dabb2c0b319a81363876a07db5b2a9e6be749899408d14747a1af9e381597",
+    "services/api/otgd/participant_migration.py": "4e819b8b4aa6619b20345de83991ccef1dce3197c0716559c8b053e69e13b7a0",
+    "services/api/otgd/raw_capture.py": "dd0e60fe5d177809e106ed5fb36676d90db5efacc4f73268bd347a7050f69d31",
+    "services/api/otgd/raw_export.py": "4b277046482abaead9d997b150b4b3e50361eae298bd1096a1f03f4286c0bdfd",
+    "services/api/otgd/raw_retention.py": "fdf39af29f04bdfc39cce72425cf1c37068985aad74f37f68dae1e3a34de0fd0",
+    "services/api/otgd/recovery_authority.py": "ffd428ab0b804cded987ff625c1623297c6e7cf887e5c35f35903221465ac821",
+    "services/api/otgd/recovery_scopes.py": "43f68c53f2bc0eca790654e1a8cc9dfe9ba9185348e2989e40269f8d094db31b",
+    "services/api/otgd/replacement_links.py": "e78d403aa32f68e6a47eab62864ff7cab057fe6df8c9405c20869dbb0399f8a5",
+    "services/api/otgd/replica_cleanup.py": "00bd71eeeb380cd0cab235f7bb74cd329e902d50e451d90e1fdd1010137a3cc3",
+    "services/api/otgd/report_revisions.py": "8cf026c220397eb92f5f191846ab32e13a87413ede31d02a1e060f400a2bba17",
+    "services/api/otgd/schema_migrations.py": "e78165d36a6287669aa3cada9e83f76822b79d6869922c201b06c87a184703b3",
+    "services/api/otgd/serverless_control.py": "0660528a8e939b8f1373bf58df2f775016f669e2b11109255acfe06554d09162",
+    "services/api/otgd/serverless_lifecycle.py": "ecbf832e92dbe7965aff8392da8a0b7e4ad3d974314af5535a37df57e854edb2",
+    "services/api/otgd/serverless_worker.py": "c7891a212ee4c979b615be01d01b3062e690ee4a0dbdbd7200b213dbcf99b0da",
+    "services/api/otgd/storage.py": "fe72246a6247dad323cab209b0c412d20c143233fa46d16387c530bfc2f39d4b",
+    "services/api/otgd/synthetic_evidence.py": "2c0f699cc6de6c00ae07831951f12b36b75bdae68b30119fcbf4c82e50f45654",
+    "services/api/otgd/vendor_evidence.py": "4d8869f13b01292a2fe052e651858aea8904e391550a62d4f2d6a6fe8c3eb959",
+    "services/api/otgd/worker.py": "06c0042053501c5e9150436fcadc9a224075cc396ba5c9bb39ffa19335a29c8f",
+    "services/api/otgd/worker_health.py": "9d23d0074ed19244931ce9444f23b82e152c8cd0491f244dc40773d4ddb87aac"
+  },
+  "source_manifest_before": {
+    "contracts/application/Alcohol.schema.json": "9b5850b9b6528df7f44b0530c4bfbb05b81a2127acc60cc9b0495e0248733474",
+    "contracts/application/Attestation.schema.json": "d1e11a401fa993d51601967f23a7d6849c834c26bd5a1a90f26d9fec041a0bbd",
+    "contracts/application/CaptureAttempt.schema.json": "1e8573d7b3d42cb7a5302021f0b44cc08a66a4b0e8a3a15923183bd24c2721a2",
+    "contracts/application/CaptureAuthorization.schema.json": "4c94ab363981bfb074b4d126852a7245d5f1fc643dc21c32fa49373c617d5e90",
+    "contracts/application/CaptureContext.schema.json": "ffc678dec16845c20a91da983c9551ca92fb989a3f89ff91701f85d1e1541d34",
+    "contracts/application/CollectionAbandonment.schema.json": "82e7c2b9adfd8bd60c26b5ec7170ad40ce136c6a6f6374ce3a453a327b3ac2f1",
+    "contracts/application/CollectionReceipt.schema.json": "177ccd5c3b7bd6d2be271eec6bf0335cf3b9932be4eda44f85dd9a3912577b99",
+    "contracts/application/CollectionRequest.schema.json": "92cb4bede2a88175a4ab9b6ee8ed3b54dde66853e0d1e4a17e12326e7e50c726",
+    "contracts/application/ECGRecording.schema.json": "794e80c6762412092ced00acd1ddd34ba795f7a3348dc67888b6888c7c198590",
+    "contracts/application/EvidenceManifest.schema.json": "d066e582c2b24ea0a1629a5a690051381e19210894360961e0e176dbb0f357c8",
+    "contracts/application/ExportRequest.schema.json": "e058e8acf28221e8d905611f2b3a9524d44e87b4aa7bde807e9c012a8cd7866c",
+    "contracts/application/InstructionAcknowledgment.schema.json": "d6f2da1ada7db6dfa41016d1d8ffbb30e1ea2cc7de4febcd4232f10bca72a05d",
+    "contracts/application/LabSourceRequest.schema.json": "cbe7839e2c99b0a2e9e29784467dfba68febbeda668237cf2383559c8e4deb47",
+    "contracts/application/PPGEvidence.schema.json": "c9113ec14bf8a5847901ecbc2d7f1d485ac0f0aa6b2e615ceed4c53b091c433d",
+    "contracts/application/ProfileWrite.schema.json": "5cac4fdb8bdfbebfe8728879ba5b820cdd1cc4edbe5ccd64ec7c1201d121760d",
+    "contracts/application/ReplacementLinks.schema.json": "0d4ac14eec5be61e5e6a68c7553124aae77494ea8ce03b13f7d7beb3740bbfbd",
+    "contracts/application/ReportDescriptor.schema.json": "82d5e34902882645e7ba5d55963adc044a3c832d7d4565c42bca9ec126239f21",
+    "contracts/application/ReportRevisionCompanion.schema.json": "439339d69c6a988000e57f19f005dcd02fc4208d5f535fdbf99d6fbca79002ea",
+    "contracts/application/ReportRevisionDetail.schema.json": "2e6a20e76d5b143ea139e9b1215f91e6552203627b813c17bc854a7cbc82f4ed",
+    "contracts/application/ReportRevisionIndex.schema.json": "b2f3034016eb5863bb3e1e02997034500e6d13b9d537122c8570ead0e8909863",
+    "contracts/application/ReportRevisionList.schema.json": "b8e92dc764d6a03ee860ed2b562532d1ac40da50fe2ebed51532f9b1f2b67d9f",
+    "contracts/application/ReportRevisionRequest.schema.json": "db1cc503469558a7891be14d40e098ba2b6caf32dbf6cf35d9f5eebd4c269b83",
+    "contracts/application/ReportRevisionResult.schema.json": "a0766a4c0462fe064ee2cb93968fce50f9cae0581c39b12cb09eacbce288c11a",
+    "contracts/application/ServerStartToken.schema.json": "0f14a43845a44744ab29e938d9cc5f7cd70d3c9a0540069e3b774eb55f32b5c2",
+    "contracts/application/StartAuthorization.schema.json": "faa2d376f852c21e49b821e09f3e43b47aee9cb64085aea107da000e47bb640e",
+    "contracts/application/SyntheticDeviceCapture.schema.json": "8cc6b2bc9d0ceadedbadb40111919451560a251e193967aab0cb01e1c56e13ce",
+    "contracts/application/canonical-golden.json": "cfcf7a79db3fc20c737b364391aea73fe238379873cc24b5d5aed5539b7bc944",
+    "contracts/application/fixtures/synthetic-transport-ecg.json": "f3c577014f85bb67fd6de6d75a6222942e044c311490469b8e9b67ddb0d2a749",
+    "contracts/application/fixtures/synthetic-transport-ppg.json": "89ea865c840ffc7d805e4e127c5603d327a1e8f76b6f0883e1c9dc8393f89286",
+    "contracts/application/fixtures/synthetic-transport-saliva.json": "b4baaf1a3d4975b4d56fcbd9423475a4d8b523ba33744ba65ba40419c588c9ef",
+    "contracts/application/openapi.json": "d67cf5dd455cc80051c3092c54306614a6f485c5a1bf3c9a49bc5d22ff26671f",
+    "contracts/measurement.schema.json": "5793bcd9738d62c546608449d3806ed6fe0da4802233c575f45ba91d499a931f",
+    "contracts/model_manifest.schema.json": "a3dea558f563b9e79cd848fa17e4d6f41b1feb708ea1564d87710e6b5aa0a27e",
+    "contracts/operator/calibration.schema.json": "6355138d056f400431496cd9108f726e4bb8d66489b7673f21de2d1e9b2364f2",
+    "contracts/operator/configuration.schema.json": "e72cbe9a5783e76b2b5c86cb42d6d5c2bb4ca5f402bbfb408368c15e33b2f0c5",
+    "contracts/operator/device.schema.json": "a8018091e2b05df13332832a46609183a81f90fb2faba14765ad98641f683fc7",
+    "contracts/operator/method.schema.json": "38bf52c68ccb5d460ae00783a105e5ecc76514c111bc2cf8e0f2e03481e70232",
+    "contracts/operator/model.schema.json": "01dde37c9e331252026bc57cba4ca9a43510b00d03c644288337ab09ceebadec",
+    "contracts/operator/qualification.schema.json": "83b19c1e6c6e2eaf62881bab0c0888b6dcb1d22e46627d1a66bec72d4b063428",
+    "contracts/operator/raw_export.schema.json": "028a399579882361c69e51316be89017b78c08538a3bbad52d1ec54fb481e443",
+    "contracts/operator/retention.schema.json": "cf5757264305ee0c1c6ed51aa67b40dbb054e9b703d6653c4a55e7b553131280",
+    "contracts/operator/role.schema.json": "78183ee1bb315e4cb618ac72687d9d2561ad564787870c9e4639a4e2534f8da8",
+    "contracts/operator/study.schema.json": "571ca4c34a2f3b6d24c598b6dd8db630dd1cfc3fb28e1c33c03ff0a69a21b99e",
+    "contracts/research/ResearchResult.schema.json": "4c4663f625bf2d72b87e7c9101eafd6f3c5a209ad51b7044dda7466e947d4964",
+    "contracts/result.schema.json": "0eddf1e7079db6dddcf36f662857608b85cd8968059cf1f0cefd11b4f8055fa8",
+    "contracts/session.schema.json": "bceca135190143791a6cfec5fef1412c6f1c6f491f197885018e74dc95991a14",
+    "contracts/telemetry.schema.json": "d65f44641ea8605d533b5e50d74aa2843ba9429ab2ad55fdd33b95d11e1d5a50",
+    "infra/local/worker_interrupt_gate.py": "fd0ec8fccbe344df436775bdcaf484534eb236025c2c0e63e6ffdc7e730223b1",
+    "infra/local/worker_interrupt_probe.py": "17f19c89fb376416aec5379cf7181822082171863e5f202cba7b90cd972d98cc",
+    "services/api/otgd/__init__.py": "154a88f80d65ab95f4102878db91aed1523f1772016f52330947d4f3e6f6691f",
+    "services/api/otgd/auth.py": "865f4d0fcf199b9898d3bb43fd5301f814979d47f01ea48d9be2df75063c4fd7",
+    "services/api/otgd/canonical.py": "44400843af24ec301c3f6663e22206d599611934a05cc6b841b58717ffcfc186",
+    "services/api/otgd/capture_signing.py": "234fdc8a6660f81683232461d27bfe1821aa39bd6688513fa906b5fa1a1065d2",
+    "services/api/otgd/cardiac_authority.py": "3cd89f16cc15742323f753b85bfe4e7ec7563dea42e7b96dfef7dd8f56c33f2d",
+    "services/api/otgd/config.py": "684e9b17549519c8cd880dffa9013f0020bef8b25d00dc383290ad7f6105ef61",
+    "services/api/otgd/db.py": "60562b98fbaab9c5e83d47ca376f727ca235f2eaa2aa0f9b415cd3bf4d4c612e",
+    "services/api/otgd/domain.py": "0ca539870e392ce401144879aab95d3c5d07fc560d904c6e8e76658fd3d2bc8f",
+    "services/api/otgd/dto.py": "8702de1a389b622b30a34b123087026e72159f1930cdeb231d00456a2d534103",
+    "services/api/otgd/errors.py": "8e9649fce20f0b184249f9f1c2d16392c22cddb439b2b80241f43cd9d47c32b3",
+    "services/api/otgd/fargate_runtime.py": "d765a1d84be59fde00ba0fc0227bf6bbdc54c637719828298882f93ca21fcff5",
+    "services/api/otgd/identity_keys.py": "e3abade5a3242b8f8e30a67c2dd791f413c1ee675e95311a45845b4625e75ac0",
+    "services/api/otgd/journal_continuity.py": "09eb707c29150acd3e6b520f23e600df1b320ac24d8e3ec1b172b309c60332d2",
+    "services/api/otgd/lab_handoff.py": "ab6a3136b75934a95327aee9e20f8f454b5b6d8b4ad8540d5e6c2a755a1e70e1",
+    "services/api/otgd/local_identity.py": "118723bf3242154fef3d7faae9d624d5d5f1d02b458844952167ae4a07330a3d",
+    "services/api/otgd/local_oauth_state.py": "e7456407ee43ddf4578161a7eeee2fe0bbe796fbd51a742524f283a1e20678ad",
+    "services/api/otgd/main.py": "fc2547f87b408ab83cbf164245fc0703c35bfd4012b6f692dec5e46ee52700f4",
+    "services/api/otgd/migrate.py": "2d11514252952b5f4c808e9bbf37ca643b7411d46be7d177d8f248af3882f3e8",
+    "services/api/otgd/model_engine.py": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+    "services/api/otgd/native_evidence.py": "c807bcec91bf8b60125334feb3b8177d12e5a05ec84c4acb539077a1e03d8510",
+    "services/api/otgd/operator_cli.py": "944d9a6a429f10e6159bcf4761748d0b6c380b6d1b2d787bb7eb2edab273f396",
+    "services/api/otgd/operator_governance.py": "1e16fc9b3679b1d6abd4cc6bdad1a53d18e8e02c4b759e2c3a950b04286ce971",
+    "services/api/otgd/optical_evidence.py": "3a25c6dbceba62c35f609fee33de126dc20c69064254009a3108301f78cd5a73",
+    "services/api/otgd/participant_acquisition.py": "dc0dabb2c0b319a81363876a07db5b2a9e6be749899408d14747a1af9e381597",
+    "services/api/otgd/participant_migration.py": "4e819b8b4aa6619b20345de83991ccef1dce3197c0716559c8b053e69e13b7a0",
+    "services/api/otgd/raw_capture.py": "dd0e60fe5d177809e106ed5fb36676d90db5efacc4f73268bd347a7050f69d31",
+    "services/api/otgd/raw_export.py": "4b277046482abaead9d997b150b4b3e50361eae298bd1096a1f03f4286c0bdfd",
+    "services/api/otgd/raw_retention.py": "fdf39af29f04bdfc39cce72425cf1c37068985aad74f37f68dae1e3a34de0fd0",
+    "services/api/otgd/recovery_authority.py": "ffd428ab0b804cded987ff625c1623297c6e7cf887e5c35f35903221465ac821",
+    "services/api/otgd/recovery_scopes.py": "43f68c53f2bc0eca790654e1a8cc9dfe9ba9185348e2989e40269f8d094db31b",
+    "services/api/otgd/replacement_links.py": "e78d403aa32f68e6a47eab62864ff7cab057fe6df8c9405c20869dbb0399f8a5",
+    "services/api/otgd/replica_cleanup.py": "00bd71eeeb380cd0cab235f7bb74cd329e902d50e451d90e1fdd1010137a3cc3",
+    "services/api/otgd/report_revisions.py": "8cf026c220397eb92f5f191846ab32e13a87413ede31d02a1e060f400a2bba17",
+    "services/api/otgd/schema_migrations.py": "e78165d36a6287669aa3cada9e83f76822b79d6869922c201b06c87a184703b3",
+    "services/api/otgd/serverless_control.py": "0660528a8e939b8f1373bf58df2f775016f669e2b11109255acfe06554d09162",
+    "services/api/otgd/serverless_lifecycle.py": "ecbf832e92dbe7965aff8392da8a0b7e4ad3d974314af5535a37df57e854edb2",
+    "services/api/otgd/serverless_worker.py": "c7891a212ee4c979b615be01d01b3062e690ee4a0dbdbd7200b213dbcf99b0da",
+    "services/api/otgd/storage.py": "fe72246a6247dad323cab209b0c412d20c143233fa46d16387c530bfc2f39d4b",
+    "services/api/otgd/synthetic_evidence.py": "2c0f699cc6de6c00ae07831951f12b36b75bdae68b30119fcbf4c82e50f45654",
+    "services/api/otgd/vendor_evidence.py": "4d8869f13b01292a2fe052e651858aea8904e391550a62d4f2d6a6fe8c3eb959",
+    "services/api/otgd/worker.py": "06c0042053501c5e9150436fcadc9a224075cc396ba5c9bb39ffa19335a29c8f",
+    "services/api/otgd/worker_health.py": "9d23d0074ed19244931ce9444f23b82e152c8cd0491f244dc40773d4ddb87aac"
+  },
+  "stages": [
+    {
+      "at_kill": {
+        "attempts": 0,
+        "completed": null,
+        "expires": 1792914661.975505,
+        "failure": null,
+        "fence": 0,
+        "generation": 1,
+        "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+        "lease_until": null,
+        "outbox_id": "f40cc99f-6684-4a6c-9b6b-8f567696c63f",
+        "output": null,
+        "published": 1792911062.003434,
+        "state": "pending"
+      },
+      "barrier": {
+        "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+        "pid": 13,
+        "protocol": 1,
+        "stage": "before_claim"
+      },
+      "kind": "export",
+      "pid": 13,
+      "recovered": {
+        "attempts": 1,
+        "completed": 1792911185.154872,
+        "expires": 1792914661.975505,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+        "lease_until": null,
+        "outbox_id": "f40cc99f-6684-4a6c-9b6b-8f567696c63f",
+        "output": {
+          "key": "exports/9e157e35-7b35-4733-a090-bdb756149e20/1/d52de882-4055-4514-9032-d169886b0fde/1.zip",
+          "manifest": {
+            "canonicalization": "RFC8785",
+            "created_at": "2026-10-25T06:53:05.137Z",
+            "expires_at": "2026-10-25T07:51:01.975Z",
+            "files": [
+              {
+                "path": "profile.json",
+                "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+                "size_bytes": 78
+              }
+            ],
+            "job_id": "d52de882-4055-4514-9032-d169886b0fde",
+            "omitted_categories": [
+              "raw_artifacts"
+            ],
+            "schema_version": "1.0.0",
+            "selection": {
+              "kind": "all"
+            },
+            "session_ids": []
+          },
+          "sha256": "20a841c7e86e2d5359eb16f98017c0c549f53a1c4c8aef3b96998a804bd8b960",
+          "size_bytes": 571,
+          "version_id": "AaFxyAsIEhUEp3PIkDPGBalfaAptybCF"
+        },
+        "published": 1792911062.003434,
+        "state": "completed"
+      },
+      "recovery_seconds": 122.592,
+      "replacement_pid": 16,
+      "stage": "before_claim"
+    },
+    {
+      "at_kill": {
+        "attempts": 1,
+        "completed": null,
+        "expires": 1792914786.866843,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+        "lease_until": 1792911309.474328,
+        "outbox_id": "825a518c-d60f-4a75-bd0f-6a6deb75a2c6",
+        "output": null,
+        "published": 1792911186.880282,
+        "state": "running"
+      },
+      "barrier": {
+        "fence": 1,
+        "generation": 1,
+        "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+        "pid": 20,
+        "protocol": 1,
+        "stage": "after_claim",
+        "started": 1792911189.474335
+      },
+      "kind": "export",
+      "pid": 20,
+      "recovered": {
+        "attempts": 2,
+        "completed": 1792911309.905991,
+        "expires": 1792914786.866843,
+        "failure": null,
+        "fence": 2,
+        "generation": 1,
+        "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+        "lease_until": null,
+        "outbox_id": "825a518c-d60f-4a75-bd0f-6a6deb75a2c6",
+        "output": {
+          "key": "exports/2b15d02a-1ce8-4f1c-a279-768879e4a163/1/bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897/2.zip",
+          "manifest": {
+            "canonicalization": "RFC8785",
+            "created_at": "2026-10-25T06:55:09.885Z",
+            "expires_at": "2026-10-25T07:53:06.866Z",
+            "files": [
+              {
+                "path": "profile.json",
+                "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+                "size_bytes": 78
+              }
+            ],
+            "job_id": "bf8af2ed-c47c-4fc9-9ddf-7a8bdabe3897",
+            "omitted_categories": [
+              "raw_artifacts"
+            ],
+            "schema_version": "1.0.0",
+            "selection": {
+              "kind": "all"
+            },
+            "session_ids": []
+          },
+          "sha256": "6f717268c48f6d68d74240f87246de774d2b67ad278c56deee0b9bb85a3121fa",
+          "size_bytes": 569,
+          "version_id": "AaFxyAsJ0Ba5c5Wsw2nnYjyNjqJSMwrY"
+        },
+        "published": 1792911309.51685,
+        "state": "completed"
+      },
+      "recovery_seconds": 140.834,
+      "replacement_pid": 23,
+      "stage": "after_claim"
+    },
+    {
+      "at_kill": {
+        "attempts": 1,
+        "completed": null,
+        "expires": 1792914930.322524,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+        "lease_until": 1792911453.233513,
+        "outbox_id": "76bcd2e9-ac3f-4a34-bdab-51bddd9c315f",
+        "output": null,
+        "published": 1792911330.332614,
+        "state": "running"
+      },
+      "barrier": {
+        "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+        "key": "exports/af9d5b54-66b2-4fad-b719-f59016c72c9e/1/01c34dd9-293b-4d4b-b140-d36da12be5e9/1.zip",
+        "pid": 27,
+        "protocol": 1,
+        "sha256": "007daca63535220f5cc32dfaa86e4121eae33d61bddd9a57f060a4a6d86549fa",
+        "stage": "after_write",
+        "version_id": "AaFxyAsK4KAPJ8lhG8WmVVko1rJb8yCh"
+      },
+      "kind": "export",
+      "pid": 27,
+      "recovered": {
+        "attempts": 2,
+        "completed": 1792911454.021767,
+        "expires": 1792914930.322524,
+        "failure": null,
+        "fence": 2,
+        "generation": 1,
+        "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+        "lease_until": null,
+        "outbox_id": "76bcd2e9-ac3f-4a34-bdab-51bddd9c315f",
+        "output": {
+          "key": "exports/af9d5b54-66b2-4fad-b719-f59016c72c9e/1/01c34dd9-293b-4d4b-b140-d36da12be5e9/2.zip",
+          "manifest": {
+            "canonicalization": "RFC8785",
+            "created_at": "2026-10-25T06:57:34.003Z",
+            "expires_at": "2026-10-25T07:55:30.322Z",
+            "files": [
+              {
+                "path": "profile.json",
+                "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+                "size_bytes": 78
+              }
+            ],
+            "job_id": "01c34dd9-293b-4d4b-b140-d36da12be5e9",
+            "omitted_categories": [
+              "raw_artifacts"
+            ],
+            "schema_version": "1.0.0",
+            "selection": {
+              "kind": "all"
+            },
+            "session_ids": []
+          },
+          "sha256": "e3aafe57864d4eb567028499bdd440002caa59adcaf04032ee16f404670d71c2",
+          "size_bytes": 571,
+          "version_id": "AaFxyAsLuH0v8OLnU.XKNCbxlm42yJNX"
+        },
+        "published": 1792911453.69381,
+        "state": "completed"
+      },
+      "recovery_seconds": 139.772,
+      "replacement_pid": 31,
+      "stage": "after_write"
+    },
+    {
+      "at_kill": {
+        "attempts": 1,
+        "completed": 1792911476.50508,
+        "expires": 1792915073.348904,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+        "lease_until": null,
+        "outbox_id": "6beff94d-6dce-4bfb-9e31-dc0586b57b70",
+        "output": {
+          "key": "exports/7176f07c-8fe0-401a-9908-77fe69a5bc6d/1/f1d0016f-a403-4033-aab1-7fa55d32662d/1.zip",
+          "manifest": {
+            "canonicalization": "RFC8785",
+            "created_at": "2026-10-25T06:57:56.483Z",
+            "expires_at": "2026-10-25T07:57:53.348Z",
+            "files": [
+              {
+                "path": "profile.json",
+                "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+                "size_bytes": 78
+              }
+            ],
+            "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+            "omitted_categories": [
+              "raw_artifacts"
+            ],
+            "schema_version": "1.0.0",
+            "selection": {
+              "kind": "all"
+            },
+            "session_ids": []
+          },
+          "sha256": "ecdc0b227c876e20e009bfda5f5201645b4bfb4f70c7ce9337de467ee135416c",
+          "size_bytes": 567,
+          "version_id": "AaFxyAsMAQU.kQVBnM7kkeY9ilco2UCV"
+        },
+        "published": 1792911473.358523,
+        "state": "completed"
+      },
+      "barrier": {
+        "fence": 1,
+        "generation": 1,
+        "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+        "output": {
+          "key": "exports/7176f07c-8fe0-401a-9908-77fe69a5bc6d/1/f1d0016f-a403-4033-aab1-7fa55d32662d/1.zip",
+          "manifest": {
+            "canonicalization": "RFC8785",
+            "created_at": "2026-10-25T06:57:56.483Z",
+            "expires_at": "2026-10-25T07:57:53.348Z",
+            "files": [
+              {
+                "path": "profile.json",
+                "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+                "size_bytes": 78
+              }
+            ],
+            "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+            "omitted_categories": [
+              "raw_artifacts"
+            ],
+            "schema_version": "1.0.0",
+            "selection": {
+              "kind": "all"
+            },
+            "session_ids": []
+          },
+          "sha256": "ecdc0b227c876e20e009bfda5f5201645b4bfb4f70c7ce9337de467ee135416c",
+          "size_bytes": 567,
+          "version_id": "AaFxyAsMAQU.kQVBnM7kkeY9ilco2UCV"
+        },
+        "pid": 35,
+        "protocol": 1,
+        "stage": "after_commit"
+      },
+      "kind": "export",
+      "pid": 35,
+      "recovered": {
+        "attempts": 1,
+        "completed": 1792911476.50508,
+        "expires": 1792915073.348904,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+        "lease_until": null,
+        "outbox_id": "6beff94d-6dce-4bfb-9e31-dc0586b57b70",
+        "output": {
+          "key": "exports/7176f07c-8fe0-401a-9908-77fe69a5bc6d/1/f1d0016f-a403-4033-aab1-7fa55d32662d/1.zip",
+          "manifest": {
+            "canonicalization": "RFC8785",
+            "created_at": "2026-10-25T06:57:56.483Z",
+            "expires_at": "2026-10-25T07:57:53.348Z",
+            "files": [
+              {
+                "path": "profile.json",
+                "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+                "size_bytes": 78
+              }
+            ],
+            "job_id": "f1d0016f-a403-4033-aab1-7fa55d32662d",
+            "omitted_categories": [
+              "raw_artifacts"
+            ],
+            "schema_version": "1.0.0",
+            "selection": {
+              "kind": "all"
+            },
+            "session_ids": []
+          },
+          "sha256": "ecdc0b227c876e20e009bfda5f5201645b4bfb4f70c7ce9337de467ee135416c",
+          "size_bytes": 567,
+          "version_id": "AaFxyAsMAQU.kQVBnM7kkeY9ilco2UCV"
+        },
+        "published": 1792911473.358523,
+        "state": "completed"
+      },
+      "recovery_seconds": 137.642,
+      "replacement_pid": 39,
+      "stage": "after_commit"
+    },
+    {
+      "at_kill": {
+        "attempts": 1,
+        "completed": 1792911617.101057,
+        "expires": 1792915214.162352,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+        "lease_until": null,
+        "outbox_id": "554d2352-be6d-4ba2-8a16-7c6d1e4485f3",
+        "output": {
+          "key": "exports/63afa90a-a66f-4166-a2d4-4e4ebf8d634e/1/79212305-ae91-427a-bd02-7caaf56f0dc8/1.zip",
+          "manifest": {
+            "canonicalization": "RFC8785",
+            "created_at": "2026-10-25T07:00:17.071Z",
+            "expires_at": "2026-10-25T08:00:14.162Z",
+            "files": [
+              {
+                "path": "profile.json",
+                "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+                "size_bytes": 78
+              }
+            ],
+            "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+            "omitted_categories": [
+              "raw_artifacts"
+            ],
+            "schema_version": "1.0.0",
+            "selection": {
+              "kind": "all"
+            },
+            "session_ids": []
+          },
+          "sha256": "2d4e40c2dfee4fb541a9f2d3874228af7eb177c600fbb37f80365a35105bd136",
+          "size_bytes": 568,
+          "version_id": "AaFxyAsNtmKTqGu0KLy4QN3P6UURHSBW"
+        },
+        "published": 1792911614.173678,
+        "state": "completed"
+      },
+      "barrier": {
+        "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+        "pid": 42,
+        "protocol": 1,
+        "receipt_sha256": "650511495261cb355fc75030c8f36a4fbd0bf2b10ccb95eedf2d5ebd24ad2b55",
+        "stage": "before_delete"
+      },
+      "kind": "export",
+      "pid": 42,
+      "recovered": {
+        "attempts": 1,
+        "completed": 1792911617.101057,
+        "expires": 1792915214.162352,
+        "failure": null,
+        "fence": 1,
+        "generation": 1,
+        "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+        "lease_until": null,
+        "outbox_id": "554d2352-be6d-4ba2-8a16-7c6d1e4485f3",
+        "output": {
+          "key": "exports/63afa90a-a66f-4166-a2d4-4e4ebf8d634e/1/79212305-ae91-427a-bd02-7caaf56f0dc8/1.zip",
+          "manifest": {
+            "canonicalization": "RFC8785",
+            "created_at": "2026-10-25T07:00:17.071Z",
+            "expires_at": "2026-10-25T08:00:14.162Z",
+            "files": [
+              {
+                "path": "profile.json",
+                "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+                "size_bytes": 78
+              }
+            ],
+            "job_id": "79212305-ae91-427a-bd02-7caaf56f0dc8",
+            "omitted_categories": [
+              "raw_artifacts"
+            ],
+            "schema_version": "1.0.0",
+            "selection": {
+              "kind": "all"
+            },
+            "session_ids": []
+          },
+          "sha256": "2d4e40c2dfee4fb541a9f2d3874228af7eb177c600fbb37f80365a35105bd136",
+          "size_bytes": 568,
+          "version_id": "AaFxyAsNtmKTqGu0KLy4QN3P6UURHSBW"
+        },
+        "published": 1792911614.173678,
+        "state": "completed"
+      },
+      "recovery_seconds": 122.633,
+      "replacement_pid": 46,
+      "stage": "before_delete"
+    }
+  ],
+  "stale_write": {
+    "after_late_commit": {
+      "attempts": 2,
+      "completed": 1792912134.232318,
+      "expires": 1792912200.855944,
+      "failure": null,
+      "fence": 2,
+      "generation": 1,
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "lease_until": null,
+      "outbox_id": "0a0389ac-0369-445b-a88d-79fd2976b93b",
+      "output": {
+        "key": "exports/3a5d8738-07c1-413c-af5d-b0624e381013/1/53e86a50-2d9f-4373-915f-60f695754739/2.zip",
+        "manifest": {
+          "canonicalization": "RFC8785",
+          "created_at": "2026-10-25T07:08:54.209Z",
+          "expires_at": "2026-10-25T07:10:00.855Z",
+          "files": [
+            {
+              "path": "profile.json",
+              "sha256": "fe511f4a8bca506491625d9822b2f60d0a9ddf55cdf5fa68542baa7c74423e06",
+              "size_bytes": 78
+            }
+          ],
+          "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+          "omitted_categories": [
+            "raw_artifacts"
+          ],
+          "schema_version": "1.0.0",
+          "selection": {
+            "kind": "all"
+          },
+          "session_ids": []
+        },
+        "sha256": "60f46609a6312f374e589de4be092017b339c9c86bdb07b6f015b90a51c99485",
+        "size_bytes": 569,
+        "version_id": "AaFxyAsPbY._BWa0bYcmWebw.RzcFD5O"
+      },
+      "published": 1792912010.866644,
+      "state": "completed"
+    },
+    "cleanup": {
+      "attempted": 1,
+      "failed": 0
+    },
+    "cleanup_boundary": "actual job expiry, not immediate orphan removal",
+    "late_output": {
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "key": "exports/3a5d8738-07c1-413c-af5d-b0624e381013/1/53e86a50-2d9f-4373-915f-60f695754739/1.zip",
+      "pid": 67,
+      "protocol": 1,
+      "sha256": "ee3be0cb0258d34e7e3693c998ae8cc81cac3041d3d067bb1edf7f4a5ac6d4a2",
+      "stage": "after_write",
+      "version_id": "AaFxyAsQIXYh19vyudGZHjjwvNRJCpm."
+    },
+    "neighbor_version": "AaFxyAsRVIGb.uSgPjPYJZYpQMM4_MQj",
+    "original": {
+      "attempts": 1,
+      "completed": null,
+      "expires": 1792912200.855944,
+      "failure": null,
+      "fence": 1,
+      "generation": 1,
+      "job_id": "53e86a50-2d9f-4373-915f-60f695754739",
+      "lease_until": 1792912133.477654,
+      "outbox_id": "0a0389ac-0369-445b-a88d-79fd2976b93b",
+      "output": null,
+      "published": 1792912010.866644,
+      "state": "running"
+    },
+    "retired": false
+  },
+  "status": "failed"
+}

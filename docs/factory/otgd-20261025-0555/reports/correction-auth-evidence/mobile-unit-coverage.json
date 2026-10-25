@@ -1,0 +1,408 @@
+{
+  "schema_version": "1.0.0",
+  "created_at": "2026-10-25T08:15:46.870Z",
+  "scope": "Every executable src/**/*.ts business module and shared oauth-build-policy.js validator, including unloaded modules counted as zero. TSX views use the separate browser component/ATDD gate; native OS adapters remain in this inventory. Native boundary mocks do not establish physical qualification.",
+  "source_sha256": "ee9c7492761bf9c9f6dc930ea7615b3d9fa17973344fd84f14347422960c2fda",
+  "required_percent_strictly_greater_than": 80,
+  "passed": true,
+  "counts": {
+    "tests": 348,
+    "failed": 0,
+    "passed": 348,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "topLevel": 348,
+    "suites": 0
+  },
+  "totals": {
+    "total_lines": 19941,
+    "covered_lines": 18005,
+    "percent_covered": 90.29135951055613
+  },
+  "files": [
+    {
+      "path": "src/controller.ts",
+      "loaded": true,
+      "total_lines": 5035,
+      "covered_lines": 4033,
+      "line_percent": 80.09930486593842
+    },
+    {
+      "path": "src/core/acquisition.ts",
+      "loaded": true,
+      "total_lines": 331,
+      "covered_lines": 302,
+      "line_percent": 91.23867069486404
+    },
+    {
+      "path": "src/core/cardiacAuthority.ts",
+      "loaded": true,
+      "total_lines": 262,
+      "covered_lines": 233,
+      "line_percent": 88.93129770992367
+    },
+    {
+      "path": "src/core/devicePresentation.ts",
+      "loaded": true,
+      "total_lines": 169,
+      "covered_lines": 162,
+      "line_percent": 95.85798816568047
+    },
+    {
+      "path": "src/core/deviceProjection.ts",
+      "loaded": true,
+      "total_lines": 16,
+      "covered_lines": 16,
+      "line_percent": 100
+    },
+    {
+      "path": "src/core/diagnostics.ts",
+      "loaded": true,
+      "total_lines": 138,
+      "covered_lines": 137,
+      "line_percent": 99.27536231884058
+    },
+    {
+      "path": "src/core/domain.ts",
+      "loaded": true,
+      "total_lines": 1425,
+      "covered_lines": 1308,
+      "line_percent": 91.78947368421052
+    },
+    {
+      "path": "src/core/exportEvidence.ts",
+      "loaded": true,
+      "total_lines": 1072,
+      "covered_lines": 1053,
+      "line_percent": 98.22761194029852
+    },
+    {
+      "path": "src/core/exportProjection.ts",
+      "loaded": true,
+      "total_lines": 453,
+      "covered_lines": 435,
+      "line_percent": 96.02649006622516
+    },
+    {
+      "path": "src/core/eyeProjection.ts",
+      "loaded": true,
+      "total_lines": 262,
+      "covered_lines": 247,
+      "line_percent": 94.27480916030534
+    },
+    {
+      "path": "src/core/historyView.ts",
+      "loaded": true,
+      "total_lines": 68,
+      "covered_lines": 68,
+      "line_percent": 100
+    },
+    {
+      "path": "src/core/integrity.ts",
+      "loaded": true,
+      "total_lines": 38,
+      "covered_lines": 38,
+      "line_percent": 100
+    },
+    {
+      "path": "src/core/labEvidence.ts",
+      "loaded": true,
+      "total_lines": 222,
+      "covered_lines": 212,
+      "line_percent": 95.4954954954955
+    },
+    {
+      "path": "src/core/namespaceGate.ts",
+      "loaded": true,
+      "total_lines": 15,
+      "covered_lines": 15,
+      "line_percent": 100
+    },
+    {
+      "path": "src/core/oauthPolicy.ts",
+      "loaded": true,
+      "total_lines": 111,
+      "covered_lines": 105,
+      "line_percent": 94.5945945945946
+    },
+    {
+      "path": "src/core/operationGuards.ts",
+      "loaded": true,
+      "total_lines": 100,
+      "covered_lines": 93,
+      "line_percent": 93
+    },
+    {
+      "path": "src/core/participantAcquisition.ts",
+      "loaded": true,
+      "total_lines": 827,
+      "covered_lines": 786,
+      "line_percent": 95.04232164449819
+    },
+    {
+      "path": "src/core/preparationClock.ts",
+      "loaded": true,
+      "total_lines": 41,
+      "covered_lines": 41,
+      "line_percent": 100
+    },
+    {
+      "path": "src/core/profileForm.ts",
+      "loaded": true,
+      "total_lines": 169,
+      "covered_lines": 161,
+      "line_percent": 95.26627218934911
+    },
+    {
+      "path": "src/core/rawArtifacts.ts",
+      "loaded": true,
+      "total_lines": 272,
+      "covered_lines": 269,
+      "line_percent": 98.89705882352942
+    },
+    {
+      "path": "src/core/rawExport.ts",
+      "loaded": true,
+      "total_lines": 323,
+      "covered_lines": 319,
+      "line_percent": 98.76160990712074
+    },
+    {
+      "path": "src/core/rawRecordings.ts",
+      "loaded": true,
+      "total_lines": 483,
+      "covered_lines": 455,
+      "line_percent": 94.20289855072464
+    },
+    {
+      "path": "src/core/remote.ts",
+      "loaded": true,
+      "total_lines": 172,
+      "covered_lines": 159,
+      "line_percent": 92.44186046511628
+    },
+    {
+      "path": "src/core/replacements.ts",
+      "loaded": true,
+      "total_lines": 207,
+      "covered_lines": 195,
+      "line_percent": 94.20289855072464
+    },
+    {
+      "path": "src/core/reportRevisions.ts",
+      "loaded": true,
+      "total_lines": 629,
+      "covered_lines": 600,
+      "line_percent": 95.38950715421304
+    },
+    {
+      "path": "src/core/researchResult.ts",
+      "loaded": true,
+      "total_lines": 214,
+      "covered_lines": 211,
+      "line_percent": 98.5981308411215
+    },
+    {
+      "path": "src/core/resultPresentation.ts",
+      "loaded": true,
+      "total_lines": 123,
+      "covered_lines": 121,
+      "line_percent": 98.3739837398374
+    },
+    {
+      "path": "src/core/serializedVault.ts",
+      "loaded": true,
+      "total_lines": 38,
+      "covered_lines": 38,
+      "line_percent": 100
+    },
+    {
+      "path": "src/core/workspaceScope.ts",
+      "loaded": true,
+      "total_lines": 79,
+      "covered_lines": 76,
+      "line_percent": 96.20253164556962
+    },
+    {
+      "path": "src/device/controller.ts",
+      "loaded": true,
+      "total_lines": 1193,
+      "covered_lines": 1093,
+      "line_percent": 91.61777032690695
+    },
+    {
+      "path": "src/device/index.ts",
+      "loaded": true,
+      "total_lines": 31,
+      "covered_lines": 30,
+      "line_percent": 96.7741935483871
+    },
+    {
+      "path": "src/device/physicalProtocol.ts",
+      "loaded": true,
+      "total_lines": 874,
+      "covered_lines": 798,
+      "line_percent": 91.30434782608695
+    },
+    {
+      "path": "src/device/physicalRaw.ts",
+      "loaded": true,
+      "total_lines": 90,
+      "covered_lines": 86,
+      "line_percent": 95.55555555555556
+    },
+    {
+      "path": "src/device/protocol.ts",
+      "loaded": true,
+      "total_lines": 199,
+      "covered_lines": 192,
+      "line_percent": 96.4824120603015
+    },
+    {
+      "path": "src/device/signal.ts",
+      "loaded": true,
+      "total_lines": 154,
+      "covered_lines": 153,
+      "line_percent": 99.35064935064936
+    },
+    {
+      "path": "src/device/signalFailure.ts",
+      "loaded": true,
+      "total_lines": 16,
+      "covered_lines": 16,
+      "line_percent": 100
+    },
+    {
+      "path": "src/device/signalPresentation.ts",
+      "loaded": true,
+      "total_lines": 33,
+      "covered_lines": 23,
+      "line_percent": 69.6969696969697
+    },
+    {
+      "path": "src/device/simulator.ts",
+      "loaded": true,
+      "total_lines": 121,
+      "covered_lines": 109,
+      "line_percent": 90.08264462809917
+    },
+    {
+      "path": "src/device/synthetic-values.ts",
+      "loaded": true,
+      "total_lines": 19,
+      "covered_lines": 17,
+      "line_percent": 89.47368421052632
+    },
+    {
+      "path": "src/platform/config.ts",
+      "loaded": true,
+      "total_lines": 79,
+      "covered_lines": 79,
+      "line_percent": 100
+    },
+    {
+      "path": "src/platform/sharing.native.ts",
+      "loaded": false,
+      "total_lines": 41,
+      "covered_lines": 0,
+      "line_percent": 0
+    },
+    {
+      "path": "src/platform/sharing.ts",
+      "loaded": true,
+      "total_lines": 19,
+      "covered_lines": 19,
+      "line_percent": 100
+    },
+    {
+      "path": "src/platform/storage.native.ts",
+      "loaded": true,
+      "total_lines": 333,
+      "covered_lines": 292,
+      "line_percent": 87.68768768768768
+    },
+    {
+      "path": "src/platform/storage.ts",
+      "loaded": true,
+      "total_lines": 11,
+      "covered_lines": 11,
+      "line_percent": 100
+    },
+    {
+      "path": "src/services/api.ts",
+      "loaded": true,
+      "total_lines": 965,
+      "covered_lines": 900,
+      "line_percent": 93.26424870466322
+    },
+    {
+      "path": "src/services/auth.ts",
+      "loaded": true,
+      "total_lines": 399,
+      "covered_lines": 388,
+      "line_percent": 97.24310776942356
+    },
+    {
+      "path": "src/services/export.ts",
+      "loaded": true,
+      "total_lines": 701,
+      "covered_lines": 665,
+      "line_percent": 94.8644793152639
+    },
+    {
+      "path": "src/services/sync.ts",
+      "loaded": true,
+      "total_lines": 1154,
+      "covered_lines": 1042,
+      "line_percent": 90.29462738301561
+    },
+    {
+      "path": "src/ui/measurement-format.ts",
+      "loaded": true,
+      "total_lines": 71,
+      "covered_lines": 68,
+      "line_percent": 95.77464788732394
+    },
+    {
+      "path": "src/ui/study-consent.ts",
+      "loaded": true,
+      "total_lines": 45,
+      "covered_lines": 45,
+      "line_percent": 100
+    },
+    {
+      "path": "oauth-build-policy.js",
+      "loaded": true,
+      "total_lines": 99,
+      "covered_lines": 91,
+      "line_percent": 91.91919191919192
+    }
+  ],
+  "unloaded_source_files": [
+    "src/platform/sharing.native.ts"
+  ],
+  "type_only_sources": [
+    "src/core/types.ts",
+    "src/device/types.ts",
+    "src/platform/storage.types.ts"
+  ],
+  "browser_component_sources": [
+    "src/device/DevicePanel.tsx",
+    "src/device/SignalPanel.tsx",
+    "src/ui/accessibility.tsx",
+    "src/ui/account.tsx",
+    "src/ui/checks.tsx",
+    "src/ui/components.tsx",
+    "src/ui/device-summary.tsx",
+    "src/ui/lab-collection.tsx",
+    "src/ui/manage.tsx",
+    "src/ui/participant-capture.tsx",
+    "src/ui/raw-choices.tsx",
+    "src/ui/raw-export-choices.tsx",
+    "src/ui/raw-recordings.tsx",
+    "src/ui/raw-upload-selection.tsx",
+    "src/ui/revisions.tsx",
+    "src/ui/theme.tsx"
+  ]
+}

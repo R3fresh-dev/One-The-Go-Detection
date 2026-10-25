@@ -26,6 +26,7 @@ from .governance_fixture import (
     CALIBRATION, CONFIGURATION, DEVICE, KEY, POLICY, PROTOCOL, STUDY,
     approve, approve_task, calibration, common, configuration, device, proof, retention, study,
 )
+from .test_model_admission import admitted, model  # noqa: F401 - pytest fixtures
 
 
 def failure(code, callable, *args, **kwargs):
@@ -41,6 +42,151 @@ def consent(client, value):
     })
     assert response.status_code == 201, response.text
     return response.json()
+
+
+def alcohol_contract_authority(db, account, expiry_kind):
+    """Typed fictional dependency fixture; there is no breath instrument adapter."""
+    from uuid import uuid4
+
+    end = now() + 30
+    config = configuration("alcohol", device_id=DEVICE, key_id=KEY, calibration_id=CALIBRATION,
+        approved_hardware=["fixture-hw"], approved_firmware=["fixture-fw"],
+        expires_at=end if expiry_kind == "configuration" else end + 3600)
+    calibrated = {**calibration(), "channels": ["alcohol"],
+        "expires_at": end if expiry_kind == "calibration" else end + 3600}
+    config = validate_submission("configuration", config)
+    for kind, value in (("study", study(account, {"alcohol": config["registry_id"]})),
+        ("retention", retention()), ("device", device(account)), ("calibration", calibrated),
+        ("qualification", proof("alcohol", config_body=config)), ("configuration", config)):
+        approve(db, kind, value)
+    binding_id = str(uuid4())
+    save_record(db, db.get(Account, account), "binding", binding_id, {
+        "binding_id": binding_id, "device_id": DEVICE, "key_id": KEY,
+        "hardware_revision": "fixture-hw", "firmware_version": "fixture-fw", "state": "active"})
+    return config, end, binding_id
+
+
+@pytest.mark.parametrize("kind", ["configuration", "calibration"])
+@pytest.mark.parametrize("offset,valid", [(-0.001, True), (0, False), (0.001, False)])
+def test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history(client, account, monkeypatch, kind, offset, valid):
+    with factory().begin() as db:
+        config, end, _ = alcohol_contract_authority(db, account, kind)
+        registry_id = config["registry_id"] if kind == "configuration" else CALIBRATION
+        original = deepcopy(active_body(db, kind, registry_id))
+        original_history = history(db, kind, registry_id)["items"][0]
+    monkeypatch.setattr("otgd.operator_governance.now", lambda: end + offset)
+    with factory()() as db:
+        entry = history(db, kind, registry_id)["items"][0]
+        assert entry["submitted_body"] == original
+        assert entry["submitted_sha256"] == digest(original)
+        assert entry["decisions"] == original_history["decisions"]
+        assert entry["effective_state"] == ("active" if valid else "expired")
+        assert entry["expired"] is (not valid)
+        if valid:
+            assert active_body(db, kind, registry_id) == original
+            assert validate_dependencies(db, "configuration", config) is None
+        else:
+            failure("APPROVED_REGISTRY_VERSION_REQUIRED", active_body, db, kind, registry_id)
+            assert released_version(db, kind, registry_id, required=False) is None
+            if kind == "calibration":
+                # Configuration is still current; the missing current authority
+                # is specifically the calibration dependency, not its envelope.
+                assert active_body(db, "configuration", config["registry_id"]) == config
+                failure("APPROVED_REGISTRY_VERSION_REQUIRED", validate_dependencies, db, "configuration", config)
+
+
+def test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter(client, account):
+    from otgd import operator_governance as governance
+    from otgd.db import Check
+
+    with factory().begin() as db:
+        config, _, _ = alcohol_contract_authority(db, account, "calibration")
+    consent(client, study(account))
+    assert config["material"]["modality"] == "breath_alcohol"
+    assert config["material"]["raw_unit"] == "mg/L"
+    assert not governance.SOFTWARE_ADAPTERS.get("alcohol")
+    assert not governance.PHYSICAL_DRIVERS.get("alcohol")
+    assert governance.software_supported(config) is False
+    capabilities = client.get("/v1/me/capabilities", headers=headers()).json()["channels"]["alcohol"]
+    assert capabilities == {"available": False, "authorization_available": True, "software_available": False,
+        "reason_codes": ["HUMAN_ADAPTER_UNIMPLEMENTED"], "configurations": []}
+    with factory()() as db:
+        owner = db.get(Account, account)
+        failure("HUMAN_ADAPTER_UNIMPLEMENTED", capture_configuration, db, owner,
+            Check(study_id=STUDY, protocol_id=PROTOCOL), "alcohol")
+
+
+@pytest.mark.parametrize("kind", ["configuration", "calibration"])
+@pytest.mark.parametrize("offset", [0, 0.001])
+def test_alcohol_expiry_between_contract_grant_and_start_rejects_cached_authority(client, account, monkeypatch, kind, offset):
+    """Hypothetical inventory reaches real HTTP routes; never a hardware proof."""
+    from uuid import uuid4
+    from otgd import operator_governance as governance
+
+    with factory().begin() as db:
+        config, end, binding_id = alcohol_contract_authority(db, account, kind)
+    consent(client, study(account))
+    sid, aid, rid = (str(uuid4()) for _ in range(3))
+    created = client.post("/v1/sessions", headers=headers(), json={"session_id": sid,
+        "mode": "controlled_research", "study_id": STUDY, "protocol_id": PROTOCOL})
+    assert created.status_code == 201, created.text
+    context = {"schema_version": "1.0.0", "session_id": sid, "context_confirmed_at": iso(),
+        "profile_version_id": None, "profile_snapshot_sha256": "a" * 64, "history_snapshot_sha256": "b" * 64,
+        "protocol_id": PROTOCOL, "configuration_refs": [{"id": config["registry_id"], "version": "v1",
+            "sha256": config["sha256"], "scope": "measurement_collection"}],
+        "baseline_refs": [], "device_associations": [{"binding_id": binding_id, "device_id": DEVICE,
+            "hardware_revision": "fixture-hw", "firmware_version": "fixture-fw", "boot_id": "FICTIONAL-BOOT"}],
+        "self_report_context": None}
+    assert client.put(f"/v1/sessions/{sid}/context", headers=headers(revision=0), json=context).status_code == 200
+    attempt = {"schema_version": "1.0.0", "session_id": sid, "attempt_id": aid, "component": "alcohol",
+        "record_id": rid, "supersedes_attempt_id": None, "status": "started", "source": "prototype_sensor",
+        "started_at": iso(), "ended_at": None, "configuration_id": config["registry_id"],
+        "configuration_hash": config["sha256"], "quality_flags": [], "component_metadata": {},
+        "artifact_refs": [], "attestation_refs": []}
+    assert client.put(f"/v1/sessions/{sid}/attempts/{aid}", headers=headers(revision=0), json=attempt).status_code == 200
+    request = {"attempt_id": aid, "channel": "alcohol", "binding_id": binding_id, "device_id": DEVICE,
+        "configuration_id": config["registry_id"], "configuration_hash": config["sha256"]}
+    # Only this synthetic configuration is admitted by a test-local inventory.
+    # All lifecycle, consent, context, binding, expiry and signing code stays real.
+    with monkeypatch.context() as hypothetical:
+        hypothetical.setitem(governance.SOFTWARE_ADAPTERS, "alcohol", {config["software_adapter_id"]})
+        cached = client.get("/v1/me/capabilities", headers=headers()).json()["channels"]["alcohol"]
+        assert cached["available"] and cached["authorization_available"]
+        granted = client.post(f"/v1/sessions/{sid}/capture-authorizations", headers=headers(), json=request)
+        assert granted.status_code == 201, granted.text
+    authorization = granted.json()
+    assert authorization["state"] == "issued" and "server_start" not in authorization
+    assert authorization["expires_epoch"] > end + offset
+    assert cached["configurations"][0]["configuration_hash"] == config["sha256"]
+    signed_starts = []
+    def unexpected_start(*args, **kwargs):
+        signed_starts.append((args, kwargs))
+        raise AssertionError("Expired alcohol authority must never mint a start token")
+    monkeypatch.setattr("otgd.main.sign_start", unexpected_start)
+    for module in ("otgd.operator_governance", "otgd.domain", "otgd.main"):
+        monkeypatch.setattr(module + ".now", lambda: end + offset)
+    path = f"/v1/sessions/{sid}/capture-authorizations"
+    denied = client.post(path + "/" + authorization["authorization_id"] + "/start", headers=headers(),
+        json={"attempt_id": aid, "device_boot_id": "FICTIONAL-BOOT", "device_nonce": "fictional-nonce"})
+    assert denied.status_code == 403 and denied.json()["code"] == "APPROVED_REGISTRY_VERSION_REQUIRED", denied.text
+    assert "server_start" not in denied.json()
+    assert signed_starts == []
+    fresh_grant = client.post(path, headers=headers(), json=request)
+    assert fresh_grant.status_code == 403 and fresh_grant.json()["code"] == "APPROVED_REGISTRY_VERSION_REQUIRED", fresh_grant.text
+    current = client.get("/v1/me/capabilities", headers=headers()).json()["channels"]["alcohol"]
+    assert not current["available"] and not current["authorization_available"]
+    assert current["configurations"] == [] and current["reason_codes"] == ["APPROVED_REGISTRY_VERSION_REQUIRED"]
+    with factory()() as db:
+        owner = db.get(Account, account)
+        retained = record(db, owner, "authorization", authorization["authorization_id"])
+        assert retained.body == authorization and retained.body["state"] == "issued"
+        assert "server_start" not in retained.body
+        assert record(db, owner, "alcohol", sid) is None
+        assert record(db, owner, "alcohol", rid) is None
+        registry_id = config["registry_id"] if kind == "configuration" else CALIBRATION
+        assert history(db, kind, registry_id)["items"][0]["effective_state"] == "expired"
+    assert not governance.SOFTWARE_ADAPTERS.get("alcohol")
+    assert not governance.PHYSICAL_DRIVERS.get("alcohol")
 
 
 def test_immutable_submission_three_principals_lifecycle_history_and_revision(client, account):
@@ -342,6 +488,56 @@ def test_prestart_invalid_optical_attempt_retains_arm_lineage_without_invented_c
         assert persisted["component_metadata"]["native_result"] is None
         assert persisted["started_at"] is None and persisted["ended_at"] is None
         assert persisted["component_metadata"]["armed_at"] == attempt["started_at"]
+
+
+@pytest.mark.parametrize('admitted', ['optical'], indirect=True)
+def test_retired_optical_approval_refuses_later_settlement_without_rewriting_snapshot(client, admitted):  # noqa: F811 - pytest injects imported fixture
+    from otgd.db import Check
+
+    from .test_recovery_scopes import configured_capture_arm
+
+    with factory()() as db:
+        original_check = db.get(Check, admitted['sid'])
+        snapshot_before = deepcopy(original_check.snapshot)
+        snapshot_digest_before = original_check.snapshot_sha256
+        owner = db.get(Account, admitted['account'])
+        manifest = record(db, owner, 'manifest', original_check.id).body
+        original_attempt = deepcopy(record(db, owner, 'attempt', manifest['selected']['eyes']).body)
+    sid, arm, config = configured_capture_arm(client, 'eyes')
+    granted = client.post(f'/v1/sessions/{sid}/capture-authorizations', headers=headers(), json={
+        'attempt_id': arm['attempt_id'], 'channel': 'eyes', 'binding_id': None, 'device_id': None,
+        'configuration_id': config['configuration_id'], 'configuration_hash': config['sha256']})
+    assert granted.status_code == 201, granted.text
+    authorization_id = granted.json()['authorization_id']
+    started = client.post(f'/v1/sessions/{sid}/capture-authorizations/{authorization_id}/start',
+        headers=headers(), json={'attempt_id': arm['attempt_id'], 'device_boot_id': arm['record_id'],
+            'device_nonce': None})
+    assert started.status_code == 200, started.text
+    native = deepcopy(original_attempt['component_metadata']['native_result'])
+    projection = deepcopy(original_attempt['component_metadata']['projection'])
+    native.update(run_id=arm['record_id'], authorization_id=authorization_id,
+        started_at=arm['started_at'], ended_at=iso(now() + 1))
+    projection.update(started_at=native['started_at'], ended_at=native['ended_at'])
+    terminal = {**arm, 'status': 'valid', 'ended_at': native['ended_at'],
+        'quality_flags': original_attempt['quality_flags'],
+        'component_metadata': {'native_result': native, 'projection': projection}}
+    with factory().begin() as db:
+        owner = db.get(Account, admitted['account'])
+        check = db.get(Check, sid)
+        # The same owned run/authorization is admissible before retirement.
+        assert validate_optical_attempt(db, owner, check, terminal, config)['physical_onset_verified'] is False
+        transition(db, 'configuration', config['registry_id'], config['version'], 'retire',
+            'local:fixture-releaser', 'Fictional retirement after optical start, before settlement', 3)
+    denied = client.put(f"/v1/sessions/{sid}/attempts/{arm['attempt_id']}",
+        headers=headers(revision=1), json=terminal)
+    assert denied.status_code == 403 and denied.json()['code'] == 'CAPABILITY_DENIED', denied.text
+    with factory()() as db:
+        owner = db.get(Account, admitted['account'])
+        retained_arm = record(db, owner, 'attempt', arm['attempt_id'])
+        assert retained_arm.body == arm and retained_arm.revision == 1
+        assert db.get(Check, sid).snapshot is None
+        original = db.get(Check, admitted['sid'])
+        assert original.snapshot == snapshot_before and original.snapshot_sha256 == snapshot_digest_before
 
 
 def test_bound_reader_start_token_comes_from_real_owned_proof_and_exact_frozen_boot(client, account, capture_signer, monkeypatch):
@@ -703,9 +899,19 @@ def test_actual_postgresql_preserves_registry_content_and_append_only_decisions(
         migration_003_operator_governance(connection)
     with factory().begin() as db:
         approve(db, "study", study(account))
-    for statement in ("UPDATE operator_registry_versions SET body='{}'", "UPDATE operator_registry_versions SET submitted_by='other'", "DELETE FROM operator_registry_versions", "UPDATE operator_registry_events SET reason='changed'", "DELETE FROM operator_registry_events"):
+    with factory()() as db:
+        original = deepcopy(history(db, "study", STUDY)["items"][0])
+    for statement in ("UPDATE operator_registry_versions SET body='{}'", "UPDATE operator_registry_versions SET submitted_by='other'",
+        "UPDATE operator_registry_versions SET sha256='" + '0' * 64 + "'",
+        "UPDATE operator_registry_versions SET version='forged-v2'",
+        "UPDATE operator_registry_versions SET submitted_at=submitted_at+1",
+        "DELETE FROM operator_registry_versions", "UPDATE operator_registry_events SET reason='changed'", "DELETE FROM operator_registry_events"):
         with pytest.raises(IntegrityError):
             with engine().begin() as connection:
                 connection.execute(text(statement))
+        with factory()() as db:
+            reconstructed = history(db, "study", STUDY)["items"][0]
+            assert reconstructed == original
+            assert digest(reconstructed["submitted_body"]) == original["submitted_sha256"]
     with factory()() as db:
         assert len(history(db, "study", STUDY)["items"][0]["decisions"]) == 3

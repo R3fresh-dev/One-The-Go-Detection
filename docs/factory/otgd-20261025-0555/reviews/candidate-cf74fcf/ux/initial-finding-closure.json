@@ -1,0 +1,39 @@
+{
+  "candidate_revision": "cf74fcff6ad19e639538d260f223ec18d618658d",
+  "items": [
+    {
+      "id": "UX-001",
+      "status": "SOURCE_CORRECTION_CONFIRMED_CURRENT_GATE_PENDING",
+      "evidence": [
+        "apps/mobile/src/core/resultPresentation.ts:48",
+        "apps/mobile/src/ui/account.tsx:578",
+        "apps/mobile/tests/result-ui.test.ts",
+        "apps/mobile/tests/result-presentation.test.ts",
+        "/tmp/correction-HR-focused2.log"
+      ],
+      "reason": "CheckRow and Home use verified state/scope helpers; actual row/history/result tests distinguish measurement_only/invalid/inconclusive/admitted research/abstention, reject changed proof/legacy/synthetic claims and leave delivery independent. HR numeric read now additionally requires current admission. No obsolete source defect carried forward; final combined-source execution pending."
+    },
+    {
+      "id": "UX-002",
+      "status": "SOURCE_AND_BROWSER_CORRECTION_CONFIRMED_NATIVE_OS_EVIDENCE_OPEN",
+      "evidence": [
+        "apps/mobile/src/ui/accessibility.tsx:14",
+        "apps/mobile/src/ui/components.tsx:601",
+        "apps/mobile/src/ui/components.tsx:686",
+        "apps/mobile/e2e/components.spec.ts:626",
+        "/tmp/correction-HR-browser-final.log"
+      ],
+      "reason": "Actual heading .toBeFocused assertions cover Home/Settings/Privacy/History/deeper Back; named dialog heading receives focus and Cancel restores trigger. Helper cancels detached/stale/deferred work and respects newer web user focus. Native API invocation is implemented; actual TalkBack/VoiceOver/browser-cancel/large-text OS execution absent."
+    },
+    {
+      "id": "UX-E01",
+      "status": "OPEN_CURRENT_EVIDENCE_PENDING",
+      "reason": "Exact current seven-gate execution running. The readable local-gates.json is revision28 historical and is not accepted for this candidate. Per-case current reconciliation and current CI not yet supplied."
+    },
+    {
+      "id": "UX-E02",
+      "status": "OPEN_EXTERNAL_NATIVE_OS_PREREQUISITE",
+      "reason": "Compilation/core/browser fixtures do not execute actual OS camera/BLE permission dialogs/Settings return, SQLCipher unlock/key loss/process death, share-sheet cleanup or assistive-technology behavior. No target runtime evidence was supplied."
+    }
+  ]
+}

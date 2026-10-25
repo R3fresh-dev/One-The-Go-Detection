@@ -11,6 +11,11 @@ final class ReactionCoreTests: XCTestCase {
     if expected[key] is NSNull { XCTAssertNil(actual, key) }
     else { XCTAssertNotNil(actual, key); XCTAssertEqual((expected[key] as! NSNumber).doubleValue, actual ?? .nan, accuracy: 1e-6, key) }
   }
+  private func snapshot(_ result: ReactionScore) throws -> Data {
+    try JSONSerialization.data(withJSONObject: ["trials":result.trials.map { $0.dictionary() },
+      "inputs":result.inputs.map { $0.dictionary() }, "counts":result.counts,
+      "features":nullValue(result.features)], options: [.sortedKeys])
+  }
   func testFrozenLiteralSchedulesAndHashes() throws {
     let f = try fixture(); XCTAssertEqual(f["configuration_sha256"] as? String, ReactionConfig.sha256)
     for expected in f["schedules"] as! [[String: Any]] {
@@ -31,13 +36,19 @@ final class ReactionCoreTests: XCTestCase {
       let trial = ReactionTrial(index: 0, phase: "scored", stimulus: v["stimulus"] as! String, plannedOnsetMs: Int(onset), onsetIntervalMs: 1700, onsetMs: onset)
       let cutoff = (v["terminal_cutoff_ms"] as? NSNumber)?.doubleValue
       var inputs: [ReactionInput] = []; var ignored = 0; var fault: String? = nil
+      var committedSnapshot: Data? = nil
       for item in v["inputs"] as! [[String: Any]] {
         let dispatch = (item["dispatch_timestamp_ms"] as! NSNumber).doubleValue
-        if ReactionCore.inputAdmission(retainedCount: inputs.count, dispatchMs: dispatch, terminalCutoffMs: cutoff) == "ignore_after_terminal" { ignored += 1; continue }
+        if ReactionCore.inputAdmission(retainedCount: inputs.count, dispatchMs: dispatch, terminalCutoffMs: cutoff) == "ignore_after_terminal" {
+          if committedSnapshot == nil { committedSnapshot = try snapshot(ReactionCore.score(
+            trials: [trial], inputs: inputs, endedMs: try XCTUnwrap(cutoff), intact: fault == nil)) }
+          ignored += 1; continue
+        }
         let input = ReactionInput(nativeTimestampMs: (item["native_timestamp_ms"] as! NSNumber).doubleValue, dispatchTimestampMs: dispatch, target: item["target"] as! String, pointerId: item["pointer_id"] as! Int, nativeSequence: item["native_sequence"] as! Int, inputKind: item["input_kind"] as! String)
         inputs.append(input); fault = fault ?? ReactionCore.inputFault(input)
       }
       let result = ReactionCore.score(trials: [trial], inputs: inputs, endedMs: cutoff ?? onset+1100, intact: fault == nil)
+      if let committed = committedSnapshot { XCTAssertEqual(committed, try snapshot(result), v["case_id"] as! String) }
       if expected["run_integrity"] as! String == "invalid" { XCTAssertEqual(fault, (expected["quality_flags"] as! [String])[0]); XCTAssertNil(result.features) }
       else {
         XCTAssertNil(fault, v["case_id"] as! String); let t = result.trials[0]
@@ -47,6 +58,19 @@ final class ReactionCoreTests: XCTestCase {
         if let dispositions = expected["input_dispositions"] as? [String] { XCTAssertEqual(result.inputs.map { $0.disposition },dispositions) }
         if let sequences = expected["sorted_native_sequences"] as? [Int] { XCTAssertEqual(result.inputs.map { $0.nativeSequence },sequences) }
         if let count = expected["ignored_after_terminal_count"] as? Int { XCTAssertEqual(ignored,count) }
+        if let count = expected["retained_input_count"] as? Int { XCTAssertEqual(result.inputs.count,count,v["case_id"] as! String) }
+        if let ledger = expected["retained_inputs"] as? [[String: Any]] {
+          XCTAssertEqual(result.inputs.count,ledger.count)
+          for (a,e) in zip(result.inputs,ledger) {
+            number(e,"native_timestamp_ms",a.nativeTimestampMs); number(e,"dispatch_timestamp_ms",a.dispatchTimestampMs)
+            number(e,"dispatch_delay_ms",a.dispatchDelayMs)
+            number(e,"dispatch_delay_ms",a.dictionary()["dispatchDelayMs"] as? Double)
+            XCTAssertEqual(a.target,e["target"] as! String); XCTAssertEqual(a.pointerId,e["pointer_id"] as! Int)
+            XCTAssertEqual(a.nativeSequence,e["native_sequence"] as! Int); XCTAssertEqual(a.inputKind,e["input_kind"] as! String)
+            XCTAssertEqual(a.disposition,e["disposition"] as! String); XCTAssertEqual(a.trialIndex,e["trial_index"] as? Int)
+            XCTAssertNil(a.anticipatoryForTrialIndex)
+          }
+        }
       }
     }
   }

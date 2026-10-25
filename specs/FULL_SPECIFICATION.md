@@ -192,6 +192,57 @@ All gates begin **OPEN**. Quantitative acceptance values are intentionally unset
 | PRD-021–025: performance and reliability | VAL-001–007; MOD-014/015; APP-014 | G-08/G-09/G-10 |
 | PRD-026–028: economics and open decisions | BUS-001–003; DOC-001–003; VAL-008 | G-13/G-14 and gate register |
 
+### Current software refinement precedence and individual PRD traceability
+
+The 46 active/pending OpenSpec capability files across 11 changes refine this register; their canonical run IDs remain OTGD-002–047 and this register remains OTGD-001. These identifiers track evidence, not new capabilities. [Shared contracts §1](../openspec/changes/production-mobile-platform/shared-contracts.md#1-release-and-workspace-policy) scopes historical fixed-false clauses to legacy Result 0.1.0 and assigns ResearchResult 1.1.0 to the authorized-model-execution amendment with the explicitly restricted qualified-participant-acquisition HR variant. Default measurement behavior and all scientific gates above remain unchanged. [Shared contracts §7](../openspec/changes/production-mobile-platform/shared-contracts.md#7-export-artifact-versions-and-privacy-jobs) and authorized-raw-export govern the complete raw-inclusive archive at 50 MiB uncompressed / 64 MiB ZIP, with lower authority limits honored; a historical larger proposal is superseded.
+
+Each PRD identifier below is independently mapped. Full-register families supply product/scientific requirements; canonical OpenSpec IDs supply software refinements and acceptance scenarios. The canonical ID/path/hash and reverse PRD mappings are in the [run inventory](../docs/factory/otgd-20261025-0555/inventory.json). [HLD](HLD.md) and [LLD](LLD.md) describe implementation boundaries; the [implementation plan](../docs/factory/otgd-20261025-0555/reports/implementation-plan.md) links the remaining bounded gaps to exact files and tests. Source mappings and a written scenario are not executed evidence; current per-case results and independent review remain required. PRD-029–042 trace existing approved scope.
+
+| PRD identifier | Full-register requirements | Canonical software refinements | Verification focus |
+|---|---|---|---|
+| `PRD-001` | ANA-001/012; APP-012/013 | OTGD-026, OTGD-033, OTGD-035, OTGD-040 | one collection / one task; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-002` | HW-005–009; APP-009/010 | OTGD-024, OTGD-025, OTGD-027, OTGD-043 | pupil / cardiac / exploratory ECG; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-003` | MOD-001/009; APP-012/013 | OTGD-021, OTGD-030, OTGD-034 | measurement defaults; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-004` | MOD-008–011 | OTGD-009, OTGD-011, OTGD-038, OTGD-042 | current independent model admission; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-005` | MOD-002/012; VAL-002/003/006 | OTGD-008, OTGD-041 | prespecified endpoint and error policy; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-006` | APP-013; MOD-013; ALC-005 | OTGD-006, OTGD-019, OTGD-034 | claims and no clearance; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-007` | APP-012/013; MOD-010/013 | OTGD-006, OTGD-026, OTGD-034 | outcome and missingness; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-008` | ALC-001/003/005 | OTGD-019 | separate alcohol evidence; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-009` | APP-001–008; OPS-002–005 | OTGD-026, OTGD-029, OTGD-033 | attempts and orchestration; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-010` | ANA-001–013 | OTGD-035, OTGD-040 | saliva analytical boundary; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-011` | ANA-002–005 | OTGD-035, OTGD-040 | parent THC; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-012` | ANA-002–005; MOD-014 | OTGD-035, OTGD-040 | candidate analytes; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-013` | APP-004–008/014; MOD-014 | OTGD-033 | one continuous task; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-014` | HW-005/006; APP-009 | OTGD-012, OTGD-025 | optical evidence; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-015` | HW-007–009; APP-010; MOD-014 | OTGD-024, OTGD-027, OTGD-042, OTGD-043 | cardiac evidence; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-016` | APP-002/003/011; MOD-006 | OTGD-032, OTGD-026 | optional profile and unknowns; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-017` | ALC-001–005 | OTGD-019 | future fuel-cell mg/L channel; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-018` | MOD-003–007; OPS-003/004; SEC-001–006 | OTGD-008, OTGD-009, OTGD-011, OTGD-041, OTGD-042 | versioned dataset; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-019` | MOD-007–013 | OTGD-006, OTGD-009, OTGD-042 | quality-aware admission; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-020` | APP-012/013; MOD-013 | OTGD-021, OTGD-028, OTGD-034 | scientific and delivery states; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-021` | ANA-005–013; VAL-001–008 | OTGD-035, OTGD-040 | analytical qualification; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-022` | MOD-014; VAL-002–007 | OTGD-008, OTGD-041, OTGD-042 | matched incremental value; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-023` | APP-014; VAL-007 | OTGD-020, OTGD-026, OTGD-033, OTGD-036 | single-check usability; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-024` | VAL-004/005; MOD-013 | OTGD-008, OTGD-041, OTGD-042 | prespecified strata and uncertainty; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-025` | APP-014; VAL-007; OPS-005 | OTGD-020, OTGD-026, OTGD-029, OTGD-033, OTGD-036 | complete-check reliability; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-026` | BUS-001–003 | Full register only | economic feasibility; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-027` | MOD-002/012; VAL-002/003/006/008 | OTGD-008, OTGD-041 | freeze intended use and endpoint; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-028` | HW-001–012; ANA-001–013; SEC-005; BUS-001–003; DOC-001–003 | OTGD-019, OTGD-024, OTGD-025, OTGD-027, OTGD-033, OTGD-035, OTGD-043 | freeze feasibility and release choices; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-029` | SEC-002/004/007 | OTGD-020, OTGD-030, OTGD-037 | guest / identity / sign-out; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-030` | SEC-002/003; MOD-008–010 | OTGD-011, OTGD-038, OTGD-039 | consent / fresh start / withdrawal; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-031` | ANA-001/012; APP-001–008; OPS-002–005 | OTGD-026, OTGD-032, OTGD-033, OTGD-040 | frozen context / attempts; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-032` | APP-004–008/014 | OTGD-033 | native timing and stop; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-033` | HW-003/004/007/012; SEC-004 | OTGD-013, OTGD-023, OTGD-043 | binding and actual adapter scope; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-034` | ANA-001–012; HW-005–009; APP-009/010 | OTGD-012, OTGD-024, OTGD-025, OTGD-027, OTGD-035, OTGD-039, OTGD-040, OTGD-043 | acquisition and laboratory handoff; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-035` | SEC-003/004; OPS-002–005 | OTGD-026, OTGD-029, OTGD-037 | protected save / explicit upload; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-036` | APP-012/013; MOD-013; OPS-003 | OTGD-004, OTGD-006, OTGD-028, OTGD-034 | history / result / immutable lineage; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-037` | SEC-003–005 | OTGD-012, OTGD-013, OTGD-018, OTGD-024, OTGD-025 | default-off recording and cleanup; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-038` | SEC-002/005/007 | OTGD-010, OTGD-018, OTGD-022 | bounded exact-scope export; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-039` | SEC-005/007; OPS-003–006 | OTGD-016, OTGD-031, OTGD-038 | privacy / generation / recovery; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-040` | APP-014 | OTGD-020, OTGD-023, OTGD-025, OTGD-033, OTGD-036, OTGD-037 | accessibility / permission recovery; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-041` | MOD-001–015; VAL-001–007 | OTGD-002, OTGD-003, OTGD-004, OTGD-005, OTGD-006, OTGD-007, OTGD-008, OTGD-009, OTGD-011, OTGD-041, OTGD-042 | governed conditional research; canonical acceptance plus applicable G-01–G-14 evidence |
+| `PRD-042` | HW-002; SEC-001/004; OPS-001–006 | OTGD-014, OTGD-015, OTGD-017, OTGD-020, OTGD-044, OTGD-045, OTGD-046, OTGD-047 | environment / preview / release tooling; canonical acceptance plus applicable G-01–G-14 evidence |
+
 A **P0 demonstration** is accepted when synthetic data can complete the documented workflow, failure cases produce correct states, and no clinical probability is emitted. A **P1 feasibility result** is accepted per the prespecified analytical or capture gate and is not a clinical conclusion. A **P2 research estimate** is permitted only through the authorized manifest gate; that permission does not itself validate the model. A **P3 release** requires a separate specification version and evidence supporting the exact intended use.
 
 Release records must identify the requirements satisfied, unresolved deviations, evidence locations, responsible reviewers, software/hardware/assay/model versions, and remaining limitations. A full requirement register can be complete while a physical product is still unbuilt; documentation completeness must never be represented as completed development or proven intoxication detection.

@@ -1451,7 +1451,40 @@
         "trial_outcome": "wrong_choice",
         "selected_input_sequence": 0,
         "response_time_ms": 200,
-        "correct_go_rt_ms": null
+        "correct_go_rt_ms": null,
+        "retained_input_count": 2,
+        "sorted_native_sequences": [
+          0,
+          1
+        ],
+        "input_dispositions": [
+          "selected",
+          "additional_response"
+        ],
+        "retained_inputs": [
+          {
+            "native_timestamp_ms": 10200,
+            "dispatch_timestamp_ms": 10205,
+            "dispatch_delay_ms": 5,
+            "target": "right",
+            "pointer_id": 0,
+            "native_sequence": 0,
+            "input_kind": "direct_touch",
+            "disposition": "selected",
+            "trial_index": 0
+          },
+          {
+            "native_timestamp_ms": 10300,
+            "dispatch_timestamp_ms": 10305,
+            "dispatch_delay_ms": 5,
+            "target": "left",
+            "pointer_id": 0,
+            "native_sequence": 1,
+            "input_kind": "direct_touch",
+            "disposition": "additional_response",
+            "trial_index": 0
+          }
+        ]
       }
     },
     {
@@ -1675,7 +1708,21 @@
         "trial_outcome": "correct",
         "selected_input_sequence": 0,
         "response_time_ms": 999,
-        "correct_go_rt_ms": 999
+        "correct_go_rt_ms": 999,
+        "retained_input_count": 1,
+        "retained_inputs": [
+          {
+            "native_timestamp_ms": 10999,
+            "dispatch_timestamp_ms": 11079,
+            "dispatch_delay_ms": 80,
+            "target": "left",
+            "pointer_id": 0,
+            "native_sequence": 0,
+            "input_kind": "direct_touch",
+            "disposition": "selected",
+            "trial_index": 0
+          }
+        ]
       }
     },
     {
@@ -1748,7 +1795,9 @@
         "selected_input_sequence": null,
         "response_time_ms": null,
         "correct_go_rt_ms": null,
-        "ignored_after_terminal_count": 1
+        "ignored_after_terminal_count": 1,
+        "retained_input_count": 0,
+        "retained_inputs": []
       }
     },
     {
@@ -1771,6 +1820,178 @@
           "NATIVE_CLOCK_INCONSISTENCY"
         ],
         "features": null
+      }
+    },
+    {
+      "case_id": "same_time_opposing_targets_reverse_delivery_left_wins",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "left",
+          "pointer_id": 9,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        },
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "right",
+          "pointer_id": 0,
+          "native_sequence": 1,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 0,
+        "response_time_ms": 200,
+        "correct_go_rt_ms": 200,
+        "retained_input_count": 2,
+        "sorted_native_sequences": [
+          0,
+          1
+        ],
+        "input_dispositions": [
+          "selected",
+          "additional_response"
+        ]
+      }
+    },
+    {
+      "case_id": "same_time_same_target_lower_pointer_wins_before_sequence",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "left",
+          "pointer_id": 9,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        },
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 1,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 1,
+        "response_time_ms": 200,
+        "correct_go_rt_ms": 200,
+        "retained_input_count": 2,
+        "sorted_native_sequences": [
+          1,
+          0
+        ],
+        "input_dispositions": [
+          "selected",
+          "additional_response"
+        ]
+      }
+    },
+    {
+      "case_id": "same_time_same_target_pointer_native_sequence_breaks_tie",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 1,
+          "input_kind": "direct_touch"
+        },
+        {
+          "native_timestamp_ms": 10200,
+          "dispatch_timestamp_ms": 10205,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 0,
+        "response_time_ms": 200,
+        "correct_go_rt_ms": 200,
+        "retained_input_count": 2,
+        "sorted_native_sequences": [
+          0,
+          1
+        ],
+        "input_dispositions": [
+          "selected",
+          "additional_response"
+        ]
+      }
+    },
+    {
+      "case_id": "retained_drain_result_ignores_cutoff_and_later_arrivals",
+      "stimulus": "left",
+      "onset_ms": 10000,
+      "is_final_trial": true,
+      "terminal_cutoff_ms": 11100,
+      "inputs": [
+        {
+          "native_timestamp_ms": 10999,
+          "dispatch_timestamp_ms": 11079,
+          "target": "left",
+          "pointer_id": 0,
+          "native_sequence": 0,
+          "input_kind": "direct_touch"
+        },
+        {
+          "native_timestamp_ms": 10999,
+          "dispatch_timestamp_ms": 11100,
+          "target": "right",
+          "pointer_id": 1,
+          "native_sequence": 1,
+          "input_kind": "direct_touch"
+        },
+        {
+          "native_timestamp_ms": 10999,
+          "dispatch_timestamp_ms": 11101,
+          "target": "right",
+          "pointer_id": 2,
+          "native_sequence": 2,
+          "input_kind": "direct_touch"
+        }
+      ],
+      "expected": {
+        "run_integrity": "intact",
+        "trial_outcome": "correct",
+        "selected_input_sequence": 0,
+        "response_time_ms": 999,
+        "correct_go_rt_ms": 999,
+        "retained_input_count": 1,
+        "ignored_after_terminal_count": 2,
+        "retained_inputs": [
+          {
+            "native_timestamp_ms": 10999,
+            "dispatch_timestamp_ms": 11079,
+            "dispatch_delay_ms": 80,
+            "target": "left",
+            "pointer_id": 0,
+            "native_sequence": 0,
+            "input_kind": "direct_touch",
+            "disposition": "selected",
+            "trial_index": 0
+          }
+        ]
       }
     }
   ],

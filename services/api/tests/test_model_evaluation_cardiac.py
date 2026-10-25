@@ -10,7 +10,10 @@ from otgd.model_engine import Artifact, EvaluationReport, feature_values, score
 
 from .helpers import session_fixture
 from .test_model_evaluation import cohort as legacy_cohort
-from .test_model_evaluation import m, pipeline, rebind
+from .test_model_evaluation import (
+    assert_forged_history_refused, assert_sparse_subgroups_preserve_rows_and_unsupported_statistics,
+    external_history_pipeline, m, pipeline, rebind,
+)
 
 
 @pytest.fixture
@@ -129,6 +132,18 @@ def rehash(row):
         item['baseline_snapshot_sha256'] = digest(item['baseline_snapshot'])
         item['authority']['baseline']['snapshot_sha256'] = item['baseline_snapshot_sha256']
     item['authority_sha256'] = digest(item['authority'])
+
+
+def test_external_history_references_remain_unverified_through_pipeline(cardiac_cohort, tmp_path, monkeypatch):
+    external_history_pipeline(cardiac_cohort, tmp_path, monkeypatch)
+
+
+def test_self_asserted_or_extra_approval_fields_do_not_authenticate_history(cardiac_cohort, tmp_path, monkeypatch):
+    assert_forged_history_refused(cardiac_cohort, tmp_path, monkeypatch)
+
+
+def test_sparse_one_class_and_participant_boundary_subgroups_preserve_all_rows(cardiac_cohort):
+    assert_sparse_subgroups_preserve_rows_and_unsupported_statistics(cardiac_cohort)
 
 
 def test_raw_and_personalized_hr_training_reproduces_runtime_projection_and_report(cardiac_cohort):

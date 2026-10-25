@@ -12,6 +12,7 @@ import {
 } from "node:crypto";
 import { canonicalJson, clone, digest } from "../../core/integrity";
 import { DeviceControllerImpl } from "../controller";
+import { presentDevice } from "../../core/devicePresentation";
 import {
   DeviceError,
   fragmentMessage,
@@ -551,6 +552,7 @@ test("actual framed signed test peripheral requires verified binding before auth
   const { controller, transport } = await connected();
   try {
     assert.equal(controller.snapshot().state, "connected_reader");
+    assert.equal(presentDevice(controller.snapshot()).connected, true);
     assert.equal(controller.snapshot().humanCaptureAvailable, false);
     await assert.rejects(
       controller.captureAuthorized("ecg", context, options),

@@ -80,6 +80,8 @@ class CodespacesPreviewTests(unittest.TestCase):
                 "EXPO_NO_DOTENV": "1",
                 "EXPO_PUBLIC_API_URL": "https://unavailable.invalid",
                 "EXPO_PUBLIC_OAUTH_ISSUER": "https://unavailable.invalid",
+                "EXPO_PUBLIC_OAUTH_ORIGIN": "https://unavailable.invalid",
+                "EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI": "https://unavailable.invalid/",
                 "EXPO_PUBLIC_OAUTH_CLIENT_ID": "otgd-hosted-fictional",
             },
         }

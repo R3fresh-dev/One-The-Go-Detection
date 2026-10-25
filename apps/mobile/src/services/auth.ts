@@ -1,8 +1,13 @@
+import {
+  admitOAuthMetadata,
+  admitOAuthCallback,
+  admitProviderLogoutUrl,
+} from "../core/oauthPolicy";
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { Platform } from "react-native";
 import { BUILD } from "../platform/config";
-import { vault } from "../platform/storage";
+import { newId, vault } from "../platform/storage";
 import type { AppConfig, Identity } from "../core/types";
 import {
   IntegrityError,
@@ -24,6 +29,33 @@ interface StoredSession {
   identity: Identity;
   refreshToken: string | null;
   auth: AppConfig["auth"];
+}
+
+/** Code flow returns only code/state in the query of the exact selected callback. */
+function matchesAuthorizationCallback(
+  returnedUrl: unknown,
+  redirectUri: string,
+  state: string,
+  code: string,
+): boolean {
+  if (typeof returnedUrl !== "string" || returnedUrl.includes("#"))
+    return false;
+  const queryAt = returnedUrl.indexOf("?");
+  // Compare the original target bytes: URL normalization must not admit a path
+  // suffix, userinfo, default-port alias or dot-segment variant of our callback.
+  if (queryAt < 0 || returnedUrl.slice(0, queryAt) !== redirectUri)
+    return false;
+  const query = returnedUrl.slice(queryAt + 1);
+  if (query.split("&").length !== 2 || /%(?![\da-f]{2})/i.test(query))
+    return false;
+  const params = new URLSearchParams(query);
+  return (
+    [...params].length === 2 &&
+    params.getAll("code").length === 1 &&
+    params.getAll("state").length === 1 &&
+    params.get("code") === code &&
+    params.get("state") === state
+  );
 }
 export class AuthManager implements TokenProvider {
   private tokens: OAuthTokens | null = null;
@@ -56,25 +88,28 @@ export class AuthManager implements TokenProvider {
         "AUTH_STORE_MISMATCH",
         "The saved sign-in belongs to another service.",
       );
-    this.stored = parsed;
+    this.stored = { ...parsed, auth: admitOAuthMetadata(parsed.auth, BUILD) };
     return parsed.identity;
   }
   async authorize(
     config: AppConfig,
     forceLogin = false,
   ): Promise<OAuthTokens | null> {
+    const auth = admitOAuthMetadata(config.auth, BUILD);
     const attempt = this.authorizationAttempts.begin(Date.now());
     const generation = this.epoch;
     const redirectUri =
       Platform.OS === "web"
         ? `${globalThis.location.origin}/`
         : BUILD.redirectUri;
-    if (!config.auth.redirect_uris.includes(redirectUri))
+    admitOAuthCallback(redirectUri, BUILD);
+    if (!auth.redirect_uris.includes(redirectUri))
       throw new IntegrityError(
         "CALLBACK_NOT_CONFIGURED",
         `This build’s OAuth callback is not registered. Configure ${redirectUri} for this environment.`,
       );
     const request = new AuthSession.AuthRequest({
+      state: newId(),
       clientId: BUILD.clientId,
       redirectUri,
       scopes: ["openid", "profile"],
@@ -84,9 +119,9 @@ export class AuthManager implements TokenProvider {
       extraParams: forceLogin ? { prompt: "login", max_age: "0" } : {},
     });
     const discovery = {
-      authorizationEndpoint: config.auth.authorization_endpoint,
-      tokenEndpoint: config.auth.token_endpoint,
-      revocationEndpoint: config.auth.revocation_endpoint,
+      authorizationEndpoint: auth.authorization_endpoint,
+      tokenEndpoint: auth.token_endpoint,
+      revocationEndpoint: auth.revocation_endpoint,
     };
     const result = await request.promptAsync(discovery);
     if (result.type === "cancel" || result.type === "dismiss") return null;
@@ -101,14 +136,20 @@ export class AuthManager implements TokenProvider {
       result.type !== "success" ||
       result.params.state !== request.state ||
       !result.params.code ||
-      !request.codeVerifier
+      !request.codeVerifier ||
+      !matchesAuthorizationCallback(
+        result.url,
+        redirectUri,
+        request.state,
+        result.params.code,
+      )
     )
       throw new IntegrityError(
         "OAUTH_REJECTED",
         "Sign-in could not be verified. Start a new sign-in attempt.",
       );
     this.authorizationAttempts.consume(attempt, Date.now());
-    const tokens = await this.exchange(config.auth, {
+    const tokens = await this.exchange(auth, {
       grant_type: "authorization_code",
       client_id: BUILD.clientId,
       code: result.params.code,
@@ -129,11 +170,7 @@ export class AuthManager implements TokenProvider {
     fields: Record<string, string>,
     capturedRefreshToken: string | null = null,
   ): Promise<OAuthTokens> {
-    if (auth.issuer !== BUILD.issuer || auth.client_id !== BUILD.clientId)
-      throw new IntegrityError(
-        "AUTH_CONFIG_MISMATCH",
-        "The authentication service changed.",
-      );
+    auth = admitOAuthMetadata(auth, BUILD);
     const controller = new AbortController(),
       timeout = setTimeout(
         () =>
@@ -218,12 +255,13 @@ export class AuthManager implements TokenProvider {
         "AUTH_CHANGED",
         "The sign-in was canceled or the account changed.",
       );
+    const admittedAuth = admitOAuthMetadata(tokens.auth, BUILD);
     const epoch = ++this.epoch;
-    this.tokens = tokens;
+    this.tokens = { ...tokens, auth: admittedAuth };
     this.stored = {
       identity,
       refreshToken: tokens.refreshToken,
-      auth: tokens.auth,
+      auth: admittedAuth,
     };
     const stored = this.stored;
     await this.persistence.set(
@@ -239,6 +277,8 @@ export class AuthManager implements TokenProvider {
       );
   }
   async accessToken(force = false): Promise<string | null> {
+    if (this.stored) admitOAuthMetadata(this.stored.auth, BUILD);
+    if (this.tokens) admitOAuthMetadata(this.tokens.auth, BUILD);
     if (!force && this.tokens && this.tokens.expiresAt > Date.now() + 30_000)
       return this.tokens.accessToken;
     if (this.refreshing && this.refreshingEpoch === this.epoch)
@@ -322,12 +362,17 @@ export class AuthManager implements TokenProvider {
     await this.refreshing?.catch(() => null);
   }
   providerLogoutUrl(): string | null {
-    const endpoint = this.stored?.auth.logout_endpoint;
+    if (!this.stored) return null;
+    const endpoint = admitOAuthMetadata(
+      this.stored.auth,
+      BUILD,
+    ).logout_endpoint;
     if (!endpoint) return null;
     const redirect =
       Platform.OS === "web"
         ? `${globalThis.location.origin}/`
         : BUILD.redirectUri;
+    admitOAuthCallback(redirect, BUILD);
     const url = new URL(endpoint);
     url.searchParams.set("client_id", BUILD.clientId);
     url.searchParams.set("logout_uri", redirect);
@@ -338,38 +383,50 @@ export class AuthManager implements TokenProvider {
       Platform.OS === "web"
         ? `${globalThis.location.origin}/`
         : BUILD.redirectUri;
+    admitProviderLogoutUrl(url, redirect, BUILD);
     await WebBrowser.openAuthSessionAsync(url, redirect);
   }
-  async revokeProvider(): Promise<void> {
+  captureProviderRevocation(): () => Promise<void> {
     const saved = this.stored;
-    if (!saved?.refreshToken || !saved.auth.revocation_endpoint) return;
+    if (!saved) return async () => {};
+    const auth = admitOAuthMetadata(saved.auth, BUILD);
+    if (!saved.refreshToken || !auth.revocation_endpoint) return async () => {};
     const refreshToken = saved.refreshToken;
-    const controller = new AbortController(),
-      timeout = setTimeout(() => controller.abort(), 10_000);
-    try {
-      await withAbort(controller.signal, () =>
-        fetch(saved.auth.revocation_endpoint!, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            token: refreshToken,
-            token_type_hint: "refresh_token",
-            client_id: BUILD.clientId,
-          }).toString(),
-          signal: controller.signal,
-          redirect: "error",
-        }),
-      );
-    } finally {
-      clearTimeout(timeout);
-    }
+    return async () => {
+      admitOAuthMetadata(auth, BUILD);
+      const controller = new AbortController(),
+        timeout = setTimeout(() => controller.abort(), 10_000);
+      try {
+        const response = await withAbort(controller.signal, () =>
+          fetch(auth.revocation_endpoint!, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              token: refreshToken,
+              token_type_hint: "refresh_token",
+              client_id: BUILD.clientId,
+            }).toString(),
+            signal: controller.signal,
+            redirect: "error",
+          }),
+        );
+        if (!response.ok)
+          throw new ApiError(
+            response.status,
+            "AUTH_REVOCATION_UNCONFIRMED",
+            "Provider token revocation was not confirmed.",
+            true,
+          );
+      } finally {
+        clearTimeout(timeout);
+      }
+    };
+  }
+  async revokeProvider(): Promise<void> {
+    await this.captureProviderRevocation()();
   }
   async browserLogout(): Promise<void> {
-    const endpoint = this.stored?.auth.logout_endpoint;
-    if (!endpoint) return;
-    const url = new URL(endpoint);
-    url.searchParams.set("client_id", BUILD.clientId);
-    url.searchParams.set("logout_uri", BUILD.redirectUri);
-    await WebBrowser.openAuthSessionAsync(url.toString(), BUILD.redirectUri);
+    const url = this.providerLogoutUrl();
+    if (url) await this.openProviderLogout(url);
   }
 }

@@ -20,6 +20,7 @@ const outcome = spawnSync(
     "--test",
     "--experimental-test-coverage",
     "--test-coverage-include=src/**/*.ts",
+    "--test-coverage-include=oauth-build-policy.js",
     "--test-coverage-exclude=src/device/tests/**",
     "--test-reporter=spec",
     "--test-reporter-destination=stdout",

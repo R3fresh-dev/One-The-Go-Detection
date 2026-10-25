@@ -1,0 +1,16 @@
+{
+  "time": "2026-10-25T09:34:14.289470+00:00",
+  "action": "remove exactly obsolete own image cache without force",
+  "target": "sha256:a266628e1e2d87d83b0152684298e003dd2e44ce0c145ef6985ea690b8263b06",
+  "archive_sha256": "585b961d89a2b633e734b99efdb2e1ace0b616e5025fff8fa655b6db571b5df6",
+  "exit_code": 0,
+  "output": "Untagged: otgd-api:factory-source-5e44bbed7d6a\nDeleted: sha256:a266628e1e2d87d83b0152684298e003dd2e44ce0c145ef6985ea690b8263b06\nDeleted: sha256:a5b5cf95fc230c53c75d4afaba7a390441488cd9d5352cccda0793c5ef733965\n",
+  "error": "",
+  "free_before": 662269952,
+  "free_after": 956874752,
+  "status": "confirmed",
+  "container_ids_unchanged": true,
+  "volume_names_unchanged": true,
+  "archive_preserved": true,
+  "reclaimed_bytes": 294600704
+}

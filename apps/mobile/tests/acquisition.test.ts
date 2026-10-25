@@ -920,6 +920,88 @@ test("reference laboratory collection has no BLE acquisition, persists a recover
     await h.close();
   }
 });
+for (const interruption of ["withdrawal", "workspace switch"] as const) {
+  test(`late fictional collection receipt across ${interruption} cannot replace current state or restore acquisition authority`, async () => {
+    const h = await labAccount(),
+      entered = deferred<void>(),
+      release = deferred<void>();
+    try {
+      await h.app.beginStudyCheck(h.study.study_id, h.config.protocol_id, true);
+      await h.app.startLabCollection(currentInstruction(h.app, "saliva"));
+      const originalId = h.app.check!.id,
+        previousOwner = h.app.getSnapshot().identity!.accountRef;
+      const transport = globalThis.fetch;
+      globalThis.fetch = async (input, init) => {
+        const response = await transport(input, init);
+        if (
+          (init?.method ?? "GET") === "POST" &&
+          new URL(String(input)).pathname.endsWith("/collections")
+        ) {
+          // The fictional transport has accepted the exact body, while its HTTP
+          // response remains unresolved. Real ApiClient cancellation/scope logic
+          // must discard its late success even when fetch ignores AbortSignal.
+          entered.resolve();
+          await release.promise;
+        }
+        return response;
+      };
+      const pending = h.app.recordLabCollection(h.specimen()).then(
+        () => ({ ok: true }),
+        (error) => ({ ok: false, code: error.code }),
+      );
+      await entered.promise;
+      const immutable = clone(h.app.check!.labCollection!);
+      const originalSnapshot = clone(h.app.check!.snapshot);
+      if (interruption === "withdrawal") {
+        h.service.overrides.set(
+          `/v1/studies/${h.study.study_id}/withdrawals`,
+          () => h.service.result({ state: "withdrawn" }),
+        );
+        await h.app.withdraw(h.study.study_id);
+        assert.equal(
+          (h.app.getSnapshot().state!.studies[0]!.consent as any).state,
+          "withdrawn",
+        );
+        assert.equal(h.app.check!.labCollection!.receipt, null);
+        assert.equal(h.app.check!.labCollection!.key, immutable.key);
+        assert.deepEqual(h.app.check!.labCollection!.body, immutable.body);
+        assert.deepEqual(h.app.check!.snapshot, originalSnapshot);
+      } else {
+        await h.app.signOut(false);
+        h.service.caps.account_ref = randomUUID();
+        await h.app.signIn();
+        await h.app.beginCheck("measurement", true);
+        assert.notEqual(
+          h.app.getSnapshot().identity!.accountRef,
+          previousOwner,
+        );
+        assert.notEqual(h.app.check!.id, originalId);
+        assert.equal(h.app.check!.snapshot.sample.status, "not_collected");
+        assert.equal(
+          h.app
+            .getSnapshot()
+            .state!.checks.some((check) => check.id === originalId),
+          false,
+        );
+      }
+      const fenced = clone(h.app.getSnapshot().state!),
+        replacement = h.app.check?.id;
+      const calls = h.service.calls.length;
+      release.resolve();
+      assert.equal((await pending).ok, false);
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      assert.deepEqual(h.app.getSnapshot().state, fenced);
+      assert.equal(h.app.check?.id, replacement);
+      assert.equal(h.service.calls.length, calls);
+      assert.equal(h.events.includes("hardware-acquire"), false);
+      assert.deepEqual(h.app.check!.snapshot.saliva, []);
+    } finally {
+      release.resolve();
+      await h.close();
+    }
+  });
+}
+
 test("unknown analysis cancellation preserves its exact body and key and never relabels the collected specimen", async () => {
   const h = await labAccount();
   try {
@@ -1538,6 +1620,163 @@ test("scope-qualified preparation End stops the advanced capture token before a 
     await Promise.allSettled([pending, stopped]);
     assert.equal(events.includes("hardware-acquire"), false);
     assert.equal(app.check!.attempts[0]!.status, "invalid");
+  } finally {
+    await close();
+  }
+});
+
+test("hypothetical breath contract configuration is selectable only strictly before its expiry", async (context) => {
+  context.mock.timers.enable({
+    apis: ["Date"],
+    now: Date.parse("2026-10-11T12:00:00Z"),
+  });
+  const { app, study, config, close } = await approvedAccount();
+  try {
+    await app.beginStudyCheck(study.study_id, config.protocol_id, true);
+    // Selection contract only. This does not install a breath adapter, validate
+    // a calibration, obtain a server grant or invoke an instrument.
+    const caps = clone(app.getSnapshot().state!.capabilities)!;
+    for (const key of Object.keys(caps.channels))
+      caps.channels[key]!.available = false;
+    const breath = {
+      ...config,
+      configuration_id: "fictional-breath-contract-only",
+      software_adapter_id: "fictional-uninstalled-breath-contract",
+      expires_at: "2026-10-11T12:00:01Z",
+    };
+    caps.channels.alcohol = {
+      available: true,
+      software_available: true,
+      authorization_available: true,
+      reason_codes: [],
+      configurations: [breath],
+    };
+    const check = clone(app.check!);
+    check.context.configuration_refs = [
+      {
+        id: breath.configuration_id,
+        version: "v1",
+        sha256: breath.configuration_hash,
+        scope: "measurement_collection",
+      },
+    ];
+    for (const [offset, selectable] of [
+      [999, true],
+      [1000, false],
+      [1001, false],
+    ] as const) {
+      context.mock.timers.setTime(Date.parse("2026-10-11T12:00:00Z") + offset);
+      assert.equal(
+        configurationsFor(caps, study.study_id, config.protocol_id).length,
+        selectable ? 1 : 0,
+      );
+      if (selectable)
+        assert.equal(
+          configurationFor(check, caps, "alcohol").configuration_id,
+          "fictional-breath-contract-only",
+        );
+      else
+        assert.throws(() => configurationFor(check, caps, "alcohol"), {
+          code: "CAPTURE_CONFIGURATION_AMBIGUOUS",
+        });
+    }
+    assert.equal(app.check!.alcohol, null);
+  } finally {
+    await close();
+  }
+});
+
+test("fresh absent-breath-adapter capability overrides stale cached availability before any hardware invocation", async () => {
+  const { app, study, config, service, events, close } =
+    await approvedAccount();
+  try {
+    await app.beginStudyCheck(study.study_id, config.protocol_id, true);
+    // Deliberately stale cached input cannot override the refreshed server
+    // inventory. Real software_supported() inventory is tested by the API suite.
+    app.getSnapshot().state!.capabilities!.channels.alcohol = {
+      available: true,
+      authorization_available: true,
+      software_available: true,
+      reason_codes: [],
+      configurations: [config],
+    };
+    service.caps.channels.alcohol = {
+      available: false,
+      authorization_available: true,
+      software_available: false,
+      reason_codes: ["HUMAN_ADAPTER_UNIMPLEMENTED"],
+      configurations: [config],
+    };
+    await assert.rejects(app.captureReader("alcohol"), {
+      code: "CAPTURE_UNAVAILABLE",
+    });
+    assert.equal(
+      app.getSnapshot().state!.capabilities!.channels.alcohol!
+        .software_available,
+      false,
+    );
+    assert.deepEqual(
+      events.filter((event) =>
+        ["grant", "prepare-device-nonce", "hardware-acquire"].includes(event),
+      ),
+      [],
+    );
+    assert.equal(app.check!.attempts.length, 0);
+    assert.equal(app.check!.alcohol, null);
+  } finally {
+    await close();
+  }
+});
+
+test("a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration", async () => {
+  const { app, study, config, service, events, close } =
+    await approvedAccount();
+  try {
+    // Reuse the actual controller transport boundary with explicitly fictional
+    // eligibility. No successful breath driver or calibration is supplied.
+    service.caps.channels.alcohol = {
+      available: true,
+      authorization_available: true,
+      software_available: true,
+      reason_codes: [],
+      configurations: [
+        {
+          ...config,
+          participant_protocol: null,
+          participant_protocol_sha256: null,
+        },
+      ],
+    };
+    await app.beginStudyCheck(study.study_id, config.protocol_id, true);
+    const transport = globalThis.fetch;
+    globalThis.fetch = async (input, init) => {
+      const path = new URL(String(input)).pathname;
+      if (path.endsWith("/capture-authorizations")) {
+        const response = await transport(input, init),
+          body = await response.json();
+        body.participant_protocol_sha256 = null;
+        return service.result(body, response.status);
+      }
+      if (path.endsWith("/start")) {
+        events.push("authoritative-start-refusal");
+        return service.result(
+          { code: "APPROVED_REGISTRY_VERSION_REQUIRED", retryable: false },
+          403,
+        );
+      }
+      return transport(input, init);
+    };
+    await assert.rejects(app.captureReader("alcohol"), {
+      code: "APPROVED_REGISTRY_VERSION_REQUIRED",
+    });
+    assert.equal(events.includes("grant"), true);
+    assert.equal(events.includes("authoritative-start-refusal"), true);
+    assert.equal(events.includes("hardware-acquire"), false);
+    assert.equal(app.check!.alcohol!.value_mg_l, null);
+    assert.equal(app.check!.alcohol!.qualifier, "invalid");
+    assert.equal(app.check!.attempts[0]!.status, "invalid");
+    // The generic real server code cannot honestly be called a calibration
+    // diagnosis. Direct dependency expiry/recalibration belongs to API evidence.
   } finally {
     await close();
   }

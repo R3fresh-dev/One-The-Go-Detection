@@ -57,7 +57,18 @@ for (const env of ['qa','prod'] as const) {
     assert.equal(signingKey.Properties.KeySpec,'ECC_NIST_P256');
     assert.equal(signingKey.Properties.EnableKeyRotation,false);assert.equal(signingKey.DeletionPolicy,'Retain');
     t.hasResourceProperties('AWS::KMS::Alias',{AliasName:`alias/otgd-${env}-capture-grant`,TargetKeyId:{'Fn::GetAtt':[signingKeyId,'Arn']}});
-    const apiTask=Object.values(tasks).find((task:any)=>task.Properties.ContainerDefinitions.some((container:any)=>container.Name==='api')) as any;
+    const apiTasks=Object.entries(tasks).filter(([,task])=>task.Properties.ContainerDefinitions.some((container:any)=>container.Name==='api'));
+    assert.equal(apiTasks.length,1);
+    const [apiTaskId,apiTask]=apiTasks[0];
+    const apiServices=Object.entries(t.findResources('AWS::ECS::Service')).filter(([,service]:any)=>service.Properties.TaskDefinition.Ref===apiTaskId) as [string,any][];
+    assert.equal(apiServices.length,1);
+    const [apiServiceId,apiService]=apiServices[0];
+    assert.ok(apiService.Properties.DesiredCount >= (env==='prod'?2:1), 'Active API capacity must satisfy the environment minimum');
+    if(env==='prod') {
+      const apiScaling=Object.values(t.findResources('AWS::ApplicationAutoScaling::ScalableTarget')).filter((target:any)=>JSON.stringify(target.Properties.ResourceId).includes(apiServiceId)) as any[];
+      assert.equal(apiScaling.length,1);
+      assert.ok(apiScaling[0].Properties.MinCapacity>=2, 'Production autoscaling must retain at least two API tasks');
+    }
     const apiContainer=apiTask.Properties.ContainerDefinitions.find((container:any)=>container.Name==='api');
     assert.deepEqual(apiContainer.Environment.find((entry:any)=>entry.Name==='OTGD_CAPTURE_SIGNING_KEY_ID').Value,{'Fn::GetAtt':[signingKeyId,'Arn']});
     assert.equal(worker.Environment.find((entry:any)=>entry.Name==='OTGD_CAPTURE_SIGNING_KEY_ID'),undefined);

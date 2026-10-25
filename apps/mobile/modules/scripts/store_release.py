@@ -144,6 +144,8 @@ def read_config(path):
         "api_url",
         "oauth_issuer",
         "oauth_client_id",
+        "oauth_origin",
+        "oauth_web_callback_uri",
         "artifact_hosts",
         "bundletool_jar",
         "android",
@@ -161,6 +163,10 @@ def read_config(path):
         raise Gate("Supply the actual Expo project UUID and accountable account slug")
     safe_url(value["api_url"], origin=True)
     safe_url(value["oauth_issuer"])
+    origin = safe_url(value["oauth_origin"], origin=True)
+    callback = safe_url(value["oauth_web_callback_uri"], origin=True)
+    if value["oauth_origin"] != "https://" + origin.hostname or value["oauth_web_callback_uri"] != "https://" + callback.hostname + "/":
+        raise Gate("Supply exact admitted IdentityOrigin and WebCallbackUri outputs")
     if not re.fullmatch(
         r"[A-Za-z0-9]{8,128}", str(value["oauth_client_id"])
     ) or re.search(
@@ -364,6 +370,8 @@ def build_environment(config):
         EXPO_PUBLIC_API_URL=config["api_url"],
         EXPO_PUBLIC_OAUTH_ISSUER=config["oauth_issuer"],
         EXPO_PUBLIC_OAUTH_CLIENT_ID=config["oauth_client_id"],
+        EXPO_PUBLIC_OAUTH_ORIGIN=config["oauth_origin"],
+        EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI=config["oauth_web_callback_uri"],
     )
     return env
 
@@ -420,6 +428,8 @@ class Eas:
             ("EXPO_PUBLIC_API_URL", config["api_url"]),
             ("EXPO_PUBLIC_OAUTH_ISSUER", config["oauth_issuer"]),
             ("EXPO_PUBLIC_OAUTH_CLIENT_ID", config["oauth_client_id"]),
+            ("EXPO_PUBLIC_OAUTH_ORIGIN", config["oauth_origin"]),
+            ("EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI", config["oauth_web_callback_uri"]),
         ):
             value = self.run(
                 [
@@ -536,6 +546,9 @@ def verify_eas_config(value, config, platform):
         or extra.get("apiUrl") != config["api_url"]
         or extra.get("issuer") != config["oauth_issuer"]
         or extra.get("clientId") != config["oauth_client_id"]
+        or extra.get("oauthOrigin") != config["oauth_origin"]
+        or extra.get("webCallbackUri") != config["oauth_web_callback_uri"]
+        or extra.get("redirectUris") != ["otgd" + ("-qa" if config["environment"] == "qa" else "") + "://oauth/callback", config["oauth_web_callback_uri"]]
         or app.get("slug") != SLUG
         or (
             platform == "android"
@@ -807,6 +820,9 @@ def verify_embedded_config(app, config):
         or extra.get("apiUrl") != config["api_url"]
         or extra.get("issuer") != config["oauth_issuer"]
         or extra.get("clientId") != config["oauth_client_id"]
+        or extra.get("oauthOrigin") != config["oauth_origin"]
+        or extra.get("webCallbackUri") != config["oauth_web_callback_uri"]
+        or extra.get("redirectUris") != ["otgd" + ("-qa" if config["environment"] == "qa" else "") + "://oauth/callback", config["oauth_web_callback_uri"]]
         or extra.get("redirectUri") != redirect
         or extra.get("eas", {}).get("projectId") != config["project_id"]
         or app.get("slug") != SLUG
@@ -1007,6 +1023,8 @@ def verify_backend(args, config, revision):
         or out.get("ApiOrigin") != config["api_url"]
         or out.get("Issuer") != config["oauth_issuer"]
         or out.get("ClientId") != config["oauth_client_id"]
+        or out.get("IdentityOrigin") != config["oauth_origin"]
+        or out.get("WebCallbackUri") != config["oauth_web_callback_uri"]
     ):
         raise Gate(
             "Deployed backend identity/source differs from the store binary configuration"
@@ -1099,7 +1117,11 @@ def verify_backend(args, config, revision):
         or app.get("inference_available") is not False
         or app.get("auth", {}).get("issuer") != config["oauth_issuer"]
         or app.get("auth", {}).get("client_id") != config["oauth_client_id"]
-        or redirect not in app.get("auth", {}).get("redirect_uris", [])
+        or app.get("auth", {}).get("authorization_endpoint") != config["oauth_origin"] + "/oauth2/authorize"
+        or app.get("auth", {}).get("token_endpoint") != config["oauth_origin"] + "/oauth2/token"
+        or app.get("auth", {}).get("revocation_endpoint") != config["oauth_origin"] + "/oauth2/revoke"
+        or app.get("auth", {}).get("logout_endpoint") != config["oauth_origin"] + "/logout"
+        or sorted(app.get("auth", {}).get("redirect_uris", [])) != sorted([redirect, config["oauth_web_callback_uri"]])
     ):
         raise Gate(
             "Live backend admission/auth identity does not support this exact native store application"

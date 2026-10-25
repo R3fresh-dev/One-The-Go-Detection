@@ -11,6 +11,8 @@ test("longer service deadlines are an explicit cloud build setting", () => {
     "EXPO_PUBLIC_API_URL",
     "EXPO_PUBLIC_OAUTH_ISSUER",
     "EXPO_PUBLIC_OAUTH_CLIENT_ID",
+    "EXPO_PUBLIC_OAUTH_ORIGIN",
+    "EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI",
   ] as const;
   const saved = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
   try {
@@ -20,6 +22,10 @@ test("longer service deadlines are an explicit cloud build setting", () => {
     process.env.EXPO_PUBLIC_OAUTH_ISSUER =
       "https://cognito-idp.us-east-2.amazonaws.com/us-east-2_pool";
     process.env.EXPO_PUBLIC_OAUTH_CLIENT_ID = "actual-public-client";
+    process.env.EXPO_PUBLIC_OAUTH_ORIGIN =
+      "https://admitted.auth.us-east-2.amazoncognito.com";
+    process.env.EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI =
+      "https://web.owned.example.org/";
     process.env.APP_ENV = process.env.EXPO_PUBLIC_APP_ENV = "qa";
     delete process.env.EXPO_PUBLIC_SERVERLESS;
     assert.equal(configure({ config: {} } as any).extra!.serverless, false);

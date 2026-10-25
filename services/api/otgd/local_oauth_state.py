@@ -20,6 +20,9 @@ FICTIONAL_ACCOUNTS = (
     "fixture_b",
     "participant_probe_subject",
     "participant_probe_staff",
+    "browser_mobile",
+    "browser_desktop",
+    "browser_staff",
     *(f"perf_{i:02d}" for i in range(1, 21)),
 )
 FAMILY_SECONDS = 30 * 86400

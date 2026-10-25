@@ -1,8 +1,9 @@
-const { randomUUID } = require("node:crypto");
+const { randomBytes } = require("node:crypto");
 class AuthRequest {
   constructor(options) {
     Object.assign(this, options);
-    this.state = randomUUID();
+    // Match the SDK default length and preserve an explicitly supplied state.
+    this.state = options.state ?? randomBytes(5).toString("hex");
     this.codeVerifier = "unit-bound-pkce-verifier";
   }
   promptAsync() {

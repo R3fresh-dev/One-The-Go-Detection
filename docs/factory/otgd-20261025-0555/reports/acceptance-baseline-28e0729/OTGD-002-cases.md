@@ -1,0 +1,8 @@
+# OTGD-002 — frozen candidate case reconciliation
+
+Candidate `28e07295cb37bb9dcaaac82cc8fc846eb89006a6`. Source SHA-256 `c8e2d63aad6f7f973a181d917ef645e8d32b012ca41df1f2abd7d7a0b7525fe4`. No council signoff; status definitions in report.md. Full expected clauses and assertion/evidence bindings are in case-reconciliation.json/source-assertions.json/evidence-index.json.
+
+| Stable case | Status | Actual assertion symbols | Current named observations | Unproven scope / finding |
+|---|---|---|---:|---|
+| OTGD-002-AND-DASH-001-01 | PARTIAL | apps/mobile/tests/controller.test.ts::server generation retirement quarantines prior checks and a new empty workspace requires separate acknowledgment; apps/mobile/tests/research-result.test.ts::actual signed API-to-worker HR-only fixture verifies conservative server interval authority without rewriting its sensor flags | 2 | Related independent review finding; this broad case still requires exact semantic body/owner review. The tag alone does not establish a software defect in this criterion. PROD-001 / UX-001 saved-state and workspace scope labels |
+| OTGD-002-AND-DASH-001-02 | PARTIAL | apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint; services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score | 21 | Related independent review finding; this broad case still requires exact semantic body/owner review. The tag alone does not establish a software defect in this criterion. PROD-001 / UX-001 saved-state and workspace scope labels |

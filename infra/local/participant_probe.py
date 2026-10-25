@@ -83,7 +83,7 @@ def released(db, kind, body, namespace):
     db.flush()
 
 
-def provision(cfg, subject, staff, namespace):
+def provision(cfg, subject, staff, namespace, *, staff_subject="local-participant_probe_staff"):
     ids = {key: "fictional-probe-" + namespace + "-" + key for key in (
         "study", "protocol", "policy", "config", "qualification", "collection", "method",
         "instrument", "device", "key", "calibration")}
@@ -145,7 +145,7 @@ def provision(cfg, subject, staff, namespace):
         db.execute(sql_text("SET LOCAL lock_timeout = '2s'"))
         # Match runtime Account→registry ordering. This account comes only from
         # the dedicated staff OAuth identity; no unrelated role is maintained.
-        locked_staff = lock_account(db, "local-participant_probe_staff", cfg)
+        locked_staff = lock_account(db, staff_subject, cfg)
         if not locked_staff or locked_staff.id != staff or locked_staff.state != "active":
             raise RuntimeError("Dedicated fictional staff account is unavailable")
         for kind, value in (("study", study), ("retention", retention), ("device", device),

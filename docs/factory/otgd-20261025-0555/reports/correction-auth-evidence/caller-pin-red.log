@@ -1,0 +1,39 @@
+test_actual_web_builder_passes_independent_stack_oauth_pins (infra.test.test_fargate_deploy.FargateDeployTest.test_actual_web_builder_passes_independent_stack_oauth_pins) ... ERROR
+test_actual_web_builder_passes_independent_stack_oauth_pins (infra.test.test_serverless_deploy.ServerlessImageTest.test_actual_web_builder_passes_independent_stack_oauth_pins) ... ERROR
+
+======================================================================
+ERROR: test_actual_web_builder_passes_independent_stack_oauth_pins (infra.test.test_fargate_deploy.FargateDeployTest.test_actual_web_builder_passes_independent_stack_oauth_pins)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/One-The-Go-Detection/infra/test/test_fargate_deploy.py", line 47, in test_actual_web_builder_passes_independent_stack_oauth_pins
+    with self.assertRaises(ObservedInputs):MODULE.build_ui(aws, {}, {}, out, source, root)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/One-The-Go-Detection/deploy/fargate.py", line 323, in build_ui
+    env = web_artifact.build_environment({'environment': 'qa', 'api_url': out['ApiOrigin'],
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/One-The-Go-Detection/deploy/web_artifact.py", line 108, in build_environment
+    validate_oauth_runtime(runtime)
+  File "/workspace/One-The-Go-Detection/deploy/web_artifact.py", line 98, in validate_oauth_runtime
+    raise Gate('Current web OAuth origin and callback must be explicitly configured')
+deploy.provenance.Gate: Current web OAuth origin and callback must be explicitly configured
+
+======================================================================
+ERROR: test_actual_web_builder_passes_independent_stack_oauth_pins (infra.test.test_serverless_deploy.ServerlessImageTest.test_actual_web_builder_passes_independent_stack_oauth_pins)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/One-The-Go-Detection/infra/test/test_serverless_deploy.py", line 539, in test_actual_web_builder_passes_independent_stack_oauth_pins
+    with self.assertRaises(ObservedInputs):serverless.build_and_publish_web(aws, {}, out, source, root)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/One-The-Go-Detection/deploy/serverless.py", line 363, in build_and_publish_web
+    env = web_artifact.build_environment(runtime)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/One-The-Go-Detection/deploy/web_artifact.py", line 108, in build_environment
+    validate_oauth_runtime(runtime)
+  File "/workspace/One-The-Go-Detection/deploy/web_artifact.py", line 98, in validate_oauth_runtime
+    raise Gate('Current web OAuth origin and callback must be explicitly configured')
+deploy.provenance.Gate: Current web OAuth origin and callback must be explicitly configured
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.004s
+
+FAILED (errors=2)

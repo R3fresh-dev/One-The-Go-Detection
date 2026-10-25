@@ -27,7 +27,7 @@ Store operations SHALL require a bounded nonsecret external config and verify th
 - **THEN** it fails before build or submission.
 
 ### Requirement: STORE-003 Stage only admitted immutable source
-Build/submission SHALL recheck trusted live thirteen-job gate provenance, independently signed backend/QA authority and the exact source. Build staging SHALL contain only committed reviewed files and pinned dependency locks; it SHALL preserve the development checkout and omit untracked credentials, unrelated drafts and generated guest artifacts.
+Build/submission SHALL recheck trusted live gate provenance for every mandatory job in the exact committed aggregate workflow and its reusable workflows (including platform container-runtime verification where required), independently signed backend/QA authority and the exact source. Build staging SHALL contain only committed reviewed files and pinned dependency locks; it SHALL preserve the development checkout and omit untracked credentials, unrelated drafts and generated guest artifacts.
 
 #### Scenario: Exact source and genuine release evidence agree
 - **GIVEN** the allowed trusted GitHub release event and current signed backend/QA binding

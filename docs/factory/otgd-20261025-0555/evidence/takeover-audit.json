@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "task": "Factory — One-The-Go-Detection",
+  "audit_timestamp_utc": "2026-10-25T05:50:24Z",
+  "source_thread_id": "01a16636-df8f-72e1-b9e7-31c10571e0d7",
+  "environment": {
+    "id": "ccarenv_b64_Y2NhcmVudl9jMWMxZjFjNWVmM2M4MTkxODZmM2NmOTVmMmY5NTAyZQ",
+    "status": "ready",
+    "configuration_version_from_parent": "e3a694de-e2f6-4d1d-aee7-6d3b96399ff5~cecfgver_6acb10389ea481938137782207714d2e",
+    "checkout": "/workspace/One-The-Go-Detection",
+    "branch": "work",
+    "head": "0844868aa543af4ab75ac5065ad48cf807b86bb3",
+    "working_tree": "clean",
+    "remote_main": "0844868aa543af4ab75ac5065ad48cf807b86bb3",
+    "local_origin_main": "e2226e2 (stale; do not use as starting point)",
+    "runtime_process_observation": "Only current codex process PID 528; no other local PM found",
+    "docker_containers": 0,
+    "docker_volumes": 0
+  },
+  "factory": {
+    "repository": "https://github.com/R3fresh-dev/factory",
+    "revision": "4770878e18e9c587c2961b9e2bb13315da31abe9",
+    "local_source": "/tmp/otgd-factory-source",
+    "skill": "factory/SKILL.md",
+    "pinned_detached": true,
+    "read_references": [
+      "coordination",
+      "communication",
+      "model-policy",
+      "evidence",
+      "spec-council",
+      "recovery",
+      "workflow",
+      "agents",
+      "completeness"
+    ]
+  },
+  "ownership": {
+    "status": "PENDING_PARENT_LIVENESS_RECONCILIATION",
+    "run_id": null,
+    "new_branch": null,
+    "prior_pm_identity": "unknown; none found in this container or remote branch records",
+    "reason": "Parent reports older same-name environment configuration. Worker has no cross-task/environment runtime inspection tool. Personal context tool returned unavailable. Branch/file absence does not prove another runtime is stopped.",
+    "required_parent_action": "Inspect existing/retained One-The-Go-Detection tasks in both configured environments. If healthy PM exists, return its identity and checkpoint and keep this task read-only. If no PM exists or old execution is confirmed stopped/crashed, provide runtime evidence and any retained run/branch/checkpoint/counters before resuming this same task.",
+    "rule": "Factory recovery.md: Establish one active PM through runtime or explicitly stopped prior session before shared mutations or dispatching workers. Unknown old PM liveness holds mutations; read-only assessment may continue.",
+    "denial": false,
+    "mutation_outcome": "not attempted",
+    "repo_changes": [],
+    "specialists_spawned": [],
+    "correction_rounds_consumed": 0,
+    "recovery_attempts_consumed": 0
+  },
+  "remote_record_scan": [
+    {
+      "branch": "docs/project-documents",
+      "sha": "1b5f70862fac86d4e0fa300ec4f7118302b8fac8",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "feat/aws-development-deployment",
+      "sha": "4412494c5dc4f32c21328a763e19f900e5c91113",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "feat/aws-serverless-deployment",
+      "sha": "875c3ca291ab77a1ea3318f47faedae6e77d5fe4",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "feat/complete-research-platform",
+      "sha": "f50c734192bfe7769cfb3f82dfd133bd256fc7fa",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "feat/fargate-development",
+      "sha": "396dad74c9752854a89287070054ffe79eaeb0f9",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/enforce-required-merge-gates",
+      "sha": "03bf06f0bf545914d96bb0d3b0734895298da919",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/fargate-empty-recovery-default",
+      "sha": "6bca4fc7a77d268f35ea6a5b0f577f37389158cc",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/fargate-repair-retained-subnet",
+      "sha": "0844868aa543af4ab75ac5065ad48cf807b86bb3",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/fargate-retained-database-continuation",
+      "sha": "7229cf8becb5b6beb53ad3dfd04dd6c479d92d70",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/required-ci-gates",
+      "sha": "d7dd9a8a8884d59e629b5783b0cd16325d2b85fa",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/serverless-browser-uploads",
+      "sha": "e122a25c9d92fcffcc926d4249671778116e126a",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/serverless-credential-name",
+      "sha": "36eb03bf14f8e76efe3c5535bd0a337c22f35269",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/serverless-import-status",
+      "sha": "14a1d665ba3bbac933689424e043da56d1be232e",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/serverless-initial-recovery",
+      "sha": "929c2794cd296039dafaf9e5761d0cf43b22e4dd",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/serverless-resume-import",
+      "sha": "d99d43654cdcca348004c20ef7fa594f268c3826",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/serverless-template-comparison",
+      "sha": "f91674be10db91ededa853fad205868e717f668f",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "fix/swift-xctest-reporting",
+      "sha": "ed14bea4c6e5feeb11c2df591f0dcf3ee67b4133",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "main",
+      "sha": "0844868aa543af4ab75ac5065ad48cf807b86bb3",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-cold-storage-only",
+      "sha": "9f12659756f1cb30a7a230c4039d7a4f9261ca73",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-ohio-inventory",
+      "sha": "774a282f0dbec5573939a293a05ab06e3c623787",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-ohio-retire",
+      "sha": "89cd6fb84f7f03981354635f9b6b385cf1a46be3",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-ohio-stop",
+      "sha": "7c982304ed2dda577bf0ddec25dec3ff4d57fabc",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-pause-development",
+      "sha": "f3b3892862ec7f260bb8f81e1c569a23e517e008",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-regional-diagnostic",
+      "sha": "74581f921d886f9a6e43992190249eaae44c18cb",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-regional-preflight",
+      "sha": "ab9c3a3b45041b4100243102364812eae6d050b3",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-serverless-inspection",
+      "sha": "395d52c946e8be5a1837a45a5d375f95b9214c41",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-aws-serverless-observer",
+      "sha": "40156fe69895127385e837ae60b92c41b3a8668d",
+      "truncated": false,
+      "records": []
+    },
+    {
+      "branch": "work-fargate-import-inspection",
+      "sha": "0cb7c4d931d79557961e3d7e04c3bdee206e6fc0",
+      "truncated": false,
+      "records": []
+    }
+  ],
+  "open_prs": [
+    {
+      "number": 21,
+      "url": "https://github.com/R3fresh-dev/One-The-Go-Detection/pull/21",
+      "head": "docs/project-documents",
+      "sha": "1b5f70862fac86d4e0fa300ec4f7118302b8fac8",
+      "draft": true,
+      "title": "Version project plans and research reports in Git",
+      "updated_at": "2026-10-13T05:21:44Z",
+      "body": "Project plans and several research reports existed only in chat, a Page, or workspace drafts. Add the selected integrated device/app/model MVP, consumer marketing plan, YC application draft and readiness assessment, and the missing dated research reports with their PDFs to the repository.\n\nA document index and links from the README, PRD, roadmap, and specification index make the selected direction discoverable. AGENTS.md records the user's requirement that project documents live in Git. Historical reports retain their evidence limits and link to the current implementation and MVP scope; the finished-tests/refill service remains an alternative proposal.\n\nValidation for commit `1b5f70862fac86d4e0fa300ec4f7118302b8fac8`:\n\n- Document links resolve, Markdown content and formatting were checked, and the imported PDF layouts were inspected. An independent content audit found no material omissions.\n- All 14 GitHub jobs, including the merge aggregate and actual LocalStack performance check, passed in [run 38347973235](https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38347973235).\n- Local unit coverage, ATDD, components, live PostgreSQL dependencies, Docker health, and real LocalStack API checks passed. Coverage was 89.40% for Python, 90.08% for mobile, 95.93% for store inputs, and 85.06% for store release helpers. Browser components passed all 40 cases; live PostgreSQL testing passed all 1,331 API cases plus migration and runtime-role checks.\n- **Local performance remains unresolved.** The final combined runner passed unit coverage and ATDD, then failed latency limits: all 400 writes succeeded across 40 workflows at concurrency 20, with p95 1,610.89 ms (limit below 1,000 ms) and p99 2,161.95 ms (limit below 2,000 ms). All queued results met their 15-second deadline. One isolated repeat after real application flows passed at 970.46/1,266.59 ms, but the successful repeat does not replace the failed final aggregate. Source, test thresholds, and retained data were preserved.\n\nThis PR remains draft. The repository requires passing local and GitHub checks for the exact revision before completion or merge. These software checks do not establish assay performance, customer demand, clinical model validity, or production release qualification.\n"
+    },
+    {
+      "number": 8,
+      "url": "https://github.com/R3fresh-dev/One-The-Go-Detection/pull/8",
+      "head": "feat/complete-research-platform",
+      "sha": "f50c734192bfe7769cfb3f82dfd133bd256fc7fa",
+      "draft": false,
+      "title": "Preserve serverless authority and reduce request connection waits",
+      "updated_at": "2026-10-12T19:44:52Z",
+      "body": "Serverless upgrades could lose SQL-producer barriers or reopen maintenance from stale identity/evidence. This preserves durable protocol-2 leases, owned closure and current-source admission before each deployment mutation, and refuses unsupported recovery instead of replacing retained authority.\n\nThe request path now retains one pool connection across two independent transactions. Rate charges commit first; a fresh second Session repeats signature and current authority checks. Pool capacity and the 400-write/40-workflow/20-concurrency latency limits are unchanged. Consent and baseline test fixtures use consistent clock anchors without relaxing production timing guards.\n\nThe integration also validates empty first-attempt resource adoption, isolates guest builds, adds separate coverage floors for all four serverless deployment modules, and points the original HLD/LLD to current implementation and deviation records. Historical review maps remain unchanged; new reviews bind the corrections.\n\nValidation: 92 focused authentication/API cases and 10 actual PostgreSQL transaction/race/concurrency cases passed with zero skips. The reusable installer, mobile type check, infrastructure checks, web export and twelve strict OpenSpec validations passed. All seven local categories and all thirteen current-source GitHub jobs passed at f50c734192bfe7769cfb3f82dfd133bd256fc7fa (tested merge e9e843e273009d19dc447a777e3c6240d32e37ee, identical source tree), run https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38237943351. Python coverage is 89.19%, mobile-business coverage 90.14%; unit/API1226, actual PostgreSQL1206, infra312+SDK9, mobile264, browser ATDD6+2 and components40 executed without mandatory skips. Actual400-write/40-workflow/20-concurrency p95/p99 were local448/605ms and CI413/538ms, within unchanged1000/2000ms limits. Native Android/iOS reports and both actual guest binaries/source inventories were inspected. The immutable local-image upgrade preserved retained dependency identities, records and journal. This green PR is not main-push promotion evidence or merge enforcement.\n\nMain protection remains unverified: current supported metadata shows unprotected main and the Administration API returns 403 despite an authenticated repository admin role. No main merge is authorized until that enforcement and all exact-source gates verify. Genuine AWS deployment/restore, hosted sessions, store publication and hardware/scientific qualification remain separate; optional initialized Aurora/Lambda restore/session reconciliation is absent. The serverless development path is not canonical QA/prod promotion.\n"
+    }
+  ],
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python tools/verify_specs.py",
+      "chunk_id": "f818ae",
+      "wall_time_seconds": 0.237476664,
+      "exit_code": 1,
+      "original_token_count": 163,
+      "output": "Traceback (most recent call last):\n  File \"/workspace/One-The-Go-Detection/tools/verify_specs.py\", line 242, in <module>\n    main()\n  File \"/workspace/One-The-Go-Detection/tools/verify_specs.py\", line 122, in main\n    result = build_demo_result(session, manifest)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/One-The-Go-Detection/tools/run_demo.py\", line 35, in build_demo_result\n    \"input_sha256\": snapshot_hash(session),\n                    ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/One-The-Go-Detection/tools/spec_validation.py\", line 174, in snapshot_hash\n    import rfc8785\nModuleNotFoundError: No module named 'rfc8785'\n"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python tools/verify_openspec.py",
+      "chunk_id": "0fc033",
+      "wall_time_seconds": 0.00002663,
+      "exit_code": 0,
+      "original_token_count": 541,
+      "output": "{\n  \"features\": [\n    {\n      \"feature\": \"android-alcohol-channel\",\n      \"requirements\": 6,\n      \"scenarios\": 12\n    },\n    {\n      \"feature\": \"android-app-environment\",\n      \"requirements\": 7,\n      \"scenarios\": 14\n    },\n    {\n      \"feature\": \"android-dashboard\",\n      \"requirements\": 7,\n      \"scenarios\": 17\n    },\n    {\n      \"feature\": \"android-data-export\",\n      \"requirements\": 7,\n      \"scenarios\": 14\n    },\n    {\n      \"feature\": \"android-device-pairing\",\n      \"requirements\": 8,\n      \"scenarios\": 19\n    },\n    {\n      \"feature\": \"android-ecg-capture\",\n      \"requirements\": 7,\n      \"scenarios\": 16\n    },\n    {\n      \"feature\": \"android-eye-capture\",\n      \"requirements\": 7,\n      \"scenarios\": 16\n    },\n    {\n      \"feature\": \"android-guided-check\",\n      \"requirements\": 8,\n      \"scenarios\": 21\n    },\n    {\n      \"feature\": \"android-heart-rate\",\n      \"requirements\": 7,\n      \"scenarios\": 16\n    },\n    {\n      \"feature\": \"android-history\",\n      \"requirements\": 7,\n      \"scenarios\": 17\n    },\n    {\n      \"feature\": \"android-offline-sync\",\n      \"requirements\": 7,\n      \"scenarios\": 14\n    },\n    {\n      \"feature\": \"android-onboarding\",\n      \"requirements\": 6,\n      \"scenarios\": 14\n    },\n    {\n      \"feature\": \"android-privacy-controls\",\n      \"requirements\": 7,\n      \"scenarios\": 17\n    },\n    {\n      \"feature\": \"android-profile\",\n      \"requirements\": 7,\n      \"scenarios\": 16\n    },\n    {\n      \"feature\": \"android-reaction-task\",\n      \"requirements\": 8,\n      \"scenarios\": 22\n    },\n    {\n      \"feature\": \"android-results\",\n      \"requirements\": 7,\n      \"scenarios\": 14\n    },\n    {\n      \"feature\": \"android-saliva-measurement\",\n      \"requirements\": 7,\n      \"scenarios\": 16\n    },\n    {\n      \"feature\": \"android-settings-accessibility\",\n      \"requirements\": 7,\n      \"scenarios\": 17\n    },\n    {\n      \"feature\": \"android-sign-in\",\n      \"requirements\": 7,\n      \"scenarios\": 17\n    },\n    {\n      \"feature\": \"android-study-enrollment\",\n      \"requirements\": 6,\n      \"scenarios\": 12\n    }\n  ],\n  \"requirement_count\": 140,\n  \"scenario_count\": 321,\n  \"status\": \"passed\",\n  \"scope\": \"specification structure only\"\n}\n"
+    }
+  ],
+  "baseline_ci": [
+    {
+      "id": 38351951577,
+      "name": "Deploy OnGo containers to AWS",
+      "path": ".github/workflows/deploy-fargate.yml",
+      "event": "workflow_dispatch",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-13T05:32:54Z",
+      "url": "https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38351951577"
+    },
+    {
+      "id": 38350430258,
+      "name": "Required application gates",
+      "path": ".github/workflows/merge-gate.yml",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-13T05:15:03Z",
+      "url": "https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38350430258"
+    },
+    {
+      "id": 38347053597,
+      "name": "Required application gates",
+      "path": ".github/workflows/merge-gate.yml",
+      "event": "workflow_dispatch",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-13T04:33:58Z",
+      "url": "https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38347053597"
+    },
+    {
+      "id": 38347011315,
+      "name": "Required application gates",
+      "path": ".github/workflows/merge-gate.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-13T04:33:26Z",
+      "url": "https://github.com/R3fresh-dev/One-The-Go-Detection/actions/runs/38347011315"
+    }
+  ],
+  "dependencies": {
+    "python": "3.12.14",
+    "node": "24.19.0",
+    "npm": "11.9.0",
+    "docker": "28.4.0",
+    "compose": "2.40.3",
+    "api_environment": "Root .venv incomplete; fastapi uvicorn sqlalchemy psycopg boto3 PyJWT rfc8785 httpx python-multipart pytest pytest-cov ruff absent",
+    "node_modules": "absent for apps/mobile and infra",
+    "local_stack": "infra/local/.env and secrets absent in selected checkout; no containers/volumes in selected Docker daemon; not proof about another retained environment",
+    "missing_tools_on_path": [
+      "gradle",
+      "adb",
+      "sdkmanager",
+      "xcodebuild",
+      "swift",
+      "arduino-cli",
+      "idf.py",
+      "openspec",
+      "cmake"
+    ],
+    "documented_setup_after_ownership": [
+      "uv sync --project services/api --locked",
+      "npm ci --prefix apps/mobile",
+      "npm ci --ignore-scripts --prefix infra",
+      "npm run typecheck --prefix apps/mobile",
+      "npm run export:web --prefix apps/mobile",
+      "cd apps/mobile && npx playwright install --with-deps chromium",
+      "python scripts/local-platform.py prepare",
+      "python scripts/local-platform.py up"
+    ],
+    "setup_conditions": "Reconcile retained environments/data first; never run up/reset against retained LocalStack blindly. Known pinned dependencies can be installed under existing user scope once ownership is established. macOS/Xcode CI is needed for iOS; Android SDK and firmware toolchains are separate absent local prerequisites."
+  },
+  "authorization": {
+    "software": "Audit, implementation, tests, dedicated branch commits/non-force pushes, draft PRs authorized by full parent-provided brief.",
+    "external": "No merge, cloud deployment, participant use, publication, hardware provisioning or scientific approval authorized.",
+    "supervision": "Parent Bono owns external supervisor; worker did not create any automation. Supervisor ID/cadence/recovery testing unavailable here."
+  },
+  "completion": {
+    "takeover_audit": "read-only evidence gathered; cross-environment ownership unresolved",
+    "specification_readiness": "not established",
+    "software_verified": false,
+    "council_signoffs": "not started",
+    "scientific_hardware_release": "not qualified by software",
+    "durability": "This audit file only; no remote checkpoint created",
+    "next": "Parent resolve liveness, then resume same task, preserve any retained run/counters, create or resume dedicated branch and Factory records; sequence actual product owner, engineering lead and spec writer."
+  }
+}

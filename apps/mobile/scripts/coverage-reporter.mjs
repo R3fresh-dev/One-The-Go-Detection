@@ -36,18 +36,23 @@ function runtimeSource(path) {
     return true;
   });
 }
+export function productionUnitSources(directory = root) {
+  return files(resolve(directory, "src"))
+    .filter(
+      (path) =>
+        path.endsWith(".ts") &&
+        !path.endsWith(".d.ts") &&
+        !path.includes("/tests/"),
+    )
+    .concat(resolve(directory, "oauth-build-policy.js"));
+}
 export default async function* coverageReporter(source) {
   let coverage, summary;
   for await (const event of source) {
     if (event.type === "test:coverage") coverage = event.data.summary;
     if (event.type === "test:summary") summary = event.data;
   }
-  const inventory = files(resolve(root, "src")).filter(
-    (path) =>
-      path.endsWith(".ts") &&
-      !path.endsWith(".d.ts") &&
-      !path.includes("/tests/"),
-  );
+  const inventory = productionUnitSources();
   const executable = inventory.filter(runtimeSource),
     types = inventory.filter((path) => !runtimeSource(path));
   const observed = new Map(
@@ -90,7 +95,7 @@ export default async function* coverageReporter(source) {
     schema_version: "1.0.0",
     created_at: new Date().toISOString(),
     scope:
-      "Every executable src/**/*.ts business module, including unloaded modules counted as zero. TSX views use the separate browser component/ATDD gate; native OS adapters remain in this inventory. Native boundary mocks do not establish physical qualification.",
+      "Every executable src/**/*.ts business module and shared oauth-build-policy.js validator, including unloaded modules counted as zero. TSX views use the separate browser component/ATDD gate; native OS adapters remain in this inventory. Native boundary mocks do not establish physical qualification.",
     source_sha256: hash.digest("hex"),
     required_percent_strictly_greater_than: 80,
     passed,

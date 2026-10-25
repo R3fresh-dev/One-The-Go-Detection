@@ -359,7 +359,8 @@ def build_and_publish_web(aws, c, out, source, work):
         context = Path(temporary)
         with tarfile.open(source) as archive:
             archive.extractall(context, filter='data')
-        runtime = {'environment': 'qa', 'api_url': out['ApiOrigin'], 'issuer': out['Issuer'], 'client_id': out['ClientId']}
+        runtime = {'environment': 'qa', 'api_url': out['ApiOrigin'], 'issuer': out['Issuer'], 'client_id': out['ClientId'],
+                   'oauth_origin': out['IdentityOrigin'], 'callback_uri': out['WebCallbackUri']}
         env = web_artifact.build_environment(runtime)
         env['EXPO_PUBLIC_SERVERLESS'] = 'true'
         mobile = context / 'apps/mobile'

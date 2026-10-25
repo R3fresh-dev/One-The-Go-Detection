@@ -1,0 +1,25 @@
+{
+  "identity": {
+    "agent_identity": "/root/replacement_ui",
+    "role": "independent UI design reviewer",
+    "provider": "OpenAI",
+    "configured_model": "gpt-6.1-sol",
+    "configured_reasoning": "high",
+    "configuration_evidence": "PM native message attests successful explicit fork_turns:none, model:gpt-6.1-sol, reasoning_effort:high dispatch",
+    "runtime_model_independently_queryable": false,
+    "independence": "Fresh reviewer context; no source/spec authorship; no tests, runtime changes or further delegates."
+  },
+  "candidate_revision": "cf74fcff6ad19e639538d260f223ec18d618658d",
+  "acks": {
+    "D001": "AFFECTED: frozen UI IMPLEMENTATION scope, defaults/science/release limits preserved",
+    "D002": "NOT_AFFECTED: no supervision/recovery ownership",
+    "D003": "AFFECTED: inspect fictional evidence only; no probes",
+    "D004": "AFFECTED: default measurement/conditional research copy",
+    "D005": "AFFECTED: no service/data/cache mutation",
+    "D006 v9": "NOT_AFFECTED operationally: no image actions; retain reconstructed-local limits",
+    "D007": "AFFECTED: repaired auth needs current evidence",
+    "D008 v2": "AFFECTED: source freeze/external owned outputs/no tests",
+    "D009 v11": "AFFECTED: individual contrast,motion,result,retention,raw,HR display/export inspection; pending gates prevent final PASS"
+  },
+  "delivered": "Native PM message before dependent substantive review"
+}

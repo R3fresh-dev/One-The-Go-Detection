@@ -321,7 +321,8 @@ def build_ui(aws, c, registry, out, source, work):
         with tarfile.open(source) as archive:
             archive.extractall(context, filter='data')
         env = web_artifact.build_environment({'environment': 'qa', 'api_url': out['ApiOrigin'],
-                                               'issuer': out['Issuer'], 'client_id': out['ClientId']})
+                                               'issuer': out['Issuer'], 'client_id': out['ClientId'],
+                                               'oauth_origin': out['IdentityOrigin'], 'callback_uri': out['WebCallbackUri']})
         env['EXPO_PUBLIC_SERVERLESS'] = 'true'
         mobile = context / 'apps/mobile'
         build_command(['npm', 'ci'], cwd=mobile, env=env)

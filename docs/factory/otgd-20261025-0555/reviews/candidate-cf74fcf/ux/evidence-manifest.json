@@ -1,0 +1,117 @@
+{
+  "recorded_at": "2026-10-25T09:53:33.544585+00:00",
+  "artifacts": [
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reviews/candidate-28e0729/ux/review.md",
+      "sha256": "0e98195b9e94079fb31b9819cdba0fae0032958f0539873b70caf4d2de3efc4d",
+      "size_bytes": 22219,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-product.md",
+      "sha256": "e4a8aaceebc5fcc0e77f4017fcfbaa167f742f5204cfd9166e171adc9e52a8ff",
+      "size_bytes": 39746,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-accessibility.md",
+      "sha256": "4c7d911591242116646bb20be8a658fd5e5b040b65a49a67b3c46698c63eca10",
+      "size_bytes": 10853,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-privacy-raw-ui.md",
+      "sha256": "5924f815c227c1656f14494bf71e0735db73f48b448da43f09e4e93d04b791e4",
+      "size_bytes": 10584,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/reports/correction-accessibility-round1/browser-final-stable.log",
+      "sha256": "4cafc06cf6bdbf3fe64f090926e3a822a7007732dff9beee9ad34ef388436402",
+      "size_bytes": 3536,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/reports/correction-accessibility-round1/computed-destructive-contrast.json",
+      "sha256": "c304e11cf9df205491c51502be84cfce866c109938819c0fe8d67d590c5ff52f",
+      "size_bytes": 1952,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/tmp/correction-HR-browser-final.log",
+      "sha256": "3fc1cac64d8521ac06c36a347cdf7590138690c7555d5b64fc0325fe67357d20",
+      "size_bytes": 13676,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/tmp/correction-HR-focused2.log",
+      "sha256": "a0a66289c8849d195d3503bd8a75cbb5c114deecac18e3257726a3cc58221074",
+      "size_bytes": 4238,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/candidate-binding.json",
+      "sha256": "15850b9e86668d2e614188f8a6477ca74b1628821b40c01db264fc5975674638",
+      "size_bytes": 42881,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/gate-process.json",
+      "sha256": "321f1152f550727c9a6ae7f96114e7ca263b48fceb78a4009da5b449bdcaee07",
+      "size_bytes": 333,
+      "scope": "current gate in progress"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/final-gates.log",
+      "sha256": "2878198885637bc294f079ea7154c94686bece4449dbf65c9d914862122c6e4a",
+      "size_bytes": 18,
+      "scope": "current gate in progress"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/reports/local-gates.json",
+      "sha256": "9abd5245beae3aed1512432bb2d3ebc721a27cbedf32502b225ef138636fd5f1",
+      "size_bytes": 370,
+      "scope": "historical or correction preflight; not final candidate acceptance"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-auth-evidence/live-mobile/fictional-structured-export.zip",
+      "sha256": "7322071e8ab151fc217429e75bd910741392ef555f97b69e057ff424d955e5b4",
+      "size_bytes": 3187,
+      "scope": "correction preflight archive"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-auth-evidence/live-desktop/fictional-structured-export.zip",
+      "sha256": "b83f370de6f3c60943351a03b31367e856f95580b5908e0a513c5efbd9c170bf",
+      "size_bytes": 3191,
+      "scope": "correction preflight archive"
+    }
+  ],
+  "archive_inspections": [
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-auth-evidence/live-mobile/fictional-structured-export.zip",
+      "sha256": "7322071e8ab151fc217429e75bd910741392ef555f97b69e057ff424d955e5b4",
+      "selection": {
+        "kind": "single",
+        "session_ids": [
+          "89b95093-8947-4b8e-9e5c-6e9cb7b04e93"
+        ]
+      },
+      "exact_members": true,
+      "hashes_valid": true,
+      "scope": "read-only verification of correction preflight archive; not frozen-candidate runtime"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-auth-evidence/live-desktop/fictional-structured-export.zip",
+      "sha256": "b83f370de6f3c60943351a03b31367e856f95580b5908e0a513c5efbd9c170bf",
+      "selection": {
+        "kind": "single",
+        "session_ids": [
+          "d983183d-537f-40fc-a120-4178d1a26a32"
+        ]
+      },
+      "exact_members": true,
+      "hashes_valid": true,
+      "scope": "read-only verification of correction preflight archive; not frozen-candidate runtime"
+    }
+  ]
+}

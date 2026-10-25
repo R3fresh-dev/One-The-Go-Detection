@@ -1,0 +1,18 @@
+{
+  "candidate": "cf74fcff6ad19e639538d260f223ec18d618658d",
+  "source": "Actual native collaboration messages received by PM; these are coordination acknowledgments, not signoffs",
+  "configured_model": "OpenAI gpt-6.1-sol",
+  "configured_reasoning_effort": "high",
+  "runtime_model_query_available": false,
+  "correction_round": 1,
+  "recovery_attempts": 0,
+  "decisions": "D001-D009 current, including D006 v9, D008 v2, D009 v11",
+  "agents": [
+    {"agent":"/root/replacement_security","role":"security","ack":"AFFECTED; D002 NOT_AFFECTED; no clarification","scope":"trust boundaries, current disclosure, auth, privacy, preserved state and frozen source"},
+    {"agent":"/root/replacement_ux","role":"ux","ack":"AFFECTED; D002 and D006 v9 operationally NOT_AFFECTED; no clarification","scope":"journeys, recovery, accessibility, current HR states, fictional evidence"},
+    {"agent":"/root/replacement_ui","role":"ui","ack":"AFFECTED; D002 and D006 v9 operationally NOT_AFFECTED; no clarification","scope":"current UI corrections, all 47 canonical hashes checked, no stale PASS"},
+    {"agent":"/root/replacement_code","role":"code","ack":"AFFECTED; D002 NOT_AFFECTED; no clarification","scope":"correctness, assertions, integrations, source/image identity"},
+    {"agent":"/root/replacement_product","role":"product-signoff","ack":"AFFECTED; D002 and D006 v9 requirements NOT_AFFECTED; no clarification","scope":"all approved scope, claims, current admission and chemistry minimums"},
+    {"agent":"/root/replacement_engineering","role":"engineering-signoff","ack":"AFFECTED across current decisions; no clarification","scope":"real dependencies, image scope, frozen source, all corrections and external authority limits"}
+  ]
+}

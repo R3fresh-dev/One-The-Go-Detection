@@ -276,6 +276,17 @@ export interface CheckRecord {
   remote_revision: number;
   remote_etag: string;
   updated_at: string;
+  /** Read-only server observation; never replaces pending immutable evidence. */
+  sync_conflict?: SyncConflict;
+}
+export interface SyncConflict {
+  account_ref: string;
+  data_generation: number;
+  observed_at: string;
+  server_record: JsonObject | null;
+  server_etag: string | null;
+  frozen: boolean;
+  read_error: string | null;
 }
 export interface NoticeRef {
   version: string;
@@ -365,7 +376,7 @@ export interface Identity {
 }
 export interface Preferences {
   theme: "system" | "light" | "dark";
-  reducedMotion: boolean;
+  reducedMotion: boolean | "system";
   units: "metric" | "imperial";
   retryQueuedAutomatically: boolean;
 }
@@ -376,6 +387,12 @@ export type ExportSelection = {
 export interface ExportEntry {
   source: "device" | "cloud";
   selection: ExportSelection;
+}
+export interface RetainedPrivacyCategory {
+  category: string;
+  policy_basis: string;
+  reason: string;
+  expires_at: string | null;
 }
 export interface PrivacyJob {
   schema_version: "1.0.0";
@@ -392,11 +409,11 @@ export interface PrivacyJob {
     | "revoked"
     | "partially_retained";
   accepted_at: string;
-  started_at?: string;
-  completed_at?: string;
-  expires_at?: string;
-  failure_code?: string;
-  retained_categories: JsonObject[];
+  started_at?: string | null;
+  completed_at?: string | null;
+  expires_at?: string | null;
+  failure_code?: string | null;
+  retained_categories: (RetainedPrivacyCategory | string)[];
   policy_version: string;
   attempt_count: number;
   allowed_actions: string[];
@@ -429,6 +446,9 @@ export interface QueueOperation {
   error: string | null;
   created_at: string;
   phase: number;
+  field_errors?: Record<string, string>;
+  /** Server deadline also fences explicit retry; waits over one hour are manual-only. */
+  rate_limited_until?: string | null;
 }
 export interface WorkspaceState {
   schema_version: 1;

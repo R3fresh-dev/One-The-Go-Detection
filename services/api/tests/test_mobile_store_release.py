@@ -52,6 +52,8 @@ def config(tmp_path):
         "expo_account": "fictional-engineering",
         "api_url": "https://api.engineering-research.org",
         "oauth_issuer": "https://cognito-idp.us-east-2.amazonaws.com/us-east-2_ENGINEERING",
+        "oauth_origin": "https://hosted.engineering-research.org",
+        "oauth_web_callback_uri": "https://web.engineering-research.org/",
         "oauth_client_id": "fictionalclientwithoutreservedword".replace(
             "fictional", "unit"
         ),
@@ -96,6 +98,9 @@ def resolved(config, platform):
                 "apiUrl": config["api_url"],
                 "issuer": config["oauth_issuer"],
                 "clientId": config["oauth_client_id"],
+                "oauthOrigin": config["oauth_origin"],
+                "webCallbackUri": config["oauth_web_callback_uri"],
+                "redirectUris": ["otgd" + ("-qa" if config["environment"] == "qa" else "") + "://oauth/callback", config["oauth_web_callback_uri"]],
                 "redirectUri": "otgd"
                 + ("-qa" if config["environment"] == "qa" else "")
                 + "://oauth/callback",
@@ -204,6 +209,14 @@ def test_plan_is_pure_and_profiles_cannot_publish_automatically(
     assert profiles["build"]["qa"]["distribution"] == "internal"
 
 
+@pytest.mark.parametrize("field", ["oauth_origin", "oauth_web_callback_uri"])
+def test_current_mobile_config_requires_independent_oauth_pins(config, tmp_path, field):
+    changed = deepcopy(config)
+    changed.pop(field, None)
+    with pytest.raises(store.Gate):
+        store.read_config(write_config(changed, tmp_path))
+
+
 @pytest.mark.parametrize(
     "field,value",
     [
@@ -213,6 +226,15 @@ def test_plan_is_pure_and_profiles_cannot_publish_automatically(
         ("api_url", "http://api.engineering-research.org"),
         ("api_url", "https://user:secret@api.engineering-research.org"),
         ("oauth_client_id", "otgd-local"),
+        ("oauth_origin", "https://hosted.engineering-research.org/oauth2/token"),
+        ("oauth_origin", "https://hosted.engineering-research.org/?override=1"),
+        ("oauth_origin", "https://hosted.engineering-research.org#override"),
+        ("oauth_origin", "https://user@hosted.engineering-research.org"),
+        ("oauth_origin", "https://hosted.engineering-research.org:443"),
+        ("oauth_web_callback_uri", "https://web.engineering-research.org/extra"),
+        ("oauth_web_callback_uri", "https://web.engineering-research.org/?override=1"),
+        ("oauth_web_callback_uri", "https://web.engineering-research.org/#override"),
+        ("oauth_web_callback_uri", "https://user@web.engineering-research.org/"),
         ("artifact_hosts", ["*.amazonaws.com"]),
         ("extra_field", True),
     ],
@@ -823,6 +845,8 @@ def test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope(
                 "EXPO_PUBLIC_API_URL": config["api_url"],
                 "EXPO_PUBLIC_OAUTH_ISSUER": config["oauth_issuer"],
                 "EXPO_PUBLIC_OAUTH_CLIENT_ID": config["oauth_client_id"],
+                "EXPO_PUBLIC_OAUTH_ORIGIN": config["oauth_origin"],
+                "EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI": config["oauth_web_callback_uri"],
             }[name]
         )
 
@@ -830,7 +854,7 @@ def test_pinned_tool_package_integrity_and_actual_public_eas_variable_scope(
     eas = store.Eas(tmp_path, config)
     eas.verify_project(config)
     eas.verify_environment(config)
-    assert len(seen) == 6
+    assert len(seen) == 8
     assert all(
         "--scope" not in command or command[command.index("--scope") + 1] == "project"
         for command, _ in seen
@@ -1157,11 +1181,13 @@ def test_backend_admission_rechecks_signed_release_actual_running_image_and_live
         "ApiOrigin": config["api_url"],
         "Issuer": config["oauth_issuer"],
         "ClientId": config["oauth_client_id"],
+        "IdentityOrigin": config["oauth_origin"],
+        "WebCallbackUri": config["oauth_web_callback_uri"],
         "Cluster": "unit-cluster",
         "ApiService": "api",
         "WorkerService": "worker",
     }
-    faults = {"rollout": False, "image": False, "callback": False}
+    faults = {"rollout": False, "image": False, "callback": False, "endpoint": False}
 
     class Client:
         def get_caller_identity(self):
@@ -1250,10 +1276,15 @@ def test_backend_admission_rechecks_signed_release_actual_running_image_and_live
                 "auth": {
                     "issuer": config["oauth_issuer"],
                     "client_id": config["oauth_client_id"],
+                    "authorization_endpoint": config["oauth_origin"] + "/oauth2/authorize",
+                    "token_endpoint": ("https://foreign.invalid" if faults["endpoint"] else config["oauth_origin"]) + "/oauth2/token",
+                    "revocation_endpoint": config["oauth_origin"] + "/oauth2/revoke",
+                    "logout_endpoint": config["oauth_origin"] + "/logout",
                     "redirect_uris": [
                         "otgd-prod://oauth/callback"
                         if faults["callback"]
-                        else "otgd://oauth/callback"
+                        else "otgd://oauth/callback",
+                        config["oauth_web_callback_uri"],
                     ],
                 },
             },

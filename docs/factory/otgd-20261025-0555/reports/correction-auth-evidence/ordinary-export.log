@@ -1,0 +1,24 @@
+
+> one-the-go-detection-mobile@0.2.0 export:web
+> expo export --platform web --clear
+
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+| (node:158125) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:158125) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:158125) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Web Bundled 8268ms node_modules/expo/AppEntry.js (580 modules)
+
+› web bundles (2):
+_expo/static/js/web/AppEntry-34955a04f652f1e48c295396f7f5cced.js (1.6MB)
+_expo/static/js/web/index-a68f43c81714f37378d239eac6eaa6bd.js (45KB)
+
+› Files (2):
+index.html (1.2KB)
+metadata.json (49B)
+
+Exported: dist

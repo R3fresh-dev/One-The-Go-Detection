@@ -1,0 +1,115 @@
+# OTGD-043: verification plan
+
+Canonical: `openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md`; SHA-256 `c6f863bc71ebf167438fbe5cffe07b892da12cc066d0487d21403ff8dd49fa0d`.
+Planning snapshot HEAD: `33901a1ff785cd28e351d935be510d184fb7f8e2`; approved implementation baseline: `0844868aa543af4ab75ac5065ad48cf807b86bb3`. This is a mutable audit snapshot, not a frozen execution candidate.
+
+Owner: `/root/verification`, verification specialist; OpenAI `gpt-6.1-sol/high` requested explicitly in PM dispatch; effective model identifier is not independently exposed inside this worker. Decisions: D-001–005 v1 and D-006 v3 acknowledged through native messaging; D-006 v1/v2 retained as superseded method history. See `../../decisions.md`, `../../impact-register.md` and `../../reports/verification-plan.md`.
+
+Stage: PLANNED / NOT_RUN. Test-source symbols below are related existing checks, not a claim that every assertion is adequate or has passed. Static indexing does not establish runtime coverage. Every stated canonical scenario must execute and meet its full THEN conditions; use the source reference for complete GIVEN/WHEN context. Missing exact-case coverage remains a software verification gap until a meaningful assertion is inspected/added and executed. No historical test/CI result is adopted.
+
+Use the shared command catalog and source-binding rules in `../../reports/verification-plan.md`. API checks: C-UNIT/C-PG; mobile business checks: C-MOBILE; visible flows: C-ATDD/C-COMP; native: C-ANDROID/C-IOS; firmware: C-FW/C-SECURE. Real runtime: C-DOCKER/C-LOCAL/C-PERF. Contracts: C-SPEC/C-SCHEMA/C-CDK. Applicable external prerequisites are recorded per requirement below.
+
+Acceptance: no failure/error/skip/xfail/zero-case report; Python and TypeScript business-module coverage independently strictly >80%, each store helper >80% without excluded statements. Performance: all 400 writes, p95 <1000 ms, p99 <2000 ms, result <=15 s. Require fresh exact-source evidence, scoped independent signoffs and council decision before acceptance.
+
+## Existing mapped test source bindings
+
+These SHA-256 bindings identify inspected source at planning time. Any edit requires remapping and a fresh execution binding.
+
+- `apps/mobile/src/device/tests/physical.test.ts` — `23d4938d5015dc6cca7f978a44c3d823f0e9aef3f52631a87898ae5d28c82d9d`
+- `apps/mobile/tests/acquisition.test.ts` — `797e9858167b9b80bff401e0b66c3fda1f9ae56c8f007fbe5b10c4aeb0b159be`
+- `firmware/tests/signed_reader_acquisition_test.cpp` — `fcab5453fa6058f9ec5c02c9aa30044e979896007eaf06afb7129287af926e7a`
+- `firmware/tests/sparkfun_ppg_test.cpp` — `00121684618f2ea6a40bba22118a910c0cedef814d8e9f308c50f31a6cb9d78a`
+- `services/api/tests/test_operator_governance.py` — `4d512a3ad9f7c65b69ee09d94fb471799d1aff63a5bc4c34140526dcac280ae7`
+- `services/api/tests/test_vendor_evidence.py` — `ffb2ca5111d52df5d295f0e594a6eb00b17465c452c0abb21a4d2fb79a8930fe`
+
+## Requirement and criterion cases
+
+For each requirement, also exercise absent/null/malformed/unknown values, wrong owner/environment/generation, retired/revoked authority, duplicate same-body vs changed-body replay, delayed/out-of-order replies, cancellation/replacement and restart where applicable. For every numeric/string/time limit in the linked normative detailed contract, test equality plus the smallest representable increment below and above, including post-terminal immutability. Do not invent physical tolerances or treat a declaration as measured safety evidence.
+
+### VPPG-001 — Pin and initialize the actual selected sensor SDK
+
+Normative acceptance source: `openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md` / `VPPG-001`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes. NOT_RUN firmware target builds; BLOCKED physical provisioning, protected-key/eFuse/secure-boot configuration, authenticated BLE pairing, contact/calibration/safety and sensor qualification. No flash or provisioning authorized.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-043-VPPG-001-01 | Exact selected breakout initializes — **GIVEN** approved/provisioned selected hardware, firmware and SDK material **WHEN** the current signed PPG start is admitted **THEN** the actual SDK adapter initializes the declared I2C/reset/MFIO/BPM mode and progresses through bounded warmup without blocking cancellation. | `apps/mobile/tests/acquisition.test.ts:1703` — actual Python HTTP grant/start envelope binds material, frozen context and signed fresh start without simulated clinical authority<br>`services/api/tests/test_operator_governance.py:257` — test_missing_decisions_and_expiry_fail_closed_with_preserved_history | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-043-VPPG-001-02 | Generic ADC or failed hub initialization — **GIVEN** a configuration expects SEN-15219 but a different adapter or failed I2C hub is present **WHEN** acquisition is requested **THEN** it returns a concrete invalid/unavailable disposition and never substitutes ADC counts, a simulator or a fabricated bpm. | `services/api/tests/test_operator_governance.py:569` — test_typed_adc_material_retains_counts_and_rejects_unreviewed_pins_units_or_unbounded_deadlines<br>`apps/mobile/tests/acquisition.test.ts:1319` — approved research start freezes exact online study/configuration context and device binding before any acquisition | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+### VPPG-002 — Count only fresh bounded vendor records
+
+Normative acceptance source: `openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md` / `VPPG-002`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes. NOT_RUN firmware target builds; BLOCKED physical provisioning, protected-key/eFuse/secure-boot configuration, authenticated BLE pairing, contact/calibration/safety and sensor qualification. No flash or provisioning authorized.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-043-VPPG-002-01 | Fresh FIFO with known invalid records — **GIVEN** the current capture receives bounded distinct vendor records with valid and poor-contact statuses **WHEN** the adapter processes them **THEN** received counts reconcile to valid/invalid dispositions and only fresh permitted records contribute to the summary. | `services/api/tests/test_vendor_evidence.py:66` — test_contact_vendor_bounds_and_no_raw_count_persistence<br>`apps/mobile/tests/acquisition.test.ts:1366` — actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-043-VPPG-002-02 | No new FIFO data — **GIVEN** one prior valid heart rate followed by empty FIFO, stale records or truncated responses **WHEN** polling continues **THEN** no prior number fills the missing interval, valid count does not advance and insufficient/stale evidence produces null completion. | `apps/mobile/tests/acquisition.test.ts:1366` — actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence<br>`services/api/tests/test_vendor_evidence.py:66` — test_contact_vendor_bounds_and_no_raw_count_persistence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-043-VPPG-002-03 | Identical values from genuine fresh dequeues — **GIVEN** two separately successful current FIFO dequeues contain identical bpm/quality values and the vendor supplies no unique sample timestamp **WHEN** the driver consumes each once **THEN** both may count as observations, host sequence remains labeled as host-generated and neither equality nor polling cadence manufactures vendor timing or dropped-sample knowledge. | `apps/mobile/tests/acquisition.test.ts:1366` — actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence<br>`apps/mobile/src/device/tests/physical.test.ts:820` — actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+### VPPG-003 — Preserve vendor quality and finite extraction semantics
+
+Normative acceptance source: `openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md` / `VPPG-003`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes. NOT_RUN firmware target builds; BLOCKED physical provisioning, protected-key/eFuse/secure-boot configuration, authenticated BLE pairing, contact/calibration/safety and sensor qualification. No flash or provisioning authorized.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-043-VPPG-003-01 | Valid finger and vendor quality — **GIVEN** enough fresh vendor records meet the approved finger/status/confidence/range criteria **WHEN** the named extractor completes **THEN** a finite positive measured bpm and original bounded quality/count evidence are retained; confidence is labeled acquisition quality. | `apps/mobile/src/device/tests/physical.test.ts:820` — actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence<br>`apps/mobile/tests/acquisition.test.ts:1412` — explicit ECG raw choice uses a fresh signed recording receipt and the real bounded encoder before atomic encrypted local save | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-043-VPPG-003-02 | Poor finger state or confidence reinterpretation — **GIVEN** finger absence, insufficient accepted data or a vendor confidence score **WHEN** output is validated/displayed **THEN** invalid capture has null bpm and explicit reasons, and confidence cannot be shown as accuracy or cannabis impairment probability. | `apps/mobile/tests/acquisition.test.ts:1412` — explicit ECG raw choice uses a fresh signed recording receipt and the real bounded encoder before atomic encrypted local save<br>`apps/mobile/src/device/tests/physical.test.ts:820` — actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+### VPPG-004 — Bind measured output to signed current origin
+
+Normative acceptance source: `openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md` / `VPPG-004`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes. NOT_RUN firmware target builds; BLOCKED physical provisioning, protected-key/eFuse/secure-boot configuration, authenticated BLE pairing, contact/calibration/safety and sensor qualification. No flash or provisioning authorized.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-043-VPPG-004-01 | Current signed vendor completion — **GIVEN** a verified binding and current scoped start token with actual accepted vendor records **WHEN** completion is signed and consumed by Android/iOS and the API **THEN** the unchanged normalized evidence and timing/source labels survive exact signature and configuration validation. | `apps/mobile/tests/acquisition.test.ts:1319` — approved research start freezes exact online study/configuration context and device binding before any acquisition<br>`apps/mobile/src/device/tests/physical.test.ts:293` — signed completion binds each current authorization scope field and exact immutable projection | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-043-VPPG-004-02 | Foreign boot or configuration — **GIVEN** a signed completion from another boot, authorization, protocol/configuration or workspace **WHEN** it is delivered late or replayed **THEN** current client/server admission rejects it without attaching the old bpm to the replacement attempt. | `apps/mobile/tests/acquisition.test.ts:1158` — late binding receipt cannot bind a foreign replacement or erase a newer same-owner intent<br>`apps/mobile/src/device/tests/physical.test.ts:293` — signed completion binds each current authorization scope field and exact immutable projection | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+### VPPG-005 — Stop independently of transport and connection replacement
+
+Normative acceptance source: `openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md` / `VPPG-005`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes. NOT_RUN firmware target builds; BLOCKED physical provisioning, protected-key/eFuse/secure-boot configuration, authenticated BLE pairing, contact/calibration/safety and sensor qualification. No flash or provisioning authorized.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-043-VPPG-005-01 | Cancellation during warmup or blocked delivery — **GIVEN** vendor acquisition is warming up or terminal transport is backpressured **WHEN** Cancel or the admitted cutoff occurs **THEN** the actual adapter stops before later delivery, retains the originating terminal identity and performs no resumed sampling. | `apps/mobile/tests/acquisition.test.ts:1366` — actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence<br>`services/api/tests/test_operator_governance.py:598` — test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-043-VPPG-005-02 | Late old vendor read versus reconnect — **GIVEN** an old read/result is delayed while another authenticated connection becomes current **WHEN** it completes or notification is attempted **THEN** origin fencing rejects its effects and only its own resources may be stopped; no participant payload reaches the replacement peer. | `apps/mobile/tests/acquisition.test.ts:1101` — binding reconnect reconciles old receipt then requires a new device proof in the current connection<br>`apps/mobile/src/device/tests/physical.test.ts:632` — delayed old acknowledgment rejection cannot invalidate replacement association | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+### VPPG-006 — Advertise only the installed matching vendor adapter
+
+Normative acceptance source: `openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md` / `VPPG-006`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes. NOT_RUN firmware target builds; BLOCKED physical provisioning, protected-key/eFuse/secure-boot configuration, authenticated BLE pairing, contact/calibration/safety and sensor qualification. No flash or provisioning authorized.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-043-VPPG-006-01 | Installed and currently admitted vendor PPG — **GIVEN** the selected adapter is compiled and all its exact current independently released scopes match **WHEN** Home and PPG capture are opened **THEN** the supported vendor path and instruction journey are shown while actual acquisition still obtains a fresh start. | `apps/mobile/tests/acquisition.test.ts:1319` — approved research start freezes exact online study/configuration context and device binding before any acquisition<br>`services/api/tests/test_operator_governance.py:689` — test_current_device_calibration_binding_and_software_inventory | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-043-VPPG-006-02 | Approved record names an absent driver or raw codec — **GIVEN** an operator record names a missing vendor build or unsupported raw encoding **WHEN** capability/start/recording is evaluated **THEN** software availability remains refused; an approval cannot manufacture code or raw permission. | `services/api/tests/test_operator_governance.py:598` — test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec<br>`apps/mobile/tests/acquisition.test.ts:1478` — revoked consent, stale approval and reader substitution cannot invoke hardware | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+### VPPG-007 — Verify executable software separately from physical qualification
+
+Normative acceptance source: `openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md` / `VPPG-007`.
+
+Prerequisites and limits: NOT_RUN physical/native: actual Android/iOS permission, background/foreground, radio/camera/touch/secure-storage and hardware timing cases on supported devices; fixtures/browser DOM do not establish those outcomes. NOT_RUN firmware target builds; BLOCKED physical provisioning, protected-key/eFuse/secure-boot configuration, authenticated BLE pairing, contact/calibration/safety and sensor qualification. No flash or provisioning authorized.
+
+| Stable case | Canonical criterion / expected observation | Existing related check (source, not execution) | Status and required supplement |
+|---|---|---|---|
+| OTGD-043-VPPG-007-01 | Actual driver software fixtures — **GIVEN** the same adapter used by firmware and the pinned vendor commands **WHEN** fresh/empty/malformed FIFO, reset, quality, cutoff and cancellation cases execute **THEN** tests verify its actual observable outcomes and both target builds retain source/artifact evidence without claiming sensor execution. | `apps/mobile/src/device/tests/physical.test.ts:820` — actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence<br>`services/api/tests/test_operator_governance.py:689` — test_current_device_calibration_binding_and_software_inventory | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+| OTGD-043-VPPG-007-02 | Compile mistaken for participant qualification — **GIVEN** stock/protected compilation and fictional interoperability pass but no genuine reference/device/study evidence exists **WHEN** participant or model eligibility is evaluated **THEN** those external gates remain closed and the reports explicitly distinguish software tests from real sensor validation. | `services/api/tests/test_operator_governance.py:689` — test_current_device_calibration_binding_and_software_inventory<br>`apps/mobile/src/device/tests/physical.test.ts:654` — actual backend bound-reader HTTP fixture passes strict physical token and exact material digest | NOT_RUN: run related assertions, inspect full canonical case and add/execute missing acceptance assertions; no complete scenario-coverage claim. |
+
+## Execution and evidence handoff
+
+Before running: PM freezes implementation/tests/contracts; capture HEAD, changed/untracked implementation hashes and tool versions, confirm canonical hash still matches, and record actual clock/environment/commands. Log each check under `reports/` or a PM-designated immutable attempt path; preserve JUnit/coverage/Playwright traces/screenshots/performance JSON and compute SHA-256 of actual artifacts. Shared passing suites can serve this dossier only when its relevant assertions and exact binding are explicit.
+
+Record each case PASS/FAIL/BLOCKED/NOT_RUN in `test-results.md`, with exit/result/timestamp and evidence path/hash. A historical file existing in reports is not a new execution. Required checks unavailable on this runner remain BLOCKED; neither design review nor npm tests substitute for native, firmware, physical or scientific evidence.
+
+## Reactivated verification audit
+
+Observed checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active writers’ working-tree edits, 2026-10-25T06:53:56.344429+00:00. This is not source freeze. Original planning HEAD and prior no-execution record above remain historical. Canonical hash above is rebound to the reconciled current source; OTGD-001 and OTGD-047 changed. Existing411 requirements /782 case IDs are retained. No Docker/build/probe or suite execution performed by this verifier.

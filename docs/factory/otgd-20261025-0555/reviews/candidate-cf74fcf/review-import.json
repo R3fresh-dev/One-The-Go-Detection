@@ -1,0 +1,394 @@
+{
+  "candidate": "cf74fcff6ad19e639538d260f223ec18d618658d",
+  "roles": [
+    "security",
+    "ux",
+    "ui",
+    "code",
+    "product",
+    "engineering"
+  ],
+  "spec_count": 47,
+  "actual_independent_decisions": 282,
+  "archive_sha256": "d7e4ddc0a30333aab303bf30e3f6c4ba9c8891dccf0e6887ac14ea635a6f8767",
+  "archive_bytes": 420143,
+  "archive_entries": 40,
+  "matrix": {
+    "OTGD-001": {
+      "security": "CHANGES_REQUIRED",
+      "ux": "CHANGES_REQUIRED",
+      "ui": "CHANGES_REQUIRED",
+      "code": "CHANGES_REQUIRED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-002": {
+      "security": "BLOCKED",
+      "ux": "CHANGES_REQUIRED",
+      "ui": "CHANGES_REQUIRED",
+      "code": "BLOCKED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-003": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "CHANGES_REQUIRED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-004": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-005": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-006": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "CHANGES_REQUIRED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-007": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-008": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-009": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-010": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "CHANGES_REQUIRED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-011": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-012": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-013": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-014": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-015": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-016": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-017": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-018": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "CHANGES_REQUIRED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-019": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-020": {
+      "security": "CHANGES_REQUIRED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-021": {
+      "security": "BLOCKED",
+      "ux": "CHANGES_REQUIRED",
+      "ui": "CHANGES_REQUIRED",
+      "code": "BLOCKED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-022": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "CHANGES_REQUIRED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-023": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-024": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-025": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-026": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-027": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-028": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-029": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-030": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-031": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-032": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-033": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-034": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "CHANGES_REQUIRED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-035": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-036": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-037": {
+      "security": "CHANGES_REQUIRED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-038": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-039": {
+      "security": "BLOCKED",
+      "ux": "CHANGES_REQUIRED",
+      "ui": "CHANGES_REQUIRED",
+      "code": "BLOCKED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-040": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-041": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-042": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "CHANGES_REQUIRED",
+      "product": "CHANGES_REQUIRED",
+      "engineering": "CHANGES_REQUIRED"
+    },
+    "OTGD-043": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-044": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-045": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-046": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    },
+    "OTGD-047": {
+      "security": "BLOCKED",
+      "ux": "BLOCKED",
+      "ui": "BLOCKED",
+      "code": "BLOCKED",
+      "product": "BLOCKED",
+      "engineering": "BLOCKED"
+    }
+  }
+}

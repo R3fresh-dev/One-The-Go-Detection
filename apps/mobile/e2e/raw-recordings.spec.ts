@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { buildSync } from "esbuild";
+import { build, buildSync } from "esbuild";
 import { resolve } from "node:path";
 import fixture from "../testfixtures/backend-raw-recordings.json";
+import privacyReceipt from "../testfixtures/backend-privacy-deletion-receipt.json";
 import { clone, digest, digestText } from "../src/core/integrity";
 import { readFileSync } from "node:fs";
 import researchFixture from "../testfixtures/backend-research-result.json";
@@ -76,6 +77,443 @@ const bundle = buildSync({
   define: { "process.env.NODE_ENV": '"test"' },
   loader: { ".tsx": "tsx" },
 }).outputFiles![0]!.text;
+
+function screenOptions(entry: string, native = false) {
+  return {
+    entryPoints: [resolve(`e2e/fixtures/${entry}.tsx`)],
+    bundle: true,
+    write: false,
+    platform: "browser" as const,
+    format: "iife" as const,
+    resolveExtensions: [
+      ".web.tsx",
+      ".web.ts",
+      ".web.js",
+      ".tsx",
+      ".ts",
+      ".jsx",
+      ".js",
+      ".json",
+    ],
+    alias: {
+      "react-native": resolve(
+        `e2e/fixtures/${native ? "permissions-native-shim.ts" : "native-web-shim.js"}`,
+      ),
+      ...(native
+        ? {
+            "expo-camera": resolve("e2e/fixtures/permission-adapters.ts"),
+            "expo-local-authentication": resolve(
+              "e2e/fixtures/permission-adapters.ts",
+            ),
+            "expo-clipboard": resolve("e2e/fixtures/permission-adapters.ts"),
+          }
+        : {}),
+    },
+    define: {
+      "process.env.NODE_ENV": '"test"',
+      "process.env.EXPO_PUBLIC_APP_ENV": '"local"',
+      "process.env.EXPO_PUBLIC_HOSTED_PREVIEW": '"false"',
+    },
+  };
+}
+const alcoholBundle = buildSync(screenOptions("alcohol-component"))
+  .outputFiles![0]!.text;
+const receiptBundle = buildSync(screenOptions("privacy-raw-receipt-component"))
+  .outputFiles![0]!.text;
+let permissionsBundle: string;
+test.beforeAll(async () => {
+  permissionsBundle = (
+    await build({
+      ...screenOptions("permissions-component", true),
+      plugins: [
+        {
+          name: "controlled-permission-boundary",
+          setup(builder) {
+            builder.onResolve({ filter: /modules\/device-transport$/ }, () => ({
+              path: resolve("e2e/fixtures/permission-adapters.ts"),
+            }));
+          },
+        },
+      ],
+    })
+  ).outputFiles![0]!.text;
+});
+
+const screenErrors = new WeakMap<object, string[]>();
+async function screenDOM(page: any, content: string) {
+  const errors: string[] = [];
+  screenErrors.set(page, errors);
+  page.on("pageerror", (error: Error) => errors.push(error.message));
+  await page.setContent('<main id="root"></main>');
+  await page.addScriptTag({ content });
+}
+test.afterEach(async ({ page }) => {
+  expect(screenErrors.get(page) ?? []).toEqual([]);
+});
+
+test("alcohol copy remains accurate for measurement, guest and admitted research contexts", async ({
+  page,
+}) => {
+  await screenDOM(page, alcoholBundle);
+  for (const kind of ["measurement", "guest_demo", "research"]) {
+    const check = clone(researchFixture.check) as any;
+    if (kind !== "research") {
+      check.kind = kind;
+      check.result = null;
+    }
+    await page.evaluate((value) => (window as any).renderAlcohol(value), check);
+    await expect(
+      page.getByText("Qualified capture unavailable", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("mg/L breath alcohol", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "No automatic combined classification; research co-use requires model-specific authority",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByText("No classification exists", { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText("Driving threshold or clearance", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText("Unavailable", { exact: true })).toHaveCount(2);
+  }
+});
+
+test("alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail", async ({
+  page,
+}) => {
+  await screenDOM(page, alcoholBundle);
+  for (const variant of [
+    {
+      qualifier: "quantified",
+      source: "prototype_sensor",
+      value: 0,
+      text: "0.000",
+    },
+    {
+      qualifier: "quantified",
+      source: "prototype_sensor",
+      value: 0.001,
+      text: "0.001",
+    },
+    {
+      qualifier: "below_loq",
+      source: "prototype_sensor",
+      value: null,
+      text: "—",
+    },
+    {
+      qualifier: "not_detected",
+      source: "prototype_sensor",
+      value: null,
+      text: "—",
+    },
+    {
+      qualifier: "invalid",
+      source: "prototype_sensor",
+      value: null,
+      text: "—",
+    },
+    {
+      qualifier: "quantified",
+      source: "simulated",
+      value: 0.001,
+      text: "0.001",
+    },
+  ]) {
+    const check = clone(researchFixture.check) as any;
+    check.alcohol = {
+      ...check.alcohol,
+      qualifier: variant.qualifier,
+      source: variant.source,
+      value_mg_l: variant.value,
+      measured_at: "2026-10-11T07:08:09Z",
+      // Hypothetical reporting boundary only; no qualified instrument exists.
+      limits: { lod_mg_l: 0, loq_mg_l: 0, upper_mg_l: 1 },
+    };
+    await page.evaluate(
+      (value) => (window as any).renderAlcohol(value, "history"),
+      check,
+    );
+    await expect(
+      page.getByText("Your check history", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        /safe to drive|cleared to drive|legally cleared|combined score/i,
+      ),
+    ).toHaveCount(0);
+    await page
+      .getByRole("button", { name: /Historical research result/ })
+      .click();
+    await expect(page.getByText("83.2%", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("above threshold", { exact: true }),
+    ).toBeVisible();
+    const card = page
+      .getByText("Separate alcohol measurement", { exact: true })
+      .locator("..");
+    await expect(
+      card.getByText(`${variant.text} mg/L`, { exact: true }),
+    ).toBeVisible();
+    await expect(card.getByText("mg/L", { exact: true })).toBeVisible();
+    await expect(
+      card.getByText(
+        `${variant.qualifier.replaceAll("_", " ")} / ${variant.source.replaceAll("_", " ")}`,
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      card.getByText("2026-10-11T07:08:09Z", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      card.getByText(
+        "No BAC conversion or cannabis impairment adjustment is calculated.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        /safe to drive|cleared to drive|legally cleared|combined score/i,
+      ),
+    ).toHaveCount(0);
+    await page.getByRole("button", { name: /About this result/ }).click();
+    await expect(
+      page.getByText("Evidence & context", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        /safe to drive|cleared to drive|legally cleared|combined score/i,
+      ),
+    ).toHaveCount(0);
+  }
+});
+
+test("Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly", async ({
+  page,
+}) => {
+  await screenDOM(page, permissionsBundle);
+  for (const value of [
+    {
+      exact: "denied",
+      status: "denied",
+      canAskAgain: true,
+      label: "Denied · request only in eye preview",
+    },
+    {
+      exact: "denied",
+      status: "denied",
+      canAskAgain: false,
+      label: "Denied · review app settings",
+    },
+    {
+      exact: "restricted",
+      status: "denied",
+      canAskAgain: false,
+      label: "Restricted by device policy",
+    },
+    {
+      exact: "not_requested",
+      status: "undetermined",
+      canAskAgain: true,
+      label: "Not requested",
+    },
+    {
+      exact: "unknown",
+      status: "denied",
+      canAskAgain: false,
+      fail: true,
+      label: "Status unavailable · refresh to retry",
+    },
+  ]) {
+    await page.evaluate((value) => {
+      const c = (window as any).permissionControl;
+      c.exact = value.exact;
+      c.fail = !!value.fail;
+      c.permission = {
+        status: value.status,
+        canAskAgain: value.canAskAgain,
+        granted: false,
+        expires: "never",
+      };
+      (window as any).renderPermissions(value.label);
+    }, value);
+    const camera = page
+      .getByText("Camera · eye-positioning preview", { exact: true })
+      .locator("..");
+    // Refresh also covers retained Settings instances before the account-boundary repair.
+    await page
+      .getByRole("button", { name: "Refresh permission status", exact: true })
+      .click();
+    await expect(camera.getByText(value.label, { exact: true })).toBeVisible();
+    await page.evaluate(() => (window as any).permissionActive());
+    await expect(camera.getByText(value.label, { exact: true })).toBeVisible();
+    expect(
+      await page.evaluate(() => (window as any).permissionControl.prompts),
+    ).toBe(0);
+  }
+  expect(
+    await page.evaluate(() => (window as any).permissionControl.settings),
+  ).toBe(0);
+  await page
+    .getByRole("button", { name: "Open device settings", exact: true })
+    .click();
+  expect(
+    await page.evaluate(() => (window as any).permissionControl.settings),
+  ).toBe(1);
+  await page.evaluate(() => {
+    const c = (window as any).permissionControl;
+    c.fail = false;
+    c.exact = "granted";
+    c.permission = {
+      status: "granted",
+      granted: true,
+      canAskAgain: true,
+      expires: "never",
+    };
+    (window as any).permissionActive();
+  });
+  await expect(
+    page
+      .getByText("Camera · eye-positioning preview", { exact: true })
+      .locator("..")
+      .getByText("Granted", { exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => (window as any).permissionControl.prompts),
+  ).toBe(0);
+});
+
+test("Settings ignores out-of-order and unmounted camera reads and replaces stale account and generation observations", async ({
+  page,
+}) => {
+  await screenDOM(page, permissionsBundle);
+  await page.evaluate(() => {
+    (window as any).permissionControl.defer = true;
+    (window as any).renderPermissions();
+  });
+  const camera = page
+    .getByText("Camera · eye-positioning preview", { exact: true })
+    .locator("..");
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as any).permissionControl.pending.length),
+    )
+    .toBe(1);
+  await page
+    .getByRole("button", { name: "Refresh permission status", exact: true })
+    .click();
+  await page.evaluate(() => {
+    const c = (window as any).permissionControl;
+    c.pending[1].resolve({
+      status: "granted",
+      granted: true,
+      canAskAgain: true,
+      expires: "never",
+    });
+  });
+  await expect(camera.getByText("Granted", { exact: true })).toBeVisible();
+  await page.evaluate(() =>
+    (window as any).permissionControl.pending[0].resolve({
+      status: "denied",
+      granted: false,
+      canAskAgain: false,
+      expires: "never",
+    }),
+  );
+  await expect(camera.getByText("Granted", { exact: true })).toBeVisible();
+  // A controller can invalidate its epoch before React commits navigation.
+  // That interval must not let the old card publish its outstanding OS read.
+  await page
+    .getByRole("button", { name: "Refresh permission status", exact: true })
+    .click();
+  await page.evaluate(() => {
+    (window as any).changePermissionEpoch("fictional-between-render");
+    (window as any).permissionControl.pending.at(-1).resolve({
+      status: "denied",
+      granted: false,
+      canAskAgain: false,
+      expires: "never",
+    });
+  });
+  await page.clock.runFor(50);
+  await expect(camera.getByText("Granted", { exact: true })).toBeVisible();
+  for (const [epoch, generation] of [
+    ["fictional-account-B:g1", 1],
+    ["fictional-account-B:g1", 2],
+  ] as const) {
+    await page
+      .getByRole("button", { name: "Refresh permission status", exact: true })
+      .click();
+    const old = await page.evaluate(
+      () => (window as any).permissionControl.pending.length - 1,
+    );
+    await page.evaluate(
+      ({ epoch, generation }) =>
+        (window as any).renderPermissions(epoch, generation),
+      { epoch, generation },
+    );
+    await page.evaluate(
+      (index) =>
+        (window as any).permissionControl.pending[index].resolve({
+          status: "denied",
+          granted: false,
+          canAskAgain: false,
+          expires: "never",
+        }),
+      old,
+    );
+    await expect(
+      camera.getByText("Not checked", { exact: true }),
+    ).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() => (window as any).permissionControl.pending.length),
+      )
+      .toBe(old + 2);
+    await page.evaluate(
+      (index) =>
+        (window as any).permissionControl.pending[index + 1].resolve({
+          status: "granted",
+          granted: true,
+          canAskAgain: true,
+          expires: "never",
+        }),
+      old,
+    );
+    await expect(camera.getByText("Granted", { exact: true })).toBeVisible();
+  }
+  await page
+    .getByRole("button", { name: "Refresh permission status", exact: true })
+    .click();
+  await page.evaluate(() => (window as any).unmountPermissions());
+  await expect(
+    page.getByText("Device permissions", { exact: true }),
+  ).toHaveCount(0);
+  await page.evaluate(() => {
+    const c = (window as any).permissionControl;
+    c.pending.at(-1).resolve({
+      status: "denied",
+      granted: false,
+      canAskAgain: false,
+      expires: "never",
+    });
+  });
+  await expect(
+    page.getByText("Denied · review app settings", { exact: true }),
+  ).toHaveCount(0);
+  expect(
+    await page.evaluate(() => ({
+      prompts: (window as any).permissionControl.prompts,
+      listeners: (window as any).permissionControl.listeners.size,
+    })),
+  ).toEqual({ prompts: 0, listeners: 0 });
+});
 
 test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: Date.parse("2026-10-11T12:00:00Z") });
@@ -287,7 +725,6 @@ test("approved rest begins after online preparation, uses monotonic time, and ne
       exact: true,
     }),
   ).toBeVisible();
-  await page.clock.setSystemTime(Date.parse("2026-10-11T14:00:00Z"));
   await expect(start).toBeDisabled();
   await expect(
     page.getByRole("switch", { name: "rest_completed", exact: true }),
@@ -373,6 +810,11 @@ test("a monotonic regression resets approved rest and declarations until an expl
   const configuration = cardiacPreparation();
   await page.evaluate((value) => {
     (window as any).restTick = 1000;
+    const wallAnchor = Date.now();
+    Object.defineProperty(Date, "now", {
+      configurable: true,
+      value: () => wallAnchor + (window as any).restTick - 1000,
+    });
     Object.defineProperty(performance, "now", {
       configurable: true,
       value: () => (window as any).restTick,
@@ -407,9 +849,7 @@ test("a monotonic regression resets approved rest and declarations until an expl
     (window as any).restTick = 3000;
   });
   await page.clock.fastForward(200);
-  await expect(
-    page.getByText(/The monotonic rest clock changed/),
-  ).toBeVisible();
+  await expect(page.getByText(/Preparation timing changed/)).toBeVisible();
   await expect(
     page.getByRole("switch", { name: "posture_confirmed", exact: true }),
   ).not.toBeChecked();
@@ -1020,5 +1460,119 @@ test("actual service component labels conditional approved channels and model su
   ).toBeVisible();
   await expect(
     page.getByText("Approved acquisition available", { exact: true }),
+  ).toHaveCount(0);
+});
+
+test("actual raw receipt screen keeps quarantine and cleanup confirmation distinct from retention expiry", async ({
+  page,
+}) => {
+  await screenDOM(page, receiptBundle);
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("raw", value),
+    fixture,
+  );
+  await expect(
+    page.getByText("Eye video · quarantine · retained", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Retention deadline", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Not confirmed", { exact: true })).toBeVisible();
+  const changed: any = clone(fixture);
+  changed.artifacts[0].state = "cleanup_pending";
+  changed.artifacts[0].upload_state = "cleanup_pending";
+  changed.artifacts[0].retention_due_at = "2026-10-10T00:00:00.000Z";
+  changed.revocations = [
+    {
+      receipt_id: "70000000-0000-4000-8000-000000000001",
+      artifact_kinds: ["eye_video"],
+      accepted_at: "2026-10-11T01:00:00Z",
+      state: "cleanup_pending",
+    },
+  ];
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("raw", value),
+    changed,
+  );
+  await expect(
+    page.getByText("Eye video · cleanup pending · cleanup pending", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Eye video · quarantine · retained", { exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText("Not confirmed", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Eye video · cleanup pending", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(/Oct 10, 2026/)).toBeVisible();
+  changed.artifacts[0].state = "purged";
+  changed.artifacts[0].upload_state = "purged";
+  changed.artifacts[0].cleanup_completed_at = "2026-10-11T02:03:00Z";
+  changed.revocations[0].state = "completed";
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("raw", value),
+    changed,
+  );
+  await expect(
+    page.getByText("Eye video · purged · purged", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Not confirmed", { exact: true })).toHaveCount(0);
+  await expect(page.getByText(/Oct 11, 2026, 02:03/)).toBeVisible();
+  await expect(page.getByText(/Oct 10, 2026/)).toBeVisible();
+});
+
+test("actual API privacy receipt renders category policy reason and supplied or absent expiry without generic legacy names", async ({
+  page,
+}) => {
+  await screenDOM(page, receiptBundle);
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("privacy", value),
+    privacyReceipt,
+  );
+  for (const category of privacyReceipt.retained_categories) {
+    await expect(
+      page.getByText(category.category, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(category.reason, { exact: true }),
+    ).toBeVisible();
+  }
+  await expect(
+    page.getByText("No scheduled expiry supplied", { exact: true }),
+  ).toHaveCount(6);
+  await expect(
+    page.getByText("Retention policy basis", { exact: true }),
+  ).toHaveCount(6);
+  const supplied: any = clone(privacyReceipt);
+  supplied.retained_categories[0].expires_at = "2027-02-28T23:59:59.123Z";
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("privacy", value),
+    supplied,
+  );
+  await expect(
+    page.getByText("2027-02-28T23:59:59.123Z", { exact: true }),
+  ).toBeVisible();
+  const legacy: any = {
+    ...privacyReceipt,
+    retained_categories: privacyReceipt.retained_categories.map(
+      (entry) => entry.category,
+    ),
+  };
+  await page.evaluate(
+    (value) => (window as any).renderReceipt("privacy", value),
+    legacy,
+  );
+  for (const category of legacy.retained_categories)
+    await expect(page.getByText(category, { exact: true })).toBeVisible();
+  await expect(
+    page.getByText(
+      "Legacy receipt: policy basis, retention reason and expiry were not supplied.",
+      { exact: true },
+    ),
+  ).toHaveCount(6);
+  await expect(
+    page.getByText("2027-02-28T23:59:59.123Z", { exact: true }),
   ).toHaveCount(0);
 });

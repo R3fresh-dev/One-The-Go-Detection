@@ -56,16 +56,19 @@ export function ParticipantPreparation({
     setConfirmed([]);
     setRecord(false);
   };
+  const timingChanged = () => {
+    reset();
+    setError(
+      "Preparation timing changed. Start a new approved rest period and reconfirm every declaration.",
+    );
+    void onStop();
+  };
   useEffect(() => {
     const timer = setInterval(() => {
       if (running.current) {
         setRemaining(clock.current.remaining(protocol.rest_duration_seconds!));
         if (!clock.current.active) {
-          reset();
-          setError(
-            "The monotonic rest clock changed. Start a new approved rest period.",
-          );
-          void onStop();
+          timingChanged();
         }
       }
     }, 200);
@@ -163,10 +166,10 @@ export function ParticipantPreparation({
         title="Start approved rest period"
         busy={busy}
         disabled={unavailable || !setup || !!restStart}
-        onPress={() =>
+        onPress={() => {
+          const epoch = ++operationEpoch.current;
+          preparing.current = true;
           void (async () => {
-            const epoch = ++operationEpoch.current;
-            preparing.current = true;
             await onPrepare();
             if (epoch !== operationEpoch.current) return;
             preparing.current = false;
@@ -177,15 +180,18 @@ export function ParticipantPreparation({
               clock.current.remaining(protocol.rest_duration_seconds!),
             );
             setConfirmed([]);
+            setError(null);
           })().catch((error) => {
+            if (epoch !== operationEpoch.current) return;
             reset();
             setError(
               error instanceof Error
                 ? error.message
                 : "Preparation could not be admitted.",
             );
-          })
-        }
+            void onStop();
+          });
+        }}
       />
       <Paragraph>
         {restStart
@@ -193,8 +199,9 @@ export function ParticipantPreparation({
           : `Rest required: ${protocol.rest_duration_seconds} seconds. Begin only after the service saves the preparation attempt.`}
       </Paragraph>
       <Paragraph>
-        Leaving the app or interrupting preparation resets the wait and every
-        confirmation. A wall-clock change cannot shorten the monotonic wait.
+        Leaving the app, interrupting preparation or changing device time resets
+        the wait and every confirmation. Complete a new foreground rest period
+        and reconfirm the setup. Device time cannot shorten the approved wait.
       </Paragraph>
       {protocol.required_confirmations.map((item) => (
         <SwitchRow
@@ -236,12 +243,14 @@ export function ParticipantPreparation({
         }
         onPress={() =>
           void (async () => {
-            if (
-              clock.current.remaining(protocol.rest_duration_seconds!) > 0 ||
-              !clock.current.active ||
-              !restStart
-            )
+            const restRemaining = clock.current.remaining(
+              protocol.rest_duration_seconds!,
+            );
+            if (!clock.current.active) {
+              timingChanged();
               return;
+            }
+            if (restRemaining > 0 || !restStart) return;
             const input: InstructionInput = {
               participant_protocol_sha256:
                 configuration.participant_protocol_sha256!,

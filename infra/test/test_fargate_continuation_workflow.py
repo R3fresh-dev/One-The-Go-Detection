@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import Mock, patch
 from infra.test import test_serverless_workflow as legacy
 from infra.test.test_fargate_workflow import configuration_fixture, reviewed_config, workflow_program, workflow_source
-from deploy.provenance import Gate, REPOSITORY, WORKFLOW_PATH
+from deploy.provenance import Gate, REPOSITORY, REQUIRED_JOBS, WORKFLOW_PATH
 REVISION = legacy.REVISION
 PREVIOUS_REVISION = legacy.PREVIOUS_REVISION
 deployment_run = legacy.deployment_run
@@ -260,6 +260,9 @@ class FargateContinuationWorkflowTest(unittest.TestCase):
     def test_continuation_admission_preserves_exact_bytes_and_authenticates_failed_source(self):
         with self.continuation_fixture() as (directory, files, archive):
             self.program['admit_continuation']()
+            self.program['platform'].verify_gate_file.assert_called_once_with(
+                Path('.local/fargateconfig/continuation-gates/gates.json'),
+                PREVIOUS_REVISION, required_jobs=REQUIRED_JOBS)
             path = Path('.local/fargateconfig/continuation-source/uninitialized-continuation.json')
             raw = path.read_bytes(); bundle = json.loads(raw)
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
@@ -279,6 +282,16 @@ class FargateContinuationWorkflowTest(unittest.TestCase):
             self.assertEqual(receipt['source_artifact_sha256'], hashlib.sha256(archive).hexdigest())
             self.assertEqual((directory / 'github-environment').read_text(),
                              f'CONTINUE_UNINITIALIZED_PATH={path}\nCONTINUE_UNINITIALIZED_SHA256={hashlib.sha256(raw).hexdigest()}\n')
+
+    def test_legacy_recheck_preserves_explicit_historical_job_requirement(self):
+        run = deployment_run()
+        proof = {'run_id': 50, 'head_sha': PREVIOUS_REVISION}
+        self.program['select_latest_gate'] = Mock(return_value=50)
+        self.program['github_json'] = Mock(return_value=run)
+        with patch.object(self.program['platform'], 'verify_gate_file', return_value=proof) as verify:
+            self.program['recheck_legacy_continuation'](run, 50, Path('historical'), proof)
+        verify.assert_called_once_with(Path('historical/gates.json'), PREVIOUS_REVISION,
+                                       required_jobs=REQUIRED_JOBS)
 
     def test_continuation_never_exports_authority_after_digest_gate_or_attempt_changes(self):
         for case in ({'artifact_download': 1}, {'historical_download': 1}, {'proof': {'run_id': 51}},

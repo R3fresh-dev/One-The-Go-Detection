@@ -669,13 +669,20 @@ def measurement_result(check):
     return result
 
 
-def safe_result(value):
+def safe_result(value, *, db=None, account=None, check=None):
     if value is None:
         return None
     if value.get("schema_version") == "1.1.0":
-        from .model_engine import validate_result
+        from .model_engine import validate_result, verify_current_execution
 
-        return validate_result(value)
+        validate_result(value)
+        if value["model_execution"]["authority_manifest"].get("cardiac_authority") is not None:
+            # Conditional HR evidence requires current admission even for a
+            # stored historical read. Pure envelope hashes cannot renew it.
+            if db is None or account is None or check is None:
+                raise Problem(403, "MODEL_AUTHORITY_CONTEXT_REQUIRED")
+            verify_current_execution(db, account, check, value)
+        return value
     if value.get("state") == "research_estimate":
         raise Problem(422, "UNSUPPORTED_RESEARCH_RESULT")
     validate_schema(value, "result.schema.json")

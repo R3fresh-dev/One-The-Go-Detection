@@ -1,0 +1,12 @@
+{
+  "time": "2026-10-25T07:47:10.283006+00:00",
+  "event": "intentional-gate-stop-for-consolidated-correction",
+  "signal": "SIGINT",
+  "owned_pytest_pids": [
+    125667
+  ],
+  "root_pid": 112422,
+  "reason": "Six independent reviews require round1 changes; stop at completed unit/ATDD/performance/components boundary before long worker matrix. Separate disposable PostgreSQL test only; canonical data services untouched.",
+  "correction_rounds_before": 0,
+  "recovery_attempts": 0
+}

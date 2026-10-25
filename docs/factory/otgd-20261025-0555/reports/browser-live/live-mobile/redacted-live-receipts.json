@@ -1,0 +1,110 @@
+{
+  "namespace": "fictional-browser-6a1246886f3240f2b8ddba15c1f8764a",
+  "fictional_only": true,
+  "project": "live-mobile",
+  "viewport": {
+    "width": 412,
+    "height": 839
+  },
+  "origins": [
+    "http://localhost:8000",
+    "http://localhost:8081",
+    "http://localhost:8082"
+  ],
+  "finalize": {
+    "session_id": "80eef7ae-9c5a-48cc-bd31-2126381be7f3",
+    "state": "processing",
+    "job_id": "6d777e94-ec18-4620-8645-276bcc176ee7",
+    "revision": 3,
+    "snapshot_sha256": "ce69f54b9619a575330c376fa621fb19fe70531e8fb99f6fe330f2eb6ab84f20",
+    "evidence_sha256": "175f855d08ed993a108812ef415f95015d9602844ab43eaa05ed97a75526dc36"
+  },
+  "finalize_receipt_replayed": true,
+  "result": {
+    "state": "measurement_only",
+    "probability": null,
+    "session_id": "80eef7ae-9c5a-48cc-bd31-2126381be7f3"
+  },
+  "export": {
+    "schema_version": "1.0.0",
+    "job_id": "218ea88a-76f2-45e9-ba7c-e89422027c53",
+    "kind": "export",
+    "state": "pending",
+    "scope": {
+      "kind": "single",
+      "session_ids": [
+        "80eef7ae-9c5a-48cc-bd31-2126381be7f3"
+      ]
+    },
+    "data_generation": 3,
+    "accepted_at": "2026-10-25T07:19:06.047Z",
+    "started_at": null,
+    "completed_at": null,
+    "expires_at": "2026-10-26T07:19:06.047Z",
+    "failure_code": null,
+    "retained_categories": [],
+    "policy_version": "privacy-v1",
+    "attempt_count": 0,
+    "allowed_actions": [
+      "refresh"
+    ]
+  },
+  "archive": {
+    "sha256": "b88a6b164c5fdcfd3476c7284dbfcb7a32c365be981744b515dc7c4d930fc8a0",
+    "bytes": 3190,
+    "member_count": 3
+  },
+  "consent": {
+    "study_id": "fictional-probe-03ab4619f85f4b3a-study",
+    "consent_record_id": "8d357abf-fd4c-4814-a99a-35a454f81454",
+    "state": "active",
+    "document_sha256": "2604b8e9b67de37c41256f0ca53f9b2832088e5614021417993eae38a02672d5"
+  },
+  "withdrawal": {
+    "study_id": "fictional-probe-03ab4619f85f4b3a-study",
+    "state": "withdrawn",
+    "accepted_at": "2026-10-25T07:19:10.685Z"
+  },
+  "withdrawn_consent_denied": true,
+  "deletion": {
+    "schema_version": "1.0.0",
+    "job_id": "e045b16c-becb-42c7-a07a-bc038b2c4234",
+    "kind": "deletion",
+    "state": "pending",
+    "scope": "all_data",
+    "data_generation": 3,
+    "accepted_at": "2026-10-25T07:19:11.918Z",
+    "started_at": null,
+    "completed_at": null,
+    "expires_at": null,
+    "failure_code": null,
+    "retained_categories": [
+      "identity_and_generation_barriers",
+      "audit_and_security_metadata",
+      "minimal_operation_receipts",
+      "operator_membership_references",
+      "private_cleanup_references",
+      "deletion_journal"
+    ],
+    "policy_version": "privacy-v1",
+    "attempt_count": 0,
+    "allowed_actions": [
+      "refresh"
+    ]
+  },
+  "pending_deletion_after_lost_ack": true,
+  "logout": {
+    "state": "accepted",
+    "remote_family_revoked": true,
+    "accepted_at": "2026-10-25T07:19:14.026Z"
+  },
+  "memory_only_reload": true,
+  "foreign_denied": true,
+  "retired_generation_denied": true,
+  "revoked_refresh_denied": true,
+  "network_destinations": [
+    "http://localhost:8000",
+    "http://localhost:8081",
+    "http://localhost:8082"
+  ]
+}

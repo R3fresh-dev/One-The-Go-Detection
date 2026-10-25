@@ -1,0 +1,91 @@
+{
+  "algorithm": "SHA-256",
+  "artifacts": [
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/mobile-implementation.md",
+      "sha256": "6852659dd811cc7e04ffc6ce91de15f23b7225f5c56af546b1fa123fa13b5d35"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/browser-implementation.md",
+      "sha256": "ac9e8da864d3a1ab34e8610f3006c7e35200f05c432c2ed43be41584cba4d99d"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/evaluation-implementation.md",
+      "sha256": "4332b81097b9dd4cc25545c46f808554439cf7d61a2425caa77cffe52ee96f0c"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/provenance-implementation.md",
+      "sha256": "8d78d5000cbb7d1f08848a3420759a5139e3abdb83eb22f87c01944bb1d4d9f2"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/browser-live/README.md",
+      "sha256": "b113b76738b7bac4cce9a434969ad0189356db19db6041bb5004faac0d449502"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/browser-live/summary.json",
+      "sha256": "7369ca7a107207b236f80edea79b10f0154816f20c1a8662a07624b032813e53"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/browser-live/playwright-live.log",
+      "sha256": "4b6a3c4db3680d64c1ce14bb247f0742adc1bbd9f34bb68d769b071490a86fd0"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/playwright-live-report/index.html",
+      "sha256": "fffd3d93979c52d3e54cd39ebc0cbd4f20e8f5e9af7453b1242c76094e652a6d"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/browser-live/live-mobile/redacted-live-receipts.json",
+      "sha256": "3663c469c61edef94cf1c90cded01973864e090a46888c87b2494e5987740c9f"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/browser-live/live-mobile/fictional-structured-export.zip",
+      "sha256": "b88a6b164c5fdcfd3476c7284dbfcb7a32c365be981744b515dc7c4d930fc8a0"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/browser-live/live-desktop/redacted-live-receipts.json",
+      "sha256": "9cbff1782f8b516da3f56feb24f670bdb11684d767aa58b58e6af0d389f2d421"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/browser-live/live-desktop/fictional-structured-export.zip",
+      "sha256": "83111f88049a154faf2dbac4bdfe1fa9758f5e68cb4f7181c11d303c6cc1fd44"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-home.png",
+      "sha256": "ee7514365f0359b7d213a54694abce15f1913e616db8dd15f460a86e48dc6bb6",
+      "inspection": "UX reviewer visually inspected existing credential-free image; captured by independent UI reviewer, not UX browser execution"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-profile-error.png",
+      "sha256": "0731cd9bfb1b4adda4c23eca931fe04dfa84c115c5447c6ab012134437e26382",
+      "inspection": "UX reviewer visually inspected existing credential-free image; captured by independent UI reviewer, not UX browser execution"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-check-review.png",
+      "sha256": "d37b590b6471a467b7fb13fe7c09443dd7c06320a0a710a0090e15cdcc9f0282",
+      "inspection": "UX reviewer visually inspected existing credential-free image; captured by independent UI reviewer, not UX browser execution"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-settings-dark.png",
+      "sha256": "cbe9e3aaf7e5f262e20576c0a15ccfbb3f29a9fb27a905948d9cf85f347bfc06",
+      "inspection": "UX reviewer visually inspected existing credential-free image; captured by independent UI reviewer, not UX browser execution"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-check-overview.png",
+      "sha256": "27f44a45a5c26490c89a5708ee43580321656e3b48cdc6023eb86c3acf87410b",
+      "inspection": "UX reviewer visually inspected existing credential-free image; captured by independent UI reviewer, not UX browser execution"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-profile-error.png",
+      "sha256": "e2f2c3bd7d7617aa5d58c5ad092c3f3e4302376c15ebf4efec39d8ff41a4114b",
+      "inspection": "UX reviewer visually inspected existing credential-free image; captured by independent UI reviewer, not UX browser execution"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/visual-observations.json",
+      "sha256": "c0d509f492e42035e50d542dbbbe61b96f672b72ea78a2f6f5c1d127b592bb21"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/visual-observations-extra.json",
+      "sha256": "620ce899044b12cf7ae87ab6c9c5f1703cbf57b39e74b8e657ef1e6157cca6fd"
+    }
+  ]
+}

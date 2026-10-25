@@ -89,13 +89,29 @@ def contents(archive, manifest, *, snapshot=None):
         return result
 
 
+def validate_oauth_runtime(runtime):
+    """Current bundles require independently admitted public pins; old signatures are not rewritten."""
+    origin = runtime.get('oauth_origin', '')
+    callback = runtime.get('callback_uri', '')
+    for value, root_callback in ((origin, False), (callback, True)):
+        if not isinstance(value, str) or not value or len(value) > 2048:
+            raise Gate('Current web OAuth origin and callback must be explicitly configured')
+        parsed = urlsplit(value)
+        if (parsed.scheme != 'https' or not parsed.hostname or parsed.netloc != parsed.hostname
+            or parsed.username or parsed.password or parsed.query or parsed.fragment
+            or value != 'https://' + parsed.netloc + ('/' if root_callback else '')):
+            raise Gate('Current web OAuth origin and callback must be exact admitted HTTPS values')
+
+
 def build_environment(runtime):
     """Public bundle tools receive public configuration, never deploy credentials."""
+    validate_oauth_runtime(runtime)
     prefixes=('EXPO_PUBLIC_','APP_','EAS_','AWS_','GH_','GITHUB_','OTGD_','OPENAI_','ANTHROPIC_','APPETIZE_','AZURE_','GOOGLE_','GCLOUD_','SSH_')
     sensitive=re.compile(r'(^|_)(TOKEN|SECRET|PASSWORD|PRIVATE_KEY|API_KEY|CREDENTIALS)(_|$)',re.IGNORECASE)
     env={key:value for key,value in os.environ.items() if not key.startswith(prefixes) and key!='NODE_OPTIONS' and not sensitive.search(key)}
     env.update(APP_ENV=runtime['environment'],EXPO_PUBLIC_APP_ENV=runtime['environment'],EXPO_PUBLIC_API_URL=runtime['api_url'],
         EXPO_PUBLIC_OAUTH_ISSUER=runtime['issuer'],EXPO_PUBLIC_OAUTH_CLIENT_ID=runtime['client_id'],
+        EXPO_PUBLIC_OAUTH_ORIGIN=runtime['oauth_origin'],EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI=runtime['callback_uri'],
         EXPO_PUBLIC_HOSTED_PREVIEW='false',EXPO_NO_TELEMETRY='1',CI='1')
     return env
 
@@ -104,7 +120,7 @@ def build(platform,args,c,out,service_release,archive,record_path):
     platform.require_clean_source(c['releaseId'])
     platform.require_trusted_signer(args.signing_key,args.trusted_public_key)
     runtime={'environment':c['environment'],'api_url':out['ApiOrigin'],'issuer':out['Issuer'],
-        'client_id':out['ClientId'],'web_origin':out['WebOrigin'],'callback_uri':out['WebCallbackUri']}
+        'client_id':out['ClientId'],'oauth_origin':out['IdentityOrigin'],'web_origin':out['WebOrigin'],'callback_uri':out['WebCallbackUri']}
     if (runtime['api_url']!='https://'+c['domain'] or not runtime['issuer'].startswith('https://cognito-idp.'+c['region']+'.amazonaws.com/') or
         runtime['callback_uri']!=runtime['web_origin']+'/' or not runtime['web_origin'].startswith('https://') or not runtime['client_id']):
         raise Gate('Actual infrastructure outputs do not provide the pinned web identity')
@@ -146,9 +162,10 @@ def verify(record_path,archive,public_key,c,service_path,service_release,out=Non
         payload.get('runtime_sha256')!=sha256(payload.get('runtime')) or not re.fullmatch(r'[0-9a-f]{64}',payload.get('package_lock_sha256',''))):
         raise Gate('Web release artifact/runtime digest does not match')
     runtime=payload['runtime']
+    validate_oauth_runtime(runtime)
     if runtime.get('environment')!=c['environment'] or runtime.get('api_url')!='https://'+c['domain'] or runtime.get('callback_uri')!=runtime.get('web_origin','')+'/':
         raise Gate('Web runtime configuration differs from the environment')
-    if out and runtime!={'environment':c['environment'],'api_url':out['ApiOrigin'],'issuer':out['Issuer'],'client_id':out['ClientId'],'web_origin':out['WebOrigin'],'callback_uri':out['WebCallbackUri']}:
+    if out and runtime!={'environment':c['environment'],'api_url':out['ApiOrigin'],'issuer':out['Issuer'],'client_id':out['ClientId'],'oauth_origin':out['IdentityOrigin'],'web_origin':out['WebOrigin'],'callback_uri':out['WebCallbackUri']}:
         raise Gate('Web artifact does not match the actual deployed service identity')
     return payload,contents(archive,payload['manifest'],snapshot=snapshot)
 
@@ -267,10 +284,13 @@ def verify_security_headers(headers,out):
 def verify_access(out,payload,files,*,timeout=15):
     # This public transport probe is not a signed-in customer acceptance test.
     with httpx.Client(timeout=timeout,follow_redirects=False) as client:
-        paths=['index.html',next((name for name in files if name.endswith('.js')),'index.html')]
+        # Admission binds the complete export, including secondary chunks,
+        # styles, images and additional HTML. One entry chunk is not a proxy
+        # for all signed bytes served by the distribution.
+        paths=['index.html',*(name for name in sorted(files) if name!='index.html')]
         for path in paths:
             headers=verify_public_bytes(client,out['WebOrigin']+'/'+path,files[path])
-            if path=='index.html':verify_security_headers(headers,out)
+            if path.endswith('.html'):verify_security_headers(headers,out)
         headers=verify_public_bytes(client,out['WebOrigin']+'/history',files['index.html'])
         verify_security_headers(headers,out)
         with client.stream('GET',out['WebOrigin']+'/otgd-missing-release-asset.js') as missing:

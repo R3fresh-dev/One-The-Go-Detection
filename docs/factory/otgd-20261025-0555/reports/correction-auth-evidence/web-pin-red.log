@@ -1,0 +1,25 @@
+test_browser_build_environment_retains_transport_settings_without_deploy_credentials (infra.test.test_web_deployment.WebArtifactTest.test_browser_build_environment_retains_transport_settings_without_deploy_credentials) ... ERROR
+test_public_build_requires_independent_origin_and_callback_not_ambient_guesses (infra.test.test_web_deployment.WebArtifactTest.test_public_build_requires_independent_origin_and_callback_not_ambient_guesses) ... FAIL
+
+======================================================================
+ERROR: test_browser_build_environment_retains_transport_settings_without_deploy_credentials (infra.test.test_web_deployment.WebArtifactTest.test_browser_build_environment_retains_transport_settings_without_deploy_credentials)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/One-The-Go-Detection/infra/test/test_web_deployment.py", line 53, in test_browser_build_environment_retains_transport_settings_without_deploy_credentials
+    self.assertEqual(environment['EXPO_PUBLIC_OAUTH_ORIGIN'],runtime['oauth_origin'])
+                     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'EXPO_PUBLIC_OAUTH_ORIGIN'
+
+======================================================================
+FAIL: test_public_build_requires_independent_origin_and_callback_not_ambient_guesses (infra.test.test_web_deployment.WebArtifactTest.test_public_build_requires_independent_origin_and_callback_not_ambient_guesses)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/One-The-Go-Detection/infra/test/test_web_deployment.py", line 61, in test_public_build_requires_independent_origin_and_callback_not_ambient_guesses
+    with patch.dict(os.environ, {'EXPO_PUBLIC_OAUTH_ORIGIN':'https://foreign.invalid','EXPO_PUBLIC_OAUTH_WEB_CALLBACK_URI':'https://foreign.invalid/'},clear=True), self.assertRaises((Gate,KeyError)):
+                                                                                                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'deploy.provenance.Gate'>, <class 'KeyError'>) not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+FAILED (failures=1, errors=1)

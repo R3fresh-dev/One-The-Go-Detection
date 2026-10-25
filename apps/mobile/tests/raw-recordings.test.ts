@@ -198,14 +198,18 @@ test("lost optional-choice receipt replays exact durable body, original acknowle
           .getSnapshot()
           .state!.queue.find((q) => q.kind === "raw_preference")!;
         assert.deepEqual(queued.body.payload, call.body);
-        accepted = clone(fixture);
-        accepted.receipt_id = randomUUID();
-        accepted.choices = call.body.choices;
-        accepted.preference_receipt = {
-          ...call.body,
-          receipt_id: accepted.receipt_id,
-          accepted_at: new Date().toISOString(),
-        };
+        // The fictional server accepts this exact idempotent operation once.
+        // Replaying a lost acknowledgment returns that original receipt.
+        if (!accepted) {
+          accepted = clone(fixture);
+          accepted.receipt_id = randomUUID();
+          accepted.choices = clone(call.body.choices);
+          accepted.preference_receipt = {
+            ...clone(call.body),
+            receipt_id: accepted.receipt_id,
+            accepted_at: new Date().toISOString(),
+          };
+        }
         if (failed) {
           failed = false;
           throw Error("accepted receipt lost");
@@ -218,6 +222,8 @@ test("lost optional-choice receipt replays exact durable body, original acknowle
       app.getSnapshot().state!.queue.find((q) => q.kind === "raw_preference")!,
     );
     assert.equal(intent.state, "retry_wait");
+    const originalAcceptedReceiptId = accepted.receipt_id;
+    const originalAcceptedReceipt = clone(accepted.preference_receipt);
     await app.saveRawRecordingChoices(fixture.study_id, rawChoicesOff());
     const calls = service.calls.filter((call) =>
       call.path.endsWith("raw-recording-preferences"),
@@ -234,7 +240,12 @@ test("lost optional-choice receipt replays exact durable body, original acknowle
     assert.equal(
       app.getSnapshot().state!.rawRecordingStatuses[fixture.study_id]!
         .receipt_id,
-      accepted.receipt_id,
+      originalAcceptedReceiptId,
+    );
+    assert.deepEqual(
+      app.getSnapshot().state!.rawRecordingStatuses[fixture.study_id]!
+        .preference_receipt,
+      originalAcceptedReceipt,
     );
   } finally {
     await close();
@@ -399,4 +410,76 @@ test("an older completed revocation cannot clear a newer accepted cleanup-pendin
   } finally {
     await close();
   }
+});
+
+test("actual raw receipt screen distinguishes quarantine, retained data, pending cleanup and completed cleanup from retention deadlines", () => {
+  const { buildSync } = require("esbuild");
+  const { resolve } = require("node:path");
+  const compiled = buildSync({
+    entryPoints: [resolve("tests/support/privacy-rendering.tsx")],
+    bundle: true,
+    write: false,
+    platform: "node",
+    format: "cjs",
+    resolveExtensions: [
+      ".web.tsx",
+      ".web.ts",
+      ".web.js",
+      ".tsx",
+      ".ts",
+      ".jsx",
+      ".js",
+      ".json",
+    ],
+    alias: { "react-native": resolve("e2e/fixtures/native-web-shim.js") },
+    define: {
+      __DEV__: "false",
+      "process.env.EXPO_OS": '\"web\"',
+      "process.env.NODE_ENV": '\"test\"',
+      "process.env.EXPO_PUBLIC_APP_ENV": '\"local\"',
+      "process.env.EXPO_PUBLIC_HOSTED_PREVIEW": '\"false\"',
+    },
+  }).outputFiles[0].text;
+  const output = { exports: {} as any };
+  new Function("module", "exports", "require", compiled)(
+    output,
+    output.exports,
+    require,
+  );
+  const render = (value: unknown) =>
+    output.exports
+      .renderRawReceipt(value)
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ");
+  const retained = render(fixture);
+  assert.match(retained, /Eye video · quarantine · retained/);
+  assert.match(retained, /Retention deadline Oct 13, 2026/);
+  assert.match(retained, /Cleanup completed Not confirmed/);
+  assert.ok(retained.includes(fixture.artifacts[0]!.artifact_id));
+  const changed: any = clone(fixture);
+  changed.artifacts[0].state = "cleanup_pending";
+  changed.artifacts[0].upload_state = "cleanup_pending";
+  changed.artifacts[0].retention_due_at = "2026-10-10T00:00:00.000Z";
+  changed.revocations = [
+    {
+      receipt_id: randomUUID(),
+      artifact_kinds: ["eye_video"],
+      accepted_at: "2026-10-11T01:00:00Z",
+      state: "cleanup_pending",
+    },
+  ];
+  const pending = render(changed);
+  assert.match(pending, /Eye video · cleanup pending · cleanup pending/);
+  assert.match(pending, /Retention deadline Oct 10, 2026/);
+  assert.match(pending, /Cleanup completed Not confirmed/);
+  assert.match(pending, /Cleanup receipt .*Eye video · cleanup pending/);
+  assert.doesNotMatch(pending, /Cleanup completed Oct/);
+  changed.artifacts[0].state = "purged";
+  changed.artifacts[0].upload_state = "purged";
+  changed.artifacts[0].cleanup_completed_at = "2026-10-11T02:03:00Z";
+  changed.revocations[0].state = "completed";
+  const completed = render(changed);
+  assert.match(completed, /Eye video · purged · purged/);
+  assert.match(completed, /Cleanup completed Oct 11, 2026/);
+  assert.match(completed, /Retention deadline Oct 10, 2026/);
 });

@@ -124,10 +124,14 @@ def cleanup():
 @app.middleware("http")
 async def boundaries(request, call_next):
     response = await call_next(request)
+    # Chromium applies form-action to redirects too. Permit only the browser
+    # origins already registered for OAuth; exact callbacks remain checked by
+    # authorize/choose and the POST still requires this issuer's Origin.
+    form_targets = " ".join(["'self'", *web_origins(s)])
     response.headers.update(
         {
             "Cache-Control": "no-store",
-            "Content-Security-Policy": "default-src 'none'; form-action 'self'; frame-ancestors 'none'",
+            "Content-Security-Policy": f"default-src 'none'; form-action {form_targets}; frame-ancestors 'none'",
             "X-Content-Type-Options": "nosniff",
         }
     )
@@ -212,9 +216,9 @@ def authorize(
         )
     token = html.escape(id, quote=True)
     response = HTMLResponse(
-        '<!doctype html><html lang="en"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fictional local sign-in</title><h1>Local engineering account</h1><p>These two named accounts contain fictional engineering data. This is not production authentication.</p><form method="post" action="/oauth2/authorize"><input type="hidden" name="authorization_id" value="'
+        '<!doctype html><html lang="en"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fictional local sign-in</title><h1>Local engineering account</h1><p>These named accounts contain fictional engineering data. This is not production authentication.</p><form method="post" action="/oauth2/authorize"><input type="hidden" name="authorization_id" value="'
         + token
-        + '"><button name="account" value="fixture_a">Use Fictional Account A</button><button name="account" value="fixture_b">Use Fictional Account B</button></form></html>'
+        + '"><button name="account" value="fixture_a">Use Fictional Account A</button><button name="account" value="fixture_b">Use Fictional Account B</button><button name="account" value="browser_mobile">Use Fictional Browser Mobile</button><button name="account" value="browser_desktop">Use Fictional Browser Desktop</button></form></html>'
     )
     response.set_cookie(
         COOKIE,

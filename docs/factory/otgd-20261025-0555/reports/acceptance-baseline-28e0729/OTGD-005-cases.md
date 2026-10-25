@@ -1,0 +1,8 @@
+# OTGD-005 — frozen candidate case reconciliation
+
+Candidate `28e07295cb37bb9dcaaac82cc8fc846eb89006a6`. Source SHA-256 `1b82b7101ffe6bf0538ffe24b814aea01369f322c9bb8e96808e05f0dd70e369`. No council signoff; status definitions in report.md. Full expected clauses and assertion/evidence bindings are in case-reconciliation.json/source-assertions.json/evidence-index.json.
+
+| Stable case | Status | Actual assertion symbols | Current named observations | Unproven scope / finding |
+|---|---|---|---:|---|
+| OTGD-005-AND-ONB-001-01 | PARTIAL | apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload; apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed | 2 | Related independent review finding; this broad case still requires exact semantic body/owner review. The tag alone does not establish a software defect in this criterion. PROD-002 onboarding conditional scope |
+| OTGD-005-AND-ONB-001-02 | PARTIAL | apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload; apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint | 2 | Related independent review finding; this broad case still requires exact semantic body/owner review. The tag alone does not establish a software defect in this criterion. PROD-002 onboarding conditional scope |

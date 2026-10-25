@@ -1,0 +1,1169 @@
+{
+  "schema_version": 1,
+  "reviewer": {
+    "agent_id": "/root/review_security",
+    "role": "SECURITY",
+    "provider": "OpenAI",
+    "configured_model": "gpt-6.1-sol",
+    "configured_reasoning_effort": "high",
+    "identity_source": "Parent actual spawn configuration confirmed by direct native message; exact runtime model attestation not exposed",
+    "independent_from_authors": true
+  },
+  "captured_at": "2026-10-25T07:43:26.974621+00:00",
+  "baseline_revision": "0844868aa543af4ab75ac5065ad48cf807b86bb3",
+  "candidate_revision": "28e07295cb37bb9dcaaac82cc8fc846eb89006a6",
+  "candidate_working_tree_sha256": "36ed8d800edcb560ac8ca189e98b64518b3342a29458d6e91a8d943085310f8c",
+  "factory_revision": "4770878e18e9c587c2961b9e2bb13315da31abe9",
+  "candidate_manifest_file": "/workspace/scratch/otgd-20261025-0555-live/candidate.json",
+  "candidate_manifest_file_sha256": "d9ac81db7cae9e77fbd0518081b4e1cf231d5ccc8b91069acc96050af521b59f",
+  "candidate_manifest_entries_checked": 1014,
+  "candidate_manifest_mismatches": [],
+  "hash_algorithm": "SHA-256",
+  "canonical_specs": [
+    {
+      "id": "OTGD-001",
+      "canonical_path": "specs/FULL_SPECIFICATION.md",
+      "canonical_sha256": "c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7",
+      "inventory_sha256": "c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7",
+      "candidate_manifest_sha256": "c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7",
+      "decision": "CHANGES_REQUIRED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [
+        "SEC-01"
+      ],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Requirement register SEC-001\u2013007, claim boundaries, identity and release traceability; SEC-01 applies.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-001/council.md": "1cf9f83c34b42d90d539cb9cc6c9c87487470022e2319dc4349260685280312b",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-001/engineering-signoff.md": "ee0a4da88645d84b98948bb92d88123cb69f25bb68f4e219c4601e8c4e664a60",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-001/product-signoff.md": "ac05c279a61d387d879bbdec6038b46388813e881004e630547a01b9724dad77",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-001/test-plan.md": "d7779081e109c77fae11e322f98531e2c0afa44df6d33ef07b443c0ea8856d87",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-001/test-results.md": "b063066183878a079950b5041fb50258fb08a5c0e1f9a7a23ee78b93c6ed4f23"
+      }
+    },
+    {
+      "id": "OTGD-002",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-dashboard/spec.md",
+      "canonical_sha256": "c8e2d63aad6f7f973a181d917ef645e8d32b012ca41df1f2abd7d7a0b7525fe4",
+      "inventory_sha256": "c8e2d63aad6f7f973a181d917ef645e8d32b012ca41df1f2abd7d7a0b7525fe4",
+      "candidate_manifest_sha256": "c8e2d63aad6f7f973a181d917ef645e8d32b012ca41df1f2abd7d7a0b7525fe4",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Dashboard research/guest provenance and server-admitted scope; ordinary results remain measurement-only.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-002/council.md": "b66abceb417d2b6e221f335d757ae218aa40cd1734d8a8c09c60e163eed74c37",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-002/engineering-signoff.md": "767f20686c0add5772fc3766be40fdabc9959a6c1ff604a146fd8519087052b2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-002/product-signoff.md": "942a4b603acd3293288bb87bd05a7a4af360575d902ae3005b949ca203e15f0f",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-002/test-plan.md": "2cb4ddf5f765247cac512e8f3008f91a5adf2e07ca08ba1912bcb75d2ed4f866",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-002/test-results.md": "00f4ce1369b7ff71528a46fdc1a53a6e56d5c181b20b465ace8d8479ecd5d504"
+      }
+    },
+    {
+      "id": "OTGD-003",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-guided-check/spec.md",
+      "canonical_sha256": "c171a3fd1d7705d710dd172ebe5d59046cc0023a2ddfedaf162092008703e648",
+      "inventory_sha256": "c171a3fd1d7705d710dd172ebe5d59046cc0023a2ddfedaf162092008703e648",
+      "candidate_manifest_sha256": "c171a3fd1d7705d710dd172ebe5d59046cc0023a2ddfedaf162092008703e648",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Explicit local save versus authorized upload; original result/target times and no driving clearance.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-003/council.md": "8117158aabceb9cf0d53b1edc22dd560b6784db5e57eddd45092d95774ade848",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-003/engineering-signoff.md": "d870345dc2201372e3449b79e92b3d3befc9123922f2fa3790611b029059681a",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-003/product-signoff.md": "522633903d9906870d96bde8bc9aee047857f3c3f6d617e5d90bc444244935ba",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-003/test-plan.md": "291e81f003d73b8cec89e6eab67c5b39430bb54298f1666816de4d1fa1b5a69a",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-003/test-results.md": "3df7a620386c77a113b841a58a0b455770c65abb762336c8a5dc0d38fdcb963e"
+      }
+    },
+    {
+      "id": "OTGD-004",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-history/spec.md",
+      "canonical_sha256": "b29801322e8700aa11edce8289d84290485834005cba2fa80ee5695dd3d248ce",
+      "inventory_sha256": "b29801322e8700aa11edce8289d84290485834005cba2fa80ee5695dd3d248ce",
+      "candidate_manifest_sha256": "b29801322e8700aa11edce8289d84290485834005cba2fa80ee5695dd3d248ce",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Historical research schema/ownership and immutable qualifier/time display.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-004/council.md": "93a7a931cb34e1c9070a8faaae7db0d6048b2d5aa540a0bb6a4b2e5a60d1f3c1",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-004/engineering-signoff.md": "823463bc79088733e52a387d935e185e3638bd6f844e33b663d618a942165916",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-004/product-signoff.md": "3d641b1237c77f71ebf2a72d6421d6b744f95f525a1746c0549ce1fa8fa85cf7",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-004/test-plan.md": "183e37ec06549ac6ef94fdedb787e034d5f8de5fda7fa4bab7ec7dffcd535442",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-004/test-results.md": "63bafcc74cb134bd13204fe0b6ee1e664d65a228293c52a521d601b3ebdaebb1"
+      }
+    },
+    {
+      "id": "OTGD-005",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-onboarding/spec.md",
+      "canonical_sha256": "1b82b7101ffe6bf0538ffe24b814aea01369f322c9bb8e96808e05f0dd70e369",
+      "inventory_sha256": "1b82b7101ffe6bf0538ffe24b814aea01369f322c9bb8e96808e05f0dd70e369",
+      "candidate_manifest_sha256": "1b82b7101ffe6bf0538ffe24b814aea01369f322c9bb8e96808e05f0dd70e369",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Onboarding and sign-in cannot create enrollment, sensing or model authority.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-005/council.md": "b7e361ad6c005a3b070b91f46e288975fc87a3640a3b4f0e1060fd017b1ced35",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-005/engineering-signoff.md": "28279ee9ec62ede372633b0061aae601b0a2041e43ceb03c607994c986f0eacf",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-005/product-signoff.md": "b8ac52ced1c3c76a1f192bb54a7135c485c19cb6ae9bfed9690e0e100eddc129",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-005/test-plan.md": "7f07c9f020af24ebbbe133819dc0960428134956cfc6368a0a400bb430c5fb51",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-005/test-results.md": "8f4912d4df94e7171a65ebe0ffaa949c4c3e26235a5c6920707968fd2cecc509"
+      }
+    },
+    {
+      "id": "OTGD-006",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
+      "canonical_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "inventory_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "candidate_manifest_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Legacy estimate rejection; independently linked ResearchResult 1.1.0 admission.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-006/council.md": "e503feb076bb8c15cb2e6080baaa4ae9effbf902535a843a654c68ce67f8abd3",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-006/engineering-signoff.md": "e44f25085659fb17b839df3958506df8af0d1918eec8c586602186b6215fcbeb",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-006/product-signoff.md": "203224eeb37a8c3b594bf50a5123d4276557774970afaf3972753d9f844b4bdb",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-006/test-plan.md": "3d005b386d6c8561b6e5c646418e26480ea6e483389919fb3ea5c15e216cda0e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-006/test-results.md": "d6c113113b39350ad8b219a12430f1cdb2e998ee1bea32b6b23d721e85bcf335"
+      }
+    },
+    {
+      "id": "OTGD-007",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-settings-accessibility/spec.md",
+      "canonical_sha256": "8dc5faf4274edf798f4828bacff599c2c34c5aa6f5cb594481f2ca365ef401f6",
+      "inventory_sha256": "8dc5faf4274edf798f4828bacff599c2c34c5aa6f5cb594481f2ca365ef401f6",
+      "candidate_manifest_sha256": "8dc5faf4274edf798f4828bacff599c2c34c5aa6f5cb594481f2ca365ef401f6",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Capability/environment settings cannot grant authorization or bypass qualified capture.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-007/council.md": "8d77fdf34b34ce6011a1216f161db3e0b8b51606e04968f6d01936319132684f",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-007/engineering-signoff.md": "0196c35111c961ec962418dc7c7bc416ef1cbd65461a293d0c32600698c31658",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-007/product-signoff.md": "4bc1b094323211107a1bf6b19c5b6a1f9ea494f0143e4964629c2f9696b71ae3",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-007/test-plan.md": "3907f9f85aff8588537b55f5755aad23bf333d7661e1bb0a22cb124d0d79fcf5",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-007/test-results.md": "65b36cece3983e0690da12d5d753f62acae57b7be62b9b0c097fdd55c9c47d30"
+      }
+    },
+    {
+      "id": "OTGD-008",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/research-evaluation/spec.md",
+      "canonical_sha256": "1307ac2ebe390b58619b599669a9c52773104dded84661be708aa132d95f8626",
+      "inventory_sha256": "1307ac2ebe390b58619b599669a9c52773104dded84661be708aa132d95f8626",
+      "candidate_manifest_sha256": "1307ac2ebe390b58619b599669a9c52773104dded84661be708aa132d95f8626",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Bounded data-only evaluation input custody, partition locks and unverified external research assertions.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-008/council.md": "f94fc72db12b1bd94ba229f6576744c116ba3103690dd283a7b3b104cdf641ae",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-008/engineering-signoff.md": "ada000ec99e4c377f7f5048826a089e3ee8cc5cf6a5b6a0bfe0ac8a588e36966",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-008/product-signoff.md": "749f110376de9a9b0533f2ee7fc2bebc766de6ee35c5b2d1ed4db33d4dda8a86",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-008/test-plan.md": "21117b36d01a4cb874891be980b06cf0a5bf8ad1474c91ef5fabf4ffbfbca50e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-008/test-results.md": "99f78c38c80c681b4c2a9cfa522a376f28b4db7a994fae154cef0cf347d39349"
+      }
+    },
+    {
+      "id": "OTGD-009",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/research-model-execution/spec.md",
+      "canonical_sha256": "a110df0160cb1dfa6b1eb471ebe558eec1af8bcb86c7c883b8795bac2fdf714a",
+      "inventory_sha256": "a110df0160cb1dfa6b1eb471ebe558eec1af8bcb86c7c883b8795bac2fdf714a",
+      "candidate_manifest_sha256": "a110df0160cb1dfa6b1eb471ebe558eec1af8bcb86c7c883b8795bac2fdf714a",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Current independently released model/capture authority, nonsynthetic required channels and publication recheck.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-009/council.md": "1ac1a5a3c95b205b2a057b3d57184dd984b54cc336377a9b84defd4c5a1fcdb2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-009/engineering-signoff.md": "b8f8c6c7887e089413271e2a706229e8103d1b33b21d3259c1ce525fcbfb2cc1",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-009/product-signoff.md": "6a450e3a3d01212dc1b7121b57b97a797e8c680cca0d8144d6bd57df04ee9b17",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-009/test-plan.md": "b3e769fa9bbd6db2b2f69ace75ff514d89da2c26733f703d766a0b98ff7820d2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-009/test-results.md": "c0113f6ae1cd42ae4b5a8b8699c5637141ab271008135779a7732c27a0bc94e1"
+      }
+    },
+    {
+      "id": "OTGD-010",
+      "canonical_path": "openspec/changes/authorized-raw-export/specs/raw-export-authorization/spec.md",
+      "canonical_sha256": "6e7ff5b60880e7234eec431ccb702b3e452b6a1d6e76a01720cb60b478782993",
+      "inventory_sha256": "6e7ff5b60880e7234eec431ccb702b3e452b6a1d6e76a01720cb60b478782993",
+      "candidate_manifest_sha256": "6e7ff5b60880e7234eec431ccb702b3e452b6a1d6e76a01720cb60b478782993",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Raw export grant/purpose separation; exact source versions; authenticated bounded chunk re-admission and recurring erasure.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-010/council.md": "5acfc8dfe20f79e4aa299f7c7812bbd25dd816bbd0e12e81ee21a5acb65d131a",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-010/engineering-signoff.md": "7dba5bfd6f35c9d90323f1e61f25c61b5a74be85aa3e0dce429c88a1104f8511",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-010/product-signoff.md": "4d1badc5fba170718dcd71e60233c0908a81f63435ecd7f2624dc613e4f0cab2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-010/test-plan.md": "7968d7f0b2bd45aa19a161c689e1d29ad702185485712374cef6bbd22a046f62",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-010/test-results.md": "8b4de91df8daab519e3c5c286dc20e73fc3bf453434a3148c233f1975ce0220b"
+      }
+    },
+    {
+      "id": "OTGD-011",
+      "canonical_path": "openspec/changes/canonical-operator-governance/specs/operator-authority/spec.md",
+      "canonical_sha256": "a7bb7170b6fc7c119e8e93eae9783767876a8f861a71588027577172c30a80e2",
+      "inventory_sha256": "a7bb7170b6fc7c119e8e93eae9783767876a8f861a71588027577172c30a80e2",
+      "candidate_manifest_sha256": "a7bb7170b6fc7c119e8e93eae9783767876a8f861a71588027577172c30a80e2",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Typed immutable registries, three distinct principals, current capabilities, signed capture and raw evidence.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-011/council.md": "e0da01d7229256edfc57e036afc980cb0935d30f46f166d7a9309fc191f793c2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-011/engineering-signoff.md": "6f208904edbe6632ad6eecf5f7ebd440fd17021f3e96a7104bd14f006965155e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-011/product-signoff.md": "5adc216cf3ec6eab1272a53aee6486ceed32537ac00c1f7309e0beb1baf61222",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-011/test-plan.md": "897c13a646594a06df69b08db0257d1b9de59a8c7e3da36b9bf7e7beb6a03970",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-011/test-results.md": "7fa3f2d31d12ccb4ec24899e47ebb33cf416797888b21b5468e6a9368a3904d2"
+      }
+    },
+    {
+      "id": "OTGD-012",
+      "canonical_path": "openspec/changes/canonical-optical-native-acquisition/specs/optical-native/spec.md",
+      "canonical_sha256": "1e25c5f543b73c2df18741240a266b39716ae17c31bc8b57e2bd91dc699a29c4",
+      "inventory_sha256": "1e25c5f543b73c2df18741240a266b39716ae17c31bc8b57e2bd91dc699a29c4",
+      "candidate_manifest_sha256": "1e25c5f543b73c2df18741240a266b39716ae17c31bc8b57e2bd91dc699a29c4",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Current scoped optical start; bounded ephemeral ROI; originating lifecycle and encrypted persistence.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-012/council.md": "7d76fd7df020945f259298241affebef747aabf99bd97daba17cf712a10a1e4c",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-012/engineering-signoff.md": "fc8b716aa07fb452c790b483b61277037f877201eb6d8fe6804e07713b18ec73",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-012/product-signoff.md": "382fac8fc5dc3113bac2e0ad79a81b59c58b634911c9a5359619c18a02845a91",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-012/test-plan.md": "65ff8ba9aac1df269661af079dc0b0e636c07db3cfaa631911d83405fe13069e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-012/test-results.md": "6a79ee261f3acda5351a47c9f2026507c43e514e5357a29900ef57fbb680fb4f"
+      }
+    },
+    {
+      "id": "OTGD-013",
+      "canonical_path": "openspec/changes/canonical-signed-reader-acquisition/specs/signed-reader-acquisition/spec.md",
+      "canonical_sha256": "df6d046105c408da0217d264ba7d9ec83e11682c55933c65753c12c196a7fb29",
+      "inventory_sha256": "df6d046105c408da0217d264ba7d9ec83e11682c55933c65753c12c196a7fb29",
+      "candidate_manifest_sha256": "df6d046105c408da0217d264ba7d9ec83e11682c55933c65753c12c196a7fb29",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Protected provisioned P-256 signer, one-use signed starts, origin-bound authenticated encrypted BLE; physical qualification separate.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-013/council.md": "b4c3d058a11cdc58f938bc60122196a2f26c8cb90c0f731060ac3c3e91da0f5f",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-013/engineering-signoff.md": "063257c5bb704fef400b7ace99ac0605beeaaab9e47e4a0496578145c1c7f056",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-013/product-signoff.md": "4fe5b4e87faa86046283d71bae76ee9ff3c95c8ba1bfb9a272a689c1399ff81e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-013/test-plan.md": "699d5bc6e3a7628a1e6fd5a1f246ca0bc34947b9addd3deeb76e5b32d37804d5",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-013/test-results.md": "fcf3fded30642be9389b6af06555f2c1cd4811c301f4e3f9917b133b40503a5b"
+      }
+    },
+    {
+      "id": "OTGD-014",
+      "canonical_path": "openspec/changes/cloud-deployment-customer-access/specs/cloud-browser-delivery/spec.md",
+      "canonical_sha256": "735f76493e8188925c157347dc22b0a2acad4cb76721f2ea8a7f324629631855",
+      "inventory_sha256": "735f76493e8188925c157347dc22b0a2acad4cb76721f2ea8a7f324629631855",
+      "candidate_manifest_sha256": "735f76493e8188925c157347dc22b0a2acad4cb76721f2ea8a7f324629631855",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Private immutable web origin, exact public identity, provenance and browser security headers.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-014/council.md": "e9696aabdc07314510cbbf2de2925030013ff00f9b74db63518f4c8aadb928e8",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-014/engineering-signoff.md": "478fa0104ee72c7b3ac4acba2318c95c999089d4894e5b71b25951a00d486c24",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-014/product-signoff.md": "82691f59c66ea9300b8e43f45c65c6ac73e70eaaa4505cede50ef532c2c3a374",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-014/test-plan.md": "0b246d0cc02e6a21e9c7d11e9e1e551f80aaef8bc1a14d52cac9a53cbea022e0",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-014/test-results.md": "2eede8d047fdd1a7ba4f46dc2f0094a8e4a773c5a0feb33fcaa719497c6e56be"
+      }
+    },
+    {
+      "id": "OTGD-015",
+      "canonical_path": "openspec/changes/cloud-deployment-customer-access/specs/cloud-release-orchestration/spec.md",
+      "canonical_sha256": "32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6",
+      "inventory_sha256": "32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6",
+      "candidate_manifest_sha256": "32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Current live fourteen-job release admission, distinct roles and immutable cloud attempts; no deployment claimed.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-015/council.md": "8a65c58960240d9adc77c6e53cfe9ef6f267faeeb0f28b9c5e65edb83c957363",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-015/engineering-signoff.md": "acd850ac705b293f5861a34fa9a5e41801bf6e5fd051dba4fab1859797ca7533",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-015/product-signoff.md": "595849082da4bff1a0a27c345e6dd7f1b7ed822e5cf3d2107d766117b24207f2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-015/test-plan.md": "6c0450f5044421198c3d72c0f24e41d44a9bc37204068a2805d05edb13ac351a",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-015/test-results.md": "9287296f2aeabbf46398a496067bc00a5186ecdf9a585827bea89a320eac53b2"
+      }
+    },
+    {
+      "id": "OTGD-016",
+      "canonical_path": "openspec/changes/independent-recovery-admission/specs/recovery-authority/spec.md",
+      "canonical_sha256": "430fe7dfbfdb117add502c5632150690905d94b3dcb42ddc892bf1e8943f273c",
+      "inventory_sha256": "430fe7dfbfdb117add502c5632150690905d94b3dcb42ddc892bf1e8943f273c",
+      "candidate_manifest_sha256": "430fe7dfbfdb117add502c5632150690905d94b3dcb42ddc892bf1e8943f273c",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Independent journal recovery admission and exact fresh reapproval; database flags alone insufficient.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-016/council.md": "ba2d4bd0c916ecb8e8f35b74febb14905a482b8a1834d2f3180d509ef82dc763",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-016/engineering-signoff.md": "d6fd99ea0ba7082e8ac9194f4e1da94b2fe3dc094b5c01b805de1262c117b1db",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-016/product-signoff.md": "f14e681ca2e40eded4c371ea640ad70dc7051547a899e45c30fd7fb2ff03ed81",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-016/test-plan.md": "1928dba8411fd4fa761d64a5a2fa7b0bda1788e8f12fbe08e2171743c7b05b91",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-016/test-results.md": "8740cfc1611477a19de9a7724f10be3dcee619d0fd37155de10055fb60568dd2"
+      }
+    },
+    {
+      "id": "OTGD-017",
+      "canonical_path": "openspec/changes/optional-raw-recording-lifecycle/specs/fictional-hosted-preview/spec.md",
+      "canonical_sha256": "ee9d68e204d40b0500732c19096ce4fc4a362892d09106034678baacde4e961d",
+      "inventory_sha256": "ee9d68e204d40b0500732c19096ce4fc4a362892d09106034678baacde4e961d",
+      "candidate_manifest_sha256": "ee9d68e204d40b0500732c19096ce4fc4a362892d09106034678baacde4e961d",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Local-only fictional hosted mode, no account/network/acquisition, isolated guest records.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-017/council.md": "333e7be8ea5bef6e6e66aefe93203dc8e23e34e987dcad84d6c9112c6877defb",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-017/engineering-signoff.md": "4d2f149db2332f8f595a7fbf0fcd56d6c27491798cfea4de22a3bfbf1de5f246",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-017/product-signoff.md": "f84e99ecebed9259d76f2db047dea32942b1716944335d776463ebbed9295dd9",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-017/test-plan.md": "167eefec681858e67665d06d7ce5c6f8a6d51dc9b301030fb7b51ecbf9438441",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-017/test-results.md": "0514c4d0d70bcddcbfca2a843faa789c3d0617b14db0981e1ea0a6038af5b5ba"
+      }
+    },
+    {
+      "id": "OTGD-018",
+      "canonical_path": "openspec/changes/optional-raw-recording-lifecycle/specs/raw-recording-customer-flow/spec.md",
+      "canonical_sha256": "a688ab279a337ce745968e41c3d834c1afa8486a45901544cd7f779df2d54218",
+      "inventory_sha256": "a688ab279a337ce745968e41c3d834c1afa8486a45901544cd7f779df2d54218",
+      "candidate_manifest_sha256": "a688ab279a337ce745968e41c3d834c1afa8486a45901544cd7f779df2d54218",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Default-off raw consent and upload, durable revocation fence, encrypted commit, retention and separate raw export.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-018/council.md": "d36fdcebae2690575fd246b45b673e36ed6ac51bb341b71533900bccffa8ef1a",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-018/engineering-signoff.md": "d47ee2d82ba1438003ef5fbbba052eb0e138d1d0c4bee068c1cb85391e4f79b9",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-018/product-signoff.md": "a49bb055dd3262d59ca27d90c0ca17062739228578415010af6b24966a620f11",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-018/test-plan.md": "5398806f3cc7b37709c61e1df462545437d98553a19980ccca8c8e97466f5509",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-018/test-results.md": "a74271ba025ba114f92682ae42d5483190ab8b6c177ffcc06e905cb83b605c50"
+      }
+    },
+    {
+      "id": "OTGD-019",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-alcohol-channel/spec.md",
+      "canonical_sha256": "6c423c75ae449e935fe8856f61d70af07aaab582719baba1d1e1bc63d787f45a",
+      "inventory_sha256": "6c423c75ae449e935fe8856f61d70af07aaab582719baba1d1e1bc63d787f45a",
+      "candidate_manifest_sha256": "6c423c75ae449e935fe8856f61d70af07aaab582719baba1d1e1bc63d787f45a",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Synthetic alcohol remains separate and measurement-only; mg/L calibration/quality provenance.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-019/council.md": "63c2141f476038fcb3b8f07d1cc0c48d680374645f06a13df01f4221d80cf026",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-019/engineering-signoff.md": "34a4e74ce9748b2eafe4241bb806d40e81efc1e147608bcacc57e7e093ac4896",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-019/product-signoff.md": "a3e3947a1bdb5f73b0a3143df282cccf43189fefc49d977cd3b13729970b6ee0",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-019/test-plan.md": "9979fe3a5a674709583517dcf89cb6d06a555be9184d4e873c1ca14ce4629b21",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-019/test-results.md": "f0b73dc49bc3f85efe5ad97988513454054fd0afdfa4049d921c462c145d8532"
+      }
+    },
+    {
+      "id": "OTGD-020",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-app-environment/spec.md",
+      "canonical_sha256": "7cd3451fd8c13cd25bdc66403e879de3f9fe0e127e3655f2ed40017869916f76",
+      "inventory_sha256": "7cd3451fd8c13cd25bdc66403e879de3f9fe0e127e3655f2ed40017869916f76",
+      "candidate_manifest_sha256": "7cd3451fd8c13cd25bdc66403e879de3f9fe0e127e3655f2ed40017869916f76",
+      "decision": "CHANGES_REQUIRED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [
+        "SEC-01"
+      ],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Compiled environment identity and protected deployment/recovery boundary; SEC-01 endpoint pinning gap.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-020/council.md": "90c30235f7921b315a7c87a858c7a39f25659366795c61beafcce30fce157281",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-020/engineering-signoff.md": "c2c71e1e6459e916c2259051d4775d4f2142cd137f059559be3f895dd7f81b85",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-020/product-signoff.md": "3cc7211a7a8af6c68a30930420388c175185d49f7a170b7e1858b27e1e50777e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-020/test-plan.md": "66014e32995264ea88a655c1b4bf31567bf3e81ce01450456a1be26cfba2822d",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-020/test-results.md": "0521fbc8b48711850850e4c46780d95cb0fe9092a35c1182a71bcb71f4fa7ff4"
+      }
+    },
+    {
+      "id": "OTGD-021",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-dashboard/spec.md",
+      "canonical_sha256": "c756e1eb65e8b3e9929a58c4c191e7c179529f8cd238da6e9cd6b5403439105e",
+      "inventory_sha256": "c756e1eb65e8b3e9929a58c4c191e7c179529f8cd238da6e9cd6b5403439105e",
+      "candidate_manifest_sha256": "c756e1eb65e8b3e9929a58c4c191e7c179529f8cd238da6e9cd6b5403439105e",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Current capability and source display; workspace-race fencing and explicit uploads.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-021/council.md": "2b9153cb013c43eb9fd5402e2c670977198dbc23a720a2932b70a636cb581d70",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-021/engineering-signoff.md": "ee46cd67281baa7dba22ed232f1a2f982c5a343bf696640be549d3fa23443401",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-021/product-signoff.md": "b4416df0d6acc4a393d44a66981b5c3033ccc76babcda7cecc31861743455186",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-021/test-plan.md": "6006c5c00ec283c9a916c4600b47cc00e84963d70311359d273f4f922a3377ed",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-021/test-results.md": "39ea5297595dcd16096b52d853f2a7842ac4a0b3d57813380a09515579f0a440"
+      }
+    },
+    {
+      "id": "OTGD-022",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-data-export/spec.md",
+      "canonical_sha256": "2e02ae2e4ea75c4e789b29399dee2b6e4206f12ecb81630b04ca54c4a6e1ef30",
+      "inventory_sha256": "2e02ae2e4ea75c4e789b29399dee2b6e4206f12ecb81630b04ca54c4a6e1ef30",
+      "candidate_manifest_sha256": "2e02ae2e4ea75c4e789b29399dee2b6e4206f12ecb81630b04ca54c4a6e1ef30",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Owned selected export, explicit raw exclusion/authorization, bounded versioned archive and protected delivery.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-022/council.md": "e9eb28ed106e328970f3f9aedc0474d923419bcb0729e484f86c11acfa10a664",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-022/engineering-signoff.md": "9912d444e8dcaa72d1b6f0636ce61e0c0d25d182a28ce8770f25773e4cd28895",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-022/product-signoff.md": "07bb564d68a2448bee9b5965cf8f7c04db803113862dea6ea03121d567a481e2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-022/test-plan.md": "431bd11991617d146ea79e4036d044864e6721b3efd1e0295a626451486d8269",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-022/test-results.md": "bc92766aaccbb6897f4a79eb1622d11a6ccd393f5d936d0efce05a2b54ebea52"
+      }
+    },
+    {
+      "id": "OTGD-023",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-device-pairing/spec.md",
+      "canonical_sha256": "c772a370e6d80b6568ad3d210081934ac57ecb9e7449e7e776efeb776cdd98c4",
+      "inventory_sha256": "c772a370e6d80b6568ad3d210081934ac57ecb9e7449e7e776efeb776cdd98c4",
+      "candidate_manifest_sha256": "c772a370e6d80b6568ad3d210081934ac57ecb9e7449e7e776efeb776cdd98c4",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Untrusted advertisement, registry-owned binding, bounded framing and lifecycle; real hardware qualification remains external.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-023/council.md": "7419bbe26dfb5670b38dde885513a47d9d5e405fb0ef56a280043b465edece68",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-023/engineering-signoff.md": "e8a029370caf6d08d267b54600c09099a5faa1a7f14af7c0be07f8c548ea7526",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-023/product-signoff.md": "f4fb7585e4540c23247dc58303c997ecc2eaba5da276119b4dfd2d32227c38ed",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-023/test-plan.md": "1c410f6e6d2f6810e5f4be20cc4c14d3c7b88fa534344d13aa264826d03c4077",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-023/test-results.md": "a5fe8ca0ea9610609159fbadccd533a5a4c5c5968eea4a25449f09aac20d72de"
+      }
+    },
+    {
+      "id": "OTGD-024",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-ecg-capture/spec.md",
+      "canonical_sha256": "c75f24b4beeda893b780af0d924747c0cd7ca599ead627d3d265f21ec3772895",
+      "inventory_sha256": "c75f24b4beeda893b780af0d924747c0cd7ca599ead627d3d265f21ec3772895",
+      "candidate_manifest_sha256": "c75f24b4beeda893b780af0d924747c0cd7ca599ead627d3d265f21ec3772895",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Human ECG safety gate, scoped authorization and encrypted optional waveform; no participant qualification claimed.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-024/council.md": "a57a3fcdb43ae4c94c17d022806c3116f5f463595a220571a2e8feb258715668",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-024/engineering-signoff.md": "36636256e6555b48edd5806d03e8367e78065bfeffa2b89d59b9e625071d6631",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-024/product-signoff.md": "e8df74f894aeaaf9a07abff33f40cedb3212e1c12afcacb0ab15ea9fd8dc8d07",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-024/test-plan.md": "0ea6821a21b1c15d75f2afeea8a6a8db54f6d5e1afe0b0508d31ed204d2f7a85",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-024/test-results.md": "0748ad9259af6adddb165537b25ae8fa1c33faf8e1bdea41726e8d3e1461a351"
+      }
+    },
+    {
+      "id": "OTGD-025",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-eye-capture/spec.md",
+      "canonical_sha256": "bfb351373c6c3c2d33fd74fa1537ed0c610aa65624e5ce0e8c07fa8f5d1a6cf8",
+      "inventory_sha256": "bfb351373c6c3c2d33fd74fa1537ed0c610aa65624e5ce0e8c07fa8f5d1a6cf8",
+      "candidate_manifest_sha256": "bfb351373c6c3c2d33fd74fa1537ed0c610aa65624e5ce0e8c07fa8f5d1a6cf8",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Optical preview versus qualified capture, ephemeral images, current authorizations and separate retention/upload.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-025/council.md": "52c02aa779863349aadeda6c46999361b7ca91155ba4abe37f99c8a5f606a382",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-025/engineering-signoff.md": "134a6c8a17baf7503c7454b0592c904b23110807dd148d575f53d2a695edf1d8",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-025/product-signoff.md": "a99070acc24621797e2634ab324abc05e6d1ddda1dad1f11b89f38fc3fa65f10",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-025/test-plan.md": "2284bcae896fc6014a0570044e187a35be948ae2e4015e8cce9f4a000701f9ad",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-025/test-results.md": "82135a0bfec0b880c9c5cabb412435f4060b1a978d56e9a42ea1156d7eecafe5"
+      }
+    },
+    {
+      "id": "OTGD-026",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-guided-check/spec.md",
+      "canonical_sha256": "cef15148de295ecabe3b38d6f9b2d45530b60993c1aacf1b41e1b4fc495c6562",
+      "inventory_sha256": "cef15148de295ecabe3b38d6f9b2d45530b60993c1aacf1b41e1b4fc495c6562",
+      "candidate_manifest_sha256": "cef15148de295ecabe3b38d6f9b2d45530b60993c1aacf1b41e1b4fc495c6562",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Immutable context/attempt identities, stop-before-navigation, durable local save and separate explicit upload.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-026/council.md": "6377fb9e555d2183831229e8bd746f16697d3beb786372b83412ce41adff3ab4",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-026/engineering-signoff.md": "8caf2186266d2d2990a1ae62d931e14f61d2e04bea5bc8622b5900ce5b1685c2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-026/product-signoff.md": "ac2a8137d02c9f634d2827b0c06274839e8b5adcd2af72821a3ac3724514cf86",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-026/test-plan.md": "93db422626664e00437e99e96202537e8348c078928f3a4df1ff392761d61a43",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-026/test-results.md": "e66cb48e4e30b699cb90cb519d467d376916486e50c99020a597f3299231f7c7"
+      }
+    },
+    {
+      "id": "OTGD-027",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-heart-rate/spec.md",
+      "canonical_sha256": "e9288b9fbec177d7287962239555b7633a0cfbf80ecf3e1e350158da607f5139",
+      "inventory_sha256": "e9288b9fbec177d7287962239555b7633a0cfbf80ecf3e1e350158da607f5139",
+      "candidate_manifest_sha256": "e9288b9fbec177d7287962239555b7633a0cfbf80ecf3e1e350158da607f5139",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "PPG source/quality preserved, fresh scoped starts and no synthetic/ECG substitution.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-027/council.md": "e9dcad9426f661840aae61baa54de5b6128b5462b33830fa458799f95c9a2aba",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-027/engineering-signoff.md": "dce30dedaea1ef9d1c7900e1aaca33438ba42f5c07ba576f57729b5d49374e2f",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-027/product-signoff.md": "ce7bd60afbcd6f9eab310e298d4a3830f56907f96de4e5be1357e41259df47ad",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-027/test-plan.md": "3b3b06fc871daad3b067ed4a5bfad8797890773588b9e29ebd7bc002ef6bef38",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-027/test-results.md": "abce5536b106795ff7d3d76f35d74b5dca50979ea060d3d5b758f6ebebd99d32"
+      }
+    },
+    {
+      "id": "OTGD-028",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-history/spec.md",
+      "canonical_sha256": "eb9f89e04620ed296b248ce076e2c5447df6c5fb2c9da0eb9fa90725f2bd99a2",
+      "inventory_sha256": "eb9f89e04620ed296b248ce076e2c5447df6c5fb2c9da0eb9fa90725f2bd99a2",
+      "candidate_manifest_sha256": "eb9f89e04620ed296b248ce076e2c5447df6c5fb2c9da0eb9fa90725f2bd99a2",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Active workspace ownership, pagination, immutable evidence and deletion reconciliation prevent resurrection.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-028/council.md": "ec480719ae20369f6094b441d270087d6bd804988cdd10b4f731329a9a576cda",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-028/engineering-signoff.md": "b62089181529aeda7f8c1aeba09c0d27486626d7d9cdf090cfc541e2390cb711",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-028/product-signoff.md": "e3fe541adf11583ea22c4e83630a71775076e25be6c10090c00e0b1233bb449a",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-028/test-plan.md": "f6e1a143bdb849395cf7b509341f03610583c8e8c2bcd893ae5f79e01ee8aca9",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-028/test-results.md": "ef2790b933931688910e5dd39835665ebfdf66b853026a339c5d36fb96682d2b"
+      }
+    },
+    {
+      "id": "OTGD-029",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-offline-sync/spec.md",
+      "canonical_sha256": "388f00c1fab3eb1f905e140b7248ce8e737ae87349eb8a508068becbb51456b9",
+      "inventory_sha256": "388f00c1fab3eb1f905e140b7248ce8e737ae87349eb8a508068becbb51456b9",
+      "candidate_manifest_sha256": "388f00c1fab3eb1f905e140b7248ce8e737ae87349eb8a508068becbb51456b9",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Durable encrypted queue, stable idempotency and owner/environment isolation; original acquisition time retained.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-029/council.md": "8131c68480435c6d804e0d4064b9677808064937b887e82f6fad93d304002cda",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-029/engineering-signoff.md": "4997a60ced312cea9875a1861e1386947e058906a4fa1e29f432794912ea9be3",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-029/product-signoff.md": "a07608d2aaaed34c03c7bdd2d84cde9cd3ef72dedd0f4d8438eb49e9c79358e3",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-029/test-plan.md": "1556afcaedbc6b37297b51cab0283ab6a76bc01e81b3f5338810481866ad4a31",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-029/test-results.md": "a66a09fbb90de29fa69d49eb0b5c6ffe6e572326429d3fc0dd22bade89f378c8"
+      }
+    },
+    {
+      "id": "OTGD-030",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-onboarding/spec.md",
+      "canonical_sha256": "da9837761a2034853336456f15dc249daf23aed73a9808bbdf4b1b690eda53ee",
+      "inventory_sha256": "da9837761a2034853336456f15dc249daf23aed73a9808bbdf4b1b690eda53ee",
+      "candidate_manifest_sha256": "da9837761a2034853336456f15dc249daf23aed73a9808bbdf4b1b690eda53ee",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Notice receipt and workspace separation; onboarding/OS permissions do not create scientific authority.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-030/council.md": "cb57e20fdaca3fce38a79dc7922dc74c23add1f7ed24f3022e7dd10d945cf14f",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-030/engineering-signoff.md": "1e120d002d87d8e05fa63fec9485fe7f4174182b9260a87e8a7e393d96cfc6bf",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-030/product-signoff.md": "d54ebeb76abf63bb974259cd9582e4bfdeb759d298abaaa72609daed6847d894",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-030/test-plan.md": "ccf9076b76b17c08202e3a0feff1cd18fe5e5c9b722235a3667573a424b4d1a9",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-030/test-results.md": "7b8458332806b5065a60394ae6ac53ba57c781934aa5fafbaa69baf4a41f13cd"
+      }
+    },
+    {
+      "id": "OTGD-031",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-privacy-controls/spec.md",
+      "canonical_sha256": "993e7c0f65b5ee4bd9b2f470e2d4111f6329f083e7650a76ab71f78abf5e9f3f",
+      "inventory_sha256": "993e7c0f65b5ee4bd9b2f470e2d4111f6329f083e7650a76ab71f78abf5e9f3f",
+      "candidate_manifest_sha256": "993e7c0f65b5ee4bd9b2f470e2d4111f6329f083e7650a76ab71f78abf5e9f3f",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Reauthenticated owned deletion, immediate generation fence, truthful async completion and recurring version erasure.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-031/council.md": "5d9bea0da0c026c6a1020f4574693783f4b9688aee1a31c8188088982fd8bf2c",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-031/engineering-signoff.md": "513eb80fb2116715d61060a2046d7d4812af33a8e876f51dfd36b24a420a81e2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-031/product-signoff.md": "429ca76335eccff55d51688a9cf8bec9172f5748809f49b0b71465b052526513",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-031/test-plan.md": "146528ba10cdd547d17fb02fb1630a20eccba7e626730b5978bd71a23414254e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-031/test-results.md": "eae5c436fbd6f1fd733cee577a87b38ede21122843e897bc102201e512641636"
+      }
+    },
+    {
+      "id": "OTGD-032",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-profile/spec.md",
+      "canonical_sha256": "b90bbf657f3c8e8a24eab7ab93f04c680018bbe2179131c1b8aa70c6d3d67a43",
+      "inventory_sha256": "b90bbf657f3c8e8a24eab7ab93f04c680018bbe2179131c1b8aa70c6d3d67a43",
+      "candidate_manifest_sha256": "b90bbf657f3c8e8a24eab7ab93f04c680018bbe2179131c1b8aa70c6d3d67a43",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Optional/declined profile values, owned revisioned drafts and immutable frozen context.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-032/council.md": "82d3af37220dee85eb771250df17fb909b8592c1cb35b7d3b291b1b8cbccd6b3",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-032/engineering-signoff.md": "1360504586d56e03b520387a1c551d53b2a25bafd3f62b09978ecb44536a042f",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-032/product-signoff.md": "2c538eda20510ed36bb614c83571c21e65fe7aed529ab822c67b23e1ee81fc43",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-032/test-plan.md": "377a19217bddeac1d092a41b532fb6c12deea3302617e55bf98ee3f6ed2cf175",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-032/test-results.md": "a0d18083a234228e29217e0108737ada4fda6f286b3af46f771720341f70cba4"
+      }
+    },
+    {
+      "id": "OTGD-033",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-reaction-task/spec.md",
+      "canonical_sha256": "1c5bfceae8b4e2b5e1bd8c9edd7f19fd73908cde1fb804af4e9530700d3ea317",
+      "inventory_sha256": "1c5bfceae8b4e2b5e1bd8c9edd7f19fd73908cde1fb804af4e9530700d3ea317",
+      "candidate_manifest_sha256": "1c5bfceae8b4e2b5e1bd8c9edd7f19fd73908cde1fb804af4e9530700d3ea317",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Native originating attempt/timing, bounded raw events and stop-on-interruption; no sensing validity implied.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-033/council.md": "7b95f229702ab3b70bd7c6917f910b3277f6e6dadf1158820153c58b51a9c2e9",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-033/engineering-signoff.md": "f9db5fc2a083719df509c20b24bd0984f1876f57a653917f0c587330785bf608",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-033/product-signoff.md": "70bcc2270b612dc73ee389341e7ed1f8497549862f6100ce90f52195bc566ba2",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-033/test-plan.md": "060bb3c35ac856fa80c0df802e61bc41906e57755eaee59c55ca2eab6208d471",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-033/test-results.md": "fead7038e3f6f5775a61788f5fbf5c021ff091dafa78c9d5014ed71f418c93d8"
+      }
+    },
+    {
+      "id": "OTGD-034",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-results/spec.md",
+      "canonical_sha256": "dadd53ea7fd8027bb76d17c26e51d4910cc3c8763bfd8a838434fbf8112397ba",
+      "inventory_sha256": "dadd53ea7fd8027bb76d17c26e51d4910cc3c8763bfd8a838434fbf8112397ba",
+      "candidate_manifest_sha256": "dadd53ea7fd8027bb76d17c26e51d4910cc3c8763bfd8a838434fbf8112397ba",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Exact result/session/digest linkage, null/provenance handling and bounded cancelable polling.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-034/council.md": "1cebd4891fcd5b54861278bcdba053732bb59f21d576f1384fe91fa764231aef",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-034/engineering-signoff.md": "034b51ab10d4728d4cbe13c8500ca3e6572c0b82c6ca74be5a985f0df6c0a528",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-034/product-signoff.md": "7c2d57f7b386afae39a41d97f3a59f4bb39db860bb788445711260bee7da6bee",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-034/test-plan.md": "7ac5627a5a7fea81f9207ef62e152d6b0725aafeb8c4ecc457edccab6d8f8812",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-034/test-results.md": "c5fb5fb5e7f974d0c55620d3283620cd0431b6b645d8a2dcd88461f61ce34213"
+      }
+    },
+    {
+      "id": "OTGD-035",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-saliva-measurement/spec.md",
+      "canonical_sha256": "6edc6d7603b66733858b1f7fe42dc93d22712dd8cadbac29121a65f2ffd23610",
+      "inventory_sha256": "6edc6d7603b66733858b1f7fe42dc93d22712dd8cadbac29121a65f2ffd23610",
+      "candidate_manifest_sha256": "6edc6d7603b66733858b1f7fe42dc93d22712dd8cadbac29121a65f2ffd23610",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Participant collection versus independently authorized lab import; exact specimen, units, source and role.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-035/council.md": "1c2465421ac1289bf9a1f7c450f02a6b7a55ba57b4abb0c032f3ebeb402325fd",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-035/engineering-signoff.md": "a45d583dbb791751fc6c6d0ce45496b69b5561f1619c71095d41eda9bab02f01",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-035/product-signoff.md": "b23fb6834fb311302459cba18d2863e48882a52b91654e41af587e63f83cfaeb",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-035/test-plan.md": "c5193c98c45826bc706329455fc833c259bc0ea5f2b5f119595039413192fa64",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-035/test-results.md": "078de6e67eacccf1a0bda39945c1ae7652c7777e027f4de28696bdc934605e58"
+      }
+    },
+    {
+      "id": "OTGD-036",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-settings-accessibility/spec.md",
+      "canonical_sha256": "2768fdfbe5ff0b1971d6aad04101ea2fa17db6f6c3012848aa3aa3f490e654c8",
+      "inventory_sha256": "2768fdfbe5ff0b1971d6aad04101ea2fa17db6f6c3012848aa3aa3f490e654c8",
+      "candidate_manifest_sha256": "2768fdfbe5ff0b1971d6aad04101ea2fa17db6f6c3012848aa3aa3f490e654c8",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Permissions read without prompt and epoch-fenced responses; diagnostics allowlist and capability integrity.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-036/council.md": "959ee2c403f17e90eb81bee190d6dcc19df06ee31aa111fe6a37cdfc026befd5",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-036/engineering-signoff.md": "bc187c3fe433616127b63b1a44a4c40d9b47439c4c97be7397ebd2f39c7e83ea",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-036/product-signoff.md": "f4760a16a0729a3355915f5fd2870b75bbbef0b7f5a926d2ff9ab1f716ce2219",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-036/test-plan.md": "ba256dab1f7255ece17eda8cd9498cba2d165b9b83e0398d6443ca28e44e323a",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-036/test-results.md": "8a05678651dd89afaec955977f68316729c4abbb5d430d749d8c758f543517a6"
+      }
+    },
+    {
+      "id": "OTGD-037",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-sign-in/spec.md",
+      "canonical_sha256": "b20292aa0a4f47fa00fa5e652eafd1dffdd75e2a710ac2b0165f5f2ae4e2a1bd",
+      "inventory_sha256": "b20292aa0a4f47fa00fa5e652eafd1dffdd75e2a710ac2b0165f5f2ae4e2a1bd",
+      "candidate_manifest_sha256": "b20292aa0a4f47fa00fa5e652eafd1dffdd75e2a710ac2b0165f5f2ae4e2a1bd",
+      "decision": "CHANGES_REQUIRED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [
+        "SEC-01"
+      ],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "PKCE/state/single-use and logout improved; missing OAuth endpoint allowlist is SEC-01.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-037/council.md": "3bbefa15c5e13f72199268fa833c729136e1d9cc4bee9813901858668a345505",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-037/engineering-signoff.md": "d4758794429f54b5b549eb944b2204e3534d9820c1da56891fbdf1909de80fab",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-037/product-signoff.md": "fa9719edffc026ea37d02fb6d4bddf1508be8acade040b115e1e3923f52c43ef",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-037/test-plan.md": "eb66fa29cee4f2c34aeb976c0ec78ee8f529cb17ad43d988258a76deb9ad2784",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-037/test-results.md": "2d9a8d46216a39895c9678973a2afad9ef97c8f4070fe0e1f106f856a69ddf59"
+      }
+    },
+    {
+      "id": "OTGD-038",
+      "canonical_path": "openspec/changes/production-mobile-platform/specs/android-study-enrollment/spec.md",
+      "canonical_sha256": "e0c8f1f81be37cbe775f274e6c2aa81d3f3eacc64da92f01bcdd1c31adfb9ee8",
+      "inventory_sha256": "e0c8f1f81be37cbe775f274e6c2aa81d3f3eacc64da92f01bcdd1c31adfb9ee8",
+      "candidate_manifest_sha256": "e0c8f1f81be37cbe775f274e6c2aa81d3f3eacc64da92f01bcdd1c31adfb9ee8",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Owned invitation and exact consent; fresh starts, withdrawal fence and no seeded genuine membership.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-038/council.md": "11d0c9e2082f88cba65999648935aa65e2271dc3a4d70b7c435258652e170180",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-038/engineering-signoff.md": "9db8d81405441c40da654a3a6ba404290474e562783fb29410837dff989af336",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-038/product-signoff.md": "ec7e997ae94920ae41fcdc1a3710634d1d832009962d56e27b9a8992c3213765",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-038/test-plan.md": "2f846018ba45d237f08f93bd47b0a20e18a146c9c57d5587f7c1feffb41346aa",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-038/test-results.md": "c7c7faf17e7a1eb2a043e8b42b35810997bcc267b4d9508b62898ac8fc8fe936"
+      }
+    },
+    {
+      "id": "OTGD-039",
+      "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/participant-instruction-authority/spec.md",
+      "canonical_sha256": "238b3c329cd79edb4bd57807926311a3bed0c935cf77ef77577fcf79afda02ef",
+      "inventory_sha256": "238b3c329cd79edb4bd57807926311a3bed0c935cf77ef77577fcf79afda02ef",
+      "candidate_manifest_sha256": "238b3c329cd79edb4bd57807926311a3bed0c935cf77ef77577fcf79afda02ef",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Immutable fresh instruction receipt and stop-before-privacy transition; declarations never safety proof.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-039/council.md": "4cf28c86b069a706d0f473fdd9b5eea2b461030caf5f79b0639320b3bf0cb706",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-039/engineering-signoff.md": "631a54c598616e1dc7d5885f710e523fd9b9bc0f6f68538d66507155a80a44a9",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-039/product-signoff.md": "673303223e936cbcfc12a3a4595638de099207d9d1bd018ba2bad834025e5ae9",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-039/test-plan.md": "f49c42913c1e03767b10d52ee47f928f5c61af879079cdf343c59593abe9e5d4",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-039/test-results.md": "2bab3aa13b6e3fa58bd5a5391f047897c820e8ba72669097c4f7bdd596c070af"
+      }
+    },
+    {
+      "id": "OTGD-040",
+      "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/reference-lab-collection/spec.md",
+      "canonical_sha256": "09cbf8dccec136a1ec7895fc553c62160b63fa1e2133f5b5864d7d3aed13547a",
+      "inventory_sha256": "09cbf8dccec136a1ec7895fc553c62160b63fa1e2133f5b5864d7d3aed13547a",
+      "candidate_manifest_sha256": "09cbf8dccec136a1ec7895fc553c62160b63fa1e2133f5b5864d7d3aed13547a",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Exact owned specimen/configuration and independent staff import/report custody; collection cannot self-authorize analytics.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-040/council.md": "2901e2e7ab5f825d7f5de81e3a055aad3510746addd32115ffedeff2a7d3b24d",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-040/engineering-signoff.md": "d4cf6f3afa861ec56007cd7bab6bc5965198d60cafcc0f38a5f6670e00a0fcec",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-040/product-signoff.md": "f292951f1df5119335fc603823d3877a38d78a44583582c1918bd646bb25fc0d",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-040/test-plan.md": "0a2a4af27d82a45062c5fe3de6093dc5c688aad920be06064e5599970212f5d5",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-040/test-results.md": "117b491cd13efc9c58b32200ce3e4d1e693fded27842e259b9d5f5f5332c800a"
+      }
+    },
+    {
+      "id": "OTGD-041",
+      "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/research-evaluation/spec.md",
+      "canonical_sha256": "f4bef2eee7577e8f57b7cd27b7463d3879dcb1d452c73540d8916f9d6bf41726",
+      "inventory_sha256": "f4bef2eee7577e8f57b7cd27b7463d3879dcb1d452c73540d8916f9d6bf41726",
+      "candidate_manifest_sha256": "f4bef2eee7577e8f57b7cd27b7463d3879dcb1d452c73540d8916f9d6bf41726",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Prespecified HR-only evaluation keeps missing comparisons explicit and does not grant external authority.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-041/council.md": "50aa337d4b981b04f41ecc6bca1a080ca45809e521dad93659d5cb956832d677",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-041/engineering-signoff.md": "9e6223a24662c3b8edcf19b9ccbf1feddd9407d115a7a0c0dbb21080136a07e5",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-041/product-signoff.md": "17e83037583c04fc5fd5bba3750f9b9939d753cf2a9ac3ffa4297ce3d92db851",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-041/test-plan.md": "113a7487943ad72e588c44768e509f503da199ed68445d966573f918fe278035",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-041/test-results.md": "3652aff68789695380ddd6740e90befe996f32953bc4ebf0a146a9fcb598d51f"
+      }
+    },
+    {
+      "id": "OTGD-042",
+      "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/scoped-cardiac-authority/spec.md",
+      "canonical_sha256": "277f1727d50ffc6c0ee8717d1c77541bca64139ea78ffe032795ebf8a0c2b0a7",
+      "inventory_sha256": "277f1727d50ffc6c0ee8717d1c77541bca64139ea78ffe032795ebf8a0c2b0a7",
+      "candidate_manifest_sha256": "277f1727d50ffc6c0ee8717d1c77541bca64139ea78ffe032795ebf8a0c2b0a7",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Restricted HR timing/calibration/quality/baseline policy; numeric output re-admits current authority.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-042/council.md": "88f1bdc5c4c648b87d82476d53eb15248df30a366a52a57592aeef27469353f4",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-042/engineering-signoff.md": "05d80a57c7b9f4e271831c98e94e410016f4a549f89265ea3eca2ce342e749e3",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-042/product-signoff.md": "f719a91c50bc4cd515d0d442b955e59c4a82b11f40fe277f0de578d34b917137",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-042/test-plan.md": "513b0a64a72c14144dc947d36904d676cfd39fa7203ce8bbe09297369021861f",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-042/test-results.md": "f90c171f9e306683922f3061d79ddf386fc2136a37c68424055635ce7962c634"
+      }
+    },
+    {
+      "id": "OTGD-043",
+      "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md",
+      "canonical_sha256": "c6f863bc71ebf167438fbe5cffe07b892da12cc066d0487d21403ff8dd49fa0d",
+      "inventory_sha256": "c6f863bc71ebf167438fbe5cffe07b892da12cc066d0487d21403ff8dd49fa0d",
+      "candidate_manifest_sha256": "c6f863bc71ebf167438fbe5cffe07b892da12cc066d0487d21403ff8dd49fa0d",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Pinned selected SDK, fresh bounded FIFO and signed current origin; software success does not qualify physiology.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-043/council.md": "bae60d1b921be56344cfaab4d30ef8bacccb83b70ecbbfe785fba8a6f0d8e69e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-043/engineering-signoff.md": "fc9dd56c147d0fa4eb70cfb5284b838ad90b85f5332e63ef39f12eec01ccd9a3",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-043/product-signoff.md": "5277bd30e1813eb599be5490292946a97362d49d3d8a5706c7b51bf845ebea64",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-043/test-plan.md": "0bfef05a46b30cb95c7d2102b8927c5f023da5158dd6f5851d8ca3efd3c3cc3e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-043/test-results.md": "ee991d3743eb89e8718528d8990d63a6e51b4f55a55fb8276515120351405722"
+      }
+    },
+    {
+      "id": "OTGD-044",
+      "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/cloud-browser-delivery/spec.md",
+      "canonical_sha256": "758f7dd11a72a15750d44a61d49d986b923232ac981fcb9ab304a56526e5bb6c",
+      "inventory_sha256": "758f7dd11a72a15750d44a61d49d986b923232ac981fcb9ab304a56526e5bb6c",
+      "candidate_manifest_sha256": "758f7dd11a72a15750d44a61d49d986b923232ac981fcb9ab304a56526e5bb6c",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Complete exact security headers/private route and bounded signed public response bytes.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-044/council.md": "dda610035c4d8b8fff7d5e3de9f097db10f496a3bcfcf82e5df504d2b0240d5e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-044/engineering-signoff.md": "976342a36723d22206b0267ab58e0cba75f362acb5e817c5ad37cfb1cb1c923f",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-044/product-signoff.md": "2ecaa44518b0819bd4f00b9e3cdda4fbe6e14a3ca274c11d2eea70b17a64caaf",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-044/test-plan.md": "e990dca5324ffe97c4fd350035163e8f5e48d24cff159f7be2230bac873fdaf6",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-044/test-results.md": "97659b4f788260974fbf9a7e9758d69583270f3542f39a419e5137320181df83"
+      }
+    },
+    {
+      "id": "OTGD-045",
+      "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/cloud-release-orchestration/spec.md",
+      "canonical_sha256": "c62bb011c5e71f177ededaf19e710e2ec40a97618a5b427d144f97bcd67d7a26",
+      "inventory_sha256": "c62bb011c5e71f177ededaf19e710e2ec40a97618a5b427d144f97bcd67d7a26",
+      "candidate_manifest_sha256": "c62bb011c5e71f177ededaf19e710e2ec40a97618a5b427d144f97bcd67d7a26",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Exact CNAME ownership and immutable DNS creation; bounded private release authority input.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-045/council.md": "6f8593a91c053c6f2e84aa5b769195ffbe9cdcb8557dc5b5ea69cc375759ea69",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-045/engineering-signoff.md": "c520e5a4e20c3fede4ca02d0c24f761e67ccf8199dc87ed845537b39436f9759",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-045/product-signoff.md": "2c50ccc67dd2f1f26ef4f0b1b7f7395afb12de88c6d8d5c686c69ecc5ff5609c",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-045/test-plan.md": "b9b480415a3f8f79b40871a591d92d463bb6d8de2658cb586025155cdfdaf160",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-045/test-results.md": "fbc552f2e25f520b1faa0f3b7412213eb7ac7530a214618ea0efb8c7fcfc1576"
+      }
+    },
+    {
+      "id": "OTGD-046",
+      "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/fictional-browser-preview/spec.md",
+      "canonical_sha256": "1a331132cf6b66413d1705dc09d0c7f885b8fe1375ea72250dcd5a451162e241",
+      "inventory_sha256": "1a331132cf6b66413d1705dc09d0c7f885b8fe1375ea72250dcd5a451162e241",
+      "candidate_manifest_sha256": "1a331132cf6b66413d1705dc09d0c7f885b8fe1375ea72250dcd5a451162e241",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Fixed unavailable public API/issuer in guest export, verified private forwarded service and accurate hosting claims.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-046/council.md": "4aa4a3fdec5c6d41d820357155c8872db3071f6d3b52cafca082a32788188c27",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-046/engineering-signoff.md": "c3ef134b940436b74b134cf8543339bd2c9dd7bc20ce6adecdad7b8ba64ff06c",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-046/product-signoff.md": "53955b37afe8d31d52983444d911d143ee2452fb39af2ebecd7a088b8604626e",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-046/test-plan.md": "4fa4c3c47ffc4eb8498f061c3dedf725200a129c45da45f8d9e38962337f19b5",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-046/test-results.md": "87df929dd627ed678638bf7d4e0e6efb90b69cfa4aa17ff0fd5f74211668ea6f"
+      }
+    },
+    {
+      "id": "OTGD-047",
+      "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/mobile-store-delivery/spec.md",
+      "canonical_sha256": "b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4",
+      "inventory_sha256": "b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4",
+      "candidate_manifest_sha256": "b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4",
+      "decision": "BLOCKED",
+      "review_scope": "IMPLEMENTATION security domain; final gates pending",
+      "findings": [],
+      "evidence_gaps": [
+        "SEC-E01",
+        "SEC-E02"
+      ],
+      "rationale": "Current source/live gate and actual signed artifact/store submission safety; all release execution remains external.",
+      "dossier_artifact_sha256": {
+        "docs/factory/otgd-20261025-0555/specs/OTGD-047/council.md": "148b012319d0d8b348e28fa289fafec23ad3ea2815ca8ec93620db8532fbaa54",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-047/engineering-signoff.md": "253976fb48694844f63025e8fdccd187c30bee6e7ebe3601e6ebbd696d83795b",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-047/product-signoff.md": "861ddfe8fa44b8efc414f3331317a848a0b0b6f32ecd3338e805bcfd54e9bb31",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-047/test-plan.md": "5eb303f81ec2934329a1258d6a357bec3db8168af8ccc20c0301ae24d61eb21d",
+        "docs/factory/otgd-20261025-0555/specs/OTGD-047/test-results.md": "d46bd202e49e30bc285276433317b4a2d0aef856e9ccf1ea55f976c425b724e9"
+      }
+    }
+  ],
+  "source_files": {
+    "AGENTS.md": "92a015f16480dae34990dca4a58f5d8085ce3ed651e40819f6b3260562d4bfd8",
+    "apps/mobile/src/services/auth.ts": "d79c20f75d42225f1c8a8dbb5143116a78981a4c5e7345728f68cd888cd4430a",
+    "apps/mobile/src/services/api.ts": "fc7a571b43c25c95966fa9178a1648465fb45118f2515e2dc077654b66f7c958",
+    "apps/mobile/src/platform/config.ts": "88860be747ccb4ed9a91793a096dab0f19c2075c9c7701fb288460b573802bef",
+    "apps/mobile/src/platform/storage.native.ts": "a9a13a16e80675b74ffebe1de78e44d7cdb16e0a87d5e62f24d4685443038055",
+    "apps/mobile/src/controller.ts": "a7adf043f78c93e056502c1ced62d1a2ba42615c181454d1725745ff4061808a",
+    "apps/mobile/src/ui/manage.tsx": "df28e91c2335b54179bed5f1ad3e606a240f19d471fc735234a577e3a448ce7c",
+    "apps/mobile/src/ui/checks.tsx": "aa00421169fedb903393a7b778d2cd47281bf007d6ef24b2794e92fbbbc20b95",
+    "apps/mobile/e2e/authenticated-live.spec.ts": "3ec7e636797c30677205c3bde7e9ca64fe919b4c3513b1cf47453d52b87a468d",
+    "apps/mobile/playwright.live.config.ts": "c4952d51029987bddd14983e73c3fe27ca76581dc33c9aab05f09fa009a1605f",
+    "services/api/otgd/auth.py": "865f4d0fcf199b9898d3bb43fd5301f814979d47f01ea48d9be2df75063c4fd7",
+    "services/api/otgd/local_identity.py": "1576b35868abd7a22b402f2efea4777b6d34dcfb786e8670350b915972bc1e9e",
+    "services/api/otgd/local_oauth_state.py": "e7456407ee43ddf4578161a7eeee2fe0bbe796fbd51a742524f283a1e20678ad",
+    "services/api/otgd/main.py": "fc2547f87b408ab83cbf164245fc0703c35bfd4012b6f692dec5e46ee52700f4",
+    "services/api/otgd/worker.py": "06c0042053501c5e9150436fcadc9a224075cc396ba5c9bb39ffa19335a29c8f",
+    "services/api/otgd/raw_export.py": "4b277046482abaead9d997b150b4b3e50361eae298bd1096a1f03f4286c0bdfd",
+    "services/api/otgd/model_engine.py": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+    "services/api/otgd/migrate.py": "2d11514252952b5f4c808e9bbf37ca643b7411d46be7d177d8f248af3882f3e8",
+    "tools/model_evaluation.py": "80488d36507c7adb49bbf02448eec9f8ab173008f53e82f59c2d5d782194396c",
+    "infra/local/browser_fixture.py": "01e70e58cec7913d7bf3b442e39158b80514c7c645cad8095f06e3b528695da7",
+    "infra/local/participant_probe.py": "8243f9c8da985fe7c3f4dd79a83a42d89199f64e4895f81f2b46e632d9fdd5cb",
+    "infra/local/worker_interrupt_gate.py": "fd0ec8fccbe344df436775bdcaf484534eb236025c2c0e63e6ffdc7e730223b1",
+    "infra/local/worker_interrupt_probe.py": "17f19c89fb376416aec5379cf7181822082171863e5f202cba7b90cd972d98cc",
+    "deploy/provenance.py": "81d44c50e87a7fafc200012618920eb607a8bff0d9303a3193b7829a39f87d76",
+    "deploy/platform.py": "6d157097dac3cb938377fe56cb2cc9c66aa2a41fbf5e32ab1550ff0ce9157a6f",
+    "deploy/serverless.py": "0fa8f136b1204d2c3c3089a5791429f834936cd8372fbb4135da4bc818a99e3b",
+    "deploy/fargate.py": "6c7e6f6fa4a9cbf0a38cb38c465fcfeb961c1fb83cc41f17a93150d5ac3b4fb3",
+    "deploy/orchestrate.py": "4fadeb3bc31c38485e5790238e1be247f1b4e17285d2266fdcc725ae12783719",
+    ".github/workflows/deploy-serverless.yml": "3f9ead2335a61833294520a12bdea378720cdd6946867e580fd15c05db658e3f",
+    ".github/workflows/deploy-fargate.yml": "19a92c6831fd7a9f50fb8093f28401670b3040ae377d6385afc0eefe6d609f0b",
+    ".github/workflows/platform.yml": "a8aa1d5e4f239417b2b4c4d2432d7159185d7f1f379fd7817c7549ae26755df5",
+    ".github/workflows/merge-gate.yml": "9759a137309d85311e482b4c4672ffb01c14bca7678fd12194fe378d295ab20c",
+    "firmware/nano_esp32_signed_reader/nano_esp32_signed_reader.ino": "e8d71cc23f5b6b8e93b5470daf838c4458652159bd429e70898e6bcbed6e79c6",
+    "firmware/nano_esp32_signed_reader/ReaderLifecycle.h": "d12a4e60177eccee75c9dc0d6bbe00ce0c88ab889ac060a6e3ee36645b27214e",
+    "firmware/nano_esp32_signed_reader/ProtectedSigner.h": "367ed5b894c371c16fcd101a8cba05b1f130bacdd81e904c71de79a7a9b335ad"
+  },
+  "artifacts": {
+    "docs/factory/otgd-20261025-0555/inventory.json": "7e2ee28c07f424636fe5fd59262a01faafe65f8e78f9804840bdedc300728f4f",
+    "docs/factory/otgd-20261025-0555/decisions.md": "f47c904f0b3d2e700aed9c01c9530ee2232c2afa54b9bdfe7f18338dbb69d695",
+    "docs/factory/otgd-20261025-0555/impact-register.md": "60f1ede8fae6c77760ffad2324836f71ec5f4103c3225a354f6ffdc9be51212c",
+    "docs/factory/otgd-20261025-0555/run.md": "7098e79a809e6818b3d004984e0bb305bfbd3194fdddcdceae95a33da242b13d",
+    "docs/factory/otgd-20261025-0555/reports/implementation-plan.md": "801dcd4e8c7e1c348de596980600aa902f3e8ed35b5d9bbb7fac73842ac9eebb",
+    "docs/factory/otgd-20261025-0555/reports/verification-plan.md": "30b2dd09733b4fc6f9e6c1fdde2ef529653b4c80635fbe437759b4975663a3b8",
+    "docs/factory/otgd-20261025-0555/reports/mobile-implementation.md": "6852659dd811cc7e04ffc6ce91de15f23b7225f5c56af546b1fa123fa13b5d35",
+    "docs/factory/otgd-20261025-0555/reports/browser-implementation.md": "ac9e8da864d3a1ab34e8610f3006c7e35200f05c432c2ed43be41584cba4d99d",
+    "docs/factory/otgd-20261025-0555/reports/worker-implementation.md": "7ddc59435b0c0caac8db2fecc2eafd0f4eec691a3c997e010f24b8b57e7c342f",
+    "docs/factory/otgd-20261025-0555/reports/provenance-implementation.md": "8d78d5000cbb7d1f08848a3420759a5139e3abdb83eb22f87c01944bb1d4d9f2",
+    "docs/factory/otgd-20261025-0555/reports/evaluation-implementation.md": "4332b81097b9dd4cc25545c46f808554439cf7d61a2425caa77cffe52ee96f0c",
+    "docs/factory/otgd-20261025-0555/reports/runtime-image-proof.md": "6800a338a01a6d18bbfba89fd06581df419a994b4cb1563b02dcd5095fde00be",
+    "docs/factory/otgd-20261025-0555/reports/runtime-source-refresh.md": "ad7dd34d621fece870d4694ace8ad932313aff23f342ed47fa2d065fde7169c9",
+    "docs/factory/otgd-20261025-0555/reports/browser-live/summary.json": "7369ca7a107207b236f80edea79b10f0154816f20c1a8662a07624b032813e53",
+    "docs/factory/otgd-20261025-0555/reports/browser-live/README.md": "b113b76738b7bac4cce9a434969ad0189356db19db6041bb5004faac0d449502"
+  },
+  "stale_spec_records": [
+    {
+      "spec_id": "OTGD-001",
+      "path": "docs/factory/otgd-20261025-0555/specs/OTGD-001/council.md",
+      "declared": [
+        "f8c4cd46f9b3e2e7fb24b5940f3a876d2f0e16d94aa29d1bedec21e1516def7a"
+      ],
+      "actual": "c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7"
+    },
+    {
+      "spec_id": "OTGD-001",
+      "path": "docs/factory/otgd-20261025-0555/specs/OTGD-001/engineering-signoff.md",
+      "declared": [
+        "f8c4cd46f9b3e2e7fb24b5940f3a876d2f0e16d94aa29d1bedec21e1516def7a"
+      ],
+      "actual": "c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7"
+    },
+    {
+      "spec_id": "OTGD-001",
+      "path": "docs/factory/otgd-20261025-0555/specs/OTGD-001/product-signoff.md",
+      "declared": [
+        "f8c4cd46f9b3e2e7fb24b5940f3a876d2f0e16d94aa29d1bedec21e1516def7a"
+      ],
+      "actual": "c8f052979fd2a15da2d0bc09c8533bde246cdc559d798696af728378cf5850f7"
+    },
+    {
+      "spec_id": "OTGD-047",
+      "path": "docs/factory/otgd-20261025-0555/specs/OTGD-047/council.md",
+      "declared": [
+        "8dd256054b4cc55a8fe8141b5589fa39cf9a655cf1af16cb28cde8ed0c4622ea"
+      ],
+      "actual": "b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4"
+    },
+    {
+      "spec_id": "OTGD-047",
+      "path": "docs/factory/otgd-20261025-0555/specs/OTGD-047/engineering-signoff.md",
+      "declared": [
+        "8dd256054b4cc55a8fe8141b5589fa39cf9a655cf1af16cb28cde8ed0c4622ea"
+      ],
+      "actual": "b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4"
+    },
+    {
+      "spec_id": "OTGD-047",
+      "path": "docs/factory/otgd-20261025-0555/specs/OTGD-047/product-signoff.md",
+      "declared": [
+        "8dd256054b4cc55a8fe8141b5589fa39cf9a655cf1af16cb28cde8ed0c4622ea"
+      ],
+      "actual": "b5523be8de175f257dda911b52b94732ae4e5e838b49cd9c38bea7802d0670c4"
+    }
+  ],
+  "review_evidence_snapshot_sha256": "fdef52d751db294cd3e47c44dc8bb3396a00c3c247596fce53d7acb556365724"
+}
