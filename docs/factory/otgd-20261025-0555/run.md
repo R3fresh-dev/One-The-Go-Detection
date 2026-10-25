@@ -13,8 +13,8 @@ Baseline/candidate: 0844868aa543af4ab75ac5065ad48cf807b86bb3; Factory records on
 correction_round: 0
 max_correction_rounds: 2
 recovery_attempts: 0
-checkpoint_seq: 1
-last_observed_confirmed_remote_commit: none for new branch (baseline main independently verified).
+checkpoint_seq: 2
+last_observed_confirmed_remote_commit: 33901a1ff785cd28e351d935be510d184fb7f8e2 (checkpoint 1 verified via git ls-remote).
 
 ## Scope and authority
 
@@ -23,11 +23,11 @@ Complete the existing approved Android/iOS journeys, native modules, API/workers
 ## Plan and tasks
 
 - T01 takeover and ownership, attempt 1: DONE; evidence/takeover-audit.json and ownership.md.
-- T02 product audit, attempt 1: PENDING; product-owner owns PRD and active OpenSpec edits, report.
+- T02 product audit, attempt 1: DONE; report read-back and document checks passed; PRD ownership released; product-owner owns PRD and active OpenSpec edits, report.
 - T03 engineering audit, attempt 1: PENDING on T02; engineering-lead owns HLD/LLD and applicable specs.
 - T04 reconciliation, attempt 1: PENDING on T03; spec writer reconciles all documents/specs/contracts and per-criterion verification map.
 - T05 implementation, attempt 1: PENDING on T04; bounded builders own affected code and meaningful tests.
-- T06 verification planning/execution, attempt 1: PENDING; verification specialist owns per-spec test plans/results and command evidence. Setup may proceed independently, actual final gates after source freeze.
+- T06 verification planning/execution, attempt 1: PLANNING DONE, runtime execution PENDING after reconciliation/freeze; verification specialist owns per-spec test plans/results and command evidence. Setup may proceed independently, actual final gates after source freeze.
 - T07 six independent reviews/signoffs: PENDING on candidate and evidence; security, UX, UI design, code, product signoff, engineering signoff.
 - T08 consolidated correction rounds: PENDING only if required; persist count before repairs, all affected confirmations required.
 - T09 fresh independent approval: PENDING on all required reviews/tests passing per spec.
@@ -41,3 +41,16 @@ PM exclusively owns ACTIVE.md, run/status/resume/decisions/impact/events, invent
 ## Outcome
 
 Specification readiness unassessed; implementation unverified for this run; release/hardware/scientific qualification not granted. Current setup gaps: missing API/npm dependencies, native and firmware toolchains, no local runtime yet.
+
+## Active roster
+
+- /root/product_audit: product-owner, OpenAI gpt-6.1-sol/high (explicit spawn), PRD/OpenSpec/report owner; RUNNING; D-001 v1/D-002 v1 acknowledged.
+- /root/verification: verification specialist, OpenAI gpt-6.1-sol/high (explicit spawn), dossier test plans/results/report owner; RUNNING planning; D-001 v1/D-002 v1 acknowledged.
+
+- /root/firmware_validation: firmware verification, OpenAI gpt-6.1-sol/high explicit spawn; owns firmware report and ignored tool/build outputs, no source edits. RUNNING baseline checks; D-001–004 ACKs pending.
+
+## Checkpoint 2
+
+Product author /root/product_audit released; PRD-001–028 preserved and PRD-029–042 trace existing approved scope. All47 dispositions recorded. Verification planning /root/verification released: 411 requirements/782 cases, eight software verification handoffs, 24 external-only requirements and six manual reviews. Runtime dossier results remain NOT_RUN. Firmware specialist /root/firmware_validation released: portable tests, Nano simulator/signed-reader and protected ESP-IDF actual builds PASS at unchanged source hashes; not hardware/scientific qualification.
+
+ENV-SPACE-001: root32GiB VFS Docker host exhausted while creating five app containers. Read-only diagnostics and action-time approved cache cleanup/dependency relocation/removal of five never-started app containers restored ~2GB. PostgreSQL and LocalStack plus both volumes/settings preserved and healthy. Subsequent parent instruction prohibits further unapproved cleanup/migration/restart. No disk-resize tool exposed. Investigate smaller reproducible image execution without weakening gates; full local integration currently blocked. This is environment setup, not a crash; recovery count remains0 and correction_round remains0.
