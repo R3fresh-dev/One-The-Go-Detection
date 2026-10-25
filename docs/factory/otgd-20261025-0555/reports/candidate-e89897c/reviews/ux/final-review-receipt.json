@@ -1,0 +1,20 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "decisions": {
+    "PASS": 3,
+    "BLOCKED": 44,
+    "CHANGES_REQUIRED": 0
+  },
+  "files": {
+    "per-spec-decisions.json": "81f1522504e21e1f94f102dd3e1c053d25ed66631f00142cab3fcb2bf9cfd657",
+    "evidence-manifest.json": "4523344c4ae368e03c17c4aa1640eb1e89f0e615da93de8c28bb5ad35a9a47b6",
+    "report.md": "e598cf79a5797cb704cc9b9933fa10d5f90ad73bc4dc4735365a47693759627a",
+    "finding-closure.json": "51785edbc4cd484c69f93ec00e55137558ab087b826bf85b25f7a4154fdd70a4",
+    "current-evidence-checks.json": "b9f163b444465ba7fa16b8afb36c6452021c5f80ab54ffff300a993bf27dfff5",
+    "source-manifest.json": "30cab5534e692180697babb6a0a3f03aaedb69771aa4d429f6cf28f4e31d86f7"
+  },
+  "verdict": "BLOCKED",
+  "scope": "Independent IMPLEMENTATION UX decisions across47 canonical specs; not full application/council/scientific/release approval.",
+  "source_hashes_rechecked": true,
+  "provisional_versions_preserved": true
+}

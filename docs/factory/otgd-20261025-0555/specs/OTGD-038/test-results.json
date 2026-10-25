@@ -1,0 +1,65 @@
+{
+  "spec_id": "OTGD-038",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-study-enrollment/spec.md",
+  "canonical_sha256": "e0c8f1f81be37cbe775f274e6c2aa81d3f3eacc64da92f01bcdd1c31adfb9ee8",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-038-AND-STUDY-001-01",
+    "OTGD-038-AND-STUDY-001-02",
+    "OTGD-038-AND-STUDY-002-01",
+    "OTGD-038-AND-STUDY-002-02",
+    "OTGD-038-AND-STUDY-003-01",
+    "OTGD-038-AND-STUDY-003-02",
+    "OTGD-038-AND-STUDY-004-01",
+    "OTGD-038-AND-STUDY-004-02",
+    "OTGD-038-AND-STUDY-005-01",
+    "OTGD-038-AND-STUDY-005-02",
+    "OTGD-038-AND-STUDY-006-01",
+    "OTGD-038-AND-STUDY-006-02"
+  ],
+  "requirements": [
+    "AND-STUDY-001",
+    "AND-STUDY-002",
+    "AND-STUDY-003",
+    "AND-STUDY-004",
+    "AND-STUDY-005",
+    "AND-STUDY-006"
+  ],
+  "statuses": {
+    "PARTIAL": 10,
+    "PASS": 2
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-038",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd"
+  ],
+  "current_source_assertion_refs": [
+    "services/api/tests/test_consent_versions.py::test_updated_document_has_new_immutable_receipt_and_replay_keeps_current_pointer",
+    "apps/mobile/tests/controller.test.ts::explicit study consent is durable before upload and a lost receipt retries the original timestamp and request identity",
+    "services/api/tests/test_consent_versions.py::test_queued_confirmation_keeps_actual_past_time_if_approved_document_remains_current",
+    "services/api/tests/test_participant_postgres.py::test_receipt_update_is_denied_in_postgres_without_blocking_privacy_deletion",
+    "apps/mobile/tests/study-consent.test.ts::only an active exact affirmative receipt suppresses new study consent",
+    "services/api/tests/test_api.py::test_unprovisioned_device_and_human_capture_unavailable",
+    "services/api/tests/test_operator_governance.py::test_capabilities_change_with_consent_revision_notice_expiry_and_revoke",
+    "apps/mobile/e2e/raw-recordings.spec.ts::eye and ECG descriptions follow the approved observation and actual provenance without claiming measured light onset",
+    "services/api/tests/test_operator_governance.py::test_real_session_start_requires_current_approved_study_and_exact_protocol",
+    "apps/mobile/tests/acquisition.test.ts::fresh absent-breath-adapter capability overrides stale cached availability before any hardware invocation",
+    "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+    "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+    "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware",
+    "apps/mobile/tests/controller.test.ts::maintenance pauses queued consent and withdrawal prevents its later automatic transmission",
+    "services/api/tests/test_consent_versions.py::test_withdrawal_does_not_rewrite_original_acceptance_receipt",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/offline_withdrawal_probe.fragment.ts::supplemental offline active reader capture withdrawal retains exact privacy intent and later receipt without restoring uploads",
+    "services/api/tests/test_report_revisions.py::test_completion_reauthorizes_after_external_storage_and_cannot_resurrect_cleanup",
+    "services/api/tests/test_report_revisions.py::test_report_completion_and_generic_capture_purpose_are_separate",
+    "apps/mobile/e2e/raw-recordings.spec.ts::actual service component labels conditional approved channels and model support, while the fictional build refuses both"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

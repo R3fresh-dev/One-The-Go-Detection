@@ -1,0 +1,238 @@
+async uploadRaw(
+    localId: string,
+    queue: QueueOperation,
+    guard: () => void,
+    save: (
+      change: (state: WorkspaceState, queue: QueueOperation) => void,
+    ) => Promise<void>,
+  ): Promise<void> {
+    const current = () => {
+      guard();
+      const raw = this.read()?.rawArtifacts?.find(
+        (raw) => raw.local_id === localId,
+      );
+      if (
+        !raw ||
+        !["queued", "uploaded"].includes(raw.state) ||
+        raw.session_id !== queue.check_id ||
+        !raw.permission.upload ||
+        this.read()?.rawRecordingFences[raw.study_id]?.includes(
+          raw.artifact_kind,
+        ) ||
+        Date.parse(raw.retention_due_at) <= Date.now()
+      )
+        throw new IntegrityError(
+          "RAW_UPLOAD_STOPPED",
+          "The selected raw recording is expired, revoked or belongs to a stopped upload.",
+        );
+      return raw;
+    };
+    let raw = current();
+    if (raw.state === "uploaded") return;
+    const store = this.rawStore();
+    if (!store?.readRaw)
+      throw new IntegrityError(
+        "ENCRYPTED_RAW_STORAGE_REQUIRED",
+        "Raw uploads require unlocked encrypted native storage.",
+      );
+    const bytes = await store.readRaw(localId);
+    // Every post-read path, including an account/fence change, must wipe RAM.
+    try {
+      raw = current();
+      if (
+        !bytes ||
+        bytes.length !== raw.size_bytes ||
+        digestBytes(bytes) !== raw.sha256
+      )
+        throw new IntegrityError(
+          "RAW_RECORDING_DIGEST",
+          "The encrypted local recording is missing or failed its integrity check.",
+        );
+      const write = { generation: queue.generation, method: "POST" };
+      const renewal = () =>
+        requireObject(
+          requireObject(
+            this.read()!.queue.find((q) => q.id === queue.id)!.body
+              .raw_tickets ?? {},
+          )[localId] ?? {},
+        );
+      const acknowledge = async (ticket: unknown) => {
+        const t = requireObject(ticket);
+        if (
+          t.artifact_id !== current().server_artifact_id ||
+          typeof t.expires_at !== "string" ||
+          !Number.isFinite(Date.parse(t.expires_at))
+        )
+          throw new IntegrityError(
+            "RAW_TICKET_INVALID",
+            "The ticket receipt changed its artifact identity or expiry.",
+          );
+        await save((_state, q) => {
+          current();
+          const tickets = requireObject(q.body.raw_tickets ?? {}),
+            prior = requireObject(tickets[localId] ?? {});
+          tickets[localId] = {
+            ...prior,
+            epoch: prior.epoch ?? 0,
+            ticket: clone(t),
+          };
+          q.body.raw_tickets = tickets as JsonObject;
+        });
+        return t;
+      };
+      let ticket: unknown;
+      if (raw.server_artifact_id) {
+        const response = await this.api.request<JsonObject>(
+          `/v1/artifact-uploads/${raw.server_artifact_id}`,
+        );
+        current();
+        if (
+          response.value.artifact_id !== raw.server_artifact_id ||
+          response.value.sha256 !== raw.sha256
+        )
+          throw new IntegrityError(
+            "RAW_ACK_MISMATCH",
+            "The service artifact differs from this retained recording.",
+          );
+        if (response.value.state === "verified") {
+          if (
+            typeof response.value.version_id !== "string" ||
+            !response.value.version_id ||
+            response.value.version_id === "null"
+          )
+            throw new IntegrityError(
+              "RAW_VERSION_REQUIRED",
+              "A raw upload requires a verified immutable object version.",
+            );
+          await save((state) => {
+            current();
+            state.rawArtifacts!.find(
+              (file) => file.local_id === localId,
+            )!.state = "uploaded";
+          });
+          return;
+        }
+        if (response.value.state !== "quarantine")
+          throw new IntegrityError(
+            "RAW_UPLOAD_STOPPED",
+            "This artifact is no longer eligible for upload.",
+          );
+        let pending = renewal();
+        const old =
+          pending.ticket == null ? null : requireObject(pending.ticket);
+        if (old && Date.parse(String(old.expires_at)) > Date.now())
+          ticket = old;
+        else {
+          // Advance only after the previous ticket was acknowledged and expired.
+          // A lost renewal response keeps its original key and exact body.
+          if (old) {
+            const epoch = Number(pending.epoch ?? 0) + 1;
+            if (!Number.isSafeInteger(epoch) || epoch > 8192)
+              throw new IntegrityError(
+                "RAW_RENEWAL_LIMIT",
+                "This artifact exceeded its bounded ticket renewal history.",
+              );
+            const h = digest({
+              root: queue.keys[`raw:renew:${localId}`],
+              epoch,
+            });
+            const key = `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-8${h.slice(17, 20)}-${h.slice(20, 32)}`;
+            await save((_state, q) => {
+              current();
+              const tickets = requireObject(q.body.raw_tickets ?? {});
+              tickets[localId] = { epoch, key, ticket: null };
+              q.body.raw_tickets = tickets as JsonObject;
+            });
+            pending = renewal();
+          }
+          const key = String(pending.key ?? queue.keys[`raw:renew:${localId}`]);
+          ticket = (
+            await this.api.request<unknown>(
+              `/v1/artifact-uploads/${raw.server_artifact_id}/ticket`,
+              { ...write, body: {}, key },
+            )
+          ).value;
+          current();
+          ticket = await acknowledge(ticket);
+        }
+      } else {
+        ticket = (
+          await this.api.request<unknown>("/v1/artifact-uploads", {
+            ...write,
+            key: queue.keys[`raw:create:${localId}`],
+            body: {
+              study_id: raw.study_id,
+              session_id: raw.session_id,
+              consent_record_id: raw.consent_record_id,
+              retention_policy_id: raw.permission.policy_id,
+              artifact_kind: raw.artifact_kind,
+              sha256: raw.sha256,
+              size_bytes: raw.size_bytes,
+              media_type: raw.media_type,
+              raw_consent_record_id: raw.permission.receipt_id,
+              attempt_id: raw.attempt_id,
+              capture_started_at: raw.capture_started_at,
+            },
+          })
+        ).value;
+        current();
+        const artifactId = String(requireObject(ticket).artifact_id);
+        if (
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+            artifactId,
+          )
+        )
+          throw new IntegrityError(
+            "RAW_TICKET_INVALID",
+            "The upload ticket has no valid artifact identity.",
+          );
+        await save((state) => {
+          current();
+          state.rawArtifacts!.find(
+            (file) => file.local_id === localId,
+          )!.server_artifact_id = artifactId;
+        });
+        raw = current();
+        ticket = await acknowledge(ticket);
+      }
+      if (requireObject(ticket).artifact_id !== raw.server_artifact_id)
+        throw new IntegrityError(
+          "RAW_ACK_MISMATCH",
+          "The upload ticket changed its artifact identity.",
+        );
+      await this.api.putArtifact(ticket, bytes, raw.sha256, raw.media_type);
+      raw = current();
+      const receipt = await this.api.request<JsonObject>(
+        `/v1/artifact-uploads/${raw.server_artifact_id}/complete`,
+        {
+          ...write,
+          key: queue.keys[`raw:complete:${localId}`],
+          body: {
+            sha256: raw.sha256,
+            size_bytes: raw.size_bytes,
+            media_type: raw.media_type,
+          },
+        },
+      );
+      current();
+      if (
+        receipt.value.artifact_id !== raw.server_artifact_id ||
+        receipt.value.state !== "verified" ||
+        receipt.value.sha256 !== raw.sha256 ||
+        typeof receipt.value.version_id !== "string" ||
+        !receipt.value.version_id ||
+        receipt.value.version_id === "null"
+      )
+        throw new IntegrityError(
+          "RAW_ACK_MISMATCH",
+          "The service has not verified this exact raw recording and immutable version.",
+        );
+      await save((state) => {
+        current();
+        state.rawArtifacts!.find((file) => file.local_id === localId)!.state =
+          "uploaded";
+      });
+    } finally {
+      bytes?.fill(0);
+    }
+  }

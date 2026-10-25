@@ -125,3 +125,44 @@ Record each case PASS/FAIL/BLOCKED/NOT_RUN in `test-results.md`, with exit/resul
 ## Reactivated verification audit
 
 Observed checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active writers’ working-tree edits, 2026-10-25T06:53:56.344429+00:00. This is not source freeze. Original planning HEAD and prior no-execution record above remain historical. Canonical hash above is rebound to the reconciled current source; OTGD-001 and OTGD-047 changed. Existing411 requirements /782 case IDs are retained. No Docker/build/probe or suite execution performed by this verifier.
+
+
+## Final corrected source evidence — e89897cc852a
+
+# OTGD-035 current verification plan proposal
+
+Candidate `e89897cc852a111b131eaf5c2caaf163ef201a48`; canonical `openspec/changes/production-mobile-platform/specs/android-saliva-measurement/spec.md`; SHA256 `6edc6d7603b66733858b1f7fe42dc93d22712dd8cadbac29121a65f2ffd23610`.
+
+Proposed repository destination: `docs/factory/otgd-20261025-0555/specs/OTGD-035/test-plan.md`. External review artifact only; PM controls import.
+
+All 16 stable cases / 7 requirements are preserved. The exact GIVEN/WHEN/THEN wording and negative/boundary/recovery clauses are in `test-results.md` and the central `case-evidence.json`; no renamed IDs or weakened criteria.
+
+Current execution commands (already executed by PM/current CI where their raw observations are bound):
+
+- `python scripts/ci_gate.py unit-coverage`
+- `python scripts/ci_gate.py live-dependencies`
+- `python scripts/ci_gate.py components`
+- `python scripts/ci_gate.py atdd`
+
+Shared full local command: `python scripts/run_all_gates.py`. Its independent local final receipt confirms all7 gates passed. No verifier tests or service mutations were run. Current CI exact-tree run 40185247204 passed all14 mandatory jobs. Exact workflow/source bindings and named artifacts are retained in `../../final-ci-admission.json` and `../../source-assertions.json`.
+
+Each remaining clause requires the minimal evidence/action recorded beside that case. Review meaningful existing shared assertions/helpers/control flow before requesting any extra execution. After correction2/2, unresolved evidence does not authorize a third source correction or a broader test project. Native/hardware/study/deployment prerequisites remain separately typed.
+
+| Stable case | Planned assertion | Current disposition |
+|---|---|---|
+| OTGD-035-AND-SAL-001-01 | Simulated sample workflow — - **GIVEN** explicit P0 mode - **WHEN** the user selects Use simulated sample - **THEN** the app SHALL create a labeled fictional sample and fictional analyte records, retain simulated source on all channels, and show the same validation/review UI used by the production adapters. | PARTIAL |
+| OTGD-035-AND-SAL-001-02 | Reader has no assay implementation — - **GIVEN** a connected Nano that only supplies telemetry - **WHEN** the user opens Saliva - **THEN** Read cartridge SHALL be unavailable with Assay not available, and the app SHALL permit only authorized sample-record or demonstration actions without implying chemical detection. | PARTIAL |
+| OTGD-035-AND-SAL-002-01 | Buffered collector — - **GIVEN** a qualified collection method with recorded saliva and buffer quantities - **WHEN** collection is accepted - **THEN** the sample record SHALL retain those quantities, the defined dilution convention, method version, lot, and collection time for later comparison with each report's concentration basis. | PARTIAL |
+| OTGD-035-AND-SAL-002-02 | Invalid sample identity from device — - **GIVEN** a session expecting sample A - **WHEN** a reader result identifies sample B or a different session - **THEN** the import SHALL fail with identity mismatch and SHALL not silently relabel the reading or attach it to sample A. | PARTIAL |
+| OTGD-035-AND-SAL-002-03 | Companion evidence cannot be omitted — - **GIVEN** a saliva sample with buffer, lot, adequacy, and report lineage metadata beyond the v0.1 projection - **WHEN** the check is saved and exported or explicitly uploaded - **THEN** the full typed companion attempt and its digest SHALL accompany the selected projection; unknown v0.1 fields or an incomplete manifest SHALL fail validation. | PARTIAL |
+| OTGD-035-AND-SAL-003-01 | Below quantification without detection assertion — - **GIVEN** a laboratory report stating BLQ at an LOQ of 0.1 ng/mL - **WHEN** the report is imported and viewed - **THEN** the canonical value SHALL remain null, the display SHALL say Below quantification with the limit and original qualifier, and SHALL not say Detected or 0 ng/mL. | PARTIAL |
+| OTGD-035-AND-SAL-003-02 | Upper limit is not an exact result — - **GIVEN** an above-range report with a validated upper bound - **WHEN** the user reviews the channel - **THEN** the app SHALL display Above range and the bound, preserve null quantitative value, and SHALL not clip the reading to that bound for model or chart use. | PARTIAL |
+| OTGD-035-AND-SAL-004-01 | Laboratory already corrected dilution — - **GIVEN** a result of 75 pg/mL reported for neat oral fluid with laboratory_corrected status - **WHEN** the app imports it from a buffered sample - **THEN** it SHALL store 0.075 ng/mL, retain the original 75 pg/mL and correction status, and SHALL not apply the collection dilution factor again. | PARTIAL |
+| OTGD-035-AND-SAL-004-02 | Unspecified assay basis — - **GIVEN** a report that does not specify free or hydrolyzed analyte - **WHEN** it is retained for review - **THEN** assay_basis SHALL remain unspecified, the app SHALL expose the unresolved basis, and no compatible-model claim SHALL be made from separate allowed-method and allowed-basis lists alone. | PARTIAL |
+| OTGD-035-AND-SAL-005-01 | Quantified value outside interval — - **GIVEN** a reported value below its method's LOQ but labeled quantified - **WHEN** validation runs - **THEN** the app and server SHALL reject the inconsistent quantitative record with a field-specific reason and SHALL not coerce it to a valid reading. | NOT_RUN |
+| OTGD-035-AND-SAL-005-02 | Forged validated source — - **GIVEN** a synthetic device or a manually edited local payload - **WHEN** it claims validated_sensor with an unknown calibration ID - **THEN** the claim SHALL not pass provenance validation, and no qualified concentration or research estimate SHALL result. | PARTIAL |
+| OTGD-035-AND-SAL-006-01 | Assay disconnect — - **GIVEN** a cartridge read in progress - **WHEN** the reader disconnects before a verified completion payload - **THEN** the app SHALL show Read interrupted, preserve the identified sample and failed analytical attempt, and offer only method-permitted recovery without treating progress as a concentration. | BLOCKED |
+| OTGD-035-AND-SAL-006-02 | Corrected laboratory report — - **GIVEN** a previously finalized analyte measurement - **WHEN** an authorized corrected report is accepted - **THEN** the system SHALL preserve the original immutable record, create a linked correction, and make any reanalysis a separately identified result rather than changing past evidence silently. | PASS |
+| OTGD-035-AND-SAL-006-03 | Replacing a finalized sample is a new check — - **GIVEN** a finalized invalid check with an inadequate specimen and earlier physical task evidence - **WHEN** the user chooses to collect another sample - **THEN** Start replacement check SHALL allocate a new session/target and require new physical acquisitions without overwriting the original or reusing its task. | PARTIAL |
+| OTGD-035-AND-SAL-007-01 | Metabolite panel partly unavailable — - **GIVEN** a quantified THC result and two unrun metabolite channels - **WHEN** the panel is displayed - **THEN** it SHALL show the THC value with provenance and Not measured for each other channel; absence of 11-OH-THC measurement SHALL not be described as evidence of sobriety. | PARTIAL |
+| OTGD-035-AND-SAL-007-02 | Same report on Android and iOS — - **GIVEN** the same permitted laboratory report and sample metadata - **WHEN** either platform normalizes and renders it - **THEN** both SHALL preserve identical numeric meaning, qualifiers, original-report evidence, basis, and lineage, subject only to locale-specific display formatting. | BLOCKED |

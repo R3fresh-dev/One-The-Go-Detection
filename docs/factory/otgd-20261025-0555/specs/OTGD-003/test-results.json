@@ -1,0 +1,41 @@
+{
+  "spec_id": "OTGD-003",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/android-guided-check/spec.md",
+  "canonical_sha256": "c171a3fd1d7705d710dd172ebe5d59046cc0023a2ddfedaf162092008703e648",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-003-AND-CHECK-007-01",
+    "OTGD-003-AND-CHECK-007-02"
+  ],
+  "requirements": [
+    "AND-CHECK-007"
+  ],
+  "statuses": {
+    "PARTIAL": 1,
+    "PASS": 1
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-003",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd"
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+    "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+    "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+    "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+    "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+    "apps/mobile/tests/result-ui.test.ts::actual Home changes research access with current identity capabilities and immediately with revocation",
+    "apps/mobile/tests/result-ui.test.ts::actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy",
+    "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+    "apps/mobile/tests/result-ui.test.ts::actual welcome describes measurement defaults and separate research authority without enrollment",
+    "apps/mobile/tests/result-presentation.test.ts::current research scope requires live matching authenticated account and generation capabilities",
+    "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

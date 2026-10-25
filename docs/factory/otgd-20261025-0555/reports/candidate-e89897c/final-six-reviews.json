@@ -1,0 +1,1278 @@
+{
+  "recorded_at": "2026-10-25T11:39:55.231665+00:00",
+  "source_candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "source_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "verifier_release_sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d",
+  "actual_reports": 6,
+  "actual_per_spec_decisions": 282,
+  "unanimous_scoped_passes": [
+    "OTGD-002",
+    "OTGD-004",
+    "OTGD-007"
+  ],
+  "blocked_specs": 44,
+  "full_application_approval": false,
+  "independent_council_status": "PENDING",
+  "reviews": [
+    {
+      "role": "security",
+      "reviewer": "/root/replacement_security",
+      "provider": "OpenAI",
+      "configured_model": "gpt-6.1-sol",
+      "reasoning": "high",
+      "report": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/security/report.md",
+      "report_sha256": "b0a639460cec207eba7a7b64d3f92be274b1e2d8e4a7afb9be3e9c16d8dd00e2",
+      "decisions": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/security/per-spec-decisions.json",
+      "decisions_sha256": "5d31f21b6ab80fb5924a45fd1c9529bc8ccaddb30a4b67296cf9e682c9289a91",
+      "counts": {
+        "BLOCKED": 44,
+        "PASS": 3
+      },
+      "scope_passes": [
+        "OTGD-002",
+        "OTGD-004",
+        "OTGD-007"
+      ],
+      "entries": [
+        {
+          "spec_id": "OTGD-001",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-002",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-003",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-004",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-005",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-006",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-007",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-008",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-009",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-010",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-011",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-012",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-013",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-014",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-015",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-016",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-017",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-018",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-019",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-020",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-021",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-022",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-023",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-024",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-025",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-026",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-027",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-028",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-029",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-030",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-031",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-032",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-033",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-034",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-035",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-036",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-037",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-038",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-039",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-040",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-041",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-042",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-043",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-044",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-045",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-046",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-047",
+          "decision": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "role": "code",
+      "reviewer": "/root/replacement_code",
+      "provider": "OpenAI",
+      "configured_model": "gpt-6.1-sol",
+      "reasoning": "high",
+      "report": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/code/report.md",
+      "report_sha256": "67237a2968e6bca498ffe2ed931624becaf22badc903dd6fac99c39f634c7af0",
+      "decisions": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/code/per-spec-decisions.json",
+      "decisions_sha256": "d4fbf4ce67dbebe9734c7dd370c33c2dba11da87620f4495a885bdab2ec18298",
+      "counts": {
+        "BLOCKED": 44,
+        "PASS": 3
+      },
+      "scope_passes": [
+        "OTGD-002",
+        "OTGD-004",
+        "OTGD-007"
+      ],
+      "entries": [
+        {
+          "spec_id": "OTGD-001",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-002",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-003",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-004",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-005",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-006",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-007",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-008",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-009",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-010",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-011",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-012",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-013",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-014",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-015",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-016",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-017",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-018",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-019",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-020",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-021",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-022",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-023",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-024",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-025",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-026",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-027",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-028",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-029",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-030",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-031",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-032",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-033",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-034",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-035",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-036",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-037",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-038",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-039",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-040",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-041",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-042",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-043",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-044",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-045",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-046",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-047",
+          "decision": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "role": "ux",
+      "reviewer": "/root/replacement_ux",
+      "provider": "OpenAI",
+      "configured_model": "gpt-6.1-sol",
+      "reasoning": "high",
+      "report": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/ux/report.md",
+      "report_sha256": "e598cf79a5797cb704cc9b9933fa10d5f90ad73bc4dc4735365a47693759627a",
+      "decisions": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/ux/per-spec-decisions.json",
+      "decisions_sha256": "81f1522504e21e1f94f102dd3e1c053d25ed66631f00142cab3fcb2bf9cfd657",
+      "counts": {
+        "BLOCKED": 44,
+        "PASS": 3
+      },
+      "scope_passes": [
+        "OTGD-002",
+        "OTGD-004",
+        "OTGD-007"
+      ],
+      "entries": [
+        {
+          "spec_id": "OTGD-001",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-002",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-003",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-004",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-005",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-006",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-007",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-008",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-009",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-010",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-011",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-012",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-013",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-014",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-015",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-016",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-017",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-018",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-019",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-020",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-021",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-022",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-023",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-024",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-025",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-026",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-027",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-028",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-029",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-030",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-031",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-032",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-033",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-034",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-035",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-036",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-037",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-038",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-039",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-040",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-041",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-042",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-043",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-044",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-045",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-046",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-047",
+          "decision": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "role": "ui",
+      "reviewer": "/root/replacement_ui",
+      "provider": "OpenAI",
+      "configured_model": "gpt-6.1-sol",
+      "reasoning": "high",
+      "report": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/ui/report.md",
+      "report_sha256": "e8730fc7434b3857255d0438d8f2f165fc2f17752c3327752b58b30d2bfaf9a7",
+      "decisions": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/ui/per-spec-decisions.json",
+      "decisions_sha256": "3ff12de3b1b2746dfaeccc3df32e59275e28a8871205ca6c1b507b6fe319d0e4",
+      "counts": {
+        "BLOCKED": 44,
+        "PASS": 3
+      },
+      "scope_passes": [
+        "OTGD-002",
+        "OTGD-004",
+        "OTGD-007"
+      ],
+      "entries": [
+        {
+          "spec_id": "OTGD-001",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-002",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-003",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-004",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-005",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-006",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-007",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-008",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-009",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-010",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-011",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-012",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-013",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-014",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-015",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-016",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-017",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-018",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-019",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-020",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-021",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-022",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-023",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-024",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-025",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-026",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-027",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-028",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-029",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-030",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-031",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-032",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-033",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-034",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-035",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-036",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-037",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-038",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-039",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-040",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-041",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-042",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-043",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-044",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-045",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-046",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-047",
+          "decision": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "role": "product",
+      "reviewer": "/root/replacement_product",
+      "provider": "OpenAI",
+      "configured_model": "gpt-6.1-sol",
+      "reasoning": "high",
+      "report": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/product/report.md",
+      "report_sha256": "51e33da06eb3fffd7ac1ff3467382866af77af315798434eef70273810cfe7cc",
+      "decisions": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/product/per-spec-decisions.json",
+      "decisions_sha256": "47d09bdbde122e170a786dcace4c12fd25d3f657fb10b9b39e73f193ec214fe1",
+      "counts": {
+        "BLOCKED": 44,
+        "PASS": 3
+      },
+      "scope_passes": [
+        "OTGD-002",
+        "OTGD-004",
+        "OTGD-007"
+      ],
+      "entries": [
+        {
+          "spec_id": "OTGD-001",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-002",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-003",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-004",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-005",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-006",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-007",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-008",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-009",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-010",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-011",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-012",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-013",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-014",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-015",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-016",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-017",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-018",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-019",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-020",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-021",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-022",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-023",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-024",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-025",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-026",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-027",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-028",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-029",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-030",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-031",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-032",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-033",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-034",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-035",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-036",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-037",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-038",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-039",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-040",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-041",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-042",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-043",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-044",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-045",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-046",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-047",
+          "decision": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "role": "engineering",
+      "reviewer": "/root/replacement_engineering",
+      "provider": "OpenAI",
+      "configured_model": "gpt-6.1-sol",
+      "reasoning": "high",
+      "report": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/engineering/report.md",
+      "report_sha256": "ae49af4ff368073835022ae31e579336d9e1154fb4ba96ccdb5c3ccc1d9c4fec",
+      "decisions": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/engineering/per-spec-decisions.json",
+      "decisions_sha256": "af9b06414253674020670b5eaefe9a75c1520dedf5fcc88f41d8ff46d2f53ed5",
+      "counts": {
+        "BLOCKED": 44,
+        "PASS": 3
+      },
+      "scope_passes": [
+        "OTGD-002",
+        "OTGD-004",
+        "OTGD-007"
+      ],
+      "entries": [
+        {
+          "spec_id": "OTGD-001",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-002",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-003",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-004",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-005",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-006",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-007",
+          "decision": "PASS"
+        },
+        {
+          "spec_id": "OTGD-008",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-009",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-010",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-011",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-012",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-013",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-014",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-015",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-016",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-017",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-018",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-019",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-020",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-021",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-022",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-023",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-024",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-025",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-026",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-027",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-028",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-029",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-030",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-031",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-032",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-033",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-034",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-035",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-036",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-037",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-038",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-039",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-040",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-041",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-042",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-043",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-044",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-045",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-046",
+          "decision": "BLOCKED"
+        },
+        {
+          "spec_id": "OTGD-047",
+          "decision": "BLOCKED"
+        }
+      ]
+    }
+  ]
+}

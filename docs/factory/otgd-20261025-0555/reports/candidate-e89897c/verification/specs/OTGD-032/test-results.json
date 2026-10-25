@@ -1,0 +1,62 @@
+{
+  "spec_id": "OTGD-032",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-profile/spec.md",
+  "canonical_sha256": "b90bbf657f3c8e8a24eab7ab93f04c680018bbe2179131c1b8aa70c6d3d67a43",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-032-AND-PRO-001-01",
+    "OTGD-032-AND-PRO-001-02",
+    "OTGD-032-AND-PRO-002-01",
+    "OTGD-032-AND-PRO-002-02",
+    "OTGD-032-AND-PRO-003-01",
+    "OTGD-032-AND-PRO-003-02",
+    "OTGD-032-AND-PRO-003-03",
+    "OTGD-032-AND-PRO-004-01",
+    "OTGD-032-AND-PRO-004-02",
+    "OTGD-032-AND-PRO-004-03",
+    "OTGD-032-AND-PRO-005-01",
+    "OTGD-032-AND-PRO-005-02",
+    "OTGD-032-AND-PRO-006-01",
+    "OTGD-032-AND-PRO-006-02",
+    "OTGD-032-AND-PRO-007-01",
+    "OTGD-032-AND-PRO-007-02"
+  ],
+  "requirements": [
+    "AND-PRO-001",
+    "AND-PRO-002",
+    "AND-PRO-003",
+    "AND-PRO-004",
+    "AND-PRO-005",
+    "AND-PRO-006",
+    "AND-PRO-007"
+  ],
+  "statuses": {
+    "PARTIAL": 14,
+    "PASS": 2
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-032",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd"
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/tests/profile-form.test.ts::optional blank demographics stay null and unknown remains distinct from declined",
+    "apps/mobile/tests/profile-form.test.ts::whole feet plus bounded inches and pounds use exact SI conversions",
+    "apps/mobile/e2e/components.spec.ts::profile fields announce validation, preserve canonical units and guard unsaved edits",
+    "apps/mobile/tests/profile-form.test.ts::profile validation collects independent inline errors without clearing draft text",
+    "apps/mobile/tests/profile-form.test.ts::locale decimal and digit input becomes locale-independent numbers",
+    "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+    "apps/mobile/tests/domain.test.ts::check freezes original profile timestamp and recomputes elapsed use at its start",
+    "apps/mobile/tests/controller.test.ts::ordinary measurement P1 stays frozen after P2 profile update ${ledgerTransition ? \"across a software-only interrupted first attempt\" : \"while the draft has no captures\"}",
+    "apps/mobile/tests/sync.test.ts::conflict and stale generation stop automatic replay without changing frozen evidence",
+    "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in",
+    "apps/mobile/tests/profile-form.test.ts::known last-use rejects impossible calendar dates and future times with a field error",
+    "apps/mobile/tests/profile-form.test.ts::display rounding and repeated unit toggles preserve original canonical values"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

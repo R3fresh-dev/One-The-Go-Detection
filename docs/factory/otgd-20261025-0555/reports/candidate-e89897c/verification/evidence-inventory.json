@@ -1,0 +1,304 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "captured_at": "2026-10-25T10:55:33.718148+00:00",
+  "artifacts": [
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/unit-coverage.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+      "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+      "bytes": 163284,
+      "kind": "current_closed_unit_stage",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/unit-coverage.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.json",
+      "sha256": "7ec165e9addff5b48735e6a2ed010af58aace533f5f6f988bbd60256b13fde65",
+      "bytes": 507005,
+      "kind": "current_closed_unit_stage",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/coverage.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/coverage.xml",
+      "sha256": "59cdf7003855fe183abd347c1345232afff43620c238a9787fc4198b37732a79",
+      "bytes": 419526,
+      "kind": "current_closed_unit_stage",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/apps/mobile/reports/mobile-unit-coverage.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/apps/mobile/reports/mobile-unit-coverage.json",
+      "sha256": "46afce8abefeb452a7e42abb93949809a79169d1d44ed7d77082a56e219531b1",
+      "bytes": 10104,
+      "kind": "current_closed_unit_stage",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/unit.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+      "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+      "bytes": 614661,
+      "kind": "current_named_junit",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00",
+      "case_counts": {
+        "PASS": 1538
+      }
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/atdd.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/atdd.xml",
+      "sha256": "8f7f6be05f22df4eeedb2681d2f568c59457dd99fea80af10f687185d18ef410",
+      "bytes": 1431,
+      "kind": "current_named_junit",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00",
+      "case_counts": {
+        "PASS": 6
+      }
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/hosted-preview.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/hosted-preview.xml",
+      "sha256": "374044d14f7d671489e6a5e364841c09bbff43fc2ec9a338e00e74139b465f6c",
+      "bytes": 873,
+      "kind": "current_named_junit",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00",
+      "case_counts": {
+        "PASS": 2
+      }
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/components.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "bytes": 15137,
+      "kind": "current_named_junit",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00",
+      "case_counts": {
+        "PASS": 80
+      }
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/secure-sdk.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/secure-sdk.xml",
+      "sha256": "257222d4edad30b4f2d654af931264ebd4d84e991402466b4d990086e9848fdd",
+      "bytes": 1562,
+      "kind": "current_named_junit",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00",
+      "case_counts": {
+        "PASS": 9
+      }
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/atdd.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/atdd.log",
+      "sha256": "87fd10ab184f02e3a54f70293699cbfb006e636e47b45a4e201cdeb5d1cc9d29",
+      "bytes": 3724,
+      "kind": "current_closed_stage_raw",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/components.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.log",
+      "sha256": "5915cc3bfd04b8035c82193eaba6aa4ad421e019105adf707687c1de8f53b066",
+      "bytes": 14437,
+      "kind": "current_closed_stage_raw",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/performance.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/performance.json",
+      "sha256": "81161a741de145d996bebd15e72f62c62f93393afcc7ac1408b62c9a90bdba94",
+      "bytes": 190,
+      "kind": "current_closed_stage_raw",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/reports/performance.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/performance.log",
+      "sha256": "9ac39b1542b2108e415384f1f5712807091533337bf7273d3deac5146f2b08ed",
+      "bytes": 174,
+      "kind": "current_closed_stage_raw",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-components.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/candidate/ci-components.log",
+      "sha256": "0055f72eaf959dd093a2d283f0ea6abd51444675538e94079831392ecc3f1c42",
+      "bytes": 77048,
+      "kind": "current_ci_component_raw_log",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-accessibility.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-accessibility.md",
+      "sha256": "4c7d911591242116646bb20be8a658fd5e5b040b65a49a67b3c46698c63eca10",
+      "bytes": 10853,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-auth-acceptance.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-auth-acceptance.md",
+      "sha256": "ccaddb7036526b6de895984536aa9131b93cdeab044270d6b870edfc7d1a7bd1",
+      "bytes": 5016,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-auth.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-auth.md",
+      "sha256": "010860d631be2e7bb84db781c8c701ccaecc20cc65f113ff3a01242da92fe2ab",
+      "bytes": 14318,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-backend-assertions.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-backend-assertions.md",
+      "sha256": "823d9fb35f879746badac56d083f59e705cf464e46f66b41ca4a7d5832f098a5",
+      "bytes": 16898,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-evaluation-invalid-rows.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-evaluation-invalid-rows.md",
+      "sha256": "792a3c5c1d3bbde6ab8c4682e3f7d1a938636381ad2a354e0780d1cee45d0d7f",
+      "bytes": 1824,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-evaluation.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-evaluation.md",
+      "sha256": "e50bb689352fc973f11aac289d5c01407ed15b762f9b7250caeceaab4e3bb0b5",
+      "bytes": 11562,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-history-boundaries.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-history-boundaries.md",
+      "sha256": "881b3d853dd61d583f6a0e83e4388ab632e403bb93dadf1deb4297c20376cb0e",
+      "bytes": 11345,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-hr-readback.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-hr-readback.md",
+      "sha256": "3b296866eac653f310d3062579e49b1852766cf6b318e87cfabe983598988ff3",
+      "bytes": 4854,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-infra-capacity.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-infra-capacity.md",
+      "sha256": "12d8fd9b5b6f5f0844934338696c32cb1aee2cdc5954fb8ee76de7818e6058c2",
+      "bytes": 1116,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-native-assertions.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-native-assertions.md",
+      "sha256": "84c60f25d6d2a1f97f476c0d9a1f8c593a0db66dbc8be7a54ebb2993e2c5f00b",
+      "bytes": 18318,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-native-optical-fifo.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-native-optical-fifo.md",
+      "sha256": "fa766ab96b67c6d3c6c2788473a155296e180e77597b2b1446402d8023569e29",
+      "bytes": 17511,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-preview-fixtures.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-preview-fixtures.md",
+      "sha256": "686ad103af794d0541b6062274b882c5e4045b33a00fb1e05ea8c93dadce8331",
+      "bytes": 4794,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-privacy-raw-ui.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-privacy-raw-ui.md",
+      "sha256": "5924f815c227c1656f14494bf71e0735db73f48b448da43f09e4e93d04b791e4",
+      "bytes": 10584,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-product.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-product.md",
+      "sha256": "e4a8aaceebc5fcc0e77f4017fcfbaa167f742f5204cfd9166e171adc9e52a8ff",
+      "bytes": 39746,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-auth.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-round2-auth.md",
+      "sha256": "c0c038cc39a9463adefe8d6ac9645c77e8d65b7c7e1cd958743b0d0187643ff9",
+      "bytes": 6272,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-export.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-round2-export.md",
+      "sha256": "531e32101f1be660f19c2f6c92bf9c40fc5b3d911795dea54ac41c52f6ee7e34",
+      "bytes": 6241,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-mobile.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-round2-mobile.md",
+      "sha256": "c17244ac85a3573ac0585cc8626f8849bd1d57db8dfcd7fd47a1e7f8f7604267",
+      "bytes": 10395,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-salcol.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-salcol.md",
+      "sha256": "c706f8e2b03152ac8ca8a6bcb62e470bcc844e99c69f46c2885f6e43204d00fc",
+      "bytes": 12180,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    },
+    {
+      "original_path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-web-assets.md",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/docs/factory/otgd-20261025-0555/reports/correction-web-assets.md",
+      "sha256": "e732331cfec1df71b01f6aad8fecb1e9052f9e28f2e0af3f406ede262ee78130",
+      "bytes": 3359,
+      "kind": "committed_author_report_development_evidence_only",
+      "captured_at": "2026-10-25T10:55:33.718148+00:00"
+    }
+  ],
+  "named_observation_count": 2533,
+  "current_local_gate_state": {
+    "started_at": "2026-10-25T10:34:05.033651+00:00",
+    "revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+    "image": "sha256:f6c164a1739b3470c54af0ecf8d3db548fe9b7ccc3fba9dc328949e557f240c0",
+    "prior_reports_sha256": "832bbe3aab2d40a64e99048e7bf52ae04cdb09bea302d2f32263bfaa896286c4",
+    "pid": 344776,
+    "status": "running"
+  },
+  "full_local_pass": true,
+  "full_current_ci_pass": true,
+  "limitations": [
+    "Original preparation snapshots are historical within this candidate. Final admissions bind all7 local gates and14 current exact-tree CI jobs.",
+    "Named observations and clause records, not aggregate success, establish scoped case outcomes.",
+    "Native OS, physical hardware, independent study/science and real target deployment/store prerequisites remain separate."
+  ],
+  "record_role": "PREPARATION_INVENTORY_SUPERSEDED_BY_FINAL_ADMISSIONS",
+  "final_local_admission": "final-local-admission.json",
+  "final_ci_admission": "final-ci-admission.json"
+}

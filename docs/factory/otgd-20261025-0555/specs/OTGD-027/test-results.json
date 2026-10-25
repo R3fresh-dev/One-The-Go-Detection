@@ -1,0 +1,64 @@
+{
+  "spec_id": "OTGD-027",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-heart-rate/spec.md",
+  "canonical_sha256": "e9288b9fbec177d7287962239555b7633a0cfbf80ecf3e1e350158da607f5139",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-027-AND-HR-001-01",
+    "OTGD-027-AND-HR-001-02",
+    "OTGD-027-AND-HR-002-01",
+    "OTGD-027-AND-HR-002-02",
+    "OTGD-027-AND-HR-002-03",
+    "OTGD-027-AND-HR-003-01",
+    "OTGD-027-AND-HR-003-02",
+    "OTGD-027-AND-HR-004-01",
+    "OTGD-027-AND-HR-004-02",
+    "OTGD-027-AND-HR-005-01",
+    "OTGD-027-AND-HR-005-02",
+    "OTGD-027-AND-HR-005-03",
+    "OTGD-027-AND-HR-006-01",
+    "OTGD-027-AND-HR-006-02",
+    "OTGD-027-AND-HR-007-01",
+    "OTGD-027-AND-HR-007-02"
+  ],
+  "requirements": [
+    "AND-HR-001",
+    "AND-HR-002",
+    "AND-HR-003",
+    "AND-HR-004",
+    "AND-HR-005",
+    "AND-HR-006",
+    "AND-HR-007"
+  ],
+  "statuses": {
+    "PARTIAL": 14,
+    "PASS": 1,
+    "BLOCKED": 1
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-027",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies",
+    "Exact compiler, executable and arduino-cli commands: immutable .github/workflows/native-build.yml; actual ci-firmware.log and ci-protected-reader.log retained."
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/src/device/tests/protocol.test.ts::local simulator exercises handshake, clocks, full framed capture and explicit simulated provenance",
+    "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+    "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral",
+    "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+    "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+    "apps/mobile/src/device/tests/physical.test.ts::physical advertisement has a distinct bounded dialect and never a synthetic/validated source",
+    "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+    "apps/mobile/tests/cardiac-selection.test.ts::a cardiac modality is pinned at start and cannot be supplied to another component",
+    "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion",
+    "firmware/tests/sparkfun_ppg_test.cpp::main",
+    "apps/mobile/src/device/tests/protocol.test.ts::identity, changed message ID content and replay sequence are independently checked",
+    "apps/mobile/src/device/tests/signal.test.ts::stale identities, schema additions, sequence replay and bounded sample tampering cannot populate a current capture",
+    "apps/mobile/src/device/tests/protocol.test.ts::cancellation invalidates before disconnect and prevents stale completion into a different workspace"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

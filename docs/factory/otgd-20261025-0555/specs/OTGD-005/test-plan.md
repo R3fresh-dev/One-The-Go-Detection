@@ -46,3 +46,27 @@ Record each case PASS/FAIL/BLOCKED/NOT_RUN in `test-results.md`, with exit/resul
 ## Reactivated verification audit
 
 Observed checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active writers’ working-tree edits, 2026-10-25T06:53:56.344429+00:00. This is not source freeze. Original planning HEAD and prior no-execution record above remain historical. Canonical hash above is rebound to the reconciled current source; OTGD-001 and OTGD-047 changed. Existing411 requirements /782 case IDs are retained. No Docker/build/probe or suite execution performed by this verifier.
+
+
+## Final corrected source evidence — e89897cc852a
+
+# OTGD-005 current verification plan proposal
+
+Candidate `e89897cc852a111b131eaf5c2caaf163ef201a48`; canonical `openspec/changes/authorized-model-execution/specs/android-onboarding/spec.md`; SHA256 `1b82b7101ffe6bf0538ffe24b814aea01369f322c9bb8e96808e05f0dd70e369`.
+
+Proposed repository destination: `docs/factory/otgd-20261025-0555/specs/OTGD-005/test-plan.md`. External review artifact only; PM controls import.
+
+All 2 stable cases / 1 requirements are preserved. The exact GIVEN/WHEN/THEN wording and negative/boundary/recovery clauses are in `test-results.md` and the central `case-evidence.json`; no renamed IDs or weakened criteria.
+
+Current execution commands (already executed by PM/current CI where their raw observations are bound):
+
+- `python scripts/ci_gate.py unit-coverage`
+
+Shared full local command: `python scripts/run_all_gates.py`. Its independent local final receipt confirms all7 gates passed. No verifier tests or service mutations were run. Current CI exact-tree run 40185247204 passed all14 mandatory jobs. Exact workflow/source bindings and named artifacts are retained in `../../final-ci-admission.json` and `../../source-assertions.json`.
+
+Each remaining clause requires the minimal evidence/action recorded beside that case. Review meaningful existing shared assertions/helpers/control flow before requesting any extra execution. After correction2/2, unresolved evidence does not authorize a third source correction or a broader test project. Native/hardware/study/deployment prerequisites remain separately typed.
+
+| Stable case | Planned assertion | Current disposition |
+|---|---|---|
+| OTGD-005-AND-ONB-001-01 | Independent research admission — - **WHEN** onboarding completes for an account whose separate current study and channel authority is admitted - **THEN** the dashboard identifies authorized research access independently of the onboarding receipt | PARTIAL |
+| OTGD-005-AND-ONB-001-02 | Legacy or unapproved claim — - **WHEN** a legacy result, local preference or valid-looking manifest claims research authority without current complete admission - **THEN** no score is admitted and the historical measurement-only or unsupported-result boundary remains in force | PASS |

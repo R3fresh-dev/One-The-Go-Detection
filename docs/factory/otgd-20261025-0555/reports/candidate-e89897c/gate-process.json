@@ -1,0 +1,10 @@
+{
+  "started_at": "2026-10-25T10:34:05.033651+00:00",
+  "revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "image": "sha256:f6c164a1739b3470c54af0ecf8d3db548fe9b7ccc3fba9dc328949e557f240c0",
+  "prior_reports_sha256": "832bbe3aab2d40a64e99048e7bf52ae04cdb09bea302d2f32263bfaa896286c4",
+  "pid": 344776,
+  "status": "passed",
+  "ended_at": "2026-10-25T11:23:32.913621+00:00",
+  "exit_code": 0
+}

@@ -1,0 +1,10 @@
+{
+  "received_at": "2026-10-25T11:32:39.874033+00:00",
+  "from": "/root/verification",
+  "status": "EXPLICIT_RELEASE_RECEIVED",
+  "message": "candidate-e89897cc852a/verification/ is now immutable. release-manifest binds164 files including47 dossier proposals; no further verifier writes. Source e898 remains tested primary, auxiliary D011 metadata is not new tested source.",
+  "release_manifest_sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d",
+  "case_evidence_sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3",
+  "remaining_clauses_sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8",
+  "requirement_evidence_sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f"
+}

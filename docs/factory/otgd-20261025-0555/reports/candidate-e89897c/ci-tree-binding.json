@@ -1,0 +1,12 @@
+{
+  "run_id": 40185247204,
+  "head": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "tested_merge": "d75116afb2771e4d2841e3592f2784a455ba0a9f",
+  "exact_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "merge_parents": [
+    "0844868aa543af4ab75ac5065ad48cf807b86bb3",
+    "e89897cc852a111b131eaf5c2caaf163ef201a48"
+  ],
+  "source": "GitHub Git commits plus actual current components job checkout log",
+  "verified": true
+}

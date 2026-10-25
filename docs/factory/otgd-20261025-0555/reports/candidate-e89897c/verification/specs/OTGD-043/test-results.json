@@ -1,0 +1,64 @@
+{
+  "spec_id": "OTGD-043",
+  "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/selected-vendor-ppg/spec.md",
+  "canonical_sha256": "c6f863bc71ebf167438fbe5cffe07b892da12cc066d0487d21403ff8dd49fa0d",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-043-VPPG-001-01",
+    "OTGD-043-VPPG-001-02",
+    "OTGD-043-VPPG-002-01",
+    "OTGD-043-VPPG-002-02",
+    "OTGD-043-VPPG-002-03",
+    "OTGD-043-VPPG-003-01",
+    "OTGD-043-VPPG-003-02",
+    "OTGD-043-VPPG-004-01",
+    "OTGD-043-VPPG-004-02",
+    "OTGD-043-VPPG-005-01",
+    "OTGD-043-VPPG-005-02",
+    "OTGD-043-VPPG-006-01",
+    "OTGD-043-VPPG-006-02",
+    "OTGD-043-VPPG-007-01",
+    "OTGD-043-VPPG-007-02"
+  ],
+  "requirements": [
+    "VPPG-001",
+    "VPPG-002",
+    "VPPG-003",
+    "VPPG-004",
+    "VPPG-005",
+    "VPPG-006",
+    "VPPG-007"
+  ],
+  "statuses": {
+    "PARTIAL": 10,
+    "PASS": 5
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-043",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd",
+    "Exact compiler, executable and arduino-cli commands: immutable .github/workflows/native-build.yml; actual ci-firmware.log and ci-protected-reader.log retained."
+  ],
+  "current_source_assertion_refs": [
+    "firmware/tests/sparkfun_ppg_test.cpp::main",
+    "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec",
+    "apps/mobile/src/device/tests/physical.test.ts::actual SparkFun production factory decodes derived-only quality evidence without inventing raw consent or cadence",
+    "apps/mobile/src/device/tests/physical.test.ts::signed completion binds each current authorization scope field and exact immutable projection",
+    "apps/mobile/src/device/tests/physical.test.ts::delayed old acknowledgment rejection cannot invalidate replacement association",
+    "firmware/tests/signed_reader_acquisition_test.cpp::main",
+    "services/api/tests/test_operator_governance.py::test_current_device_calibration_binding_and_software_inventory",
+    "apps/mobile/tests/acquisition.test.ts::actual customer sequence persists keys and metadata before fresh online start, retains signed projection locally, and only explicit upload queues evidence",
+    "apps/mobile/tests/device-presentation.test.ts::per-channel display uses active matching scope and unexpired admitted configuration independently from connection or binding",
+    "apps/mobile/tests/device-presentation.test.ts::a healthy signed reader connection is physical and retains current boot independently from service binding",
+    "apps/mobile/tests/result-ui.test.ts::actual Home and Device agree on a connected physical reader without synthetic or unconditional unavailable claims",
+    "apps/mobile/e2e/components.spec.ts::Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority",
+    "apps/mobile/e2e/components.spec.ts::Home expires its current channel observation while mounted and Device retains that expired status"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

@@ -1,0 +1,35 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "manifest": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/manifest.json",
+  "manifest_sha256": "70ecb29a145da94cf032e22942571be9c703b2bab87e6e7856f69a37c3ea6da5",
+  "files_rehashed": 43,
+  "production_files_rehashed": 16,
+  "accepted_records": [
+    {
+      "case_id": "OTGD-020-AND-ENV-001-02",
+      "source_assertion_ref": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/probe.py::probe[prod-emulator-rejected]",
+      "record": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/prod-emulator-rejected.json",
+      "sha256": "1a634e7b681d0cfc123085a6e7bf02df6e0ee7ae6e7345f4c482ae0eadb602c6"
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-001-02",
+      "source_assertion_ref": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/probe.py::probe[prod-local-identity-rejected]",
+      "record": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/prod-local-identity-rejected.json",
+      "sha256": "52c4105f7e839121b2b77c14663335f434fd9c1c3969120ecd66a687a70c9b9d"
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-004-02",
+      "source_assertion_ref": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/probe.py::probe[missing-database-secret-rejected]",
+      "record": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/missing-database-secret-rejected.json",
+      "sha256": "06caff405f180fb66955542e9c177b44016ced9638829da0f5dbb27466692f58"
+    },
+    {
+      "case_id": "OTGD-020-AND-ENV-006-01",
+      "source_assertion_ref": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/probe.py::probe[unavailable-database-live-readiness]",
+      "record": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/unavailable-database-live-readiness.json",
+      "sha256": "74b1bafb8c26ce65eb0491dcd1611aa9ffd68c178aa96bc43bc77ef1818381a7"
+    }
+  ],
+  "rollback_target": "UNVERIFIED; current orchestrator rollout-stop observed with external boundaries mocked, exact prior provider target retention not proved; no requirement for newly serialized record invented.",
+  "driver_harness_failure": "Initial nonexistent auxiliary /v1/me404 led exit1; corrected path and full final rerun passed. Not product repair."
+}

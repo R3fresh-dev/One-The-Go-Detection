@@ -1,0 +1,48 @@
+{
+  "spec_id": "OTGD-044",
+  "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/cloud-browser-delivery/spec.md",
+  "canonical_sha256": "758f7dd11a72a15750d44a61d49d986b923232ac981fcb9ab304a56526e5bb6c",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-044-WEB-DEP-007-01",
+    "OTGD-044-WEB-DEP-007-02",
+    "OTGD-044-WEB-DEP-007-03",
+    "OTGD-044-WEB-DEP-009-01",
+    "OTGD-044-WEB-DEP-009-02",
+    "OTGD-044-WEB-DEP-009-03",
+    "OTGD-044-WEB-DEP-010-01",
+    "OTGD-044-WEB-DEP-010-02"
+  ],
+  "requirements": [
+    "WEB-DEP-007",
+    "WEB-DEP-009",
+    "WEB-DEP-010"
+  ],
+  "statuses": {
+    "PARTIAL": 4,
+    "PASS": 4
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-044",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "uv run --project services/api python scripts/ci_gate.py infra-unit",
+    "node --import tsx --test --test-reporter=junit test/*.test.ts (cwd: infra)"
+  ],
+  "current_source_assertion_refs": [
+    "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+    "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport",
+    "infra/test/test_web_deployment.py::test_every_admitted_asset_is_read_and_checked_before_public_access_passes",
+    "infra/test/test_web_deployment.py::test_navigation_cannot_omit_required_policy_when_index_is_secure",
+    "infra/test/test_web_deployment.py::test_public_body_overrun_and_unsolicited_compression_stop_before_unbounded_reads",
+    "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+    "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last",
+    "infra/test/test_web_deployment.py::test_archive_bound_precedes_hashing_and_admission_uses_one_stable_snapshot",
+    "infra/test/test_web_deployment.py::test_unreviewed_cache_routes_origins_and_failover_groups_block_all_publication",
+    "infra/test/test_web_deployment.py::test_disabled_foreign_origin_or_non_sigv4_distribution_cannot_publish_dns",
+    "infra/test/test_web_deployment.py::test_public_asset_types_paths_symlinks_and_duplicate_zip_entries_are_rejected"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

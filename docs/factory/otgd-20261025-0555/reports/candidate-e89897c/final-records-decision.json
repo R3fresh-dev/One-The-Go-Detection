@@ -1,0 +1,15 @@
+{
+  "decision_id": "D011",
+  "version": 1,
+  "run_id": "otgd-20261025-0555",
+  "authority": "Authorized ordinary commits/non-force pushes and durable records; preserve exact tested source and stable recovery branch",
+  "primary_branch": "factory/one-the-go-detection-20261025",
+  "source_candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "evidence_branch": "factory/one-the-go-detection-20261025-evidence",
+  "decision": "Publish final safe Factory dossiers, reviews, evidence and recovery records as a descendant metadata-only commit on an auxiliary evidence branch. Do not change the primary source branch, application/spec/test/workflow/configuration content, run ID, source candidate or correction/recovery counters. Final records identify the source revision and implementation manifest explicitly; evidence commit is not separately claimed application-tested.",
+  "boundary": "One PM and one primary implementation branch. Auxiliary records are not a new run, supervisor, feature branch or deployment. Reconcile remote refs before non-force push; preserve prior records. Recovery checks both refs, retains the primary source branch and only resumes explicitly authorized unblocked work.",
+  "correction_round": 2,
+  "recovery_attempts": 0,
+  "status": "PLANNED; no Git write or push yet",
+  "announced_to_parent": true
+}

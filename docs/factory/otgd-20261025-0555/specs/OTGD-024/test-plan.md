@@ -121,3 +121,43 @@ Record each case PASS/FAIL/BLOCKED/NOT_RUN in `test-results.md`, with exit/resul
 ## Reactivated verification audit
 
 Observed checkpoint `1891f8b7f06f6279e7f86371a0798cd373813fd4` plus active writers’ working-tree edits, 2026-10-25T06:53:56.344429+00:00. This is not source freeze. Original planning HEAD and prior no-execution record above remain historical. Canonical hash above is rebound to the reconciled current source; OTGD-001 and OTGD-047 changed. Existing411 requirements /782 case IDs are retained. No Docker/build/probe or suite execution performed by this verifier.
+
+
+## Final corrected source evidence — e89897cc852a
+
+# OTGD-024 current verification plan proposal
+
+Candidate `e89897cc852a111b131eaf5c2caaf163ef201a48`; canonical `openspec/changes/production-mobile-platform/specs/android-ecg-capture/spec.md`; SHA256 `c75f24b4beeda893b780af0d924747c0cd7ca599ead627d3d265f21ec3772895`.
+
+Proposed repository destination: `docs/factory/otgd-20261025-0555/specs/OTGD-024/test-plan.md`. External review artifact only; PM controls import.
+
+All 16 stable cases / 7 requirements are preserved. The exact GIVEN/WHEN/THEN wording and negative/boundary/recovery clauses are in `test-results.md` and the central `case-evidence.json`; no renamed IDs or weakened criteria.
+
+Current execution commands (already executed by PM/current CI where their raw observations are bound):
+
+- `python scripts/ci_gate.py unit-coverage`
+- `python scripts/ci_gate.py live-dependencies`
+- `Exact compiler, executable and arduino-cli commands: immutable .github/workflows/native-build.yml; actual ci-firmware.log and ci-protected-reader.log retained.`
+
+Shared full local command: `python scripts/run_all_gates.py`. Its independent local final receipt confirms all7 gates passed. No verifier tests or service mutations were run. Current CI exact-tree run 40185247204 passed all14 mandatory jobs. Exact workflow/source bindings and named artifacts are retained in `../../final-ci-admission.json` and `../../source-assertions.json`.
+
+Each remaining clause requires the minimal evidence/action recorded beside that case. Review meaningful existing shared assertions/helpers/control flow before requesting any extra execution. After correction2/2, unresolved evidence does not authorize a third source correction or a broader test project. Native/hardware/study/deployment prerequisites remain separately typed.
+
+| Stable case | Planned assertion | Current disposition |
+|---|---|---|
+| OTGD-024-AND-ECG-001-01 | Skip optional ECG — - **GIVEN** a workflow in which ECG is optional - **WHEN** the user selects Skip ECG - **THEN** the check SHALL continue with an explicit not_collected ECG status and null ECG features, without fabricating a normal ECG or marking the entire app unusable. | PARTIAL |
+| OTGD-024-AND-ECG-001-02 | Run the simulator — - **GIVEN** synthetic mode and no ECG hardware - **WHEN** the user selects Run simulator - **THEN** a deterministic named waveform fixture SHALL exercise capture/progress/review states with simulated source and SHALL not require electrode contact or imply a measured heartbeat. | PARTIAL |
+| OTGD-024-AND-ECG-002-01 | Approved configuration and verified device — - **GIVEN** a valid approved whole-system configuration matching the connected device and permitted operating state - **WHEN** the authorized operator initiates capture - **THEN** the module SHALL execute only that protocol and retain the binding, approval/configuration hashes, power-state evidence, and lead configuration. | BLOCKED |
+| OTGD-024-AND-ECG-002-02 | Unreviewed USB-powered body connection — - **GIVEN** no matching approved power/connection configuration - **WHEN** the device or user requests hardware ECG capture - **THEN** the app SHALL reject Start hardware capture, show Electrical configuration not qualified, and SHALL not substitute a simple acknowledgment checkbox for the missing evidence. | PARTIAL |
+| OTGD-024-AND-ECG-002-03 | Cached gate after device restart — - **GIVEN** a cached approved-looking capability and a reader with a new boot ID - **WHEN** the operator attempts a hardware start offline - **THEN** the app SHALL refuse the start pending fresh online authorization and verified association; it SHALL not reuse the prior boot clock or provide connection instructions from an unresolved configuration. | PARTIAL |
+| OTGD-024-AND-ECG-003-01 | Raw ADC counts received — - **GIVEN** an otherwise well-formed stream without an approved scale calibration - **WHEN** the waveform is reviewed - **THEN** the app SHALL label values counts, retain the missing-scale reason, and SHALL not render an mV axis or supply calibrated features that require voltage units. | PARTIAL |
+| OTGD-024-AND-ECG-003-02 | Sample gap inside a recording — - **GIVEN** a stream with a missing block or nonconsecutive sample index - **WHEN** reassembly completes or times out - **THEN** the gap SHALL be represented explicitly and the applicable quality rule enforced; the app SHALL not draw a continuous valid trace by interpolating away lost evidence. | PARTIAL |
+| OTGD-024-AND-ECG-004-01 | Waveform visually smooth but inadequate for HRV — - **GIVEN** a capture shorter than its extractor's approved duration or with too few usable beat intervals - **WHEN** the summary is generated - **THEN** the waveform MAY remain available within policy but RMSSD SHALL be null with an adequacy reason, not a guessed feature. | PARTIAL |
+| OTGD-024-AND-ECG-004-02 | Heavy rendering load — - **GIVEN** a supported synthetic or approved stream - **WHEN** the screen drops rendering frames - **THEN** raw sample acquisition SHALL remain independently bounded, display lag SHALL be reported where relevant, and lost acquisition samples SHALL not be hidden by the appearance of the graph. | PARTIAL |
+| OTGD-024-AND-ECG-005-01 | Lead detaches during capture — - **GIVEN** an active hardware or simulator lead-off test - **WHEN** contact is lost - **THEN** the UI SHALL show Lead contact lost, retain lead-off timing, and apply the fixed protocol's stop/invalid behavior without continuing to display an unqualified live heart rate as current. | PARTIAL |
+| OTGD-024-AND-ECG-005-02 | Late samples after cancellation — - **GIVEN** a canceled ECG capture - **WHEN** remaining Bluetooth notifications arrive - **THEN** those samples SHALL be rejected by capture identity and SHALL not populate a later attempt or turn the canceled attempt complete. | PASS |
+| OTGD-024-AND-ECG-006-01 | User selects ECG after a PPG capture — - **GIVEN** a check with an accepted PPG cardiac component - **WHEN** the user selects the allowed ECG alternative - **THEN** the UI SHALL explain that v0.1 selects one cardiac modality, preserve the PPG attempt, and require an explicit selection of which accepted capture becomes the final cardiac component. | PARTIAL |
+| OTGD-024-AND-ECG-006-02 | Protocol demands both modalities — - **GIVEN** the installed client supports only the v0.1 cardiac schema - **WHEN** a protocol requires both PPG and ECG as distinct model inputs - **THEN** capability resolution SHALL report Unsupported cardiac contract and SHALL not merge the two sources or fabricate a compatible feature vector. | NOT_RUN |
+| OTGD-024-AND-ECG-006-03 | Optional ECG skip preserves selected PPG — - **GIVEN** a pre-finalization check with a valid selected PPG capture - **WHEN** the user selects Skip ECG - **THEN** the PPG selection SHALL remain unchanged, ECG SHALL remain explicitly not_collected, and no mixed-modality v0.1 component SHALL be created. | PASS |
+| OTGD-024-AND-ECG-007-01 | Offline completed simulation — - **GIVEN** a complete synthetic ECG capture with the network disabled - **WHEN** the user saves the check - **THEN** the app SHALL store the permitted fictional record locally, retain its simulated label, and show sync status independently from capture completion. | PARTIAL |
+| OTGD-024-AND-ECG-007-02 | Missing raw-data retention policy — - **GIVEN** a proposed participant protocol without a resolved ECG retention policy - **WHEN** recording or upload is requested - **THEN** the app SHALL block the dependent recording/upload path and SHALL not choose indefinite retention as a fallback. | PARTIAL |

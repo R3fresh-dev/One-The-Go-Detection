@@ -1,0 +1,478 @@
+{
+  "recorded_at": "2026-10-25T10:39:27.186976+00:00",
+  "reviewer": {
+    "agent_id": "/root/replacement_code",
+    "role": "code reviewer",
+    "provider": "OpenAI",
+    "configured_model": "gpt-6.1-sol",
+    "configured_reasoning_effort": "high",
+    "fork_turns": "none",
+    "runtime_model_independently_queryable": false,
+    "model_evidence": "Parent corrected and explicitly confirmed actual spawn arguments through native message; no runtime model query exposed.",
+    "independence": "Separate independent review context retained for confirmation; no authorship of candidate code/tests."
+  },
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "actual_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "worktree_clean": true,
+  "all47_canonical_hashes_match": true,
+  "canonical_hashes_unchanged_from_cf74fcf": true,
+  "author_execution_source_bindings": {
+    "backend": {
+      "count": 116,
+      "mismatches": []
+    },
+    "mobile": {
+      "count": 15,
+      "mismatches": []
+    },
+    "auth": {
+      "count": 14,
+      "mismatches": []
+    }
+  },
+  "actual_xml_summary": {
+    "correction-round2-export/red.xml": {
+      "testcases": 2,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0
+    },
+    "correction-round2-export/focused-green.xml": {
+      "testcases": 21,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "correction-round2-export/unit.xml": {
+      "testcases": 1538,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "correction-round2-auth/auth-release.xml": {
+      "testcases": 99,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "changed_non_document_files_reviewed": [
+    "apps/mobile/e2e/components.spec.ts",
+    "apps/mobile/e2e/fixtures/alcohol-component.tsx",
+    "apps/mobile/e2e/fixtures/device-presentation-component.tsx",
+    "apps/mobile/e2e/fixtures/hr-result-component.tsx",
+    "apps/mobile/src/controller.ts",
+    "apps/mobile/src/core/devicePresentation.ts",
+    "apps/mobile/src/device/tests/physical.test.ts",
+    "apps/mobile/src/services/auth.ts",
+    "apps/mobile/src/ui/checks.tsx",
+    "apps/mobile/src/ui/device-summary.tsx",
+    "apps/mobile/src/ui/manage.tsx",
+    "apps/mobile/tests/auth-acceptance.test.ts",
+    "apps/mobile/tests/auth-callback.test.ts",
+    "apps/mobile/tests/auth-cognito.test.ts",
+    "apps/mobile/tests/auth.test.ts",
+    "apps/mobile/tests/controller.test.ts",
+    "apps/mobile/tests/device-presentation.test.ts",
+    "apps/mobile/tests/hr-read-admission.test.ts",
+    "apps/mobile/tests/result-ui.test.ts",
+    "apps/mobile/tests/support/device-presentation-fixtures.ts",
+    "apps/mobile/tests/support/result-rendering.tsx",
+    "apps/mobile/tests/support/runtime.cjs",
+    "services/api/otgd/report_revisions.py",
+    "services/api/tests/test_current_result_readback.py"
+  ],
+  "evidence": [
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/e2e/components.spec.ts",
+      "sha256": "a1d8cd2e19f072ac0d981602e7a96d29415b25b47cbfe98292f556d682612bd1",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/e2e/fixtures/alcohol-component.tsx",
+      "sha256": "dfafd09b27580553506f00a96bc8a7a71c806c625584939e2bc51dc69dab11a9",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/e2e/fixtures/device-presentation-component.tsx",
+      "sha256": "10c3d77f398b1c571e1f43cc20df7341ffe0b2ce423b80dbc281ebbafdd48e48",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/e2e/fixtures/hr-result-component.tsx",
+      "sha256": "ad64e9697e9f6575d76c442aa325a381e05d5428e8428d645ec090a7fbb79a6b",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/src/controller.ts",
+      "sha256": "5e1c20cb71a72004b32aff1ef9585b61aeb721b2f3336a3862b98b6c3b801e53",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/src/core/devicePresentation.ts",
+      "sha256": "59eae66daaf4dbfcf0daa7341fb1649b2aa3b092c657fef57c0b6f73460e9768",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/src/device/tests/physical.test.ts",
+      "sha256": "6df427ba040c5193847772dc4a6d630b51153c5e23bdb6e5c3d473f6b5e295bc",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/src/services/auth.ts",
+      "sha256": "bcb384ac846cccd8796ec4a35b85c4aa92cab65221ac6dda3a075163a5770c62",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/src/ui/checks.tsx",
+      "sha256": "11f5d3e659726c77590b06ad56eed8cce8a890d121352d797d46b95ad3cf0cd5",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/src/ui/device-summary.tsx",
+      "sha256": "2b1126a8f49a8c035e2c4ebec7fa57271e7f3b781b8f895c2bf2a31d7074233d",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/src/ui/manage.tsx",
+      "sha256": "023fd4fdb5819fd85be7dbd181a89d265cb24606b75ee21891b1136e66c210ac",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/auth-acceptance.test.ts",
+      "sha256": "ca9ec0ba337a779fc8675d02069a95dfd5b7054894fde67e3900b95833ce922c",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/auth-callback.test.ts",
+      "sha256": "d4d89af5fcce9d3d7c902d89eea1c0b72cbb09be274a962d56358dc801e6ead8",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/auth-cognito.test.ts",
+      "sha256": "6662a60247bbc734d380d6d533fb3938425d5f30cd98f6c0e5580c7860cd1911",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/auth.test.ts",
+      "sha256": "4fe1cf28a5cbd70e1b35528ead96f32090f47b4025bfad9b5fc09eca24f67827",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/controller.test.ts",
+      "sha256": "9d467077dd365a048585943fcb33b17859535db4bcb8c7741dd48782b16370d0",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/device-presentation.test.ts",
+      "sha256": "b5ef6ea88a473d082e49cf89eb4afa8e50b1bed4d7fe572ebdabdf31062ee733",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/hr-read-admission.test.ts",
+      "sha256": "83dc55ed2473fc54f54d43a26a76dd31a6cbb0c019118a8b612166944bc49fa8",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/result-ui.test.ts",
+      "sha256": "217ae43bfcae4cb9826bafd8ad66bef8e97327c0638400c0e6263c5eb7d66a60",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/support/device-presentation-fixtures.ts",
+      "sha256": "483f069e5dcde3aced0162ccc54e92c2b99acc604c3462051605c558a6323934",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/support/result-rendering.tsx",
+      "sha256": "2c890041f348af9e54462fde8f77f806e8d8b7cf6b1c211bae73bad992c81eb9",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/apps/mobile/tests/support/runtime.cjs",
+      "sha256": "f6c4495c7ad94ea3f80d288f1199899fc581802a4175d4b8040a3ca1575dd9cf",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/services/api/otgd/report_revisions.py",
+      "sha256": "02e6d0331075209a33261ec6f75499dae778e78d590c9451d4e6584dc0f590f4",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/services/api/tests/test_current_result_readback.py",
+      "sha256": "8df4b2d22a0eb0b0167ec244dc5c46d93e28608682038074f3a6da4112177023",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/correction-round-2.md",
+      "sha256": "931b6ee445dbe96f2dacd9240cc0e58750800e9798b31c1b0e49a3f606248e5c",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/decisions.md",
+      "sha256": "f373ab8f33191d4a60b6ed6108ea8ea0aaf46ac44c60e4f1844bac57e4a227d3",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/impact-register.md",
+      "sha256": "49fa1c9a5f8ef54cba93fd52543b6fe715eb0f0909900a392b781285a0cb3ded",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-auth.md",
+      "sha256": "c0c038cc39a9463adefe8d6ac9645c77e8d65b7c7e1cd958743b0d0187643ff9",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-export.md",
+      "sha256": "531e32101f1be660f19c2f6c92bf9c40fc5b3d911795dea54ac41c52f6ee7e34",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-mobile.md",
+      "sha256": "c17244ac85a3573ac0585cc8626f8849bd1d57db8dfcd7fd47a1e7f8f7604267",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/runtime-source-refresh-h.md",
+      "sha256": "7f592003baa95d9c95a5b19693868b6f80fb8da8e4a520160d8e6b8141f7d485",
+      "kind": "current_source_or_authored_report"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.xml",
+      "sha256": "20c536f287c90f0f1b04ff4ccd10a17466325aceb98b4a28d56f602f0be74f75",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.log",
+      "sha256": "78d5ab2b48335fb6e4512af9597cbb91cceca6ef1b4f5c324d1fa3fa9ba45c6f",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red-http-observations.json",
+      "sha256": "4b4d13fda751084d197948bb0c89258addf6d6071e4c7e761c50b8601265e5be",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red-source-bindings.json",
+      "sha256": "7e7f33737f5cfce7c4f36a04f56928a022192943b2c23c012bc195a8c23dbda8",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.xml",
+      "sha256": "019aa3e9c4e9c9815cfc3686d221a079ad6168856e859e6ffe25f7d0408beafa",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.log",
+      "sha256": "acbf9ecea1b30e657d6578f149c32f4056cf166613bbe2579b5f90e68c092b0e",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green-summary.json",
+      "sha256": "fe8f702d59238dc08b874c976e2ee2c23f7afb7f1dcc717b47f0d5591100297c",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/green-source-bindings.json",
+      "sha256": "3dd8ae6e0eb2bc6ee89c4a6ff41b796932fe95a745042d26c3e441eb6e6c87b6",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.xml",
+      "sha256": "ccb75ad190003fae033e81135730b3e650ac9de921c4c65fd922ceed857f1673",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.log",
+      "sha256": "341a4fdfe23ad0f0879006799754e205d36602058db6d6ce2b06457098422617",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-coverage.json",
+      "sha256": "4bfd7a8c030a25d2be5802aa4a241aa1a0448b7cb42f5a641fd204040ca34976",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-execution.json",
+      "sha256": "23823bbf349717058e4176a8b61f5cdc0f364735da8533d42164e61e25458d3c",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/final-handoff.json",
+      "sha256": "8495ac97aee86b18b146dbe54c6c954f8759d9a9876f57705b6ce7da56f7f7d2",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-red2.log",
+      "sha256": "f88cc099b2777a27748f6ed5333b63d518532667c19f369116c94bac7641b5ff",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-manual-red.log",
+      "sha256": "0b230499fbe635936fe4746397019a101c409feedcdd6fc5fb0dbbddc091fd9d",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-browser-green.log",
+      "sha256": "44680c74875b80133e9c5ba359d3d2fa18edb7e92a12923d22381f964bd9a685",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-browser.log",
+      "sha256": "7653ad9b088a8db86e0094c2788cba8144bad596dbcde9ebe86b4a4cbd3ca562",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-green.log",
+      "sha256": "f56413d46ae2dcdc3a1a61318e15a806c98c8475942090077bfb175fc99ddbe4",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-unit.log",
+      "sha256": "b42da21e502e3e1167d84c3d87a9f0295c7fdda2c2337f599bcbe880b8d06f37",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/coverage.log",
+      "sha256": "1e83ec65d3299b5cc025ee7b46be32911de51ffd97cf77ef9ca9081663b65ff2",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/mobile-unit-coverage.json",
+      "sha256": "6bc30489f434da6832741aa07b4d1a0ac0fc541f3067e9b3d10d67c07717ceed",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/evidence-manifest.json",
+      "sha256": "33311002a9ce8a228218d2afb8a6f018f40e173298301aa2e9ae9e5b0fb9c5e4",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/source-bindings.json",
+      "sha256": "0feeffd55a8ac408f5752130553dd549187d75c00b34646a1cb55dd37a0cbdca",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/callback-red.log",
+      "sha256": "128b062a0135fb7c344c5fea86fb49ac4f14435a60adaf996fad2b44218788a7",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/red-native-observation.json",
+      "sha256": "f83fe94cf92198e8991f0c8301a6e7e18619fdfdf44be1b4c39a50d1b131f0d6",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.xml",
+      "sha256": "b57121aac71ce0367875631a755babc266ed32a60685414dc8ff5f3c0d6d643e",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release-final.log",
+      "sha256": "35584575e1aabd382bbedfdfb71495dca6b70ed05bc8b82f27af850fedcd52fe",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/source-evidence-hashes.json",
+      "sha256": "ca018f4fe556f693cb6ee8089b3f3647efc548df0870b135eb9c19ef8d01fa00",
+      "kind": "preserved_author_execution_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/archive-storage-receipt.json",
+      "sha256": "16e384cd5ff77be7b90077d78bde04fef1fce739da33b843d170b1187395a8ad",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/author-source-release.json",
+      "sha256": "86e4cb4e1ee9a7d3715001dbbefe2f13f10d1ae451a6e246688eae6168d84837",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/cache-cleanup-receipt.json",
+      "sha256": "e0a25018d0a5b573e47aa90de7844678fc080f6dd468b204fdfd742fde8eab16",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/final-readback-h.json",
+      "sha256": "dac0edd666ca82fe0e8207fde34ef48e88d5c056e164081cc7dd61319af36909",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-load-image.json",
+      "sha256": "569281e6e06e1f64bbe3bdb639a50acfd62419372f3bb46efea1f4f9a5d70e2d",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-api.json",
+      "sha256": "4744e5597cf44f3bae371db7688316d559bf37fc9697648cd1060ec58dead0a7",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-identity.json",
+      "sha256": "b11f639711b1f303093868130430eebd5b95daa81bbabd6dd7369b29b8e8a811",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-worker.json",
+      "sha256": "ee023517fbb995feff36318a1661913deb90b2c81b9fff9d2f436714123b7a1e",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-tag-image.json",
+      "sha256": "f55c2c1417cfb2bea1e3eba630494c4694b33e6aaae8fc28222c92438d152bfd",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h.receipt.json",
+      "sha256": "bb080ecd23329607f6ffb594163136bafb5d90a2151067485d3df2e5d1d4b401",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/independent-readback-h.json",
+      "sha256": "e9104780b22a4e4270840b8aead06fb1f91a614cda0d613739637c5ef2d9890a",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/obsolete-image-g-removal.json",
+      "sha256": "e4acf36e1f526e59669f1d6daaedb7a94d616f757fba2a4e41e9420c99bf5ab1",
+      "kind": "preserved_runtime_adoption_evidence"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/candidate-binding.json",
+      "sha256": "fa5aaacb091120bc5ffd2ff1ea4958ec385ec8e4cb2fab2afbb85d97415b370d",
+      "kind": "candidate_status_or_prior_independent_review"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/gate-process.json",
+      "sha256": "cd80691627e9b992f4544a57372c25476a17221a572fc7137117c0c936698ba8",
+      "kind": "candidate_status_or_prior_independent_review"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-gates.log",
+      "sha256": "2878198885637bc294f079ea7154c94686bece4449dbf65c9d914862122c6e4a",
+      "kind": "candidate_status_or_prior_independent_review"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/reviews/code/report.md",
+      "sha256": "936af8827eb5617cfe4c4e5f2cef1a2c8427383360c1deb46ecd1ded21c96f49",
+      "kind": "candidate_status_or_prior_independent_review"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/reviews/code/per-spec-decisions.json",
+      "sha256": "01a997ed6a9e3b347cae5b846493feb114322aefe0511f3118f3f5fac0f21b27",
+      "kind": "candidate_status_or_prior_independent_review"
+    }
+  ],
+  "reviewer_runtime_tests": false,
+  "no_source_service_mutations": true,
+  "stage": "FINAL_CURRENT_EXECUTION_UPDATE",
+  "final_recorded_at": "2026-10-25T11:33:18.357001+00:00",
+  "final_evidence_checks": "final-evidence-checks.json",
+  "final_evidence_checks_sha256": "3d9ef1f1eb484f3ffbf6024f2b2d99c12ed11a4177d752e6860b160b0f1996dc",
+  "immutable_verifier_release_sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d",
+  "current_gates": "all7local/all14CI PASS",
+  "full_source_fingerprint_independently_recomputed": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "historical_provisional_preserved": "provisional-20261025T1044/",
+  "note": "Original source/focused-evidence entries remain historical closure context; final current raw receipts and immutable clause evidence are bound in final-evidence-checks.json."
+}

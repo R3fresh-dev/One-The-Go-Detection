@@ -1,0 +1,47 @@
+{
+  "spec_id": "OTGD-045",
+  "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/cloud-release-orchestration/spec.md",
+  "canonical_sha256": "c62bb011c5e71f177ededaf19e710e2ec40a97618a5b427d144f97bcd67d7a26",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-045-CLOUD-DEP-007-01",
+    "OTGD-045-CLOUD-DEP-007-02",
+    "OTGD-045-CLOUD-DEP-007-03",
+    "OTGD-045-CLOUD-DEP-007-04",
+    "OTGD-045-CLOUD-DEP-011-01",
+    "OTGD-045-CLOUD-DEP-011-02"
+  ],
+  "requirements": [
+    "CLOUD-DEP-007",
+    "CLOUD-DEP-011"
+  ],
+  "statuses": {
+    "PARTIAL": 2,
+    "PASS": 4
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-045",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "uv run --project services/api python scripts/ci_gate.py infra-unit",
+    "node --import tsx --test --test-reporter=junit test/*.test.ts (cwd: infra)"
+  ],
+  "current_source_assertion_refs": [
+    "infra/test/test_web_deployment.py::test_plan_has_no_dns_mutation_and_apply_waits_for_actual_change",
+    "infra/test/test_web_deployment.py::test_late_dns_success_is_refused_without_claiming_rollback",
+    "infra/test/test_web_deployment.py::test_intervening_dns_record_fails_atomic_create_without_overwrite",
+    "infra/test/test_web_deployment.py::test_equivalent_existing_dns_case_and_trailing_dot_are_idempotent",
+    "infra/test/test_web_deployment.py::test_apex_foreign_private_zone_unready_tls_alias_and_existing_record_conflicts_fail_closed",
+    "infra/test/test_web_deployment.py::test_disabled_foreign_origin_or_non_sigv4_distribution_cannot_publish_dns",
+    "infra/test/test_release.py::test_private_signing_key_is_regular_private_bounded_and_single_link",
+    "infra/test/test_release.py::test_signed_digest_bound_to_account_environment_and_source",
+    "infra/test/test_provenance.py::test_signer_must_match_independently_trusted_key",
+    "infra/test/test_release.py::test_fifo_key_is_rejected_without_waiting_for_a_writer",
+    "infra/test/test_release.py::test_signing_key_metadata_change_during_read_is_refused",
+    "infra/test/test_provenance.py::test_evidence_and_trusted_key_inputs_refuse_links_and_oversize_before_read",
+    "infra/test/test_provenance.py::test_fifo_evidence_is_rejected_without_waiting_for_a_writer"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

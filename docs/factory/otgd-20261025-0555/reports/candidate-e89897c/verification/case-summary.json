@@ -1,0 +1,41 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "generated_at": "2026-10-25T11:28:32.161134+00:00",
+  "cases": 782,
+  "requirements": 411,
+  "specs": 47,
+  "statuses": {
+    "PARTIAL": 420,
+    "PASS": 260,
+    "BLOCKED": 82,
+    "NOT_RUN": 20
+  },
+  "audit_pending": 0,
+  "current_source_records": 623,
+  "source_records_with_observations": 617,
+  "remaining_type_case_counts_nonexclusive": {
+    "physical_hardware_execution": 51,
+    "software_assertion_or_integration_evidence": 341,
+    "independent_owner_review": 43,
+    "study_scientific_approval": 42,
+    "independent_prerequisite_or_exact_scenario_evidence": 9,
+    "native_os_execution": 90,
+    "software_variant_inventory_evidence": 1,
+    "deployment_cloud_or_owner_prerequisite": 69,
+    "software_integration_evidence": 7,
+    "software_authority_boundary_evidence": 2,
+    "software_toolchain_evidence": 1,
+    "software_compiled_artifact_evidence": 1,
+    "live_dependency_scenario_evidence": 1,
+    "software_startup_scenario_evidence": 1,
+    "software_ui_assertion_evidence": 3,
+    "software_scenario_evidence": 1,
+    "provider_credentials": 1,
+    "software_adapter_integration_evidence": 1,
+    "deployment_cloud_prerequisite": 2
+  },
+  "new_demonstrated_source_defects": 0,
+  "full_local_gate_pass": true,
+  "full_current_ci_pass": true,
+  "scope": "Current case evidence reconciliation; no complete application/council/release approval. PARTIAL and evidence-gap counts are not implementation defects or requests for test expansion."
+}

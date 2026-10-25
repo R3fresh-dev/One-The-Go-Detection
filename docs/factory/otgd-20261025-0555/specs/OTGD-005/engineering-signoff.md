@@ -23,3 +23,11 @@ Relevant findings:
 D-001–005 v1, D-006 v5, D-007 v1 and D-008 v1 acknowledged through actual parent messaging; exact impact responses are in the JSON record and main report. Scope remains approved software only. Native OS execution, physical/scientific/study/cloud/store evidence are distinct where applicable. No merge, deploy, participant use, paid service or provisioning was attempted. Correction round 0/2; recovery 0.
 
 Current independent replacement disposition: **BLOCKED** for cf74fcff6ad19e639538d260f223ec18d618658d, canonical SHA256 1b82b7101ffe6bf0538ffe24b814aea01369f322c9bb8e96808e05f0dd70e369. Actual /root/replacement_engineering report and per-spec decision are preserved under ../../reviews/candidate-cf74fcf/engineering/. This is provisional IMPLEMENTATION review, not final approval.
+
+## Final independent engineering signoff — e89897cc852a
+
+Decision: **BLOCKED**, at the scope stated by `/root/replacement_engineering`. Source candidate e89897cc852a111b131eaf5c2caaf163ef201a48.
+
+Welcome explicitly names measurement default and separately authorized research; acknowledgment/sign-in cannot enroll or release a model. Controlled rendered tests cover the corrected copy. All applicable exact-source local/CI software gates now pass. Final engineering acceptance remains blocked only by the precise current unproved clauses listed below, not aggregate gate status.
+
+This is a PM index of the unchanged independent result. Complete per-spec decision, canonical hash, exact evidence and limits: [final-reviews.json](final-reviews.json), and [independent report](../../reports/candidate-e89897c/reviews/engineering/report.md). Full software application/native/hardware/scientific/release approval is not implied.

@@ -1,0 +1,586 @@
+{
+  "created_at": "2026-10-25T10:40:13.358402+00:00",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "fingerprint": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "procedures": [
+    "No reviewer test/build/browser/runtime/Docker execution or source/dependency mutations; only read-only source/evidence/hash/metadata inspection and owned external reports",
+    "Independently verified HEAD/tree/clean source/all47canonical fingerprints",
+    "Reviewed final four production diffs and meaningful actual test assertion bodies; independently matched all author source/raw manifests",
+    "Parsed actual author RED/GREEN XML/log scopes, did not promote unit doubles to live/native/scientific evidence",
+    "Independently rehashed Harchive and checked all224COPYentrypayloads against currenthost; admitted saved actual PMruntime4files/health/data identities receipt",
+    "Reaffirmed47canonical judgments with explicit unchanged source hashes and changed shared dependency assessment; current782reconciliation/gates pending"
+  ],
+  "author_validation": {
+    "auth_source_mismatches": [],
+    "auth_raw_mismatches": [],
+    "mobile_source_mismatches": [],
+    "mobile_raw_mismatches": [],
+    "export_source_mismatches": [],
+    "export_raw_mismatches": []
+  },
+  "xml": {
+    "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.xml": {
+      "testcase_elements": 99,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "suites": []
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.xml": {
+      "testcase_elements": 2,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0,
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "2",
+          "skipped": "0",
+          "tests": "2",
+          "time": "1.796",
+          "timestamp": "2026-10-25T10:06:15.829007+00:00",
+          "hostname": "3a026c20741d"
+        }
+      ]
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.xml": {
+      "testcase_elements": 21,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "21",
+          "time": "22.573",
+          "timestamp": "2026-10-25T10:07:56.838047+00:00",
+          "hostname": "3a026c20741d"
+        }
+      ]
+    },
+    "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.xml": {
+      "testcase_elements": 1538,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "1746",
+          "time": "350.113",
+          "timestamp": "2026-10-25T10:08:57.522972+00:00",
+          "hostname": "3a026c20741d"
+        }
+      ]
+    }
+  },
+  "runtime_adoption": {
+    "image": "sha256:f6c164a1739b3470c54af0ecf8d3db548fe9b7ccc3fba9dc328949e557f240c0",
+    "archive_sha256_independently_recomputed": "e33a167902ff8157d4e726fbdf5c4dc3ce0cec962515acc12e7d1ecdbabbf011",
+    "copy_entries_independently_checked": 224,
+    "copy_payload_mismatches": [],
+    "actual_runtime_readback_receipt": {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/runtime-readback.json",
+      "sha256": "c2b01666321d81b5e318ecc4c059e91b3e85d84ccf58748bed5afe3c08649fef"
+    },
+    "runtime4files_match_current_host": true,
+    "proof_scope": "Reconstructed local declared filesystem/Config/source only. Not original raw export equivalence/image digest or actual Dockerfile/cloud/ECR provenance. Actual CI Fargate image build/runtime separate."
+  },
+  "evidence": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/source-evidence-hashes.json",
+      "sha256": "ca018f4fe556f693cb6ee8089b3f3647efc548df0870b135eb9c19ef8d01fa00"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-green-initial.log",
+      "sha256": "ad374a449b4a58b932fb358f0277ac2605593402282555bae3251f7c36c26791"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release-final.log",
+      "sha256": "35584575e1aabd382bbedfdfb71495dca6b70ed05bc8b82f27af850fedcd52fe"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.log",
+      "sha256": "8df5cff8abdb95c4164504773fbf2ae0d3b7be143c30a106dfb5eeb8f6d72a3c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.xml",
+      "sha256": "b57121aac71ce0367875631a755babc266ed32a60685414dc8ff5f3c0d6d643e"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/callback-red.log",
+      "sha256": "128b062a0135fb7c344c5fea86fb49ac4f14435a60adaf996fad2b44218788a7"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/format-check.log",
+      "sha256": "abd4583f989ca3a93ca1c3063f312a65f6cc07612d4898fd5932230551db5fe2"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/format.log",
+      "sha256": "41aa74e338245794a277a8f97833814dc8558ea1220a4334b040bb4eec8e8389"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/red-native-observation.json",
+      "sha256": "f83fe94cf92198e8991f0c8301a6e7e18619fdfdf44be1b4c39a50d1b131f0d6"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/red-observation.json",
+      "sha256": "f5bf09b1f241ab95988456cd2d8478d772432ba7cd2f536e81dbaec0eaed66f1"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/reviewed-auth.ts",
+      "sha256": "c1f9ef918b2f2b8a1f52a82937a3576d51d232b89aa7f5656aa3d87156c15cc9"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/source-bindings.json",
+      "sha256": "0feeffd55a8ac408f5752130553dd549187d75c00b34646a1cb55dd37a0cbdca"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/evidence-manifest.json",
+      "sha256": "33311002a9ce8a228218d2afb8a6f018f40e173298301aa2e9ae9e5b0fb9c5e4"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/coverage.log",
+      "sha256": "1e83ec65d3299b5cc025ee7b46be32911de51ffd97cf77ef9ca9081663b65ff2"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/device-green-initial.log",
+      "sha256": "849025bbf7692955e56378063a01f14e1bc293aa5fbdd163a4be60092697a29b"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/device-red.log",
+      "sha256": "9af651f31af77719ab47ad88d476edb3923a3957753574beace3943c2203166e"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/export.log",
+      "sha256": "2823d8a6dbfd724cd7c32c22be929b8ef489813cf372353eb196c9ff1cfdd722"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-browser-green.log",
+      "sha256": "44680c74875b80133e9c5ba359d3d2fa18edb7e92a12923d22381f964bd9a685"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-green-initial.log",
+      "sha256": "7f4cd920fd5e4f921fb6697270adac6cf210ebf3dac32e701dd1b13c7df18ba7"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-green.log",
+      "sha256": "f56413d46ae2dcdc3a1a61318e15a806c98c8475942090077bfb175fc99ddbe4"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/format-scoped.log",
+      "sha256": "abd4583f989ca3a93ca1c3063f312a65f6cc07612d4898fd5932230551db5fe2"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/format.log",
+      "sha256": "d98b119763acc42b9e17efc50b280aa740789518b6635bc693dee9aaf6e65852"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-browser.log",
+      "sha256": "7653ad9b088a8db86e0094c2788cba8144bad596dbcde9ebe86b4a4cbd3ca562"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-unit.log",
+      "sha256": "b42da21e502e3e1167d84c3d87a9f0295c7fdda2c2337f599bcbe880b8d06f37"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/home-device-red.log",
+      "sha256": "c15b32aa115c6eade960e14fb9757177e9a2a45e247e62c2196eafb146bda46b"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-manual-red.log",
+      "sha256": "0b230499fbe635936fe4746397019a101c409feedcdd6fc5fb0dbbddc091fd9d"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-green-initial.log",
+      "sha256": "083f8e724dfc2c7ee3aa9d3405745f89ae0fc5f2ea04359d7ac667d2bbd40b1c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-red.log",
+      "sha256": "37e01797310407464d29383e40b1c6c45c1766be3b7e561af0959fb4d3863f37"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-red2.log",
+      "sha256": "f88cc099b2777a27748f6ed5333b63d518532667c19f369116c94bac7641b5ff"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/mobile-unit-coverage.json",
+      "sha256": "6bc30489f434da6832741aa07b4d1a0ac0fc541f3067e9b3d10d67c07717ceed"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/mobile-unit-events.log",
+      "sha256": "ccc2b9c0438c7c1c139bc03a531e6a643db1c7acaaf94e1ea7ebf0cf77a277f6"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/report-draft.md",
+      "sha256": "c17244ac85a3573ac0585cc8626f8849bd1d57db8dfcd7fd47a1e7f8f7604267"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/typecheck-initial.log",
+      "sha256": "755086290c537844887ede5d4543d4e4e93fbc7adbec49b28f45e0bace8807ff"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/final-handoff.json",
+      "sha256": "8495ac97aee86b18b146dbe54c6c954f8759d9a9876f57705b6ce7da56f7f7d2"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.xml",
+      "sha256": "20c536f287c90f0f1b04ff4ccd10a17466325aceb98b4a28d56f602f0be74f75"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.log",
+      "sha256": "78d5ab2b48335fb6e4512af9597cbb91cceca6ef1b4f5c324d1fa3fa9ba45c6f"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red-http-observations.json",
+      "sha256": "4b4d13fda751084d197948bb0c89258addf6d6071e4c7e761c50b8601265e5be"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red-source-bindings.json",
+      "sha256": "7e7f33737f5cfce7c4f36a04f56928a022192943b2c23c012bc195a8c23dbda8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.xml",
+      "sha256": "019aa3e9c4e9c9815cfc3686d221a079ad6168856e859e6ffe25f7d0408beafa"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.log",
+      "sha256": "acbf9ecea1b30e657d6578f149c32f4056cf166613bbe2579b5f90e68c092b0e"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green-summary.json",
+      "sha256": "fe8f702d59238dc08b874c976e2ee2c23f7afb7f1dcc717b47f0d5591100297c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.xml",
+      "sha256": "ccb75ad190003fae033e81135730b3e650ac9de921c4c65fd922ceed857f1673"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.log",
+      "sha256": "341a4fdfe23ad0f0879006799754e205d36602058db6d6ce2b06457098422617"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-coverage.json",
+      "sha256": "4bfd7a8c030a25d2be5802aa4a241aa1a0448b7cb42f5a641fd204040ca34976"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-coverage.xml",
+      "sha256": "138706e5a768ae41fbdb56e3f2d0dd5d0d04b3800b1c17d22f1f82b0dd2b0fea"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-execution.json",
+      "sha256": "23823bbf349717058e4176a8b61f5cdc0f364735da8533d42164e61e25458d3c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/green-source-bindings.json",
+      "sha256": "3dd8ae6e0eb2bc6ee89c4a6ff41b796932fe95a745042d26c3e441eb6e6c87b6"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/canonical-bindings.json",
+      "sha256": "9a478cbc13b50651512f32815c1c01d32474fc785d023c9254de69e60f679302"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/report.md",
+      "sha256": "531e32101f1be660f19c2f6c92bf9c40fc5b3d911795dea54ac41c52f6ee7e34"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/candidate-binding.json",
+      "sha256": "fa5aaacb091120bc5ffd2ff1ea4958ec385ec8e4cb2fab2afbb85d97415b370d"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/gate-process.json",
+      "sha256": "cd80691627e9b992f4544a57372c25476a17221a572fc7137117c0c936698ba8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-gates.log",
+      "sha256": "2878198885637bc294f079ea7154c94686bece4449dbf65c9d914862122c6e4a"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/runtime-readback.json",
+      "sha256": "c2b01666321d81b5e318ecc4c059e91b3e85d84ccf58748bed5afe3c08649fef"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/decisions.md",
+      "sha256": "f373ab8f33191d4a60b6ed6108ea8ea0aaf46ac44c60e4f1844bac57e4a227d3"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/impact-register.md",
+      "sha256": "49fa1c9a5f8ef54cba93fd52543b6fe715eb0f0909900a392b781285a0cb3ded"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/correction-round-2.md",
+      "sha256": "931b6ee445dbe96f2dacd9240cc0e58750800e9798b31c1b0e49a3f606248e5c"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/runtime-source-refresh-h.md",
+      "sha256": "7f592003baa95d9c95a5b19693868b6f80fb8da8e4a520160d8e6b8141f7d485"
+    },
+    {
+      "path": "/tmp/otgd-image-proof/source-refresh-h/image-h.receipt.json",
+      "sha256": "bb080ecd23329607f6ffb594163136bafb5d90a2151067485d3df2e5d1d4b401"
+    },
+    {
+      "path": "/tmp/otgd-image-proof/source-refresh-h/independent-readback-h.json",
+      "sha256": "e9104780b22a4e4270840b8aead06fb1f91a614cda0d613739637c5ef2d9890a"
+    },
+    {
+      "path": "/tmp/otgd-image-proof/source-refresh-h/source-refresh-image-h.tar.gz",
+      "sha256": "e33a167902ff8157d4e726fbdf5c4dc3ce0cec962515acc12e7d1ecdbabbf011"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-load-image.json",
+      "sha256": "569281e6e06e1f64bbe3bdb639a50acfd62419372f3bb46efea1f4f9a5d70e2d"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/archive-storage-receipt.json",
+      "sha256": "16e384cd5ff77be7b90077d78bde04fef1fce739da33b843d170b1187395a8ad"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-tag-image.json",
+      "sha256": "f55c2c1417cfb2bea1e3eba630494c4694b33e6aaae8fc28222c92438d152bfd"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h.receipt.json",
+      "sha256": "bb080ecd23329607f6ffb594163136bafb5d90a2151067485d3df2e5d1d4b401"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-worker.json",
+      "sha256": "ee023517fbb995feff36318a1661913deb90b2c81b9fff9d2f436714123b7a1e"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/independent-readback-h.json",
+      "sha256": "e9104780b22a4e4270840b8aead06fb1f91a614cda0d613739637c5ef2d9890a"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-api.json",
+      "sha256": "4744e5597cf44f3bae371db7688316d559bf37fc9697648cd1060ec58dead0a7"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-identity.json",
+      "sha256": "b11f639711b1f303093868130430eebd5b95daa81bbabd6dd7369b29b8e8a811"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/author-source-release.json",
+      "sha256": "86e4cb4e1ee9a7d3715001dbbefe2f13f10d1ae451a6e246688eae6168d84837"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/obsolete-image-g-removal.json",
+      "sha256": "e4acf36e1f526e59669f1d6daaedb7a94d616f757fba2a4e41e9420c99bf5ab1"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/cache-cleanup-receipt.json",
+      "sha256": "e0a25018d0a5b573e47aa90de7844678fc080f6dd468b204fdfd742fde8eab16"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/final-readback-h.json",
+      "sha256": "dac0edd666ca82fe0e8207fde34ef48e88d5c056e164081cc7dd61319af36909"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-mobile.md",
+      "sha256": "c17244ac85a3573ac0585cc8626f8849bd1d57db8dfcd7fd47a1e7f8f7604267"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-auth.md",
+      "sha256": "c0c038cc39a9463adefe8d6ac9645c77e8d65b7c7e1cd958743b0d0187643ff9"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-export.md",
+      "sha256": "531e32101f1be660f19c2f6c92bf9c40fc5b3d911795dea54ac41c52f6ee7e34"
+    }
+  ],
+  "final_gate_evidence": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/local-final-artifacts.json",
+      "sha256": "50d0485b41031dc1375d5b73aea227ef7ab5fe973d24a41e6ba123ac7f57fa80"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-acceptance-summary.json",
+      "sha256": "c62c574b6e6e08eefb459d9d8297c6e20db5ca024f242b4a0ea2299ca42da928"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-run-final.json",
+      "sha256": "a022388c81fb57dfaa975b0c75f5474ed8a5e25f2d8b57fa1bb3ccb06047f7f7"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-jobs-final.json",
+      "sha256": "4c5e26ac94a83b767ed43082e5cb5cd3fd646dcc84d85996feb5aee2e55532cd"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-tree-binding.json",
+      "sha256": "92e94326242d94cb0add0e7d16b671c19e06a847c0c8d9c5f472cef58c16e175"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-final.json",
+      "sha256": "aa4141cb537ae3323e7915fa373aa5410af2eaf8f9c059ced8122a673c6d598c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage1.json",
+      "sha256": "082bf69762d7f7c1326fc2e05b44b36fa348813efa230937bb4ee8e066754fc8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage2.json",
+      "sha256": "9827809ef5d555c636b0b9de510f3fed48533c157275b6c91a981ba7b73cb139"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage3.json",
+      "sha256": "b8cd6078c68a5f67aec1d5a6f5772e05cd607a547f8e88748d5fae794e20b8f5"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-records-decision.json",
+      "sha256": "0c225673b3319f26e3b94c3d3ac54e562d624febe93bbfb908a0bbefc76052f8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/runtime-readback.json",
+      "sha256": "c2b01666321d81b5e318ecc4c059e91b3e85d84ccf58748bed5afe3c08649fef"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/gate-process.json",
+      "sha256": "4cb00fdfc9479338c4f7eeb10968efb6eb0561c7cd264f0aa582f090e1bed069"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+      "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/requirement-evidence.json",
+      "sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/remaining-clauses.json",
+      "sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-summary.json",
+      "sha256": "202b05502ab316553c3adcb59b14cad05bc605b33b3d098ca23b6edc839a3357"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/integrity.json",
+      "sha256": "202abe7c8b5f3cdd5efe555801386d8fa4027306b741c213c429e377e2ab0017"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/dossier-proposals.json",
+      "sha256": "867e0c5f895d3ff15c94f4c10741243aa6f0fe9a4dc699f8575da941ca1ee10d"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/software-evidence-residuals.json",
+      "sha256": "59a55bf2b2a6edebc78b251a86da76277c24a391237f793ec373bedba0dcd4df"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/mixed-software-external-residuals.json",
+      "sha256": "078ece85b8f0ebe008633e8cde74f4ad445016c1cb408899c8baa8bb88bc9ea1"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/external-prerequisites.json",
+      "sha256": "c796cf27b8e1238b4183a6aad554b9b3fbfd6f612d6d2f94153ee0a09f7f8054"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/source-assertions.json",
+      "sha256": "67a4e5316422b61f499cf452881e9338805351f953d4bcd9fe00bdab8740cc14"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/source-binding.json",
+      "sha256": "35067fa6d1541a2639517b20a127889c71a0d7f65a8cbcc983b53b3dbe375baa"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-local-admission.json",
+      "sha256": "7ba2eb59e751db4367a9164884e54ee209dd52be4033b21eb4bf4c6d6f56256e"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-ci-admission.json",
+      "sha256": "bbf9576ede2273212cca845604835cf37d6bdebaf3ee7196fd469db9b43c21f2"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/operations-admission.json",
+      "sha256": "e61aa1d25e4778ea98714eebdadc235e6e740afb7c78853dc94fd62d0db1124c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/semantics-admission.json",
+      "sha256": "b5455beb5c1b18472ce947a3cbbc81d5c0dcd4dedb66b40e3b71957f4c1e944f"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/summary.json",
+      "sha256": "202b05502ab316553c3adcb59b14cad05bc605b33b3d098ca23b6edc839a3357"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/manifest.json",
+      "sha256": "70ecb29a145da94cf032e22942571be9c703b2bab87e6e7856f69a37c3ea6da5"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/report.md",
+      "sha256": "51eba5574e3e2a0bd1a5c84b2ebf09479aaf64e044df03c3089b940dbd48a9b0"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/artifact-manifest.json",
+      "sha256": "661b9002d0fff542da179657c6fa924bfdf1c8c763ab5ca7981434a57d41280c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/report.md",
+      "sha256": "2c72412a2dde1515cd9481f614ccba0ab5e9cef0cf422047ac31bfe238cab681"
+    }
+  ],
+  "independent_gate_artifact_validation": {
+    "all_local_and_downloaded_ci_hashes_match": true,
+    "downloaded_ci_archives": 9,
+    "downloaded_ci_entries": 35,
+    "assertion_records": 623,
+    "source_files": 109,
+    "helper_records": 342,
+    "source_body_helper_mismatches": []
+  },
+  "released_case_summary": {
+    "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+    "generated_at": "2026-10-25T11:28:32.161134+00:00",
+    "cases": 782,
+    "requirements": 411,
+    "specs": 47,
+    "statuses": {
+      "PARTIAL": 420,
+      "PASS": 260,
+      "BLOCKED": 82,
+      "NOT_RUN": 20
+    },
+    "audit_pending": 0,
+    "current_source_records": 623,
+    "source_records_with_observations": 617,
+    "remaining_type_case_counts_nonexclusive": {
+      "physical_hardware_execution": 51,
+      "software_assertion_or_integration_evidence": 341,
+      "independent_owner_review": 43,
+      "study_scientific_approval": 42,
+      "independent_prerequisite_or_exact_scenario_evidence": 9,
+      "native_os_execution": 90,
+      "software_variant_inventory_evidence": 1,
+      "deployment_cloud_or_owner_prerequisite": 69,
+      "software_integration_evidence": 7,
+      "software_authority_boundary_evidence": 2,
+      "software_toolchain_evidence": 1,
+      "software_compiled_artifact_evidence": 1,
+      "live_dependency_scenario_evidence": 1,
+      "software_startup_scenario_evidence": 1,
+      "software_ui_assertion_evidence": 3,
+      "software_scenario_evidence": 1,
+      "provider_credentials": 1,
+      "software_adapter_integration_evidence": 1,
+      "deployment_cloud_prerequisite": 2
+    },
+    "new_demonstrated_source_defects": 0,
+    "full_local_gate_pass": true,
+    "full_current_ci_pass": true,
+    "scope": "Current case evidence reconciliation; no complete application/council/release approval. PARTIAL and evidence-gap counts are not implementation defects or requests for test expansion."
+  },
+  "final_verifier_release": true,
+  "verifier_release_manifest": {
+    "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/release-manifest.json",
+    "sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d"
+  },
+  "released164files_hash_mismatches": [],
+  "final_source_fingerprint_independently_recomputed": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7"
+}

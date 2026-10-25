@@ -1,0 +1,588 @@
+{
+  "reviewer_identity": "/root/replacement_product",
+  "recorded_at": "2026-10-25T10:40:33.432397+00:00",
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "actual_source_fingerprint_sha256": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "candidate_binding": {
+    "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/candidate-binding.json",
+    "sha256": "fa5aaacb091120bc5ffd2ff1ea4958ec385ec8e4cb2fab2afbb85d97415b370d"
+  },
+  "all47_canonical_hashes_match": true,
+  "author_source_bindings": [
+    {
+      "role": "auth",
+      "path": "apps/mobile/src/services/auth.ts",
+      "expected_sha256": "bcb384ac846cccd8796ec4a35b85c4aa92cab65221ac6dda3a075163a5770c62",
+      "current_sha256": "bcb384ac846cccd8796ec4a35b85c4aa92cab65221ac6dda3a075163a5770c62",
+      "matches": true
+    },
+    {
+      "role": "auth",
+      "path": "apps/mobile/tests/auth-callback.test.ts",
+      "expected_sha256": "d4d89af5fcce9d3d7c902d89eea1c0b72cbb09be274a962d56358dc801e6ead8",
+      "current_sha256": "d4d89af5fcce9d3d7c902d89eea1c0b72cbb09be274a962d56358dc801e6ead8",
+      "matches": true
+    },
+    {
+      "role": "auth",
+      "path": "apps/mobile/tests/auth.test.ts",
+      "expected_sha256": "4fe1cf28a5cbd70e1b35528ead96f32090f47b4025bfad9b5fc09eca24f67827",
+      "current_sha256": "4fe1cf28a5cbd70e1b35528ead96f32090f47b4025bfad9b5fc09eca24f67827",
+      "matches": true
+    },
+    {
+      "role": "auth",
+      "path": "apps/mobile/tests/auth-cognito.test.ts",
+      "expected_sha256": "6662a60247bbc734d380d6d533fb3938425d5f30cd98f6c0e5580c7860cd1911",
+      "current_sha256": "6662a60247bbc734d380d6d533fb3938425d5f30cd98f6c0e5580c7860cd1911",
+      "matches": true
+    },
+    {
+      "role": "auth",
+      "path": "apps/mobile/tests/auth-acceptance.test.ts",
+      "expected_sha256": "ca9ec0ba337a779fc8675d02069a95dfd5b7054894fde67e3900b95833ce922c",
+      "current_sha256": "ca9ec0ba337a779fc8675d02069a95dfd5b7054894fde67e3900b95833ce922c",
+      "matches": true
+    },
+    {
+      "role": "auth",
+      "path": "apps/mobile/tests/controller.test.ts",
+      "expected_sha256": "9d467077dd365a048585943fcb33b17859535db4bcb8c7741dd48782b16370d0",
+      "current_sha256": "9d467077dd365a048585943fcb33b17859535db4bcb8c7741dd48782b16370d0",
+      "matches": true
+    },
+    {
+      "role": "auth",
+      "path": "apps/mobile/tests/support/runtime.cjs",
+      "expected_sha256": "f6c4495c7ad94ea3f80d288f1199899fc581802a4175d4b8040a3ca1575dd9cf",
+      "current_sha256": "f6c4495c7ad94ea3f80d288f1199899fc581802a4175d4b8040a3ca1575dd9cf",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "services/api/otgd/report_revisions.py",
+      "expected_sha256": "02e6d0331075209a33261ec6f75499dae778e78d590c9451d4e6584dc0f590f4",
+      "current_sha256": "02e6d0331075209a33261ec6f75499dae778e78d590c9451d4e6584dc0f590f4",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "services/api/otgd/main.py",
+      "expected_sha256": "a84b0694e0e97b41ed113f78ad261e0cfc352c9d84961969311d72d10681a46a",
+      "current_sha256": "a84b0694e0e97b41ed113f78ad261e0cfc352c9d84961969311d72d10681a46a",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "services/api/otgd/domain.py",
+      "expected_sha256": "ba1d898a1107ab9983a5ce4d2f6f04884b94acab3fc6130e04ad106fb3fc92d5",
+      "current_sha256": "ba1d898a1107ab9983a5ce4d2f6f04884b94acab3fc6130e04ad106fb3fc92d5",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "services/api/otgd/worker.py",
+      "expected_sha256": "71340311bc34f66daf641c439b4c6f66098cf1386969e78309731779edb9787d",
+      "current_sha256": "71340311bc34f66daf641c439b4c6f66098cf1386969e78309731779edb9787d",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "services/api/tests/test_current_result_readback.py",
+      "expected_sha256": "8df4b2d22a0eb0b0167ec244dc5c46d93e28608682038074f3a6da4112177023",
+      "current_sha256": "8df4b2d22a0eb0b0167ec244dc5c46d93e28608682038074f3a6da4112177023",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "services/api/tests/test_cardiac_authority.py",
+      "expected_sha256": "96d34c6540fcdbaedcd35a347c30661bbe94e9bb5582a7b6c5ecd42ec247695a",
+      "current_sha256": "96d34c6540fcdbaedcd35a347c30661bbe94e9bb5582a7b6c5ecd42ec247695a",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "services/api/tests/test_model_admission.py",
+      "expected_sha256": "af9e33ad937fcbe0554136ee5340806a8054fc9a80340d15484dc9480d7bd867",
+      "current_sha256": "af9e33ad937fcbe0554136ee5340806a8054fc9a80340d15484dc9480d7bd867",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "services/api/tests/test_report_revisions.py",
+      "expected_sha256": "d83d92bfad35040a508a5dfa79b586eec0411021b2da06c3f4c8a1c955096d06",
+      "current_sha256": "d83d92bfad35040a508a5dfa79b586eec0411021b2da06c3f4c8a1c955096d06",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "openspec/changes/production-mobile-platform/shared-contracts.md",
+      "expected_sha256": "c74f1fdf1ad65c208fb4d5f6b2f488961c3f2edff73c6a657d263073974bd8ec",
+      "current_sha256": "c74f1fdf1ad65c208fb4d5f6b2f488961c3f2edff73c6a657d263073974bd8ec",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "docs/factory/otgd-20261025-0555/correction-round-2.md",
+      "expected_sha256": "931b6ee445dbe96f2dacd9240cc0e58750800e9798b31c1b0e49a3f606248e5c",
+      "current_sha256": "931b6ee445dbe96f2dacd9240cc0e58750800e9798b31c1b0e49a3f606248e5c",
+      "matches": true
+    },
+    {
+      "role": "export",
+      "path": "docs/factory/otgd-20261025-0555/decisions.md",
+      "expected_sha256": "4bcd2c758263db66e627d1fb7fcf59b4c4cf1efd728fb77928c46e60f7d7be13",
+      "current_sha256": "f373ab8f33191d4a60b6ed6108ea8ea0aaf46ac44c60e4f1844bac57e4a227d3",
+      "matches": false,
+      "difference_explanation": "Versioned decisions journal appended D010v2/D006v10v11/D008v3 after focused author run; runtime/spec/test hashes match. This journal hash is not adopted as unchanged."
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/src/controller.ts",
+      "expected_sha256": "5e1c20cb71a72004b32aff1ef9585b61aeb721b2f3336a3862b98b6c3b801e53",
+      "current_sha256": "5e1c20cb71a72004b32aff1ef9585b61aeb721b2f3336a3862b98b6c3b801e53",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/src/ui/checks.tsx",
+      "expected_sha256": "11f5d3e659726c77590b06ad56eed8cce8a890d121352d797d46b95ad3cf0cd5",
+      "current_sha256": "11f5d3e659726c77590b06ad56eed8cce8a890d121352d797d46b95ad3cf0cd5",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/src/core/devicePresentation.ts",
+      "expected_sha256": "59eae66daaf4dbfcf0daa7341fb1649b2aa3b092c657fef57c0b6f73460e9768",
+      "current_sha256": "59eae66daaf4dbfcf0daa7341fb1649b2aa3b092c657fef57c0b6f73460e9768",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/src/ui/device-summary.tsx",
+      "expected_sha256": "2b1126a8f49a8c035e2c4ebec7fa57271e7f3b781b8f895c2bf2a31d7074233d",
+      "current_sha256": "2b1126a8f49a8c035e2c4ebec7fa57271e7f3b781b8f895c2bf2a31d7074233d",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/src/ui/manage.tsx",
+      "expected_sha256": "023fd4fdb5819fd85be7dbd181a89d265cb24606b75ee21891b1136e66c210ac",
+      "current_sha256": "023fd4fdb5819fd85be7dbd181a89d265cb24606b75ee21891b1136e66c210ac",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/tests/hr-read-admission.test.ts",
+      "expected_sha256": "83dc55ed2473fc54f54d43a26a76dd31a6cbb0c019118a8b612166944bc49fa8",
+      "current_sha256": "83dc55ed2473fc54f54d43a26a76dd31a6cbb0c019118a8b612166944bc49fa8",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/tests/device-presentation.test.ts",
+      "expected_sha256": "b5ef6ea88a473d082e49cf89eb4afa8e50b1bed4d7fe572ebdabdf31062ee733",
+      "current_sha256": "b5ef6ea88a473d082e49cf89eb4afa8e50b1bed4d7fe572ebdabdf31062ee733",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/tests/result-ui.test.ts",
+      "expected_sha256": "217ae43bfcae4cb9826bafd8ad66bef8e97327c0638400c0e6263c5eb7d66a60",
+      "current_sha256": "217ae43bfcae4cb9826bafd8ad66bef8e97327c0638400c0e6263c5eb7d66a60",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/tests/support/result-rendering.tsx",
+      "expected_sha256": "2c890041f348af9e54462fde8f77f806e8d8b7cf6b1c211bae73bad992c81eb9",
+      "current_sha256": "2c890041f348af9e54462fde8f77f806e8d8b7cf6b1c211bae73bad992c81eb9",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/tests/support/device-presentation-fixtures.ts",
+      "expected_sha256": "483f069e5dcde3aced0162ccc54e92c2b99acc604c3462051605c558a6323934",
+      "current_sha256": "483f069e5dcde3aced0162ccc54e92c2b99acc604c3462051605c558a6323934",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/src/device/tests/physical.test.ts",
+      "expected_sha256": "6df427ba040c5193847772dc4a6d630b51153c5e23bdb6e5c3d473f6b5e295bc",
+      "current_sha256": "6df427ba040c5193847772dc4a6d630b51153c5e23bdb6e5c3d473f6b5e295bc",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/e2e/components.spec.ts",
+      "expected_sha256": "a1d8cd2e19f072ac0d981602e7a96d29415b25b47cbfe98292f556d682612bd1",
+      "current_sha256": "a1d8cd2e19f072ac0d981602e7a96d29415b25b47cbfe98292f556d682612bd1",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/e2e/fixtures/hr-result-component.tsx",
+      "expected_sha256": "ad64e9697e9f6575d76c442aa325a381e05d5428e8428d645ec090a7fbb79a6b",
+      "current_sha256": "ad64e9697e9f6575d76c442aa325a381e05d5428e8428d645ec090a7fbb79a6b",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/e2e/fixtures/device-presentation-component.tsx",
+      "expected_sha256": "10c3d77f398b1c571e1f43cc20df7341ffe0b2ce423b80dbc281ebbafdd48e48",
+      "current_sha256": "10c3d77f398b1c571e1f43cc20df7341ffe0b2ce423b80dbc281ebbafdd48e48",
+      "matches": true
+    },
+    {
+      "role": "mobile",
+      "path": "apps/mobile/e2e/fixtures/alcohol-component.tsx",
+      "expected_sha256": "dfafd09b27580553506f00a96bc8a7a71c806c625584939e2bc51dc69dab11a9",
+      "current_sha256": "dfafd09b27580553506f00a96bc8a7a71c806c625584939e2bc51dc69dab11a9",
+      "matches": true
+    }
+  ],
+  "raw_xml_inspection": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.xml",
+      "testcases": 99,
+      "failures_or_errors": 0,
+      "skips": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.xml",
+      "testcases": 2,
+      "failures_or_errors": 2,
+      "skips": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.xml",
+      "testcases": 21,
+      "failures_or_errors": 0,
+      "skips": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.xml",
+      "testcases": 1538,
+      "failures_or_errors": 0,
+      "skips": 0
+    }
+  ],
+  "focused_raw_artifacts": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/callback-red.log",
+      "sha256": "128b062a0135fb7c344c5fea86fb49ac4f14435a60adaf996fad2b44218788a7"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/red-native-observation.json",
+      "sha256": "f83fe94cf92198e8991f0c8301a6e7e18619fdfdf44be1b4c39a50d1b131f0d6"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release-final.log",
+      "sha256": "35584575e1aabd382bbedfdfb71495dca6b70ed05bc8b82f27af850fedcd52fe"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.xml",
+      "sha256": "b57121aac71ce0367875631a755babc266ed32a60685414dc8ff5f3c0d6d643e"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/source-evidence-hashes.json",
+      "sha256": "ca018f4fe556f693cb6ee8089b3f3647efc548df0870b135eb9c19ef8d01fa00"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.xml",
+      "sha256": "20c536f287c90f0f1b04ff4ccd10a17466325aceb98b4a28d56f602f0be74f75"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red-http-observations.json",
+      "sha256": "4b4d13fda751084d197948bb0c89258addf6d6071e4c7e761c50b8601265e5be"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.xml",
+      "sha256": "019aa3e9c4e9c9815cfc3686d221a079ad6168856e859e6ffe25f7d0408beafa"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green-summary.json",
+      "sha256": "fe8f702d59238dc08b874c976e2ee2c23f7afb7f1dcc717b47f0d5591100297c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.xml",
+      "sha256": "ccb75ad190003fae033e81135730b3e650ac9de921c4c65fd922ceed857f1673"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-execution.json",
+      "sha256": "23823bbf349717058e4176a8b61f5cdc0f364735da8533d42164e61e25458d3c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-coverage.json",
+      "sha256": "4bfd7a8c030a25d2be5802aa4a241aa1a0448b7cb42f5a641fd204040ca34976"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/green-source-bindings.json",
+      "sha256": "3dd8ae6e0eb2bc6ee89c4a6ff41b796932fe95a745042d26c3e441eb6e6c87b6"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/device-red.log",
+      "sha256": "9af651f31af77719ab47ad88d476edb3923a3957753574beace3943c2203166e"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/home-device-red.log",
+      "sha256": "c15b32aa115c6eade960e14fb9757177e9a2a45e247e62c2196eafb146bda46b"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-red2.log",
+      "sha256": "f88cc099b2777a27748f6ed5333b63d518532667c19f369116c94bac7641b5ff"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-manual-red.log",
+      "sha256": "0b230499fbe635936fe4746397019a101c409feedcdd6fc5fb0dbbddc091fd9d"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-green.log",
+      "sha256": "f56413d46ae2dcdc3a1a61318e15a806c98c8475942090077bfb175fc99ddbe4"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-browser-green.log",
+      "sha256": "44680c74875b80133e9c5ba359d3d2fa18edb7e92a12923d22381f964bd9a685"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-browser.log",
+      "sha256": "7653ad9b088a8db86e0094c2788cba8144bad596dbcde9ebe86b4a4cbd3ca562"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-unit.log",
+      "sha256": "b42da21e502e3e1167d84c3d87a9f0295c7fdda2c2337f599bcbe880b8d06f37"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/mobile-unit-coverage.json",
+      "sha256": "6bc30489f434da6832741aa07b4d1a0ac0fc541f3067e9b3d10d67c07717ceed"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/source-bindings.json",
+      "sha256": "0feeffd55a8ac408f5752130553dd549187d75c00b34646a1cb55dd37a0cbdca"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/evidence-manifest.json",
+      "sha256": "33311002a9ce8a228218d2afb8a6f018f40e173298301aa2e9ae9e5b0fb9c5e4"
+    }
+  ],
+  "runtime_image_adoption_evidence": [
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-load-image.json",
+      "sha256": "569281e6e06e1f64bbe3bdb639a50acfd62419372f3bb46efea1f4f9a5d70e2d"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-identity.json",
+      "sha256": "b11f639711b1f303093868130430eebd5b95daa81bbabd6dd7369b29b8e8a811"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-api.json",
+      "sha256": "4744e5597cf44f3bae371db7688316d559bf37fc9697648cd1060ec58dead0a7"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-worker.json",
+      "sha256": "ee023517fbb995feff36318a1661913deb90b2c81b9fff9d2f436714123b7a1e"
+    },
+    {
+      "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/obsolete-image-g-removal.json",
+      "sha256": "e4acf36e1f526e59669f1d6daaedb7a94d616f757fba2a4e41e9420c99bf5ab1"
+    }
+  ],
+  "runtime_scope": "Earlier preparation/final-readback BLOCKED_CAPACITY receipts are historical preparation-stage facts. Later PM load/serialized refresh and G-removal receipts record actual adoption with retained data/container/volume preservation; no cloud/original-image/physical qualification follows.",
+  "current_gate_evidence": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/local-final-artifacts.json",
+      "sha256": "50d0485b41031dc1375d5b73aea227ef7ab5fe973d24a41e6ba123ac7f57fa80"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-acceptance-summary.json",
+      "sha256": "c62c574b6e6e08eefb459d9d8297c6e20db5ca024f242b4a0ea2299ca42da928"
+    }
+  ],
+  "tests_or_runtime_probes_by_reviewer": false,
+  "repository_writes": false,
+  "final_evidence_updated_at": "2026-10-25T11:33:09.007336+00:00",
+  "final_release_evidence": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/local-final-artifacts.json",
+      "sha256": "50d0485b41031dc1375d5b73aea227ef7ab5fe973d24a41e6ba123ac7f57fa80"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-acceptance-summary.json",
+      "sha256": "c62c574b6e6e08eefb459d9d8297c6e20db5ca024f242b4a0ea2299ca42da928"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-tree-binding.json",
+      "sha256": "92e94326242d94cb0add0e7d16b671c19e06a847c0c8d9c5f472cef58c16e175"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-run-final.json",
+      "sha256": "a022388c81fb57dfaa975b0c75f5474ed8a5e25f2d8b57fa1bb3ccb06047f7f7"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage1.json",
+      "sha256": "082bf69762d7f7c1326fc2e05b44b36fa348813efa230937bb4ee8e066754fc8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage2.json",
+      "sha256": "9827809ef5d555c636b0b9de510f3fed48533c157275b6c91a981ba7b73cb139"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage3.json",
+      "sha256": "b8cd6078c68a5f67aec1d5a6f5772e05cd607a547f8e88748d5fae794e20b8f5"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-records-decision.json",
+      "sha256": "0c225673b3319f26e3b94c3d3ac54e562d624febe93bbfb908a0bbefc76052f8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+      "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/requirement-evidence.json",
+      "sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/remaining-clauses.json",
+      "sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-summary.json",
+      "sha256": "202b05502ab316553c3adcb59b14cad05bc605b33b3d098ca23b6edc839a3357"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/integrity.json",
+      "sha256": "202abe7c8b5f3cdd5efe555801386d8fa4027306b741c213c429e377e2ab0017"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-local-admission.json",
+      "sha256": "7ba2eb59e751db4367a9164884e54ee209dd52be4033b21eb4bf4c6d6f56256e"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-ci-admission.json",
+      "sha256": "bbf9576ede2273212cca845604835cf37d6bdebaf3ee7196fd469db9b43c21f2"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/operations-admission.json",
+      "sha256": "e61aa1d25e4778ea98714eebdadc235e6e740afb7c78853dc94fd62d0db1124c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/semantics-admission.json",
+      "sha256": "b5455beb5c1b18472ce947a3cbbc81d5c0dcd4dedb66b40e3b71957f4c1e944f"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/dossier-proposals.json",
+      "sha256": "867e0c5f895d3ff15c94f4c10741243aa6f0fe9a4dc699f8575da941ca1ee10d"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/source-assertions.json",
+      "sha256": "67a4e5316422b61f499cf452881e9338805351f953d4bcd9fe00bdab8740cc14"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/release-manifest.json",
+      "sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/release.json",
+      "sha256": "1d866f119a95b8a34afe69e32429d74a9fbfa5dd60c043dd5736b0e1b1191c41"
+    }
+  ],
+  "current_gate_status": "7localPASS+14CIidenticaltreePASS;source-before-after-equal",
+  "actual_local_xml_inspection": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+      "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+      "actual_testcase_elements": 1538,
+      "failure_error_skip": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+      "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+      "actual_testcase_elements": 1508,
+      "failure_error_skip": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "actual_testcase_elements": 80,
+      "failure_error_skip": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/atdd.xml",
+      "sha256": "8f7f6be05f22df4eeedb2681d2f568c59457dd99fea80af10f687185d18ef410",
+      "actual_testcase_elements": 6,
+      "failure_error_skip": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/authenticated-live.xml",
+      "sha256": "d077dac5e8315553d8b2e4a574bca04ba3639fc7d2905c0aaec076f7974c8392",
+      "actual_testcase_elements": 2,
+      "failure_error_skip": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/hosted-preview.xml",
+      "sha256": "374044d14f7d671489e6a5e364841c09bbff43fc2ec9a338e00e74139b465f6c",
+      "actual_testcase_elements": 2,
+      "failure_error_skip": 0
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/secure-sdk.xml",
+      "sha256": "257222d4edad30b4f2d654af931264ebd4d84e991402466b4d990086e9848fdd",
+      "actual_testcase_elements": 9,
+      "failure_error_skip": 0
+    }
+  ],
+  "local_files_independently_rehashed": 19,
+  "ci_archive_member_files_independently_rehashed": 44,
+  "supplemental_files_independently_rehashed": 62,
+  "actual_api_unit_coverage_percent": 89.92566681241802,
+  "current_final_case_summary": {
+    "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+    "generated_at": "2026-10-25T11:28:32.161134+00:00",
+    "cases": 782,
+    "requirements": 411,
+    "specs": 47,
+    "statuses": {
+      "PARTIAL": 420,
+      "PASS": 260,
+      "BLOCKED": 82,
+      "NOT_RUN": 20
+    },
+    "audit_pending": 0,
+    "current_source_records": 623,
+    "source_records_with_observations": 617,
+    "remaining_type_case_counts_nonexclusive": {
+      "physical_hardware_execution": 51,
+      "software_assertion_or_integration_evidence": 341,
+      "independent_owner_review": 43,
+      "study_scientific_approval": 42,
+      "independent_prerequisite_or_exact_scenario_evidence": 9,
+      "native_os_execution": 90,
+      "software_variant_inventory_evidence": 1,
+      "deployment_cloud_or_owner_prerequisite": 69,
+      "software_integration_evidence": 7,
+      "software_authority_boundary_evidence": 2,
+      "software_toolchain_evidence": 1,
+      "software_compiled_artifact_evidence": 1,
+      "live_dependency_scenario_evidence": 1,
+      "software_startup_scenario_evidence": 1,
+      "software_ui_assertion_evidence": 3,
+      "software_scenario_evidence": 1,
+      "provider_credentials": 1,
+      "software_adapter_integration_evidence": 1,
+      "deployment_cloud_prerequisite": 2
+    },
+    "new_demonstrated_source_defects": 0,
+    "full_local_gate_pass": true,
+    "full_current_ci_pass": true,
+    "scope": "Current case evidence reconciliation; no complete application/council/release approval. PARTIAL and evidence-gap counts are not implementation defects or requests for test expansion."
+  },
+  "source_fingerprint_rechecked": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "verifier_release_manifest": {
+    "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/release-manifest.json",
+    "sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d"
+  },
+  "verifier_release_files_independently_rehashed": 164
+}

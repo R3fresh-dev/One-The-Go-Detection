@@ -1,0 +1,67 @@
+{
+  "spec_id": "OTGD-024",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-ecg-capture/spec.md",
+  "canonical_sha256": "c75f24b4beeda893b780af0d924747c0cd7ca599ead627d3d265f21ec3772895",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-024-AND-ECG-001-01",
+    "OTGD-024-AND-ECG-001-02",
+    "OTGD-024-AND-ECG-002-01",
+    "OTGD-024-AND-ECG-002-02",
+    "OTGD-024-AND-ECG-002-03",
+    "OTGD-024-AND-ECG-003-01",
+    "OTGD-024-AND-ECG-003-02",
+    "OTGD-024-AND-ECG-004-01",
+    "OTGD-024-AND-ECG-004-02",
+    "OTGD-024-AND-ECG-005-01",
+    "OTGD-024-AND-ECG-005-02",
+    "OTGD-024-AND-ECG-006-01",
+    "OTGD-024-AND-ECG-006-02",
+    "OTGD-024-AND-ECG-006-03",
+    "OTGD-024-AND-ECG-007-01",
+    "OTGD-024-AND-ECG-007-02"
+  ],
+  "requirements": [
+    "AND-ECG-001",
+    "AND-ECG-002",
+    "AND-ECG-003",
+    "AND-ECG-004",
+    "AND-ECG-005",
+    "AND-ECG-006",
+    "AND-ECG-007"
+  ],
+  "statuses": {
+    "PARTIAL": 12,
+    "BLOCKED": 1,
+    "PASS": 2,
+    "NOT_RUN": 1
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-024",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies",
+    "Exact compiler, executable and arduino-cli commands: immutable .github/workflows/native-build.yml; actual ci-firmware.log and ci-protected-reader.log retained."
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/tests/cardiac-selection.test.ts::skipping an ECG alternative cannot erase valid selected PPG",
+    "apps/mobile/src/device/tests/signal.test.ts::local ECG stream keeps the exact ten-message complete evidence and connection observation time separate from samples",
+    "apps/mobile/tests/acquisition.test.ts::approved research start freezes exact online study/configuration context and device binding before any acquisition",
+    "services/api/tests/test_participant_acquisition.py::test_human_ecg_state_verification_is_unavailable_even_when_declared_verified",
+    "apps/mobile/tests/acquisition.test.ts::revoked consent, stale approval and reader substitution cannot invoke hardware",
+    "apps/mobile/src/device/tests/physical.test.ts::signed sample chunks enforce monotonic actual timestamps, explicit drops, units and payload digest",
+    "apps/mobile/src/device/tests/signal.test.ts::ECG display draws at most 99 contiguous segments and does not fill a gap, rescale units or change source samples",
+    "firmware/tests/signed_reader_acquisition_test.cpp::main",
+    "apps/mobile/src/device/tests/signal.test.ts::all named fictional fault scenarios latch their exact reason, clear current BPM and reject later completion",
+    "apps/mobile/src/device/tests/physical.test.ts::cancellation clears trusted association immediately and drops a late signed completion",
+    "apps/mobile/src/device/tests/protocol.test.ts::cancellation invalidates before disconnect and prevents stale completion into a different workspace",
+    "apps/mobile/tests/cardiac-selection.test.ts::one PPG plus one ECG is retained and requires an explicit final choice",
+    "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload",
+    "apps/mobile/tests/raw-artifacts.test.ts::fresh acquisition authority must match exact current optional receipt and cannot bypass offline or cross-device stop",
+    "apps/mobile/tests/raw-upload.test.ts::Save and metadata-only upload never read or queue raw; explicit selection is immutable and exact"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

@@ -1,0 +1,2496 @@
+{
+  "spec_id": "OTGD-006",
+  "source_candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "reviews": {
+    "security": {
+      "spec_id": "OTGD-006",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
+      "canonical_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "canonical_matches_candidate": true,
+      "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+      "scope": "IMPLEMENTATION",
+      "review_domain": "SECURITY",
+      "decision": "BLOCKED",
+      "provisional": false,
+      "source_review_decision": "NO_REQUIRED_SOURCE_CORRECTION_IDENTIFIED",
+      "reason": "Strict result verification and typed1.1 linkage remain; HR numeric disclosure additionally uses ephemeral current service admission. Final view-effect change is bound to exact saved result bytes; no cached admission is persisted. Required exact implementation clause evidence remains incomplete: OTGD-006-AND-RES-003-01 \u2014 The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate.",
+      "findings": [],
+      "evidence_holds": [
+        "SEC-E03"
+      ],
+      "supporting_evidence": [
+        {
+          "path": "apps/mobile/src/core/resultPresentation.ts",
+          "sha256": "17b4d4f2e7bf60909c41f0cc6359655c6175d3e978bb0ccb9bc70fa08af7bcd0",
+          "bytes": 4952
+        },
+        {
+          "path": "apps/mobile/src/controller.ts",
+          "sha256": "5e1c20cb71a72004b32aff1ef9585b61aeb721b2f3336a3862b98b6c3b801e53",
+          "bytes": 183834
+        }
+      ],
+      "requirements": [
+        "AND-RES-003 Keep impairment inference closed"
+      ],
+      "required_current_execution": "COMPLETED: all7mandatory local gates/currentCI14; exact tested merge tree equals candidate; no skipped mandatory gate inferred",
+      "external_prerequisites": [],
+      "carried_forward_source_scope": "Prior security trust-boundary inspection reaffirmed only for unchanged hashed source and unchanged canonical criteria; final source deltas independently inspected; historical runtime PASS not carried forward",
+      "case_dispositions": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "case_ids": [
+        "OTGD-006-AND-RES-003-01",
+        "OTGD-006-AND-RES-003-02"
+      ],
+      "remaining_exact_clauses": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "status": "PARTIAL",
+          "exact_unproved_clauses": [
+            "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+          ],
+          "prerequisite_types": [
+            "software_integration_evidence",
+            "study_scientific_approval"
+          ],
+          "current_assertion_refs": [
+            "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+            "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+            "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+            "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+            "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+            "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+            "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+            "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+            "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+            "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+            "apps/mobile/tests/result-ui.test.ts::actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+            "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+            "apps/mobile/tests/result-presentation.test.ts::verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+            "apps/mobile/tests/result-presentation.test.ts::supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+            "apps/mobile/tests/research-result.test.ts::a verified uncertainty band requires null abstention rather than a probability or optimistic classification"
+          ],
+          "software_evidence_gap": true,
+          "external_prerequisite": true,
+          "not_a_demonstrated_source_defect": true
+        }
+      ],
+      "software_evidence_gap_case_ids": [
+        "OTGD-006-AND-RES-003-01"
+      ],
+      "external_prerequisite_case_ids": [
+        "OTGD-006-AND-RES-003-01"
+      ],
+      "current_named_execution_evidence": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "artifact_sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "local HR export independently reads before assembly and final release; refusal releases no archive",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual HR screen requires a fresh admitted result on open and after evidence navigation",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual HR screen requires a fresh admitted result on open and after evidence navigation",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "artifact_sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual HR screen requires a fresh admitted result on open and after evidence navigation",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual HR screen requires a fresh admitted result on open and after evidence navigation",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "artifact_sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "artifact_sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "artifact_sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "artifact_sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "explicit manual refresh can establish the active HR view when no previous token exists",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "name": "a verified uncertainty band requires null abstention rather than a probability or optimistic classification",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "artifact_sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "artifact_sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "artifact_sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "artifact_sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "status": "PASS",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "artifact_sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae"
+        }
+      ],
+      "current_case_evidence": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+        "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+      },
+      "current_requirement_evidence": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/requirement-evidence.json",
+        "sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f"
+      },
+      "current_remaining_clauses": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/remaining-clauses.json",
+        "sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8"
+      },
+      "council_admission": "Independent security-domain judgment only; no product/engineering/council approval is invented"
+    },
+    "code": {
+      "spec_id": "OTGD-006",
+      "reviewer": {
+        "agent_id": "/root/replacement_code",
+        "role": "code reviewer",
+        "provider": "OpenAI",
+        "configured_model": "gpt-6.1-sol",
+        "configured_reasoning_effort": "high",
+        "fork_turns": "none",
+        "runtime_model_independently_queryable": false,
+        "model_evidence": "Parent corrected and explicitly confirmed actual spawn arguments through native message; no runtime model query exposed.",
+        "independence": "Separate independent review context retained for confirmation; no authorship of candidate code/tests."
+      },
+      "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
+      "canonical_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "scope": "IMPLEMENTATION",
+      "criteria": [
+        "AND-RES-003 Keep impairment inference closed"
+      ],
+      "code_source_assessment": "NO_OPEN_DEMONSTRATED_CODE_DEFECT",
+      "prior_finding_ids": [
+        "CODE-R1-004"
+      ],
+      "external_limits": [
+        "Actual native OS/device/lifecycle/assistive/encrypted-storage qualification where applicable remains separate.",
+        "Hardware/electrical/assay/scientific/study approvals and genuine cloud/store deployment evidence are not created by fictional software tests."
+      ],
+      "canonical_hash_verified": true,
+      "decision": "BLOCKED",
+      "provisional": false,
+      "final_scoped_specialist_decision": true,
+      "decision_scope": "Independent CODE IMPLEMENTATION review of this canonical spec; not council/global app/release approval.",
+      "rationale": "Independent current source and executed-evidence review finds no open demonstrated code defect; required seven local and14CI gates now pass. IMPLEMENTATION acceptance remains blocked by exact residual clauses, including OTGD-006-AND-RES-003-01: The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate. Full exact residuals are retained below; software gaps and external prerequisites are distinguished.",
+      "case_status_counts": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "case_ids": [
+        "OTGD-006-AND-RES-003-01",
+        "OTGD-006-AND-RES-003-02"
+      ],
+      "remaining_clauses": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "status": "PARTIAL",
+          "unproved_then_clauses": [
+            "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+          ],
+          "prerequisite_types": [
+            "software_integration_evidence",
+            "study_scientific_approval"
+          ],
+          "assertions_proven": [
+            "Client verifies fully linked fictional1.1 endpoint/population/provenance and rejects altered proof; direct alcohol research context keeps no-driving-clearance copy.",
+            "ExistingHRcache exactdigest/view/epoch/account/gen ephemeralread, late/offline/denial/mismatch refusal; separateexportadmission atassembly/finalrelease, actualResultDOMwithprepopulatedHR.",
+            "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates.",
+            "Actual Result/History/row rendering preserves uncertainty policy/method/exact supplied limits/rationale, null abstention and historical scope; malformed/mismatched policy withheld. Shared current Result source supplies endpoint/population/research-only/no-driving text, not a probabilistic fitness claim."
+          ],
+          "current_source_assertion_refs": [
+            "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+            "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+            "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+            "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+            "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+            "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+            "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+            "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+            "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+            "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+            "apps/mobile/tests/result-ui.test.ts::actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+            "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+            "apps/mobile/tests/result-presentation.test.ts::verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+            "apps/mobile/tests/result-presentation.test.ts::supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+            "apps/mobile/tests/research-result.test.ts::a verified uncertainty band requires null abstention rather than a probability or optimistic classification"
+          ]
+        }
+      ],
+      "remaining_prerequisite_types": [
+        "software_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "remaining_count": 1,
+      "applicable_current_gates": {
+        "local7": "PASS",
+        "ci14": "PASS",
+        "ci_run": 40185247204,
+        "tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+        "fingerprint": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7"
+      },
+      "finding_ids": [],
+      "prior_finding_resolution": "CODE-R1-003/004 closed source+focused+current final named execution; CODE002 closed; CODE001 current-gate hold resolved. Prior applicable closures retained.",
+      "named_executed_support": [
+        {
+          "name": "actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "alcohol copy remains accurate for measurement, guest and admitted research contexts",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "local HR export independently reads before assembly and final release; refusal releases no archive",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "actual HR screen requires a fresh admitted result on open and after evidence navigation",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "actual HR screen requires a fresh admitted result on open and after evidence navigation",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "actual HR screen requires a fresh admitted result on open and after evidence navigation",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+          "sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "explicit manual refresh can establish the active HR view when no previous token exists",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "a verified uncertainty band requires null abstention rather than a probability or optimistic classification",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/repo/reports/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+          "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+          "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+          "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[notice]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[generation]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[consent]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[recovery]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[simulator]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[os]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[qualification]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[calibration]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[artifact]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        },
+        {
+          "name": "test_current_authority_or_bytes_refusal_returns_no_score[training_time]",
+          "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+          "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+          "scope": "Executed named observation; only source/body assertions support mapped clauses."
+        }
+      ],
+      "authoritative_released_case_evidence": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+        "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+      },
+      "requirement_evidence": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/requirement-evidence.json",
+        "sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f"
+      },
+      "per_spec_dossier_proposal": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/specs/OTGD-006/test-results.md",
+        "sha256": "5f997c06a192ee19ffcdb76f7f9af05ec8ebd18367423ef269a20595d685e245"
+      },
+      "evidence_manifest": "final-evidence-checks.json",
+      "minimal_next_action": "Independent owner/evidence adjudication of listed exact clauses after final correction2/2. Reuse existing meaningful shared proof where sufficient; no automatic third repair, new scope or duplicate test requirement.",
+      "previous_provisional_source_review_observation": "The initial-arrival HR display integration is repaired; focused actual Result browser tests show withheld before admission then correct numeric/uncertainty display; revocation/race guards remain."
+    },
+    "ux": {
+      "spec_id": "OTGD-006",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
+      "canonical_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "canonical_hash_verified": true,
+      "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+      "scope": "IMPLEMENTATION",
+      "reviewer_identity": "/root/replacement_ux",
+      "configured_model": "OpenAI gpt-6.1-sol/high",
+      "decision": "BLOCKED",
+      "decision_phase": "FINAL_SCOPED_INDEPENDENT_UX",
+      "review_scope": "Independent UX journey completion, truthful states, user control, accessibility and recovery; software-only evidence with external prerequisites retained",
+      "journey_reviewed": "Verified research presentation versus ordinary null scores.",
+      "criteria": [
+        "AND-RES-003 Keep impairment inference closed"
+      ],
+      "actionable_finding_ids": [],
+      "evidence_hold_ids": [
+        "UX-E03"
+      ],
+      "external_limits": [
+        "software_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "gate_only_hold": false,
+      "source_evidence_manifest": "source-manifest.json",
+      "supporting_evidence_manifest": "evidence-manifest.json",
+      "source_evidence_manifest_sha256": "30cab5534e692180697babb6a0a3f03aaedb69771aa4d429f6cf28f4e31d86f7",
+      "supporting_evidence_manifest_sha256": "4523344c4ae368e03c17c4aa1640eb1e89f0e615da93de8c28bb5ad35a9a47b6",
+      "historical_case_audit": {
+        "path": "docs/factory/otgd-20261025-0555/reports/acceptance-baseline-28e0729/OTGD-006-cases.md",
+        "sha256": "c014ba6772ddf74725095fd8eba09da281892be8ce43a63c134ebadfaacf8a92",
+        "use": "Historical exact-case assertions/gaps inspected; no old verdict promoted to replacement acceptance"
+      },
+      "reason": "Current gates are PASS; acceptance remains BLOCKED by the exact remaining clauses recorded below. These are missing software or external evidence, not newly demonstrated source defects or instructions to expand tests.",
+      "reaffirmation": "Canonical spec unchanged SHA256; prior independent journey review carried only where inspected source unchanged; changed shared controller/auth/device/Result/export dependencies explicitly rereviewed under D010.",
+      "gates": {
+        "all_seven_local": "PASS",
+        "current_ci14": "PASS",
+        "tested_merge_tree_identical": true,
+        "ci_run": 40185247204
+      },
+      "current_case_ids": [
+        "OTGD-006-AND-RES-003-01",
+        "OTGD-006-AND-RES-003-02"
+      ],
+      "current_case_statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "remaining_clauses": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "status": "PARTIAL",
+          "unproved_then_clauses": [
+            "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+          ],
+          "prerequisite_types": [
+            "software_integration_evidence",
+            "study_scientific_approval"
+          ],
+          "assertions_proven": [
+            "Client verifies fully linked fictional1.1 endpoint/population/provenance and rejects altered proof; direct alcohol research context keeps no-driving-clearance copy.",
+            "ExistingHRcache exactdigest/view/epoch/account/gen ephemeralread, late/offline/denial/mismatch refusal; separateexportadmission atassembly/finalrelease, actualResultDOMwithprepopulatedHR.",
+            "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates.",
+            "Actual Result/History/row rendering preserves uncertainty policy/method/exact supplied limits/rationale, null abstention and historical scope; malformed/mismatched policy withheld. Shared current Result source supplies endpoint/population/research-only/no-driving text, not a probabilistic fitness claim."
+          ],
+          "current_source_assertion_refs": [
+            "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+            "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+            "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+            "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+            "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+            "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+            "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+            "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+            "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+            "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+            "apps/mobile/tests/result-ui.test.ts::actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+            "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+            "apps/mobile/tests/result-presentation.test.ts::verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+            "apps/mobile/tests/result-presentation.test.ts::supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+            "apps/mobile/tests/research-result.test.ts::a verified uncertainty band requires null abstention rather than a probability or optimistic classification"
+          ]
+        }
+      ],
+      "remaining_prerequisite_types": [
+        "software_integration_evidence",
+        "study_scientific_approval"
+      ],
+      "current_requirement_rows": [
+        {
+          "spec_id": "OTGD-006",
+          "requirement_id": "AND-RES-003",
+          "case_ids": [
+            "OTGD-006-AND-RES-003-01",
+            "OTGD-006-AND-RES-003-02"
+          ],
+          "statuses": {
+            "PARTIAL": 1,
+            "PASS": 1
+          },
+          "all_scoped_cases_pass": false
+        }
+      ],
+      "current_case_evidence": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+        "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+      },
+      "current_remaining_clauses": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/remaining-clauses.json",
+        "sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8"
+      },
+      "historical_evidence_policy": "Provisional histories remain preserved; current exact-case artifacts used for final decision."
+    },
+    "ui": {
+      "spec_id": "OTGD-006",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
+      "canonical_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "hash_algorithm": "SHA-256",
+      "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+      "scope": "IMPLEMENTATION",
+      "review_domain": "UI design",
+      "decision": "BLOCKED",
+      "provisional": false,
+      "assessment": "BLOCKED: current source/UI findings are closed and applicable mandatory software gates passed, but this canonical scope retains the exact unproved clauses below. These are evidence gaps, not demonstrated source bugs or a request for automatic third-round repair.",
+      "requirements": [
+        "AND-RES-003 Keep impairment inference closed"
+      ],
+      "finding_ids": [],
+      "evidence_gap_ids": [
+        "UI-FINAL-RESIDUALS"
+      ],
+      "supporting_actual_evidence": [
+        {
+          "path": "apps/mobile/src/ui/checks.tsx",
+          "sha256": "11f5d3e659726c77590b06ad56eed8cce8a890d121352d797d46b95ad3cf0cd5",
+          "kind": "current static source/assertion body"
+        },
+        {
+          "path": "apps/mobile/src/core/resultPresentation.ts",
+          "sha256": "17b4d4f2e7bf60909c41f0cc6359655c6175d3e978bb0ccb9bc70fa08af7bcd0",
+          "kind": "current static source/assertion body"
+        },
+        {
+          "path": "apps/mobile/src/controller.ts",
+          "sha256": "5e1c20cb71a72004b32aff1ef9585b61aeb721b2f3336a3862b98b6c3b801e53",
+          "kind": "current static source/assertion body"
+        },
+        {
+          "path": "apps/mobile/tests/result-ui.test.ts",
+          "sha256": "217ae43bfcae4cb9826bafd8ad66bef8e97327c0638400c0e6263c5eb7d66a60",
+          "kind": "current static source/assertion body"
+        },
+        {
+          "path": "apps/mobile/tests/hr-read-admission.test.ts",
+          "sha256": "83dc55ed2473fc54f54d43a26a76dd31a6cbb0c019118a8b612166944bc49fa8",
+          "kind": "current static source/assertion body"
+        },
+        {
+          "path": "apps/mobile/e2e/components.spec.ts",
+          "sha256": "a1d8cd2e19f072ac0d981602e7a96d29415b25b47cbfe98292f556d682612bd1",
+          "kind": "current static source/assertion body"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/ui/evidence/ci-components.log",
+          "sha256": "0055f72eaf959dd093a2d283f0ea6abd51444675538e94079831392ecc3f1c42",
+          "kind": "current CI rendered component execution; exact assertions determine applicability"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+          "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+          "kind": "current local executed component assertions"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit-coverage.log",
+          "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+          "kind": "current named unit/actual JSX assertions; relevant bodies independently inspected"
+        }
+      ],
+      "external_limits": "Native OS/hardware/physical calibration/independent scientific study and participant approvals/deployment/signing/hosting remain separate unexecuted prerequisites where applicable. No silent exclusion or genuine approval inferred.",
+      "final_prerequisites": "Resolve or independently supply exact remaining evidence listed in released per-case rows. No source changes/third correction/relabeling authorized. External prerequisites require responsible owners.",
+      "current_component_evidence_note": "Current local80 components and CI80 components PASS; independently inspected named UI assertions only. Actual native app AT/200% matrix remains unexecuted where required.",
+      "source_review_decision": "NO_DEMONSTRATED_RESIDUAL_UI_SOURCE_DEFECT",
+      "final_scoped_judgment": "BLOCKED: current source/UI findings are closed and applicable mandatory software gates passed, but this canonical scope retains the exact unproved clauses below. These are evidence gaps, not demonstrated source bugs or a request for automatic third-round repair.",
+      "scope_definition": "Canonical stable spec and listed requirement/scenario criteria only; amended specs002/004/007 are not the full underlying feature. Broader canonical scopes retain exact residuals without exclusion.",
+      "case_status_counts": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "case_ids": [
+        "OTGD-006-AND-RES-003-01",
+        "OTGD-006-AND-RES-003-02"
+      ],
+      "final_evidence_reference": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/specs/OTGD-006/test-results.json",
+        "sha256": "841c0cccc603a12ef2465f2d4beafc62bb6108b98c5458c19937b6869a905dfc",
+        "release_manifest_sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d",
+        "case_evidence_sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+      },
+      "remaining_exact_case_evidence": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "status": "PARTIAL",
+          "expected_observation": "Approved new result \u2014 - **WHEN** an authorized account receives a fully linked 1.1.0 result from the admitted research pipeline - **THEN** the reader presents its endpoint, population, research-only status and provenance without claiming driving clearance",
+          "unproved_then_clauses": [
+            "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+          ],
+          "prerequisite_types": [
+            "software_integration_evidence",
+            "study_scientific_approval"
+          ],
+          "already_proven": [
+            "Client verifies fully linked fictional1.1 endpoint/population/provenance and rejects altered proof; direct alcohol research context keeps no-driving-clearance copy.",
+            "ExistingHRcache exactdigest/view/epoch/account/gen ephemeralread, late/offline/denial/mismatch refusal; separateexportadmission atassembly/finalrelease, actualResultDOMwithprepopulatedHR.",
+            "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates.",
+            "Actual Result/History/row rendering preserves uncertainty policy/method/exact supplied limits/rationale, null abstention and historical scope; malformed/mismatched policy withheld. Shared current Result source supplies endpoint/population/research-only/no-driving text, not a probabilistic fitness claim."
+          ],
+          "source_assertion_refs": [
+            "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+            "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+            "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+            "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+            "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+            "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+            "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+            "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+            "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+            "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+            "apps/mobile/tests/result-ui.test.ts::actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+            "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+            "apps/mobile/tests/result-presentation.test.ts::verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+            "apps/mobile/tests/result-presentation.test.ts::supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+            "apps/mobile/tests/research-result.test.ts::a verified uncertainty band requires null abstention rather than a probability or optimistic classification"
+          ],
+          "open_implementation_defect": false
+        }
+      ]
+    },
+    "product": {
+      "agent_id": "/root/replacement_product",
+      "role": "independent product-signoff",
+      "provider": "OpenAI",
+      "configured_model": "gpt-6.1-sol",
+      "configured_reasoning_effort": "high",
+      "model_evidence": "Parent confirmed explicit fork_turns:none / model:gpt-6.1-sol / reasoning_effort:high via native message. Runtime effective-model self-query is unavailable.",
+      "independence": "Fresh separate reviewer context; did not author product documents, implementation, tests or historical review. Peer findings independently traced in source and canonical requirements.",
+      "spec_id": "OTGD-006",
+      "topic": "Research result admission",
+      "stage": "IMPLEMENTATION",
+      "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
+      "canonical_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "canonical_hash_validated": true,
+      "criteria": [
+        "AND-RES-003 Keep impairment inference closed"
+      ],
+      "prd_requirements": [
+        "PRD-006",
+        "PRD-007",
+        "PRD-019",
+        "PRD-036",
+        "PRD-041"
+      ],
+      "decision": "BLOCKED",
+      "provisional": false,
+      "implementation_judgment": "Legacy-shaped/simulated/malformed research proof is refused. Typed HR numeric output requires current read; final effect/refresh changes close the same-ID async arrival gap while preserving fail-closed scope fences.",
+      "external_limits": [
+        "Real scientific approvals and installed client/server end-to-end acceptance."
+      ],
+      "external_limit_is_software_defect": false,
+      "canonical_cases_retained": [
+        "OTGD-006-AND-RES-003-01",
+        "OTGD-006-AND-RES-003-02"
+      ],
+      "historical_case_status_counts_not_current_acceptance": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "historical_case_index": {
+        "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/acceptance-baseline-28e0729/OTGD-006-cases.md",
+        "sha256": "c014ba6772ddf74725095fd8eba09da281892be8ce43a63c134ebadfaacf8a92"
+      },
+      "findings": [],
+      "closed_findings": [
+        "PROD-CF-003"
+      ],
+      "source_review_conclusion": "No open demonstrated product source defect; final IMPLEMENTATION judgment uses current executed evidence and exact remaining clauses below.",
+      "pending_software_evidence": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "unproved_then_clauses": [
+            "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+          ],
+          "prerequisite_types": [
+            "software_integration_evidence",
+            "study_scientific_approval"
+          ]
+        }
+      ],
+      "current_implementation_bindings": [
+        {
+          "path": "/workspace/One-The-Go-Detection/apps/mobile/src/controller.ts",
+          "sha256": "5e1c20cb71a72004b32aff1ef9585b61aeb721b2f3336a3862b98b6c3b801e53"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/apps/mobile/src/ui/account.tsx",
+          "sha256": "ab70f633e0a23ac8b185c2f547a686ac4081a27f194f9af64ec2765670c37f45"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/apps/mobile/src/ui/checks.tsx",
+          "sha256": "11f5d3e659726c77590b06ad56eed8cce8a890d121352d797d46b95ad3cf0cd5"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/apps/mobile/src/ui/manage.tsx",
+          "sha256": "023fd4fdb5819fd85be7dbd181a89d265cb24606b75ee21891b1136e66c210ac"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/services/api/otgd/model_engine.py",
+          "sha256": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/services/api/otgd/cardiac_authority.py",
+          "sha256": "3cd89f16cc15742323f753b85bfe4e7ec7563dea42e7b96dfef7dd8f56c33f2d"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/apps/mobile/src/core/researchResult.ts",
+          "sha256": "e3bb12bd554e858635aa03915b4815789b738cc0ca63f971b8dd886dd3fc5b46"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/apps/mobile/src/core/resultPresentation.ts",
+          "sha256": "17b4d4f2e7bf60909c41f0cc6359655c6175d3e978bb0ccb9bc70fa08af7bcd0"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/apps/mobile/src/core/devicePresentation.ts",
+          "sha256": "59eae66daaf4dbfcf0daa7341fb1649b2aa3b092c657fef57c0b6f73460e9768"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/apps/mobile/src/ui/device-summary.tsx",
+          "sha256": "2b1126a8f49a8c035e2c4ebec7fa57271e7f3b781b8f895c2bf2a31d7074233d"
+        }
+      ],
+      "source_carryforward": {
+        "prior_independent_review": {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/reviews/product/per-spec-decisions.json",
+          "sha256": "e8850956c60abba659a7444eafcc3bfb6dcbc3a132e99c20ae939cd3542bb51e"
+        },
+        "explicit_rationale": "All47 canonical specs unchanged. Entire changed production delta independently inspected; unchanged product scope judgments are carried forward only as source judgments, never as historical test PASS.",
+        "changed_referenced_files": [
+          "/workspace/One-The-Go-Detection/apps/mobile/src/controller.ts",
+          "/workspace/One-The-Go-Detection/apps/mobile/src/ui/checks.tsx",
+          "/workspace/One-The-Go-Detection/apps/mobile/src/ui/manage.tsx",
+          "/workspace/One-The-Go-Detection/apps/mobile/src/core/devicePresentation.ts",
+          "/workspace/One-The-Go-Detection/apps/mobile/src/ui/device-summary.tsx"
+        ]
+      },
+      "supporting_evidence": [
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/callback-red.log",
+          "sha256": "128b062a0135fb7c344c5fea86fb49ac4f14435a60adaf996fad2b44218788a7"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/red-native-observation.json",
+          "sha256": "f83fe94cf92198e8991f0c8301a6e7e18619fdfdf44be1b4c39a50d1b131f0d6"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release-final.log",
+          "sha256": "35584575e1aabd382bbedfdfb71495dca6b70ed05bc8b82f27af850fedcd52fe"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.xml",
+          "sha256": "b57121aac71ce0367875631a755babc266ed32a60685414dc8ff5f3c0d6d643e"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/source-evidence-hashes.json",
+          "sha256": "ca018f4fe556f693cb6ee8089b3f3647efc548df0870b135eb9c19ef8d01fa00"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.xml",
+          "sha256": "20c536f287c90f0f1b04ff4ccd10a17466325aceb98b4a28d56f602f0be74f75"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red-http-observations.json",
+          "sha256": "4b4d13fda751084d197948bb0c89258addf6d6071e4c7e761c50b8601265e5be"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.xml",
+          "sha256": "019aa3e9c4e9c9815cfc3686d221a079ad6168856e859e6ffe25f7d0408beafa"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green-summary.json",
+          "sha256": "fe8f702d59238dc08b874c976e2ee2c23f7afb7f1dcc717b47f0d5591100297c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.xml",
+          "sha256": "ccb75ad190003fae033e81135730b3e650ac9de921c4c65fd922ceed857f1673"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-execution.json",
+          "sha256": "23823bbf349717058e4176a8b61f5cdc0f364735da8533d42164e61e25458d3c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-coverage.json",
+          "sha256": "4bfd7a8c030a25d2be5802aa4a241aa1a0448b7cb42f5a641fd204040ca34976"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/green-source-bindings.json",
+          "sha256": "3dd8ae6e0eb2bc6ee89c4a6ff41b796932fe95a745042d26c3e441eb6e6c87b6"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/device-red.log",
+          "sha256": "9af651f31af77719ab47ad88d476edb3923a3957753574beace3943c2203166e"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/home-device-red.log",
+          "sha256": "c15b32aa115c6eade960e14fb9757177e9a2a45e247e62c2196eafb146bda46b"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-red2.log",
+          "sha256": "f88cc099b2777a27748f6ed5333b63d518532667c19f369116c94bac7641b5ff"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-manual-red.log",
+          "sha256": "0b230499fbe635936fe4746397019a101c409feedcdd6fc5fb0dbbddc091fd9d"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-green.log",
+          "sha256": "f56413d46ae2dcdc3a1a61318e15a806c98c8475942090077bfb175fc99ddbe4"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-browser-green.log",
+          "sha256": "44680c74875b80133e9c5ba359d3d2fa18edb7e92a12923d22381f964bd9a685"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-browser.log",
+          "sha256": "7653ad9b088a8db86e0094c2788cba8144bad596dbcde9ebe86b4a4cbd3ca562"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-unit.log",
+          "sha256": "b42da21e502e3e1167d84c3d87a9f0295c7fdda2c2337f599bcbe880b8d06f37"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/mobile-unit-coverage.json",
+          "sha256": "6bc30489f434da6832741aa07b4d1a0ac0fc541f3067e9b3d10d67c07717ceed"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/source-bindings.json",
+          "sha256": "0feeffd55a8ac408f5752130553dd549187d75c00b34646a1cb55dd37a0cbdca"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/evidence-manifest.json",
+          "sha256": "33311002a9ce8a228218d2afb8a6f018f40e173298301aa2e9ae9e5b0fb9c5e4"
+        }
+      ],
+      "evidence_adoption": "Current exact source/helper/named execution and clause records inspected; all7local/all14CI holds resolved. Remaining exact clauses retain their own status and prerequisite type; neither aggregates nor residual counts substitute for acceptance or defects.",
+      "decision_scope": "IMPLEMENTATION of this exact canonical specification; does not approve other specs, entire app or external release",
+      "mandatory_current_gates": "PASS:7local+14CI exact identical tree; before/after fingerprint unchanged",
+      "remaining_clauses": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "status": "PARTIAL",
+          "unproved_then_clauses": [
+            "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+          ],
+          "prerequisite_types": [
+            "software_integration_evidence",
+            "study_scientific_approval"
+          ],
+          "assertions_proven": [
+            "Client verifies fully linked fictional1.1 endpoint/population/provenance and rejects altered proof; direct alcohol research context keeps no-driving-clearance copy.",
+            "ExistingHRcache exactdigest/view/epoch/account/gen ephemeralread, late/offline/denial/mismatch refusal; separateexportadmission atassembly/finalrelease, actualResultDOMwithprepopulatedHR.",
+            "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates.",
+            "Actual Result/History/row rendering preserves uncertainty policy/method/exact supplied limits/rationale, null abstention and historical scope; malformed/mismatched policy withheld. Shared current Result source supplies endpoint/population/research-only/no-driving text, not a probabilistic fitness claim."
+          ],
+          "current_source_assertion_refs": [
+            "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+            "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+            "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+            "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+            "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+            "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+            "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+            "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+            "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+            "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+            "apps/mobile/tests/result-ui.test.ts::actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+            "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+            "apps/mobile/tests/result-presentation.test.ts::verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+            "apps/mobile/tests/result-presentation.test.ts::supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+            "apps/mobile/tests/research-result.test.ts::a verified uncertainty band requires null abstention rather than a probability or optimistic classification"
+          ]
+        }
+      ],
+      "current_case_counts": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "current_case_records": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "status": "PARTIAL",
+          "expected_observation": "Approved new result \u2014 - **WHEN** an authorized account receives a fully linked 1.1.0 result from the admitted research pipeline - **THEN** the reader presents its endpoint, population, research-only status and provenance without claiming driving clearance",
+          "current_assertions_proven": [
+            "Client verifies fully linked fictional1.1 endpoint/population/provenance and rejects altered proof; direct alcohol research context keeps no-driving-clearance copy.",
+            "ExistingHRcache exactdigest/view/epoch/account/gen ephemeralread, late/offline/denial/mismatch refusal; separateexportadmission atassembly/finalrelease, actualResultDOMwithprepopulatedHR.",
+            "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates.",
+            "Actual Result/History/row rendering preserves uncertainty policy/method/exact supplied limits/rationale, null abstention and historical scope; malformed/mismatched policy withheld. Shared current Result source supplies endpoint/population/research-only/no-driving text, not a probabilistic fitness claim."
+          ],
+          "current_source_assertion_refs": [
+            "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+            "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+            "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+            "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+            "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+            "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+            "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+            "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+            "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+            "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+            "apps/mobile/tests/result-ui.test.ts::actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+            "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+            "apps/mobile/tests/result-presentation.test.ts::verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+            "apps/mobile/tests/result-presentation.test.ts::supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+            "apps/mobile/tests/research-result.test.ts::a verified uncertainty band requires null abstention rather than a probability or optimistic classification"
+          ],
+          "actual_named_execution_count": 30,
+          "unproved_then_clauses": [
+            "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+          ]
+        },
+        {
+          "case_id": "OTGD-006-AND-RES-003-02",
+          "status": "PASS",
+          "expected_observation": "Legacy or unapproved claim \u2014 - **WHEN** a legacy result, local preference or valid-looking manifest claims research authority without current complete admission - **THEN** no score is admitted and the historical measurement-only or unsupported-result boundary remains in force",
+          "current_assertions_proven": [
+            "Exact legacy0.1 field promotion and proof/owner/provenance tampering refuse; runtime current authority/bytes changes return inconclusive/null probability. Later1.1support does not grant authority to flags/preferences/manifests."
+          ],
+          "current_source_assertion_refs": [
+            "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+            "apps/mobile/tests/research-result.test.ts::personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields",
+            "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+          ],
+          "actual_named_execution_count": 52,
+          "unproved_then_clauses": []
+        }
+      ],
+      "current_final_evidence": [
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/local-final-artifacts.json",
+          "sha256": "50d0485b41031dc1375d5b73aea227ef7ab5fe973d24a41e6ba123ac7f57fa80"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-acceptance-summary.json",
+          "sha256": "c62c574b6e6e08eefb459d9d8297c6e20db5ca024f242b4a0ea2299ca42da928"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-tree-binding.json",
+          "sha256": "92e94326242d94cb0add0e7d16b671c19e06a847c0c8d9c5f472cef58c16e175"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-run-final.json",
+          "sha256": "a022388c81fb57dfaa975b0c75f5474ed8a5e25f2d8b57fa1bb3ccb06047f7f7"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage1.json",
+          "sha256": "082bf69762d7f7c1326fc2e05b44b36fa348813efa230937bb4ee8e066754fc8"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage2.json",
+          "sha256": "9827809ef5d555c636b0b9de510f3fed48533c157275b6c91a981ba7b73cb139"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage3.json",
+          "sha256": "b8cd6078c68a5f67aec1d5a6f5772e05cd607a547f8e88748d5fae794e20b8f5"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-records-decision.json",
+          "sha256": "0c225673b3319f26e3b94c3d3ac54e562d624febe93bbfb908a0bbefc76052f8"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+          "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/requirement-evidence.json",
+          "sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/remaining-clauses.json",
+          "sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-summary.json",
+          "sha256": "202b05502ab316553c3adcb59b14cad05bc605b33b3d098ca23b6edc839a3357"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/integrity.json",
+          "sha256": "202abe7c8b5f3cdd5efe555801386d8fa4027306b741c213c429e377e2ab0017"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-local-admission.json",
+          "sha256": "7ba2eb59e751db4367a9164884e54ee209dd52be4033b21eb4bf4c6d6f56256e"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-ci-admission.json",
+          "sha256": "bbf9576ede2273212cca845604835cf37d6bdebaf3ee7196fd469db9b43c21f2"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/operations-admission.json",
+          "sha256": "e61aa1d25e4778ea98714eebdadc235e6e740afb7c78853dc94fd62d0db1124c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/semantics-admission.json",
+          "sha256": "b5455beb5c1b18472ce947a3cbbc81d5c0dcd4dedb66b40e3b71957f4c1e944f"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/dossier-proposals.json",
+          "sha256": "867e0c5f895d3ff15c94f4c10741243aa6f0fe9a4dc699f8575da941ca1ee10d"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/source-assertions.json",
+          "sha256": "67a4e5316422b61f499cf452881e9338805351f953d4bcd9fe00bdab8740cc14"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/release-manifest.json",
+          "sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/release.json",
+          "sha256": "1d866f119a95b8a34afe69e32429d74a9fbfa5dd60c043dd5736b0e1b1191c41"
+        }
+      ],
+      "final_case_record_binding": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+        "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+      },
+      "final_product_rationale": "Inspected source and executed checks support the product behavior described above, but one or more exact required clauses remain unproved in the attached case-level inventory. No demonstrated source defect is inferred from missing evidence; an unproved applicable clause prevents final implementation approval."
+    },
+    "engineering": {
+      "spec_id": "OTGD-006",
+      "title": "Research result amendment",
+      "scope": "IMPLEMENTATION",
+      "decision": "BLOCKED",
+      "provisional": false,
+      "source_review": "NO_REMAINING_CONFIRMED_SOURCE_DEFECT_IN_REVIEWED_SCOPE",
+      "canonical_path": "openspec/changes/authorized-model-execution/specs/android-results/spec.md",
+      "canonical_sha256": "e5c8877a4b483fb47aa30fb9811536166d10764d83d15eaef950e0727dc93a8f",
+      "canonical_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+      "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+      "candidate_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+      "source_fingerprint_sha256": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+      "reviewer_identity": "/root/replacement_engineering",
+      "role": "independent principal engineering signoff",
+      "configured_provider": "OpenAI",
+      "configured_model": "gpt-6.1-sol",
+      "configured_reasoning_effort": "high",
+      "configuration_authority": "Explicit final PM dispatch and final-review-brief; runtime variant not independently queryable",
+      "runtime_model_query_available": false,
+      "independent": true,
+      "judgment": "verifyResult precedes presentation and the server now re-admits typed HR authority with actual db/account/check context. Display admission binds result digest, owner, generation, epoch and view; legacy-shaped research remains unsupported. Final Result view effect owns even pending output and depends on saved result digest; explicit refresh creates/reuses only a current route-owned token. Focused mounted transition/manual/race assertions close the prior integration gap. All applicable exact-source local/CI software gates now pass. Final engineering acceptance remains blocked only by the precise current unproved clauses listed below, not aggregate gate status.",
+      "open_evidence_findings": [
+        "ENG-SIGN-002-ACCEPTANCE_RESIDUAL"
+      ],
+      "closed_source_findings": {
+        "ENG-R1-005": "CLOSED_SOURCE_AND_FOCUSED_EVIDENCE: result digest/availability participates in mounted view effect; explicit refresh can create missing view token; actual mounted pending/local\u2192HR and manual browser RED\u2192GREEN, stable ID/epoch/twoGET/no-loop assertions. Existing deny/race/leave/background/export controls retained. Native OS and full gates pending."
+      },
+      "requirements": [
+        "AND-RES-003 Keep impairment inference closed"
+      ],
+      "historical_case_count": 2,
+      "historical_case_status_counts": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "current_clause_reconciliation": "FINAL RELEASED: all782 stablecases/411requirements independently mapped; zero auditpending, currentnamedexecution/hashbindings admitted.",
+      "unchanged_area_reaffirmation": {
+        "prior_engineering_report": {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-cf74fcff6ad1/reviews/engineering/report.md",
+          "sha256": "eaadd7f03314d560a38028048dcb6065d346097ae4b8615de2e5b302edefb75a"
+        },
+        "unchanged_source_test_contract_paths": [
+          "specs/HLD.md",
+          "specs/LLD.md",
+          "openspec/changes/production-mobile-platform/shared-contracts.md",
+          "AGENTS.md",
+          "services/api/otgd/domain.py",
+          "services/api/otgd/model_engine.py",
+          "apps/mobile/src/core/resultPresentation.ts"
+        ],
+        "rationale": "Canonical criteria unchanged; current full git diff beyond docs is restricted to final four assigned repairs/tests. Independently reviewed changed call chains/shared dependencies and precise RED/GREEN assertions; unchanged hashed source supports prior bounded engineering reasoning but never transfers executed acceptance."
+      },
+      "exact_remaining_software_evidence_and_external_limits": "See remaining_clauses: exact software evidence and native OS/hardware/scientific/study/deployment prerequisites remain separated percase; none is waived or automatically treated as a software bug.",
+      "implementation_test_contract_bindings": {
+        "AGENTS.md": "92a015f16480dae34990dca4a58f5d8085ce3ed651e40819f6b3260562d4bfd8",
+        "specs/HLD.md": "f87c55cd14eb24da6341ba415d03f18a0006e269893e0123c4aa59dfaf858480",
+        "specs/LLD.md": "110e863de22d4a3297b02be119d75ef6d7d15d36b50ae756fffcf98f02d10e83",
+        "openspec/changes/production-mobile-platform/shared-contracts.md": "c74f1fdf1ad65c208fb4d5f6b2f488961c3f2edff73c6a657d263073974bd8ec",
+        "services/api/otgd/domain.py": "ba1d898a1107ab9983a5ce4d2f6f04884b94acab3fc6130e04ad106fb3fc92d5",
+        "services/api/otgd/model_engine.py": "8c145b7674d44068ad0b16fdab04776f3fc9c3ce9c03bfb772efb211683760e7",
+        "apps/mobile/src/controller.ts": "5e1c20cb71a72004b32aff1ef9585b61aeb721b2f3336a3862b98b6c3b801e53",
+        "apps/mobile/src/core/resultPresentation.ts": "17b4d4f2e7bf60909c41f0cc6359655c6175d3e978bb0ccb9bc70fa08af7bcd0",
+        "services/api/tests/test_current_result_readback.py": "8df4b2d22a0eb0b0167ec244dc5c46d93e28608682038074f3a6da4112177023",
+        "apps/mobile/src/core/devicePresentation.ts": "59eae66daaf4dbfcf0daa7341fb1649b2aa3b092c657fef57c0b6f73460e9768",
+        "apps/mobile/src/ui/device-summary.tsx": "2b1126a8f49a8c035e2c4ebec7fa57271e7f3b781b8f895c2bf2a31d7074233d",
+        "apps/mobile/tests/auth-callback.test.ts": "d4d89af5fcce9d3d7c902d89eea1c0b72cbb09be274a962d56358dc801e6ead8",
+        "services/api/otgd/report_revisions.py": "02e6d0331075209a33261ec6f75499dae778e78d590c9451d4e6584dc0f590f4",
+        "apps/mobile/e2e/components.spec.ts": "a1d8cd2e19f072ac0d981602e7a96d29415b25b47cbfe98292f556d682612bd1"
+      },
+      "test_plan": {
+        "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/specs/OTGD-006/test-plan.md",
+        "sha256": "3d005b386d6c8561b6e5c646418e26480ea6e483389919fb3ea5c15e216cda0e"
+      },
+      "test_results": {
+        "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/specs/OTGD-006/test-results.md",
+        "sha256": "964c412652f21c19057d1be93e2d7231c3926b74223b8607846db7aad3b13c7a"
+      },
+      "supporting_actual_evidence": [
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/source-evidence-hashes.json",
+          "sha256": "ca018f4fe556f693cb6ee8089b3f3647efc548df0870b135eb9c19ef8d01fa00"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-green-initial.log",
+          "sha256": "ad374a449b4a58b932fb358f0277ac2605593402282555bae3251f7c36c26791"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release-final.log",
+          "sha256": "35584575e1aabd382bbedfdfb71495dca6b70ed05bc8b82f27af850fedcd52fe"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.log",
+          "sha256": "8df5cff8abdb95c4164504773fbf2ae0d3b7be143c30a106dfb5eeb8f6d72a3c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/auth-release.xml",
+          "sha256": "b57121aac71ce0367875631a755babc266ed32a60685414dc8ff5f3c0d6d643e"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/callback-red.log",
+          "sha256": "128b062a0135fb7c344c5fea86fb49ac4f14435a60adaf996fad2b44218788a7"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/format-check.log",
+          "sha256": "abd4583f989ca3a93ca1c3063f312a65f6cc07612d4898fd5932230551db5fe2"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/format.log",
+          "sha256": "41aa74e338245794a277a8f97833814dc8558ea1220a4334b040bb4eec8e8389"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/red-native-observation.json",
+          "sha256": "f83fe94cf92198e8991f0c8301a6e7e18619fdfdf44be1b4c39a50d1b131f0d6"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/red-observation.json",
+          "sha256": "f5bf09b1f241ab95988456cd2d8478d772432ba7cd2f536e81dbaec0eaed66f1"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-auth/reviewed-auth.ts",
+          "sha256": "c1f9ef918b2f2b8a1f52a82937a3576d51d232b89aa7f5656aa3d87156c15cc9"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/source-bindings.json",
+          "sha256": "0feeffd55a8ac408f5752130553dd549187d75c00b34646a1cb55dd37a0cbdca"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/evidence-manifest.json",
+          "sha256": "33311002a9ce8a228218d2afb8a6f018f40e173298301aa2e9ae9e5b0fb9c5e4"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/coverage.log",
+          "sha256": "1e83ec65d3299b5cc025ee7b46be32911de51ffd97cf77ef9ca9081663b65ff2"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/device-green-initial.log",
+          "sha256": "849025bbf7692955e56378063a01f14e1bc293aa5fbdd163a4be60092697a29b"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/device-red.log",
+          "sha256": "9af651f31af77719ab47ad88d476edb3923a3957753574beace3943c2203166e"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/export.log",
+          "sha256": "2823d8a6dbfd724cd7c32c22be929b8ef489813cf372353eb196c9ff1cfdd722"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-browser-green.log",
+          "sha256": "44680c74875b80133e9c5ba359d3d2fa18edb7e92a12923d22381f964bd9a685"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-green-initial.log",
+          "sha256": "7f4cd920fd5e4f921fb6697270adac6cf210ebf3dac32e701dd1b13c7df18ba7"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/focused-green.log",
+          "sha256": "f56413d46ae2dcdc3a1a61318e15a806c98c8475942090077bfb175fc99ddbe4"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/format-scoped.log",
+          "sha256": "abd4583f989ca3a93ca1c3063f312a65f6cc07612d4898fd5932230551db5fe2"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/format.log",
+          "sha256": "d98b119763acc42b9e17efc50b280aa740789518b6635bc693dee9aaf6e65852"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-browser.log",
+          "sha256": "7653ad9b088a8db86e0094c2788cba8144bad596dbcde9ebe86b4a4cbd3ca562"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/full-unit.log",
+          "sha256": "b42da21e502e3e1167d84c3d87a9f0295c7fdda2c2337f599bcbe880b8d06f37"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/home-device-red.log",
+          "sha256": "c15b32aa115c6eade960e14fb9757177e9a2a45e247e62c2196eafb146bda46b"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-manual-red.log",
+          "sha256": "0b230499fbe635936fe4746397019a101c409feedcdd6fc5fb0dbbddc091fd9d"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-green-initial.log",
+          "sha256": "083f8e724dfc2c7ee3aa9d3405745f89ae0fc5f2ea04359d7ac667d2bbd40b1c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-red.log",
+          "sha256": "37e01797310407464d29383e40b1c6c45c1766be3b7e561af0959fb4d3863f37"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/hr-mounted-red2.log",
+          "sha256": "f88cc099b2777a27748f6ed5333b63d518532667c19f369116c94bac7641b5ff"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/mobile-unit-coverage.json",
+          "sha256": "6bc30489f434da6832741aa07b4d1a0ac0fc541f3067e9b3d10d67c07717ceed"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/mobile-unit-events.log",
+          "sha256": "ccc2b9c0438c7c1c139bc03a531e6a643db1c7acaaf94e1ea7ebf0cf77a277f6"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/report-draft.md",
+          "sha256": "c17244ac85a3573ac0585cc8626f8849bd1d57db8dfcd7fd47a1e7f8f7604267"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-mobile/typecheck-initial.log",
+          "sha256": "755086290c537844887ede5d4543d4e4e93fbc7adbec49b28f45e0bace8807ff"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/final-handoff.json",
+          "sha256": "8495ac97aee86b18b146dbe54c6c954f8759d9a9876f57705b6ce7da56f7f7d2"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.xml",
+          "sha256": "20c536f287c90f0f1b04ff4ccd10a17466325aceb98b4a28d56f602f0be74f75"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red.log",
+          "sha256": "78d5ab2b48335fb6e4512af9597cbb91cceca6ef1b4f5c324d1fa3fa9ba45c6f"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red-http-observations.json",
+          "sha256": "4b4d13fda751084d197948bb0c89258addf6d6071e4c7e761c50b8601265e5be"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/red-source-bindings.json",
+          "sha256": "7e7f33737f5cfce7c4f36a04f56928a022192943b2c23c012bc195a8c23dbda8"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.xml",
+          "sha256": "019aa3e9c4e9c9815cfc3686d221a079ad6168856e859e6ffe25f7d0408beafa"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green.log",
+          "sha256": "acbf9ecea1b30e657d6578f149c32f4056cf166613bbe2579b5f90e68c092b0e"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/focused-green-summary.json",
+          "sha256": "fe8f702d59238dc08b874c976e2ee2c23f7afb7f1dcc717b47f0d5591100297c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.xml",
+          "sha256": "ccb75ad190003fae033e81135730b3e650ac9de921c4c65fd922ceed857f1673"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit.log",
+          "sha256": "341a4fdfe23ad0f0879006799754e205d36602058db6d6ce2b06457098422617"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-coverage.json",
+          "sha256": "4bfd7a8c030a25d2be5802aa4a241aa1a0448b7cb42f5a641fd204040ca34976"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-coverage.xml",
+          "sha256": "138706e5a768ae41fbdb56e3f2d0dd5d0d04b3800b1c17d22f1f82b0dd2b0fea"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/unit-execution.json",
+          "sha256": "23823bbf349717058e4176a8b61f5cdc0f364735da8533d42164e61e25458d3c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/green-source-bindings.json",
+          "sha256": "3dd8ae6e0eb2bc6ee89c4a6ff41b796932fe95a745042d26c3e441eb6e6c87b6"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/canonical-bindings.json",
+          "sha256": "9a478cbc13b50651512f32815c1c01d32474fc785d023c9254de69e60f679302"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/correction-round2-export/report.md",
+          "sha256": "531e32101f1be660f19c2f6c92bf9c40fc5b3d911795dea54ac41c52f6ee7e34"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/candidate-binding.json",
+          "sha256": "fa5aaacb091120bc5ffd2ff1ea4958ec385ec8e4cb2fab2afbb85d97415b370d"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/gate-process.json",
+          "sha256": "4cb00fdfc9479338c4f7eeb10968efb6eb0561c7cd264f0aa582f090e1bed069"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-gates.log",
+          "sha256": "266db7b3c08ccaf3fabc8c8844e031c541322573ad006e3c4c91f6da56735093"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/runtime-readback.json",
+          "sha256": "c2b01666321d81b5e318ecc4c059e91b3e85d84ccf58748bed5afe3c08649fef"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/decisions.md",
+          "sha256": "f373ab8f33191d4a60b6ed6108ea8ea0aaf46ac44c60e4f1844bac57e4a227d3"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/impact-register.md",
+          "sha256": "49fa1c9a5f8ef54cba93fd52543b6fe715eb0f0909900a392b781285a0cb3ded"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/correction-round-2.md",
+          "sha256": "931b6ee445dbe96f2dacd9240cc0e58750800e9798b31c1b0e49a3f606248e5c"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/runtime-source-refresh-h.md",
+          "sha256": "7f592003baa95d9c95a5b19693868b6f80fb8da8e4a520160d8e6b8141f7d485"
+        },
+        {
+          "path": "/tmp/otgd-image-proof/source-refresh-h/image-h.receipt.json",
+          "sha256": "bb080ecd23329607f6ffb594163136bafb5d90a2151067485d3df2e5d1d4b401"
+        },
+        {
+          "path": "/tmp/otgd-image-proof/source-refresh-h/independent-readback-h.json",
+          "sha256": "e9104780b22a4e4270840b8aead06fb1f91a614cda0d613739637c5ef2d9890a"
+        },
+        {
+          "path": "/tmp/otgd-image-proof/source-refresh-h/source-refresh-image-h.tar.gz",
+          "sha256": "e33a167902ff8157d4e726fbdf5c4dc3ce0cec962515acc12e7d1ecdbabbf011"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-load-image.json",
+          "sha256": "569281e6e06e1f64bbe3bdb639a50acfd62419372f3bb46efea1f4f9a5d70e2d"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/archive-storage-receipt.json",
+          "sha256": "16e384cd5ff77be7b90077d78bde04fef1fce739da33b843d170b1187395a8ad"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-tag-image.json",
+          "sha256": "f55c2c1417cfb2bea1e3eba630494c4694b33e6aaae8fc28222c92438d152bfd"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h.receipt.json",
+          "sha256": "bb080ecd23329607f6ffb594163136bafb5d90a2151067485d3df2e5d1d4b401"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-worker.json",
+          "sha256": "ee023517fbb995feff36318a1661913deb90b2c81b9fff9d2f436714123b7a1e"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/independent-readback-h.json",
+          "sha256": "e9104780b22a4e4270840b8aead06fb1f91a614cda0d613739637c5ef2d9890a"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-api.json",
+          "sha256": "4744e5597cf44f3bae371db7688316d559bf37fc9697648cd1060ec58dead0a7"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/image-h-refresh-identity.json",
+          "sha256": "b11f639711b1f303093868130430eebd5b95daa81bbabd6dd7369b29b8e8a811"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/author-source-release.json",
+          "sha256": "86e4cb4e1ee9a7d3715001dbbefe2f13f10d1ae451a6e246688eae6168d84837"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/obsolete-image-g-removal.json",
+          "sha256": "e4acf36e1f526e59669f1d6daaedb7a94d616f757fba2a4e41e9420c99bf5ab1"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/cache-cleanup-receipt.json",
+          "sha256": "e0a25018d0a5b573e47aa90de7844678fc080f6dd468b204fdfd742fde8eab16"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/evidence/image-h-adoption/final-readback-h.json",
+          "sha256": "dac0edd666ca82fe0e8207fde34ef48e88d5c056e164081cc7dd61319af36909"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-mobile.md",
+          "sha256": "c17244ac85a3573ac0585cc8626f8849bd1d57db8dfcd7fd47a1e7f8f7604267"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-auth.md",
+          "sha256": "c0c038cc39a9463adefe8d6ac9645c77e8d65b7c7e1cd958743b0d0187643ff9"
+        },
+        {
+          "path": "/workspace/One-The-Go-Detection/docs/factory/otgd-20261025-0555/reports/correction-round2-export.md",
+          "sha256": "531e32101f1be660f19c2f6c92bf9c40fc5b3d911795dea54ac41c52f6ee7e34"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/local-final-artifacts.json",
+          "sha256": "50d0485b41031dc1375d5b73aea227ef7ab5fe973d24a41e6ba123ac7f57fa80"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-acceptance-summary.json",
+          "sha256": "c62c574b6e6e08eefb459d9d8297c6e20db5ca024f242b4a0ea2299ca42da928"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-run-final.json",
+          "sha256": "a022388c81fb57dfaa975b0c75f5474ed8a5e25f2d8b57fa1bb3ccb06047f7f7"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-jobs-final.json",
+          "sha256": "4c5e26ac94a83b767ed43082e5cb5cd3fd646dcc84d85996feb5aee2e55532cd"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-tree-binding.json",
+          "sha256": "92e94326242d94cb0add0e7d16b671c19e06a847c0c8d9c5f472cef58c16e175"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-final.json",
+          "sha256": "aa4141cb537ae3323e7915fa373aa5410af2eaf8f9c059ced8122a673c6d598c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage1.json",
+          "sha256": "082bf69762d7f7c1326fc2e05b44b36fa348813efa230937bb4ee8e066754fc8"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage2.json",
+          "sha256": "9827809ef5d555c636b0b9de510f3fed48533c157275b6c91a981ba7b73cb139"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage3.json",
+          "sha256": "b8cd6078c68a5f67aec1d5a6f5772e05cd607a547f8e88748d5fae794e20b8f5"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-records-decision.json",
+          "sha256": "0c225673b3319f26e3b94c3d3ac54e562d624febe93bbfb908a0bbefc76052f8"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+          "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/requirement-evidence.json",
+          "sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/remaining-clauses.json",
+          "sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-summary.json",
+          "sha256": "202b05502ab316553c3adcb59b14cad05bc605b33b3d098ca23b6edc839a3357"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/integrity.json",
+          "sha256": "202abe7c8b5f3cdd5efe555801386d8fa4027306b741c213c429e377e2ab0017"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/dossier-proposals.json",
+          "sha256": "867e0c5f895d3ff15c94f4c10741243aa6f0fe9a4dc699f8575da941ca1ee10d"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/software-evidence-residuals.json",
+          "sha256": "59a55bf2b2a6edebc78b251a86da76277c24a391237f793ec373bedba0dcd4df"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/mixed-software-external-residuals.json",
+          "sha256": "078ece85b8f0ebe008633e8cde74f4ad445016c1cb408899c8baa8bb88bc9ea1"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/external-prerequisites.json",
+          "sha256": "c796cf27b8e1238b4183a6aad554b9b3fbfd6f612d6d2f94153ee0a09f7f8054"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/source-assertions.json",
+          "sha256": "67a4e5316422b61f499cf452881e9338805351f953d4bcd9fe00bdab8740cc14"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/source-binding.json",
+          "sha256": "35067fa6d1541a2639517b20a127889c71a0d7f65a8cbcc983b53b3dbe375baa"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-local-admission.json",
+          "sha256": "7ba2eb59e751db4367a9164884e54ee209dd52be4033b21eb4bf4c6d6f56256e"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-ci-admission.json",
+          "sha256": "bbf9576ede2273212cca845604835cf37d6bdebaf3ee7196fd469db9b43c21f2"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/operations-admission.json",
+          "sha256": "e61aa1d25e4778ea98714eebdadc235e6e740afb7c78853dc94fd62d0db1124c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/semantics-admission.json",
+          "sha256": "b5455beb5c1b18472ce947a3cbbc81d5c0dcd4dedb66b40e3b71957f4c1e944f"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/summary.json",
+          "sha256": "202b05502ab316553c3adcb59b14cad05bc605b33b3d098ca23b6edc839a3357"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/manifest.json",
+          "sha256": "70ecb29a145da94cf032e22942571be9c703b2bab87e6e7856f69a37c3ea6da5"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/operations/report.md",
+          "sha256": "51eba5574e3e2a0bd1a5c84b2ebf09479aaf64e044df03c3089b940dbd48a9b0"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/artifact-manifest.json",
+          "sha256": "661b9002d0fff542da179657c6fa924bfdf1c8c763ab5ca7981434a57d41280c"
+        },
+        {
+          "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/report.md",
+          "sha256": "2c72412a2dde1515cd9481f614ccba0ab5e9cef0cf422047ac31bfe238cab681"
+        }
+      ],
+      "decisions_acknowledged": [
+        "D001-D009 preserved scope includingD009v11",
+        "D006v10",
+        "D006v11",
+        "D008v3",
+        "D010v2",
+        "D011v1 metadata-onlyauxevidencebranch preservesprimarye898testedidentity/noapplicationtestedclaimforevidencecommit"
+      ],
+      "final_signoff": true,
+      "signoff_meaning": "Independent engineering IMPLEMENTATION decision for this canonical spec and exact source/evidence; not council approval or APP_VERIFIED",
+      "gate_status": "PASS: all7local and14CI on exactcandidate/identicaltestedmergetree, no mandatory test skips; ENG-SIGN-001 CLOSED",
+      "current_case_status_counts": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "current_case_ids": [
+        "OTGD-006-AND-RES-003-01",
+        "OTGD-006-AND-RES-003-02"
+      ],
+      "current_requirement_evidence": [
+        {
+          "spec_id": "OTGD-006",
+          "requirement_id": "AND-RES-003",
+          "case_ids": [
+            "OTGD-006-AND-RES-003-01",
+            "OTGD-006-AND-RES-003-02"
+          ],
+          "statuses": {
+            "PARTIAL": 1,
+            "PASS": 1
+          },
+          "all_scoped_cases_pass": false
+        }
+      ],
+      "remaining_clauses": [
+        {
+          "case_id": "OTGD-006-AND-RES-003-01",
+          "status": "PARTIAL",
+          "exact_unproved_clauses": [
+            "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+          ],
+          "prerequisite_types": [
+            "software_integration_evidence",
+            "study_scientific_approval"
+          ],
+          "proved_software_scope": [
+            "Client verifies fully linked fictional1.1 endpoint/population/provenance and rejects altered proof; direct alcohol research context keeps no-driving-clearance copy.",
+            "ExistingHRcache exactdigest/view/epoch/account/gen ephemeralread, late/offline/denial/mismatch refusal; separateexportadmission atassembly/finalrelease, actualResultDOMwithprepopulatedHR.",
+            "Actual mounted Result/Controller/SyncEngine sameID+epoch pending/localmeasurement -> firstverifiedHR; one normal result GET then independent currentread, withheld until second200, exactly2GETs/no loop; visible manualrefresh establishes no-priortoken view and navigation invalidates.",
+            "Actual Result/History/row rendering preserves uncertainty policy/method/exact supplied limits/rationale, null abstention and historical scope; malformed/mismatched policy withheld. Shared current Result source supplies endpoint/population/research-only/no-driving text, not a probabilistic fitness claim."
+          ],
+          "current_assertion_refs": [
+            "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+            "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+            "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+            "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+            "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+            "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation",
+            "apps/mobile/e2e/components.spec.ts::actual HR manual refresh and late read after leaving cannot revive cached numeric research",
+            "apps/mobile/e2e/components.spec.ts::mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+            "apps/mobile/e2e/components.spec.ts::manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+            "apps/mobile/tests/hr-read-admission.test.ts::explicit manual refresh can establish the active HR view when no previous token exists",
+            "apps/mobile/tests/result-ui.test.ts::actual research result renders its verified uncertainty none and supplied band while refusing corrupted policy",
+            "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+            "apps/mobile/tests/result-presentation.test.ts::verified method none explicitly supplies no uncertainty interval and preserves its policy and rationale",
+            "apps/mobile/tests/result-presentation.test.ts::supplied verified probability band shows exact abstention limits for below, above and null outcomes",
+            "apps/mobile/tests/research-result.test.ts::a verified uncertainty band requires null abstention rather than a probability or optimistic classification"
+          ],
+          "current_named_execution_count": 30,
+          "minimal_next_evidence_or_action": {
+            "policy": "Review existing shared assertion/helper/control-flow evidence first; no automatic broad test expansion or third correction round.",
+            "target_assertion_sources": [
+              "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+              "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+              "apps/mobile/tests/hr-read-admission.test.ts::HR numeric display requires a matched owned200 per view and never persists admission or changes saved evidence",
+              "apps/mobile/tests/hr-read-admission.test.ts::late HR200 cannot revive a left view, offline transition, retired generation, changed account or background workspace",
+              "apps/mobile/tests/hr-read-admission.test.ts::local HR export independently reads before assembly and final release; refusal releases no archive",
+              "apps/mobile/e2e/components.spec.ts::actual HR screen requires a fresh admitted result on open and after evidence navigation"
+            ],
+            "exact_missing_observation": [
+              "The complete received authorized-account research screen conjunction (endpoint, population, research-only provenance and no driving clearance) is not asserted as one current admitted-account journey. Current typed verifier, actual screen rendering/uncertainty and mounted first-HR admission are proved compositionally; independent genuine study admission remains separate."
+            ],
+            "action": "Supply a scoped observation/inspection establishing the listed literal clause; if the prerequisite cannot be supplied, preserve this disposition for independent owner decision."
+          },
+          "not_a_confirmed_source_defect": true
+        }
+      ],
+      "case_evidence_binding": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+        "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3"
+      },
+      "requirement_evidence_binding": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/requirement-evidence.json",
+        "sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f"
+      },
+      "remaining_clause_binding": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/remaining-clauses.json",
+        "sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8"
+      },
+      "test_result_proposal": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/specs/OTGD-006/test-results.json",
+        "sha256": "841c0cccc603a12ef2465f2d4beafc62bb6108b98c5458c19937b6869a905dfc"
+      },
+      "verifier_release_manifest": {
+        "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/release-manifest.json",
+        "sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d"
+      }
+    }
+  },
+  "independent_council": "PENDING"
+}

@@ -1,0 +1,16 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "validated_at": "2026-10-25T11:30:42.230683+00:00",
+  "source_fingerprint_sha256": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "source_fingerprint_files": 1299,
+  "canonical_specs": 47,
+  "stable_cases": 782,
+  "requirements": 411,
+  "audit_pending": 0,
+  "source_assertion_records": 623,
+  "distinct_source_or_driver_files": 109,
+  "helper_body_records_verified": 342,
+  "distinct_actual_artifact_files_rehashed": 36,
+  "errors": [],
+  "scope": "Integrity of current source/body/helper/artifact/ID and disposition references only; not proof of unasserted clauses or final approval."
+}

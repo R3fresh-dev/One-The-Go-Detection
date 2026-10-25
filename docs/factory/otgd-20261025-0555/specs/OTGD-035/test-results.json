@@ -1,0 +1,70 @@
+{
+  "spec_id": "OTGD-035",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-saliva-measurement/spec.md",
+  "canonical_sha256": "6edc6d7603b66733858b1f7fe42dc93d22712dd8cadbac29121a65f2ffd23610",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-035-AND-SAL-001-01",
+    "OTGD-035-AND-SAL-001-02",
+    "OTGD-035-AND-SAL-002-01",
+    "OTGD-035-AND-SAL-002-02",
+    "OTGD-035-AND-SAL-002-03",
+    "OTGD-035-AND-SAL-003-01",
+    "OTGD-035-AND-SAL-003-02",
+    "OTGD-035-AND-SAL-004-01",
+    "OTGD-035-AND-SAL-004-02",
+    "OTGD-035-AND-SAL-005-01",
+    "OTGD-035-AND-SAL-005-02",
+    "OTGD-035-AND-SAL-006-01",
+    "OTGD-035-AND-SAL-006-02",
+    "OTGD-035-AND-SAL-006-03",
+    "OTGD-035-AND-SAL-007-01",
+    "OTGD-035-AND-SAL-007-02"
+  ],
+  "requirements": [
+    "AND-SAL-001",
+    "AND-SAL-002",
+    "AND-SAL-003",
+    "AND-SAL-004",
+    "AND-SAL-005",
+    "AND-SAL-006",
+    "AND-SAL-007"
+  ],
+  "statuses": {
+    "PARTIAL": 12,
+    "NOT_RUN": 1,
+    "BLOCKED": 2,
+    "PASS": 1
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-035",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd"
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/tests/export-projection.test.ts::every retained simulated sample, eye, PPG and separate alcohol projection satisfies its exact typed evidence",
+    "services/api/tests/test_operator_governance.py::test_signed_reader_transport_and_recording_approval_cannot_invent_a_sampling_driver_or_raw_codec",
+    "apps/mobile/tests/acquisition.test.ts::reference laboratory collection has no BLE acquisition, persists a recoverable pending draft, imports separate analysis then permits explicit finalization",
+    "apps/mobile/tests/participant-acquisition.test.ts::actual Python protocol, immutable acknowledgement, specimen and imported report preserve separate truthful lineage",
+    "apps/mobile/e2e/raw-recordings.spec.ts::specimen form records actual quantities, explicit unknowns and handling while offering no participant concentration entry",
+    "apps/mobile/tests/participant-acquisition.test.ts::accepted collection and export companions bind all declared facts and reject duplicate or inconsistent report lineage",
+    "apps/mobile/tests/export-projection.test.ts::an unselected projection cannot hide unknown metadata or a different run/sample identity",
+    "apps/mobile/tests/report-revisions.test.ts::rehashed report changes cannot move specimen collection, reuse prior analytical identities or misstate original units",
+    "apps/mobile/tests/measurement-format.test.ts::below LOQ displays the supplied bound without creating a concentration or rounding it to zero",
+    "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible",
+    "apps/mobile/tests/measurement-format.test.ts::only quantified results display a numeric concentration, preserving a real zero if reported",
+    "apps/mobile/tests/export-projection.test.ts::retained sample unit conversion, censored null and collection binding are independently checked",
+    "services/api/tests/test_report_revisions.py::test_correction_and_delayed_reanalysis_preserve_original_evidence_and_exact_units",
+    "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection",
+    "apps/mobile/src/device/tests/protocol.test.ts::capability source and calibration cannot promote an unprovisioned peripheral",
+    "apps/mobile/tests/report-revisions.test.ts::actual backend correction and delayed reanalysis preserve immutable original evidence and exact carried-forward readings",
+    "apps/mobile/tests/controller.test.ts::guest notice, confirmed Start check, immutable local Save and linked replacement never request account upload"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

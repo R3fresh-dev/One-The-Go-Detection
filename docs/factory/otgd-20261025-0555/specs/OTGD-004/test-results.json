@@ -1,0 +1,37 @@
+{
+  "spec_id": "OTGD-004",
+  "canonical_path": "openspec/changes/authorized-model-execution/specs/android-history/spec.md",
+  "canonical_sha256": "b29801322e8700aa11edce8289d84290485834005cba2fa80ee5695dd3d248ce",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-004-AND-HIST-003-01",
+    "OTGD-004-AND-HIST-003-02"
+  ],
+  "requirements": [
+    "AND-HIST-003"
+  ],
+  "statuses": {
+    "PASS": 2
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "SCOPED_CASES_PASS_PENDING_INDEPENDENT_ACCEPTANCE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-004",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies"
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/tests/research-result.test.ts::actual Python data-only engine interoperability result verifies immutable proof and named historical research endpoint",
+    "services/api/tests/test_model_engine.py::test_training_evaluation_policy_and_result_proof_are_bound",
+    "apps/mobile/tests/result-ui.test.ts::actual Home changes research access with current identity capabilities and immediately with revocation",
+    "apps/mobile/tests/result-ui.test.ts::actual saved row and History preserve historical research and invalid proof rather than frozen measurement-only copy",
+    "apps/mobile/tests/result-ui.test.ts::actual rows and details retain measured, invalid, inconclusive, pending and fictional boundaries",
+    "apps/mobile/tests/result-ui.test.ts::actual welcome describes measurement defaults and separate research authority without enrollment",
+    "apps/mobile/tests/result-presentation.test.ts::current research scope requires live matching authenticated account and generation capabilities",
+    "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+    "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

@@ -1,10 +1,5 @@
-# Active Factory run
+# Factory run index
 
-Run: otgd-20261025-0555
-Branch: factory/one-the-go-detection-20261025
-Records: docs/factory/otgd-20261025-0555
-PM ownership generation:1, sole PM /root.
-Stage: final corrected candidate freeze and verification; correction round 2/2, recovery 0/3.
-Draft PR:https://github.com/R3fresh-dev/One-The-Go-Detection/pull/22
-Live evidence:/workspace/scratch/otgd-20261025-0555-live
-No final approval or completion. This index is advisory, not an additional supervisor.
+Run `otgd-20261025-0555` remains the same sole-PM run. Primary source branch `factory/one-the-go-detection-20261025` at `e89897cc852a111b131eaf5c2caaf163ef201a48`. Latest records: auxiliary metadata-only branch `factory/one-the-go-detection-20261025-evidence`, directory `docs/factory/otgd-20261025-0555`, checkpoint13. This index version describes current final review; the primary source retains its historical checkpoint12 index so its exact tested identity is preserved.
+
+Execution: final independent review/council; not application complete. Correction2/2; recovery0/3. Parent supervision remains external. Recover the primary source plus these records; do not duplicate PMs or auto-resume approval/quality-blocked or deliberate stops.

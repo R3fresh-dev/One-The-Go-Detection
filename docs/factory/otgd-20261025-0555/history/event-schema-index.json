@@ -1,0 +1,469 @@
+{
+  "purpose": "Compatibility index only. Preserve earlier heterogeneous journal lines byte-for-byte; derived IDs do not invent missing original actor/candidate/attempt fields or attest execution. New checkpoint events use the full current schema.",
+  "rows": [
+    {
+      "line": 1,
+      "raw_line_sha256": "fd6c9954e5400b9dad88260fb87423bb24e2881318d6dbcc7a4c0aeeb8fc60c4",
+      "stored_event_id": "E0001",
+      "index_event_id": "E0001",
+      "stored_timestamp": "2026-10-25T05:56:56.714750+00:00",
+      "stored_type": "OWNERSHIP_CONFIRMED"
+    },
+    {
+      "line": 2,
+      "raw_line_sha256": "429a5b1d4b10c9ea0105973c34317cd108c1c14dc1b733bc6415f664c60954f6",
+      "stored_event_id": "E0002",
+      "index_event_id": "E0002",
+      "stored_timestamp": "2026-10-25T05:58:44.477339+00:00",
+      "stored_type": "SPECIALISTS_DISPATCHED"
+    },
+    {
+      "line": 3,
+      "raw_line_sha256": "737d43afb39fcf4707b678b252f9fbf873fcb53abed4ba1a404755d78b876ceb",
+      "stored_event_id": "E0003",
+      "index_event_id": "E0003",
+      "stored_timestamp": "2026-10-25T06:01:11.972764+00:00",
+      "stored_type": "DEPENDENCIES_READY"
+    },
+    {
+      "line": 4,
+      "raw_line_sha256": "0f7451ce5f2008be46a18d9b96c6aae04de5ab8df808dea4a39afdd6ba3dc33d",
+      "stored_event_id": "E0004",
+      "index_event_id": "E0004",
+      "stored_timestamp": "2026-10-25T06:13:28.690397+00:00",
+      "stored_type": "RESOURCE_INCIDENT_RECONCILED"
+    },
+    {
+      "line": 5,
+      "raw_line_sha256": "52601dfb1997aa563efcd566c787f866949a82f4e4c7761f7f3e67b62cc719d5",
+      "stored_event_id": "E0005",
+      "index_event_id": "E0005",
+      "stored_timestamp": "2026-10-25T06:18:21.105116+00:00",
+      "stored_type": "ENGINEERING_AUDIT_STARTED"
+    },
+    {
+      "line": 6,
+      "raw_line_sha256": "b01eb90bdd768b0f99c6b1f30fd3405a93808b411bc357536d419985a25c1788",
+      "stored_event_id": "E0006",
+      "index_event_id": "E0006",
+      "stored_timestamp": "2026-10-25T06:27:57.406714+00:00",
+      "stored_type": "CHECKPOINT_DURABILITY_CORRECTION"
+    },
+    {
+      "line": 7,
+      "raw_line_sha256": "5faff80cc905590e61d72415f12332e5f07aba94f95dff142b04b4f74eed2d5e",
+      "stored_event_id": "E0007",
+      "index_event_id": "E0007",
+      "stored_timestamp": "2026-10-25T06:33:45.935975+00:00",
+      "stored_type": "ACTION_PLANNED"
+    },
+    {
+      "line": 8,
+      "raw_line_sha256": "7a61a8154113b1a040b1713485e2c56958462890880861dbe60d374d2508936e",
+      "stored_event_id": "E0008",
+      "index_event_id": "E0008",
+      "stored_timestamp": "2026-10-25T06:38:09.286482+00:00",
+      "stored_type": "ACTION_CONFIRMED"
+    },
+    {
+      "line": 9,
+      "raw_line_sha256": "792a1b6e4d25af318e062268c9616e8b2492820f25701afbd23a0fa54b26a541",
+      "stored_event_id": "E0009",
+      "index_event_id": "E0009",
+      "stored_timestamp": "2026-10-25T06:41:45.698271+00:00",
+      "stored_type": "RECONCILIATION_ACCEPTED_BUILDERS_DISPATCHED"
+    },
+    {
+      "line": 10,
+      "raw_line_sha256": "ad9611d7b56118da6fac7a9b86853b2ca7070bf08e6b11df8df035ed561f1cfe",
+      "stored_event_id": "E0010",
+      "index_event_id": "E0010",
+      "stored_timestamp": "2026-10-25T06:54:52.498203+00:00",
+      "stored_type": "IMPLEMENTATION_CHECKPOINT_AND_LIVE_PROBE"
+    },
+    {
+      "line": 11,
+      "raw_line_sha256": "7c98c87f1e5b18a442d535ba6453e50fde12224720fdf7b34e4aa20fa15dde28",
+      "stored_event_id": "E0011",
+      "index_event_id": "E0011",
+      "stored_timestamp": "2026-10-25T06:58:02.428062+00:00",
+      "stored_type": "ACTION_RECONCILED"
+    },
+    {
+      "line": 12,
+      "raw_line_sha256": "f473099c6fb16c0afa09846f7aa90fd776f4ae7103ad24d1271c378991ec7a45",
+      "stored_event_id": "E0012",
+      "index_event_id": "E0012",
+      "stored_timestamp": "2026-10-25T06:59:23.074761+00:00",
+      "stored_type": "ACTION_PLANNED"
+    },
+    {
+      "line": 13,
+      "raw_line_sha256": "9baa1e6f4ddf3c97c1230da84eeebf3903c0dd20c5b105e0c8d0f59d51693c1f",
+      "stored_event_id": "E0013",
+      "index_event_id": "E0013",
+      "stored_timestamp": "2026-10-25T07:01:06.850807+00:00",
+      "stored_type": "ACTION_CONFIRMED"
+    },
+    {
+      "line": 14,
+      "raw_line_sha256": "ac75252ab2b44f47177fe8ac07e12e0db1d767408db1f7d533fce0e53ecde185",
+      "stored_event_id": "E0014",
+      "index_event_id": "E0014",
+      "stored_timestamp": "2026-10-25T07:05:06.653198+00:00",
+      "stored_type": "LIVE_BROWSER_DEFECT_REPRODUCED"
+    },
+    {
+      "line": 15,
+      "raw_line_sha256": "f649d9ff0e76c9ad8933b136afbbecd044e69ab36121ba5d46941cf93d5d5e19",
+      "stored_event_id": "E0015",
+      "index_event_id": "E0015",
+      "stored_timestamp": "2026-10-25T07:05:06.653198+00:00",
+      "stored_type": "ACTION_PLANNED"
+    },
+    {
+      "line": 16,
+      "raw_line_sha256": "04d8c2f5bc5a16e8fd7d54784e549502e7e3368849af1c711d12de9be21a1cc0",
+      "stored_event_id": "E0016",
+      "index_event_id": "E0016",
+      "stored_timestamp": "2026-10-25T07:09:08.607384+00:00",
+      "stored_type": "ACTION_CONFIRMED"
+    },
+    {
+      "line": 17,
+      "raw_line_sha256": "81d25697f509227a8c7b761213b8f05111dc33f540e3344583cf4c155fecf730",
+      "stored_event_id": "E0017",
+      "index_event_id": "E0017",
+      "stored_timestamp": "2026-10-25T07:09:08.607384+00:00",
+      "stored_type": "BROWSER_CSP_DEFECT_AND_SOURCE_INVALIDATION"
+    },
+    {
+      "line": 18,
+      "raw_line_sha256": "4a2b9c55491d5b3eb0a4aa277cedebbffacf1feccbc6ff103e68624c107758f4",
+      "stored_event_id": "E0018",
+      "index_event_id": "E0018",
+      "stored_timestamp": "2026-10-25T07:10:16.807365+00:00",
+      "stored_type": "ACTION_PLANNED"
+    },
+    {
+      "line": 19,
+      "raw_line_sha256": "8c97d4cde14845a71979c27967aa6e171cd3d4d7d4987d9f233bd1000d571726",
+      "stored_event_id": "E0019",
+      "index_event_id": "E0019",
+      "stored_timestamp": "2026-10-25T07:15:03.737802+00:00",
+      "stored_type": "CHECKPOINT_WITH_OPEN_LOGOUT_DEFECT"
+    },
+    {
+      "line": 20,
+      "raw_line_sha256": "cb62c5a0473d2e1f8696bbb092bda174be5a199baa28ddd0ed65f9b84e3473cc",
+      "stored_event_id": "E0020",
+      "index_event_id": "E0020",
+      "stored_timestamp": "2026-10-25T07:24:10.102462+00:00",
+      "stored_type": "ACTION_PLANNED"
+    },
+    {
+      "line": 21,
+      "raw_line_sha256": "49c5726165e5d1c2e4e6d578eeb74bf9f229db8eb73d9ba1af8e5a9627c65c57",
+      "stored_event_id": "E0021",
+      "index_event_id": "E0021",
+      "stored_timestamp": "2026-10-25T07:27:00.859185+00:00",
+      "stored_type": "ACTION_CONFIRMED"
+    },
+    {
+      "line": 22,
+      "raw_line_sha256": "2fdd79474adaf132cd97398d63731683156be9a6a56dc17e14c1821e4c3ebeca",
+      "stored_event_id": "E0022",
+      "index_event_id": "E0022",
+      "stored_timestamp": "2026-10-25T07:27:00.859185+00:00",
+      "stored_type": "PREFLIGHT_FAILED_SOURCE_DRIFT"
+    },
+    {
+      "line": 23,
+      "raw_line_sha256": "f8800189f977339e20f1258bd374c6a4e7fc0a44ae993ce10524a263d07f8368",
+      "stored_event_id": "E0023",
+      "index_event_id": "E0023",
+      "stored_timestamp": "2026-10-25T07:27:00.859185+00:00",
+      "stored_type": "ACTION_PLANNED"
+    },
+    {
+      "line": 24,
+      "raw_line_sha256": "0c6369580257e71765fad37587a5a6627f71f54507954b2156384491a9fa651e",
+      "stored_event_id": "E0024",
+      "index_event_id": "E0024",
+      "stored_timestamp": "2026-10-25T07:27:01.535555+00:00",
+      "stored_type": "ACTION_CONFIRMED"
+    },
+    {
+      "line": 25,
+      "raw_line_sha256": "7fd5c8867e00f95ca8958b6078c2bef46b1d86974bef57e4199624f62c4be355",
+      "stored_event_id": "E0025",
+      "index_event_id": "E0025",
+      "stored_timestamp": "2026-10-25T07:31:07.326505+00:00",
+      "stored_type": "CANDIDATE_FREEZE"
+    },
+    {
+      "line": 26,
+      "raw_line_sha256": "ceff61252442157de79b2a30eb5fd34eb77118885c0614c3de4df854bd2e0702",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-ceff61252442157de79b2a30eb5fd34eb77118885c0614c3de4df854bd2e0702",
+      "stored_timestamp": "2026-10-25T07:38:42.889626+00:00",
+      "stored_type": "checkpoint-7-verified"
+    },
+    {
+      "line": 27,
+      "raw_line_sha256": "6562432128775437f148072153ce22203945c7d02f177efe6c1210d10c60e8e3",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-6562432128775437f148072153ce22203945c7d02f177efe6c1210d10c60e8e3",
+      "stored_timestamp": "2026-10-25T07:42:02.242657+00:00",
+      "stored_type": "review-and-gate-checkpoint"
+    },
+    {
+      "line": 28,
+      "raw_line_sha256": "5c74ee4d7992c88a8f8b79ad8187334442a07a261caeeb4f9c7a066c58924091",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-5c74ee4d7992c88a8f8b79ad8187334442a07a261caeeb4f9c7a066c58924091",
+      "stored_timestamp": "2026-10-25T07:47:10.283006+00:00",
+      "stored_type": "intentional-gate-stop-for-consolidated-correction"
+    },
+    {
+      "line": 29,
+      "raw_line_sha256": "e5f614dc343c6209b29b5832c175cd58ea9dd11db845df977d8b19eef99ea349",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-e5f614dc343c6209b29b5832c175cd58ea9dd11db845df977d8b19eef99ea349",
+      "stored_timestamp": "2026-10-25T07:50:00.775438+00:00",
+      "stored_type": "correction-round-1-start"
+    },
+    {
+      "line": 30,
+      "raw_line_sha256": "bddaabbc55d3ef2cad29ffd269cd4c4bfa656a470d7e4ca629f1340decf5982d",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-bddaabbc55d3ef2cad29ffd269cd4c4bfa656a470d7e4ca629f1340decf5982d",
+      "stored_timestamp": "2026-10-25T07:57:17.946522+00:00",
+      "stored_type": "correction-assertion-consolidation"
+    },
+    {
+      "line": 31,
+      "raw_line_sha256": "44f340ad2f23c34ac03ebedc15e20fa27697ddef24891c4340a14079ccc879b3",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-44f340ad2f23c34ac03ebedc15e20fa27697ddef24891c4340a14079ccc879b3",
+      "stored_timestamp": "2026-10-25T08:04:25.081184+00:00",
+      "stored_type": "confirmed-reference-and-sync-corrections"
+    },
+    {
+      "line": 32,
+      "raw_line_sha256": "f91d91db4df802dd2d69bff8b1542c7c44e140d6b2b5c480372991d1433c4e8b",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-f91d91db4df802dd2d69bff8b1542c7c44e140d6b2b5c480372991d1433c4e8b",
+      "stored_timestamp": "2026-10-25T08:13:29.559970+00:00",
+      "stored_type": "round1-invalid-row-assertion"
+    },
+    {
+      "line": 33,
+      "raw_line_sha256": "bf3ac13ad55305db8cf9076c495da65a7533ace3cd6bb0aedad7d7ccc3ed1bff",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-bf3ac13ad55305db8cf9076c495da65a7533ace3cd6bb0aedad7d7ccc3ed1bff",
+      "stored_timestamp": "2026-10-25T08:17:49.369173+00:00",
+      "stored_type": "privacy-receipt-and-raw-assertion-consolidation"
+    },
+    {
+      "line": 34,
+      "raw_line_sha256": "5c0179ef218a673105764fc1f29a47d35045ad4d00462a7fca3158de6628b6aa",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-5c0179ef218a673105764fc1f29a47d35045ad4d00462a7fca3158de6628b6aa",
+      "stored_timestamp": "2026-10-25T08:24:56.053187+00:00",
+      "stored_type": "image-e-proof-authorized"
+    },
+    {
+      "line": 35,
+      "raw_line_sha256": "5f3b44006e0b2b50edaf86dde8c0cba2f352f643d79d3a4d1968c96e3886e903",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-5f3b44006e0b2b50edaf86dde8c0cba2f352f643d79d3a4d1968c96e3886e903",
+      "stored_timestamp": "2026-10-25T08:37:04.579663+00:00",
+      "stored_type": "history-assets-preparation-corrections"
+    },
+    {
+      "line": 36,
+      "raw_line_sha256": "9fa79e68c044ecebdc0638e736f462a086d0636468d93c8df25920c2b05843a7",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-9fa79e68c044ecebdc0638e736f462a086d0636468d93c8df25920c2b05843a7",
+      "stored_timestamp": "2026-10-25T08:39:45.416533+00:00",
+      "stored_type": "web-assets-correction-focused-pass"
+    },
+    {
+      "line": 37,
+      "raw_line_sha256": "ab0b197c587d708eafc8bbf16ab7d236b27a60556504931b5c3af3fbe959cc66",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-ab0b197c587d708eafc8bbf16ab7d236b27a60556504931b5c3af3fbe959cc66",
+      "stored_timestamp": "2026-10-25T08:51:07.834257+00:00",
+      "stored_type": "compressed-image-and-environment-prerequisite-reconciliation"
+    },
+    {
+      "line": 38,
+      "raw_line_sha256": "750b97387cbbf0282e8f38e7eef2cd5a03e1505930cbb59f477a9defd9436daf",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-750b97387cbbf0282e8f38e7eef2cd5a03e1505930cbb59f477a9defd9436daf",
+      "stored_timestamp": "2026-10-25T08:55:12.141347+00:00",
+      "stored_type": "checkpoint8-ci-complete-and-round1-source-progress"
+    },
+    {
+      "line": 39,
+      "raw_line_sha256": "75ae4afffaa18108423a2d79e883aecf9c74cb41f573eb2690ddcc04dc0fd94d",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-75ae4afffaa18108423a2d79e883aecf9c74cb41f573eb2690ddcc04dc0fd94d",
+      "stored_timestamp": "2026-10-25T08:57:54.655793+00:00",
+      "stored_type": "bounded-round1-assertion-consolidation"
+    },
+    {
+      "line": 40,
+      "raw_line_sha256": "4907094fd16fa57d23e2db971d22866f77a98dddce075f8cf9a549129c6eadd8",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-4907094fd16fa57d23e2db971d22866f77a98dddce075f8cf9a549129c6eadd8",
+      "stored_timestamp": "2026-10-25T08:59:25.284066+00:00",
+      "stored_type": "checkpoint9-source-boundary"
+    },
+    {
+      "line": 41,
+      "raw_line_sha256": "ecb04f6fba757510cba16e4798a1d00d6670d42eb0699aa7d110b3c05ee0248a",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-ecb04f6fba757510cba16e4798a1d00d6670d42eb0699aa7d110b3c05ee0248a",
+      "stored_timestamp": "2026-10-25T09:01:22.396070+00:00",
+      "stored_type": "checkpoint9-remote-verified"
+    },
+    {
+      "line": 42,
+      "raw_line_sha256": "84a8867695f4ebf14884829f92268a786c1cc640824b0a5f3c852f2886c6a73c",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-84a8867695f4ebf14884829f92268a786c1cc640824b0a5f3c852f2886c6a73c",
+      "stored_timestamp": "2026-10-25T09:04:36.055038+00:00",
+      "stored_type": "private-docker-temp-read-unavailable"
+    },
+    {
+      "line": 43,
+      "raw_line_sha256": "6759d7e2fa2af86894a473e29d10c90ac57c142013147a3228dfaf92694f5485",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-6759d7e2fa2af86894a473e29d10c90ac57c142013147a3228dfaf92694f5485",
+      "stored_timestamp": "2026-10-25T09:09:25.439458+00:00",
+      "stored_type": "required-chemistry-finalization-defect-confirmed"
+    },
+    {
+      "line": 44,
+      "raw_line_sha256": "3f13972bbfd519437dbe829c2b059fd204752e68eab889e47850db8c604ae68a",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-3f13972bbfd519437dbe829c2b059fd204752e68eab889e47850db8c604ae68a",
+      "stored_timestamp": "2026-10-25T09:11:14.448857+00:00",
+      "stored_type": "baseline-semantic-audit-preserved"
+    },
+    {
+      "line": 45,
+      "raw_line_sha256": "e3f196330ae90fc35b861ccb6fe25bf61588c89eaba72998a2401be15c60979a",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-e3f196330ae90fc35b861ccb6fe25bf61588c89eaba72998a2401be15c60979a",
+      "stored_timestamp": "2026-10-25T09:16:46.536011+00:00",
+      "stored_type": "hr-readback-revocation-defect-confirmed"
+    },
+    {
+      "line": 46,
+      "raw_line_sha256": "7b5ba2d70a4bf21c907034152caf6148771f9450fc335961075830f82be50b2e",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-7b5ba2d70a4bf21c907034152caf6148771f9450fc335961075830f82be50b2e",
+      "stored_timestamp": "2026-10-25T09:20:57.940200+00:00",
+      "stored_type": "checkpoint9-preview-fixture-regression"
+    },
+    {
+      "line": 47,
+      "raw_line_sha256": "143707560806f3d48d6dbefe110e682629bbe081f3c81c5c06d1136dbe24a454",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-143707560806f3d48d6dbefe110e682629bbe081f3c81c5c06d1136dbe24a454",
+      "stored_timestamp": "2026-10-25T09:25:37.075403+00:00",
+      "stored_type": "cached-hr-disclosure-confirmed"
+    },
+    {
+      "line": 48,
+      "raw_line_sha256": "7f83656af01cc0df34bad1981671b629442132dc6d8ddf27cdebf0a49d5d01d1",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-7f83656af01cc0df34bad1981671b629442132dc6d8ddf27cdebf0a49d5d01d1",
+      "stored_timestamp": "2026-10-25T09:33:58.757648+00:00",
+      "stored_type": "image-g-adoption-confirmed-and-obsolete-d-cache-plan"
+    },
+    {
+      "line": 49,
+      "raw_line_sha256": "96fd946335d3a910b27f4855b7b53eee6d11f12c002c14d49ae9e4dfdc41623e",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-96fd946335d3a910b27f4855b7b53eee6d11f12c002c14d49ae9e4dfdc41623e",
+      "stored_timestamp": "2026-10-25T09:34:27.170478+00:00",
+      "stored_type": "obsolete-image-d-cache-removal-confirmed"
+    },
+    {
+      "line": 50,
+      "raw_line_sha256": "d1817b415200e22b0ccd96c04afbe0e1bbb29200d0f538797db9c795c6f4f3fa",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-d1817b415200e22b0ccd96c04afbe0e1bbb29200d0f538797db9c795c6f4f3fa",
+      "stored_timestamp": "2026-10-25T09:46:37.074966+00:00",
+      "stored_type": "replacement_candidate_prepared"
+    },
+    {
+      "line": 51,
+      "raw_line_sha256": "9c1993877fc40dc387954cacc8f7dec534dcb0e9244ffbf36700730eaa3d3033",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-9c1993877fc40dc387954cacc8f7dec534dcb0e9244ffbf36700730eaa3d3033",
+      "stored_timestamp": "2026-10-25T10:03:31.382145+00:00",
+      "stored_type": "correction_round_2_started"
+    },
+    {
+      "line": 52,
+      "raw_line_sha256": "6b29a1d5f01e9e22bfc9dc029bcf753dfba937b212689d60cec822360a990497",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-6b29a1d5f01e9e22bfc9dc029bcf753dfba937b212689d60cec822360a990497",
+      "stored_timestamp": "2026-10-25T10:08:31.887442+00:00",
+      "stored_type": "correction_round_2_owner_acknowledgments"
+    },
+    {
+      "line": 53,
+      "raw_line_sha256": "2c6bdb05e63db22cdb565277ea072bb5f533ff30bc605bda6648c8ba3b5b9f8d",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-2c6bdb05e63db22cdb565277ea072bb5f533ff30bc605bda6648c8ba3b5b9f8d",
+      "stored_timestamp": "2026-10-25T10:20:19.679247+00:00",
+      "stored_type": "bounded_reproducible_cache_cleanup"
+    },
+    {
+      "line": 54,
+      "raw_line_sha256": "b7133d0acd0c0c00246ff41d5d448edc7ba2f178f54c8c6bca0a5788a7df8bb3",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-b7133d0acd0c0c00246ff41d5d448edc7ba2f178f54c8c6bca0a5788a7df8bb3",
+      "stored_timestamp": "2026-10-25T10:25:55.643513+00:00",
+      "stored_type": "aggregate_test_archive_storage_adjusted"
+    },
+    {
+      "line": 55,
+      "raw_line_sha256": "51efb60c4667c2120f80cef93f2f20e5158ea15a740e6cbd857f76d33883cbe0",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-51efb60c4667c2120f80cef93f2f20e5158ea15a740e6cbd857f76d33883cbe0",
+      "stored_timestamp": "2026-10-25T10:31:07.688044+00:00",
+      "stored_type": "image_h_adopted_and_obsolete_g_cache_removed"
+    },
+    {
+      "line": 56,
+      "raw_line_sha256": "7b00bd5696e7b8a6f0189dee1e03ac222cfa93e0ade228bb5c945d83ed1d9587",
+      "stored_event_id": null,
+      "index_event_id": "legacy-sha256-7b00bd5696e7b8a6f0189dee1e03ac222cfa93e0ade228bb5c945d83ed1d9587",
+      "stored_timestamp": "2026-10-25T10:33:04.587567+00:00",
+      "stored_type": "final_corrected_candidate_prepared"
+    },
+    {
+      "line": 57,
+      "raw_line_sha256": "0bdb10d93f08a346e5553ba5479f5f80c0f85181976fbb167b7ccf50b2ad2d36",
+      "stored_event_id": "otgd-20261025-0555-checkpoint13-final-evidence",
+      "index_event_id": "otgd-20261025-0555-checkpoint13-final-evidence",
+      "stored_timestamp": "2026-10-25T11:36:27.069012+00:00",
+      "stored_type": "CHECKPOINT_EVIDENCE"
+    },
+    {
+      "line": 58,
+      "raw_line_sha256": "47033f5615f44d20a6a0297761fa33b89772039b1a0873f743f2beb6aa945ffa",
+      "stored_event_id": "otgd-20261025-0555-final-six-reviews",
+      "index_event_id": "otgd-20261025-0555-final-six-reviews",
+      "stored_timestamp": "2026-10-25T11:41:39.593063+00:00",
+      "stored_type": "REVIEWS_RELEASED"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "manifest": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/artifact-manifest.json",
+  "manifest_sha256": "661b9002d0fff542da179657c6fa924bfdf1c8c763ab5ca7981434a57d41280c",
+  "files_independently_rehashed": 19,
+  "production_files_independently_rehashed": 11,
+  "actual_HR_variant_count": 4,
+  "actual_HR_partition_dimension_reconciliations": 48,
+  "actual_mobile_tests": 3,
+  "source_assertion_refs": [
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/hr_strata_probe.py::actual_train_evaluate_four_HR_variants_all48_strata",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/offline_withdrawal_probe.fragment.ts::supplemental offline active reader capture withdrawal retains exact privacy intent and later receipt without restoring uploads",
+    "apps/mobile/tests/acquisition.test.ts::late fictional collection receipt across ${interruption} cannot replace current state or restore acquisition authority"
+  ],
+  "initial_harness_result": "Root venv lacked pytest, no pipeline ran; existing API venv completed without install. Failure preserved, never promoted to product pass."
+}

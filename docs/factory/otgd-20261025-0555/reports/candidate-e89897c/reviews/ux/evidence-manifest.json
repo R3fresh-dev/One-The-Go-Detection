@@ -1,0 +1,172 @@
+{
+  "recorded_at": "2026-10-25T11:33:07.716515+00:00",
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "provisional_evidence_manifest": "provisional/evidence-manifest.json",
+  "provisional_evidence_manifest_sha256": "250d344a863654d714eec4c5e3eda30177fe12215e1703838585ddc1ac1b9827",
+  "release_received": "Explicit /root/verification message RELEASE at2026-10-25T11:31:29Z; immutable manifest verified",
+  "verifier_release_all_files_rehashed": 164,
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/local-final-artifacts.json",
+      "sha256": "50d0485b41031dc1375d5b73aea227ef7ab5fe973d24a41e6ba123ac7f57fa80",
+      "size_bytes": 5942,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-acceptance-summary.json",
+      "sha256": "c62c574b6e6e08eefb459d9d8297c6e20db5ca024f242b4a0ea2299ca42da928",
+      "size_bytes": 4381,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-tree-binding.json",
+      "sha256": "92e94326242d94cb0add0e7d16b671c19e06a847c0c8d9c5f472cef58c16e175",
+      "size_bytes": 427,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-jobs-final.json",
+      "sha256": "4c5e26ac94a83b767ed43082e5cb5cd3fd646dcc84d85996feb5aee2e55532cd",
+      "size_bytes": 40389,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage1.json",
+      "sha256": "082bf69762d7f7c1326fc2e05b44b36fa348813efa230937bb4ee8e066754fc8",
+      "size_bytes": 8949,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage2.json",
+      "sha256": "9827809ef5d555c636b0b9de510f3fed48533c157275b6c91a981ba7b73cb139",
+      "size_bytes": 4825,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage3.json",
+      "sha256": "b8cd6078c68a5f67aec1d5a6f5772e05cd607a547f8e88748d5fae794e20b8f5",
+      "size_bytes": 2058,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-records-decision.json",
+      "sha256": "0c225673b3319f26e3b94c3d3ac54e562d624febe93bbfb908a0bbefc76052f8",
+      "size_bytes": 1335,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/gate-process.json",
+      "sha256": "4cb00fdfc9479338c4f7eeb10968efb6eb0561c7cd264f0aa582f090e1bed069",
+      "size_bytes": 400,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/final-gates.log",
+      "sha256": "266db7b3c08ccaf3fabc8c8844e031c541322573ad006e3c4c91f6da56735093",
+      "size_bytes": 205461,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/release-manifest.json",
+      "sha256": "3f5ecef5a665738d27692a073e87377d1e65d48810408eedaec099cf5f7ce40d",
+      "size_bytes": 27860,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/case-evidence.json",
+      "sha256": "a60cfa29922ad9ab2295dd690f4c002c72d9f7a91ce30126720bac04e3b432e3",
+      "size_bytes": 10420067,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/requirement-evidence.json",
+      "sha256": "69f582cee9fadb3e2214273baf1724a66539bdc15eb95d6ccf5776119678d79f",
+      "size_bytes": 109572,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/remaining-clauses.json",
+      "sha256": "bb866e844bc2cde7c71bf5e9df85106b7a0d4b855d889b5d0184fe098c8481a8",
+      "size_bytes": 491359,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/dossier-proposals.json",
+      "sha256": "867e0c5f895d3ff15c94f4c10741243aa6f0fe9a4dc699f8575da941ca1ee10d",
+      "size_bytes": 249340,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/summary.json",
+      "sha256": "202b05502ab316553c3adcb59b14cad05bc605b33b3d098ca23b6edc839a3357",
+      "size_bytes": 1528,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/integrity.json",
+      "sha256": "202abe7c8b5f3cdd5efe555801386d8fa4027306b741c213c429e377e2ab0017",
+      "size_bytes": 675,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-local-admission.json",
+      "sha256": "7ba2eb59e751db4367a9164884e54ee209dd52be4033b21eb4bf4c6d6f56256e",
+      "size_bytes": 2066,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/final-ci-admission.json",
+      "sha256": "bbf9576ede2273212cca845604835cf37d6bdebaf3ee7196fd469db9b43c21f2",
+      "size_bytes": 3695,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/operations-admission.json",
+      "sha256": "e61aa1d25e4778ea98714eebdadc235e6e740afb7c78853dc94fd62d0db1124c",
+      "size_bytes": 2538,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/semantics-admission.json",
+      "sha256": "b5455beb5c1b18472ce947a3cbbc81d5c0dcd4dedb66b40e3b71957f4c1e944f",
+      "size_bytes": 1278,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/artifact-manifest.json",
+      "sha256": "661b9002d0fff542da179657c6fa924bfdf1c8c763ab5ca7981434a57d41280c",
+      "size_bytes": 2074,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/mobile.raw.log",
+      "sha256": "570e4e377bab177d08f59df8b36f3b1f0760a0824cf40a0a709a56d6ed74f38b",
+      "size_bytes": 530,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/offline-withdrawal-observations.json",
+      "sha256": "d1301a78b47f955bf914d70b1d7dde52e85bf2f06ef9f259b5e846b9a313194b",
+      "size_bytes": 4208,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/offline_withdrawal_probe.fragment.ts",
+      "sha256": "24b54b1005e9a9e44e3dd5dea4f69e4447a36b892726e7186502edc446a713cf",
+      "size_bytes": 5591,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/results.json",
+      "sha256": "1fb5d5ec06a23bf1f3ba2c893fae811c584d5a7855ee51d8a2b392a246b71baf",
+      "size_bytes": 6390,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/reviews/ux/current-evidence-checks.json",
+      "sha256": "b9f163b444465ba7fa16b8afb36c6452021c5f80ab54ffff300a993bf27dfff5",
+      "size_bytes": 14497,
+      "scope": "Current final execution, immutable per-case reconciliation or independent supplemental evidence; scope retained in source artifact"
+    }
+  ]
+}

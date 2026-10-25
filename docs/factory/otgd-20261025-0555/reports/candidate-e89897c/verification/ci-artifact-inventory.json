@@ -1,0 +1,440 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "tree_binding": {
+    "run_id": 40185247204,
+    "head": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+    "tested_merge": "d75116afb2771e4d2841e3592f2784a455ba0a9f",
+    "exact_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+    "merge_parents": [
+      "0844868aa543af4ab75ac5065ad48cf807b86bb3",
+      "e89897cc852a111b131eaf5c2caaf163ef201a48"
+    ],
+    "source": "GitHub Git commits plus actual current components job checkout log",
+    "verified": true
+  },
+  "manifest_indices": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage1.json",
+      "sha256": "082bf69762d7f7c1326fc2e05b44b36fa348813efa230937bb4ee8e066754fc8"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage2.json",
+      "sha256": "9827809ef5d555c636b0b9de510f3fed48533c157275b6c91a981ba7b73cb139"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage3.json",
+      "sha256": "b8cd6078c68a5f67aec1d5a6f5772e05cd607a547f8e88748d5fae794e20b8f5"
+    }
+  ],
+  "archives_independently_rehashed": [
+    {
+      "id": 12595857777,
+      "name": "evidence-unit-coverage",
+      "archive": "/tmp/otgd-ci-checkpoint12/12595857777/artifact.zip",
+      "sha256": "5479656285bd8766aee4a4673c996e8c2ec749d4fb208b15c15ac1f9ee2e61b3",
+      "bytes": 122923
+    },
+    {
+      "id": 12595408442,
+      "name": "evidence-components",
+      "archive": "/tmp/otgd-ci-checkpoint12/12595408442/artifact.zip",
+      "sha256": "11676eb444266ac444bf78ba28576c66e3712eed5c9f706ee8f08849281d43fa",
+      "bytes": 2735
+    },
+    {
+      "id": 12595383532,
+      "name": "postgres-test-results",
+      "archive": "/tmp/otgd-ci-checkpoint12/12595383532/artifact.zip",
+      "sha256": "199f4fd3198e63fe9116df58d779143782c7632ec71b0413d4515105f62b19dd",
+      "bytes": 44303
+    },
+    {
+      "id": 12595253497,
+      "name": "evidence-atdd",
+      "archive": "/tmp/otgd-ci-checkpoint12/12595253497/artifact.zip",
+      "sha256": "a4af8f24b694040f5db8f180274b9e094fa01d3f256e4f41e98162afaefa72b9",
+      "bytes": 13934
+    },
+    {
+      "id": 12596297227,
+      "name": "ios-hosted-native-reports-d75116afb2771e4d2841e3592f2784a455ba0a9f",
+      "archive": "/tmp/otgd-ci-checkpoint12/12596297227/artifact.zip",
+      "sha256": "09c39e732b940e8fda39b30f64b5fcb388dd6178cec5fa19e2c2ebc81785f150",
+      "bytes": 7706
+    },
+    {
+      "id": 12596147789,
+      "name": "ios-native-test-results",
+      "archive": "/tmp/otgd-ci-checkpoint12/12596147789/artifact.zip",
+      "sha256": "084bd3d62276ce838e8d762f79eb28023bfeb24c2c88f6690384e050ed369f82",
+      "bytes": 7797
+    },
+    {
+      "id": 12595993071,
+      "name": "android-native-test-reports",
+      "archive": "/tmp/otgd-ci-checkpoint12/12595993071/artifact.zip",
+      "sha256": "73403058073b23ba648bd7352aacedee040fbf4d95e7efb214816c64c20ac9ff",
+      "bytes": 13881
+    },
+    {
+      "id": 12597525541,
+      "name": "exact-revision-merge-evidence",
+      "archive": "/tmp/otgd-ci-checkpoint12/12597525541/artifact.zip",
+      "sha256": "93df838cb32943d053244ebca603a8dee761d28f3386e8c66111741a07cf3023",
+      "bytes": 395
+    },
+    {
+      "id": 12597206063,
+      "name": "localstack-performance-evidence",
+      "archive": "/tmp/otgd-ci-checkpoint12/12597206063/artifact.zip",
+      "sha256": "6c01314bdaf39c2c38045e67dbccf7521923ed3d59d9ca6ea2b96e2f5b1ad431",
+      "bytes": 13574
+    }
+  ],
+  "entries_independently_rehashed": [
+    {
+      "artifact_id": 12595857777,
+      "artifact_name": "evidence-unit-coverage",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595857777/extracted/reports/coverage.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/coverage.xml",
+      "sha256": "d93c49c9407e9e6317db30ed5984b87d431044aad919c2fe868a83181f5d5e92",
+      "bytes": 419554
+    },
+    {
+      "artifact_id": 12595857777,
+      "artifact_name": "evidence-unit-coverage",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595857777/extracted/reports/secure-sdk.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/secure-sdk.xml",
+      "sha256": "1131c8095c4fa4d654f28ac7a2b907f587b8e8b58e129a25c1e1d0940c4c71b2",
+      "bytes": 1563,
+      "testcase_counts": {
+        "PASS": 9
+      }
+    },
+    {
+      "artifact_id": 12595857777,
+      "artifact_name": "evidence-unit-coverage",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595857777/extracted/reports/unit-coverage.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit-coverage.json",
+      "sha256": "d8b5e44ffce91f5c9b0ea947b25367a5ea0fef2d3cff11d604b73ec29f366980",
+      "bytes": 507005
+    },
+    {
+      "artifact_id": 12595857777,
+      "artifact_name": "evidence-unit-coverage",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595857777/extracted/reports/unit.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/reports/unit.xml",
+      "sha256": "f09f50e4024052c38f8df0b72791503b1fc2efaae68c6b1cb54447a200669419",
+      "bytes": 614653,
+      "testcase_counts": {
+        "PASS": 1538
+      }
+    },
+    {
+      "artifact_id": 12595857777,
+      "artifact_name": "evidence-unit-coverage",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595857777/extracted/apps/mobile/reports/mobile-unit-coverage.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/apps/mobile/reports/mobile-unit-coverage.json",
+      "sha256": "6756a3b3f1510854a7942045ab96aba86e24358ddce50f2be6d4614a876a5883",
+      "bytes": 10077
+    },
+    {
+      "artifact_id": 12595857777,
+      "artifact_name": "evidence-unit-coverage",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595857777/extracted/apps/mobile/reports/mobile-unit-events.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595857777/apps/mobile/reports/mobile-unit-events.log",
+      "sha256": "08538e08e475e4fc38fd0878cc883bb039f5d100b105b136e1c31e881e42b1f9",
+      "bytes": 93
+    },
+    {
+      "artifact_id": 12595408442,
+      "artifact_name": "evidence-components",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595408442/extracted/reports/components.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595408442/reports/components.xml",
+      "sha256": "e7e7d926b5f3a9b2a7ed5cebe1aef20a55d8735c6b2886248edf6d77955ea580",
+      "bytes": 15132,
+      "testcase_counts": {
+        "PASS": 80
+      }
+    },
+    {
+      "artifact_id": 12595383532,
+      "artifact_name": "postgres-test-results",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595383532/extracted/postgres.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595383532/postgres.xml",
+      "sha256": "3c111a5986dfd3a6baa305bb000e550a8d290ec863ed2c490744f4de24f2d114",
+      "bytes": 611045,
+      "testcase_counts": {
+        "PASS": 1508
+      }
+    },
+    {
+      "artifact_id": 12595253497,
+      "artifact_name": "evidence-atdd",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595253497/extracted/apps/mobile/test-results/mobile-guest-completes-a-m-20491-nd-privacy-settings-journey-desktop-web-preview/selected-check.zip",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595253497/apps/mobile/test-results/mobile-guest-completes-a-m-20491-nd-privacy-settings-journey-desktop-web-preview/selected-check.zip",
+      "sha256": "a6295b5cd32d5fdf9acc55b51271f312360fabc95c9a55950e15e4956eace232",
+      "bytes": 6856
+    },
+    {
+      "artifact_id": 12595253497,
+      "artifact_name": "evidence-atdd",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595253497/extracted/reports/atdd.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595253497/reports/atdd.xml",
+      "sha256": "4487aa6116b629a25830ef3c4a32a4b11b17180cfdccb4ab8e10fcd2a207a305",
+      "bytes": 1432,
+      "testcase_counts": {
+        "PASS": 6
+      }
+    },
+    {
+      "artifact_id": 12595253497,
+      "artifact_name": "evidence-atdd",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595253497/extracted/apps/mobile/test-results/mobile-guest-completes-a-m-20491-nd-privacy-settings-journey-mobile-web-preview/selected-check.zip",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595253497/apps/mobile/test-results/mobile-guest-completes-a-m-20491-nd-privacy-settings-journey-mobile-web-preview/selected-check.zip",
+      "sha256": "69c6ee27497213d31ec8051b971489f8db4a23d1ddd1c069fd0eb2d52b85932e",
+      "bytes": 6871
+    },
+    {
+      "artifact_id": 12595253497,
+      "artifact_name": "evidence-atdd",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595253497/extracted/reports/hosted-preview.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595253497/reports/hosted-preview.xml",
+      "sha256": "c416ab04fd7865c331eb9dfb7287e5f3d8933e422590fa2ddce38c7905702434",
+      "bytes": 882,
+      "testcase_counts": {
+        "PASS": 2
+      }
+    },
+    {
+      "artifact_id": 12596297227,
+      "artifact_name": "ios-hosted-native-reports-d75116afb2771e4d2841e3592f2784a455ba0a9f",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12596297227/extracted/ios-hosted-native.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12596297227/ios-hosted-native.xml",
+      "sha256": "58e7cf359c085a84a9ff299785ea51a943e0c972f7e6ce652f3126aacb9f3745",
+      "bytes": 839,
+      "testcase_counts": {
+        "PASS": 5
+      }
+    },
+    {
+      "artifact_id": 12596297227,
+      "artifact_name": "ios-hosted-native-reports-d75116afb2771e4d2841e3592f2784a455ba0a9f",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12596297227/extracted/ios-hosted-native.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12596297227/ios-hosted-native.log",
+      "sha256": "dae44dbc588bdeab2e2258f5eaeb5f8fa714522abb8ac859460f0db609fc9568",
+      "bytes": 43112
+    },
+    {
+      "artifact_id": 12596297227,
+      "artifact_name": "ios-hosted-native-reports-d75116afb2771e4d2841e3592f2784a455ba0a9f",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12596297227/extracted/ios-hosted-optical.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12596297227/ios-hosted-optical.log",
+      "sha256": "97bb48f1c0e4e7d398c9f9de9f30f1e624cc6ec5b8da92ffb9a19a1648736cdd",
+      "bytes": 47394
+    },
+    {
+      "artifact_id": 12596297227,
+      "artifact_name": "ios-hosted-native-reports-d75116afb2771e4d2841e3592f2784a455ba0a9f",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12596297227/extracted/ios-hosted-optical.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12596297227/ios-hosted-optical.xml",
+      "sha256": "2d4be76b142ebf9538bc6a71d356831e48f485ae12689e35fc3db62ec524f3b3",
+      "bytes": 1285,
+      "testcase_counts": {
+        "PASS": 8
+      }
+    },
+    {
+      "artifact_id": 12596147789,
+      "artifact_name": "ios-native-test-results",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12596147789/extracted/ios-native.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12596147789/ios-native.xml",
+      "sha256": "6e7f89715db81a6a09e132f5acf86cd0c57c43dcbede35b41265fbada7be8e7b",
+      "bytes": 850,
+      "testcase_counts": {
+        "PASS": 5
+      }
+    },
+    {
+      "artifact_id": 12596147789,
+      "artifact_name": "ios-native-test-results",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12596147789/extracted/ios-native.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12596147789/ios-native.log",
+      "sha256": "7226c59c247f5d053c2afa2e607021bced5fbeeb2a079224cab7c8a3f92a3e04",
+      "bytes": 47662
+    },
+    {
+      "artifact_id": 12596147789,
+      "artifact_name": "ios-native-test-results",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12596147789/extracted/ios-optical.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12596147789/ios-optical.xml",
+      "sha256": "7d317e7776fb5c46c46f6b3979894133b370640bb57d0d9c166c2efe8aa89457",
+      "bytes": 1294,
+      "testcase_counts": {
+        "PASS": 8
+      }
+    },
+    {
+      "artifact_id": 12596147789,
+      "artifact_name": "ios-native-test-results",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12596147789/extracted/ios-optical.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12596147789/ios-optical.log",
+      "sha256": "11fc45e116c42ba205d0fab933755bf1f9cabd5a1c9119770330dc6c91c22cf5",
+      "bytes": 51853
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/reaction-task/android/build/reports/tests/testDebugUnitTest/css/base-style.css",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/reaction-task/android/build/reports/tests/testDebugUnitTest/css/base-style.css",
+      "sha256": "ae3edaf7d2e0cdfbd9919e0c89fcabbc6c593118515e82a13567005dc10bbf08",
+      "bytes": 2449
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/reaction-task/android/build/reports/tests/testDebugUnitTest/expo.modules.otgdreaction.NativeEventSerializationTest/index.html",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/reaction-task/android/build/reports/tests/testDebugUnitTest/expo.modules.otgdreaction.NativeEventSerializationTest/index.html",
+      "sha256": "fcd462cabb5bee1fa990f1b6418218e88312e6c62025373e17779e1d7419fd65",
+      "bytes": 2465
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/reaction-task/android/build/reports/tests/testDebugUnitTest/css/style.css",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/reaction-task/android/build/reports/tests/testDebugUnitTest/css/style.css",
+      "sha256": "7e5a63bb31295a4a5627ca9d8f8bd463bd91c035577fa2b4d020713936083a08",
+      "bytes": 2201
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/reaction-task/android/build/reports/tests/testDebugUnitTest/expo.modules.otgdreaction.ReactionCoreTest/index.html",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/reaction-task/android/build/reports/tests/testDebugUnitTest/expo.modules.otgdreaction.ReactionCoreTest/index.html",
+      "sha256": "3e02641f15a9c126856b104fa5a4aca6492f5b41cabc26e04776954a852ed8df",
+      "bytes": 3556
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/reaction-task/android/build/reports/tests/testDebugUnitTest/index.html",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/reaction-task/android/build/reports/tests/testDebugUnitTest/index.html",
+      "sha256": "387ddf12e88c76cee5d1a41cdc031ed7f6867feb05933729d7de96cf0373b790",
+      "bytes": 2599
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/reaction-task/android/build/reports/tests/testDebugUnitTest/js/report.js",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/reaction-task/android/build/reports/tests/testDebugUnitTest/js/report.js",
+      "sha256": "3aadca4fcf721dca618b54c0e93c93c37884c8d25aa2c9cb92782a3db9ffa605",
+      "bytes": 6718
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/eye-capture/android/build/reports/tests/testDebugUnitTest/css/base-style.css",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/eye-capture/android/build/reports/tests/testDebugUnitTest/css/base-style.css",
+      "sha256": "ae3edaf7d2e0cdfbd9919e0c89fcabbc6c593118515e82a13567005dc10bbf08",
+      "bytes": 2449
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/eye-capture/android/build/reports/tests/testDebugUnitTest/css/style.css",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/eye-capture/android/build/reports/tests/testDebugUnitTest/css/style.css",
+      "sha256": "7e5a63bb31295a4a5627ca9d8f8bd463bd91c035577fa2b4d020713936083a08",
+      "bytes": 2201
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/eye-capture/android/build/reports/tests/testDebugUnitTest/expo.modules.otgdeye.EyeCoreTest/index.html",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/eye-capture/android/build/reports/tests/testDebugUnitTest/expo.modules.otgdeye.EyeCoreTest/index.html",
+      "sha256": "3fb4d8afdf872b4b46f8d0881104c71ba16fb451e0ead73045ebce4e437d22fe",
+      "bytes": 4572
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/eye-capture/android/build/reports/tests/testDebugUnitTest/index.html",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/eye-capture/android/build/reports/tests/testDebugUnitTest/index.html",
+      "sha256": "a2cefbaa7455aac1f853b5cc98979e27fe10573fc35d0663735b2933a073a78e",
+      "bytes": 2265
+    },
+    {
+      "artifact_id": 12595993071,
+      "artifact_name": "android-native-test-reports",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12595993071/extracted/eye-capture/android/build/reports/tests/testDebugUnitTest/js/report.js",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12595993071/eye-capture/android/build/reports/tests/testDebugUnitTest/js/report.js",
+      "sha256": "3aadca4fcf721dca618b54c0e93c93c37884c8d25aa2c9cb92782a3db9ffa605",
+      "bytes": 6718
+    },
+    {
+      "artifact_id": 12597525541,
+      "artifact_name": "exact-revision-merge-evidence",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12597525541/extracted/gates.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12597525541/gates.json",
+      "sha256": "7709b1cb9955103f1dcf7d9c69d76730411488b841cf4e93c7d27da9e1f8a974",
+      "bytes": 427
+    },
+    {
+      "artifact_id": 12597206063,
+      "artifact_name": "localstack-performance-evidence",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12597206063/extracted/authenticated-live.xml",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12597206063/authenticated-live.xml",
+      "sha256": "9128fd401f1a08b5023fd8cb6faa9ce340538cdeaf65d0addef0d8fc14d2473c",
+      "bytes": 860,
+      "testcase_counts": {
+        "PASS": 2
+      }
+    },
+    {
+      "artifact_id": 12597206063,
+      "artifact_name": "localstack-performance-evidence",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12597206063/extracted/performance.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12597206063/performance.json",
+      "sha256": "a1e721bbd30872d4b634fe3a82d397866798f7cb22ecfb6df2981dc8fd045192",
+      "bytes": 191
+    },
+    {
+      "artifact_id": 12597206063,
+      "artifact_name": "localstack-performance-evidence",
+      "original_path": "/tmp/otgd-ci-checkpoint12/12597206063/extracted/worker-interrupt-0ad8e1db264443548c4449c91be1f5a3.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12597206063/worker-interrupt-0ad8e1db264443548c4449c91be1f5a3.json",
+      "sha256": "52d13d2911949a0f6209afac5dad6b1f303482fd547f24568bdc5a54c9af35f0",
+      "bytes": 83560
+    },
+    {
+      "original_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-firmware.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/raw/ci-firmware.log",
+      "sha256": "723d03e8ad8f725a1264467ca6ead937e9e361db6dd20939e3e71b13a10356fc",
+      "bytes": 110889,
+      "kind": "actual_current_job_log_or_step_receipt"
+    },
+    {
+      "original_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-protected-reader.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/raw/ci-protected-reader.log",
+      "sha256": "11c42fe164ac30c6022d92f5691487b8f77eb9d0b9b572ed577b84321dec6745",
+      "bytes": 765096,
+      "kind": "actual_current_job_log_or_step_receipt"
+    },
+    {
+      "original_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-native-android.log",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/raw/ci-native-android.log",
+      "sha256": "2d01ac99b121a92fbbe42bc125bc7fe3fe0f8196b982ca7f6e2aa3c2722d8a6e",
+      "bytes": 221915,
+      "kind": "actual_current_job_log_or_step_receipt"
+    },
+    {
+      "original_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-ios-step-results.json",
+      "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/raw/ci-ios-step-results.json",
+      "sha256": "a0c463e052721ed6a082358fc6602b415e8a0fef209f64eed7f8dbe75838e64f",
+      "bytes": 2327,
+      "kind": "actual_current_job_log_or_step_receipt"
+    }
+  ],
+  "named_observations": 3191,
+  "native_xml_pass_names_crosschecked_with_raw_logs": 26,
+  "scope": "Actual current named observations only. Aggregate14jobs/local7gates remain separately required; no baseline artifact adopted."
+}

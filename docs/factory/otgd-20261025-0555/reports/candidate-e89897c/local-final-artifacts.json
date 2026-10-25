@@ -1,0 +1,161 @@
+{
+  "recorded_at": "2026-10-25T11:25:23.558682+00:00",
+  "revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "fingerprint": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "source_before_after_equal": true,
+  "clean": true,
+  "exit_code": 0,
+  "gates": {
+    "revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+    "working_tree_sha256": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+    "passed": [
+      "unit-coverage",
+      "atdd",
+      "performance",
+      "components",
+      "live-dependencies",
+      "docker-health",
+      "localstack-api"
+    ],
+    "scope": "local software checks; not cloud/store/native qualification or GitHub enforcement"
+  },
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/local-gates.json",
+      "sha256": "b532014e8bf096da378967a796ddd7a1a1e9849d587614468e358ef93c4849c7",
+      "bytes": 405
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+      "sha256": "81a362401f55fbc21132ac6ff70349afc663dc4fe81535fe5940add0b67a8bf1",
+      "bytes": 614661,
+      "junit": {
+        "testcase": 1538,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/coverage.xml",
+      "sha256": "59cdf7003855fe183abd347c1345232afff43620c238a9787fc4198b37732a79",
+      "bytes": 419526
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit-coverage.json",
+      "sha256": "7ec165e9addff5b48735e6a2ed010af58aace533f5f6f988bbd60256b13fde65",
+      "bytes": 507005
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/atdd.xml",
+      "sha256": "8f7f6be05f22df4eeedb2681d2f568c59457dd99fea80af10f687185d18ef410",
+      "bytes": 1431,
+      "junit": {
+        "testcase": 6,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/hosted-preview.xml",
+      "sha256": "374044d14f7d671489e6a5e364841c09bbff43fc2ec9a338e00e74139b465f6c",
+      "bytes": 873,
+      "junit": {
+        "testcase": 2,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/performance.json",
+      "sha256": "81161a741de145d996bebd15e72f62c62f93393afcc7ac1408b62c9a90bdba94",
+      "bytes": 190
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "bytes": 15137,
+      "junit": {
+        "testcase": 80,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+      "sha256": "9fee53a7e4172574433621a7c34ee2c485a2aceacabe66f0a62f35e123b865ae",
+      "bytes": 611055,
+      "junit": {
+        "testcase": 1508,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/secure-sdk.xml",
+      "sha256": "257222d4edad30b4f2d654af931264ebd4d84e991402466b4d990086e9848fdd",
+      "bytes": 1562,
+      "junit": {
+        "testcase": 9,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/authenticated-live.xml",
+      "sha256": "d077dac5e8315553d8b2e4a574bca04ba3639fc7d2905c0aaec076f7974c8392",
+      "bytes": 869,
+      "junit": {
+        "testcase": 2,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/worker-interrupt-0ee5896b1cb1409ba1044590ecb6cc07.json",
+      "sha256": "ada817fbefbdb313be9ce8f991bb8947ae3e2539d1b3c69b81c475a4f1c980ab",
+      "bytes": 83569
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit-coverage.log",
+      "sha256": "67fea75b905579ae4b1d5c0cf1f034dd6a32bd11dfa83cd3701bd7cf47763499",
+      "bytes": 163284
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/atdd.log",
+      "sha256": "87fd10ab184f02e3a54f70293699cbfb006e636e47b45a4e201cdeb5d1cc9d29",
+      "bytes": 3724
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/performance.log",
+      "sha256": "9ac39b1542b2108e415384f1f5712807091533337bf7273d3deac5146f2b08ed",
+      "bytes": 174
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.log",
+      "sha256": "5915cc3bfd04b8035c82193eaba6aa4ad421e019105adf707687c1de8f53b066",
+      "bytes": 14437
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/live-dependencies.log",
+      "sha256": "bcd140eb103f9a033247f508a77a782ad95003e4506a738cf08fe479c10cc25c",
+      "bytes": 4120
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/docker-health.log",
+      "sha256": "2eb9a3290b7faf2a2c9a13d05a8f71318cc34978bd2a1a132492eceef5f2accb",
+      "bytes": 180
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/localstack-api.log",
+      "sha256": "2d59a25355af41031eb2bd6d6aeaf92ad1ca273b44871231a86142e5a100e82c",
+      "bytes": 19418
+    }
+  ]
+}

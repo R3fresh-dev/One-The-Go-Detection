@@ -1,0 +1,52 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "source_fingerprint_sha256": "1855fca1465dc9e19c006cba7b749967ebc28c839282b42c56079ca6159c19a7",
+  "manifest": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/local-final-artifacts.json",
+  "manifest_sha256": "50d0485b41031dc1375d5b73aea227ef7ab5fe973d24a41e6ba123ac7f57fa80",
+  "raw_files_rehashed": 19,
+  "all_seven_gates_pass": true,
+  "exact_named_xml_counts": {
+    "unit.xml": 1538,
+    "atdd.xml": 6,
+    "hosted-preview.xml": 2,
+    "components.xml": 80,
+    "postgres.xml": 1508,
+    "secure-sdk.xml": 9,
+    "authenticated-live.xml": 2
+  },
+  "unit_subtest_count_caveat": "unit.xml has1538 actual testcase elements and1746 aggregate tests including208 successful subtests; no invented208 separate named elements.",
+  "worker_source_files_rehashed_against_candidate": 92,
+  "worker_export_recoveries": 5,
+  "worker_result_recoveries": 2,
+  "worker_limits": {
+    "attempt_deadline_seconds": 900,
+    "heartbeat_seconds": 30,
+    "lease_seconds": 120,
+    "max_claims": 5,
+    "max_receives": 5,
+    "visibility_seconds": 120
+  },
+  "worker_budget_claims_receives": 5,
+  "worker_scope": {
+    "cleanup": "actual job expiry; no immediate orphan erasure assertion",
+    "export": "structured fictional export",
+    "not_exercised": [
+      "raw-export authority revocation",
+      "900-second work deadline",
+      "HTTP privacy deletion lifecycle",
+      "cloud/native/scientific qualification"
+    ],
+    "result": "synthetic measurement-only result",
+    "retirement": "real transaction retires account generation during stopped worker"
+  },
+  "actual_performance": {
+    "workflows": 40,
+    "concurrency": 20,
+    "requests": 400,
+    "p95_ms": 949.5721530001902,
+    "p99_ms": 1237.8990539982624,
+    "seconds": 12.36693540199849,
+    "result_deadline_seconds": 15
+  },
+  "scope": "Actual local software, PostgreSQL, versioned S3/SQS, process termination/recovery and browser checks. No deployed AWS, installed OS, physical sensors, participant or scientific approval."
+}

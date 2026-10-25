@@ -1,0 +1,21 @@
+{
+  "identity": {
+    "agent_identity": "/root/replacement_ui",
+    "role": "independent UI design reviewer",
+    "provider": "OpenAI",
+    "configured_model": "gpt-6.1-sol",
+    "configured_reasoning": "high",
+    "configuration_evidence": "PM native message attests successful explicit fork_turns:none, model:gpt-6.1-sol, reasoning_effort:high dispatch",
+    "runtime_model_independently_queryable": false,
+    "independence": "Independent retained reviewer, no authorship; final candidate new external review preserving prior history. Explicit OpenAI gpt-6.1-sol/high; independent runtime model query unavailable."
+  },
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "acks": {
+    "D008v3": "AFFECTED: frozen e898, new external UI outputs only; no source/probes/tests/third round",
+    "D010v2": "AFFECTED: readerHome/sharedDeviceFacts and mountedHR recovery independently inspected; no connection-based eligibility",
+    "D006v10/v11": "NOT_AFFECTED operationally: no images/cache/runtime; H reconstructedlocal/data/archive limits retained",
+    "D001/D003/D004/D007/D009v11": "AFFECTED: authorized software,measurementdefault,fictional/scientific/participant and currentHR disclosure boundaries preserved",
+    "D002": "NOT_AFFECTED: no supervision/recovery ownership"
+  },
+  "delivery": "Actual PM native ACK before dependent review"
+}

@@ -1,0 +1,55 @@
+{
+  "spec_id": "OTGD-019",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-alcohol-channel/spec.md",
+  "canonical_sha256": "6c423c75ae449e935fe8856f61d70af07aaab582719baba1d1e1bc63d787f45a",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-019-AND-ALC-001-01",
+    "OTGD-019-AND-ALC-001-02",
+    "OTGD-019-AND-ALC-002-01",
+    "OTGD-019-AND-ALC-002-02",
+    "OTGD-019-AND-ALC-003-01",
+    "OTGD-019-AND-ALC-003-02",
+    "OTGD-019-AND-ALC-004-01",
+    "OTGD-019-AND-ALC-004-02",
+    "OTGD-019-AND-ALC-005-01",
+    "OTGD-019-AND-ALC-005-02",
+    "OTGD-019-AND-ALC-006-01",
+    "OTGD-019-AND-ALC-006-02"
+  ],
+  "requirements": [
+    "AND-ALC-001",
+    "AND-ALC-002",
+    "AND-ALC-003",
+    "AND-ALC-004",
+    "AND-ALC-005",
+    "AND-ALC-006"
+  ],
+  "statuses": {
+    "PARTIAL": 9,
+    "NOT_RUN": 2,
+    "PASS": 1
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-019",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd"
+  ],
+  "current_source_assertion_refs": [
+    "services/api/tests/test_operator_governance.py::test_alcohol_current_dependencies_do_not_manufacture_an_available_adapter",
+    "apps/mobile/e2e/raw-recordings.spec.ts::alcohol copy remains accurate for measurement, guest and admitted research contexts",
+    "apps/mobile/tests/acquisition.test.ts::a start-time registry dependency refusal after a hypothetical breath grant preserves its authoritative reason and never acquires concentration",
+    "apps/mobile/e2e/raw-recordings.spec.ts::alcohol qualifiers retain zero, low, censored, invalid and simulated evidence without clearance from history through result and detail",
+    "services/api/tests/test_api.py::test_alcohol_censoring_is_null",
+    "services/api/tests/test_operator_governance.py::test_alcohol_configuration_and_calibration_expiry_boundary_preserves_history",
+    "services/api/tests/test_operator_governance.py::test_alcohol_expiry_between_contract_grant_and_start_rejects_cached_authority",
+    "services/api/tests/test_model_engine.py::test_every_acquisition_gate_has_rejection"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

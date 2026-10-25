@@ -1,0 +1,120 @@
+{
+  "candidate_revision": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "recorded_at": "2026-10-25T11:33:07.716515+00:00",
+  "items": [
+    {
+      "id": "UX-R001 / UI-003",
+      "status": "SOURCE_AND_FOCUSED_EXECUTION_CORRECTION_CONFIRMED",
+      "spec_ids": [
+        "OTGD-001",
+        "OTGD-002",
+        "OTGD-021",
+        "OTGD-039"
+      ],
+      "source": [
+        "apps/mobile/src/core/devicePresentation.ts:125",
+        "apps/mobile/src/ui/device-summary.tsx:37",
+        "apps/mobile/src/ui/device-summary.tsx:65",
+        "apps/mobile/src/ui/manage.tsx:94"
+      ],
+      "evidence": [
+        "correction-round2-mobile/device-red.log",
+        "correction-round2-mobile/home-device-red.log",
+        "correction-round2-mobile/focused-green.log",
+        "correction-round2-mobile/focused-browser-green.log"
+      ],
+      "rationale": "Actual framed signed peripheral and actual Home JSX fail before repair. Healthy signed connection now retains boot and physical badge independent of verifiedBindingId; shared Home/Device per-channel observations require online active matching owner/generation,available software/authorization and unexpired configuration. Explicitly conditional and fresh start required; connection/binding never confers eligibility. Simulator/revoked/expiry/mismatch/offline/disconnect/boot boundaries preserved. Actual OS BLE absent.",
+      "final_current_evidence_manifest": "evidence-manifest.json"
+    },
+    {
+      "id": "CODE-R1-004 / mounted HR arrival and manual recovery",
+      "status": "SOURCE_AND_FOCUSED_EXECUTION_CORRECTION_CONFIRMED",
+      "source": [
+        "apps/mobile/src/ui/checks.tsx:1680",
+        "apps/mobile/src/controller.ts:4070"
+      ],
+      "evidence": [
+        "correction-round2-mobile/hr-mounted-red2.log",
+        "correction-round2-mobile/hr-manual-red.log",
+        "correction-round2-mobile/focused-browser-green.log"
+      ],
+      "rationale": "Effect now registers pending view and depends on saved-result digest. Normal same-ID/epoch SyncEngine first result is withheld until independent second matched current-display GET. Manual refresh can create absent view token only while same check/result route active. Refusal/newest request/lifecycle guards unchanged.",
+      "final_current_evidence_manifest": "evidence-manifest.json"
+    },
+    {
+      "id": "SEC-02 actual returned callback",
+      "status": "SOURCE_AND_FOCUSED_EXECUTION_CORRECTION_CONFIRMED",
+      "source": [
+        "apps/mobile/src/services/auth.ts:35",
+        "apps/mobile/tests/auth-callback.test.ts"
+      ],
+      "evidence": [
+        "correction-round2-auth/callback-red.log",
+        "correction-round2-auth/red-native-observation.json",
+        "correction-round2-auth/auth-release.xml"
+      ],
+      "rationale": "Exact selected callback original bytes plus exactly one code/state bound to actual request/SDK required before exchange. Matching-state wrong target cannot fetch token/capabilities or switch identity; exact platform success/retry preserved. Actual native browser callback routing is separate.",
+      "final_current_evidence_manifest": "evidence-manifest.json"
+    },
+    {
+      "id": "CODE-R1-003 numeric research cloud export",
+      "status": "SOURCE_AND_FOCUSED_EXECUTION_CORRECTION_CONFIRMED",
+      "source": [
+        "services/api/otgd/report_revisions.py:247",
+        "services/api/otgd/report_revisions.py:816",
+        "services/api/tests/test_current_result_readback.py:129"
+      ],
+      "evidence": [
+        "correction-round2-export/red.xml",
+        "correction-round2-export/focused-green.xml",
+        "correction-round2-export/focused-green-summary.json"
+      ],
+      "rationale": "Genuine signed fictional current HR and nonHR numeric outputs now exact-single export202\u2192worker completed\u2192download200 with unchanged linked numeric/evidence fields and empty revision index. Administrative state restriction/orphan companion/legacy rejection remain; numeric and abstained current HR re-admit before build/commit/download.",
+      "final_current_evidence_manifest": "evidence-manifest.json"
+    },
+    {
+      "id": "UX-001",
+      "status": "CLOSED_CURRENT_SOURCE_AND_EXECUTION",
+      "evidence": [
+        "apps/mobile/src/core/resultPresentation.ts:48",
+        "apps/mobile/src/ui/account.tsx:578",
+        "apps/mobile/tests/result-ui.test.ts",
+        "apps/mobile/tests/result-presentation.test.ts",
+        "/tmp/correction-HR-focused2.log"
+      ],
+      "reason": "CheckRow and Home use verified state/scope helpers; actual row/history/result tests distinguish measurement_only/invalid/inconclusive/admitted research/abstention, reject changed proof/legacy/synthetic claims and leave delivery independent. HR numeric read now additionally requires current admission. No obsolete source defect carried forward; final combined-source execution pending.",
+      "final_current_evidence_manifest": "evidence-manifest.json"
+    },
+    {
+      "id": "UX-002",
+      "status": "SOURCE_AND_CURRENT_DOM_CORRECTION_CLOSED_NATIVE_OS_OPEN",
+      "evidence": [
+        "apps/mobile/src/ui/accessibility.tsx:14",
+        "apps/mobile/src/ui/components.tsx:601",
+        "apps/mobile/src/ui/components.tsx:686",
+        "apps/mobile/e2e/components.spec.ts:626",
+        "/tmp/correction-HR-browser-final.log"
+      ],
+      "reason": "Actual heading .toBeFocused assertions cover Home/Settings/Privacy/History/deeper Back; named dialog heading receives focus and Cancel restores trigger. Helper cancels detached/stale/deferred work and respects newer web user focus. Native API invocation is implemented; actual TalkBack/VoiceOver/browser-cancel/large-text OS execution absent.",
+      "final_current_evidence_manifest": "evidence-manifest.json"
+    },
+    {
+      "id": "UX-E01",
+      "status": "CLOSED_CURRENT_GATES_PASS",
+      "reason": "All7local/14currentCI completed with unchangedsource and equalmerge tree; current per-case evidence released separately. Residual clauses remain UX-E03.",
+      "final_current_evidence_manifest": "evidence-manifest.json"
+    },
+    {
+      "id": "UX-E02",
+      "status": "OPEN_EXTERNAL_NATIVE_OS_PREREQUISITE",
+      "reason": "Compilation/core/browser fixtures do not execute actual OS camera/BLE permission dialogs/Settings return, SQLCipher unlock/key loss/process death, share-sheet cleanup or assistive-technology behavior. No target runtime evidence was supplied.",
+      "final_current_evidence_manifest": "evidence-manifest.json"
+    }
+  ],
+  "remaining_exact_evidence_gap": {
+    "id": "UX-E03",
+    "kind": "required_exact_clause_evidence_unavailable",
+    "source_defect": false,
+    "reason": "Meaningful current execution exists; exact residual software presentation/integration assertions and external OS/hardware/scientific/deployment requirements remain individually unproved. No aggregate PASS or scope exclusion."
+  }
+}

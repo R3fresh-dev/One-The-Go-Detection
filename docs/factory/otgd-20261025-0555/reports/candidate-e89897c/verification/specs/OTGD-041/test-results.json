@@ -1,0 +1,51 @@
+{
+  "spec_id": "OTGD-041",
+  "canonical_path": "openspec/changes/qualified-participant-acquisition/specs/research-evaluation/spec.md",
+  "canonical_sha256": "f4bef2eee7577e8f57b7cd27b7463d3879dcb1d452c73540d8916f9d6bf41726",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-041-EVAL-002-01",
+    "OTGD-041-EVAL-002-02",
+    "OTGD-041-EVAL-002-03",
+    "OTGD-041-EVAL-002-04",
+    "OTGD-041-EVAL-002-05"
+  ],
+  "requirements": [
+    "EVAL-002"
+  ],
+  "statuses": {
+    "PASS": 3,
+    "PARTIAL": 2
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-041",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies"
+  ],
+  "current_source_assertion_refs": [
+    "services/api/tests/test_model_evaluation.py::test_real_logistic_fitting_is_train_only_deterministic_and_engine_compatible",
+    "services/api/tests/test_model_evaluation.py::test_censored_invalid_and_abstaining_rows_stay_in_every_matched_denominator",
+    "services/api/tests/test_model_evaluation.py::test_external_history_references_remain_unverified_through_pipeline",
+    "services/api/tests/test_model_evaluation.py::test_report_cannot_rebind_tampered_training_plans_or_temporal_order",
+    "services/api/tests/test_model_evaluation.py::test_cli_private_canonical_pipeline_and_full_reproduction_detect_corruption",
+    "services/api/tests/test_model_evaluation.py::test_self_asserted_or_extra_approval_fields_do_not_authenticate_history",
+    "services/api/tests/test_model_evaluation_cardiac.py::test_external_history_references_remain_unverified_through_pipeline",
+    "deploy/platform.py::main",
+    "infra/local/bootstrap_resources.py::initialize",
+    "services/api/tests/test_model_evaluation_cardiac.py::test_raw_and_personalized_hr_training_reproduces_runtime_projection_and_report",
+    "services/api/tests/test_model_evaluation_cardiac.py::test_invalid_custody_or_faults_remain_in_all_row_denominators",
+    "services/api/tests/test_model_evaluation.py::test_sparse_one_class_and_participant_boundary_subgroups_preserve_all_rows",
+    "services/api/tests/test_model_evaluation.py::assert_sparse_subgroups_preserve_rows_and_unsupported_statistics",
+    "services/api/tests/test_model_evaluation_cardiac.py::test_sparse_one_class_and_participant_boundary_subgroups_preserve_all_rows",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/supplemental/semantics/hr_strata_probe.py::actual_train_evaluate_four_HR_variants_all48_strata",
+    "services/api/tests/test_cardiac_authority.py::test_hr_report_cannot_claim_unmeasured_chemical_or_ecg_comparisons",
+    "services/api/tests/test_model_evaluation_cardiac.py::test_hr_scope_rejects_mixed_rows_and_unprespecified_legacy_evidence",
+    "services/api/tests/test_model_evaluation_cardiac.py::test_legacy_absent_optional_fields_do_not_change_dataset_or_plan_bytes",
+    "services/api/tests/test_cardiac_interval_governance.py::test_required_channel_scope_is_heart_rate_only"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

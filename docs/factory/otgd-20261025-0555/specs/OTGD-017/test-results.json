@@ -1,0 +1,41 @@
+{
+  "spec_id": "OTGD-017",
+  "canonical_path": "openspec/changes/optional-raw-recording-lifecycle/specs/fictional-hosted-preview/spec.md",
+  "canonical_sha256": "ee9d68e204d40b0500732c19096ce4fc4a362892d09106034678baacde4e961d",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-017-AND-PREV-001-01",
+    "OTGD-017-AND-PREV-001-02",
+    "OTGD-017-AND-PREV-002-01",
+    "OTGD-017-AND-PREV-002-02",
+    "OTGD-017-AND-PREV-003-01",
+    "OTGD-017-AND-PREV-003-02"
+  ],
+  "requirements": [
+    "AND-PREV-001",
+    "AND-PREV-002",
+    "AND-PREV-003"
+  ],
+  "statuses": {
+    "PASS": 4,
+    "PARTIAL": 2
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-017",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd"
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/tests/hosted-preview.test.ts::the hosted preview build flag is local-only and cannot alter QA or production account behavior",
+    "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service",
+    "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+    "apps/mobile/tests/hosted-preview.test.ts::network-disabled API transport refuses even explicitly supplied credentials and cloud downloads",
+    "apps/mobile/tests/domain.test.ts::guest check cannot upload and never acquires an account owner by sign-in"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

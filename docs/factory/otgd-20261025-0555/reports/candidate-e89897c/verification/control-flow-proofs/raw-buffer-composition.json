@@ -1,0 +1,14 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "source_path": "apps/mobile/src/services/sync.ts",
+  "source_sha256": "5062dd28e9db43709b010b8da65fcbafbda563fdd40c33bfe1b32c10a499e3a4",
+  "start_line": 897,
+  "snippet_sha256": "f0060a3ec92053c70e65be3737edb49971ecfa57614e923fb4a3184849e881b8",
+  "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/control-flow-proofs/raw-upload-finally.txt",
+  "composition": [
+    "The same decrypted bytes variable is passed through the awaited object upload.",
+    "Actual transport cancellation rejects that await (named ApiClient assertion).",
+    "The unconditional finally executes bytes?.fill(0) after every success, exception and cancellation exit; actual privacy-fenced test observes the buffer zeroed."
+  ],
+  "limits": "JavaScript buffer handling only, not OS secure erasure, SQLCipher durability or physical cleanup."
+}

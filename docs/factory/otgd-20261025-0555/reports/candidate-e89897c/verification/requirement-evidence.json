@@ -1,0 +1,5038 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "requirements": [
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ALC-001",
+      "case_ids": [
+        "OTGD-001-ALC-001-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ALC-002",
+      "case_ids": [
+        "OTGD-001-ALC-002-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ALC-003",
+      "case_ids": [
+        "OTGD-001-ALC-003-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ALC-004",
+      "case_ids": [
+        "OTGD-001-ALC-004-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ALC-005",
+      "case_ids": [
+        "OTGD-001-ALC-005-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-001",
+      "case_ids": [
+        "OTGD-001-ANA-001-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-002",
+      "case_ids": [
+        "OTGD-001-ANA-002-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-003",
+      "case_ids": [
+        "OTGD-001-ANA-003-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-004",
+      "case_ids": [
+        "OTGD-001-ANA-004-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-005",
+      "case_ids": [
+        "OTGD-001-ANA-005-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-006",
+      "case_ids": [
+        "OTGD-001-ANA-006-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-007",
+      "case_ids": [
+        "OTGD-001-ANA-007-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-008",
+      "case_ids": [
+        "OTGD-001-ANA-008-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-009",
+      "case_ids": [
+        "OTGD-001-ANA-009-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-010",
+      "case_ids": [
+        "OTGD-001-ANA-010-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-011",
+      "case_ids": [
+        "OTGD-001-ANA-011-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-012",
+      "case_ids": [
+        "OTGD-001-ANA-012-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "ANA-013",
+      "case_ids": [
+        "OTGD-001-ANA-013-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-001",
+      "case_ids": [
+        "OTGD-001-APP-001-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-002",
+      "case_ids": [
+        "OTGD-001-APP-002-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-003",
+      "case_ids": [
+        "OTGD-001-APP-003-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-004",
+      "case_ids": [
+        "OTGD-001-APP-004-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-005",
+      "case_ids": [
+        "OTGD-001-APP-005-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-006",
+      "case_ids": [
+        "OTGD-001-APP-006-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-007",
+      "case_ids": [
+        "OTGD-001-APP-007-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-008",
+      "case_ids": [
+        "OTGD-001-APP-008-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-009",
+      "case_ids": [
+        "OTGD-001-APP-009-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-010",
+      "case_ids": [
+        "OTGD-001-APP-010-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-011",
+      "case_ids": [
+        "OTGD-001-APP-011-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-012",
+      "case_ids": [
+        "OTGD-001-APP-012-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-013",
+      "case_ids": [
+        "OTGD-001-APP-013-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "APP-014",
+      "case_ids": [
+        "OTGD-001-APP-014-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "BUS-001",
+      "case_ids": [
+        "OTGD-001-BUS-001-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "BUS-002",
+      "case_ids": [
+        "OTGD-001-BUS-002-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "BUS-003",
+      "case_ids": [
+        "OTGD-001-BUS-003-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "DOC-001",
+      "case_ids": [
+        "OTGD-001-DOC-001-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "DOC-002",
+      "case_ids": [
+        "OTGD-001-DOC-002-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "DOC-003",
+      "case_ids": [
+        "OTGD-001-DOC-003-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-001",
+      "case_ids": [
+        "OTGD-001-HW-001-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-002",
+      "case_ids": [
+        "OTGD-001-HW-002-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-003",
+      "case_ids": [
+        "OTGD-001-HW-003-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-004",
+      "case_ids": [
+        "OTGD-001-HW-004-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-005",
+      "case_ids": [
+        "OTGD-001-HW-005-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-006",
+      "case_ids": [
+        "OTGD-001-HW-006-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-007",
+      "case_ids": [
+        "OTGD-001-HW-007-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-008",
+      "case_ids": [
+        "OTGD-001-HW-008-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-009",
+      "case_ids": [
+        "OTGD-001-HW-009-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-010",
+      "case_ids": [
+        "OTGD-001-HW-010-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-011",
+      "case_ids": [
+        "OTGD-001-HW-011-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "HW-012",
+      "case_ids": [
+        "OTGD-001-HW-012-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-001",
+      "case_ids": [
+        "OTGD-001-MOD-001-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-002",
+      "case_ids": [
+        "OTGD-001-MOD-002-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-003",
+      "case_ids": [
+        "OTGD-001-MOD-003-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-004",
+      "case_ids": [
+        "OTGD-001-MOD-004-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-005",
+      "case_ids": [
+        "OTGD-001-MOD-005-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-006",
+      "case_ids": [
+        "OTGD-001-MOD-006-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-007",
+      "case_ids": [
+        "OTGD-001-MOD-007-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-008",
+      "case_ids": [
+        "OTGD-001-MOD-008-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-009",
+      "case_ids": [
+        "OTGD-001-MOD-009-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-010",
+      "case_ids": [
+        "OTGD-001-MOD-010-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-011",
+      "case_ids": [
+        "OTGD-001-MOD-011-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-012",
+      "case_ids": [
+        "OTGD-001-MOD-012-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-013",
+      "case_ids": [
+        "OTGD-001-MOD-013-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-014",
+      "case_ids": [
+        "OTGD-001-MOD-014-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "MOD-015",
+      "case_ids": [
+        "OTGD-001-MOD-015-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "OPS-001",
+      "case_ids": [
+        "OTGD-001-OPS-001-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "OPS-002",
+      "case_ids": [
+        "OTGD-001-OPS-002-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "OPS-003",
+      "case_ids": [
+        "OTGD-001-OPS-003-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "OPS-004",
+      "case_ids": [
+        "OTGD-001-OPS-004-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "OPS-005",
+      "case_ids": [
+        "OTGD-001-OPS-005-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "OPS-006",
+      "case_ids": [
+        "OTGD-001-OPS-006-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-001",
+      "case_ids": [
+        "OTGD-001-PRD-001-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-002",
+      "case_ids": [
+        "OTGD-001-PRD-002-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-003",
+      "case_ids": [
+        "OTGD-001-PRD-003-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-004",
+      "case_ids": [
+        "OTGD-001-PRD-004-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-005",
+      "case_ids": [
+        "OTGD-001-PRD-005-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-006",
+      "case_ids": [
+        "OTGD-001-PRD-006-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-007",
+      "case_ids": [
+        "OTGD-001-PRD-007-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-008",
+      "case_ids": [
+        "OTGD-001-PRD-008-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-009",
+      "case_ids": [
+        "OTGD-001-PRD-009-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-010",
+      "case_ids": [
+        "OTGD-001-PRD-010-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-011",
+      "case_ids": [
+        "OTGD-001-PRD-011-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-012",
+      "case_ids": [
+        "OTGD-001-PRD-012-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-013",
+      "case_ids": [
+        "OTGD-001-PRD-013-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-014",
+      "case_ids": [
+        "OTGD-001-PRD-014-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-015",
+      "case_ids": [
+        "OTGD-001-PRD-015-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-016",
+      "case_ids": [
+        "OTGD-001-PRD-016-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-017",
+      "case_ids": [
+        "OTGD-001-PRD-017-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-018",
+      "case_ids": [
+        "OTGD-001-PRD-018-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-019",
+      "case_ids": [
+        "OTGD-001-PRD-019-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-020",
+      "case_ids": [
+        "OTGD-001-PRD-020-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-021",
+      "case_ids": [
+        "OTGD-001-PRD-021-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-022",
+      "case_ids": [
+        "OTGD-001-PRD-022-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-023",
+      "case_ids": [
+        "OTGD-001-PRD-023-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-024",
+      "case_ids": [
+        "OTGD-001-PRD-024-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-025",
+      "case_ids": [
+        "OTGD-001-PRD-025-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-026",
+      "case_ids": [
+        "OTGD-001-PRD-026-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-027",
+      "case_ids": [
+        "OTGD-001-PRD-027-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-028",
+      "case_ids": [
+        "OTGD-001-PRD-028-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-029",
+      "case_ids": [
+        "OTGD-001-PRD-029-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-030",
+      "case_ids": [
+        "OTGD-001-PRD-030-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-031",
+      "case_ids": [
+        "OTGD-001-PRD-031-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-032",
+      "case_ids": [
+        "OTGD-001-PRD-032-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-033",
+      "case_ids": [
+        "OTGD-001-PRD-033-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-034",
+      "case_ids": [
+        "OTGD-001-PRD-034-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-035",
+      "case_ids": [
+        "OTGD-001-PRD-035-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-036",
+      "case_ids": [
+        "OTGD-001-PRD-036-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-037",
+      "case_ids": [
+        "OTGD-001-PRD-037-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-038",
+      "case_ids": [
+        "OTGD-001-PRD-038-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-039",
+      "case_ids": [
+        "OTGD-001-PRD-039-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-040",
+      "case_ids": [
+        "OTGD-001-PRD-040-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-041",
+      "case_ids": [
+        "OTGD-001-PRD-041-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "PRD-042",
+      "case_ids": [
+        "OTGD-001-PRD-042-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "SEC-001",
+      "case_ids": [
+        "OTGD-001-SEC-001-01"
+      ],
+      "statuses": {
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "SEC-002",
+      "case_ids": [
+        "OTGD-001-SEC-002-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "SEC-003",
+      "case_ids": [
+        "OTGD-001-SEC-003-01"
+      ],
+      "statuses": {
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "SEC-004",
+      "case_ids": [
+        "OTGD-001-SEC-004-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "SEC-005",
+      "case_ids": [
+        "OTGD-001-SEC-005-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "SEC-006",
+      "case_ids": [
+        "OTGD-001-SEC-006-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "SEC-007",
+      "case_ids": [
+        "OTGD-001-SEC-007-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "VAL-001",
+      "case_ids": [
+        "OTGD-001-VAL-001-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "VAL-002",
+      "case_ids": [
+        "OTGD-001-VAL-002-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "VAL-003",
+      "case_ids": [
+        "OTGD-001-VAL-003-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "VAL-004",
+      "case_ids": [
+        "OTGD-001-VAL-004-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "VAL-005",
+      "case_ids": [
+        "OTGD-001-VAL-005-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "VAL-006",
+      "case_ids": [
+        "OTGD-001-VAL-006-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "VAL-007",
+      "case_ids": [
+        "OTGD-001-VAL-007-01"
+      ],
+      "statuses": {
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-001",
+      "requirement_id": "VAL-008",
+      "case_ids": [
+        "OTGD-001-VAL-008-01"
+      ],
+      "statuses": {
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-002",
+      "requirement_id": "AND-DASH-001",
+      "case_ids": [
+        "OTGD-002-AND-DASH-001-01",
+        "OTGD-002-AND-DASH-001-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-003",
+      "requirement_id": "AND-CHECK-007",
+      "case_ids": [
+        "OTGD-003-AND-CHECK-007-01",
+        "OTGD-003-AND-CHECK-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-004",
+      "requirement_id": "AND-HIST-003",
+      "case_ids": [
+        "OTGD-004-AND-HIST-003-01",
+        "OTGD-004-AND-HIST-003-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-005",
+      "requirement_id": "AND-ONB-001",
+      "case_ids": [
+        "OTGD-005-AND-ONB-001-01",
+        "OTGD-005-AND-ONB-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-006",
+      "requirement_id": "AND-RES-003",
+      "case_ids": [
+        "OTGD-006-AND-RES-003-01",
+        "OTGD-006-AND-RES-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-007",
+      "requirement_id": "AND-SET-004",
+      "case_ids": [
+        "OTGD-007-AND-SET-004-01",
+        "OTGD-007-AND-SET-004-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-008",
+      "requirement_id": "EVAL-001",
+      "case_ids": [
+        "OTGD-008-EVAL-001-01",
+        "OTGD-008-EVAL-001-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-008",
+      "requirement_id": "EVAL-002",
+      "case_ids": [
+        "OTGD-008-EVAL-002-01",
+        "OTGD-008-EVAL-002-02",
+        "OTGD-008-EVAL-002-03"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-008",
+      "requirement_id": "EVAL-003",
+      "case_ids": [
+        "OTGD-008-EVAL-003-01",
+        "OTGD-008-EVAL-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-008",
+      "requirement_id": "EVAL-004",
+      "case_ids": [
+        "OTGD-008-EVAL-004-01",
+        "OTGD-008-EVAL-004-02",
+        "OTGD-008-EVAL-004-03"
+      ],
+      "statuses": {
+        "PASS": 2,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-008",
+      "requirement_id": "EVAL-005",
+      "case_ids": [
+        "OTGD-008-EVAL-005-01",
+        "OTGD-008-EVAL-005-02",
+        "OTGD-008-EVAL-005-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-008",
+      "requirement_id": "EVAL-006",
+      "case_ids": [
+        "OTGD-008-EVAL-006-01",
+        "OTGD-008-EVAL-006-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-008",
+      "requirement_id": "EVAL-007",
+      "case_ids": [
+        "OTGD-008-EVAL-007-01",
+        "OTGD-008-EVAL-007-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-008",
+      "requirement_id": "EVAL-008",
+      "case_ids": [
+        "OTGD-008-EVAL-008-01",
+        "OTGD-008-EVAL-008-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-009",
+      "requirement_id": "MODEL-001",
+      "case_ids": [
+        "OTGD-009-MODEL-001-01",
+        "OTGD-009-MODEL-001-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-009",
+      "requirement_id": "MODEL-002",
+      "case_ids": [
+        "OTGD-009-MODEL-002-01",
+        "OTGD-009-MODEL-002-02",
+        "OTGD-009-MODEL-002-03"
+      ],
+      "statuses": {
+        "PASS": 2,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-009",
+      "requirement_id": "MODEL-003",
+      "case_ids": [
+        "OTGD-009-MODEL-003-01",
+        "OTGD-009-MODEL-003-02",
+        "OTGD-009-MODEL-003-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-009",
+      "requirement_id": "MODEL-004",
+      "case_ids": [
+        "OTGD-009-MODEL-004-01",
+        "OTGD-009-MODEL-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-009",
+      "requirement_id": "MODEL-005",
+      "case_ids": [
+        "OTGD-009-MODEL-005-01",
+        "OTGD-009-MODEL-005-02",
+        "OTGD-009-MODEL-005-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-009",
+      "requirement_id": "MODEL-006",
+      "case_ids": [
+        "OTGD-009-MODEL-006-01",
+        "OTGD-009-MODEL-006-02",
+        "OTGD-009-MODEL-006-03"
+      ],
+      "statuses": {
+        "PASS": 2,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-010",
+      "requirement_id": "RAW-EXP-001",
+      "case_ids": [
+        "OTGD-010-RAW-EXP-001-01",
+        "OTGD-010-RAW-EXP-001-02",
+        "OTGD-010-RAW-EXP-001-03"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-010",
+      "requirement_id": "RAW-EXP-002",
+      "case_ids": [
+        "OTGD-010-RAW-EXP-002-01",
+        "OTGD-010-RAW-EXP-002-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-010",
+      "requirement_id": "RAW-EXP-003",
+      "case_ids": [
+        "OTGD-010-RAW-EXP-003-01",
+        "OTGD-010-RAW-EXP-003-02",
+        "OTGD-010-RAW-EXP-003-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-010",
+      "requirement_id": "RAW-EXP-004",
+      "case_ids": [
+        "OTGD-010-RAW-EXP-004-01",
+        "OTGD-010-RAW-EXP-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-010",
+      "requirement_id": "RAW-EXP-005",
+      "case_ids": [
+        "OTGD-010-RAW-EXP-005-01",
+        "OTGD-010-RAW-EXP-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-010",
+      "requirement_id": "RAW-EXP-006",
+      "case_ids": [
+        "OTGD-010-RAW-EXP-006-01",
+        "OTGD-010-RAW-EXP-006-02",
+        "OTGD-010-RAW-EXP-006-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-010",
+      "requirement_id": "RAW-EXP-007",
+      "case_ids": [
+        "OTGD-010-RAW-EXP-007-01",
+        "OTGD-010-RAW-EXP-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-010",
+      "requirement_id": "RAW-EXP-008",
+      "case_ids": [
+        "OTGD-010-RAW-EXP-008-01",
+        "OTGD-010-RAW-EXP-008-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-001",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-001-01",
+        "OTGD-011-OPERATOR-AUTHORITY-001-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-002",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-002-01",
+        "OTGD-011-OPERATOR-AUTHORITY-002-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-003",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-003-01",
+        "OTGD-011-OPERATOR-AUTHORITY-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-004",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-004-01",
+        "OTGD-011-OPERATOR-AUTHORITY-004-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-005",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-005-01",
+        "OTGD-011-OPERATOR-AUTHORITY-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-006",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-006-01",
+        "OTGD-011-OPERATOR-AUTHORITY-006-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-007",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-007-01",
+        "OTGD-011-OPERATOR-AUTHORITY-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-008",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-008-01",
+        "OTGD-011-OPERATOR-AUTHORITY-008-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-011",
+      "requirement_id": "OPERATOR-AUTHORITY-009",
+      "case_ids": [
+        "OTGD-011-OPERATOR-AUTHORITY-009-01",
+        "OTGD-011-OPERATOR-AUTHORITY-009-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-012",
+      "requirement_id": "AND-EYE-101",
+      "case_ids": [
+        "OTGD-012-AND-EYE-101-01",
+        "OTGD-012-AND-EYE-101-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-012",
+      "requirement_id": "AND-EYE-102",
+      "case_ids": [
+        "OTGD-012-AND-EYE-102-01",
+        "OTGD-012-AND-EYE-102-02",
+        "OTGD-012-AND-EYE-102-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-012",
+      "requirement_id": "AND-EYE-103",
+      "case_ids": [
+        "OTGD-012-AND-EYE-103-01",
+        "OTGD-012-AND-EYE-103-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-012",
+      "requirement_id": "AND-EYE-104",
+      "case_ids": [
+        "OTGD-012-AND-EYE-104-01",
+        "OTGD-012-AND-EYE-104-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-012",
+      "requirement_id": "AND-EYE-105",
+      "case_ids": [
+        "OTGD-012-AND-EYE-105-01",
+        "OTGD-012-AND-EYE-105-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-012",
+      "requirement_id": "AND-EYE-106",
+      "case_ids": [
+        "OTGD-012-AND-EYE-106-01",
+        "OTGD-012-AND-EYE-106-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-001",
+      "case_ids": [
+        "OTGD-013-CAN-SR-001-01",
+        "OTGD-013-CAN-SR-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-002",
+      "case_ids": [
+        "OTGD-013-CAN-SR-002-01",
+        "OTGD-013-CAN-SR-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-003",
+      "case_ids": [
+        "OTGD-013-CAN-SR-003-01",
+        "OTGD-013-CAN-SR-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-004",
+      "case_ids": [
+        "OTGD-013-CAN-SR-004-01",
+        "OTGD-013-CAN-SR-004-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-005",
+      "case_ids": [
+        "OTGD-013-CAN-SR-005-01",
+        "OTGD-013-CAN-SR-005-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-006",
+      "case_ids": [
+        "OTGD-013-CAN-SR-006-01",
+        "OTGD-013-CAN-SR-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-007",
+      "case_ids": [
+        "OTGD-013-CAN-SR-007-01",
+        "OTGD-013-CAN-SR-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-008",
+      "case_ids": [
+        "OTGD-013-CAN-SR-008-01",
+        "OTGD-013-CAN-SR-008-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-009",
+      "case_ids": [
+        "OTGD-013-CAN-SR-009-01",
+        "OTGD-013-CAN-SR-009-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-010",
+      "case_ids": [
+        "OTGD-013-CAN-SR-010-01",
+        "OTGD-013-CAN-SR-010-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-013",
+      "requirement_id": "CAN-SR-011",
+      "case_ids": [
+        "OTGD-013-CAN-SR-011-01",
+        "OTGD-013-CAN-SR-011-02",
+        "OTGD-013-CAN-SR-011-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-014",
+      "requirement_id": "WEB-DEP-001",
+      "case_ids": [
+        "OTGD-014-WEB-DEP-001-01",
+        "OTGD-014-WEB-DEP-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-014",
+      "requirement_id": "WEB-DEP-002",
+      "case_ids": [
+        "OTGD-014-WEB-DEP-002-01",
+        "OTGD-014-WEB-DEP-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-014",
+      "requirement_id": "WEB-DEP-003",
+      "case_ids": [
+        "OTGD-014-WEB-DEP-003-01",
+        "OTGD-014-WEB-DEP-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-014",
+      "requirement_id": "WEB-DEP-004",
+      "case_ids": [
+        "OTGD-014-WEB-DEP-004-01",
+        "OTGD-014-WEB-DEP-004-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-014",
+      "requirement_id": "WEB-DEP-005",
+      "case_ids": [
+        "OTGD-014-WEB-DEP-005-01",
+        "OTGD-014-WEB-DEP-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-014",
+      "requirement_id": "WEB-DEP-006",
+      "case_ids": [
+        "OTGD-014-WEB-DEP-006-01",
+        "OTGD-014-WEB-DEP-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-014",
+      "requirement_id": "WEB-DEP-007",
+      "case_ids": [
+        "OTGD-014-WEB-DEP-007-01",
+        "OTGD-014-WEB-DEP-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-014",
+      "requirement_id": "WEB-DEP-008",
+      "case_ids": [
+        "OTGD-014-WEB-DEP-008-01",
+        "OTGD-014-WEB-DEP-008-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-001",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-001-01",
+        "OTGD-015-CLOUD-DEP-001-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-002",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-002-01",
+        "OTGD-015-CLOUD-DEP-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-003",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-003-01",
+        "OTGD-015-CLOUD-DEP-003-02",
+        "OTGD-015-CLOUD-DEP-003-03"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-004",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-004-01",
+        "OTGD-015-CLOUD-DEP-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-005",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-005-01",
+        "OTGD-015-CLOUD-DEP-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-006",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-006-01",
+        "OTGD-015-CLOUD-DEP-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-007",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-007-01",
+        "OTGD-015-CLOUD-DEP-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-008",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-008-01",
+        "OTGD-015-CLOUD-DEP-008-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-009",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-009-01",
+        "OTGD-015-CLOUD-DEP-009-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-015",
+      "requirement_id": "CLOUD-DEP-010",
+      "case_ids": [
+        "OTGD-015-CLOUD-DEP-010-01",
+        "OTGD-015-CLOUD-DEP-010-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-016",
+      "requirement_id": "RECOVERY-001",
+      "case_ids": [
+        "OTGD-016-RECOVERY-001-01",
+        "OTGD-016-RECOVERY-001-02",
+        "OTGD-016-RECOVERY-001-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-016",
+      "requirement_id": "RECOVERY-002",
+      "case_ids": [
+        "OTGD-016-RECOVERY-002-01",
+        "OTGD-016-RECOVERY-002-02",
+        "OTGD-016-RECOVERY-002-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-017",
+      "requirement_id": "AND-PREV-001",
+      "case_ids": [
+        "OTGD-017-AND-PREV-001-01",
+        "OTGD-017-AND-PREV-001-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-017",
+      "requirement_id": "AND-PREV-002",
+      "case_ids": [
+        "OTGD-017-AND-PREV-002-01",
+        "OTGD-017-AND-PREV-002-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-017",
+      "requirement_id": "AND-PREV-003",
+      "case_ids": [
+        "OTGD-017-AND-PREV-003-01",
+        "OTGD-017-AND-PREV-003-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-018",
+      "requirement_id": "AND-RAW-001",
+      "case_ids": [
+        "OTGD-018-AND-RAW-001-01",
+        "OTGD-018-AND-RAW-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-018",
+      "requirement_id": "AND-RAW-002",
+      "case_ids": [
+        "OTGD-018-AND-RAW-002-01",
+        "OTGD-018-AND-RAW-002-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-018",
+      "requirement_id": "AND-RAW-003",
+      "case_ids": [
+        "OTGD-018-AND-RAW-003-01",
+        "OTGD-018-AND-RAW-003-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-018",
+      "requirement_id": "AND-RAW-004",
+      "case_ids": [
+        "OTGD-018-AND-RAW-004-01",
+        "OTGD-018-AND-RAW-004-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-018",
+      "requirement_id": "AND-RAW-005",
+      "case_ids": [
+        "OTGD-018-AND-RAW-005-01",
+        "OTGD-018-AND-RAW-005-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-018",
+      "requirement_id": "AND-RAW-006",
+      "case_ids": [
+        "OTGD-018-AND-RAW-006-01",
+        "OTGD-018-AND-RAW-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-018",
+      "requirement_id": "AND-RAW-007",
+      "case_ids": [
+        "OTGD-018-AND-RAW-007-01",
+        "OTGD-018-AND-RAW-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-018",
+      "requirement_id": "AND-RAW-008",
+      "case_ids": [
+        "OTGD-018-AND-RAW-008-01",
+        "OTGD-018-AND-RAW-008-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-019",
+      "requirement_id": "AND-ALC-001",
+      "case_ids": [
+        "OTGD-019-AND-ALC-001-01",
+        "OTGD-019-AND-ALC-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-019",
+      "requirement_id": "AND-ALC-002",
+      "case_ids": [
+        "OTGD-019-AND-ALC-002-01",
+        "OTGD-019-AND-ALC-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-019",
+      "requirement_id": "AND-ALC-003",
+      "case_ids": [
+        "OTGD-019-AND-ALC-003-01",
+        "OTGD-019-AND-ALC-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-019",
+      "requirement_id": "AND-ALC-004",
+      "case_ids": [
+        "OTGD-019-AND-ALC-004-01",
+        "OTGD-019-AND-ALC-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-019",
+      "requirement_id": "AND-ALC-005",
+      "case_ids": [
+        "OTGD-019-AND-ALC-005-01",
+        "OTGD-019-AND-ALC-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-019",
+      "requirement_id": "AND-ALC-006",
+      "case_ids": [
+        "OTGD-019-AND-ALC-006-01",
+        "OTGD-019-AND-ALC-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-020",
+      "requirement_id": "AND-ENV-001",
+      "case_ids": [
+        "OTGD-020-AND-ENV-001-01",
+        "OTGD-020-AND-ENV-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-020",
+      "requirement_id": "AND-ENV-002",
+      "case_ids": [
+        "OTGD-020-AND-ENV-002-01",
+        "OTGD-020-AND-ENV-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-020",
+      "requirement_id": "AND-ENV-003",
+      "case_ids": [
+        "OTGD-020-AND-ENV-003-01",
+        "OTGD-020-AND-ENV-003-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-020",
+      "requirement_id": "AND-ENV-004",
+      "case_ids": [
+        "OTGD-020-AND-ENV-004-01",
+        "OTGD-020-AND-ENV-004-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-020",
+      "requirement_id": "AND-ENV-005",
+      "case_ids": [
+        "OTGD-020-AND-ENV-005-01",
+        "OTGD-020-AND-ENV-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-020",
+      "requirement_id": "AND-ENV-006",
+      "case_ids": [
+        "OTGD-020-AND-ENV-006-01",
+        "OTGD-020-AND-ENV-006-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-020",
+      "requirement_id": "AND-ENV-007",
+      "case_ids": [
+        "OTGD-020-AND-ENV-007-01",
+        "OTGD-020-AND-ENV-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-021",
+      "requirement_id": "AND-DASH-001",
+      "case_ids": [
+        "OTGD-021-AND-DASH-001-01",
+        "OTGD-021-AND-DASH-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-021",
+      "requirement_id": "AND-DASH-002",
+      "case_ids": [
+        "OTGD-021-AND-DASH-002-01",
+        "OTGD-021-AND-DASH-002-02",
+        "OTGD-021-AND-DASH-002-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-021",
+      "requirement_id": "AND-DASH-003",
+      "case_ids": [
+        "OTGD-021-AND-DASH-003-01",
+        "OTGD-021-AND-DASH-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-021",
+      "requirement_id": "AND-DASH-004",
+      "case_ids": [
+        "OTGD-021-AND-DASH-004-01",
+        "OTGD-021-AND-DASH-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-021",
+      "requirement_id": "AND-DASH-005",
+      "case_ids": [
+        "OTGD-021-AND-DASH-005-01",
+        "OTGD-021-AND-DASH-005-02",
+        "OTGD-021-AND-DASH-005-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-021",
+      "requirement_id": "AND-DASH-006",
+      "case_ids": [
+        "OTGD-021-AND-DASH-006-01",
+        "OTGD-021-AND-DASH-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-021",
+      "requirement_id": "AND-DASH-007",
+      "case_ids": [
+        "OTGD-021-AND-DASH-007-01",
+        "OTGD-021-AND-DASH-007-02",
+        "OTGD-021-AND-DASH-007-03"
+      ],
+      "statuses": {
+        "BLOCKED": 2,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-022",
+      "requirement_id": "AND-EXP-001",
+      "case_ids": [
+        "OTGD-022-AND-EXP-001-01",
+        "OTGD-022-AND-EXP-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-022",
+      "requirement_id": "AND-EXP-002",
+      "case_ids": [
+        "OTGD-022-AND-EXP-002-01",
+        "OTGD-022-AND-EXP-002-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-022",
+      "requirement_id": "AND-EXP-003",
+      "case_ids": [
+        "OTGD-022-AND-EXP-003-01",
+        "OTGD-022-AND-EXP-003-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-022",
+      "requirement_id": "AND-EXP-004",
+      "case_ids": [
+        "OTGD-022-AND-EXP-004-01",
+        "OTGD-022-AND-EXP-004-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-022",
+      "requirement_id": "AND-EXP-005",
+      "case_ids": [
+        "OTGD-022-AND-EXP-005-01",
+        "OTGD-022-AND-EXP-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-022",
+      "requirement_id": "AND-EXP-006",
+      "case_ids": [
+        "OTGD-022-AND-EXP-006-01",
+        "OTGD-022-AND-EXP-006-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-022",
+      "requirement_id": "AND-EXP-007",
+      "case_ids": [
+        "OTGD-022-AND-EXP-007-01",
+        "OTGD-022-AND-EXP-007-02"
+      ],
+      "statuses": {
+        "NOT_RUN": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-023",
+      "requirement_id": "AND-DEV-001",
+      "case_ids": [
+        "OTGD-023-AND-DEV-001-01",
+        "OTGD-023-AND-DEV-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-023",
+      "requirement_id": "AND-DEV-002",
+      "case_ids": [
+        "OTGD-023-AND-DEV-002-01",
+        "OTGD-023-AND-DEV-002-02"
+      ],
+      "statuses": {
+        "BLOCKED": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-023",
+      "requirement_id": "AND-DEV-003",
+      "case_ids": [
+        "OTGD-023-AND-DEV-003-01",
+        "OTGD-023-AND-DEV-003-02",
+        "OTGD-023-AND-DEV-003-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-023",
+      "requirement_id": "AND-DEV-004",
+      "case_ids": [
+        "OTGD-023-AND-DEV-004-01",
+        "OTGD-023-AND-DEV-004-02",
+        "OTGD-023-AND-DEV-004-03"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-023",
+      "requirement_id": "AND-DEV-005",
+      "case_ids": [
+        "OTGD-023-AND-DEV-005-01",
+        "OTGD-023-AND-DEV-005-02",
+        "OTGD-023-AND-DEV-005-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-023",
+      "requirement_id": "AND-DEV-006",
+      "case_ids": [
+        "OTGD-023-AND-DEV-006-01",
+        "OTGD-023-AND-DEV-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-023",
+      "requirement_id": "AND-DEV-007",
+      "case_ids": [
+        "OTGD-023-AND-DEV-007-01",
+        "OTGD-023-AND-DEV-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-023",
+      "requirement_id": "AND-DEV-008",
+      "case_ids": [
+        "OTGD-023-AND-DEV-008-01",
+        "OTGD-023-AND-DEV-008-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-024",
+      "requirement_id": "AND-ECG-001",
+      "case_ids": [
+        "OTGD-024-AND-ECG-001-01",
+        "OTGD-024-AND-ECG-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-024",
+      "requirement_id": "AND-ECG-002",
+      "case_ids": [
+        "OTGD-024-AND-ECG-002-01",
+        "OTGD-024-AND-ECG-002-02",
+        "OTGD-024-AND-ECG-002-03"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-024",
+      "requirement_id": "AND-ECG-003",
+      "case_ids": [
+        "OTGD-024-AND-ECG-003-01",
+        "OTGD-024-AND-ECG-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-024",
+      "requirement_id": "AND-ECG-004",
+      "case_ids": [
+        "OTGD-024-AND-ECG-004-01",
+        "OTGD-024-AND-ECG-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-024",
+      "requirement_id": "AND-ECG-005",
+      "case_ids": [
+        "OTGD-024-AND-ECG-005-01",
+        "OTGD-024-AND-ECG-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-024",
+      "requirement_id": "AND-ECG-006",
+      "case_ids": [
+        "OTGD-024-AND-ECG-006-01",
+        "OTGD-024-AND-ECG-006-02",
+        "OTGD-024-AND-ECG-006-03"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-024",
+      "requirement_id": "AND-ECG-007",
+      "case_ids": [
+        "OTGD-024-AND-ECG-007-01",
+        "OTGD-024-AND-ECG-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-025",
+      "requirement_id": "AND-EYE-001",
+      "case_ids": [
+        "OTGD-025-AND-EYE-001-01",
+        "OTGD-025-AND-EYE-001-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-025",
+      "requirement_id": "AND-EYE-002",
+      "case_ids": [
+        "OTGD-025-AND-EYE-002-01",
+        "OTGD-025-AND-EYE-002-02"
+      ],
+      "statuses": {
+        "BLOCKED": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-025",
+      "requirement_id": "AND-EYE-003",
+      "case_ids": [
+        "OTGD-025-AND-EYE-003-01",
+        "OTGD-025-AND-EYE-003-02",
+        "OTGD-025-AND-EYE-003-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-025",
+      "requirement_id": "AND-EYE-004",
+      "case_ids": [
+        "OTGD-025-AND-EYE-004-01",
+        "OTGD-025-AND-EYE-004-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-025",
+      "requirement_id": "AND-EYE-005",
+      "case_ids": [
+        "OTGD-025-AND-EYE-005-01",
+        "OTGD-025-AND-EYE-005-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-025",
+      "requirement_id": "AND-EYE-006",
+      "case_ids": [
+        "OTGD-025-AND-EYE-006-01",
+        "OTGD-025-AND-EYE-006-02",
+        "OTGD-025-AND-EYE-006-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-025",
+      "requirement_id": "AND-EYE-007",
+      "case_ids": [
+        "OTGD-025-AND-EYE-007-01",
+        "OTGD-025-AND-EYE-007-02"
+      ],
+      "statuses": {
+        "NOT_RUN": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-026",
+      "requirement_id": "AND-CHECK-001",
+      "case_ids": [
+        "OTGD-026-AND-CHECK-001-01",
+        "OTGD-026-AND-CHECK-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-026",
+      "requirement_id": "AND-CHECK-002",
+      "case_ids": [
+        "OTGD-026-AND-CHECK-002-01",
+        "OTGD-026-AND-CHECK-002-02",
+        "OTGD-026-AND-CHECK-002-03"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-026",
+      "requirement_id": "AND-CHECK-003",
+      "case_ids": [
+        "OTGD-026-AND-CHECK-003-01",
+        "OTGD-026-AND-CHECK-003-02",
+        "OTGD-026-AND-CHECK-003-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-026",
+      "requirement_id": "AND-CHECK-004",
+      "case_ids": [
+        "OTGD-026-AND-CHECK-004-01",
+        "OTGD-026-AND-CHECK-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-026",
+      "requirement_id": "AND-CHECK-005",
+      "case_ids": [
+        "OTGD-026-AND-CHECK-005-01",
+        "OTGD-026-AND-CHECK-005-02",
+        "OTGD-026-AND-CHECK-005-03"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-026",
+      "requirement_id": "AND-CHECK-006",
+      "case_ids": [
+        "OTGD-026-AND-CHECK-006-01",
+        "OTGD-026-AND-CHECK-006-02",
+        "OTGD-026-AND-CHECK-006-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-026",
+      "requirement_id": "AND-CHECK-007",
+      "case_ids": [
+        "OTGD-026-AND-CHECK-007-01",
+        "OTGD-026-AND-CHECK-007-02",
+        "OTGD-026-AND-CHECK-007-03"
+      ],
+      "statuses": {
+        "PASS": 2,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-026",
+      "requirement_id": "AND-CHECK-008",
+      "case_ids": [
+        "OTGD-026-AND-CHECK-008-01",
+        "OTGD-026-AND-CHECK-008-02"
+      ],
+      "statuses": {
+        "BLOCKED": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-027",
+      "requirement_id": "AND-HR-001",
+      "case_ids": [
+        "OTGD-027-AND-HR-001-01",
+        "OTGD-027-AND-HR-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-027",
+      "requirement_id": "AND-HR-002",
+      "case_ids": [
+        "OTGD-027-AND-HR-002-01",
+        "OTGD-027-AND-HR-002-02",
+        "OTGD-027-AND-HR-002-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-027",
+      "requirement_id": "AND-HR-003",
+      "case_ids": [
+        "OTGD-027-AND-HR-003-01",
+        "OTGD-027-AND-HR-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-027",
+      "requirement_id": "AND-HR-004",
+      "case_ids": [
+        "OTGD-027-AND-HR-004-01",
+        "OTGD-027-AND-HR-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-027",
+      "requirement_id": "AND-HR-005",
+      "case_ids": [
+        "OTGD-027-AND-HR-005-01",
+        "OTGD-027-AND-HR-005-02",
+        "OTGD-027-AND-HR-005-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-027",
+      "requirement_id": "AND-HR-006",
+      "case_ids": [
+        "OTGD-027-AND-HR-006-01",
+        "OTGD-027-AND-HR-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-027",
+      "requirement_id": "AND-HR-007",
+      "case_ids": [
+        "OTGD-027-AND-HR-007-01",
+        "OTGD-027-AND-HR-007-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-028",
+      "requirement_id": "AND-HIST-001",
+      "case_ids": [
+        "OTGD-028-AND-HIST-001-01",
+        "OTGD-028-AND-HIST-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-028",
+      "requirement_id": "AND-HIST-002",
+      "case_ids": [
+        "OTGD-028-AND-HIST-002-01",
+        "OTGD-028-AND-HIST-002-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-028",
+      "requirement_id": "AND-HIST-003",
+      "case_ids": [
+        "OTGD-028-AND-HIST-003-01",
+        "OTGD-028-AND-HIST-003-02",
+        "OTGD-028-AND-HIST-003-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-028",
+      "requirement_id": "AND-HIST-004",
+      "case_ids": [
+        "OTGD-028-AND-HIST-004-01",
+        "OTGD-028-AND-HIST-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-028",
+      "requirement_id": "AND-HIST-005",
+      "case_ids": [
+        "OTGD-028-AND-HIST-005-01",
+        "OTGD-028-AND-HIST-005-02",
+        "OTGD-028-AND-HIST-005-03"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1,
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-028",
+      "requirement_id": "AND-HIST-006",
+      "case_ids": [
+        "OTGD-028-AND-HIST-006-01",
+        "OTGD-028-AND-HIST-006-02",
+        "OTGD-028-AND-HIST-006-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-028",
+      "requirement_id": "AND-HIST-007",
+      "case_ids": [
+        "OTGD-028-AND-HIST-007-01",
+        "OTGD-028-AND-HIST-007-02"
+      ],
+      "statuses": {
+        "BLOCKED": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-029",
+      "requirement_id": "AND-SYNC-001",
+      "case_ids": [
+        "OTGD-029-AND-SYNC-001-01",
+        "OTGD-029-AND-SYNC-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-029",
+      "requirement_id": "AND-SYNC-002",
+      "case_ids": [
+        "OTGD-029-AND-SYNC-002-01",
+        "OTGD-029-AND-SYNC-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-029",
+      "requirement_id": "AND-SYNC-003",
+      "case_ids": [
+        "OTGD-029-AND-SYNC-003-01",
+        "OTGD-029-AND-SYNC-003-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-029",
+      "requirement_id": "AND-SYNC-004",
+      "case_ids": [
+        "OTGD-029-AND-SYNC-004-01",
+        "OTGD-029-AND-SYNC-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-029",
+      "requirement_id": "AND-SYNC-005",
+      "case_ids": [
+        "OTGD-029-AND-SYNC-005-01",
+        "OTGD-029-AND-SYNC-005-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-029",
+      "requirement_id": "AND-SYNC-006",
+      "case_ids": [
+        "OTGD-029-AND-SYNC-006-01",
+        "OTGD-029-AND-SYNC-006-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-029",
+      "requirement_id": "AND-SYNC-007",
+      "case_ids": [
+        "OTGD-029-AND-SYNC-007-01",
+        "OTGD-029-AND-SYNC-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-030",
+      "requirement_id": "AND-ONB-001",
+      "case_ids": [
+        "OTGD-030-AND-ONB-001-01",
+        "OTGD-030-AND-ONB-001-02",
+        "OTGD-030-AND-ONB-001-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-030",
+      "requirement_id": "AND-ONB-002",
+      "case_ids": [
+        "OTGD-030-AND-ONB-002-01",
+        "OTGD-030-AND-ONB-002-02",
+        "OTGD-030-AND-ONB-002-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-030",
+      "requirement_id": "AND-ONB-003",
+      "case_ids": [
+        "OTGD-030-AND-ONB-003-01",
+        "OTGD-030-AND-ONB-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-030",
+      "requirement_id": "AND-ONB-004",
+      "case_ids": [
+        "OTGD-030-AND-ONB-004-01",
+        "OTGD-030-AND-ONB-004-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-030",
+      "requirement_id": "AND-ONB-005",
+      "case_ids": [
+        "OTGD-030-AND-ONB-005-01",
+        "OTGD-030-AND-ONB-005-02"
+      ],
+      "statuses": {
+        "BLOCKED": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-030",
+      "requirement_id": "AND-ONB-006",
+      "case_ids": [
+        "OTGD-030-AND-ONB-006-01",
+        "OTGD-030-AND-ONB-006-02"
+      ],
+      "statuses": {
+        "BLOCKED": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-031",
+      "requirement_id": "AND-PRIV-001",
+      "case_ids": [
+        "OTGD-031-AND-PRIV-001-01",
+        "OTGD-031-AND-PRIV-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-031",
+      "requirement_id": "AND-PRIV-002",
+      "case_ids": [
+        "OTGD-031-AND-PRIV-002-01",
+        "OTGD-031-AND-PRIV-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-031",
+      "requirement_id": "AND-PRIV-003",
+      "case_ids": [
+        "OTGD-031-AND-PRIV-003-01",
+        "OTGD-031-AND-PRIV-003-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-031",
+      "requirement_id": "AND-PRIV-004",
+      "case_ids": [
+        "OTGD-031-AND-PRIV-004-01",
+        "OTGD-031-AND-PRIV-004-02",
+        "OTGD-031-AND-PRIV-004-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-031",
+      "requirement_id": "AND-PRIV-005",
+      "case_ids": [
+        "OTGD-031-AND-PRIV-005-01",
+        "OTGD-031-AND-PRIV-005-02",
+        "OTGD-031-AND-PRIV-005-03",
+        "OTGD-031-AND-PRIV-005-04"
+      ],
+      "statuses": {
+        "PASS": 2,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-031",
+      "requirement_id": "AND-PRIV-006",
+      "case_ids": [
+        "OTGD-031-AND-PRIV-006-01",
+        "OTGD-031-AND-PRIV-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-031",
+      "requirement_id": "AND-PRIV-007",
+      "case_ids": [
+        "OTGD-031-AND-PRIV-007-01",
+        "OTGD-031-AND-PRIV-007-02"
+      ],
+      "statuses": {
+        "BLOCKED": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-032",
+      "requirement_id": "AND-PRO-001",
+      "case_ids": [
+        "OTGD-032-AND-PRO-001-01",
+        "OTGD-032-AND-PRO-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-032",
+      "requirement_id": "AND-PRO-002",
+      "case_ids": [
+        "OTGD-032-AND-PRO-002-01",
+        "OTGD-032-AND-PRO-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-032",
+      "requirement_id": "AND-PRO-003",
+      "case_ids": [
+        "OTGD-032-AND-PRO-003-01",
+        "OTGD-032-AND-PRO-003-02",
+        "OTGD-032-AND-PRO-003-03"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-032",
+      "requirement_id": "AND-PRO-004",
+      "case_ids": [
+        "OTGD-032-AND-PRO-004-01",
+        "OTGD-032-AND-PRO-004-02",
+        "OTGD-032-AND-PRO-004-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-032",
+      "requirement_id": "AND-PRO-005",
+      "case_ids": [
+        "OTGD-032-AND-PRO-005-01",
+        "OTGD-032-AND-PRO-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-032",
+      "requirement_id": "AND-PRO-006",
+      "case_ids": [
+        "OTGD-032-AND-PRO-006-01",
+        "OTGD-032-AND-PRO-006-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-032",
+      "requirement_id": "AND-PRO-007",
+      "case_ids": [
+        "OTGD-032-AND-PRO-007-01",
+        "OTGD-032-AND-PRO-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-033",
+      "requirement_id": "AND-TASK-001",
+      "case_ids": [
+        "OTGD-033-AND-TASK-001-01",
+        "OTGD-033-AND-TASK-001-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-033",
+      "requirement_id": "AND-TASK-002",
+      "case_ids": [
+        "OTGD-033-AND-TASK-002-01",
+        "OTGD-033-AND-TASK-002-02",
+        "OTGD-033-AND-TASK-002-03"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-033",
+      "requirement_id": "AND-TASK-003",
+      "case_ids": [
+        "OTGD-033-AND-TASK-003-01",
+        "OTGD-033-AND-TASK-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-033",
+      "requirement_id": "AND-TASK-004",
+      "case_ids": [
+        "OTGD-033-AND-TASK-004-01",
+        "OTGD-033-AND-TASK-004-02",
+        "OTGD-033-AND-TASK-004-03",
+        "OTGD-033-AND-TASK-004-04"
+      ],
+      "statuses": {
+        "PASS": 4
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-033",
+      "requirement_id": "AND-TASK-005",
+      "case_ids": [
+        "OTGD-033-AND-TASK-005-01",
+        "OTGD-033-AND-TASK-005-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-033",
+      "requirement_id": "AND-TASK-006",
+      "case_ids": [
+        "OTGD-033-AND-TASK-006-01",
+        "OTGD-033-AND-TASK-006-02",
+        "OTGD-033-AND-TASK-006-03"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-033",
+      "requirement_id": "AND-TASK-007",
+      "case_ids": [
+        "OTGD-033-AND-TASK-007-01",
+        "OTGD-033-AND-TASK-007-02",
+        "OTGD-033-AND-TASK-007-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-033",
+      "requirement_id": "AND-TASK-008",
+      "case_ids": [
+        "OTGD-033-AND-TASK-008-01",
+        "OTGD-033-AND-TASK-008-02",
+        "OTGD-033-AND-TASK-008-03"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-034",
+      "requirement_id": "AND-RES-001",
+      "case_ids": [
+        "OTGD-034-AND-RES-001-01",
+        "OTGD-034-AND-RES-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-034",
+      "requirement_id": "AND-RES-002",
+      "case_ids": [
+        "OTGD-034-AND-RES-002-01",
+        "OTGD-034-AND-RES-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-034",
+      "requirement_id": "AND-RES-003",
+      "case_ids": [
+        "OTGD-034-AND-RES-003-01",
+        "OTGD-034-AND-RES-003-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-034",
+      "requirement_id": "AND-RES-004",
+      "case_ids": [
+        "OTGD-034-AND-RES-004-01",
+        "OTGD-034-AND-RES-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-034",
+      "requirement_id": "AND-RES-005",
+      "case_ids": [
+        "OTGD-034-AND-RES-005-01",
+        "OTGD-034-AND-RES-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-034",
+      "requirement_id": "AND-RES-006",
+      "case_ids": [
+        "OTGD-034-AND-RES-006-01",
+        "OTGD-034-AND-RES-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-034",
+      "requirement_id": "AND-RES-007",
+      "case_ids": [
+        "OTGD-034-AND-RES-007-01",
+        "OTGD-034-AND-RES-007-02"
+      ],
+      "statuses": {
+        "NOT_RUN": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-035",
+      "requirement_id": "AND-SAL-001",
+      "case_ids": [
+        "OTGD-035-AND-SAL-001-01",
+        "OTGD-035-AND-SAL-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-035",
+      "requirement_id": "AND-SAL-002",
+      "case_ids": [
+        "OTGD-035-AND-SAL-002-01",
+        "OTGD-035-AND-SAL-002-02",
+        "OTGD-035-AND-SAL-002-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-035",
+      "requirement_id": "AND-SAL-003",
+      "case_ids": [
+        "OTGD-035-AND-SAL-003-01",
+        "OTGD-035-AND-SAL-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-035",
+      "requirement_id": "AND-SAL-004",
+      "case_ids": [
+        "OTGD-035-AND-SAL-004-01",
+        "OTGD-035-AND-SAL-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-035",
+      "requirement_id": "AND-SAL-005",
+      "case_ids": [
+        "OTGD-035-AND-SAL-005-01",
+        "OTGD-035-AND-SAL-005-02"
+      ],
+      "statuses": {
+        "NOT_RUN": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-035",
+      "requirement_id": "AND-SAL-006",
+      "case_ids": [
+        "OTGD-035-AND-SAL-006-01",
+        "OTGD-035-AND-SAL-006-02",
+        "OTGD-035-AND-SAL-006-03"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-035",
+      "requirement_id": "AND-SAL-007",
+      "case_ids": [
+        "OTGD-035-AND-SAL-007-01",
+        "OTGD-035-AND-SAL-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "BLOCKED": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-036",
+      "requirement_id": "AND-SET-001",
+      "case_ids": [
+        "OTGD-036-AND-SET-001-01",
+        "OTGD-036-AND-SET-001-02",
+        "OTGD-036-AND-SET-001-03"
+      ],
+      "statuses": {
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-036",
+      "requirement_id": "AND-SET-002",
+      "case_ids": [
+        "OTGD-036-AND-SET-002-01",
+        "OTGD-036-AND-SET-002-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-036",
+      "requirement_id": "AND-SET-003",
+      "case_ids": [
+        "OTGD-036-AND-SET-003-01",
+        "OTGD-036-AND-SET-003-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-036",
+      "requirement_id": "AND-SET-004",
+      "case_ids": [
+        "OTGD-036-AND-SET-004-01",
+        "OTGD-036-AND-SET-004-02",
+        "OTGD-036-AND-SET-004-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-036",
+      "requirement_id": "AND-SET-005",
+      "case_ids": [
+        "OTGD-036-AND-SET-005-01",
+        "OTGD-036-AND-SET-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-036",
+      "requirement_id": "AND-SET-006",
+      "case_ids": [
+        "OTGD-036-AND-SET-006-01",
+        "OTGD-036-AND-SET-006-02",
+        "OTGD-036-AND-SET-006-03"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-036",
+      "requirement_id": "AND-SET-007",
+      "case_ids": [
+        "OTGD-036-AND-SET-007-01",
+        "OTGD-036-AND-SET-007-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-037",
+      "requirement_id": "AND-AUTH-001",
+      "case_ids": [
+        "OTGD-037-AND-AUTH-001-01",
+        "OTGD-037-AND-AUTH-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-037",
+      "requirement_id": "AND-AUTH-002",
+      "case_ids": [
+        "OTGD-037-AND-AUTH-002-01",
+        "OTGD-037-AND-AUTH-002-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-037",
+      "requirement_id": "AND-AUTH-003",
+      "case_ids": [
+        "OTGD-037-AND-AUTH-003-01",
+        "OTGD-037-AND-AUTH-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-037",
+      "requirement_id": "AND-AUTH-004",
+      "case_ids": [
+        "OTGD-037-AND-AUTH-004-01",
+        "OTGD-037-AND-AUTH-004-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-037",
+      "requirement_id": "AND-AUTH-005",
+      "case_ids": [
+        "OTGD-037-AND-AUTH-005-01",
+        "OTGD-037-AND-AUTH-005-02",
+        "OTGD-037-AND-AUTH-005-03",
+        "OTGD-037-AND-AUTH-005-04"
+      ],
+      "statuses": {
+        "BLOCKED": 4
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-037",
+      "requirement_id": "AND-AUTH-006",
+      "case_ids": [
+        "OTGD-037-AND-AUTH-006-01",
+        "OTGD-037-AND-AUTH-006-02",
+        "OTGD-037-AND-AUTH-006-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-037",
+      "requirement_id": "AND-AUTH-007",
+      "case_ids": [
+        "OTGD-037-AND-AUTH-007-01",
+        "OTGD-037-AND-AUTH-007-02"
+      ],
+      "statuses": {
+        "BLOCKED": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-038",
+      "requirement_id": "AND-STUDY-001",
+      "case_ids": [
+        "OTGD-038-AND-STUDY-001-01",
+        "OTGD-038-AND-STUDY-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-038",
+      "requirement_id": "AND-STUDY-002",
+      "case_ids": [
+        "OTGD-038-AND-STUDY-002-01",
+        "OTGD-038-AND-STUDY-002-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-038",
+      "requirement_id": "AND-STUDY-003",
+      "case_ids": [
+        "OTGD-038-AND-STUDY-003-01",
+        "OTGD-038-AND-STUDY-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-038",
+      "requirement_id": "AND-STUDY-004",
+      "case_ids": [
+        "OTGD-038-AND-STUDY-004-01",
+        "OTGD-038-AND-STUDY-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-038",
+      "requirement_id": "AND-STUDY-005",
+      "case_ids": [
+        "OTGD-038-AND-STUDY-005-01",
+        "OTGD-038-AND-STUDY-005-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-038",
+      "requirement_id": "AND-STUDY-006",
+      "case_ids": [
+        "OTGD-038-AND-STUDY-006-01",
+        "OTGD-038-AND-STUDY-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-039",
+      "requirement_id": "PAI-001",
+      "case_ids": [
+        "OTGD-039-PAI-001-01",
+        "OTGD-039-PAI-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-039",
+      "requirement_id": "PAI-002",
+      "case_ids": [
+        "OTGD-039-PAI-002-01",
+        "OTGD-039-PAI-002-02",
+        "OTGD-039-PAI-002-03",
+        "OTGD-039-PAI-002-04"
+      ],
+      "statuses": {
+        "PASS": 3,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-039",
+      "requirement_id": "PAI-003",
+      "case_ids": [
+        "OTGD-039-PAI-003-01",
+        "OTGD-039-PAI-003-02",
+        "OTGD-039-PAI-003-03",
+        "OTGD-039-PAI-003-04"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 3
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-039",
+      "requirement_id": "PAI-004",
+      "case_ids": [
+        "OTGD-039-PAI-004-01",
+        "OTGD-039-PAI-004-02",
+        "OTGD-039-PAI-004-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-039",
+      "requirement_id": "PAI-005",
+      "case_ids": [
+        "OTGD-039-PAI-005-01",
+        "OTGD-039-PAI-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-039",
+      "requirement_id": "PAI-006",
+      "case_ids": [
+        "OTGD-039-PAI-006-01",
+        "OTGD-039-PAI-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-039",
+      "requirement_id": "PAI-007",
+      "case_ids": [
+        "OTGD-039-PAI-007-01",
+        "OTGD-039-PAI-007-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-039",
+      "requirement_id": "PAI-008",
+      "case_ids": [
+        "OTGD-039-PAI-008-01",
+        "OTGD-039-PAI-008-02",
+        "OTGD-039-PAI-008-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-040",
+      "requirement_id": "SALCOL-001",
+      "case_ids": [
+        "OTGD-040-SALCOL-001-01",
+        "OTGD-040-SALCOL-001-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-040",
+      "requirement_id": "SALCOL-002",
+      "case_ids": [
+        "OTGD-040-SALCOL-002-01",
+        "OTGD-040-SALCOL-002-02",
+        "OTGD-040-SALCOL-002-03",
+        "OTGD-040-SALCOL-002-04"
+      ],
+      "statuses": {
+        "PASS": 4
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-040",
+      "requirement_id": "SALCOL-003",
+      "case_ids": [
+        "OTGD-040-SALCOL-003-01",
+        "OTGD-040-SALCOL-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-040",
+      "requirement_id": "SALCOL-004",
+      "case_ids": [
+        "OTGD-040-SALCOL-004-01",
+        "OTGD-040-SALCOL-004-02",
+        "OTGD-040-SALCOL-004-03"
+      ],
+      "statuses": {
+        "PASS": 2,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-040",
+      "requirement_id": "SALCOL-005",
+      "case_ids": [
+        "OTGD-040-SALCOL-005-01",
+        "OTGD-040-SALCOL-005-02",
+        "OTGD-040-SALCOL-005-03",
+        "OTGD-040-SALCOL-005-04"
+      ],
+      "statuses": {
+        "PASS": 4
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-040",
+      "requirement_id": "SALCOL-006",
+      "case_ids": [
+        "OTGD-040-SALCOL-006-01",
+        "OTGD-040-SALCOL-006-02",
+        "OTGD-040-SALCOL-006-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-040",
+      "requirement_id": "SALCOL-007",
+      "case_ids": [
+        "OTGD-040-SALCOL-007-01",
+        "OTGD-040-SALCOL-007-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-040",
+      "requirement_id": "SALCOL-008",
+      "case_ids": [
+        "OTGD-040-SALCOL-008-01",
+        "OTGD-040-SALCOL-008-02",
+        "OTGD-040-SALCOL-008-03",
+        "OTGD-040-SALCOL-008-04",
+        "OTGD-040-SALCOL-008-05",
+        "OTGD-040-SALCOL-008-06"
+      ],
+      "statuses": {
+        "PASS": 5,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-041",
+      "requirement_id": "EVAL-002",
+      "case_ids": [
+        "OTGD-041-EVAL-002-01",
+        "OTGD-041-EVAL-002-02",
+        "OTGD-041-EVAL-002-03",
+        "OTGD-041-EVAL-002-04",
+        "OTGD-041-EVAL-002-05"
+      ],
+      "statuses": {
+        "PASS": 3,
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-042",
+      "requirement_id": "HR-AUTH-001",
+      "case_ids": [
+        "OTGD-042-HR-AUTH-001-01",
+        "OTGD-042-HR-AUTH-001-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-042",
+      "requirement_id": "HR-AUTH-002",
+      "case_ids": [
+        "OTGD-042-HR-AUTH-002-01",
+        "OTGD-042-HR-AUTH-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-042",
+      "requirement_id": "HR-AUTH-003",
+      "case_ids": [
+        "OTGD-042-HR-AUTH-003-01",
+        "OTGD-042-HR-AUTH-003-02",
+        "OTGD-042-HR-AUTH-003-03",
+        "OTGD-042-HR-AUTH-003-04"
+      ],
+      "statuses": {
+        "PASS": 3,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-042",
+      "requirement_id": "HR-AUTH-004",
+      "case_ids": [
+        "OTGD-042-HR-AUTH-004-01",
+        "OTGD-042-HR-AUTH-004-02",
+        "OTGD-042-HR-AUTH-004-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-042",
+      "requirement_id": "HR-AUTH-005",
+      "case_ids": [
+        "OTGD-042-HR-AUTH-005-01",
+        "OTGD-042-HR-AUTH-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-042",
+      "requirement_id": "HR-AUTH-006",
+      "case_ids": [
+        "OTGD-042-HR-AUTH-006-01",
+        "OTGD-042-HR-AUTH-006-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-042",
+      "requirement_id": "HR-AUTH-007",
+      "case_ids": [
+        "OTGD-042-HR-AUTH-007-01",
+        "OTGD-042-HR-AUTH-007-02",
+        "OTGD-042-HR-AUTH-007-03",
+        "OTGD-042-HR-AUTH-007-04"
+      ],
+      "statuses": {
+        "PASS": 3,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-042",
+      "requirement_id": "HR-AUTH-008",
+      "case_ids": [
+        "OTGD-042-HR-AUTH-008-01",
+        "OTGD-042-HR-AUTH-008-02",
+        "OTGD-042-HR-AUTH-008-03",
+        "OTGD-042-HR-AUTH-008-04"
+      ],
+      "statuses": {
+        "PASS": 4
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-043",
+      "requirement_id": "VPPG-001",
+      "case_ids": [
+        "OTGD-043-VPPG-001-01",
+        "OTGD-043-VPPG-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-043",
+      "requirement_id": "VPPG-002",
+      "case_ids": [
+        "OTGD-043-VPPG-002-01",
+        "OTGD-043-VPPG-002-02",
+        "OTGD-043-VPPG-002-03"
+      ],
+      "statuses": {
+        "PASS": 3
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-043",
+      "requirement_id": "VPPG-003",
+      "case_ids": [
+        "OTGD-043-VPPG-003-01",
+        "OTGD-043-VPPG-003-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-043",
+      "requirement_id": "VPPG-004",
+      "case_ids": [
+        "OTGD-043-VPPG-004-01",
+        "OTGD-043-VPPG-004-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-043",
+      "requirement_id": "VPPG-005",
+      "case_ids": [
+        "OTGD-043-VPPG-005-01",
+        "OTGD-043-VPPG-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-043",
+      "requirement_id": "VPPG-006",
+      "case_ids": [
+        "OTGD-043-VPPG-006-01",
+        "OTGD-043-VPPG-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-043",
+      "requirement_id": "VPPG-007",
+      "case_ids": [
+        "OTGD-043-VPPG-007-01",
+        "OTGD-043-VPPG-007-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-044",
+      "requirement_id": "WEB-DEP-007",
+      "case_ids": [
+        "OTGD-044-WEB-DEP-007-01",
+        "OTGD-044-WEB-DEP-007-02",
+        "OTGD-044-WEB-DEP-007-03"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-044",
+      "requirement_id": "WEB-DEP-009",
+      "case_ids": [
+        "OTGD-044-WEB-DEP-009-01",
+        "OTGD-044-WEB-DEP-009-02",
+        "OTGD-044-WEB-DEP-009-03"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-044",
+      "requirement_id": "WEB-DEP-010",
+      "case_ids": [
+        "OTGD-044-WEB-DEP-010-01",
+        "OTGD-044-WEB-DEP-010-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-045",
+      "requirement_id": "CLOUD-DEP-007",
+      "case_ids": [
+        "OTGD-045-CLOUD-DEP-007-01",
+        "OTGD-045-CLOUD-DEP-007-02",
+        "OTGD-045-CLOUD-DEP-007-03",
+        "OTGD-045-CLOUD-DEP-007-04"
+      ],
+      "statuses": {
+        "PARTIAL": 2,
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-045",
+      "requirement_id": "CLOUD-DEP-011",
+      "case_ids": [
+        "OTGD-045-CLOUD-DEP-011-01",
+        "OTGD-045-CLOUD-DEP-011-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-046",
+      "requirement_id": "PREVIEW-001",
+      "case_ids": [
+        "OTGD-046-PREVIEW-001-01",
+        "OTGD-046-PREVIEW-001-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-046",
+      "requirement_id": "PREVIEW-002",
+      "case_ids": [
+        "OTGD-046-PREVIEW-002-01",
+        "OTGD-046-PREVIEW-002-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-046",
+      "requirement_id": "PREVIEW-003",
+      "case_ids": [
+        "OTGD-046-PREVIEW-003-01",
+        "OTGD-046-PREVIEW-003-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-001",
+      "case_ids": [
+        "OTGD-047-STORE-001-01",
+        "OTGD-047-STORE-001-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-002",
+      "case_ids": [
+        "OTGD-047-STORE-002-01",
+        "OTGD-047-STORE-002-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-003",
+      "case_ids": [
+        "OTGD-047-STORE-003-01",
+        "OTGD-047-STORE-003-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-004",
+      "case_ids": [
+        "OTGD-047-STORE-004-01",
+        "OTGD-047-STORE-004-02"
+      ],
+      "statuses": {
+        "PASS": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-005",
+      "case_ids": [
+        "OTGD-047-STORE-005-01",
+        "OTGD-047-STORE-005-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-006",
+      "case_ids": [
+        "OTGD-047-STORE-006-01",
+        "OTGD-047-STORE-006-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-007",
+      "case_ids": [
+        "OTGD-047-STORE-007-01",
+        "OTGD-047-STORE-007-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-008",
+      "case_ids": [
+        "OTGD-047-STORE-008-01",
+        "OTGD-047-STORE-008-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-009",
+      "case_ids": [
+        "OTGD-047-STORE-009-01",
+        "OTGD-047-STORE-009-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-010",
+      "case_ids": [
+        "OTGD-047-STORE-010-01",
+        "OTGD-047-STORE-010-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-011",
+      "case_ids": [
+        "OTGD-047-STORE-011-01",
+        "OTGD-047-STORE-011-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-012",
+      "case_ids": [
+        "OTGD-047-STORE-012-01",
+        "OTGD-047-STORE-012-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-013",
+      "case_ids": [
+        "OTGD-047-STORE-013-01",
+        "OTGD-047-STORE-013-02"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PARTIAL": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-014",
+      "case_ids": [
+        "OTGD-047-STORE-014-01",
+        "OTGD-047-STORE-014-02"
+      ],
+      "statuses": {
+        "PARTIAL": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-015",
+      "case_ids": [
+        "OTGD-047-STORE-015-01",
+        "OTGD-047-STORE-015-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "NOT_RUN": 1
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-016",
+      "case_ids": [
+        "OTGD-047-STORE-016-01",
+        "OTGD-047-STORE-016-02",
+        "OTGD-047-STORE-016-03"
+      ],
+      "statuses": {
+        "BLOCKED": 1,
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": false
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-017",
+      "case_ids": [
+        "OTGD-047-STORE-017-01",
+        "OTGD-047-STORE-017-02"
+      ],
+      "statuses": {
+        "PASS": 2
+      },
+      "all_scoped_cases_pass": true
+    },
+    {
+      "spec_id": "OTGD-047",
+      "requirement_id": "STORE-018",
+      "case_ids": [
+        "OTGD-047-STORE-018-01",
+        "OTGD-047-STORE-018-02"
+      ],
+      "statuses": {
+        "PARTIAL": 1,
+        "PASS": 1
+      },
+      "all_scoped_cases_pass": false
+    }
+  ]
+}

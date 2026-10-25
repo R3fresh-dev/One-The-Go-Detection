@@ -1,0 +1,63 @@
+{
+  "spec_id": "OTGD-014",
+  "canonical_path": "openspec/changes/cloud-deployment-customer-access/specs/cloud-browser-delivery/spec.md",
+  "canonical_sha256": "735f76493e8188925c157347dc22b0a2acad4cb76721f2ea8a7f324629631855",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-014-WEB-DEP-001-01",
+    "OTGD-014-WEB-DEP-001-02",
+    "OTGD-014-WEB-DEP-002-01",
+    "OTGD-014-WEB-DEP-002-02",
+    "OTGD-014-WEB-DEP-003-01",
+    "OTGD-014-WEB-DEP-003-02",
+    "OTGD-014-WEB-DEP-004-01",
+    "OTGD-014-WEB-DEP-004-02",
+    "OTGD-014-WEB-DEP-005-01",
+    "OTGD-014-WEB-DEP-005-02",
+    "OTGD-014-WEB-DEP-006-01",
+    "OTGD-014-WEB-DEP-006-02",
+    "OTGD-014-WEB-DEP-007-01",
+    "OTGD-014-WEB-DEP-007-02",
+    "OTGD-014-WEB-DEP-008-01",
+    "OTGD-014-WEB-DEP-008-02"
+  ],
+  "requirements": [
+    "WEB-DEP-001",
+    "WEB-DEP-002",
+    "WEB-DEP-003",
+    "WEB-DEP-004",
+    "WEB-DEP-005",
+    "WEB-DEP-006",
+    "WEB-DEP-007",
+    "WEB-DEP-008"
+  ],
+  "statuses": {
+    "PARTIAL": 10,
+    "PASS": 6
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-014",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd",
+    "uv run --project services/api python scripts/ci_gate.py infra-unit",
+    "node --import tsx --test --test-reporter=junit test/*.test.ts (cwd: infra)"
+  ],
+  "current_source_assertion_refs": [
+    "infra/test/test_web_deployment.py::test_publish_checks_actual_private_origin_and_commits_entrypoint_last",
+    "infra/test/test_web_deployment.py::test_https_asset_deep_link_readiness_checks_do_not_claim_signed_in_acceptance",
+    "infra/test/test_web_deployment.py::test_each_signed_environment_export_rebuilds_stale_hosted_metro_cache",
+    "infra/test/test_web_deployment.py::test_browser_build_environment_retains_transport_settings_without_deploy_credentials",
+    "infra/test/test_web_deployment.py::test_signature_source_environment_runtime_and_archive_bytes_are_bound",
+    "infra/test/test_web_deployment.py::test_public_asset_types_paths_symlinks_and_duplicate_zip_entries_are_rejected",
+    "infra/test/test_web_deployment.py::test_conflicting_immutable_object_and_asset_upload_failure_block_entrypoint",
+    "infra/test/test_web_deployment.py::test_public_policy_rejects_missing_broadened_or_ambiguous_csp_and_transport",
+    "infra/test/test_web_deployment.py::test_navigation_cannot_omit_required_policy_when_index_is_secure",
+    "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+    "apps/mobile/e2e/mobile.spec.ts::profile errors remain actionable and browser reload never pretends encrypted persistence"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

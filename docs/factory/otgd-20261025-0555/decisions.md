@@ -225,3 +225,23 @@ H was loaded and identity/API/worker serially refreshed only after actual resour
 ## D-008 v3 — final corrected candidate freeze (2026-10-25T10:33:04.587567+00:00)
 
 All D010 correction owners released exact source/test/report files; PM verified author bindings, all47 canonical hashes and image H current224COPY/runtime hashes. Checkpoint12 is the final corrected immutable candidate. Run all7 local gates and all14 CI jobs without skips or threshold changes, reconcile per-case evidence and obtain all6 actual independent confirmations. During the fingerprint window write only outside repository. Correction2/2, recovery0/3; unresolved source/evidence blockers after this round must remain explicit NEEDS_HUMAN, not reset or hidden. No scope/authority/release waiver.
+
+## D011 v1 — preserve tested source and publish evidence-only records
+
+{
+  "decision_id": "D011",
+  "version": 1,
+  "run_id": "otgd-20261025-0555",
+  "authority": "Authorized ordinary commits/non-force pushes and durable records; preserve exact tested source and stable recovery branch",
+  "primary_branch": "factory/one-the-go-detection-20261025",
+  "source_candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "evidence_branch": "factory/one-the-go-detection-20261025-evidence",
+  "decision": "Publish final safe Factory dossiers, reviews, evidence and recovery records as a descendant metadata-only commit on an auxiliary evidence branch. Do not change the primary source branch, application/spec/test/workflow/configuration content, run ID, source candidate or correction/recovery counters. Final records identify the source revision and implementation manifest explicitly; evidence commit is not separately claimed application-tested.",
+  "boundary": "One PM and one primary implementation branch. Auxiliary records are not a new run, supervisor, feature branch or deployment. Reconcile remote refs before non-force push; preserve prior records. Recovery checks both refs, retains the primary source branch and only resumes explicitly authorized unblocked work.",
+  "correction_round": 2,
+  "recovery_attempts": 0,
+  "status": "PLANNED; no Git write or push yet",
+  "announced_to_parent": true
+}
+
+The planned auxiliary branch is implemented by the commit containing checkpoint13; exact commit/remote verification is recorded after creation, not predicted here. No application/spec/test/workflow/configuration change is included.

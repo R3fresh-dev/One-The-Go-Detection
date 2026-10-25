@@ -1,0 +1,45 @@
+{
+  "spec_id": "OTGD-046",
+  "canonical_path": "openspec/changes/verified-release-and-browser-access/specs/fictional-browser-preview/spec.md",
+  "canonical_sha256": "1a331132cf6b66413d1705dc09d0c7f885b8fe1375ea72250dcd5a451162e241",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-046-PREVIEW-001-01",
+    "OTGD-046-PREVIEW-001-02",
+    "OTGD-046-PREVIEW-002-01",
+    "OTGD-046-PREVIEW-002-02",
+    "OTGD-046-PREVIEW-003-01",
+    "OTGD-046-PREVIEW-003-02"
+  ],
+  "requirements": [
+    "PREVIEW-001",
+    "PREVIEW-002",
+    "PREVIEW-003"
+  ],
+  "statuses": {
+    "PARTIAL": 4,
+    "PASS": 1,
+    "BLOCKED": 1
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-046",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd",
+    "uv run --project services/api python scripts/ci_gate.py infra-unit",
+    "node --import tsx --test --test-reporter=junit test/*.test.ts (cwd: infra)"
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/e2e/hosted-preview.spec.ts::standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+    "apps/mobile/tests/hosted-preview.test.ts::hosted preview starts an isolated fictional guest flow without reading account credentials or calling any service",
+    "infra/test/test_codespaces_preview.py::test_current_export_is_accepted_and_repeat_start_reuses_only_matching_guest",
+    "infra/test/test_codespaces_preview.py::test_changed_export_tracked_source_and_new_source_require_repreparation",
+    "infra/test/test_codespaces_preview.py::test_generic_http_200_is_not_reused_or_stopped_by_startup",
+    "infra/test/test_codespaces_preview.py::test_non_guest_marker_cannot_be_prepared_or_admitted"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

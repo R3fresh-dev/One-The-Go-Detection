@@ -1,0 +1,46 @@
+{
+  "spec_id": "OTGD-016",
+  "canonical_path": "openspec/changes/independent-recovery-admission/specs/recovery-authority/spec.md",
+  "canonical_sha256": "430fe7dfbfdb117add502c5632150690905d94b3dcb42ddc892bf1e8943f273c",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-016-RECOVERY-001-01",
+    "OTGD-016-RECOVERY-001-02",
+    "OTGD-016-RECOVERY-001-03",
+    "OTGD-016-RECOVERY-002-01",
+    "OTGD-016-RECOVERY-002-02",
+    "OTGD-016-RECOVERY-002-03"
+  ],
+  "requirements": [
+    "RECOVERY-001",
+    "RECOVERY-002"
+  ],
+  "statuses": {
+    "PARTIAL": 3,
+    "PASS": 3
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-016",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py live-dependencies"
+  ],
+  "current_source_assertion_refs": [
+    "services/api/tests/test_recovery_authority.py::test_retained_deletion_blocks_restored_active_database_even_without_restore_flag",
+    "services/api/tests/test_recovery_authority.py::test_recovery_claim_requires_latest_independent_activation_and_suspension",
+    "services/api/tests/test_recovery_authority.py::test_worker_claim_and_commit_refuse_retained_activation_missing_in_database",
+    "services/api/tests/test_recovery_authority.py::test_running_http_readiness_and_new_account_refuse_lost_local_marker",
+    "services/api/tests/test_journal_continuity.py::test_retained_database_never_automatically_adopts_journal",
+    "services/api/tests/test_journal_continuity.py::test_empty_database_binds_once_then_requires_exact_version",
+    "services/api/tests/test_recovery_scopes.py::test_fresh_registry_reapproval_seal_allows_only_exact_study_and_new_consent",
+    "services/api/tests/test_recovery_scopes.py::test_configured_reapproved_study_reaches_real_capture_start_and_model_execution",
+    "services/api/tests/test_recovery_scopes.py::test_prior_configured_seal_refuses_changed_dependency_through_capture_and_model",
+    "services/api/tests/test_recovery_authority.py::test_failed_nonprivacy_admission_preserves_accepted_cleanup_and_retained_journal",
+    "services/api/tests/test_recovery_scopes.py::test_no_stale_or_mutated_authority_reopens_study",
+    "services/api/tests/test_model_admission.py::test_current_authority_or_bytes_refusal_returns_no_score"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

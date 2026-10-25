@@ -1,0 +1,251 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "local_gate_receipt": {
+    "exit_code": 0,
+    "source_before_after_equal": true,
+    "clean": true,
+    "passed": [
+      "unit-coverage",
+      "atdd",
+      "performance",
+      "components",
+      "live-dependencies",
+      "docker-health",
+      "localstack-api"
+    ]
+  },
+  "local_artifacts_independently_rehashed": [
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/local-gates.json",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit.xml",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/coverage.xml",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit-coverage.json",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/atdd.xml",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/hosted-preview.xml",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/performance.json",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/postgres.xml",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/secure-sdk.xml",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/authenticated-live.xml",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/worker-interrupt-0ee5896b1cb1409ba1044590ecb6cc07.json",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/unit-coverage.log",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/atdd.log",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/performance.log",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.log",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/live-dependencies.log",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/docker-health.log",
+    "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/localstack-api.log"
+  ],
+  "ci_run": 40185247204,
+  "ci_tree_binding": {
+    "run_id": 40185247204,
+    "head": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+    "tested_merge": "d75116afb2771e4d2841e3592f2784a455ba0a9f",
+    "exact_tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+    "merge_parents": [
+      "0844868aa543af4ab75ac5065ad48cf807b86bb3",
+      "e89897cc852a111b131eaf5c2caaf163ef201a48"
+    ],
+    "source": "GitHub Git commits plus actual current components job checkout log",
+    "verified": true
+  },
+  "ci14_successful": true,
+  "current_exact_ux_observations": [
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "Home expires its current channel observation while mounted and Device retains that expired status",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "route headings receive focus across tabs, deeper navigation and Back",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "system motion and explicit overrides control rendered ordinary modal animation",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "rendered destructive labels meet contrast minimum in light and dark themes",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "pending laboratory UI preserves the draft, refreshes actual admitted analysis and requires explicit cancellation without inventing chemistry",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "actual raw receipt screen keeps quarantine and cleanup confirmation distinct from retention expiry",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "Home and Device distinguish physical/synthetic connection from current, revoked, expired or mismatched channel authority",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "Home expires its current channel observation while mounted and Device retains that expired status",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "mounted pending or local measurement result starts fresh HR admission after same-ID normal sync completion",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "manual service refresh establishes current HR admission from a mounted pending result without a prior token",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "route headings receive focus across tabs, deeper navigation and Back",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "system motion and explicit overrides control rendered ordinary modal animation",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "rendered destructive labels meet contrast minimum in light and dark themes",
+      "classname": "components.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "pending laboratory UI preserves the draft, refreshes actual admitted analysis and requires explicit cancellation without inventing chemistry",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "actual raw choices component defaults both optional purposes off and requires exact policy review before a separate local/upload choice",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "actual raw export component keeps every source and separate acknowledgment off until exact purpose review, then resets for another owner",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/components.xml",
+      "sha256": "a137af31ada043a249ad62b8720ab6b6a0dc7a6e1d4991d5336f7aa5b65e3e31",
+      "name": "actual raw receipt screen keeps quarantine and cleanup confirmation distinct from retention expiry",
+      "classname": "raw-recordings.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/authenticated-live.xml",
+      "sha256": "d077dac5e8315553d8b2e4a574bca04ba3639fc7d2905c0aaec076f7974c8392",
+      "name": "ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries",
+      "classname": "authenticated-live.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/authenticated-live.xml",
+      "sha256": "d077dac5e8315553d8b2e4a574bca04ba3639fc7d2905c0aaec076f7974c8392",
+      "name": "ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries",
+      "classname": "authenticated-live.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/hosted-preview.xml",
+      "sha256": "374044d14f7d671489e6a5e364841c09bbff43fc2ec9a338e00e74139b465f6c",
+      "name": "standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+      "classname": "hosted-preview.spec.ts",
+      "status": "PASS"
+    },
+    {
+      "artifact": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/current-local/hosted-preview.xml",
+      "sha256": "374044d14f7d671489e6a5e364841c09bbff43fc2ec9a338e00e74139b465f6c",
+      "name": "standalone fictional guest UI saves a check with zero account, upload, camera or Bluetooth calls and reload clears browser records",
+      "classname": "hosted-preview.spec.ts",
+      "status": "PASS"
+    }
+  ],
+  "scope": "Read-only evidence inspection, no test execution by UX reviewer; all source/case acceptance remains separately scoped."
+}

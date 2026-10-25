@@ -1,0 +1,73 @@
+{
+  "spec_id": "OTGD-036",
+  "canonical_path": "openspec/changes/production-mobile-platform/specs/android-settings-accessibility/spec.md",
+  "canonical_sha256": "2768fdfbe5ff0b1971d6aad04101ea2fa17db6f6c3012848aa3aa3f490e654c8",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "case_ids": [
+    "OTGD-036-AND-SET-001-01",
+    "OTGD-036-AND-SET-001-02",
+    "OTGD-036-AND-SET-001-03",
+    "OTGD-036-AND-SET-002-01",
+    "OTGD-036-AND-SET-002-02",
+    "OTGD-036-AND-SET-003-01",
+    "OTGD-036-AND-SET-003-02",
+    "OTGD-036-AND-SET-004-01",
+    "OTGD-036-AND-SET-004-02",
+    "OTGD-036-AND-SET-004-03",
+    "OTGD-036-AND-SET-005-01",
+    "OTGD-036-AND-SET-005-02",
+    "OTGD-036-AND-SET-006-01",
+    "OTGD-036-AND-SET-006-02",
+    "OTGD-036-AND-SET-006-03",
+    "OTGD-036-AND-SET-007-01",
+    "OTGD-036-AND-SET-007-02"
+  ],
+  "requirements": [
+    "AND-SET-001",
+    "AND-SET-002",
+    "AND-SET-003",
+    "AND-SET-004",
+    "AND-SET-005",
+    "AND-SET-006",
+    "AND-SET-007"
+  ],
+  "statuses": {
+    "PARTIAL": 11,
+    "BLOCKED": 3,
+    "PASS": 3
+  },
+  "audit_pending": 0,
+  "proposed_dossier_status": "PARTIAL_SPEC_NOT_COMPLETE",
+  "proposed_target": "docs/factory/otgd-20261025-0555/specs/OTGD-036",
+  "import_authority": "PM only; this verifier does not edit repository or sign council decisions.",
+  "exact_commands": [
+    "python scripts/ci_gate.py unit-coverage",
+    "python scripts/ci_gate.py components",
+    "python scripts/ci_gate.py atdd"
+  ],
+  "current_source_assertion_refs": [
+    "apps/mobile/e2e/mobile.spec.ts::guest completes a measurement-only check, exact export and privacy/settings journey",
+    "apps/mobile/tests/lifecycle.test.ts::concurrent route/background stops issue native cancel immediately and wait for terminal persistence",
+    "apps/mobile/tests/controller.test.ts::native stop requests cancellation before waiting for a delayed device stop and retains the immutable native completion",
+    "apps/mobile/e2e/components.spec.ts::Settings and Back preserve the actual draft and collected example without a camera prompt",
+    "apps/mobile/tests/service-boundary.test.ts::actual backend app-config and capabilities responses decode without removing mandatory fields",
+    "apps/mobile/e2e/components.spec.ts::navigation and theme components expose selected state at both viewport sizes",
+    "apps/mobile/tests/controller.test.ts::signed-in profile revision freezes into Start check and a later profile save cannot replace it",
+    "apps/mobile/tests/profile-form.test.ts::display rounding and repeated unit toggles preserve original canonical values",
+    "apps/mobile/tests/measurement-format.test.ts::original report units, laboratory correction, matrix and separate times remain visible",
+    "apps/mobile/e2e/raw-recordings.spec.ts::Settings reads denied, restricted, undetermined and failed camera status without prompting and opens OS settings only explicitly",
+    "apps/mobile/e2e/raw-recordings.spec.ts::Settings ignores out-of-order and unmounted camera reads and replaces stale account and generation observations",
+    "apps/mobile/tests/service-boundary.test.ts::research result format advertisement supports only the versioned reader and grants no inference authority",
+    "apps/mobile/tests/research-result.test.ts::changed immutable proof, endpoint, registry identity, classification or owner-record link is never displayed",
+    "apps/mobile/tests/service-boundary.test.ts::unsupported app version, minimum version or contract pauses synchronization; maintenance is separate",
+    "apps/mobile/tests/research-result.test.ts::personalized baseline cannot omit baseline evidence and legacy 0.1 result cannot acquire research fields",
+    "apps/mobile/tests/support-history.test.ts::support diagnostics copy only bounded explicit fields, never an error payload",
+    "apps/mobile/tests/support-history.test.ts::untrusted diagnostics strings cannot become fields or copied references",
+    "apps/mobile/e2e/components.spec.ts::route headings receive focus across tabs, deeper navigation and Back",
+    "apps/mobile/e2e/components.spec.ts::system motion and explicit overrides control rendered ordinary modal animation",
+    "apps/mobile/e2e/components.spec.ts::rendered destructive labels meet contrast minimum in light and dark themes",
+    "apps/mobile/tests/controller.test.ts::unmounted task arm is invalidated while unsupported or stale task terminals cannot become valid evidence"
+  ],
+  "gates": "Current CI all14 PASS; independent local all7 gates passed.",
+  "restrictions": "No merge/deployment/participant use. Measurement defaults, fictional source, research eligibility, independent scientific approvals and future separately calibrated fuel-cell breath alcohol mg/L scope preserved."
+}

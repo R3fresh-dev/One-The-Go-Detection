@@ -1,0 +1,160 @@
+{
+  "recorded_at": "2026-10-25T11:17:28.289764+00:00",
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "run_id": 40185247204,
+  "tested_merge": "d75116afb2771e4d2841e3592f2784a455ba0a9f",
+  "tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "jobs": [
+    {
+      "id": 121144851499,
+      "name": "unit-coverage",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851617,
+      "name": "platform / localstack-integration",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851697,
+      "name": "preview / android",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851710,
+      "name": "components",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851728,
+      "name": "native / protected-reader",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851740,
+      "name": "native / android",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851772,
+      "name": "atdd",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851791,
+      "name": "platform / contracts-and-synthesis",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851795,
+      "name": "platform / fargate-container-runtime",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851865,
+      "name": "platform / postgres-integration",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851931,
+      "name": "native / ios",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851959,
+      "name": "native / shared-and-firmware",
+      "conclusion": "success"
+    },
+    {
+      "id": 121144851990,
+      "name": "preview / ios",
+      "conclusion": "success"
+    },
+    {
+      "id": 121152352024,
+      "name": "merge-gate",
+      "conclusion": "success"
+    }
+  ],
+  "worker": {
+    "status": "passed",
+    "source_before_after_equal": true,
+    "export_stages": 5,
+    "result_stages": 2,
+    "logical_claims": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "actual_receives": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "limits": {
+      "attempt_deadline_seconds": 900,
+      "heartbeat_seconds": 30,
+      "lease_seconds": 120,
+      "max_claims": 5,
+      "max_receives": 5,
+      "visibility_seconds": 120
+    },
+    "scope": {
+      "cleanup": "actual job expiry; no immediate orphan erasure assertion",
+      "export": "structured fictional export",
+      "not_exercised": [
+        "raw-export authority revocation",
+        "900-second work deadline",
+        "HTTP privacy deletion lifecycle",
+        "cloud/native/scientific qualification"
+      ],
+      "result": "synthetic measurement-only result",
+      "retirement": "real transaction retires account generation during stopped worker"
+    }
+  },
+  "authenticated_browser": {
+    "cases": 2,
+    "names": [
+      "ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries",
+      "ordinary web completes owned PKCE, explicit upload, worker export, lost-ack recovery, reload and privacy boundaries"
+    ],
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "performance": {
+    "workflows": 40,
+    "concurrency": 20,
+    "requests": 400,
+    "p95_ms": 838.2263490002515,
+    "p99_ms": 1162.4777410002025,
+    "seconds": 11.324452417999964,
+    "result_deadline_seconds": 15
+  },
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-jobs-final.json",
+      "sha256": "4c5e26ac94a83b767ed43082e5cb5cd3fd646dcc84d85996feb5aee2e55532cd"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-final.json",
+      "sha256": "aa4141cb537ae3323e7915fa373aa5410af2eaf8f9c059ced8122a673c6d598c"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-artifacts-verified-stage3.json",
+      "sha256": "b8cd6078c68a5f67aec1d5a6f5772e05cd607a547f8e88748d5fae794e20b8f5"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-localstack-final.log",
+      "sha256": "359f42fb346e7434cf3cbe5ac042b1549a142a722c866eed8976a9a24e72879f"
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/ci-tree-binding.json",
+      "sha256": "92e94326242d94cb0add0e7d16b671c19e06a847c0c8d9c5f472cef58c16e175"
+    }
+  ]
+}

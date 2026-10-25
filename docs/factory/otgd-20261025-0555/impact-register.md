@@ -57,3 +57,11 @@ Actual D010v1 AFFECTED acknowledgments received from /root/browser_builder (retu
 ## Final author release / checkpoint12
 
 Actual D010v2 AFFECTED acknowledgment received from mobile owner for the narrow DeviceScreen Facts section; firmware owner acknowledged source coordination only. Auth, backend, mobile and image-proof owners released all writes with verified hashes; each report distinguishes author tests from independent signoff. PM completed H adoption and checked current backend bytes. New/resumed reviewers must ACK D008v3 and D006v10/v11 along with D010v2 before current signoff. No unresolved author clarification.
+
+## D011 v1 / final evidence admission
+
+Actual AFFECTED ACKs received from /root/verification and /root/replacement_security, replacement_code, replacement_product, replacement_engineering, replacement_ux, replacement_ui. Impact is metadata/source identity interpretation only; no new feature or permission. All bind source e89897c and immutable verifier release. Two final supplemental executors acknowledged source freeze/final-round/resource preservation and released actual bounded evidence. No agent signs its own implementation.
+
+## D011v1 approver synchronization
+
+/root/final_approver actual AFFECTED ACK received: source remains e898 and metadata commit is not separately application-tested. Final review coverage is282 real independent decisions over47 stable canonical specs; no model/provider substitution or author self-signoff.

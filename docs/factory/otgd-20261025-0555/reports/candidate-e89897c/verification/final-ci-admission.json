@@ -1,0 +1,79 @@
+{
+  "candidate": "e89897cc852a111b131eaf5c2caaf163ef201a48",
+  "tree": "6b43a0a3058eb30bddb08d9476ca58929e7733f1",
+  "ci_run": 40185247204,
+  "merge": "d75116afb2771e4d2841e3592f2784a455ba0a9f",
+  "jobs": 14,
+  "all_jobs_success": true,
+  "gate_artifact": {
+    "artifact_id": 12597525541,
+    "artifact_name": "exact-revision-merge-evidence",
+    "original_path": "/tmp/otgd-ci-checkpoint12/12597525541/extracted/gates.json",
+    "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12597525541/gates.json",
+    "sha256": "7709b1cb9955103f1dcf7d9c69d76730411488b841cf4e93c7d27da9e1f8a974",
+    "bytes": 427
+  },
+  "worker_report": {
+    "artifact_id": 12597206063,
+    "artifact_name": "localstack-performance-evidence",
+    "original_path": "/tmp/otgd-ci-checkpoint12/12597206063/extracted/worker-interrupt-0ad8e1db264443548c4449c91be1f5a3.json",
+    "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12597206063/worker-interrupt-0ad8e1db264443548c4449c91be1f5a3.json",
+    "sha256": "52d13d2911949a0f6209afac5dad6b1f303482fd547f24568bdc5a54c9af35f0",
+    "bytes": 83560
+  },
+  "worker_manifest_files_rehashed_against_commit": 92,
+  "worker_export_recoveries": 5,
+  "worker_result_recoveries": 2,
+  "worker_limits": {
+    "attempt_deadline_seconds": 900,
+    "heartbeat_seconds": 30,
+    "lease_seconds": 120,
+    "max_claims": 5,
+    "max_receives": 5,
+    "visibility_seconds": 120
+  },
+  "worker_scope": {
+    "cleanup": "actual job expiry; no immediate orphan erasure assertion",
+    "export": "structured fictional export",
+    "not_exercised": [
+      "raw-export authority revocation",
+      "900-second work deadline",
+      "HTTP privacy deletion lifecycle",
+      "cloud/native/scientific qualification"
+    ],
+    "result": "synthetic measurement-only result",
+    "retirement": "real transaction retires account generation during stopped worker"
+  },
+  "performance": {
+    "artifact_id": 12597206063,
+    "artifact_name": "localstack-performance-evidence",
+    "original_path": "/tmp/otgd-ci-checkpoint12/12597206063/extracted/performance.json",
+    "snapshot_path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/12597206063/performance.json",
+    "sha256": "a1e721bbd30872d4b634fe3a82d397866798f7cb22ecfb6df2981dc8fd045192",
+    "bytes": 191
+  },
+  "raw_final_receipts": [
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/raw/ci-localstack-final.log",
+      "sha256": "359f42fb346e7434cf3cbe5ac042b1549a142a722c866eed8976a9a24e72879f",
+      "bytes": 157660
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/raw/ci-aggregate-final.log",
+      "sha256": "72f2b79c720dc0de3dc58aacd302f429c5739b532ba3b7e75d0a12db1182a813",
+      "bytes": 6003
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/raw/ci-jobs-final.json",
+      "sha256": "4c5e26ac94a83b767ed43082e5cb5cd3fd646dcc84d85996feb5aee2e55532cd",
+      "bytes": 40389
+    },
+    {
+      "path": "/workspace/scratch/otgd-20261025-0555-live/candidate-e89897cc852a/verification/evidence-snapshots/current-ci/raw/ci-run-final.json",
+      "sha256": "a022388c81fb57dfaa975b0c75f5474ed8a5e25f2d8b57fa1bb3ccb06047f7f7",
+      "bytes": 451
+    }
+  ],
+  "local_full_gate": "PENDING; independent local execution not promoted by CI pass",
+  "not_an_approval": true
+}
