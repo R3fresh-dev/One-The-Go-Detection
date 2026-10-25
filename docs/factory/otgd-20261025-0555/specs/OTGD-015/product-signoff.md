@@ -1,11 +1,11 @@
-# OTGD-015: Independent product signoff
+# OTGD-015: Independent product signoff — initial review
 
-Canonical spec: `openspec/changes/cloud-deployment-customer-access/specs/cloud-release-orchestration/spec.md`
+Canonical `openspec/changes/cloud-deployment-customer-access/specs/cloud-release-orchestration/spec.md`; SHA-256 `32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6`.
 
-Spec SHA-256: `32e918e2908b70dbf00f7c9533aa462402b71ffc5c5ce9b8f4da499783cc3bc6`
+Reviewer `/root/review_product`, configured OpenAI gpt-6.1-sol/high; runtime attestation unavailable. Candidate `28e07295cb37bb9dcaaac82cc8fc846eb89006a6`.
 
-Baseline implementation: `0844868aa543af4ab75ac5065ad48cf807b86bb3`.
+Decision **BLOCKED**. Environment-specific plans and exact-source/gate/maintenance/health/QA approval admission preserve operator control. Real target accounts, credentials and deployment observations remain external and unexecuted; no deployment is authorized.
 
-Decision register: `docs/factory/otgd-20261025-0555/decisions.md`.
+Findings: none; required evidence pending.
 
-Status: PENDING. No reviewer assigned or signoff granted. Requires independent agent identity, candidate binding, actual evidence and per-spec decision.
+This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.

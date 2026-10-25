@@ -1,0 +1,86 @@
+{
+  "created_at": "2026-10-25T07:38:52.555Z",
+  "scope": "Guest navigation only; no saved check/API write. All external origins blocked.",
+  "records": [
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "demo-confirmation",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-demo-confirmation.png",
+      "sha256": "080609cc673281a7d6c24c746f8471f0d02a6bcde7eba2717af36a8f711acc26",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nDetails\nONE THE GO · MEASUREMENT COMPANION\nTry a complete check\nExplore the whole journey before connecting hardware.\nA CLEARER VIEW OF YOUR DATA\nOne check. Every measurement in context.\n01  Sample\n02  Measurements\n03  Reaction\nWHAT THIS RELEASE DOES\nCollect and organize measurement evidence, show its quality and source, and keep a clear history.\nIt does not determine whether someone is intoxicated, impaired, or safe to drive. No validated impairment model is available.\nOne sample\nFictional saliva example\nGuided measurements\nSynthetic sensor examples\nOne reaction task\nNative practice on supported builds\nDemo sample and sensor values are synthetic. Reaction taps are a practice measurement. Guest demo records remain on this device and never upload.\nStart demo\nSign in\nBack\nPrivacy\nAbout this release\nLOCAL environment. Account sign-in uses the isolated local fixture issuer. No real participants belong in this environment."
+    },
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "check-overview",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-check-overview.png",
+      "sha256": "e3ac80279490dfbe93678652dbb9494aef044d1bdb590fb8aabde705bcd6d94e",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\n‹ Back\nCHECK 1 OF 8 · 3FAB4A99…C6F4C8\nContext\n1 Context\n2 Device\n3 Saliva\n4 Eyes\n5 Pulse\n6 ECG\n7 Reaction\n8 Review\nSynthetic session: sample, eye, pulse, ECG and alcohol examples are fictional. Any actual native reaction taps are uncalibrated practice with separate provenance.\nFrozen at Start check\nCheck time\nOct 25, 2026, 07:38 AM\nProfile revision ID\nNo saved profile revision\nAge\nNot provided\nHeight / weight\n— / —\nBMI\nNot available\nPrior use\nunknown\nLast use\nunknown\nSleep / recent exercise\nUnknown / Unknown\nThis exact context is read only. Changing the current profile later affects a new check.\nContinue to device\nCheck context: Oct 25, 2026, 07:38 AM. Each component retains its own acquisition time. Missing and censored values are never filled with zero.\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings"
+    },
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "check-review",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-check-review.png",
+      "sha256": "d37b590b6471a467b7fb13fe7c09443dd7c06320a0a710a0090e15cdcc9f0282",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\n‹ Back\nCHECK 8 OF 8 · 3FAB4A99…C6F4C8\nReview\n1 Context\n2 Device\n3 Saliva\n4 Eyes\n5 Pulse\n6 ECG\n7 Reaction\n8 Review\nSynthetic session: sample, eye, pulse, ECG and alcohol examples are fictional. Any actual native reaction taps are uncalibrated practice with separate provenance.\nReview before saving\nSaving freezes this snapshot and its evidence manifest on this device. New measurements after saving require a replacement check with a new start time.\nSaliva\nnot collected\nEyes\nnot collected\nCardiac\nnot collected · ppg\nReaction task\nnot collected\nAlcohol\nNot collected\nCapture attempts retained\n0\nUpload\nNothing queued by saving\nSaliva measurements\nSample\nb499b43d…37a992\nCollected\nNot collected\nCollection method\nunavailable\nSample status\nnot collected\nCollected volume\nNot reported\nReported dilution factor\nNot reported\nLimits and concentrations use the reporting method's stated matrix and analyte basis. This app does not calculate or repeat a dilution correction. Missing concentrations remain null.\nNo saliva measurements were collected.\nSave on this device\nReview attempt evidence\nCheck context: Oct 25, 2026, 07:38 AM. Each component retains its own acquisition time. Missing and censored values are never filled with zero.\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings"
+    },
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "settings-dark",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-settings-dark.png",
+      "sha256": "cbe9e3aaf7e5f262e20576c0a15ccfbb3f29a9fb27a905948d9cf85f347bfc06",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\nMAKE THIS WORKSPACE YOURS\nSettings\nAPPEARANCE & ACCESSIBILITY\nTheme\nSystem\nLight\nDark\nReduce motion\nNavigation uses no continuous animation. The native task keeps its fixed acquisition presentation.\nProfile display units\nMetric\nImperial\nText outside acquisition follows system text scaling. Task requested sRGB colors, shape/text size, geometry and timing are fixed by its configuration. Physical luminance is unmeasured; the app does not override brightness.\nDevice permissions\nCamera · eye-positioning preview\nBrowser permission is checked at eye preview\nBluetooth · find and connect to a reader\nUnavailable in browser preview\nPrivate record unlock\nWeb preview uses memory only\nViewing this page requests no permission. Bluetooth permission is requested only from Devices. Android 11 and earlier require the OS discovery location permission for Bluetooth scanning; the app does not collect location. No microphone, photo-library or notification permission is requested.\nRefresh permission status\nHelp & diagnostics\nReader connection: check Bluetooth access, power and distance, then request a fresh scan. A simulator connection does not qualify a sensor.\nOffline records: unlock the current workspace to view local saves. Upload only queues after your explicit choice; Pending sync shows requested delivery.\nUnavailable capture: read Service status for the reason. Export and deletion are in Privacy & data; a pending request is not a completed request.\nPreview diagnostics\nPrivacy & data\nLocal storage, export, deletion and upload retry preference\n›\nResearch access\nSeparate study invitation and consent; no automatic enrollment\n›\nApplication data notice\nlocal-demo-v1\n›\nAbout this release\nVersion 0.2.0 · LOCAL\n›\nService status & capabilities\nOffline or unavailable\n›\nGuest workspace\nGuest records stay separate and never upload. Sign-in opens another workspace without importing this one.\nSign in to a separate account workspace\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings"
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "demo-confirmation",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-demo-confirmation.png",
+      "sha256": "267de930c3cdb5e3cfbd30f33692c8fdc66e99474e21153dab2021aaa8a18da1",
+      "scrollWidth": 1440,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nDetails\nONE THE GO · MEASUREMENT COMPANION\nTry a complete check\nExplore the whole journey before connecting hardware.\nA CLEARER VIEW OF YOUR DATA\nOne check. Every measurement in context.\n01  Sample\n02  Measurements\n03  Reaction\nWHAT THIS RELEASE DOES\nCollect and organize measurement evidence, show its quality and source, and keep a clear history.\nIt does not determine whether someone is intoxicated, impaired, or safe to drive. No validated impairment model is available.\nOne sample\nFictional saliva example\nGuided measurements\nSynthetic sensor examples\nOne reaction task\nNative practice on supported builds\nDemo sample and sensor values are synthetic. Reaction taps are a practice measurement. Guest demo records remain on this device and never upload.\nStart demo\nSign in\nBack\nPrivacy\nAbout this release\nLOCAL environment. Account sign-in uses the isolated local fixture issuer. No real participants belong in this environment."
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "check-overview",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-check-overview.png",
+      "sha256": "27f44a45a5c26490c89a5708ee43580321656e3b48cdc6023eb86c3acf87410b",
+      "scrollWidth": 1440,
+      "text": "one the go.\nMEASUREMENT COMPANION\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings\nEvidence and context. No impairment verdict.\nLOCAL · v0.2.0\none the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\n‹ Back\nCHECK 1 OF 8 · A44B6F0C…811866\nContext\n1 Context\n2 Device\n3 Saliva\n4 Eyes\n5 Pulse\n6 ECG\n7 Reaction\n8 Review\nSynthetic session: sample, eye, pulse, ECG and alcohol examples are fictional. Any actual native reaction taps are uncalibrated practice with separate provenance.\nFrozen at Start check\nCheck time\nOct 25, 2026, 07:38 AM\nProfile revision ID\nNo saved profile revision\nAge\nNot provided\nHeight / weight\n— / —\nBMI\nNot available\nPrior use\nunknown\nLast use\nunknown\nSleep / recent exercise\nUnknown / Unknown\nThis exact context is read only. Changing the current profile later affects a new check.\nContinue to device\nCheck context: Oct 25, 2026, 07:38 AM. Each component retains its own acquisition time. Missing and censored values are never filled with zero."
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "check-review",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-check-review.png",
+      "sha256": "00c8dded9c697a0888d83dbd6e7991c4a7a52ecfa88c9e30e24d0f1300d1dab7",
+      "scrollWidth": 1440,
+      "text": "one the go.\nMEASUREMENT COMPANION\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings\nEvidence and context. No impairment verdict.\nLOCAL · v0.2.0\none the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\n‹ Back\nCHECK 8 OF 8 · A44B6F0C…811866\nReview\n1 Context\n2 Device\n3 Saliva\n4 Eyes\n5 Pulse\n6 ECG\n7 Reaction\n8 Review\nSynthetic session: sample, eye, pulse, ECG and alcohol examples are fictional. Any actual native reaction taps are uncalibrated practice with separate provenance.\nReview before saving\nSaving freezes this snapshot and its evidence manifest on this device. New measurements after saving require a replacement check with a new start time.\nSaliva\nnot collected\nEyes\nnot collected\nCardiac\nnot collected · ppg\nReaction task\nnot collected\nAlcohol\nNot collected\nCapture attempts retained\n0\nUpload\nNothing queued by saving\nSaliva measurements\nSample\ndba8f9bb…542f92\nCollected\nNot collected\nCollection method\nunavailable\nSample status\nnot collected\nCollected volume\nNot reported\nReported dilution factor\nNot reported\nLimits and concentrations use the reporting method's stated matrix and analyte basis. This app does not calculate or repeat a dilution correction. Missing concentrations remain null.\nNo saliva measurements were collected.\nSave on this device\nReview attempt evidence\nCheck context: Oct 25, 2026, 07:38 AM. Each component retains its own acquisition time. Missing and censored values are never filled with zero."
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "settings-dark",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-settings-dark.png",
+      "sha256": "7e605fa9e66f2c03eabdee0ec9c0976bb3a35ccf0201072173bb09c752839fc7",
+      "scrollWidth": 1440,
+      "text": "one the go.\nMEASUREMENT COMPANION\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings\nEvidence and context. No impairment verdict.\nLOCAL · v0.2.0\none the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\nMAKE THIS WORKSPACE YOURS\nSettings\nAPPEARANCE & ACCESSIBILITY\nTheme\nSystem\nLight\nDark\nReduce motion\nNavigation uses no continuous animation. The native task keeps its fixed acquisition presentation.\nProfile display units\nMetric\nImperial\nText outside acquisition follows system text scaling. Task requested sRGB colors, shape/text size, geometry and timing are fixed by its configuration. Physical luminance is unmeasured; the app does not override brightness.\nDevice permissions\nCamera · eye-positioning preview\nBrowser permission is checked at eye preview\nBluetooth · find and connect to a reader\nUnavailable in browser preview\nPrivate record unlock\nWeb preview uses memory only\nViewing this page requests no permission. Bluetooth permission is requested only from Devices. Android 11 and earlier require the OS discovery location permission for Bluetooth scanning; the app does not collect location. No microphone, photo-library or notification permission is requested.\nRefresh permission status\nHelp & diagnostics\nReader connection: check Bluetooth access, power and distance, then request a fresh scan. A simulator connection does not qualify a sensor.\nOffline records: unlock the current workspace to view local saves. Upload only queues after your explicit choice; Pending sync shows requested delivery.\nUnavailable capture: read Service status for the reason. Export and deletion are in Privacy & data; a pending request is not a completed request.\nPreview diagnostics\nPrivacy & data\nLocal storage, export, deletion and upload retry preference\n›\nResearch access\nSeparate study invitation and consent; no automatic enrollment\n›\nApplication data notice\nlocal-demo-v1\n›\nAbout this release\nVersion 0.2.0 · LOCAL\n›\nService status & capabilities\nOffline or unavailable\n›\nGuest workspace\nGuest records stay separate and never upload. Sign-in opens another workspace without importing this one.\nSign in to a separate account workspace"
+    }
+  ]
+}

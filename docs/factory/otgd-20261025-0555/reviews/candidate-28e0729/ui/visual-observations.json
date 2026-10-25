@@ -1,0 +1,135 @@
+{
+  "created_at": "2026-10-25T07:38:28.519Z",
+  "origin": "http://127.0.0.1:8090",
+  "scope": "Independent read-only fictional guest UI; blocked all other network origins",
+  "records": [
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "welcome",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-welcome.png",
+      "sha256": "3b4ccf5311deacca39c6f692135dd226f2d56e181d16ae9765bd5a73b8e2f1b1",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nDetails\nONE THE GO · MEASUREMENT COMPANION\nYour measurements, in one place\nCollect a saliva result, eye and pulse measurements, and one reaction task. This release reports measurements only.\nA CLEARER VIEW OF YOUR DATA\nOne check. Every measurement in context.\n01  Sample\n02  Measurements\n03  Reaction\nWHAT THIS RELEASE DOES\nCollect and organize measurement evidence, show its quality and source, and keep a clear history.\nIt does not determine whether someone is intoxicated, impaired, or safe to drive. No validated impairment model is available.\nExplore the demo\nSign in\nPrivacy\nAbout this release\nLOCAL environment. Account sign-in uses the isolated local fixture issuer. No real participants belong in this environment."
+    },
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "notice",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-notice.png",
+      "sha256": "a9cd691cf8d55b2c89cde8705fa0fdc03ac5012b383489fde8a2a60beca332f3",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nDetails\n‹ Back\nAPPLICATION NOTICE\nHow your data is handled\nlocal-demo-v1\nVerified plain text\nOne The Go is a measurement platform. This release does not determine whether you are intoxicated or safe to drive.\n\nDemo chemistry, eye, pulse, ECG and alcohol examples are fictional. A native reaction task records your actual taps as uncalibrated practice; those taps are not fictional and have not been validated to measure impairment. Camera positioning preview neither records images nor measures pupils.\n\nGuest demo records stay on this device and never upload or migrate when you sign in. Native records use encrypted local storage. The web preview keeps data only in memory. Export happens only after your explicit selection and share action. Anyone receiving an exported file may be able to read it.\n\nAge, height, weight and context are optional. They do not generate a metabolic rate, clearance time or impairment score. Profile context freezes when you select Start check.\n\nQualified sensors, research enrollment and raw recording require their own approved configuration and permissions; this release ships no approved human assay or active impairment model. Account notice acknowledgment is separate from research consent.\nSHA-256\n71f1987620c3931e54b7ce2e81d9fefdc833231c067c07efb47ef2b29b6b91f1\nI have read how this app handles data.\nThis acknowledgment does not enroll you in research or upload a check.\nContinue\nPrivacy controls"
+    },
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "home",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-home.png",
+      "sha256": "ee7514365f0359b7d213a54694abce15f1913e616db8dd15f460a86e48dc6bb6",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\nApplication notice acknowledged. Research consent remains separate.\n×\nEXPLORE · GUEST DEMO\nA check with context\nA clear record of what was measured, when, and how.\nStart a check\nGuest demo\nMeasurements and uncalibrated practice. No intoxication score.\nReview context and start\nWORKSPACE\nSAVED CHECKS\n0\nQUEUED\n0\nView history\nREADER CONNECTION\nNot ready for capture\nReader connection unavailable\nA current supported handshake could not be verified. Review device status and reconnect.\nConnection state observed\n10/25/2026, 7:38:26 AM\nQualified human saliva, pupil, PPG, ECG and alcohol measurement remains unavailable. This connection does not change that gate.\nReview device status\nAlcohol measurement\nUnavailable · see requirements and separate units\n›\nProfile\nOptional context and units\n›\nService and feature availability\nOffline or service unavailable\n›\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings"
+    },
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "context",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-context.png",
+      "sha256": "36b1a53d2b8ad8c24dbc57834d14aeb33c05f1793b840a48812d7a192d1b34e2",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\nApplication notice acknowledged. Research consent remains separate.\n×\nEXPLORE · GUEST DEMO\nA check with context\nA clear record of what was measured, when, and how.\nStart a check\nGuest demo\nMeasurements and uncalibrated practice. No intoxication score.\nAge\nNot provided\nHeight / weight\n— / —\nBMI\nNot available\nPrior use\nunknown\nLast use\nunknown\nSleep / recent exercise\nUnknown / Unknown\nThese optional self-reported values freeze when you start. They cannot predict metabolism or impairment. Original last-use time is retained; elapsed time is recalculated at this check’s start.\nEdit profile and context\nI have reviewed this check’s context.\nBlank or unknown values are allowed. Updates after starting apply to a new check.\nStart demo check\nCancel context review\nWORKSPACE\nSAVED CHECKS\n0\nQUEUED\n0\nView history\nREADER CONNECTION\nNot ready for capture\nReader connection unavailable\nA current supported handshake could not be verified. Review device status and reconnect.\nConnection state observed\n10/25/2026, 7:38:26 AM\nQualified human saliva, pupil, PPG, ECG and alcohol measurement remains unavailable. This connection does not change that gate.\nReview device status\nAlcohol measurement\nUnavailable · see requirements and separate units\n›\nProfile\nOptional context and units\n›\nService and feature availability\nOffline or service unavailable\n›\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings"
+    },
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "profile-error",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-profile-error.png",
+      "sha256": "0731cd9bfb1b4adda4c23eca931fe04dfa84c115c5447c6ab012134437e26382",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\n‹ Back\nOPTIONAL SELF REPORT\nYour profile & context\nEnter only what you want to share. These values are context, not a metabolic-rate or intoxication model.\nBODY CONTEXT\nDisplay units\ncm / kg\nft + in / lb\nAge (years)\nOptional whole number, 18–125. Leave blank for unknown.\nAge must be a whole number from 18 to 125, or blank.\nHeight (cm)\nOptional, up to one decimal place. Decimal separator: ..\nWeight (kg)\nOptional, up to two decimal places. Decimal separator: ..\nCalculated BMI\nNot available\nCalculated from your entered height and weight. Missing or invalid fields keep BMI unavailable; no health category is assigned.\nPRIOR CANNABIS USE\nHow would you describe prior use?\nNever\nOccasional\nFrequent\nDaily\nUnknown\nPrefer not to say\nYour description; not a clinical tolerance category.\nMost recent route\nInhaled\nOral\nOther\nUnknown\nPrefer not to say\nLast use date and time\nEnter date & time\nUnknown\nPrefer not to say\nOTHER RECENT CONTEXT\nSleep in the last 24 hours\nOptional, 0–24 hours.\nRecent exercise\nReported\nNot reported\nUnknown\nAlcohol co-use\nReported\nNot reported\nUnknown\nPrefer not to say\nThis profile belongs only to the guest workspace and never uploads.\nAge must be a whole number from 18 to 125, or blank.\nSave profile\nSaved revision\n0 · local\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings"
+    },
+    {
+      "label": "phone",
+      "width": 412,
+      "height": 839,
+      "state": "settings-or-unsaved",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/phone-settings-or-unsaved.png",
+      "sha256": "0166e285aefee514873c92a544939593666435a60c90d76be4ac31debb6677b3",
+      "scrollWidth": 412,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\nMAKE THIS WORKSPACE YOURS\nSettings\nAPPEARANCE & ACCESSIBILITY\nTheme\nSystem\nLight\nDark\nReduce motion\nNavigation uses no continuous animation. The native task keeps its fixed acquisition presentation.\nProfile display units\nMetric\nImperial\nText outside acquisition follows system text scaling. Task requested sRGB colors, shape/text size, geometry and timing are fixed by its configuration. Physical luminance is unmeasured; the app does not override brightness.\nDevice permissions\nCamera · eye-positioning preview\nBrowser permission is checked at eye preview\nBluetooth · find and connect to a reader\nUnavailable in browser preview\nPrivate record unlock\nWeb preview uses memory only\nViewing this page requests no permission. Bluetooth permission is requested only from Devices. Android 11 and earlier require the OS discovery location permission for Bluetooth scanning; the app does not collect location. No microphone, photo-library or notification permission is requested.\nRefresh permission status\nHelp & diagnostics\nReader connection: check Bluetooth access, power and distance, then request a fresh scan. A simulator connection does not qualify a sensor.\nOffline records: unlock the current workspace to view local saves. Upload only queues after your explicit choice; Pending sync shows requested delivery.\nUnavailable capture: read Service status for the reason. Export and deletion are in Privacy & data; a pending request is not a completed request.\nPreview diagnostics\nPrivacy & data\nLocal storage, export, deletion and upload retry preference\n›\nResearch access\nSeparate study invitation and consent; no automatic enrollment\n›\nApplication data notice\nlocal-demo-v1\n›\nAbout this release\nVersion 0.2.0 · LOCAL\n›\nService status & capabilities\nOffline or unavailable\n›\nGuest workspace\nGuest records stay separate and never upload. Sign-in opens another workspace without importing this one.\nSign in to a separate account workspace\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings"
+    },
+    {
+      "label": "phone",
+      "errors": []
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "welcome",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-welcome.png",
+      "sha256": "00813297b439d3be26663d616b44a24404ded5aed8a35d8173cb9f41dd6dd192",
+      "scrollWidth": 1440,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nDetails\nONE THE GO · MEASUREMENT COMPANION\nYour measurements, in one place\nCollect a saliva result, eye and pulse measurements, and one reaction task. This release reports measurements only.\nA CLEARER VIEW OF YOUR DATA\nOne check. Every measurement in context.\n01  Sample\n02  Measurements\n03  Reaction\nWHAT THIS RELEASE DOES\nCollect and organize measurement evidence, show its quality and source, and keep a clear history.\nIt does not determine whether someone is intoxicated, impaired, or safe to drive. No validated impairment model is available.\nExplore the demo\nSign in\nPrivacy\nAbout this release\nLOCAL environment. Account sign-in uses the isolated local fixture issuer. No real participants belong in this environment."
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "notice",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-notice.png",
+      "sha256": "da9c868368df4efad2966036cded4e8afc53eaec331afb8411e0a5a7dd369de6",
+      "scrollWidth": 1440,
+      "text": "one the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nDetails\n‹ Back\nAPPLICATION NOTICE\nHow your data is handled\nlocal-demo-v1\nVerified plain text\nOne The Go is a measurement platform. This release does not determine whether you are intoxicated or safe to drive.\n\nDemo chemistry, eye, pulse, ECG and alcohol examples are fictional. A native reaction task records your actual taps as uncalibrated practice; those taps are not fictional and have not been validated to measure impairment. Camera positioning preview neither records images nor measures pupils.\n\nGuest demo records stay on this device and never upload or migrate when you sign in. Native records use encrypted local storage. The web preview keeps data only in memory. Export happens only after your explicit selection and share action. Anyone receiving an exported file may be able to read it.\n\nAge, height, weight and context are optional. They do not generate a metabolic rate, clearance time or impairment score. Profile context freezes when you select Start check.\n\nQualified sensors, research enrollment and raw recording require their own approved configuration and permissions; this release ships no approved human assay or active impairment model. Account notice acknowledgment is separate from research consent.\nSHA-256\n71f1987620c3931e54b7ce2e81d9fefdc833231c067c07efb47ef2b29b6b91f1\nI have read how this app handles data.\nThis acknowledgment does not enroll you in research or upload a check.\nContinue\nPrivacy controls"
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "home",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-home.png",
+      "sha256": "370226c0a9e35f9ba03d4b823e1e649b792973e1c208172079aa03acf512796b",
+      "scrollWidth": 1440,
+      "text": "one the go.\nMEASUREMENT COMPANION\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings\nEvidence and context. No impairment verdict.\nLOCAL · v0.2.0\none the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\nApplication notice acknowledged. Research consent remains separate.\n×\nEXPLORE · GUEST DEMO\nA check with context\nA clear record of what was measured, when, and how.\nStart a check\nGuest demo\nMeasurements and uncalibrated practice. No intoxication score.\nReview context and start\nWORKSPACE\nSAVED CHECKS\n0\nQUEUED\n0\nView history\nREADER CONNECTION\nNot ready for capture\nReader connection unavailable\nA current supported handshake could not be verified. Review device status and reconnect.\nConnection state observed\n10/25/2026, 7:38:27 AM\nQualified human saliva, pupil, PPG, ECG and alcohol measurement remains unavailable. This connection does not change that gate.\nReview device status\nAlcohol measurement\nUnavailable · see requirements and separate units\n›\nProfile\nOptional context and units\n›\nService and feature availability\nOffline or service unavailable\n›"
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "context",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-context.png",
+      "sha256": "32b4897253b7c878d00cb87bcc47dff030b3f4e7bfcabd57a009a3b3398c35f1",
+      "scrollWidth": 1440,
+      "text": "one the go.\nMEASUREMENT COMPANION\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings\nEvidence and context. No impairment verdict.\nLOCAL · v0.2.0\none the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\nApplication notice acknowledged. Research consent remains separate.\n×\nEXPLORE · GUEST DEMO\nA check with context\nA clear record of what was measured, when, and how.\nStart a check\nGuest demo\nMeasurements and uncalibrated practice. No intoxication score.\nAge\nNot provided\nHeight / weight\n— / —\nBMI\nNot available\nPrior use\nunknown\nLast use\nunknown\nSleep / recent exercise\nUnknown / Unknown\nThese optional self-reported values freeze when you start. They cannot predict metabolism or impairment. Original last-use time is retained; elapsed time is recalculated at this check’s start.\nEdit profile and context\nI have reviewed this check’s context.\nBlank or unknown values are allowed. Updates after starting apply to a new check.\nStart demo check\nCancel context review\nWORKSPACE\nSAVED CHECKS\n0\nQUEUED\n0\nView history\nREADER CONNECTION\nNot ready for capture\nReader connection unavailable\nA current supported handshake could not be verified. Review device status and reconnect.\nConnection state observed\n10/25/2026, 7:38:27 AM\nQualified human saliva, pupil, PPG, ECG and alcohol measurement remains unavailable. This connection does not change that gate.\nReview device status\nAlcohol measurement\nUnavailable · see requirements and separate units\n›\nProfile\nOptional context and units\n›\nService and feature availability\nOffline or service unavailable\n›"
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "profile-error",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-profile-error.png",
+      "sha256": "e2f2c3bd7d7617aa5d58c5ad092c3f3e4302376c15ebf4efec39d8ff41a4114b",
+      "scrollWidth": 1440,
+      "text": "one the go.\nMEASUREMENT COMPANION\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings\nEvidence and context. No impairment verdict.\nLOCAL · v0.2.0\none the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\n‹ Back\nOPTIONAL SELF REPORT\nYour profile & context\nEnter only what you want to share. These values are context, not a metabolic-rate or intoxication model.\nBODY CONTEXT\nDisplay units\ncm / kg\nft + in / lb\nAge (years)\nOptional whole number, 18–125. Leave blank for unknown.\nAge must be a whole number from 18 to 125, or blank.\nHeight (cm)\nOptional, up to one decimal place. Decimal separator: ..\nWeight (kg)\nOptional, up to two decimal places. Decimal separator: ..\nCalculated BMI\nNot available\nCalculated from your entered height and weight. Missing or invalid fields keep BMI unavailable; no health category is assigned.\nPRIOR CANNABIS USE\nHow would you describe prior use?\nNever\nOccasional\nFrequent\nDaily\nUnknown\nPrefer not to say\nYour description; not a clinical tolerance category.\nMost recent route\nInhaled\nOral\nOther\nUnknown\nPrefer not to say\nLast use date and time\nEnter date & time\nUnknown\nPrefer not to say\nOTHER RECENT CONTEXT\nSleep in the last 24 hours\nOptional, 0–24 hours.\nRecent exercise\nReported\nNot reported\nUnknown\nAlcohol co-use\nReported\nNot reported\nUnknown\nPrefer not to say\nThis profile belongs only to the guest workspace and never uploads.\nAge must be a whole number from 18 to 125, or blank.\nSave profile\nSaved revision\n0 · local"
+    },
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "state": "settings-or-unsaved",
+      "path": "/workspace/scratch/otgd-20261025-0555-live/reviews/ui/desktop-settings-or-unsaved.png",
+      "sha256": "bb500191f2d6aa900116e908c520162ff97dca9b5949f7f25c3528f12079560f",
+      "scrollWidth": 1440,
+      "text": "one the go.\nMEASUREMENT COMPANION\n⌂\nHome\n+\nCheck\n≡\nHistory\n⚙\nSettings\nEvidence and context. No impairment verdict.\nLOCAL · v0.2.0\none the go.\nGUEST DEMO · OFFLINE\nBrowser preview · memory only\nGuest demo · synthetic values · no uploads\nDetails\nMAKE THIS WORKSPACE YOURS\nSettings\nAPPEARANCE & ACCESSIBILITY\nTheme\nSystem\nLight\nDark\nReduce motion\nNavigation uses no continuous animation. The native task keeps its fixed acquisition presentation.\nProfile display units\nMetric\nImperial\nText outside acquisition follows system text scaling. Task requested sRGB colors, shape/text size, geometry and timing are fixed by its configuration. Physical luminance is unmeasured; the app does not override brightness.\nDevice permissions\nCamera · eye-positioning preview\nBrowser permission is checked at eye preview\nBluetooth · find and connect to a reader\nUnavailable in browser preview\nPrivate record unlock\nWeb preview uses memory only\nViewing this page requests no permission. Bluetooth permission is requested only from Devices. Android 11 and earlier require the OS discovery location permission for Bluetooth scanning; the app does not collect location. No microphone, photo-library or notification permission is requested.\nRefresh permission status\nHelp & diagnostics\nReader connection: check Bluetooth access, power and distance, then request a fresh scan. A simulator connection does not qualify a sensor.\nOffline records: unlock the current workspace to view local saves. Upload only queues after your explicit choice; Pending sync shows requested delivery.\nUnavailable capture: read Service status for the reason. Export and deletion are in Privacy & data; a pending request is not a completed request.\nPreview diagnostics\nPrivacy & data\nLocal storage, export, deletion and upload retry preference\n›\nResearch access\nSeparate study invitation and consent; no automatic enrollment\n›\nApplication data notice\nlocal-demo-v1\n›\nAbout this release\nVersion 0.2.0 · LOCAL\n›\nService status & capabilities\nOffline or unavailable\n›\nGuest workspace\nGuest records stay separate and never upload. Sign-in opens another workspace without importing this one.\nSign in to a separate account workspace"
+    },
+    {
+      "label": "desktop",
+      "errors": []
+    }
+  ]
+}

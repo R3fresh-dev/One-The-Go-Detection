@@ -1,0 +1,16 @@
+{
+  "report": "/workspace/scratch/otgd-20261025-0555-live/reviews/product/product-signoff.md",
+  "report_sha256": "a58b50e037fd74fe356802aaf76e3f24738d7fe0752dc0c3ee5461ffea38864a",
+  "json": "/workspace/scratch/otgd-20261025-0555-live/reviews/product/product-signoff.json",
+  "json_sha256": "b71a52afde09602465b91fa9f2c117337daf74fbc9022052d20ec8fce773306a",
+  "spec_count": 47,
+  "changes_required": 11,
+  "blocked": 36,
+  "findings": [
+    "PROD-001",
+    "PROD-002",
+    "PROD-003"
+  ],
+  "canonical_matches": 47,
+  "missing_implementation_paths": []
+}

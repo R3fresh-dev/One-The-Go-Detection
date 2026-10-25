@@ -35,3 +35,7 @@ Mobile/evaluation/provenance authorsreleased; workerprobe/wrapper frozen foractu
 ## Browser preflight decisions
 
 D-006 v4 and D-007 v1 were acknowledged AFFECTED by browser builder; source refresh owner acknowledged D-006 v4. The browser owner may repair only demonstrated auth/controller defects with regression evidence. Known identity-source drift invalidates the running worker preflight final source binding; no waiver or counter reset. Fresh reviewers will receive both decisions and the complete final candidate.
+
+## Checkpoint8 independent review acknowledgments
+
+All six actual reviewers ACKed D001–D008/currentD006v5/D007v1/D008v1 through native messages and their preserved reports. Every reviewer confirmed source/spec hashes and respected source freeze; no author self-signoff. D009 correction1 is persisted before repairs; correction owners must ACK its scope/ownership and affected reviewers must reconfirm against replacement evidence. Initial review decisions remain history, not current replacement signoffs.

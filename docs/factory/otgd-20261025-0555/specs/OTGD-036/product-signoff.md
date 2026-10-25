@@ -1,11 +1,11 @@
-# OTGD-036: Independent product signoff
+# OTGD-036: Independent product signoff — initial review
 
-Canonical spec: `openspec/changes/production-mobile-platform/specs/android-settings-accessibility/spec.md`
+Canonical `openspec/changes/production-mobile-platform/specs/android-settings-accessibility/spec.md`; SHA-256 `2768fdfbe5ff0b1971d6aad04101ea2fa17db6f6c3012848aa3aa3f490e654c8`.
 
-Spec SHA-256: `2768fdfbe5ff0b1971d6aad04101ea2fa17db6f6c3012848aa3aa3f490e654c8`
+Reviewer `/root/review_product`, configured OpenAI gpt-6.1-sol/high; runtime attestation unavailable. Candidate `28e07295cb37bb9dcaaac82cc8fc846eb89006a6`.
 
-Baseline implementation: `0844868aa543af4ab75ac5065ad48cf807b86bb3`.
+Decision **BLOCKED**. Settings destinations, no-prompt permission refresh, redacted diagnostics and workspace guards exist with focused rendered tests. Controlled OS observations do not establish genuine Settings return, 200% text, TalkBack/VoiceOver or iOS parity.
 
-Decision register: `docs/factory/otgd-20261025-0555/decisions.md`.
+Findings: none; required evidence pending.
 
-Status: PENDING. No reviewer assigned or signoff granted. Requires independent agent identity, candidate binding, actual evidence and per-spec decision.
+This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.

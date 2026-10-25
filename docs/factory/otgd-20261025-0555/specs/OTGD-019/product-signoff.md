@@ -1,11 +1,11 @@
-# OTGD-019: Independent product signoff
+# OTGD-019: Independent product signoff — initial review
 
-Canonical spec: `openspec/changes/production-mobile-platform/specs/android-alcohol-channel/spec.md`
+Canonical `openspec/changes/production-mobile-platform/specs/android-alcohol-channel/spec.md`; SHA-256 `6c423c75ae449e935fe8856f61d70af07aaab582719baba1d1e1bc63d787f45a`.
 
-Spec SHA-256: `6c423c75ae449e935fe8856f61d70af07aaab582719baba1d1e1bc63d787f45a`
+Reviewer `/root/review_product`, configured OpenAI gpt-6.1-sol/high; runtime attestation unavailable. Candidate `28e07295cb37bb9dcaaac82cc8fc846eb89006a6`.
 
-Baseline implementation: `0844868aa543af4ab75ac5065ad48cf807b86bb3`.
+Decision **BLOCKED**. Separate mg/L alcohol record, qualifier, source and own timestamp are visible and co-use claims are bounded. No calibrated breath driver exists; calibration-specific participant start/recovery and real sampling remain BLOCKED, not N/A.
 
-Decision register: `docs/factory/otgd-20261025-0555/decisions.md`.
+Findings: none; required evidence pending.
 
-Status: PENDING. No reviewer assigned or signoff granted. Requires independent agent identity, candidate binding, actual evidence and per-spec decision.
+This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.

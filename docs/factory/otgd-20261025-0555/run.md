@@ -8,13 +8,13 @@ PM: current Codex /root in parent-delegated task; OpenAI GPT-6 family per host i
 Parent source thread: 01a16636-df8f-72e1-b9e7-31c10571e0d7.
 Environment: ccarenv_b64_Y2NhcmVudl9jMWMxZjFjNWVmM2M4MTkxODZmM2NmOTVmMmY5NTAyZQ.
 Ownership generation: 1. Prior PM: no active same-repository task found by parent; see ownership.md.
-Last heartbeat: 2026-10-25T06:38:09.286482+00:00.
+Last heartbeat: 2026-10-25T07:50:00.775438+00:00.
 Baseline/candidate: 0844868aa543af4ab75ac5065ad48cf807b86bb3; Factory records only until first audit edits.
-correction_round: 0
+correction_round: 1
 max_correction_rounds: 2
 recovery_attempts: 0
-checkpoint_seq: 7
-last_observed_confirmed_remote_commit: 33901a1ff785cd28e351d935be510d184fb7f8e2 (checkpoint 1 verified via git ls-remote).
+checkpoint_seq: 8
+last_observed_confirmed_remote_commit: 28e07295cb37bb9dcaaac82cc8fc846eb89006a6 (checkpoint7 verified).
 
 ## Scope and authority
 
@@ -84,3 +84,8 @@ The shared live gate integration and all 47 updated verification dossiers are ca
 ## Checkpoint 7 — candidate freeze
 
 All implementation sources are released. Browser acceptance is 2/2 on actual services; mobile unit274, focusedauth/controller28, and typecheck/export pass. Current source imageD is adopted; canonicalhealth passes. The earlier actual worker preflight intentionally remains FAIL for its one changed source file, with complete scenario observations preserved in evidence/worker-preflight-source-drift.json. Begin final current gates and six fresh independent reviews under D008. All journal/review writes during the fingerprint window go outside the worktree at /workspace/scratch/otgd-20261025-0555-live. No final signoff yet.
+
+
+## Checkpoint 8 — initial reviews and correction round1
+
+All six independent initial reviews complete for candidate28e07295; all47 per-spec decisions imported with current canonical hashes. D009 starts correction1/2; recovery0/3 unchanged. No final approver or completion. Local gate completed unit/ATDD/performance/components on unchanged source, intentionally stopped next disposable-PG collection to repair reviewed defects. Exact interruption and passing stages preserved; full final rerun remains required. Current CI40173151613 runs merge891e5e789e3f8ac114237dc63f21f1960cdc62d0, exact candidate tree9a62a8ae6bffd16394f68ea9147b8d7c5469f169 verified. Draft PR22 remains open. Canonical services healthy; all data preserved.

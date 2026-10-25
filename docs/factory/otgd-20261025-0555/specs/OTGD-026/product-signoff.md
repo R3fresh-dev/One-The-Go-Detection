@@ -1,11 +1,11 @@
-# OTGD-026: Independent product signoff
+# OTGD-026: Independent product signoff — initial review
 
-Canonical spec: `openspec/changes/production-mobile-platform/specs/android-guided-check/spec.md`
+Canonical `openspec/changes/production-mobile-platform/specs/android-guided-check/spec.md`; SHA-256 `cef15148de295ecabe3b38d6f9b2d45530b60993c1aacf1b41e1b4fc495c6562`.
 
-Spec SHA-256: `cef15148de295ecabe3b38d6f9b2d45530b60993c1aacf1b41e1b4fc495c6562`
+Reviewer `/root/review_product`, configured OpenAI gpt-6.1-sol/high; runtime attestation unavailable. Candidate `28e07295cb37bb9dcaaac82cc8fc846eb89006a6`.
 
-Baseline implementation: `0844868aa543af4ab75ac5065ad48cf807b86bb3`.
+Decision **CHANGES_REQUIRED**. Frozen context, immutable attempts/replacements, local-first save, explicit upload and interruption fences are present. Research navigation omits uncertainty (PROD-003); complete offline/restart/native parity and current live evidence remain unverified.
 
-Decision register: `docs/factory/otgd-20261025-0555/decisions.md`.
+Findings: PROD-003.
 
-Status: PENDING. No reviewer assigned or signoff granted. Requires independent agent identity, candidate binding, actual evidence and per-spec decision.
+This is a faithful imported summary of the independent signed review record, not PM approval. Full current-hash bindings and explicit per-spec judgment: ../../reviews/candidate-28e0729/product/product-signoff.json. Replacement candidate requires fresh confirmation.

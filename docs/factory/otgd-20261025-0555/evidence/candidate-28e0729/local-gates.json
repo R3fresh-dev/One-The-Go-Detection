@@ -1,0 +1,12 @@
+{
+  "revision": "28e07295cb37bb9dcaaac82cc8fc846eb89006a6",
+  "working_tree_sha256": "36ed8d800edcb560ac8ca189e98b64518b3342a29458d6e91a8d943085310f8c",
+  "passed": [
+    "unit-coverage",
+    "atdd",
+    "performance",
+    "components"
+  ],
+  "scope": "local software checks; not cloud/store/native qualification or GitHub enforcement",
+  "failed": "live-dependencies"
+}
