@@ -1,6 +1,6 @@
 # High-level design
 
-Version 0.1.0 | 2026-10-10, America/Chicago | Development proposal
+Architecture reconciliation | 2026-10-25 UTC | Software design; qualification and release remain gated
 
 ## 1. Purpose and architectural boundary
 
@@ -28,7 +28,9 @@ flowchart TB
     K --> F
 ```
 
-This diagram is a proposed architecture, not a deployment inventory. The mobile app owns camera capture and task presentation; those operations do not run on the microcontroller. Reference laboratory reports support analytical comparison and model development. A delayed laboratory result is historical evidence for its collection time, not a real-time consumer measurement.
+This diagram describes component responsibilities, not a deployment inventory. Current source includes the Expo application, native acquisition modules, FastAPI service, asynchronous worker, protected signed-reader firmware and deployment tooling. Source presence is not executed acceptance evidence. The mobile app owns camera capture and task presentation; those operations do not run on the microcontroller. Reference laboratory reports support analytical comparison and model development. A delayed laboratory result is historical evidence for its collection time, not a real-time consumer measurement.
+
+The normative software refinements are the pending OpenSpec changes and their shared contracts. In particular, `authorized-model-execution` modifies six legacy mobile requirements for independently admitted ResearchResult 1.1.0; legacy 0.1.0 estimates remain unsupported. `qualified-participant-acquisition` adds exact participant instructions, laboratory handoff, the selected digital PPG adapter and a separately prespecified HR-only model exception. These refinements preserve the full register's scientific gates, ordinary/guest measurement defaults and one-saliva/one-task consumer-format target. They do not authorize a participant study or consumer clinical release. The PRD's additional journey identifiers trace existing scope rather than new capabilities.
 
 ## 3. Development phases
 
@@ -45,7 +47,7 @@ The system defaults to P0. Installing a model file, switching a UI setting, or h
 
 ### 4.1 Pocket controller
 
-The first controller is an Arduino Nano ESP32. Its role is transport, timestamping, signal acquisition coordination, and device health. The supplied sketch is an intentionally small USB serial simulator. Later firmware will add BLE, sensor drivers, bounded buffering, command handling, and calibration references. The [hardware guide](HARDWARE_STARTER_GUIDE.md) gives board-specific details and a staged parts list.
+The first controller is an Arduino Nano ESP32. Its role is transport, timestamping, signal acquisition coordination, and device health. The original USB serial simulator remains a fictional bring-up path. `firmware/nano_esp32_signed_reader` supplies a distinct bounded physical dialect, protected P-256 identity and server-grant verification, authenticated BLE and optional ADC or pinned SparkFun MAX32664 PPG acquisition. `firmware/secure_reader` builds the security-enabled SDK branch; a stock build cannot establish encrypted-NVS runtime availability. These are implemented software paths, not evidence of flashed/provisioned or qualified hardware. The [hardware guide](HARDWARE_STARTER_GUIDE.md) gives board-specific details and a staged parts list.
 
 The controller never invents concentrations from a generic electrical signal. A future assay driver must implement the selected assay's calibration, controls, quality rules, environmental compensation, and uncertainty representation. The device records raw observations and references to its calibration; it may produce concentrations only through an approved versioned analytical algorithm.
 
@@ -61,7 +63,7 @@ Expectorated saliva and buffered collection devices are different acquisition co
 
 ### 4.3 Mobile application
 
-Proposed implementation: React Native for workflow and presentation, with native Swift/Kotlin modules for camera timing, stimulus event timing, and BLE integration. No runtime/framework version is claimed tested by these documents. Pin supported versions and device capabilities when implementation begins.
+The implemented software uses Expo/React Native and TypeScript for workflow and presentation, with native Swift/Kotlin modules for camera acquisition, reaction timing, BLE transport and protected-storage support. `apps/mobile/package.json` and its lockfile pin the build dependencies; the shared contract defines the platform matrix. The current package declares Expo 57.0.27, React Native 0.86.3 and React 19.2.3. Declared dependencies and source do not establish native build or device acceptance.
 
 The app guides consent/configuration, device association, profile entry, sample collection, cardiac capture, pupil capture, one game, quality review, and result display. It stores encrypted local records, supports an explicit retry when a measurement fails, and allows cancelation before finalization. After finalization, a correction creates a new record version.
 
@@ -73,7 +75,7 @@ The task runs locally, without network dependence. Response timing uses monotoni
 
 Use a modular Python/FastAPI service rather than multiple independently deployed microservices at inception. Logical modules are identity/authorization, session ingestion, assay import, artifact management, feature extraction, model registry/inference, audit, and study export. PostgreSQL stores structured records; private object storage holds approved raw artifacts. The initial development environment can use local synthetic files without a cloud account.
 
-An optional future AWS deployment uses an authenticated API behind TLS, a containerized service, managed PostgreSQL, private object storage, and a queue for asynchronous feature work. This is a deployment choice consistent with the team's skills, not a requirement to buy cloud services during the first hardware exercises.
+The approved software includes isolated local, QA and production configurations. Local verification uses actual PostgreSQL and LocalStack S3/SQS plus a fictional OAuth issuer. The CDK-managed cloud design uses authenticated TLS, containerized API/worker services, managed PostgreSQL, private versioned objects and SQS. Existing bounded serverless/Fargate operator paths are separately configured implementations, not interchangeable deployment receipts. Their actual account, region, source/image, authority, network, backup and budget evidence must be retained for the chosen target. This audit authorizes no cloud deployment or new spend.
 
 Separate account identity from pseudonymous study data. A participant's identity is never part of a BLE advertisement, object key, analytic export filename, or device log. Study authorization is evaluated for each read/write; possession of a session UUID is not authorization.
 
@@ -81,7 +83,7 @@ Separate account identity from pseudonymous study data. A participant's identity
 
 The pipeline validates structure, checks cross-field semantics, aligns acquisition times, calculates versioned features, evaluates signal-quality gates, resolves an approved model manifest, and only then performs inference when permitted. It saves the exact input record hashes, manifest ID, model artifact hash, feature code version, and resulting status.
 
-Candidate models start with regularized regression and tree-based approaches. Model selection follows participant-level evaluation, calibration, and incremental-value analysis; algorithm complexity is not a performance claim. The pipeline must support ablation of chemistry, task, eyes, profile, heart rate, and ECG. It must distinguish a personalized mode from a first-use mode rather than substituting a missing personal baseline with zero.
+The executable research artifact boundary is bounded canonical data-only `logistic_linear_v1`, implemented by `services/api/otgd/model_engine.py`; executable model loaders and arbitrary expressions are refused. `tools/model_evaluation.py` provides deterministic offline fitting and evaluation with frozen participant/later-session partitions. Other model families remain research candidates requiring a separate contract. The full multimodal mode retains matched chemical-only, app-only, combined and ECG-removed comparisons. Only the separately prespecified `cardiac_hr_only` variant may omit those comparisons, with their absence explicit and no multimodal superiority claim. Personalized and first-use modes remain distinct; missing baselines are never zero.
 
 The manifest declares mandatory channels, eligible acquisition/assay/task versions, limits, population, outcome definition, operating threshold, calibration version, baseline mode, timing window, and lifecycle. There are no hard-coded clinical cutoff defaults in the app. A missing required channel yields an inconclusive result unless a separately evaluated manifest explicitly supports that reduced feature set.
 
@@ -93,7 +95,7 @@ The manifest declares mandatory channels, eligible acquisition/assay/task versio
 4. One standardized saliva collection is associated with one sample ID. Every analyte result carries source, method, basis, limits, and quality. Invalid samples never become silent zero concentrations.
 5. The app collects pupil and cardiac data using a recorded acquisition configuration, and runs one configured task. Exact component times are retained.
 6. Local checks give actionable recapture reasons. A user may cancel; a completed game is not repeatedly rerun until the user achieves a preferred score.
-7. The finalized immutable snapshot is ingested idempotently. Approved raw uploads occur separately with content hashes and explicit authorization.
+7. Save persists the local record before success and never queues upload. An eligible account explicitly requests idempotent ingestion. The service freezes the selected snapshot and its complete companion context/attempt manifest together. Approved raw uploads require their separate purpose and explicit action before immutable finalization where their references are required.
 8. The backend validates the snapshot. In P0/P1 it returns measurements only. In P2 it may produce an estimate for the original acquisition time after applying manifest and study gates.
 9. The app displays status, exposure measurements, quality, and permitted research output. It never labels delayed or stale evidence as a current real-time assessment.
 
@@ -112,7 +114,7 @@ The manifest declares mandatory channels, eligible acquisition/assay/task versio
 | Result | Target time, evaluation time, immutable status, reason codes, optional authorized research estimate, provenance |
 | Audit event | Actor, action, object version, outcome, time; no raw physiology or unnecessary personal data |
 
-Contracts live in [../contracts/](../contracts/). They specify the v0.1 exchange boundary; database tables and APIs are proposed rather than implemented.
+Contracts live in [../contracts/](../contracts/) and the [shared application contracts](../openspec/changes/production-mobile-platform/shared-contracts.md). The v0.1 session remains the selected scientific projection; typed companion contracts retain context, all attempts, alcohol, collection/import receipts, report revisions and optional artifacts. ResearchResult 1.1.0 is a separate conditional output. Actual database models and route implementations live in `services/api/otgd/db.py` and `main.py`; the LLD records their boundaries. Contract validity does not establish the scientific authenticity of a supplied record.
 
 ## 7. Failure behavior and availability
 
@@ -120,7 +122,7 @@ Sensor faults, low sample volume, out-of-range results, poor eye segmentation, m
 
 BLE disconnects do not produce a partial successful record. The receiver detects missing sequence numbers and verifies a completed transfer before accepting a component. Firmware buffers are bounded; overflow becomes a quality failure. After a restart, a new capture is required unless the component can be proven complete and immutable.
 
-The app may collect an authorized session offline and display local quality information. It does not fabricate an estimate when the registry or server is unavailable. Upload replay must be idempotent. Old model outputs remain historical records with their version; a later model generates a linked reanalysis, not an invisible overwrite.
+Offline operation supports fictional data, uncalibrated native practice and permitted local drafts/history. Every qualified participant start requires fresh online authority; cached capability or consent cannot grant offline capture. The app does not fabricate an estimate when the registry or server is unavailable. Upload replay must preserve the original operation/body/revision. Old model outputs remain historical records with their version; a later model generates a linked reanalysis, not an invisible overwrite.
 
 ## 8. Security and privacy architecture
 
@@ -141,3 +143,11 @@ A future combined check links alcohol and cannabis channels by session, while pr
 The [roadmap](ROADMAP.md) turns this design into work packages. First demonstrate synthetic telemetry and record validation; then add a real pulse channel; then a reproducible game and guided eye capture; independently establish assay feasibility; only then collect approved paired data. A custom enclosure and PCB follow stable sensor and power requirements.
 
 The main risks are selective quantitative saliva sensing, inability to identify a sufficiently useful impairment endpoint, confounding and poor generalization, measurement drift, interaction burden, and unproven economics. Each has an experiment and owner in the full specification and validation plan. The architecture deliberately allows the team to stop or change an assay without rewriting the app, data contracts, or evidence trail.
+
+## 11. Authority, privacy and verification boundaries
+
+Account identity is issuer/subject scoped and partitioned by build environment and data generation. Sign-in, onboarding and an installed adapter confer no study authority. Independently authenticated submitter/reviewer/releaser duties release exact immutable configuration and scientific dependencies. Qualified start, attestation, finalization, computation, commit and protected delivery re-admit their current scope. Registry retirement serializes against acceptance. Reference-lab collection needs no BLE reader; it remains pending until authorized staff import or explicit permitted abandonment, and pending analysis cannot finalize.
+
+SQLCipher and OS-protected keys own native persistence; browser records remain memory-only. Signed-out caches require the same account to reauthenticate and unlock. Optional eye/ECG recording, upload and participant-copy export are separate default-off purposes. Accepted objects are byte-verified and version-pinned; export delivery rechecks authority at bounded chunk boundaries. Deletion/generation tombstones and independently retained journal/recovery seals fence restored databases and stale workers. Physical cleanup may remain pending after logical access is denied; delivered copies cannot be recalled.
+
+The canonical worker uses a transactional outbox, at-least-once delivery, fenced leases and bounded retries. Source unit interleavings do not establish recovery after an actual process kill. Exact-source acceptance includes >80% unit coverage, ATDD, performance, components, live dependencies, Docker health and LocalStack APIs under the repository gate commands, plus required native/platform checks. Missing or skipped checks remain open. An authenticated browser journey must exercise the actual fictional issuer/API/worker/storage path; component fixtures and a guest preview do not establish it. Native simulator/device permissions, SQLCipher restart, BLE, lifecycle, accessibility and physical timing require their own observed matrix rows. Hardware, scientific approvals, AWS/store execution and participant authorization remain independent gates.

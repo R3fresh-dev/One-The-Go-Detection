@@ -49,3 +49,7 @@ node_modules
 
 # Intermediate task files and downloaded pricing evidence
 /work/
+
+# Durable Factory text reports are checkpoint evidence, not generated test output.
+!docs/factory/*/reports/
+!docs/factory/*/reports/*.md

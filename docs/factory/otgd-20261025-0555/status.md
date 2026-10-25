@@ -1,12 +1,15 @@
 # Factory status
 
-As of: 2026-10-25T06:13:28.690397+00:00 | Run: otgd-20261025-0555 | Stage: product audit complete; engineering next | Execution: active, integration capacity blocked
-Candidate implementation: 0844868aa543af4ab75ac5065ad48cf807b86bb3; PRD and Factory documentation changed.
-Progress: 0/47 final spec dossiers verified; planning411 requirements/782 cases.
-Completed: product audit and author checks; all47 verification plans; baseline host/Arduino/protected firmware checks; 41 semantic contracts, mobile typecheck and six CDK assertions; browser export.
-Active: PM checkpoint/integration capacity diagnosis; prior specialist writers paused/released.
-Next: engineering audit, spec reconciliation, concrete software verification fixes; then freeze candidate and required gates/reviews.
-Blocker ENV-SPACE-001: Docker VFS full-stack size exceeded root32GiB. Commands restored; root ~2GB and /tmp ~4GB free. PostgreSQL+LocalStack and both volumes retained healthy; API/identity/worker not started. No resize API available. No diagnostic approval pending; no further cleanup underway.
-Council: not started. Hardware/scientific/native-device/release prerequisites not qualified.
-Checkpoint: 2; branch factory/one-the-go-detection-20261025; previously observed remote33901a1ff785cd28e351d935be510d184fb7f8e2.
-Unpersisted: checkpoint2 audit/planning/evidence records awaiting current commit/push.
+As of: 2026-10-25T06:24:30.095238+00:00 | Run: otgd-20261025-0555 | Stage: specification reconciliation | Execution: active; full local Docker gates capacity blocked
+Candidate: checkpoint2 4da90f1e473329650bf2a33095ee29df362b23d9 plus engineering-doc changes; implementation baseline unchanged.
+Progress: 0/47 final dossiers verified; 411 requirements/782 planned cases; product audit completed.
+Completed: remote checkpoint2 verified; host/Nano/protected firmware baseline PASS; ordinary dependency install,41 contracts,typecheck,6CDK assertions,browser export.
+Active: /root/engineering_audit HLD/LLD/design reconciliation and concrete gap assessment; /root/firmware_validation bounded local-image proof; PM coordination.
+Next: engineering handoff to spec reconciler, bounded builder fixes, freeze/tests/reviews.
+Blocker ENV-SPACE-001: root32GiB Docker VFS; after recovery~1.4GB root and3.4GB /tmp free while proof artifact is retained. PostgreSQL+LocalStack healthy, both volumes preserved. Compact import remains held for source/group-backup normalization disposition; no canonical image/service mutation performed. No resize tool exposed.
+Council: not started, no signoffs; no native-device/scientific/release qualification.
+Checkpoint:3 being saved; previous remote4da90f1e473329650bf2a33095ee29df362b23d9 confirmed.
+Unpersisted: engineering docs, coordination and image-proof investigation.
+Counters: correction0/2; recovery0/3. Parent target verified completion by waking today; acceptance unchanged.
+
+Durability correction: checkpoint2 reports had been excluded by global ignore rule; checkpoint3 explicitly includes completed Factory Markdown reports. Product/engineering audits complete; spec reconciliation active.

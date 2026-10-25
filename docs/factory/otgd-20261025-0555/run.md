@@ -13,7 +13,7 @@ Baseline/candidate: 0844868aa543af4ab75ac5065ad48cf807b86bb3; Factory records on
 correction_round: 0
 max_correction_rounds: 2
 recovery_attempts: 0
-checkpoint_seq: 2
+checkpoint_seq: 3
 last_observed_confirmed_remote_commit: 33901a1ff785cd28e351d935be510d184fb7f8e2 (checkpoint 1 verified via git ls-remote).
 
 ## Scope and authority
@@ -24,8 +24,8 @@ Complete the existing approved Android/iOS journeys, native modules, API/workers
 
 - T01 takeover and ownership, attempt 1: DONE; evidence/takeover-audit.json and ownership.md.
 - T02 product audit, attempt 1: DONE; report read-back and document checks passed; PRD ownership released; product-owner owns PRD and active OpenSpec edits, report.
-- T03 engineering audit, attempt 1: PENDING on T02; engineering-lead owns HLD/LLD and applicable specs.
-- T04 reconciliation, attempt 1: PENDING on T03; spec writer reconciles all documents/specs/contracts and per-criterion verification map.
+- T03 engineering audit, attempt 1: DONE; engineering report and author checks complete; engineering-lead owns HLD/LLD and applicable specs.
+- T04 reconciliation, attempt 1: RUNNING; /root/spec_reconciliation; spec writer reconciles all documents/specs/contracts and per-criterion verification map.
 - T05 implementation, attempt 1: PENDING on T04; bounded builders own affected code and meaningful tests.
 - T06 verification planning/execution, attempt 1: PLANNING DONE, runtime execution PENDING after reconciliation/freeze; verification specialist owns per-spec test plans/results and command evidence. Setup may proceed independently, actual final gates after source freeze.
 - T07 six independent reviews/signoffs: PENDING on candidate and evidence; security, UX, UI design, code, product signoff, engineering signoff.
@@ -54,3 +54,11 @@ Specification readiness unassessed; implementation unverified for this run; rele
 Product author /root/product_audit released; PRD-001–028 preserved and PRD-029–042 trace existing approved scope. All47 dispositions recorded. Verification planning /root/verification released: 411 requirements/782 cases, eight software verification handoffs, 24 external-only requirements and six manual reviews. Runtime dossier results remain NOT_RUN. Firmware specialist /root/firmware_validation released: portable tests, Nano simulator/signed-reader and protected ESP-IDF actual builds PASS at unchanged source hashes; not hardware/scientific qualification.
 
 ENV-SPACE-001: root32GiB VFS Docker host exhausted while creating five app containers. Read-only diagnostics and action-time approved cache cleanup/dependency relocation/removal of five never-started app containers restored ~2GB. PostgreSQL and LocalStack plus both volumes/settings preserved and healthy. Subsequent parent instruction prohibits further unapproved cleanup/migration/restart. No disk-resize tool exposed. Investigate smaller reproducible image execution without weakening gates; full local integration currently blocked. This is environment setup, not a crash; recovery count remains0 and correction_round remains0.
+
+## Post-checkpoint2 roster
+
+/root/product_audit and /root/verification released after coherent checkpoint. /root/engineering_audit: gpt-6.1-sol/high explicit OpenAI spawn, RUNNING sequential engineering audit; owns HLD/LLD/designs/specs/report. /root/firmware_validation reactivated solely for D-006 runtime-image proof; owns /tmp artifacts and runtime-image-proof.md, no source/retained-runtime changes. Last verified remote checkpoint:4da90f1e473329650bf2a33095ee29df362b23d9. Target per parent: verified completion by user waking Sunday October25, no skipped gates or extra scope/spend.
+
+## Checkpoint3 durability correction
+
+The repository global reports/ ignore rule excluded previously untracked specialist reports from checkpoint2. PRD and47plans/results were remote, but reports were local-only despite earlier summary. Narrow .gitignore exceptions now include only docs/factory/*/reports/*.md. Checkpoint3 stages completed product, engineering, verification and firmware reports explicitly, and records the unfinished image-proof report as WIP if present. Previous remote verified4da90f1e473329650bf2a33095ee29df362b23d9. Current spec writer owns docs and inventory after completed engineering; no production source edits yet.
